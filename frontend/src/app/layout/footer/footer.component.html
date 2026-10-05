@@ -13,8 +13,10 @@
             <ul class="mt-4 space-y-3">
                 <li><a routerLink="/" fragment="features" class="transition hover:text-bv-primary">Features</a></li>
                 <li><a routerLink="/" fragment="how-it-works" class="transition hover:text-bv-primary">How it works</a></li>
-                <li><a routerLink="/collection" class="transition hover:text-bv-primary">Collection</a></li>
-                <li><a routerLink="/dashboard" class="transition hover:text-bv-primary">Your groups</a></li>
+                @if (isAuthenticated()) {
+                    <li><a routerLink="/collection" class="transition hover:text-bv-primary">Collection</a></li>
+                    <li><a routerLink="/dashboard" class="transition hover:text-bv-primary">Your groups</a></li>
+                }
             </ul>
         </div>
 

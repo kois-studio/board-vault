@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" width="400" height="400">
+<rect width="400" height="400" fill="#FFD166"/>
+<rect x="60" y="70" width="80" height="80" rx="18" fill="#8A2C7A"/><rect x="160" y="70" width="80" height="80" rx="18" fill="#B45309"/><rect x="260" y="70" width="80" height="80" rx="18" fill="#047857"/><rect x="110" y="165" width="80" height="80" rx="18" fill="#0E7490"/><rect x="210" y="165" width="80" height="80" rx="18" fill="#C0392B"/>
+<text x="40" y="318" font-family="Inter, system-ui, sans-serif" font-size="44" font-weight="800" fill="#3A0B30">Meeple</text>
+<text x="40" y="366" font-family="Inter, system-ui, sans-serif" font-size="44" font-weight="800" fill="#3A0B30">Market</text>
+</svg>

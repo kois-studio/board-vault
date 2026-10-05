@@ -14,6 +14,7 @@ import type {
     UserType,
 } from '../../api/api.types'
 import { ImageProfileComponent } from '../../components/image-profile/image-profile.component'
+import { type SessionStat, SessionSummaryComponent } from '../../components/session-summary/session-summary.component'
 import { ToastService } from '../../components/toast/toast.service'
 import { ButtonComponent } from '../../components/ui/button/button.component'
 import { ContainerWrapperComponent } from '../../components/ui/container-wrapper/container-wrapper.component'
@@ -45,6 +46,7 @@ const resultKey = (entry: Pick<GameResultEntryType, 'accountId' | 'groupPersonId
 @Component({
     imports: [
         ButtonComponent,
+        SessionSummaryComponent,
         RouterLink,
         CustomDatePipe,
         IconComponent,
@@ -223,19 +225,16 @@ export class MeetViewComponent {
             : (this.meetData?.attendeeStatuses.filter((attendee) => attendee.attendanceStatus === 'attended').length ?? 0)
     }
 
-    get sessionStatusDescription(): string {
-        switch (this.meetData?.status) {
-            case 'scheduled':
-                return 'Answer if you can make it. The organizer starts the night when everyone is at the table.'
-            case 'active':
-                return 'Mark the games as you play them, who played, and who won.'
-            case 'completed':
-                return 'Part of the group’s history. You can still record who won each game.'
-            case 'cancelled':
-                return 'This game night was cancelled. It stays here for reference.'
-            default:
-                return ''
-        }
+    /** The counts under the session title. */
+    get sessionStats(): Array<SessionStat> {
+        const upcoming = this.meetData?.status === 'scheduled' || this.meetData?.status === 'active'
+        return [
+            { label: 'Invited', value: this.attendeeCount },
+            upcoming ? { label: 'Going', value: this.goingCount } : { label: 'Attended', value: this.attendedCount },
+            { label: 'Shortlisted', value: this.plannedGames.length },
+            { label: 'Played', value: this.playedGamesCount },
+            ...(this.skippedGamesCount > 0 ? [{ label: 'Skipped', value: this.skippedGamesCount }] : []),
+        ]
     }
 
     get dateParts(): SessionDateParts | null {
@@ -244,20 +243,6 @@ export class MeetViewComponent {
 
     get relativeDate(): string {
         return this.meetData ? relativeDay(this.meetData.meetDate) : ''
-    }
-
-    /** Colours of the date block and status pill, per status. */
-    get statusTone(): { date: string; pill: string } {
-        switch (this.meetData?.status) {
-            case 'active':
-                return { date: 'bg-bv-success/15 text-bv-success', pill: 'bg-bv-success/15 text-bv-success' }
-            case 'completed':
-                return { date: 'bg-bv-surface-2 text-bv-text', pill: 'bg-bv-surface-2 text-bv-text-muted' }
-            case 'cancelled':
-                return { date: 'bg-bv-danger/10 text-bv-danger', pill: 'bg-bv-danger/10 text-bv-danger' }
-            default:
-                return { date: 'bg-bv-primary-soft text-bv-on-primary-soft', pill: 'bg-bv-primary-soft text-bv-on-primary-soft' }
-        }
     }
 
     // #region People
@@ -479,21 +464,6 @@ export class MeetViewComponent {
 
     gameTitle(game: GameCompleteType): string {
         return game.titleTranslations.en || game.title || 'Untitled game'
-    }
-
-    get sessionStatusLabel(): string {
-        switch (this.meetData?.status) {
-            case 'scheduled':
-                return 'Planned'
-            case 'active':
-                return 'Live now'
-            case 'completed':
-                return 'Completed'
-            case 'cancelled':
-                return 'Cancelled'
-            default:
-                return ''
-        }
     }
 
     public requestStatusUpdate(status: 'completed' | 'cancelled'): void {

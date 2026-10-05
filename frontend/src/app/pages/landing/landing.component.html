@@ -1,122 +1,221 @@
 <main>
-    <section class="bg-gradient-to-b from-bv-surface to-bv-primary-soft px-4 py-20 sm:px-6 lg:px-8 lg:py-32">
-        <div class="mx-auto grid grid-cols-1 max-w-6xl items-center gap-12 lg:grid-cols-[1.1fr_0.9fr]">
+    <!-- Hero: the promise, and a live recommendation for the example group. -->
+    <section class="bg-gradient-to-b from-bv-surface to-bv-primary-soft px-4 py-16 sm:px-6 lg:px-8 lg:py-24">
+        <div class="mx-auto grid max-w-6xl grid-cols-1 items-center gap-12 lg:grid-cols-[1fr_1fr]">
             <div>
                 <p class="mb-4 text-sm font-semibold uppercase tracking-[0.2em] text-bv-primary">Board Vault</p>
-                <h1 class="text-4xl font-bold tracking-tight text-bv-text md:text-6xl">
-                    Make the next game night easier.
-                </h1>
-                <p class="mt-6 max-w-2xl text-lg leading-8 text-bv-text-muted">
-                    Board Vault helps a recurring group decide what to play, coordinate the night, and remember what happened afterwards.
+                <h1 class="text-4xl font-bold tracking-tight text-bv-text md:text-6xl">Game night, decided together.</h1>
+                <p class="mt-6 max-w-xl text-lg leading-8 text-bv-text-muted">
+                    A private space for the group you play with: the games you own between you, the nights you plan, and everything you played.
                 </p>
                 <div class="mt-10 flex flex-col gap-4 sm:flex-row">
-                    <a
-                        routerLink="/register"
-                        class="rounded-lg bg-bv-primary px-6 py-3 text-center font-medium text-bv-on-primary shadow-lg transition hover:bg-bv-primary/90 hover:shadow-xl"
-                    >
+                    <a routerLink="/register" class="rounded-lg bg-bv-primary px-6 py-3 text-center font-medium text-bv-on-primary shadow-lg transition hover:bg-bv-primary/90 hover:shadow-xl">
                         {{ registrationCta() }}
                     </a>
-                    <a
-                        routerLink="/login"
-                        class="rounded-lg border border-bv-border px-6 py-3 text-center font-medium text-bv-text-muted transition hover:bg-bv-surface"
-                    >
-                        Sign in
-                    </a>
+                    <a routerLink="/login" class="rounded-lg border border-bv-border bg-bv-surface px-6 py-3 text-center font-medium text-bv-text transition hover:bg-bv-surface-2">Sign in</a>
                 </div>
                 <p class="mt-5 text-sm text-bv-text-muted">
-                    {{ selfRegistrationEnabled() ? 'Start with the people and games you already know.' : 'Start with an invitation from a friend while we finish the core group experience.' }}
+                    {{ selfRegistrationEnabled() ? 'Start with the people and games you already know.' : 'During the beta you join with an invitation from a friend.' }}
                 </p>
             </div>
 
-            <div class="rounded-3xl border border-bv-primary/30 bg-bv-surface/80 p-8 shadow-2xl">
-                <div class="mb-8 flex items-center gap-3">
-                    <app-logo class="text-bv-primary" [size]="44" />
+            <app-example-frame caption="The real suggestions screen, filled with a sample group. Every reason comes from the group’s own games, ratings and history.">
+                <div class="mb-3 flex flex-wrap items-baseline justify-between gap-2 px-1">
+                    <p class="font-semibold text-bv-text">What should {{ group }} play tonight?</p>
+                    <p class="text-sm text-bv-text-muted">5 coming · 2 hours</p>
+                </div>
+                <ol class="grid gap-3">
+                    @for (recommendation of recommendations; track recommendation.game.id; let first = $first) {
+                    <li>
+                        <app-recommendation-card
+                            [title]="recommendation.game.title"
+                            [imageUrl]="recommendation.game.imageUrl"
+                            [minutes]="recommendation.game.minutes"
+                            [minPlayers]="recommendation.game.minPlayers"
+                            [maxPlayers]="recommendation.game.maxPlayers"
+                            [historyLabel]="recommendation.historyLabel"
+                            [reasons]="recommendation.reasons"
+                            [score]="recommendation.score"
+                            [isTopPick]="first"
+                            [signal]="recommendation.signal"
+                        />
+                    </li>
+                    }
+                </ol>
+            </app-example-frame>
+        </div>
+    </section>
+
+    <!-- How a game night works: four beats, each with a live sample. -->
+    <section id="how-it-works" class="bg-bv-surface px-4 py-20 sm:px-6 lg:px-8">
+        <div class="mx-auto max-w-6xl">
+            <div class="max-w-2xl">
+                <p class="text-sm font-semibold uppercase tracking-[0.2em] text-bv-primary">How a game night works</p>
+                <h2 class="mt-3 text-3xl font-bold text-bv-text">From “what can we play?” to “remember when Leo won?”</h2>
+            </div>
+
+            @defer (on viewport) {
+            <ol class="mt-14 grid gap-20">
+                <li class="grid items-center gap-8 lg:grid-cols-[0.8fr_1.2fr] lg:gap-12">
                     <div>
-                        <p class="font-semibold text-bv-text">One shared memory for game night</p>
-                        <p class="text-sm text-bv-text-muted">From “what can we play?” to “remember that session?”</p>
+                        <span class="text-sm font-bold text-bv-primary">01</span>
+                        <h3 class="mt-2 text-2xl font-semibold text-bv-text">Bring your shelf</h3>
+                        <p class="mt-3 leading-7 text-bv-text-muted">Everyone adds the games they own. The group sees what is actually available tonight, and who has it.</p>
                     </div>
-                </div>
-                <div class="space-y-4">
-                    <div class="rounded-2xl bg-bv-primary-soft p-5">
-                        <p class="text-sm font-medium text-bv-primary">Decide together</p>
-                        <p class="mt-1 text-2xl font-bold text-bv-text">Use your group’s games, people, and time</p>
-                    </div>
-                    <div class="grid grid-cols-2 gap-4">
-                        <div class="rounded-2xl bg-bv-surface-2 p-5">
-                            <p class="text-sm text-bv-text-muted">Coordinate</p>
-                            <p class="mt-1 font-semibold text-bv-text">Plan the night</p>
-                        </div>
-                        <div class="rounded-2xl bg-bv-surface-2 p-5">
-                            <p class="text-sm text-bv-text-muted">Remember</p>
-                            <p class="mt-1 font-semibold text-bv-text">Build useful history</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <section id="features" class="bg-bv-surface px-4 py-20 sm:px-6 lg:px-8">
-        <div class="mx-auto max-w-6xl">
-            <div class="max-w-2xl">
-                <p class="text-sm font-semibold uppercase tracking-[0.2em] text-bv-primary">The foundation</p>
-                <h2 class="mt-3 text-3xl font-bold text-bv-text">Everything starts with trustworthy shared data.</h2>
-                <p class="mt-4 text-lg text-bv-text-muted">
-                    Your personal collection is the input. Your group’s decisions and play history are the value.
-                </p>
-            </div>
-
-            <div class="mt-12 grid grid-cols-1 gap-6 md:grid-cols-3">
-                <article class="rounded-2xl border border-bv-border p-6">
-                    <h3 class="text-xl font-semibold text-bv-text">Bring your shelf</h3>
-                    <p class="mt-3 leading-7 text-bv-text-muted">Keep a lightweight record of the games you can bring. It gives your group a trustworthy starting point.</p>
-                    <a routerLink="/register" class="mt-5 inline-flex font-medium text-bv-primary hover:underline">{{ registrationCta() }}</a>
-                </article>
-                <article class="rounded-2xl border border-bv-border p-6">
-                    <h3 class="text-xl font-semibold text-bv-text">Decide as a group</h3>
-                    <p class="mt-3 leading-7 text-bv-text-muted">See what fits the people attending, capture shared signals, and turn “maybe” into a useful next choice.</p>
-                    <a routerLink="/register" class="mt-5 inline-flex font-medium text-bv-primary hover:underline">{{ registrationCta() }}</a>
-                </article>
-                <article class="rounded-2xl border border-bv-border p-6">
-                    <h3 class="text-xl font-semibold text-bv-text">Remember the night</h3>
-                    <p class="mt-3 leading-7 text-bv-text-muted">Record who came, what you played, and the notes that make the next session easier to plan.</p>
-                    <a routerLink="/register" class="mt-5 inline-flex font-medium text-bv-primary hover:underline">{{ registrationCta() }}</a>
-                </article>
-            </div>
-        </div>
-    </section>
-
-    <section id="how-it-works" class="bg-bv-bg px-4 py-20 sm:px-6 lg:px-8">
-        <div class="mx-auto max-w-6xl">
-            <div class="max-w-2xl">
-                <p class="text-sm font-semibold uppercase tracking-[0.2em] text-bv-primary">How it works today</p>
-                <h2 class="mt-3 text-3xl font-bold text-bv-text">Start with one group and one real game night.</h2>
-            </div>
-            <ol class="mt-12 grid grid-cols-1 gap-6 md:grid-cols-3">
-                <li class="rounded-2xl bg-bv-surface p-6 shadow-sm">
-                    <span class="text-sm font-bold text-bv-primary">01</span>
-                    <h3 class="mt-3 text-xl font-semibold text-bv-text">{{ selfRegistrationEnabled() ? 'Create your account' : 'Join your group' }}</h3>
-                    <p class="mt-3 leading-7 text-bv-text-muted">{{ selfRegistrationEnabled() ? 'Set up the identity your group will recognize, then create or join a private group.' : 'Use a private invitation from a friend or group owner to enter the shared workspace.' }}</p>
+                    <app-example-frame>
+                        <ul class="grid grid-cols-2 gap-3 sm:grid-cols-4">
+                            @for (item of shelf; track item.id) {
+                            <li class="relative">
+                                <app-card-game [title]="item.title" [imageUrl]="item.imageUrl" [gameAvgDuration]="item.minutes" [minPlayers]="item.minPlayers" [maxPlayers]="item.maxPlayers" />
+                                <span class="absolute right-2 top-2 flex -space-x-2">
+                                    @for (owner of item.owners; track owner.key) {
+                                    <app-image-profile size="small" class="rounded-full ring-2 ring-bv-surface" [avatar]="owner.avatar" />
+                                    }
+                                </span>
+                                <span class="sr-only">Owned by {{ item.owners.map((owner) => owner.name).join(' and ') }}</span>
+                            </li>
+                            }
+                        </ul>
+                    </app-example-frame>
                 </li>
-                <li class="rounded-2xl bg-bv-surface p-6 shadow-sm">
-                    <span class="text-sm font-bold text-bv-primary">02</span>
-                    <h3 class="mt-3 text-xl font-semibold text-bv-text">Add the games you can bring</h3>
-                    <p class="mt-3 leading-7 text-bv-text-muted">Your personal shelf tells the group what is actually available—not everything on the internet.</p>
+
+                <li class="grid items-center gap-8 lg:grid-cols-[1.2fr_0.8fr] lg:gap-12">
+                    <div class="lg:order-2">
+                        <span class="text-sm font-bold text-bv-primary">02</span>
+                        <h3 class="mt-2 text-2xl font-semibold text-bv-text">Plan the night</h3>
+                        <p class="mt-3 leading-7 text-bv-text-muted">Pick a date and invite the group. Everyone answers in one tap, and you see who is coming at a glance.</p>
+                    </div>
+                    <app-example-frame class="lg:order-1">
+                        <app-session-summary
+                            status="scheduled"
+                            [headingLevel]="3"
+                            [date]="session.date"
+                            [groupName]="group"
+                            [timezone]="session.timezone"
+                            [relativeLabel]="session.relativeLabel"
+                            [accessibleDate]="session.accessibleDate"
+                            [notes]="session.notes"
+                            [stats]="session.stats"
+                        >
+                            <ul class="mt-5 grid gap-2 sm:grid-cols-2" aria-label="Who is coming">
+                                @for (rsvp of session.rsvps; track rsvp.person.key) {
+                                @let label = rsvpLabels[rsvp.answer];
+                                <li class="flex items-center gap-3 rounded-lg bg-bv-surface-2 p-2">
+                                    <app-image-profile size="small" [avatar]="rsvp.person.avatar" />
+                                    <span class="font-medium">{{ rsvp.person.name }}</span>
+                                    <span class="ml-auto flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-semibold" [class]="label.tone">
+                                        <app-icon [name]="label.icon" [size]="12" />
+                                        {{ label.text }}
+                                    </span>
+                                </li>
+                                }
+                            </ul>
+                        </app-session-summary>
+                    </app-example-frame>
                 </li>
-                <li class="rounded-2xl bg-bv-surface p-6 shadow-sm">
-                    <span class="text-sm font-bold text-bv-primary">03</span>
-                    <h3 class="mt-3 text-xl font-semibold text-bv-text">Choose the next game night</h3>
-                    <p class="mt-3 leading-7 text-bv-text-muted">Decide with the people attending, plan the session, and let the shared history improve future choices.</p>
+
+                <li class="grid items-center gap-8 lg:grid-cols-[0.8fr_1.2fr] lg:gap-12">
+                    <div>
+                        <span class="text-sm font-bold text-bv-primary">03</span>
+                        <h3 class="mt-2 text-2xl font-semibold text-bv-text">Decide together</h3>
+                        <p class="mt-3 leading-7 text-bv-text-muted">
+                            Board Vault suggests games that fit the people coming and the time you have, and says why. Shortlist a few and let everyone vote.
+                        </p>
+                    </div>
+                    <app-example-frame>
+                        <div class="rounded-lg border border-bv-border bg-bv-surface p-4">
+                            <p class="text-sm font-semibold">Shortlist</p>
+                            <ul class="mt-2 flex flex-wrap gap-2">
+                                @for (game of shortlist; track game.id; let first = $first) {
+                                <li><span class="app-chip" [attr.aria-pressed]="first">{{ game.title }}</span></li>
+                                }
+                            </ul>
+                        </div>
+                        @if (recommendations[0]; as top) {
+                        <div class="mt-3">
+                            <app-recommendation-card
+                                [title]="top.game.title"
+                                [imageUrl]="top.game.imageUrl"
+                                [minutes]="top.game.minutes"
+                                [minPlayers]="top.game.minPlayers"
+                                [maxPlayers]="top.game.maxPlayers"
+                                [historyLabel]="top.historyLabel"
+                                [reasons]="top.reasons"
+                                [score]="top.score"
+                                [isTopPick]="true"
+                                [signal]="top.signal"
+                            >
+                                <div class="mt-4 flex gap-1">
+                                    <span class="app-chip px-2.5" aria-pressed="true"><app-icon name="thumbs-up" [size]="16" /><span class="sr-only">Interested</span></span>
+                                    <span class="app-chip px-2.5"><app-icon name="thumbs-down" [size]="16" /><span class="sr-only">Not for us</span></span>
+                                </div>
+                            </app-recommendation-card>
+                        </div>
+                        }
+                    </app-example-frame>
+                </li>
+
+                <li class="grid items-center gap-8 lg:grid-cols-[1.2fr_0.8fr] lg:gap-12">
+                    <div class="lg:order-2">
+                        <span class="text-sm font-bold text-bv-primary">04</span>
+                        <h3 class="mt-2 text-2xl font-semibold text-bv-text">Remember</h3>
+                        <p class="mt-3 leading-7 text-bv-text-muted">
+                            Mark what you played and who won. The history keeps every night, and the next suggestions learn from it.
+                        </p>
+                    </div>
+                    <app-example-frame class="lg:order-1">
+                        <app-history-entry [entry]="history" />
+                    </app-example-frame>
                 </li>
             </ol>
+            } @placeholder {
+            <div class="mt-14 min-h-[80rem]" aria-hidden="true"></div>
+            }
+        </div>
+    </section>
+
+    <!-- Privacy and what makes it different. -->
+    <section id="features" class="bg-bv-bg px-4 py-20 sm:px-6 lg:px-8">
+        <div class="mx-auto max-w-6xl">
+            <div class="max-w-2xl">
+                <p class="text-sm font-semibold uppercase tracking-[0.2em] text-bv-primary">Made for your group</p>
+                <h2 class="mt-3 text-3xl font-bold text-bv-text">For the people you play with, not the whole internet.</h2>
+            </div>
+            <ul class="mt-12 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                @for (point of privacyPoints; track point.title) {
+                <li class="rounded-2xl border border-bv-border bg-bv-surface p-6">
+                    <span class="flex h-10 w-10 items-center justify-center rounded-lg bg-bv-primary-soft text-bv-on-primary-soft"><app-icon [name]="point.icon" [size]="20" /></span>
+                    <h3 class="mt-4 text-lg font-semibold text-bv-text">{{ point.title }}</h3>
+                    <p class="mt-2 leading-7 text-bv-text-muted">{{ point.text }}</p>
+                </li>
+                }
+            </ul>
+        </div>
+    </section>
+
+    <!-- Questions -->
+    <section id="questions" class="bg-bv-surface px-4 py-20 sm:px-6 lg:px-8">
+        <div class="mx-auto max-w-3xl">
+            <h2 class="text-3xl font-bold text-bv-text">Questions</h2>
+            <div class="mt-8 divide-y divide-bv-border border-y border-bv-border">
+                @for (item of questions; track item.q) {
+                <details class="group py-2">
+                    <summary class="flex min-h-11 cursor-pointer list-none items-center justify-between gap-4 rounded-lg py-2 font-semibold text-bv-text focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-bv-primary [&::-webkit-details-marker]:hidden">
+                        {{ item.q }}
+                        <app-icon name="chevron-down" [size]="18" className="shrink-0 transition group-open:rotate-180 motion-reduce:transition-none" />
+                    </summary>
+                    <p class="pb-3 leading-7 text-bv-text-muted">{{ item.a }}</p>
+                </details>
+                }
+            </div>
         </div>
     </section>
 
     <section class="bg-bv-primary px-4 py-20 text-bv-on-primary sm:px-6 lg:px-8">
         <div class="mx-auto flex max-w-6xl flex-col items-start justify-between gap-8 md:flex-row md:items-center">
             <div>
-                <h2 class="text-3xl font-bold">Ready to make your group’s next choice easier?</h2>
-                <p class="mt-3 max-w-xl text-bv-on-primary/90">Board Vault is for the people you already play with—not a public encyclopedia of every game.</p>
+                <h2 class="text-3xl font-bold">Bring your group’s next game night here.</h2>
+                <p class="mt-3 max-w-xl text-bv-on-primary/90">Your games, your people, your history, in one private place.</p>
             </div>
             <a routerLink="/register" class="rounded-lg bg-bv-surface px-6 py-3 font-semibold text-bv-primary transition hover:bg-bv-primary-soft">{{ registrationCta() }}</a>
         </div>

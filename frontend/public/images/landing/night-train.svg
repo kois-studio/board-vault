@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" width="400" height="400">
+<rect width="400" height="400" fill="#201C20"/>
+<circle cx="310" cy="80" r="34" fill="#FFD166"/><rect x="40" y="150" width="90" height="70" rx="16" fill="#E58AD0"/><rect x="140" y="150" width="90" height="70" rx="16" fill="#8A2C7A"/><rect x="240" y="150" width="120" height="70" rx="16" fill="#E58AD0"/><rect x="30" y="232" width="340" height="8" rx="4" fill="#BFA9B8"/><circle cx="85" cy="226" r="12" fill="#BFA9B8"/><circle cx="185" cy="226" r="12" fill="#BFA9B8"/><circle cx="300" cy="226" r="12" fill="#BFA9B8"/>
+<text x="40" y="318" font-family="Inter, system-ui, sans-serif" font-size="44" font-weight="800" fill="#F6EEF3">Night</text>
+<text x="40" y="366" font-family="Inter, system-ui, sans-serif" font-size="44" font-weight="800" fill="#F6EEF3">Train</text>
+</svg>

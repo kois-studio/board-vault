@@ -1,0 +1,49 @@
+@let when = date();
+<header class="rounded-lg border border-bv-border bg-bv-surface p-5 shadow-sm sm:p-6">
+    <div class="flex gap-4 sm:gap-5">
+        <span class="flex w-16 shrink-0 flex-col items-center self-start rounded-lg py-2 sm:w-20 sm:py-3" [class]="tone().date" aria-hidden="true">
+            <span class="text-xs font-semibold uppercase">{{ when.month }}</span>
+            <span class="text-3xl font-bold leading-none sm:text-4xl">{{ when.day }}</span>
+            <span class="mt-1 text-xs font-medium">{{ when.weekday }}</span>
+        </span>
+        <div class="min-w-0 flex-1">
+            <div class="flex flex-wrap items-center gap-2">
+                <span class="rounded-full px-3 py-1 text-xs font-semibold" [class]="tone().pill">{{ tone().label }}</span>
+                @if (isUpcoming() && relativeLabel()) {
+                <span class="text-sm text-bv-text-muted">{{ relativeLabel() }}</span>
+                }
+            </div>
+            @if (headingLevel() === 1) {
+            <h1 class="mt-2 text-2xl font-bold sm:text-3xl">
+                Game night <span class="text-bv-text-muted">· {{ when.time }}</span>
+                @if (accessibleDate()) {
+                <span class="sr-only">, {{ accessibleDate() }}</span>
+                }
+            </h1>
+            } @else {
+            <h3 class="mt-2 text-2xl font-bold sm:text-3xl">
+                Game night <span class="text-bv-text-muted">· {{ when.time }}</span>
+                @if (accessibleDate()) {
+                <span class="sr-only">, {{ accessibleDate() }}</span>
+                }
+            </h3>
+            }
+            <p class="mt-1 text-sm text-bv-text-muted wrap-anywhere">{{ groupName() }} · {{ when.weekday }} {{ when.day }} {{ when.month }} {{ when.year }} · {{ timezone() }}</p>
+            <p class="mt-3 max-w-2xl text-sm text-bv-text-muted">{{ tone().description }}</p>
+        </div>
+    </div>
+
+    @if (notes(); as notes) {
+    <p class="mt-5 rounded-lg bg-bv-surface-2 px-4 py-3 text-sm italic wrap-anywhere">“{{ notes }}”</p>
+    }
+
+    @if (stats().length) {
+    <dl class="mt-5 flex flex-wrap gap-x-6 gap-y-2 text-sm" aria-label="Session summary">
+        @for (stat of stats(); track stat.label) {
+        <div class="flex items-baseline gap-1.5"><dt class="text-bv-text-muted">{{ stat.label }}</dt><dd class="font-semibold">{{ stat.value }}</dd></div>
+        }
+    </dl>
+    }
+
+    <ng-content />
+</header>

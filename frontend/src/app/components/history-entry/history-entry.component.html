@@ -1,0 +1,72 @@
+@let item = entry();
+<article class="@container rounded-lg border border-bv-border bg-bv-surface p-4 shadow-sm sm:p-5" [attr.aria-labelledby]="'history-session-' + item.id">
+    <div class="flex gap-4">
+        <span class="flex w-14 shrink-0 flex-col items-center self-start rounded-lg bg-bv-success/15 py-2 text-bv-success" aria-hidden="true">
+            <span class="text-xs font-semibold uppercase">{{ item.weekday }}</span>
+            <span class="text-2xl font-bold leading-none">{{ item.day }}</span>
+        </span>
+        <div class="min-w-0 flex-1">
+            <div class="flex items-start justify-between gap-3">
+                <div class="min-w-0">
+                    <h3 class="font-semibold wrap-anywhere" [id]="'history-session-' + item.id">{{ item.title }}</h3>
+                    <p class="text-sm text-bv-text-muted">{{ item.dateLabel }} · {{ item.games.length }} game{{ item.games.length === 1 ? '' : 's' }}</p>
+                </div>
+                @if (item.link; as link) {
+                <a class="flex shrink-0 items-center gap-1 rounded text-sm font-medium text-bv-primary hover:underline" [routerLink]="link" [attr.aria-label]="'Open the session of ' + item.dateLabel">
+                    Open <app-icon name="chevron-right" [size]="16" aria-hidden="true" />
+                </a>
+                }
+            </div>
+
+            <div class="mt-3 flex min-w-0 items-center gap-3">
+                @if (item.attendees.length > 0) {
+                <div class="flex shrink-0 -space-x-2" aria-hidden="true">
+                    @for (person of item.attendees.slice(0, 6); track person.key) {
+                    <app-image-profile size="small" class="rounded-full ring-2 ring-bv-surface" [avatar]="person.avatar" [title]="person.name" />
+                    }
+                </div>
+                }
+                <p class="min-w-0 text-sm text-bv-text-muted wrap-anywhere">{{ item.attendeeSummary }}</p>
+            </div>
+
+            @if (item.notes) {
+            <p class="mt-3 line-clamp-3 text-sm italic text-bv-text-muted wrap-anywhere" [title]="item.notes">“{{ item.notes }}”</p>
+            }
+
+            <ul class="mt-4 grid grid-cols-1 gap-2 @md:grid-cols-2 @3xl:grid-cols-3">
+                @for (game of item.games; track game.key) {
+                <li class="flex min-w-0 items-center gap-3 rounded-lg bg-bv-surface-2 p-2">
+                    @if (game.link; as link) {
+                    <a [routerLink]="link" [attr.aria-label]="'View ' + game.title" class="relative flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded bg-bv-primary-soft text-sm font-bold text-bv-on-primary-soft">
+                        <span aria-hidden="true">{{ game.initials }}</span>
+                        @if (game.imageUrl) {
+                        <img [src]="game.imageUrl" alt="" loading="lazy" class="absolute inset-0 h-full w-full object-cover" (error)="hideBrokenImage($event)" />
+                        }
+                    </a>
+                    } @else {
+                    <span class="relative flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded bg-bv-primary-soft text-sm font-bold text-bv-on-primary-soft" aria-hidden="true">
+                        {{ game.initials }}
+                        @if (game.imageUrl) {
+                        <img [src]="game.imageUrl" alt="" loading="lazy" class="absolute inset-0 h-full w-full object-cover" (error)="hideBrokenImage($event)" />
+                        }
+                    </span>
+                    }
+                    <div class="min-w-0">
+                        <p class="truncate text-sm font-semibold" [title]="game.title">{{ game.title }}</p>
+                        @if (game.winners) {
+                        <p class="flex min-w-0 items-center gap-1 text-xs font-medium text-bv-success"><app-icon name="award-fill" [size]="12" className="shrink-0" aria-hidden="true" /><span class="min-w-0 truncate" [title]="game.winners">{{ game.winners }}</span></p>
+                        }
+                        @if (game.playedBy === null) {
+                        <p class="text-xs text-bv-text-muted">Players not recorded</p>
+                        } @else {
+                        <p class="min-w-0 line-clamp-2 text-xs text-bv-text-muted wrap-anywhere" [attr.aria-label]="'Played by ' + game.playedBy" [title]="'Played by ' + game.playedBy">
+                            {{ game.everyonePlayed ? 'Everyone played' : game.playedBy }}
+                        </p>
+                        }
+                    </div>
+                </li>
+                }
+            </ul>
+        </div>
+    </div>
+</article>

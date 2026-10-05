@@ -11,11 +11,13 @@ import type {
     UserType,
 } from '../../../api/api.types'
 import { ImageProfileComponent } from '../../../components/image-profile/image-profile.component'
-import { BadgeComponent } from '../../../components/ui/badge/badge.component'
+import {
+    RecommendationCardComponent,
+    RecommendationGroupSignal,
+} from '../../../components/recommendation-card/recommendation-card.component'
 import { ButtonComponent } from '../../../components/ui/button/button.component'
 import { ContainerWrapperComponent } from '../../../components/ui/container-wrapper/container-wrapper.component'
 import { IconComponent } from '../../../components/ui/icon/icon.component'
-import { ImageBackgroundComponent } from '../../../components/ui/image-background/image-background.component'
 import { PageHeaderComponent } from '../../../components/ui/page-header/page-header.component'
 import { SpinnerComponent } from '../../../components/ui/spinner/spinner.component'
 import { LOADING_KEYS } from '../../../core/enums/loading-keys-enum'
@@ -47,12 +49,11 @@ const RELOAD_DELAY_MS = 300
 @Component({
     imports: [
         RouterLink,
-        BadgeComponent,
         ButtonComponent,
         ContainerWrapperComponent,
         IconComponent,
-        ImageBackgroundComponent,
         ImageProfileComponent,
+        RecommendationCardComponent,
         PageHeaderComponent,
         SpinnerComponent,
         CustomDatePipe,
@@ -295,6 +296,17 @@ export class RecommendationsPageComponent {
 
     public getRecommendationSignal(gameId: number): RecommendationSignalsType['signals'][number] | null {
         return this.recommendationSignals()?.signals.find((signal) => signal.gameId === gameId) ?? null
+    }
+
+    /** The group's votes on a suggestion, for the card. */
+    public getGroupSignal(gameId: number): RecommendationGroupSignal | null {
+        const signal = this.getRecommendationSignal(gameId)
+        if (!signal) return null
+        return {
+            interestedCount: signal.interestedCount,
+            interestedNames: this.getInterestedMemberNames(signal),
+            notForUsCount: signal.notForUsCount,
+        }
     }
 
     public getInterestedMemberNames(signal: RecommendationSignalsType['signals'][number]): string {

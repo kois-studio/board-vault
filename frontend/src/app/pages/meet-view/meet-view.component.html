@@ -12,7 +12,6 @@
     </container-wrapper>
 } @else if (loaded && meetData; as meet) {
     @let when = dateParts!;
-    @let tone = statusTone;
     <container-wrapper>
         <a class="mb-5 inline-flex max-w-full items-center gap-1 rounded text-sm font-medium text-bv-text-muted hover:text-bv-text" [routerLink]="['/groups', groupData?.id]">
             <app-icon name="arrow-left" [size]="16" className="shrink-0" aria-hidden="true" />
@@ -20,46 +19,16 @@
         </a>
 
         <!-- Hero -->
-        <header class="rounded-lg border border-bv-border bg-bv-surface p-5 shadow-sm sm:p-6">
-            <div class="flex gap-4 sm:gap-5">
-                <span class="flex w-16 shrink-0 flex-col items-center self-start rounded-lg py-2 sm:w-20 sm:py-3" [class]="tone.date" aria-hidden="true">
-                    <span class="text-xs font-semibold uppercase">{{ when.month }}</span>
-                    <span class="text-3xl font-bold leading-none sm:text-4xl">{{ when.day }}</span>
-                    <span class="mt-1 text-xs font-medium">{{ when.weekday }}</span>
-                </span>
-                <div class="min-w-0 flex-1">
-                    <div class="flex flex-wrap items-center gap-2">
-                        <span class="rounded-full px-3 py-1 text-xs font-semibold" [class]="tone.pill">{{ sessionStatusLabel }}</span>
-                        @if (meet.status === 'scheduled' || meet.status === 'active') {
-                            <span class="text-sm text-bv-text-muted">{{ relativeDate }}</span>
-                        }
-                    </div>
-                    <h1 class="mt-2 text-2xl font-bold sm:text-3xl">
-                        Game night <span class="text-bv-text-muted">· {{ when.time }}</span>
-                        <span class="sr-only">, {{ meet.meetDate | customDate: false: meet.timezone }}</span>
-                    </h1>
-                    <p class="mt-1 text-sm text-bv-text-muted wrap-anywhere">{{ groupData?.name }} · {{ when.weekday }} {{ when.day }} {{ when.month }} {{ when.year }} · {{ meet.timezone }}</p>
-                    <p class="mt-3 max-w-2xl text-sm text-bv-text-muted">{{ sessionStatusDescription }}</p>
-                </div>
-            </div>
-
-            @if (meet.notes) {
-                <p class="mt-5 rounded-lg bg-bv-surface-2 px-4 py-3 text-sm italic wrap-anywhere">“{{ meet.notes }}”</p>
-            }
-
-            <dl class="mt-5 flex flex-wrap gap-x-6 gap-y-2 text-sm" aria-label="Session summary">
-                <div class="flex items-baseline gap-1.5"><dt class="text-bv-text-muted">Invited</dt><dd class="font-semibold">{{ attendeeCount }}</dd></div>
-                @if (meet.status === 'scheduled' || meet.status === 'active') {
-                    <div class="flex items-baseline gap-1.5"><dt class="text-bv-text-muted">Going</dt><dd class="font-semibold">{{ goingCount }}</dd></div>
-                } @else {
-                    <div class="flex items-baseline gap-1.5"><dt class="text-bv-text-muted">Attended</dt><dd class="font-semibold">{{ attendedCount }}</dd></div>
-                }
-                <div class="flex items-baseline gap-1.5"><dt class="text-bv-text-muted">Shortlisted</dt><dd class="font-semibold">{{ plannedGames.length }}</dd></div>
-                <div class="flex items-baseline gap-1.5"><dt class="text-bv-text-muted">Played</dt><dd class="font-semibold">{{ playedGamesCount }}</dd></div>
-                @if (skippedGamesCount > 0) {
-                    <div class="flex items-baseline gap-1.5"><dt class="text-bv-text-muted">Skipped</dt><dd class="font-semibold">{{ skippedGamesCount }}</dd></div>
-                }
-            </dl>
+        <app-session-summary
+            [status]="meet.status"
+            [date]="when"
+            [groupName]="groupData?.name ?? ''"
+            [timezone]="meet.timezone"
+            [relativeLabel]="relativeDate"
+            [accessibleDate]="meet.meetDate | customDate: false: meet.timezone"
+            [notes]="meet.notes"
+            [stats]="sessionStats"
+        >
 
             @if (canRespondToRsvp) {
                 <div class="mt-5 flex flex-wrap items-center gap-3 rounded-lg border border-bv-primary/30 bg-bv-primary-soft p-4">
@@ -115,7 +84,7 @@
                     <button type="button" class="font-medium underline" (click)="actionError.set(null)">Dismiss</button>
                 </div>
             }
-        </header>
+        </app-session-summary>
 
         @if (pendingStatus(); as requestedStatus) {
             <div class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4" (click)="cancelStatusUpdate()">

@@ -1,7 +1,7 @@
 import { Component, computed, inject, signal } from '@angular/core'
 import { ActivatedRoute, Router, RouterLink } from '@angular/router'
 import type { HistoryRecordType } from '../../../api/api.types'
-import { ImageProfileComponent } from '../../../components/image-profile/image-profile.component'
+import { HistoryEntryComponent, type HistoryEntryView } from '../../../components/history-entry/history-entry.component'
 import { SkeletonHistoryComponent } from '../../../components/skeletons/skeleton-history/skeleton-history.component'
 import { ButtonComponent } from '../../../components/ui/button/button.component'
 import { ContainerWrapperComponent } from '../../../components/ui/container-wrapper/container-wrapper.component'
@@ -29,9 +29,8 @@ const MONTH_FORMAT = new Intl.DateTimeFormat('en-GB', { month: 'long', year: 'nu
         RouterLink,
         ContainerWrapperComponent,
         IconComponent,
-        CustomDatePipe,
         SkeletonHistoryComponent,
-        ImageProfileComponent,
+        HistoryEntryComponent,
         PageHeaderComponent,
         ButtonComponent,
     ],
@@ -127,6 +126,41 @@ export class HistoryPageComponent {
         return mostPlayed ? `${mostPlayed.title} · ${mostPlayed.count} session${mostPlayed.count === 1 ? '' : 's'}` : null
     })
 
+    private readonly customDate = new CustomDatePipe()
+
+    /** The view of one recorded night for `<app-history-entry>`. */
+    public toHistoryEntry(record: HistoryRecordType): HistoryEntryView {
+        const meet = record.meetData
+        const when = this.dateParts(meet)
+        const attendees = this.getAttendees(record)
+
+        return {
+            id: String(meet.id),
+            title: this.getGroupName(meet.groupId),
+            dateLabel: this.customDate.transform(meet.meetDate, true, meet.timezone),
+            weekday: when.weekday,
+            day: when.day,
+            link: ['/sessions', meet.id],
+            attendees: attendees.map((person) => ({ key: person.key, name: person.displayName, avatar: this.avatarFor(person) })),
+            attendeeSummary: this.getAttendeeSummary(attendees),
+            notes: meet.notes,
+            games: record.gamesPlayed.map((gamePlayed) => {
+                const title = this.getGameTitle(gamePlayed.gameData)
+                const players = this.getPlayers(gamePlayed)
+                return {
+                    key: String(gamePlayed.gameData.id),
+                    title,
+                    initials: this.getGameInitials(title),
+                    imageUrl: gamePlayed.gameData.imageUrl || null,
+                    link: ['/games', gamePlayed.gameData.id],
+                    winners: this.getWinners(gamePlayed),
+                    playedBy: players.length === 0 ? null : this.getPlayedBySummary(players),
+                    everyonePlayed: this.playedEveryone(players, attendees),
+                }
+            }),
+        }
+    }
+
     public getGroupName(groupId: number): string {
         return this.userGroups$().find((group) => group.id === groupId)?.name ?? 'Selected group'
     }
@@ -207,11 +241,6 @@ export class HistoryPageComponent {
             .join('')
             .slice(0, 2)
             .toUpperCase()
-    }
-
-    public hideBrokenImage(event: Event): void {
-        const image = event.target
-        if (image instanceof HTMLImageElement) image.hidden = true
     }
 
     private readGroupIdFilter(): number | null {

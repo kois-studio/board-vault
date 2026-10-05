@@ -1,0 +1,51 @@
+<article class="flex h-full gap-4 rounded-lg border bg-bv-surface p-4 shadow-sm" [class]="isTopPick() ? 'border-bv-primary/40' : 'border-bv-border'" [attr.aria-label]="title()">
+    @if (link(); as link) {
+    <a [routerLink]="link" class="shrink-0 self-start" tabindex="-1" aria-hidden="true">
+        <image-background class="block h-20 w-20 overflow-hidden rounded sm:h-24 sm:w-24" [src]="imageUrl()" [alt]="''" />
+    </a>
+    } @else {
+    <image-background class="block h-20 w-20 shrink-0 self-start overflow-hidden rounded sm:h-24 sm:w-24" [src]="imageUrl()" [alt]="''" />
+    }
+    <div class="min-w-0 flex-1">
+        <div class="flex flex-wrap items-start justify-between gap-x-3 gap-y-1">
+            <h3 class="min-w-32 flex-1 font-semibold wrap-anywhere">
+                @if (link(); as link) {
+                <a [routerLink]="link" class="hover:underline">{{ title() }}</a>
+                } @else {
+                {{ title() }}
+                }
+            </h3>
+            <span class="flex shrink-0 gap-1">
+                @if (isTopPick()) {
+                <app-badge tone="accent" text="Top pick" />
+                }
+                <app-badge [text]="'Fit ' + score()" [attr.aria-label]="'Fit score ' + score() + ' out of 100'" />
+            </span>
+        </div>
+        <p class="mt-1 text-sm text-bv-text-muted">{{ minutes() }} min · {{ minPlayers() }}–{{ maxPlayers() }} players · {{ historyLabel() }}</p>
+        <ul class="mt-3 space-y-1 text-sm wrap-anywhere">
+            @for (reason of reasons(); track reason) {
+            <li class="flex gap-2"><app-icon name="check" [size]="16" className="mt-0.5 shrink-0 text-bv-success" aria-hidden="true" /><span>{{ reason }}</span></li>
+            }
+        </ul>
+        @if (signal(); as signal) {
+        @if (signal.interestedCount > 0 || signal.notForUsCount > 0) {
+        <p class="mt-2 text-sm wrap-anywhere" aria-label="What the group thinks">
+            @if (signal.interestedCount > 0) {
+            <span class="font-medium text-bv-success">{{ signal.interestedCount }} interested</span>
+            @if (signal.interestedNames) {
+            <span class="text-bv-text-muted"> ({{ signal.interestedNames }})</span>
+            }
+            }
+            @if (signal.interestedCount > 0 && signal.notForUsCount > 0) {
+            <span class="text-bv-text-muted"> · </span>
+            }
+            @if (signal.notForUsCount > 0) {
+            <span class="text-bv-text-muted">{{ signal.notForUsCount }} passed</span>
+            }
+        </p>
+        }
+        }
+        <ng-content />
+    </div>
+</article>

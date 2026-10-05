@@ -260,6 +260,13 @@ no strokes or effects.
 - **Session surface:** show lifecycle state, attendance, games, and the next
   action together. Destructive completion or cancellation requires an
   explicit confirmation.
+- **Product samples (landing page):** show the real components, never
+  screenshots. Feed them from `pages/landing/landing.fixtures.ts` (the
+  example group "Friday Crew"), wrap each in `<app-example-frame>` (dashed
+  outline, "Example" chip, caption, `inert` content), and use only our own
+  artwork from `public/images/landing/`. A component shown there takes
+  `input()`s only (`app-recommendation-card`, `app-session-summary`,
+  `app-history-entry`, `app-card-game`), so the sample and the app can't drift.
 - **State surface:** loading, empty, error, permission, and partial-failure
   messages belong near the affected content and should include the safest
   useful next action.

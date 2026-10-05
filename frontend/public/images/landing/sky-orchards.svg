@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" width="400" height="400">
+<rect width="400" height="400" fill="#F3EDF9"/>
+<circle cx="130" cy="120" r="60" fill="#4D7C0F"/><circle cx="270" cy="110" r="70" fill="#047857"/><circle cx="200" cy="170" r="50" fill="#BEF264"/><circle cx="115" cy="105" r="10" fill="#C0392B"/><circle cx="290" cy="90" r="10" fill="#C0392B"/><circle cx="210" cy="160" r="9" fill="#C0392B"/><rect x="60" y="230" width="280" height="14" rx="7" fill="#8A2C7A" opacity=".4"/>
+<text x="40" y="318" font-family="Inter, system-ui, sans-serif" font-size="44" font-weight="800" fill="#24121E">Sky</text>
+<text x="40" y="366" font-family="Inter, system-ui, sans-serif" font-size="44" font-weight="800" fill="#24121E">Orchards</text>
+</svg>

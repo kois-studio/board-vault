@@ -86,70 +86,8 @@
                         </h2>
                         <ul class="space-y-4">
                             @for (historyRecord of month.records; track historyRecord.meetData.id) {
-                                @let when = dateParts(historyRecord.meetData);
-                                @let attendees = getAttendees(historyRecord);
                                 <li>
-                                    <article class="rounded-lg border border-bv-border bg-bv-surface p-4 shadow-sm sm:p-5" [attr.aria-labelledby]="'history-session-' + historyRecord.meetData.id">
-                                        <div class="flex gap-4">
-                                            <span class="flex w-14 shrink-0 flex-col items-center self-start rounded-lg bg-bv-success/15 py-2 text-bv-success" aria-hidden="true">
-                                                <span class="text-xs font-semibold uppercase">{{ when.weekday }}</span>
-                                                <span class="text-2xl font-bold leading-none">{{ when.day }}</span>
-                                            </span>
-                                            <div class="min-w-0 flex-1">
-                                                <div class="flex items-start justify-between gap-3">
-                                                    <div class="min-w-0">
-                                                        <h3 class="font-semibold wrap-anywhere" [id]="'history-session-' + historyRecord.meetData.id">{{ getGroupName(historyRecord.meetData.groupId) }}</h3>
-                                                        <p class="text-sm text-bv-text-muted">{{ historyRecord.meetData.meetDate | customDate: true: historyRecord.meetData.timezone }} · {{ historyRecord.gamesPlayed.length }} game{{ historyRecord.gamesPlayed.length === 1 ? '' : 's' }}</p>
-                                                    </div>
-                                                    <a class="flex shrink-0 items-center gap-1 rounded text-sm font-medium text-bv-primary hover:underline" [routerLink]="['/sessions', historyRecord.meetData.id]" [attr.aria-label]="'Open the session of ' + (historyRecord.meetData.meetDate | customDate: true: historyRecord.meetData.timezone)">
-                                                        Open <app-icon name="chevron-right" [size]="16" aria-hidden="true" />
-                                                    </a>
-                                                </div>
-
-                                                <div class="mt-3 flex min-w-0 items-center gap-3">
-                                                    @if (attendees.length > 0) {
-                                                        <div class="flex shrink-0 -space-x-2" aria-hidden="true">
-                                                            @for (person of attendees.slice(0, 6); track person.key) {
-                                                                <app-image-profile size="small" class="rounded-full ring-2 ring-bv-surface" [avatar]="avatarFor(person)" [title]="person.displayName" />
-                                                            }
-                                                        </div>
-                                                    }
-                                                    <p class="min-w-0 text-sm text-bv-text-muted wrap-anywhere">{{ getAttendeeSummary(attendees) }}</p>
-                                                </div>
-
-                                                @if (historyRecord.meetData.notes) {
-                                                    <p class="mt-3 line-clamp-3 text-sm italic text-bv-text-muted wrap-anywhere" [title]="historyRecord.meetData.notes">“{{ historyRecord.meetData.notes }}”</p>
-                                                }
-
-                                                <ul class="mt-4 grid grid-cols-1 gap-2 sm:grid-cols-2 xl:grid-cols-3">
-                                                    @for (gamePlayed of historyRecord.gamesPlayed; track gamePlayed.gameData.id) {
-                                                        @let players = getPlayers(gamePlayed);
-                                                        <li class="flex min-w-0 items-center gap-3 rounded-lg bg-bv-surface-2 p-2">
-                                                            <a [routerLink]="['/games', gamePlayed.gameData.id]" [attr.aria-label]="'View ' + getGameTitle(gamePlayed.gameData)" class="relative flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded bg-bv-primary-soft text-sm font-bold text-bv-on-primary-soft">
-                                                                <span aria-hidden="true">{{ getGameInitials(getGameTitle(gamePlayed.gameData)) }}</span>
-                                                                @if (gamePlayed.gameData.imageUrl) {
-                                                                    <img [src]="gamePlayed.gameData.imageUrl" alt="" loading="lazy" class="absolute inset-0 h-full w-full object-cover" (error)="hideBrokenImage($event)" />
-                                                                }
-                                                            </a>
-                                                            <div class="min-w-0">
-                                                                <p class="truncate text-sm font-semibold" [title]="getGameTitle(gamePlayed.gameData)">{{ getGameTitle(gamePlayed.gameData) }}</p>
-                                                                @if (getWinners(gamePlayed); as winners) {
-                                                                    <p class="flex min-w-0 items-center gap-1 text-xs font-medium text-bv-success"><app-icon name="award-fill" [size]="12" className="shrink-0" aria-hidden="true" /><span class="min-w-0 truncate" [title]="winners">{{ winners }}</span></p>
-                                                                }
-                                                                @if (players.length === 0) {
-                                                                    <p class="text-xs text-bv-text-muted">Players not recorded</p>
-                                                                } @else {
-                                                                    <p class="min-w-0 line-clamp-2 text-xs text-bv-text-muted wrap-anywhere" [attr.aria-label]="'Played by ' + getPlayedBySummary(players)" [title]="'Played by ' + getPlayedBySummary(players)">
-                                                                        {{ playedEveryone(players, attendees) ? 'Everyone played' : getPlayedBySummary(players) }}
-                                                                    </p>
-                                                                }
-                                                            </div>
-                                                        </li>
-                                                    }
-                                                </ul>
-                                            </div>
-                                        </div>
-                                    </article>
+                                    <app-history-entry [entry]="toHistoryEntry(historyRecord)" />
                                 </li>
                             }
                         </ul>

@@ -124,63 +124,34 @@
                             @let gameId = recommendation.gameData.id;
                             @let feedback = feedbackState()[gameId];
                             <li>
-                            <article class="flex h-full gap-4 rounded-lg border bg-bv-surface p-4 shadow-sm" [class]="first ? 'border-bv-primary/40' : 'border-bv-border'" [attr.aria-label]="getGameTitle(recommendation)">
-                                <a [routerLink]="['/games', gameId]" class="shrink-0 self-start" tabindex="-1" aria-hidden="true">
-                                    <image-background class="block h-20 w-20 overflow-hidden rounded sm:h-24 sm:w-24" [src]="recommendation.gameData.imageUrl" [alt]="''" />
-                                </a>
-                                <div class="min-w-0 flex-1">
-                                    <div class="flex items-start justify-between gap-3">
-                                        <h3 class="min-w-0 font-semibold wrap-anywhere"><a [routerLink]="['/games', gameId]" class="hover:underline">{{ getGameTitle(recommendation) }}</a></h3>
-                                        <span class="flex shrink-0 gap-1">
-                                            @if (first) {
-                                                <app-badge tone="accent" text="Top pick" />
-                                            }
-                                            <app-badge [text]="'Fit ' + recommendation.score" [attr.aria-label]="'Fit score ' + recommendation.score + ' out of 100'" />
-                                        </span>
+                            <app-recommendation-card
+                                [title]="getGameTitle(recommendation)"
+                                [imageUrl]="recommendation.gameData.imageUrl"
+                                [link]="['/games', gameId]"
+                                [minutes]="recommendation.gameData.gameAvgDuration"
+                                [minPlayers]="recommendation.gameData.minPlayers"
+                                [maxPlayers]="recommendation.gameData.maxPlayers"
+                                [historyLabel]="recommendation.explanation.lastPlayedAt ? 'Last played ' + (recommendation.explanation.lastPlayedAt | customDate) : 'New to this group'"
+                                [reasons]="recommendation.explanation.reasons"
+                                [score]="recommendation.score"
+                                [isTopPick]="first"
+                                [signal]="getGroupSignal(gameId)"
+                            >
+                                <div class="mt-4 flex flex-wrap items-center justify-between gap-2">
+                                    <a appButton variant="secondary" size="small" icon="calendar-plus" [routerLink]="['/groups', result.groupId, 'sessions', 'new']" [queryParams]="{ plannedGameId: gameId, participantIds: getRecommendationParticipantIds(result) }">Plan with this game</a>
+                                    <div class="flex gap-1" role="group" [attr.aria-label]="'Your opinion on ' + getGameTitle(recommendation)">
+                                        <button type="button" class="app-chip px-2.5" aria-label="Interested" title="Interested" [attr.aria-pressed]="feedback === 'interested'" [disabled]="feedback === 'saving'" (click)="saveFeedback(gameId, 'interested')">
+                                            <app-icon name="thumbs-up" [size]="16" aria-hidden="true" />
+                                        </button>
+                                        <button type="button" class="app-chip px-2.5" aria-label="Not for us" title="Not for us" [attr.aria-pressed]="feedback === 'not_for_us'" [disabled]="feedback === 'saving'" (click)="saveFeedback(gameId, 'not_for_us')">
+                                            <app-icon name="thumbs-down" [size]="16" aria-hidden="true" />
+                                        </button>
                                     </div>
-                                    <p class="mt-1 text-sm text-bv-text-muted">
-                                        {{ recommendation.gameData.gameAvgDuration }} min · {{ recommendation.gameData.minPlayers }}–{{ recommendation.gameData.maxPlayers }} players ·
-                                        {{ recommendation.explanation.lastPlayedAt ? 'Last played ' + (recommendation.explanation.lastPlayedAt | customDate) : 'New to this group' }}
-                                    </p>
-                                    <ul class="mt-3 space-y-1 text-sm wrap-anywhere">
-                                        @for (reason of recommendation.explanation.reasons; track reason) {
-                                            <li class="flex gap-2"><app-icon name="check" [size]="16" className="mt-0.5 shrink-0 text-bv-success" aria-hidden="true" /><span>{{ reason }}</span></li>
-                                        }
-                                    </ul>
-                                    @if (getRecommendationSignal(gameId); as signal) {
-                                        @if (signal.interestedCount > 0 || signal.notForUsCount > 0) {
-                                            <p class="mt-2 text-sm wrap-anywhere" aria-label="What the group thinks">
-                                                @if (signal.interestedCount > 0) {
-                                                    <span class="font-medium text-bv-success">{{ signal.interestedCount }} interested</span>
-                                                    @if (signal.interestedBy.length > 0) {
-                                                        <span class="text-bv-text-muted"> ({{ getInterestedMemberNames(signal) }})</span>
-                                                    }
-                                                }
-                                                @if (signal.interestedCount > 0 && signal.notForUsCount > 0) {
-                                                    <span class="text-bv-text-muted"> · </span>
-                                                }
-                                                @if (signal.notForUsCount > 0) {
-                                                    <span class="text-bv-text-muted">{{ signal.notForUsCount }} passed</span>
-                                                }
-                                            </p>
-                                        }
-                                    }
-                                    <div class="mt-4 flex flex-wrap items-center justify-between gap-2">
-                                        <a appButton variant="secondary" size="small" icon="calendar-plus" [routerLink]="['/groups', result.groupId, 'sessions', 'new']" [queryParams]="{ plannedGameId: gameId, participantIds: getRecommendationParticipantIds(result) }">Plan with this game</a>
-                                        <div class="flex gap-1" role="group" [attr.aria-label]="'Your opinion on ' + getGameTitle(recommendation)">
-                                            <button type="button" class="app-chip px-2.5" aria-label="Interested" title="Interested" [attr.aria-pressed]="feedback === 'interested'" [disabled]="feedback === 'saving'" (click)="saveFeedback(gameId, 'interested')">
-                                                <app-icon name="thumbs-up" [size]="16" aria-hidden="true" />
-                                            </button>
-                                            <button type="button" class="app-chip px-2.5" aria-label="Not for us" title="Not for us" [attr.aria-pressed]="feedback === 'not_for_us'" [disabled]="feedback === 'saving'" (click)="saveFeedback(gameId, 'not_for_us')">
-                                                <app-icon name="thumbs-down" [size]="16" aria-hidden="true" />
-                                            </button>
-                                        </div>
-                                    </div>
-                                    @if (feedbackErrors()[gameId]; as feedbackError) {
-                                        <p class="mt-2 text-xs text-bv-danger" role="alert">{{ feedbackError }}</p>
-                                    }
                                 </div>
-                            </article>
+                                @if (feedbackErrors()[gameId]; as feedbackError) {
+                                    <p class="mt-2 text-xs text-bv-danger" role="alert">{{ feedbackError }}</p>
+                                }
+                            </app-recommendation-card>
                             </li>
                         }
                     </ol>
