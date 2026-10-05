@@ -1,13 +1,5 @@
-<div class="p-4 md:p-6 space-y-6">
-    <!-- Header -->
-    <header class="mb-6">
-        <h1 class="text-3xl font-bold text-bv-text">
-            Game Proposals
-        </h1>
-        <p class="text-sm text-bv-text-muted mt-1">
-            Review and manage game proposals submitted by users.
-        </p>
-    </header>
+<div class="space-y-6">
+    <app-admin-page-header title="Proposals" description="Games people asked to add to the catalogue. Approve them to add the game, or reject them with a reason." />
 
     @if (errorMessage(); as error) {
         <div class="mb-6 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-bv-danger/30 bg-bv-danger/10 p-4 text-sm text-bv-danger" role="alert">

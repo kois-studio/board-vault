@@ -11,10 +11,12 @@ import { ModalEditTagComponent } from '../../../../components/modals/modal-edit-
 import { ToastService } from '../../../../components/toast/toast.service'
 import { ButtonComponent } from '../../../../components/ui/button/button.component'
 import { SpinnerComponent } from '../../../../components/ui/spinner/spinner.component'
+import { AdminPageHeaderComponent } from '../admin-page-header/admin-page-header.component'
 import { AdminTagsManageService } from './admin-tags-manage.service'
 
 @Component({
     imports: [
+        AdminPageHeaderComponent,
         ButtonComponent,
         SpinnerComponent,
         ModalEditCategoryComponent,

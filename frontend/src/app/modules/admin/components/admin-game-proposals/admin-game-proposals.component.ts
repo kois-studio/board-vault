@@ -6,10 +6,19 @@ import { DialogDirective } from '../../../../components/ui/dialog/dialog.directi
 import { IconComponent } from '../../../../components/ui/icon/icon.component'
 import { ImageBackgroundComponent } from '../../../../components/ui/image-background/image-background.component'
 import { SpinnerComponent } from '../../../../components/ui/spinner/spinner.component'
+import { AdminPageHeaderComponent } from '../admin-page-header/admin-page-header.component'
 import { AdminGameProposalsService } from './admin-game-proposals.service'
 
 @Component({
-    imports: [ButtonComponent, FormsModule, ImageBackgroundComponent, SpinnerComponent, IconComponent, DialogDirective],
+    imports: [
+        AdminPageHeaderComponent,
+        ButtonComponent,
+        FormsModule,
+        ImageBackgroundComponent,
+        SpinnerComponent,
+        IconComponent,
+        DialogDirective,
+    ],
     providers: [AdminGameProposalsService],
     selector: 'app-admin-game-proposals',
     templateUrl: './admin-game-proposals.component.html',

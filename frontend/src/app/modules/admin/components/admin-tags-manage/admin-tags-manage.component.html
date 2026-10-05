@@ -1,13 +1,5 @@
-<!-- src/app/pages/admin/tags-manage/admin-tags-manage.component.html -->
-<div class="p-4 md:p-6 space-y-8">
-	<header class="mb-6">
-		<h1 class="text-3xl font-bold text-bv-text">
-			Manage Tags & Categories
-		</h1>
-		<p class="text-sm text-bv-text-muted mt-1">
-			Oversee the taxonomy used to classify games in BoardVault.
-		</p>
-	</header>
+<div class="space-y-8">
+	<app-admin-page-header title="Tags" description="The categories and tags that describe games in Board Vault, used by Browse filters and suggestions." />
 
 	@if (errorMessage(); as error) {
 	<div class="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-bv-danger/30 bg-bv-danger/10 p-4 text-sm text-bv-danger" role="alert">
@@ -19,9 +11,9 @@
 	<!-- Section for Tag Categories -->
 	<section class="bg-bv-surface shadow-lg rounded-lg p-6">
 		<div class="flex justify-between items-center mb-4">
-			<h2 class="text-xl font-semibold text-bv-text-muted">
+			<h3 class="text-xl font-semibold text-bv-text">
 				Tag Categories
-			</h2>
+			</h3>
 			<button appButton (click)="onAddCategory()" variant="primary" icon="plus-lg">
 				Add new
 			</button>
@@ -117,9 +109,9 @@
 	<!-- Section for Tags -->
 	<section class="bg-bv-surface shadow-lg rounded-lg p-6">
 		<div class="flex justify-between items-center mb-4">
-			<h2 class="text-xl font-semibold text-bv-text-muted">
+			<h3 class="text-xl font-semibold text-bv-text">
 				Tags
-			</h2>
+			</h3>
 			<button appButton (click)="onAddTag()" variant="primary" icon="plus-lg">
 				Add new
 			</button>

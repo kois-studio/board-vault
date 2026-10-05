@@ -20,15 +20,16 @@ import { LayoutCompleteComponent } from './layout/layout-complete/layout-complet
  */
 export const routes: Routes = [
     {
-        path: 'admin',
-        loadChildren: () => import('./modules/admin/admin.routes').then((r) => r.ADMIN_ROUTES),
-        canActivate: [AdminGuard],
-    },
-    {
         path: '',
         component: LayoutCompleteComponent,
         data: { [SHOWS_AUTH_HANDOFF]: true },
         children: [
+            // Administration: inside the app layout, still a lazy chunk only admins download.
+            {
+                path: 'admin',
+                loadChildren: () => import('./modules/admin/admin.routes').then((r) => r.ADMIN_ROUTES),
+                canActivate: [AdminGuard],
+            },
             // accessible to everyone
             { path: '', loadComponent: () => import('./pages/landing/landing.component').then((m) => m.LandingComponent) }, // cannot move it to routes[n>0] unless routes[0].path !== ''
             // accessible to unauthenticated users

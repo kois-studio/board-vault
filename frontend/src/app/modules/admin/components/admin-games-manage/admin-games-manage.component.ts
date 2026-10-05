@@ -13,11 +13,13 @@ import { IconComponent } from '../../../../components/ui/icon/icon.component'
 import { ImageBackgroundComponent } from '../../../../components/ui/image-background/image-background.component'
 import { SpinnerComponent } from '../../../../components/ui/spinner/spinner.component'
 import { LogService } from '../../../../core/services/log.service'
+import { AdminPageHeaderComponent } from '../admin-page-header/admin-page-header.component'
 import { AdminTagsManageService } from '../admin-tags-manage/admin-tags-manage.service'
 import { AdminGamesManageService } from './admin-games-manage.service'
 
 @Component({
     imports: [
+        AdminPageHeaderComponent,
         ReactiveFormsModule,
         ButtonComponent,
         TagsComponent,

@@ -4,6 +4,8 @@ const authStorageState = process.env['PLAYWRIGHT_AUTH_STORAGE_STATE']
 const groupId = process.env['PLAYWRIGHT_GROUP_ID']
 const sessionId = process.env['PLAYWRIGHT_SESSION_ID']
 
+// Admin pages need an admin storage state: set PLAYWRIGHT_AUDIT_ADMIN=1 to include them.
+const adminRoutes = process.env['PLAYWRIGHT_AUDIT_ADMIN'] ? ['/admin/panel', '/admin/proposals', '/admin/manage-games', '/admin/manage-tags'] : []
 const coreRoutes = ['/groups/:groupId', '/groups/:groupId/edit', '/groups/:groupId/sessions/new', '/collection', '/play/upcoming-sessions', '/play/history', '/settings/profile', '/settings/appearance', '/settings/security']
 
 function accessibleNameScript() {
@@ -117,7 +119,9 @@ test.describe('rendered core route audit', () => {
     test.use({ storageState: authStorageState })
 
     test('keeps primary routes usable at core breakpoints', async ({ page }) => {
-        const routes = [...coreRoutes, ...(sessionId ? [`/sessions/${sessionId}`] : [])].map(route => route.replace(':groupId', groupId!))
+        // Every route at every width: give it room as the list grows.
+        test.setTimeout(180_000)
+        const routes = [...coreRoutes, ...adminRoutes, ...(sessionId ? [`/sessions/${sessionId}`] : [])].map(route => route.replace(':groupId', groupId!))
 
         for (const width of [375, 768, 1280]) {
             await page.setViewportSize({ width, height: 900 })

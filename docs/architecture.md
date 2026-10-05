@@ -141,7 +141,7 @@ component through `takeUntilDestroyed` or `toSignal`.
 | `/games/:gameId` | `AuthOnlyGuard` | Game detail |
 | `/play`, `/play/…` | `AuthOnlyGuard` | Play hub (a card per subpage); upcoming, recommendations, log a session, history |
 | `/settings`, `/settings/profile`, `/settings/appearance`, `/settings/security` | `AuthOnlyGuard` | Settings: profile, theme, and Clerk account security (`/settings/account` redirects to profile) |
-| `/admin/…` | `AdminGuard` | Catalogue administration |
+| `/admin`, `/admin/panel`, `/admin/proposals`, `/admin/manage-games`, `/admin/manage-tags` | `AdminGuard` | Administration: overview, proposals, games, tags (lazy chunk, inside the app layout) |
 
 The app has three sections: Home (groups and their pages), Collection
 (games, browse, reviews, wishlist), and Play (upcoming, what to play,
@@ -157,7 +157,8 @@ them.
 `LayoutCompleteComponent` wraps browsing pages; `LayoutBasicComponent` wraps
 focused actions (create, edit, claim, propose) without navigation.
 `SidebarLayoutComponent` is the shell for areas with their own sections
-(Settings): sidebar and section side by side on desktop, and on phones a
+(Settings, and Administration under `/admin`, which stays a lazy-loaded
+chunk that only admins download): sidebar and section side by side on desktop, and on phones a
 list of sections at the base route that opens each section full width.
 
 `ThemeService` owns the colour scheme: `localStorage.theme` is `system`

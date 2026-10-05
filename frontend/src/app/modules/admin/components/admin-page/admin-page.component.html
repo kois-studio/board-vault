@@ -1,11 +1,5 @@
-<section class="mx-auto max-w-6xl" aria-labelledby="admin-panel-title">
-    <div class="mb-8">
-        <p class="text-sm font-semibold uppercase tracking-wider text-bv-primary">Board Vault administration</p>
-        <h1 id="admin-panel-title" class="mt-2 text-3xl font-bold text-bv-text">Admin panel</h1>
-        <p class="mt-3 max-w-2xl text-bv-text-muted">
-            Choose an area below to maintain the shared game catalogue. The panel shows the tools that are currently available; operational metrics will be added when they have a persisted data contract.
-        </p>
-    </div>
+<section>
+    <app-admin-page-header title="Overview" description="Look after the shared game catalogue: review what people propose, and keep games and tags tidy." />
 
     <div class="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
         @for (area of adminAreas; track area.route) {
@@ -16,7 +10,7 @@
                 <span class="mb-5 flex h-12 w-12 items-center justify-center rounded-lg bg-bv-primary-soft text-bv-on-primary-soft" aria-hidden="true">
                     <app-icon [name]="area.icon" [size]="28" />
                 </span>
-                <h2 class="text-xl font-semibold text-bv-text group-hover:text-bv-primary">{{ area.title }}</h2>
+                <h3 class="text-xl font-semibold text-bv-text group-hover:text-bv-primary">{{ area.title }}</h3>
                 <p class="mt-2 text-sm leading-6 text-bv-text-muted">{{ area.description }}</p>
                 <span class="mt-5 inline-flex items-center gap-2 text-sm font-semibold text-bv-primary">
                     Open area <app-icon name="arrow-right" [size]="16" aria-hidden="true" />
