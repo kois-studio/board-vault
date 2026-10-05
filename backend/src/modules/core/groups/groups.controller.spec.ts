@@ -99,4 +99,18 @@ describe('GroupsController actor and listing boundaries', () => {
 
         expect(updateDecision).toHaveBeenCalledWith(12, 7, 42, body)
     })
+
+    it('derives the spending-sharing account from the authenticated request', async () => {
+        const setSpendingShare = vi.fn().mockResolvedValue({ success: true })
+        const controller = new GroupsController(
+            {} as GroupsService,
+            {} as GroupAcquisitionService,
+            {} as ClerkIdentityService,
+            { setSpendingShare } as unknown as GroupInsightsService,
+        )
+
+        await controller.setSpendingShare(12, request, { share: true })
+
+        expect(setSpendingShare).toHaveBeenCalledWith(12, 7, true)
+    })
 })

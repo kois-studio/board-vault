@@ -540,6 +540,12 @@ export class Api {
             .pipe(map((response) => groupInsightsSchema.parse(response)))
     }
 
+    setGroupSpendingShare(groupId: number, share: boolean) {
+        return this.http
+            .put<{ success: true }>(`${this.url}/groups/${groupId}/spending-share`, { share })
+            .pipe(map((response) => successSchema.parse(response)))
+    }
+
     getGroupAcquisitionBoard(groupId: number) {
         return this.http
             .get<Array<GroupAcquisitionEntryType>>(`${this.url}/groups/${groupId}/acquisition-board`)

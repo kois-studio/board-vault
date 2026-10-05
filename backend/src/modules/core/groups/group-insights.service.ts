@@ -39,8 +39,11 @@ const toNullableId = (value: unknown): number | null => (value === null || value
 export class GroupInsightsService {
     constructor(private readonly databaseService: DatabaseService) {}
 
-    async getInsights(groupId: number): Promise<GroupInsightsDto> {
-        const { totals, standings, mostPlayed, neverPlayed } = await this.databaseService.groups.getGroupInsights(groupId)
+    async getInsights(groupId: number, accountId: number): Promise<GroupInsightsDto> {
+        const { totals, standings, mostPlayed, neverPlayed, spending, spendingShare } = await this.databaseService.groups.getGroupInsights(
+            groupId,
+            accountId,
+        )
         const total = totals.rows[0]
 
         return {
@@ -63,6 +66,19 @@ export class GroupInsightsService {
             })),
             neverPlayed: neverPlayed.rows.map(row => toGame(row)),
             neverPlayedCount: Number(neverPlayed.rows[0]?.[7] ?? 0),
+            spending: spending.rows.map(row => ({
+                accountId: Number(row[0]),
+                displayName: String(row[1] ?? ''),
+                avatar: toAvatar(row[2]),
+                totalSpent: Number(row[3] ?? 0),
+                pricedGames: Number(row[4] ?? 0),
+            })),
+            spendingShared: Number(spendingShare.rows[0]?.[0] ?? 0) === 1,
         }
+    }
+
+    async setSpendingShare(groupId: number, accountId: number, share: boolean): Promise<{ success: true }> {
+        await this.databaseService.groups.setGroupSpendingShare(groupId, accountId, share)
+        return { success: true }
     }
 }

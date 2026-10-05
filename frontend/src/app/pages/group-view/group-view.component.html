@@ -608,9 +608,8 @@
             </section>
 
             @if (insights$(); as insights) {
-                @if (insights.sessions > 0 || insights.neverPlayedCount > 0) {
-                    <section id="insights" class="order-8 scroll-mt-24" aria-labelledby="insights-heading">
-                        <div>
+                <section id="insights" class="order-8 scroll-mt-24" aria-labelledby="insights-heading">
+                    <div>
                             <p class="text-sm font-semibold uppercase tracking-[0.18em] text-bv-primary">What your group returns to</p>
                             <h2 id="insights-heading" class="mt-1 text-2xl font-bold">Standings and stats</h2>
                             <p class="mt-1 text-secondary">
@@ -620,8 +619,46 @@
                                     Finish a game night to start the standings.
                                 }
                             </p>
-                        </div>
-                        <div class="mt-5 grid grid-cols-1 gap-4 lg:grid-cols-2">
+                    </div>
+                    <label class="mt-5 flex cursor-pointer items-start gap-3 rounded-2xl border border-bv-border bg-bv-surface p-4 text-sm">
+                            <input
+                                #spendingShareCheckbox
+                                type="checkbox"
+                                class="mt-1 h-4 w-4 shrink-0 accent-bv-primary"
+                                [checked]="insights.spendingShared"
+                                [disabled]="spendingShareSaving()"
+                                (change)="setGroupSpendingShare(group.id, spendingShareCheckbox.checked)"
+                            />
+                            <span>
+                                <span class="block font-semibold">Share my recorded game spending with this group</span>
+                                <span class="mt-1 block text-secondary">This shares the total of purchase prices saved in your private collection with group members. Games without a recorded price are not included. Currency is not stored, so the total has no currency label. You can change this any time.</span>
+                            </span>
+                    </label>
+                    @if (spendingShareError()) {
+                            <p class="mt-2 text-sm text-bv-danger" role="alert">Your sharing preference could not be updated. The previous setting is still in effect.</p>
+                    }
+                    <div class="mt-5 grid grid-cols-1 gap-4 lg:grid-cols-2">
+                            <article class="rounded-2xl border border-bv-border bg-bv-surface p-5 shadow-sm">
+                                <h3 class="font-semibold">Game spending leaderboard</h3>
+                                <p class="mt-1 text-sm text-secondary">Only totals that members chose to share with this group appear here.</p>
+                                @if (insights.spending.length > 0) {
+                                    <ol class="mt-4 space-y-3">
+                                        @for (member of insights.spending; track member.accountId) {
+                                            <li class="flex min-w-0 items-center gap-3">
+                                                <span class="w-5 shrink-0 text-sm font-semibold text-secondary">{{ $index + 1 }}</span>
+                                                <app-image-profile size="small" class="shrink-0" [avatar]="member.avatar ?? initialsAvatar(member.displayName)" />
+                                                <span class="min-w-0 flex-1">
+                                                    <span class="block truncate text-sm font-medium" [title]="member.displayName">{{ member.displayName }}</span>
+                                                    <span class="block text-xs text-secondary">{{ member.pricedGames }} game{{ member.pricedGames === 1 ? '' : 's' }} with a recorded price</span>
+                                                </span>
+                                                <span class="shrink-0 text-sm font-semibold tabular-nums">{{ member.totalSpent | number: '1.2-2' }}</span>
+                                            </li>
+                                        }
+                                    </ol>
+                                } @else {
+                                    <p class="mt-4 rounded-xl bg-bv-bg p-3 text-sm text-secondary">No one has shared a spending total with this group yet.</p>
+                                }
+                            </article>
                             @if (insights.standings.length > 0) {
                                 <article class="rounded-2xl border border-bv-border bg-bv-surface p-5 shadow-sm">
                                     <h3 class="font-semibold">Standings</h3>
@@ -689,9 +726,8 @@
                                     </ul>
                                 </article>
                             }
-                        </div>
-                    </section>
-                }
+                    </div>
+                </section>
             } @else if (insightsError()) {
                 <section id="insights" class="order-8 scroll-mt-24 rounded-2xl border border-bv-warning/30 bg-bv-warning/10 p-5 text-sm" role="alert">
                     <p>Standings and stats could not be loaded.</p>

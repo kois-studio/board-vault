@@ -17,13 +17,20 @@ describe('GroupInsightsService', () => {
                 },
                 mostPlayed: { rows: [[10, 'image', 60, 2, 4, 'Alpha', null, 2, '2026-09-08T18:00:00.000Z']] },
                 neverPlayed: { rows: [[13, 'image', 20, 3, 8, null, 'Delta', 5]] },
+                spending: {
+                    rows: [
+                        [1, 'Organizer', emoji, '123.45', 4],
+                        [2, 'Guest', null, 20, 1],
+                    ],
+                },
+                spendingShare: { rows: [[1]] },
             }),
         }
         const service = new GroupInsightsService(fakeDatabase(database))
 
-        const insights = await service.getInsights(7)
+        const insights = await service.getInsights(7, 1)
 
-        expect(database.getGroupInsights).toHaveBeenCalledWith(7)
+        expect(database.getGroupInsights).toHaveBeenCalledWith(7, 1)
         expect(insights).toEqual({
             sessions: 2,
             gamesPlayed: 3,
@@ -67,6 +74,11 @@ describe('GroupInsightsService', () => {
                 },
             ],
             neverPlayedCount: 5,
+            spending: [
+                { accountId: 1, displayName: 'Organizer', avatar: JSON.parse(emoji), totalSpent: 123.45, pricedGames: 4 },
+                { accountId: 2, displayName: 'Guest', avatar: null, totalSpent: 20, pricedGames: 1 },
+            ],
+            spendingShared: true,
         })
     })
 
@@ -74,13 +86,18 @@ describe('GroupInsightsService', () => {
         const empty = { rows: [] }
         const service = new GroupInsightsService(
             fakeDatabase({
-                getGroupInsights: vi
-                    .fn()
-                    .mockResolvedValue({ totals: { rows: [[0, 0, 0]] }, standings: empty, mostPlayed: empty, neverPlayed: empty }),
+                getGroupInsights: vi.fn().mockResolvedValue({
+                    totals: { rows: [[0, 0, 0]] },
+                    standings: empty,
+                    mostPlayed: empty,
+                    neverPlayed: empty,
+                    spending: empty,
+                    spendingShare: { rows: [[0]] },
+                }),
             }),
         )
 
-        await expect(service.getInsights(7)).resolves.toEqual({
+        await expect(service.getInsights(7, 1)).resolves.toEqual({
             sessions: 0,
             gamesPlayed: 0,
             gamesWithWinner: 0,
@@ -88,6 +105,16 @@ describe('GroupInsightsService', () => {
             mostPlayed: [],
             neverPlayed: [],
             neverPlayedCount: 0,
+            spending: [],
+            spendingShared: false,
         })
+    })
+
+    it('saves the sharing choice for the authenticated group member', async () => {
+        const setGroupSpendingShare = vi.fn().mockResolvedValue({})
+        const service = new GroupInsightsService(fakeDatabase({ setGroupSpendingShare }))
+
+        await expect(service.setSpendingShare(7, 1, true)).resolves.toEqual({ success: true })
+        expect(setGroupSpendingShare).toHaveBeenCalledWith(7, 1, true)
     })
 })

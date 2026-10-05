@@ -164,6 +164,14 @@ export type GroupInsightsType = {
     mostPlayed: Array<{ gameData: GameCompleteType; sessions: number; lastPlayedAt: string }>
     neverPlayed: Array<GameCompleteType>
     neverPlayedCount: number
+    spending: Array<{
+        accountId: number
+        displayName: string
+        avatar: PublicUserType['avatar'] | null
+        totalSpent: number
+        pricedGames: number
+    }>
+    spendingShared: boolean
 }
 
 export type GroupAcquisitionEntryType = {

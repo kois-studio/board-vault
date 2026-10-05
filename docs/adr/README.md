@@ -18,6 +18,7 @@ deployment-specific evidence, live data, credentials, and personal details.
 - [0013 — Clerk user lifecycle sync](0013-clerk-user-lifecycle.md)
 - [0014 — Own the game catalogue](0014-own-the-game-catalogue.md)
 - [0015 — Own game artwork](0015-own-game-artwork.md)
+- [0016 — Opt-in group spending aggregates](0016-opt-in-group-spending-aggregates.md)
 
 Accepted ADRs are durable constraints unless a later ADR explicitly supersedes
 them. Create an ADR when a decision changes architecture, persistence,

@@ -172,6 +172,64 @@ describe('Api response contracts', () => {
         await expect(response).resolves.toEqual([])
     })
 
+    it('reads opted-in spending totals and the current member sharing preference', async () => {
+        const response = firstValueFrom(api.getGroupInsights(7))
+        const request = http.expectOne(`${environment.apiUrl}/groups/7/insights`)
+
+        expect(request.request.method).toBe('GET')
+        request.flush({
+            sessions: 0,
+            gamesPlayed: 0,
+            gamesWithWinner: 0,
+            standings: [],
+            mostPlayed: [],
+            neverPlayed: [],
+            neverPlayedCount: 0,
+            spending: [
+                {
+                    accountId: 1,
+                    displayName: 'Ana',
+                    avatar: null,
+                    totalSpent: 42.5,
+                    pricedGames: 2,
+                },
+            ],
+            spendingShared: true,
+        })
+
+        await expect(response).resolves.toEqual(
+            expect.objectContaining({ spendingShared: true, spending: [expect.objectContaining({ totalSpent: 42.5 })] }),
+        )
+    })
+
+    it('accepts the previous group-insights response during a staggered deployment', async () => {
+        const response = firstValueFrom(api.getGroupInsights(7))
+        const request = http.expectOne(`${environment.apiUrl}/groups/7/insights`)
+
+        request.flush({
+            sessions: 0,
+            gamesPlayed: 0,
+            gamesWithWinner: 0,
+            standings: [],
+            mostPlayed: [],
+            neverPlayed: [],
+            neverPlayedCount: 0,
+        })
+
+        await expect(response).resolves.toEqual(expect.objectContaining({ spending: [], spendingShared: false }))
+    })
+
+    it('updates spending sharing for the selected group', async () => {
+        const response = firstValueFrom(api.setGroupSpendingShare(7, true))
+        const request = http.expectOne(`${environment.apiUrl}/groups/7/spending-share`)
+
+        expect(request.request.method).toBe('PUT')
+        expect(request.request.body).toEqual({ share: true })
+        request.flush({ success: true })
+
+        await expect(response).resolves.toEqual({ success: true })
+    })
+
     it('validates pending Clerk group invitations at the API boundary', async () => {
         const response = firstValueFrom(api.getClerkGroupInvitations(7))
         const request = http.expectOne(`${environment.apiUrl}/groups/7/clerk-invitations`)

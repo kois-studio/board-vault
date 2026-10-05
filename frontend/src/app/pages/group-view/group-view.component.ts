@@ -117,6 +117,8 @@ export class GroupViewComponent {
     public readonly acquisitionBoard$ = signal<Array<GroupAcquisitionEntryType>>([])
     public readonly insights$ = signal<GroupInsightsType | null>(null)
     public readonly insightsError = signal(false)
+    public readonly spendingShareSaving = signal(false)
+    public readonly spendingShareError = signal(false)
     private activeInsightsGroupId: number | null = null
     public readonly acquisitionBoardLoading = signal(false)
     public readonly acquisitionBoardError = signal(false)
@@ -319,6 +321,8 @@ export class GroupViewComponent {
                 this.acquisitionBoardError.set(false)
                 this.insights$.set(null)
                 this.insightsError.set(false)
+                this.spendingShareSaving.set(false)
+                this.spendingShareError.set(false)
                 this.activeInsightsGroupId = null
                 this.groupPeople$.set([])
                 this.groupPeopleError.set(false)
@@ -666,6 +670,32 @@ export class GroupViewComponent {
             next: (insights) => this.insights$.set(insights),
             error: () => this.insightsError.set(true),
         })
+    }
+
+    public async setGroupSpendingShare(groupId: number, share: boolean): Promise<void> {
+        this.spendingShareSaving.set(true)
+        this.spendingShareError.set(false)
+        try {
+            await firstValueFrom(this.api.setGroupSpendingShare(groupId, share))
+            this.insights$.update((insights) =>
+                insights
+                    ? {
+                          ...insights,
+                          spendingShared: share,
+                          spending: share
+                              ? insights.spending
+                              : insights.spending.filter((member) => member.accountId !== this.currentUser$()?.id),
+                      }
+                    : insights,
+            )
+            this.loadInsights(groupId)
+        } catch {
+            this.spendingShareError.set(true)
+            this.toastService.error('Could not update spending sharing. Try again.')
+            this.loadInsights(groupId)
+        } finally {
+            this.spendingShareSaving.set(false)
+        }
     }
 
     /** People without an account or avatar show their initials. */

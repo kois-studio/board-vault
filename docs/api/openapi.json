@@ -1398,7 +1398,46 @@
             "bearer": []
           }
         ],
-        "summary": "Get standings, most played and never played games from completed game nights",
+        "summary": "Get group history insights and spending shared by members",
+        "tags": [
+          "groups"
+        ]
+      }
+    },
+    "/groups/{groupId}/spending-share": {
+      "put": {
+        "operationId": "GroupsController_setSpendingShare",
+        "parameters": [
+          {
+            "name": "groupId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateGroupSpendingShareBody"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Spending sharing preference saved"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Choose whether to share recorded game spending with this group",
         "tags": [
           "groups"
         ]
@@ -6065,6 +6104,45 @@
           "lastPlayedAt"
         ]
       },
+      "GroupSpendingDto": {
+        "type": "object",
+        "properties": {
+          "accountId": {
+            "type": "number",
+            "example": 4
+          },
+          "displayName": {
+            "type": "string",
+            "example": "Lucía"
+          },
+          "avatar": {
+            "nullable": true,
+            "type": "object",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/AvatarDto"
+              }
+            ]
+          },
+          "totalSpent": {
+            "type": "number",
+            "example": 248.5,
+            "description": "Sum of recorded purchase prices in the member’s private collection."
+          },
+          "pricedGames": {
+            "type": "number",
+            "example": 8,
+            "description": "Number of games with a recorded purchase price."
+          }
+        },
+        "required": [
+          "accountId",
+          "displayName",
+          "avatar",
+          "totalSpent",
+          "pricedGames"
+        ]
+      },
       "GroupInsightsDto": {
         "type": "object",
         "properties": {
@@ -6108,6 +6186,18 @@
             "type": "number",
             "example": 23,
             "description": "How many owned games the group has never played."
+          },
+          "spending": {
+            "description": "Members who chose to share their recorded game spending with this group.",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/GroupSpendingDto"
+            }
+          },
+          "spendingShared": {
+            "type": "boolean",
+            "example": false,
+            "description": "Whether the requesting member shares their spending with this group."
           }
         },
         "required": [
@@ -6117,7 +6207,22 @@
           "standings",
           "mostPlayed",
           "neverPlayed",
-          "neverPlayedCount"
+          "neverPlayedCount",
+          "spending",
+          "spendingShared"
+        ]
+      },
+      "UpdateGroupSpendingShareBody": {
+        "type": "object",
+        "properties": {
+          "share": {
+            "type": "boolean",
+            "example": true,
+            "description": "Whether to share this account’s recorded game spending with this group."
+          }
+        },
+        "required": [
+          "share"
         ]
       },
       "UserPublicDto": {

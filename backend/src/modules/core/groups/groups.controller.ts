@@ -16,7 +16,7 @@ import {
     GroupGameInterestBody,
     UpdateGroupAcquisitionDecisionBody,
 } from '../../../common/types/group-game-interest.type.js'
-import { GroupInsightsDto } from '../../../common/types/group-insights.type.js'
+import { GroupInsightsDto, UpdateGroupSpendingShareBody } from '../../../common/types/group-insights.type.js'
 import { CreateGroupRequestBody, GroupDto, UpdateGroupBody } from '../../../common/types/group.type.js'
 import { InvitationWithAccountsData } from '../../../common/types/invitation.type.js'
 import { ClerkIdentityService } from '../../common/auth/clerk-identity.service.js'
@@ -124,10 +124,22 @@ export class GroupsController {
 
     @UseGuards(UserInGroupGuard)
     @Get('/:groupId/insights')
-    @ApiOperation({ summary: 'Get standings, most played and never played games from completed game nights' })
+    @ApiOperation({ summary: 'Get group history insights and spending shared by members' })
     @ApiResponse({ status: 200, type: GroupInsightsDto })
-    getInsights(@Param('groupId', ParseIntPipe) groupId: number) {
-        return this.groupInsightsService.getInsights(groupId)
+    getInsights(@Param('groupId', ParseIntPipe) groupId: number, @Req() request: { user: { userId: number } }) {
+        return this.groupInsightsService.getInsights(groupId, request.user.userId)
+    }
+
+    @UseGuards(UserInGroupGuard)
+    @Put('/:groupId/spending-share')
+    @ApiOperation({ summary: 'Choose whether to share recorded game spending with this group' })
+    @ApiResponse({ status: 200, description: 'Spending sharing preference saved' })
+    setSpendingShare(
+        @Param('groupId', ParseIntPipe) groupId: number,
+        @Req() request: { user: { userId: number } },
+        @Body() body: UpdateGroupSpendingShareBody,
+    ) {
+        return this.groupInsightsService.setSpendingShare(groupId, request.user.userId, body.share)
     }
 
     @UseGuards(UserInGroupGuard)

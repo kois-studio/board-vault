@@ -254,6 +254,21 @@ export const groupInsightsSchema: z.ZodMiniType<GroupInsightsType> = z.object({
     mostPlayed: z.array(z.object({ gameData: gameCompleteSchema, sessions: z.number(), lastPlayedAt: z.string() })),
     neverPlayed: z.array(gameCompleteSchema),
     neverPlayedCount: z.number(),
+    spending: z._default(
+        z.optional(
+            z.array(
+                z.object({
+                    accountId: z.number(),
+                    displayName: z.string(),
+                    avatar: z.nullable(avatarSchema),
+                    totalSpent: z.number(),
+                    pricedGames: z.number(),
+                }),
+            ),
+        ),
+        [],
+    ),
+    spendingShared: z._default(z.optional(z.boolean()), false),
 })
 
 const gameReviewSchema = z.object({

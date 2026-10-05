@@ -1,4 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger'
+import { IsBoolean, IsDefined } from 'class-validator'
 
 import { GameCompleteDto } from './game.type.js'
 import { AvatarDto } from './user.type.js'
@@ -41,6 +42,23 @@ export class GroupGamePlayCountDto {
     lastPlayedAt: string
 }
 
+export class GroupSpendingDto {
+    @ApiProperty({ example: 4 })
+    accountId: number
+
+    @ApiProperty({ example: 'Lucía' })
+    displayName: string
+
+    @ApiProperty({ type: AvatarDto, nullable: true })
+    avatar: AvatarDto | null
+
+    @ApiProperty({ example: 248.5, description: 'Sum of recorded purchase prices in the member’s private collection.' })
+    totalSpent: number
+
+    @ApiProperty({ example: 8, description: 'Number of games with a recorded purchase price.' })
+    pricedGames: number
+}
+
 export class GroupInsightsDto {
     @ApiProperty({ example: 8, description: 'Completed game nights.' })
     sessions: number
@@ -62,4 +80,17 @@ export class GroupInsightsDto {
 
     @ApiProperty({ example: 23, description: 'How many owned games the group has never played.' })
     neverPlayedCount: number
+
+    @ApiProperty({ type: [GroupSpendingDto], description: 'Members who chose to share their recorded game spending with this group.' })
+    spending: Array<GroupSpendingDto>
+
+    @ApiProperty({ example: false, description: 'Whether the requesting member shares their spending with this group.' })
+    spendingShared: boolean
+}
+
+export class UpdateGroupSpendingShareBody {
+    @ApiProperty({ example: true, description: 'Whether to share this account’s recorded game spending with this group.' })
+    @IsDefined()
+    @IsBoolean()
+    share: boolean
 }
