@@ -231,7 +231,14 @@ describe('recording a past session with group people (e2e)', () => {
             .expect(201)
         const sessionId = Number(scheduled.body.sessionId)
 
-        await request(app.getHttpServer()).patch(`/sessions/${sessionId}/status`).set(withAuth).send({ status: 'active' }).expect(200)
+        // Started before its date (20 October), so the night is dated now (#94).
+        const started = await request(app.getHttpServer())
+            .patch(`/sessions/${sessionId}/status`)
+            .set(withAuth)
+            .send({ status: 'active' })
+            .expect(200)
+
+        expect(Date.parse(started.body.sessionDate)).toBeLessThanOrEqual(Date.now())
         const marked = await request(app.getHttpServer())
             .patch(`/sessions/${sessionId}/played-games`)
             .set(withAuth)
@@ -253,7 +260,13 @@ describe('recording a past session with group people (e2e)', () => {
 
         expect(unmarked.body.skippedGameIds).toEqual([10])
 
-        await request(app.getHttpServer()).patch(`/sessions/${sessionId}/status`).set(withAuth).send({ status: 'completed' }).expect(200)
+        // Nothing is marked as played now, so finishing needs the organizer's confirmation (#94).
+        await request(app.getHttpServer()).patch(`/sessions/${sessionId}/status`).set(withAuth).send({ status: 'completed' }).expect(400)
+        await request(app.getHttpServer())
+            .patch(`/sessions/${sessionId}/status`)
+            .set(withAuth)
+            .send({ status: 'completed', noGamesPlayed: true })
+            .expect(200)
         const finished = await request(app.getHttpServer()).get(`/sessions/${sessionId}`).set(withAuth).expect(200)
 
         expect([...finished.body.skippedGames].sort()).toEqual([10, 11])

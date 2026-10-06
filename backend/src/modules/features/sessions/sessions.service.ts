@@ -235,13 +235,26 @@ export class SessionsService {
             throw new BadRequestException(`Cannot change a ${currentStatus} session to ${body.status}`)
         }
 
-        const result = await this.databaseService.sessions.updateMeetStatus(sessionId, currentStatus, body.status)
+        if (body.status === 'completed' && !body.noGamesPlayed) {
+            const played = await this.databaseService.sessions.countPlayedMeetGames(sessionId)
+
+            if (Number(played.rows[0]?.['played'] ?? 0) === 0) {
+                throw new BadRequestException('No game is marked as played. Mark what you played, or confirm that nothing was played.')
+            }
+        }
+
+        // A night started or finished before its date was played now, so History keeps it in order (#94).
+        const sessionDate = String(sessionRow[3])
+        const now = new Date()
+        const movedDate = body.status !== 'cancelled' && Date.parse(sessionDate) > now.getTime() ? now.toISOString() : undefined
+
+        const result = await this.databaseService.sessions.updateMeetStatus(sessionId, currentStatus, body.status, movedDate)
 
         if (result.rowsAffected !== 1) {
             throw new NotFoundException(`Session with id ${sessionId} not found`)
         }
 
-        return { sessionId, status: body.status }
+        return { sessionId, status: body.status, sessionDate: movedDate ?? sessionDate }
     }
 
     async updateSessionAttendees(

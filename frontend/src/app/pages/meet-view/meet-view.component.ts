@@ -82,7 +82,7 @@ export class MeetViewComponent {
     public isUpdatingShortlist = false
     public isPersistingChanges = false
     public readonly actionError = signal<string | null>(null)
-    public readonly pendingStatus = signal<'completed' | 'cancelled' | null>(null)
+    public readonly pendingStatus = signal<'active' | 'completed' | 'cancelled' | null>(null)
     public plannedGameIdsDraft: Array<number> = []
     public postSessionRatings: Record<number, number> = {}
     public savingPostSessionRatings: Record<number, boolean> = {}
@@ -466,6 +466,13 @@ export class MeetViewComponent {
         return game.titleTranslations.en || game.title || 'Untitled game'
     }
 
+    /** Before its date, starting the night asks first: the night is then dated now (#94). */
+    public requestStart(): void {
+        if (!this.canManageLifecycle || !this.canEditSession || this.isUpdatingStatus) return
+        if (this.isDatedInFuture) this.pendingStatus.set('active')
+        else void this.updateStatus('active')
+    }
+
     public requestStatusUpdate(status: 'completed' | 'cancelled'): void {
         if (!this.canManageLifecycle || !this.canEditSession || this.isUpdatingStatus) return
         this.pendingStatus.set(status)
@@ -475,12 +482,17 @@ export class MeetViewComponent {
         this.pendingStatus.set(null)
     }
 
-    public confirmStatusUpdate(): void {
-        const status = this.pendingStatus()
+    /** `status` overrides the requested one: finishing a night with no games offers to cancel it instead. */
+    public confirmStatusUpdate(status = this.pendingStatus()): void {
         if (!status) return
 
         this.pendingStatus.set(null)
-        void this.updateStatus(status)
+        // The dialog has shown that nothing is marked as played, so finishing is confirmed.
+        void this.updateStatus(status, status === 'completed' && this.playedGamesCount === 0)
+    }
+
+    get isDatedInFuture(): boolean {
+        return Boolean(this.meetData && Date.parse(this.meetData.meetDate) > Date.now())
     }
 
     get currentRsvpStatus(): 'pending' | 'accepted' | 'declined' | null {
@@ -645,14 +657,17 @@ export class MeetViewComponent {
         return `Remove ${name} from session attendees`
     }
 
-    async updateStatus(status: 'active' | 'completed' | 'cancelled'): Promise<void> {
+    async updateStatus(status: 'active' | 'completed' | 'cancelled', noGamesPlayed = false): Promise<void> {
         if (!this.meetData || !this.canManageLifecycle || !this.canEditSession) return
 
         this.actionError.set(null)
         this.isUpdatingStatus = true
         try {
-            const result = await firstValueFrom(this.api.updateSessionStatus(this.meetData.id, { status }))
+            const result = await firstValueFrom(
+                this.api.updateSessionStatus(this.meetData.id, noGamesPlayed ? { status, noGamesPlayed } : { status }),
+            )
             this.meetData.status = result.status
+            this.meetData.meetDate = result.sessionDate
             this.meetDataCopyOriginal = JSON.parse(JSON.stringify(this.meetData))
             this.dataService.refreshUserMeets()
             // A completed session joins the history shown in Play › History and on Home.

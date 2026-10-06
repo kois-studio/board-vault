@@ -585,6 +585,7 @@ export const scheduledSessionCreatedSchema: z.ZodMiniType<ScheduledSessionCreate
 export const sessionStatusUpdatedSchema: z.ZodMiniType<SessionStatusUpdatedType> = z.object({
     sessionId: z.number(),
     status: z.enum(['scheduled', 'active', 'completed', 'cancelled']),
+    sessionDate: z.string(),
 })
 
 export const sessionAttendeesUpdatedSchema: z.ZodMiniType<SessionAttendeesUpdatedType> = z.object({

@@ -28,6 +28,7 @@ function createDatabaseMock() {
             .mockResolvedValue({ rows: [[12, 7, 1, '2026-08-16T19:30:00.000Z', 0, 'scheduled', 'Europe/Madrid', null]] }),
         getMeetDetailsByIdForAccount: vi.fn(),
         updateMeetStatus: vi.fn().mockResolvedValue({ rowsAffected: 1 }),
+        countPlayedMeetGames: vi.fn().mockResolvedValue({ rows: [{ played: 1 }] }),
         getMeetAttendeeForAccount: vi.fn(),
         updateMeetAttendeeRsvp: vi.fn(),
         getMeetAttendeeIds: vi.fn().mockResolvedValue([1, 2]),
@@ -518,8 +519,53 @@ describe('SessionsService', () => {
         const database = createDatabaseMock()
         const service = new SessionsService(fakeDatabase(database))
 
-        await expect(service.updateSessionStatus(1, 12, { status: 'active' })).resolves.toEqual({ sessionId: 12, status: 'active' })
-        expect(database.updateMeetStatus).toHaveBeenCalledWith(12, 'scheduled', 'active')
+        await expect(service.updateSessionStatus(1, 12, { status: 'active' })).resolves.toEqual({
+            sessionId: 12,
+            status: 'active',
+            sessionDate: '2026-08-16T19:30:00.000Z',
+        })
+        expect(database.updateMeetStatus).toHaveBeenCalledWith(12, 'scheduled', 'active', undefined)
+    })
+
+    it('moves the date of a night started before it to now', async () => {
+        vi.useFakeTimers({ now: new Date('2026-08-10T18:00:00.000Z') })
+        const database = createDatabaseMock()
+        const service = new SessionsService(fakeDatabase(database))
+
+        await expect(service.updateSessionStatus(1, 12, { status: 'active' })).resolves.toEqual({
+            sessionId: 12,
+            status: 'active',
+            sessionDate: '2026-08-10T18:00:00.000Z',
+        })
+        expect(database.updateMeetStatus).toHaveBeenCalledWith(12, 'scheduled', 'active', '2026-08-10T18:00:00.000Z')
+        vi.useRealTimers()
+    })
+
+    it('keeps the date of a cancelled night, even a future one', async () => {
+        vi.useFakeTimers({ now: new Date('2026-08-10T18:00:00.000Z') })
+        const database = createDatabaseMock()
+        const service = new SessionsService(fakeDatabase(database))
+
+        await service.updateSessionStatus(1, 12, { status: 'cancelled' })
+        expect(database.updateMeetStatus).toHaveBeenCalledWith(12, 'scheduled', 'cancelled', undefined)
+        vi.useRealTimers()
+    })
+
+    it('refuses to finish a night with no game played unless the organizer confirms it', async () => {
+        const database = createDatabaseMock()
+
+        database.getMeetByIdForCreator.mockResolvedValue({
+            rows: [[12, 7, 1, '2026-08-16T19:30:00.000Z', 0, 'active', 'Europe/Madrid', null]],
+        })
+        database.countPlayedMeetGames.mockResolvedValue({ rows: [{ played: 0 }] })
+        const service = new SessionsService(fakeDatabase(database))
+
+        await expect(service.updateSessionStatus(1, 12, { status: 'completed' })).rejects.toThrow('No game is marked as played')
+        expect(database.updateMeetStatus).not.toHaveBeenCalled()
+
+        await expect(service.updateSessionStatus(1, 12, { status: 'completed', noGamesPlayed: true })).resolves.toEqual(
+            expect.objectContaining({ status: 'completed' }),
+        )
     })
 
     it('requires a scheduled session to become active before it can be completed', async () => {

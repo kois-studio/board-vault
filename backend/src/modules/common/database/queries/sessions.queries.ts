@@ -158,10 +158,20 @@ export class SessionQueries {
         })
     }
 
+    /** Number of games marked as played in a session. */
+    countPlayedMeetGames(meetId: number) {
+        return this.database.execute({
+            sql: "SELECT COUNT(*) AS played FROM MeetGame WHERE meetId = ? AND gameStatus = 'played'",
+            args: [meetId],
+        })
+    }
+
+    /** Changes the status if it is still `expectedStatus`; `meetDate`, when given, replaces the session date. */
     async updateMeetStatus(
         meetId: number,
         expectedStatus: 'scheduled' | 'active' | 'completed' | 'cancelled',
         status: 'scheduled' | 'active' | 'completed' | 'cancelled',
+        meetDate?: string,
     ) {
         const transaction = await this.database.transaction('write')
 
@@ -169,10 +179,10 @@ export class SessionQueries {
             const result = await transaction.execute({
                 sql: `
                     UPDATE Meet
-                    SET status = ?, isConfirmed = ?, updatedAt = CURRENT_TIMESTAMP
+                    SET status = ?, isConfirmed = ?, meetDate = COALESCE(?, meetDate), updatedAt = CURRENT_TIMESTAMP
                     WHERE id = ? AND status = ?
                 `,
-                args: [status, status === 'completed' || status === 'cancelled', meetId, expectedStatus],
+                args: [status, status === 'completed' || status === 'cancelled', meetDate ?? null, meetId, expectedStatus],
             })
 
             if (result.rowsAffected === 1 && (status === 'completed' || status === 'cancelled')) {

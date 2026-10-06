@@ -9353,7 +9353,13 @@
               "active",
               "completed",
               "cancelled"
-            ]
+            ],
+            "description": "Starting or finishing a session dated in the future moves its date to now."
+          },
+          "noGamesPlayed": {
+            "type": "boolean",
+            "example": false,
+            "description": "Finishing with no game marked as played is refused unless this is true: the organizer confirmed nothing was played."
           }
         },
         "required": [
@@ -9376,11 +9382,17 @@
               "completed",
               "cancelled"
             ]
+          },
+          "sessionDate": {
+            "type": "string",
+            "example": "2026-08-21T19:30:00.000Z",
+            "description": "The session date, moved to now if it was in the future."
           }
         },
         "required": [
           "sessionId",
-          "status"
+          "status",
+          "sessionDate"
         ]
       },
       "GameResultBody": {

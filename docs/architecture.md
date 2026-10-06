@@ -69,7 +69,7 @@ attempt may already have been applied.
 | `modules/features/dashboard` | `/dashboard/users/:userId/…`: stats, groups, group creation and membership management. |
 | `modules/features/play` | `/play`: recommendations, recommendation feedback, play history. |
 | `modules/features/profile` | `/profile/users/:userId/…`: own profile, notifications, received invitations, game proposals. |
-| `modules/features/sessions` | `/sessions`: scheduled sessions, RSVP, attendance, shortlist, played games, status. |
+| `modules/features/sessions` | `/sessions`: scheduled sessions, RSVP, attendance, shortlist, played games, status. Starting or finishing a session dated in the future moves its date to now; finishing with no game played needs `noGamesPlayed: true`. |
 | `test/` | Backend e2e tests; `fake-clerk-token-verifier.ts` replaces Clerk. |
 
 `core` modules own an entity; `features` modules compose several of them for a

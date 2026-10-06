@@ -108,7 +108,7 @@ describe('MeetViewComponent participant safeguards', () => {
 
     it('reloads the cached history when a session is completed', async () => {
         const { component, api, dataService } = await setup()
-        api.updateSessionStatus.mockReturnValue(of({ sessionId: 99, status: 'completed' }))
+        api.updateSessionStatus.mockReturnValue(of({ sessionId: 99, status: 'completed', sessionDate: '2026-08-16T19:30:00.000Z' }))
 
         await component.updateStatus('completed')
 
@@ -118,12 +118,31 @@ describe('MeetViewComponent participant safeguards', () => {
 
     it('leaves the cached history alone when a session is cancelled', async () => {
         const { component, api, dataService } = await setup()
-        api.updateSessionStatus.mockReturnValue(of({ sessionId: 99, status: 'cancelled' }))
+        api.updateSessionStatus.mockReturnValue(of({ sessionId: 99, status: 'cancelled', sessionDate: '2026-08-16T19:30:00.000Z' }))
 
         await component.updateStatus('cancelled')
 
         expect(dataService.refreshUserMeets).toHaveBeenCalledOnce()
         expect(dataService.refreshUserHistory).not.toHaveBeenCalled()
+    })
+
+    it('offers to cancel a night with nothing played, and confirms when finishing it anyway', async () => {
+        const { component, api } = await setup()
+        api.updateSessionStatus.mockReturnValue(of({ sessionId: 99, status: 'completed', sessionDate: '2026-08-16T19:30:00.000Z' }))
+        const meetData = component.meetData
+        if (!meetData) return
+        meetData.status = 'active'
+        meetData.playedGames = []
+
+        component.requestStatusUpdate('completed')
+        component.confirmStatusUpdate('cancelled')
+        expect(api.updateSessionStatus).toHaveBeenLastCalledWith(99, { status: 'cancelled' })
+        await vi.waitFor(() => expect(component.isUpdatingStatus).toBe(false))
+
+        meetData.status = 'active'
+        component.requestStatusUpdate('completed')
+        component.confirmStatusUpdate()
+        expect(api.updateSessionStatus).toHaveBeenLastCalledWith(99, { status: 'completed', noGamesPlayed: true })
     })
 
     it('requires an explicit review before completing or cancelling', async () => {
@@ -370,7 +389,7 @@ describe('MeetViewComponent rendered lifecycle actions', () => {
     })
 
     const setup = async () => {
-        const statusResponse = new Subject<{ sessionId: number; status: 'active' }>()
+        const statusResponse = new Subject<{ sessionId: number; status: 'active'; sessionDate: string }>()
         const rsvpResponse = new Subject<{ sessionId: number; rsvpStatus: 'accepted' }>()
         const api = {
             getSessionDetailsById: vi.fn().mockReturnValue(of(scheduledMeet())),
@@ -414,20 +433,38 @@ describe('MeetViewComponent rendered lifecycle actions', () => {
         return { fixture, button, statusResponse, rsvpResponse }
     }
 
-    it('shows the live night once Start game night is saved', async () => {
+    it('asks before starting a night ahead of its date, then shows it live and dated now', async () => {
+        vi.useFakeTimers({ now: new Date('2026-10-10T18:00:00.000Z'), toFake: ['Date'] })
         const { fixture, button, statusResponse } = await setup()
 
         button('Start game night')?.click()
         await fixture.whenStable()
+        expect((fixture.nativeElement as HTMLElement).textContent).toContain('Start this game night now?')
+
+        button('Start now')?.click()
+        await fixture.whenStable()
         expect(button('Start game night')?.disabled).toBe(true)
 
-        statusResponse.next({ sessionId: 59, status: 'active' })
+        statusResponse.next({ sessionId: 59, status: 'active', sessionDate: '2026-10-10T18:00:00.000Z' })
         statusResponse.complete()
         await fixture.whenStable()
 
         expect(button('Start game night')).toBeUndefined()
         expect(button('Finish game night')?.disabled).toBe(false)
         expect(button('Cancel game night')?.disabled).toBe(false)
+        vi.useRealTimers()
+    })
+
+    it('starts a night on or after its date without asking', async () => {
+        vi.useFakeTimers({ now: new Date('2026-10-14T17:30:00.000Z'), toFake: ['Date'] })
+        const { fixture, button } = await setup()
+
+        button('Start game night')?.click()
+        await fixture.whenStable()
+
+        expect((fixture.nativeElement as HTMLElement).textContent).not.toContain('Start this game night now?')
+        expect(button('Start game night')?.disabled).toBe(true)
+        vi.useRealTimers()
     })
 
     it('marks you as going and frees the RSVP buttons once the RSVP is saved', async () => {

@@ -164,9 +164,22 @@ export class ScheduledSessionCreatedDto {
 }
 
 export class UpdateSessionStatusBody {
-    @ApiProperty({ example: 'active', enum: ['active', 'completed', 'cancelled'] })
+    @ApiProperty({
+        example: 'active',
+        enum: ['active', 'completed', 'cancelled'],
+        description: 'Starting or finishing a session dated in the future moves its date to now.',
+    })
     @IsIn(['active', 'completed', 'cancelled'])
     status: 'active' | 'completed' | 'cancelled'
+
+    @ApiProperty({
+        required: false,
+        example: false,
+        description: 'Finishing with no game marked as played is refused unless this is true: the organizer confirmed nothing was played.',
+    })
+    @IsOptional()
+    @IsBoolean()
+    noGamesPlayed?: boolean
 }
 
 export class UpdateSessionAttendeesBody {
@@ -197,6 +210,9 @@ export class SessionStatusUpdatedDto {
 
     @ApiProperty({ example: 'active', enum: ['scheduled', 'active', 'completed', 'cancelled'] })
     status: 'scheduled' | 'active' | 'completed' | 'cancelled'
+
+    @ApiProperty({ example: '2026-08-21T19:30:00.000Z', description: 'The session date, moved to now if it was in the future.' })
+    sessionDate: string
 }
 
 export class SessionAttendeesUpdatedDto {

@@ -48,7 +48,7 @@
                 <div class="mt-5 flex flex-wrap items-center gap-3 border-t border-bv-border pt-5">
                     @if (canManageLifecycle && canEditSession) {
                         @if (meet.status === 'scheduled') {
-                            <button appButton type="button" icon="dice-5" [disabled]="isUpdatingStatus" (click)="updateStatus('active')">Start game night</button>
+                            <button appButton type="button" icon="dice-5" [disabled]="isUpdatingStatus" (click)="requestStart()">Start game night</button>
                         } @else {
                             <button appButton type="button" icon="check" [disabled]="isUpdatingStatus" (click)="requestStatusUpdate('completed')">Finish game night</button>
                         }
@@ -91,30 +91,60 @@
                 <section
                     appDialog
                     (dialogClosed)="cancelStatusUpdate()"
-                    class="w-full max-w-lg rounded-lg border border-bv-border bg-bv-surface p-6 shadow-2xl"
+                    class="w-full max-w-xl rounded-lg border border-bv-border bg-bv-surface p-6 shadow-2xl"
                     aria-labelledby="session-status-confirmation-title"
                     aria-describedby="session-status-confirmation-description"
                     (click)="$event.stopPropagation()"
                 >
-                    <h2 id="session-status-confirmation-title" class="text-2xl font-bold">{{ requestedStatus === 'completed' ? 'Finish this game night?' : 'Cancel this game night?' }}</h2>
+                    @let noGames = requestedStatus === 'completed' && playedGamesCount === 0;
+                    <h2 id="session-status-confirmation-title" class="text-2xl font-bold">
+                        @switch (requestedStatus) {
+                            @case ('active') { Start this game night now? }
+                            @case ('completed') { {{ noGames ? 'No games marked as played' : 'Finish this game night?' }} }
+                            @default { Cancel this game night? }
+                        }
+                    </h2>
                     <p id="session-status-confirmation-description" class="mt-2 text-bv-text-muted">
-                        @if (requestedStatus === 'completed') {
-                            The night joins the group’s history. Played games, players and attendance can no longer change, but anyone can still record who won.
-                        } @else {
-                            The night stays here for reference, but nobody can answer, mark games or record attendance any more.
+                        @switch (requestedStatus) {
+                            @case ('active') {
+                                It’s planned for {{ dateParts?.weekday }} {{ dateParts?.day }} {{ dateParts?.month }} at {{ dateParts?.time }}. Starting it now moves it to today, so the group’s history stays in order.
+                            }
+                            @case ('completed') {
+                                @if (noGames) {
+                                    Mark the games you played before finishing. If the night didn’t happen, cancel it instead. You can also finish it with nothing played.
+                                } @else {
+                                    The night joins the group’s history. Played games, players and attendance can no longer change, but anyone can still record who won.
+                                }
+                            }
+                            @default {
+                                The night stays here for reference, but nobody can answer, mark games or record attendance any more.
+                            }
                         }
                     </p>
-                    <dl class="mt-5 grid grid-cols-3 gap-3">
-                        <div class="rounded-lg bg-bv-surface-2 p-3"><dt class="text-xs text-bv-text-muted">Played</dt><dd class="mt-1 text-xl font-bold">{{ playedGamesCount }}</dd></div>
-                        <div class="rounded-lg bg-bv-surface-2 p-3"><dt class="text-xs text-bv-text-muted">Still shortlisted</dt><dd class="mt-1 text-xl font-bold">{{ remainingPlannedGamesCount }}</dd></div>
-                        <div class="rounded-lg bg-bv-surface-2 p-3"><dt class="text-xs text-bv-text-muted">Skipped</dt><dd class="mt-1 text-xl font-bold">{{ skippedGamesCount }}</dd></div>
-                    </dl>
-                    @if (requestedStatus === 'completed' && remainingPlannedGamesCount > 0) {
+                    @if (requestedStatus !== 'active') {
+                        <dl class="mt-5 grid grid-cols-3 gap-3">
+                            <div class="rounded-lg bg-bv-surface-2 p-3"><dt class="text-xs text-bv-text-muted">Played</dt><dd class="mt-1 text-xl font-bold">{{ playedGamesCount }}</dd></div>
+                            <div class="rounded-lg bg-bv-surface-2 p-3"><dt class="text-xs text-bv-text-muted">Still shortlisted</dt><dd class="mt-1 text-xl font-bold">{{ remainingPlannedGamesCount }}</dd></div>
+                            <div class="rounded-lg bg-bv-surface-2 p-3"><dt class="text-xs text-bv-text-muted">Skipped</dt><dd class="mt-1 text-xl font-bold">{{ skippedGamesCount }}</dd></div>
+                        </dl>
+                    }
+                    @if (requestedStatus === 'completed' && !noGames && remainingPlannedGamesCount > 0) {
                         <p class="mt-4 text-sm text-bv-text-muted">Shortlisted games you didn’t play are not recorded as played.</p>
                     }
-                    <div class="mt-6 flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
+                    <div class="mt-6 flex flex-col-reverse gap-3 sm:flex-row sm:flex-wrap sm:justify-end">
                         <button appButton variant="secondary" type="button" (click)="cancelStatusUpdate()">Keep editing</button>
-                        <button appButton [variant]="requestedStatus === 'completed' ? 'primary' : 'danger'" type="button" [disabled]="isUpdatingStatus" (click)="confirmStatusUpdate()">{{ requestedStatus === 'completed' ? 'Finish game night' : 'Cancel game night' }}</button>
+                        @if (noGames) {
+                            <button appButton variant="danger" type="button" [disabled]="isUpdatingStatus" (click)="confirmStatusUpdate('cancelled')">Cancel game night</button>
+                            <button appButton type="button" [disabled]="isUpdatingStatus" (click)="confirmStatusUpdate()">Finish anyway</button>
+                        } @else {
+                            <button appButton [variant]="requestedStatus === 'cancelled' ? 'danger' : 'primary'" type="button" [disabled]="isUpdatingStatus" (click)="confirmStatusUpdate()">
+                                @switch (requestedStatus) {
+                                    @case ('active') { Start now }
+                                    @case ('completed') { Finish game night }
+                                    @default { Cancel game night }
+                                }
+                            </button>
+                        }
                     </div>
                 </section>
             </div>

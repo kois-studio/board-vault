@@ -1322,7 +1322,7 @@ describe('DatabaseService logging', () => {
 
         expect(transaction.execute).toHaveBeenNthCalledWith(1, {
             sql: expect.stringContaining('SET status = ?'),
-            args: ['completed', true, 12, 'active'],
+            args: ['completed', true, null, 12, 'active'],
         })
         expect(transaction.execute).toHaveBeenNthCalledWith(2, {
             sql: expect.stringContaining("SET gameStatus = 'skipped'"),

@@ -339,6 +339,8 @@ export type ScheduledSessionCreatedType = {
 
 export type UpdateSessionStatusRequest = {
     status: 'active' | 'completed' | 'cancelled'
+    /** Finishing with no game marked as played needs this: the organizer confirmed nothing was played. */
+    noGamesPlayed?: boolean
 }
 
 export type UpdateSessionAttendeesRequest = {
@@ -349,6 +351,8 @@ export type UpdateSessionAttendeesRequest = {
 export type SessionStatusUpdatedType = {
     sessionId: number
     status: MeetType['status']
+    /** Moved to now when a night is started or finished before its date. */
+    sessionDate: string
 }
 
 export type SessionAttendeesUpdatedType = {
