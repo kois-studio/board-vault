@@ -130,23 +130,37 @@
             }
           </h2>
           @if (userHistoryFilteredComputed().length) {
-            <ul class="divide-y divide-bv-border rounded-2xl border border-bv-border">
-              @for (session of userHistoryFilteredComputed().slice(0, 6); track session.meetData.id) {
+            <ul id="game-plays" class="divide-y divide-bv-border rounded-2xl border border-bv-border">
+              @for (session of visiblePlaysComputed(); track session.meetData.id) {
                 <li>
                   <a [routerLink]="['/sessions', session.meetData.id]" class="flex items-center justify-between gap-4 p-4 transition hover:bg-bv-bg">
                     <span class="min-w-0">
                       <span class="block font-semibold">{{ session.meetData.meetDate | customDate: false: session.meetData.timezone }}</span>
                       <span class="block truncate text-sm text-secondary">{{ getGroupName(session.meetData.groupId) }}</span>
                     </span>
-                    <span class="flex shrink-0 -space-x-2">
-                      @for (player of (session.gamePlayed?.playedBy ?? []).slice(0, 5); track player.id) {
-                        <app-image-profile [title]="player.username" class="rounded-full border-2 border-bv-border" [avatar]="player.avatar" />
+                    <span class="flex shrink-0 items-center -space-x-2">
+                      @for (player of session.players.slice(0, 5); track player.key) {
+                        <app-image-profile [title]="player.displayName" class="rounded-full border-2 border-bv-border" [avatar]="player.avatar" />
+                      }
+                      @if (session.players.length > 5) {
+                        <span class="pl-3 text-sm text-secondary">+{{ session.players.length - 5 }}</span>
                       }
                     </span>
                   </a>
                 </li>
               }
             </ul>
+            @if (userHistoryFilteredComputed().length > visiblePlaysComputed().length || showAllPlays()) {
+              <button
+                type="button"
+                class="mt-3 text-sm font-semibold text-bv-primary hover:underline"
+                aria-controls="game-plays"
+                [attr.aria-expanded]="showAllPlays()"
+                (click)="showAllPlays.set(!showAllPlays())"
+              >
+                {{ showAllPlays() ? 'Show the latest only' : 'Show all ' + userHistoryFilteredComputed().length + ' plays' }}
+              </button>
+            }
           } @else {
             <p class="rounded-2xl border border-dashed border-bv-border p-5 text-secondary">You haven't played it in a recorded session yet.</p>
           }

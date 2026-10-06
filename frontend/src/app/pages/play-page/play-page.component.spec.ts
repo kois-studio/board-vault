@@ -60,6 +60,14 @@ describe('PlayPageComponent', () => {
         expect(cards[2]?.textContent).toContain('Last: Friday crew')
     })
 
+    it('calls a game night in progress happening now, not next', async () => {
+        const element = await setup(false, [{ id: 4, groupId: 7, status: 'active', meetDate: '2026-01-01T18:00:00Z', timezone: 'UTC' }])
+        const upcoming = element.querySelector('app-card-section')?.textContent ?? ''
+
+        expect(upcoming).toContain('Happening now: Friday crew')
+        expect(upcoming).not.toContain('Next:')
+    })
+
     it('flags planned sessions whose night has passed', async () => {
         const element = await setup(false, [{ id: 3, groupId: 7, status: 'scheduled', meetDate: '2026-01-01T18:00:00Z', timezone: 'UTC' }])
 

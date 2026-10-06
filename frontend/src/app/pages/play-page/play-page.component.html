@@ -14,7 +14,7 @@
             } @else if (wrapUpCount() > 0) {
                 <p class="min-w-0 text-sm font-medium text-bv-warning">{{ countLabel(wrapUpCount(), 'session') }} waiting for results</p>
             } @else if (nextSession(); as next) {
-                <p class="min-w-0 text-sm text-bv-text-muted wrap-anywhere">Next: {{ getGroupName(next.groupId) }} · {{ relativeDay(next.meetDate) }}</p>
+                <p class="min-w-0 text-sm text-bv-text-muted wrap-anywhere">{{ next.status === 'active' ? 'Happening now' : 'Next' }}: {{ getGroupName(next.groupId) }} · {{ relativeDay(next.meetDate) }}</p>
             } @else {
                 <p class="text-sm text-bv-text-muted">Nothing planned yet.</p>
             }

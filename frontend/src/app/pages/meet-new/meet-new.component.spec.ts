@@ -11,6 +11,13 @@ import { LoadingService } from '../../core/services/loading.service'
 import { MeetNewComponent } from './meet-new.component'
 
 describe('MeetNewComponent social handoff', () => {
+    // The form defaults to today at 19:00; a morning clock keeps that start in the future whenever the tests run.
+    beforeEach(() => {
+        vi.useFakeTimers({ toFake: ['Date'] })
+        vi.setSystemTime(new Date(2026, 9, 6, 10, 0))
+    })
+    afterEach(() => vi.useRealTimers())
+
     const organizer = {
         id: 1,
         displayName: 'Organizer',
@@ -161,6 +168,50 @@ describe('MeetNewComponent social handoff', () => {
 
         expect(component.dateForm.hasError('futureDate')).toBe(true)
         expect(component.canCreate()).toBe(false)
+    })
+
+    it('rejects a start earlier today, and explains how to plan or record it', async () => {
+        vi.setSystemTime(new Date(2026, 9, 6, 20, 15))
+        const { fixture, component } = await setup()
+
+        // Today at 19:00, the default, is already over at 20:15.
+        expect(component.startsInThePast()).toBe(true)
+        expect(component.canCreate()).toBe(false)
+        fixture.detectChanges()
+        const timeInput = fixture.nativeElement.querySelector('#session-time') as HTMLInputElement
+        expect(timeInput.getAttribute('aria-invalid')).toBe('true')
+        expect(fixture.nativeElement.querySelector('#session-date-error').textContent).toContain('That time has already passed today')
+
+        // The current minute still counts, and any later time is fine.
+        component.timeForm.setValue('20:15')
+        expect(component.canCreate()).toBe(true)
+        component.timeForm.setValue('21:00')
+        expect(component.startsInThePast()).toBe(false)
+        expect(component.canCreate()).toBe(true)
+        fixture.detectChanges()
+        expect(fixture.nativeElement.querySelector('#session-date-error').textContent.trim()).toBe('')
+    })
+
+    it('keeps the same evening open on a later day', async () => {
+        vi.setSystemTime(new Date(2026, 9, 6, 20, 15))
+        const { component } = await setup()
+
+        component.pickDate('2026-10-07')
+
+        expect(component.startsInThePast()).toBe(false)
+        expect(component.canCreate()).toBe(true)
+    })
+
+    it('checks the time again when planning, in case it passed while the page was open', async () => {
+        vi.setSystemTime(new Date(2026, 9, 6, 18, 50))
+        const { component, api } = await setup()
+        expect(component.canCreate()).toBe(true)
+
+        vi.setSystemTime(new Date(2026, 9, 6, 19, 5))
+        await component.onClickCreateMeeting()
+
+        expect(api.scheduleSession).not.toHaveBeenCalled()
+        expect(component.startsInThePast()).toBe(true)
     })
 
     it('clears stale planning context when the group disappears during a refresh', async () => {

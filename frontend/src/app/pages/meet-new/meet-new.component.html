@@ -39,7 +39,7 @@
                         </div>
                         <div>
                             <label for="session-time" class="mb-1 block text-sm font-medium">Start time</label>
-                            <input id="session-time" type="time" class="app-input" [formControl]="timeForm" [class.border-bv-danger]="timeForm.invalid && (timeForm.dirty || timeForm.touched)" required />
+                            <input id="session-time" type="time" class="app-input" [formControl]="timeForm" [class.border-bv-danger]="startsInThePast() || (timeForm.invalid && (timeForm.dirty || timeForm.touched))" [attr.aria-invalid]="startsInThePast() || timeForm.invalid" aria-describedby="session-date-error" required />
                         </div>
                         <p class="text-sm text-bv-text-muted sm:pb-2">Your timezone: {{ localTimezone }}</p>
                     </div>
@@ -50,6 +50,8 @@
                             That day has already passed. To add a night you already played, <a class="underline" routerLink="/play/log-session">record a session</a>.
                         } @else if (timeForm.invalid && (timeForm.dirty || timeForm.touched)) {
                             Choose a start time.
+                        } @else if (startsInThePast()) {
+                            That time has already passed today. Pick a later time, or <a class="underline" routerLink="/play/log-session">record the night</a> if it already happened.
                         }
                     </p>
                 </section>

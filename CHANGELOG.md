@@ -123,6 +123,13 @@ operational details.
 ### Fixed
 
 - The session heading no longer reads the time twice to screen readers.
+- A game's page lists its plays newest first, with every night reachable
+  through "Show all", and shows who played on nights recorded with group
+  people. The group page and group settings count people without an account
+  and their games, as Home does. A game night in progress shows as
+  "Happening now" on Home and Play instead of as the next session, and stays
+  listed until it is finished. Planning a game night for a time that has
+  already passed today is refused with an explanation.
 - The header, footer and landing logo load a 6 KB image instead of 75 KB,
   and hashed scripts and styles are cached for a year.
 - Signing out clears every account's data, including search results, the

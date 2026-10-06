@@ -18,6 +18,10 @@ import { SpinnerComponent } from '../../../components/ui/spinner/spinner.compone
 import { WishlistToggleComponent } from '../../../components/wishlist-toggle/wishlist-toggle.component'
 import { CustomDatePipe } from '../../../core/pipes/customDate.pipe'
 import { DataService } from '../../../core/services/data.service'
+import { mergeHistoryParticipants } from '../../../core/utils/historyParticipants'
+
+/** Nights listed before "Show all" on the game page. */
+const PLAYS_SHOWN = 6
 
 @Component({
     imports: [
@@ -73,20 +77,24 @@ export class GameViewPageComponent {
     public readonly gameView$ = signal<GameViewType | null>(null)
     public readonly gameUserReviewComputed = computed(() => this.gameView$()?.ratingData?.userRating ?? 0)
     public readonly isWishlistedComputed = computed(() => !!this.gameView$()?.wishlistedGameData)
+    /** The nights the game in view was played, newest first, each with everyone who played it once. */
     public readonly userHistoryFilteredComputed = computed(() => {
-        const userHistory = this.userHistory$()
-        // take only the meetings where we played the game in view
-        const userHistoryFiltered = userHistory.filter((history) =>
-            history.gamesPlayed.some((game) => game.gameData.id === this.gameView$()?.gameData.id),
-        )
-        // ignore the rest of games -> convert `gamesPlayed` to `gamePlayed`
-        return userHistoryFiltered.map((history) => {
-            return {
-                ...history,
-                gamePlayed: history.gamesPlayed.find((game) => game.gameData.id === this.gameView$()?.gameData.id),
-            }
-        })
+        const gameId = this.gameView$()?.gameData.id
+
+        return this.userHistory$()
+            .flatMap((history) => {
+                const gamePlayed = history.gamesPlayed.find((game) => game.gameData.id === gameId)
+
+                // Accounts and group people, so nights recorded by the session wizard show their players too.
+                return gamePlayed ? [{ ...history, players: mergeHistoryParticipants(gamePlayed.playedBy, gamePlayed.playedByPeople) }] : []
+            })
+            .sort((a, b) => new Date(b.meetData.meetDate).getTime() - new Date(a.meetData.meetDate).getTime())
     })
+    public readonly showAllPlays = signal(false)
+    /** The latest nights, or all of them once asked for. */
+    public readonly visiblePlaysComputed = computed(() =>
+        this.showAllPlays() ? this.userHistoryFilteredComputed() : this.userHistoryFilteredComputed().slice(0, PLAYS_SHOWN),
+    )
 
     // --------------------------------------------------------------------------
     //        Component props

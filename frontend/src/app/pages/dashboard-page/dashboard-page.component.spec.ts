@@ -70,6 +70,20 @@ describe('DashboardPageComponent (Home)', () => {
         expect(fixture.nativeElement.querySelector('a[href="/sessions/2"]')).not.toBeNull()
     })
 
+    it('keeps a game night in progress listed, however long ago it started, and drops planned nights long over', async () => {
+        const fixture = await renderHome({
+            userMeets: signal([
+                // Started two days ago and still running; a planned night two days ago that nobody started.
+                meet(7, 10, -2, 'active'),
+                meet(8, 10, -2),
+                meet(9, 11, 3),
+            ]),
+        })
+
+        expect(fixture.componentInstance.upcomingSessions().map((item) => item.id)).toEqual([7, 9])
+        expect(fixture.nativeElement.querySelector('a[href="/sessions/7"]').textContent).toContain('Happening now')
+    })
+
     it('gives a new account clear next actions when no groups exist', async () => {
         const fixture = await renderHome()
         const text = fixture.nativeElement.textContent
