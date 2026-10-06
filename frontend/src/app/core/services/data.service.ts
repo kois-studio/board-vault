@@ -505,26 +505,14 @@ export class DataService {
                 }))
                 this.toastService.success('Invitation sent')
             }),
-            catchError((error) => {
-                if (error.status === 404) {
-                    this.toastService.error('User not found')
-                } else {
-                    this.toastService.error('Error sending invitation')
-                }
-                return throwError(() => error)
-            }),
+            // Failures are explained inline by the page, which keeps what was typed.
         )
     }
 
     public inviteNewPersonToGroup(groupId: number, emailAddress: string, groupPersonId?: number | null) {
         return this.api.createClerkGroupInvitation(groupId, emailAddress, groupPersonId ?? undefined).pipe(
             tap(() => this.toastService.success('Clerk invitation sent')),
-            catchError((error) => {
-                this.toastService.error(
-                    error.status === 409 ? 'This email already has a pending invitation' : 'Error sending email invitation',
-                )
-                return throwError(() => error)
-            }),
+            // Failures are explained inline by the page, which keeps what was typed.
         )
     }
 
@@ -588,14 +576,7 @@ export class DataService {
                 this._getUserGroups(currentUser.id)
                 this.toastService.success(`You have created the group ${groupName}`)
             }),
-            catchError((error) => {
-                if (error.status === 404) {
-                    this.toastService.error('User not found')
-                } else {
-                    this.toastService.error('Error creating group')
-                }
-                return throwError(() => error)
-            }),
+            // Failures are explained inline by the page, which keeps what was typed.
         )
     }
 

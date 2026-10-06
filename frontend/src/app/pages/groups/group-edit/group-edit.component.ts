@@ -1,3 +1,4 @@
+import { HttpErrorResponse } from '@angular/common/http'
 import { Component, effect, inject, signal } from '@angular/core'
 import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms'
 import { ActivatedRoute, Router, RouterLink } from '@angular/router'
@@ -175,8 +176,12 @@ export class GroupEditComponent {
                 this.dataService.addInvitedToGroup(this.groupData.id, this.usernameToInvite.value, this.selectedClaimPersonId()),
             )
             this.usernameToInvite.reset()
-        } catch {
-            this.existingInvitationError.set('We could not send this invite. Check the username and try again; your entry is still here.')
+        } catch (error) {
+            this.existingInvitationError.set(
+                httpStatus(error) === 404
+                    ? 'No Board Vault account has this username. Check it and try again; your entry is still here.'
+                    : 'We could not send this invite. Check the username and try again; your entry is still here.',
+            )
         } finally {
             this.isLoading.set(false)
         }
@@ -196,9 +201,11 @@ export class GroupEditComponent {
             this.clerkInvitation.set(invitation)
             this.emailToInvite.reset()
             await this.refreshClerkInvitations(this.groupData.id)
-        } catch {
+        } catch (error) {
             this.newPersonInvitationError.set(
-                'We could not send the email invitation. Check the address and try again; your entry is still here.',
+                httpStatus(error) === 409
+                    ? 'This email already has a pending invitation. Find it under Pending invitations, where you can revoke it and send a new one.'
+                    : 'We could not send the email invitation. Check the address and try again; your entry is still here.',
             )
         } finally {
             this.isLoading.set(false)
@@ -313,4 +320,8 @@ export class GroupEditComponent {
             this.isDeletingGroup.set(false)
         }
     }
+}
+
+function httpStatus(error: unknown): number | undefined {
+    return error instanceof HttpErrorResponse ? error.status : undefined
 }

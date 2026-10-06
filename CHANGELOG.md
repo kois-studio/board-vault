@@ -211,6 +211,9 @@ operational details.
   painted, and `/login` and `/register` render without it. With a Clerk key,
   as in production, Lighthouse performance goes from about 76 to 94–96, and
   CI now audits with a (fake) key too.
+- A failed group creation or invitation shows one message, next to the form,
+  instead of the same error again as a toast. Inviting an unknown username or
+  an email with a pending invitation says so.
 
 ### Added
 
