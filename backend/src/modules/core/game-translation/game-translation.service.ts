@@ -151,6 +151,11 @@ export class GameTranslationService {
         const skip = (options.page - 1) * options.pageSize
         const normalizedSearch = this._normalizeTitle(options.search)
 
+        // Punctuation alone normalizes to nothing: a search with no match, not the whole catalogue.
+        if (normalizedSearch === '' && options.search.trim() !== '') {
+            return { gameIds: [], currentPage: options.page, totalPages: 0, totalItems: 0, itemsPerPage: options.pageSize }
+        }
+
         // Step 1: Try to get from cache if it's a simple query
         const cacheKey = `${this.CACHE_KEY}:browseMultiLang:${normalizedSearch}:${options.page}:${options.pageSize}:${options.excludeGameIds.join(',')}`
 

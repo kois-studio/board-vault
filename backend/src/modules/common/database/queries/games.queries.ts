@@ -1,5 +1,7 @@
 import { BadRequestException, NotFoundException } from '@nestjs/common'
 
+import { containsPattern, LIKE_ESCAPE } from '../like-pattern.js'
+
 import type { CatalogueQualityIssue } from '../../../../common/types/admin.type.js'
 import type { SupportedLanguage } from '../../../../common/types/game-translation.type.js'
 import type { BrowseSort, GameLength } from '../../../../common/types/game.type.js'
@@ -307,8 +309,8 @@ export class GameQueries {
 
         if (filters.search) {
             // Any translation matches, so a Spanish title finds the game too.
-            conditions.push('EXISTS (SELECT 1 FROM GameTranslation s WHERE s.gameId = g.id AND s.normalizedTitle LIKE ?)')
-            args.push(`%${filters.search}%`)
+            conditions.push(`EXISTS (SELECT 1 FROM GameTranslation s WHERE s.gameId = g.id AND s.normalizedTitle LIKE ? ${LIKE_ESCAPE})`)
+            args.push(containsPattern(filters.search))
         }
         if (filters.players !== undefined) {
             conditions.push('g.minPlayers <= ? AND g.maxPlayers >= ?')
@@ -340,8 +342,8 @@ export class GameQueries {
 
         // Add search condition if provided
         if (search && search.trim() !== '') {
-            whereConditions.push('normalizedTitle LIKE ?')
-            queryArgs.push(`%${search}%`)
+            whereConditions.push(`normalizedTitle LIKE ? ${LIKE_ESCAPE}`)
+            queryArgs.push(containsPattern(search))
         }
 
         // Add exclusion condition if game IDs to exclude are provided
@@ -380,8 +382,8 @@ export class GameQueries {
 
         // Add search condition if provided
         if (search && search.trim() !== '') {
-            whereConditions.push('normalizedTitle LIKE ?')
-            queryArgs.push(`%${search}%`)
+            whereConditions.push(`normalizedTitle LIKE ? ${LIKE_ESCAPE}`)
+            queryArgs.push(containsPattern(search))
         }
 
         // Add exclusion condition if game IDs to exclude are provided

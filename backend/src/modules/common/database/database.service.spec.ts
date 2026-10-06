@@ -644,7 +644,6 @@ describe('DatabaseService logging', () => {
                 .fn()
                 .mockResolvedValueOnce({ rowsAffected: 1 })
                 .mockResolvedValueOnce({ rowsAffected: 1 })
-                .mockResolvedValueOnce({ rowsAffected: 1 })
                 .mockResolvedValueOnce({ rowsAffected: 1 }),
             commit: vi.fn().mockResolvedValue(undefined),
             rollback: vi.fn().mockResolvedValue(undefined),
@@ -657,16 +656,53 @@ describe('DatabaseService logging', () => {
 
         await expect(service.collection.saveGameReviewAndLogActivity(1, 42, 8)).resolves.toEqual({ success: true })
 
-        expect(transaction.execute).toHaveBeenNthCalledWith(2, {
-            sql: 'INSERT INTO GameReview (accountId, gameId, review) VALUES (?, ?, ?)',
+        expect(transaction.execute).toHaveBeenNthCalledWith(1, {
+            sql: expect.stringContaining('ON CONFLICT (accountId, gameId) DO UPDATE SET review = excluded.review'),
             args: [1, 42, 8],
         })
-        expect(transaction.execute).toHaveBeenNthCalledWith(3, {
+        expect(transaction.execute).toHaveBeenNthCalledWith(2, {
             sql: 'INSERT INTO CollectionActivity (accountId, gameId, actionType, actionDetails) VALUES (?, ?, ?, ?)',
             args: [1, 42, 'rated', '{"rating":8}'],
         })
         expect(transaction.commit).toHaveBeenCalledTimes(1)
         expect(transaction.close).toHaveBeenCalledTimes(1)
+    })
+
+    it('logs no activity when the same rating is saved again', async () => {
+        const service = new DatabaseService({} as ConfigService)
+        const transaction = {
+            execute: vi.fn().mockResolvedValueOnce({ rowsAffected: 0 }),
+            commit: vi.fn().mockResolvedValue(undefined),
+            rollback: vi.fn().mockResolvedValue(undefined),
+            close: vi.fn(),
+        }
+
+        ;(service as unknown as { tursoClient: { transaction: Mock } }).tursoClient = {
+            transaction: vi.fn().mockResolvedValue(transaction),
+        }
+
+        await expect(service.collection.saveGameReviewAndLogActivity(1, 42, 8)).resolves.toEqual({ success: true })
+
+        expect(transaction.execute).toHaveBeenCalledTimes(1)
+        expect(transaction.commit).toHaveBeenCalledTimes(1)
+        expect(transaction.rollback).not.toHaveBeenCalled()
+        expect(transaction.close).toHaveBeenCalledTimes(1)
+    })
+
+    it('counts each group rating once, however many groups its author shares', async () => {
+        const service = new DatabaseService({} as ConfigService)
+        const execute = vi.fn().mockResolvedValue({ rows: [] })
+
+        ;(service as unknown as { tursoClient: { execute: typeof execute } }).tursoClient = { execute }
+
+        await service.collection.getAvgGroupsRating(6, 18)
+
+        const [{ sql, args }] = execute.mock.calls[0]
+
+        expect(sql).toContain('gr.accountId IN (')
+        expect(sql).toContain('SELECT DISTINCT member.accountId')
+        expect(sql).not.toMatch(/JOIN GroupMembership gm2/)
+        expect(args).toEqual([18, 6])
     })
 
     it('rolls back review replacement when rated activity memory fails', async () => {

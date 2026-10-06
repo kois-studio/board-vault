@@ -84,6 +84,7 @@ export class ReviewsService {
 
             // invalidate the cache
             await this.cacheService.deleteOne(`${this.CACHE_KEY}:userReviewsWithGameData:${accountId}`)
+            await this._invalidateAverages(accountId, gameId)
 
             return result
         } catch (error) {
@@ -100,7 +101,37 @@ export class ReviewsService {
             throw new NotFoundException(`Game Review with accountId ${accountId} and gameId ${gameId} not found`)
         }
 
+        await this.cacheService.deleteOne(`${this.CACHE_KEY}:userReviewsWithGameData:${accountId}`)
+        await this._invalidateAverages(accountId, gameId)
+
         return { success: true }
+    }
+
+    /**
+     * Drops the cached averages a review of `gameId` by `accountId` feeds: the global one, and the group
+     * one of everyone sharing a group with the author. The review is already saved, so a failure here is
+     * logged instead of failing the request; the group averages also expire within the hour.
+     */
+    private async _invalidateAverages(accountId: number, gameId: number): Promise<void> {
+        try {
+            const resultSet = await this.databaseService.collection.getAccountIdsSharingAGroupWith(accountId)
+            const accountIds = new Set([accountId, ...resultSet.rows.map(row => Number(row[0]))])
+
+            await Promise.all([
+                this.cacheService.deleteOne(`${this.CACHE_KEY}:avgGlobalRating:${gameId}`),
+                ...[...accountIds].map(id => this.cacheService.deleteOne(this._groupsRatingKey(id, gameId))),
+            ])
+        } catch (error) {
+            this.LOGGER.error(`Rating average invalidation failed (${safeErrorName(error)})`)
+        }
+    }
+
+    /**
+     * Renamed from `avgGroupsRating`, which also counted a review once per shared group, so the
+     * corrected averages never read those cached values; the old keys expire on their own.
+     */
+    private _groupsRatingKey(accountId: number, gameId: number): string {
+        return `${this.CACHE_KEY}:sharedGroupsRating:${accountId}:${gameId}`
     }
 
     async getUserReviews(userId: number): Promise<Array<GameReviewDto>> {
@@ -154,7 +185,7 @@ export class ReviewsService {
         this.LOGGER.log('Getting average group rating for game')
 
         // Step 1: Try to get them from cache
-        const cachedRating = await this.cacheService.get(`${this.CACHE_KEY}:avgGroupsRating:${accountId}:${gameId}`)
+        const cachedRating = await this.cacheService.get(this._groupsRatingKey(accountId, gameId))
 
         if (cachedRating) {
             this.LOGGER.log('Returning cached average group rating')
@@ -168,8 +199,8 @@ export class ReviewsService {
             count: Number(resultSet.rows[0]?.count),
         }
 
-        // Step 3: Save them to cache
-        await this.cacheService.set(`${this.CACHE_KEY}:avgGroupsRating:${accountId}:${gameId}`, avgGroupsRating, 'long')
+        // Step 3: Save them to cache. Short-lived, since it also changes when people join or leave a group.
+        await this.cacheService.set(this._groupsRatingKey(accountId, gameId), avgGroupsRating, 'short')
 
         return avgGroupsRating
     }

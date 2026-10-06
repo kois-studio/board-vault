@@ -1,5 +1,7 @@
 import { BadRequestException, NotFoundException } from '@nestjs/common'
 
+import { containsPattern, LIKE_ESCAPE } from '../like-pattern.js'
+
 import type { ClerkGroupInvitationMetadata } from '../../../../common/types/clerk-invitation.type.js'
 import type { GroupGameInterestBody } from '../../../../common/types/group-game-interest.type.js'
 import type { CreateGroupMembershipBody } from '../../../../common/types/group-membership.type.js'
@@ -331,11 +333,11 @@ export class GroupQueries {
                 LEFT JOIN GameTranslation gt_en ON gt_en.gameId = g.id AND gt_en.languageCode = 'en'
                 LEFT JOIN GameTranslation gt_es ON gt_es.gameId = g.id AND gt_es.languageCode = 'es'
                 WHERE COALESCE(gt_en.title, gt_es.title) IS NOT NULL
-                  AND (? = '' OR lower(COALESCE(gt_en.normalizedTitle, gt_es.normalizedTitle, '')) LIKE ?)
+                  AND (? = '' OR lower(COALESCE(gt_en.normalizedTitle, gt_es.normalizedTitle, '')) LIKE ? ${LIKE_ESCAPE})
                 ORDER BY lower(COALESCE(gt_en.title, gt_es.title)), g.id ASC
                 LIMIT ?
             `,
-            args: [normalizedSearch, `%${normalizedSearch}%`, Math.min(Math.max(limit, 1), 100)],
+            args: [normalizedSearch, containsPattern(normalizedSearch), Math.min(Math.max(limit, 1), 100)],
         })
     }
 
