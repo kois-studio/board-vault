@@ -145,6 +145,12 @@ export class AdminService {
             tagIds: query.tags,
             issue: query.issue,
         }
+
+        // Punctuation alone, such as `%%`, normalizes to nothing: a search with no match, not the whole catalogue.
+        if (filters.search === '' && query.search?.trim()) {
+            return { games: [], pagination: { currentPage: query.page, totalPages: 0, totalItems: 0, itemsPerPage: query.limit } }
+        }
+
         const [page, count] = await Promise.all([
             this.databaseService.games.browseAdminCatalogue({ ...filters, skip: (query.page - 1) * query.limit, take: query.limit }),
             this.databaseService.games.countAdminCatalogue(filters),

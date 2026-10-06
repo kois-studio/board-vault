@@ -146,6 +146,10 @@ describe('admin catalogue (e2e)', () => {
     it('filters by search, players, length, tags and each data problem', async () => {
         expect(await titlesFor({ search: 'cat' })).toEqual(['Catan'])
         expect(await titlesFor({ search: 'edicion' })).toEqual(['Azul'])
+        // `%` and `_` are text, not wildcards; punctuation alone finds nothing.
+        expect(await titlesFor({ search: 'c_t' })).toEqual([])
+        expect(await titlesFor({ search: '__' })).toEqual([])
+        expect(await titlesFor({ search: '%%' })).toEqual([])
         expect(await titlesFor({ players: 3 })).toEqual(['Azul', 'Catan', 'Hanabi'])
         expect(await titlesFor({ issue: 'no-title' })).toEqual([''])
         expect(await titlesFor({ players: 5 })).toEqual([])
