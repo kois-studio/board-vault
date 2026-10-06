@@ -37,21 +37,25 @@ The job fails when the median run of any page drops below:
 | Best practices | 90 |
 | SEO | 90 |
 
-Performance varies from run to run on shared CI machines (92 to 95 across
-the nine audits of the baseline run), so its floor sits under the baseline and
-catches real regressions, such as Clerk or a large library loading before the
-first paint. Treat the scores
-as signals; a passing score does not mean a page is accessible.
+Performance varies from run to run on shared CI machines, so its floor sits
+under the baseline and catches real regressions, such as Clerk or a large
+library loading before the first paint. Treat the scores as signals; a
+passing score does not mean a page is accessible.
 
 ## Baseline (CI, October 2026)
 
-Median of three runs on the GitHub runner:
+Median of three runs on the GitHub runner, with the fake Clerk key (after
+[#92](https://github.com/kois-studio/board-vault/issues/92)):
 
-| Page | Performance | Accessibility | Best practices | SEO |
-| --- | --- | --- | --- | --- |
-| `/` | 95 | 100 | 96 | 100 |
-| `/login` | 95 | 100 | 96 | 100 |
-| `/register` | 92 | 100 | 96 | 100 |
+| Page | Performance | Accessibility | Best practices | SEO | LCP |
+| --- | --- | --- | --- | --- | --- |
+| `/` | 88 | 100 | 96 | 100 | 2.3 s |
+| `/login` | 91 | 100 | 96 | 100 | 2.6 s |
+| `/register` | 89 | 100 | 96 | 100 | 2.8 s |
+
+These are a few points below the earlier no-key baseline (95, 95, 92)
+because the audit now downloads and parses Clerk's bundle after the first
+paint, as production does.
 
 The first audit scored 65 to 76. [#72](https://github.com/kois-studio/board-vault/issues/72)
 raised it by drawing the page before Clerk loads and bundling only the icons
