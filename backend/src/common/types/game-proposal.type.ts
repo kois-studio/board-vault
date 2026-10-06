@@ -1,4 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger'
+import { Transform } from 'class-transformer'
 import { IsIn, IsInt, IsNotEmpty, IsOptional, IsString, MaxLength, Min } from 'class-validator'
 
 import { UserPublicDto } from './user.type.js'
@@ -114,6 +115,8 @@ export class GameProposalDto {
  */
 export class CreateGameProposalBody {
     @ApiProperty({ example: 'Catan', description: 'Game title' })
+    // Trimmed first, so a title of only spaces is empty and rejected.
+    @Transform(({ value }) => (typeof value === 'string' ? value.trim() : value))
     @IsString()
     @IsNotEmpty()
     @MaxLength(200)

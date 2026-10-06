@@ -52,6 +52,17 @@ describe('GroupPeopleService participant boundaries', () => {
         expect(databaseService.getGroupPersonGameCatalog).toHaveBeenCalledWith('catan')
     })
 
+    it('searches the catalog the way titles are stored, and finds nothing for punctuation alone', async () => {
+        const { service, databaseService } = createService()
+
+        await service.getCatalog(7, 12, '  Love Letter ')
+        expect(databaseService.getGroupPersonGameCatalog).toHaveBeenCalledWith('love-letter')
+
+        databaseService.getGroupPersonGameCatalog.mockClear()
+        await expect(service.getCatalog(7, 12, '%%')).resolves.toEqual([])
+        expect(databaseService.getGroupPersonGameCatalog).not.toHaveBeenCalled()
+    })
+
     it('uses the authenticated account email and never trusts claim selections as identity', async () => {
         const { service, databaseService } = createService()
 

@@ -1,6 +1,7 @@
 import { ForbiddenException, Injectable, NotFoundException } from '@nestjs/common'
 
 import { DatabaseService } from '../../common/database/database.service.js'
+import { normalizeTitle } from '../game-translation/normalize-title.js'
 
 import type { GameCompleteDto } from '../../../common/types/game.type.js'
 import type {
@@ -50,7 +51,12 @@ export class GroupPeopleService {
 
     async getCatalog(actorAccountId: number, groupId: number, search = ''): Promise<Array<GameCompleteDto>> {
         await this.assertGroupMember(actorAccountId, groupId)
-        const result = await this.databaseService.groups.getGroupPersonGameCatalog(search)
+        // Stored titles are normalized, so the search is too: "love letter" finds Love Letter.
+        const normalizedSearch = normalizeTitle(search)
+
+        // Punctuation alone normalizes to nothing: a search with no match, not the whole catalogue.
+        if (normalizedSearch === '' && search.trim() !== '') return []
+        const result = await this.databaseService.groups.getGroupPersonGameCatalog(normalizedSearch)
 
         return result.rows.map(row => ({
             id: Number(row[0]),

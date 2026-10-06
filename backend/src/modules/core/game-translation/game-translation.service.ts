@@ -5,6 +5,7 @@ import { CacheService } from '../../common/cache/cache.service.js'
 import { DatabaseService } from '../../common/database/database.service.js'
 
 import { gameTranslationsSchema } from './game-translation.schema.js'
+import { normalizeTitle } from './normalize-title.js'
 
 import type { SuccessDto } from '../../../common/types/auth.type.js'
 import type { GameTranslationDto, SupportedLanguage } from '../../../common/types/game-translation.type.js'
@@ -43,13 +44,7 @@ export class GameTranslationService {
     }
 
     private _normalizeTitle(title: string): string {
-        return title
-            .toLowerCase()
-            .normalize('NFD') // decompose accented characters
-            .replace(/[\u0300-\u036f]/g, '') // remove accent marks
-            .replace(/[^\w\s-]/g, '') // remove all non-alphanumeric except spaces and hyphens
-            .trim() // remove leading/trailing spaces
-            .replace(/\s+/g, '-') // replace spaces with hyphens for better readability
+        return normalizeTitle(title)
     }
 
     normalizeTitle(title: string): string {

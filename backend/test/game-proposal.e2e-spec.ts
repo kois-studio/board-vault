@@ -87,6 +87,17 @@ describe('proposing a game (e2e)', () => {
         return result.rows.map(row => ({ accountId: Number(row.accountId), data: JSON.parse(String(row.data)) as Record<string, unknown> }))
     }
 
+    it('trims the title and refuses one of only spaces', async () => {
+        const send = (title: string) =>
+            request(app.getHttpServer())
+                .post('/profile/users/2/proposals')
+                .set(asProposer)
+                .send({ title, minPlayers: 2, maxPlayers: 4, gameAvgDuration: 30 })
+
+        await send('   ').expect(400)
+        expect((await send('  Hive  ').expect(201)).body.title).toBe('Hive')
+    })
+
     it('tells every active admin once, then puts the approved game on the proposer’s shelf', async () => {
         const proposalId = await propose('Azul', 'shelf')
 
