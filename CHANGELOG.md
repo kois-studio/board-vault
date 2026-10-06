@@ -214,6 +214,15 @@ operational details.
 - A failed group creation or invitation shows one message, next to the form,
   instead of the same error again as a toast. Inviting an unknown username or
   an email with a pending invitation says so.
+- Game nights keep an honest history: starting or finishing a night before
+  its date asks first and moves it to now, and finishing one with no games
+  played asks whether to cancel it instead or finish it anyway.
+- Similar games on a game's page share its tags, the group catalogue search
+  finds "love letter" for "Love-Letter", and a proposal title of only spaces
+  is refused.
+- The admin "Guessed values" filter is gone. No game in the catalogue still
+  had values guessed by old approvals, and the check flagged games whose
+  reviewed values happened to be 60 min or 2–4 players.
 
 ### Added
 

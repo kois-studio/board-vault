@@ -9,7 +9,7 @@ import type { GameLength } from './game.type.js'
 
 const ADMIN_PAGE_SIZE_MAX = 100
 
-export const CATALOGUE_QUALITY_ISSUES = ['no-title', 'no-artwork', 'no-spanish', 'no-tags', 'guessed-values'] as const
+export const CATALOGUE_QUALITY_ISSUES = ['no-title', 'no-artwork', 'no-spanish', 'no-tags'] as const
 export type CatalogueQualityIssue = (typeof CATALOGUE_QUALITY_ISSUES)[number]
 
 export class AdminGamesQuery {
@@ -59,7 +59,7 @@ export class AdminGamesQuery {
     @ApiPropertyOptional({
         enum: CATALOGUE_QUALITY_ISSUES,
         description:
-            'Only games with this data problem: no English title; no artwork; no Spanish title or one equal to the English; no tags; or players or length still equal to the values old approvals guessed (60 min, 2-4 players).',
+            'Only games with this data problem: no English title; no artwork; no Spanish title or one equal to the English; or no tags.',
     })
     @IsOptional()
     @IsIn(CATALOGUE_QUALITY_ISSUES)
@@ -164,9 +164,6 @@ class OverviewCatalogueIssuesDto {
 
     @ApiProperty({ example: 2 })
     'no-tags': number
-
-    @ApiProperty({ example: 1 })
-    'guessed-values': number
 }
 
 class OverviewTagsDto {

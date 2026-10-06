@@ -456,7 +456,7 @@ export type BrowseGamesResultType = {
 }
 
 /** A catalogue data problem, as the admin Games filter names it. */
-export type CatalogueIssue = 'no-title' | 'no-artwork' | 'no-spanish' | 'no-tags' | 'guessed-values'
+export type CatalogueIssue = 'no-title' | 'no-artwork' | 'no-spanish' | 'no-tags'
 
 export type AdminGameType = GameWithTagsAndTranslationsType & {
     /** The English title. */

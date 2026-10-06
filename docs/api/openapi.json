@@ -2655,15 +2655,14 @@
             "name": "issue",
             "required": false,
             "in": "query",
-            "description": "Only games with this data problem: no English title; no artwork; no Spanish title or one equal to the English; no tags; or players or length still equal to the values old approvals guessed (60 min, 2-4 players).",
+            "description": "Only games with this data problem: no English title; no artwork; no Spanish title or one equal to the English; or no tags.",
             "schema": {
               "type": "string",
               "enum": [
                 "no-title",
                 "no-artwork",
                 "no-spanish",
-                "no-tags",
-                "guessed-values"
+                "no-tags"
               ]
             }
           }
@@ -6859,18 +6858,13 @@
           "no-tags": {
             "type": "number",
             "example": 2
-          },
-          "guessed-values": {
-            "type": "number",
-            "example": 1
           }
         },
         "required": [
           "no-title",
           "no-artwork",
           "no-spanish",
-          "no-tags",
-          "guessed-values"
+          "no-tags"
         ]
       },
       "OverviewTagsDto": {
@@ -7107,8 +7101,7 @@
                 "no-title",
                 "no-artwork",
                 "no-spanish",
-                "no-tags",
-                "guessed-values"
+                "no-tags"
               ]
             }
           }

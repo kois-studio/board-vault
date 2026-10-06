@@ -105,7 +105,7 @@ describe('admin catalogue (e2e)', () => {
             ['', ['no-title', 'no-spanish', 'no-tags']],
             ['Azul', []],
             ['Catan', ['no-artwork', 'no-spanish']],
-            ['Hanabi', ['no-spanish', 'no-tags', 'guessed-values']],
+            ['Hanabi', ['no-spanish', 'no-tags']],
         ])
         expect(response.body.games[1]).toEqual(
             expect.objectContaining({
@@ -124,7 +124,7 @@ describe('admin catalogue (e2e)', () => {
 
         expect(response.body).toEqual({
             proposals: { pending: 2, oldestPendingAt: '2026-09-01 10:00:00' },
-            catalogueIssues: { 'no-title': 1, 'no-artwork': 1, 'no-spanish': 3, 'no-tags': 2, 'guessed-values': 1 },
+            catalogueIssues: { 'no-title': 1, 'no-artwork': 1, 'no-spanish': 3, 'no-tags': 2 },
             tags: { unused: 0, emptyCategories: 0 },
             catalogue: {
                 games: 4,
@@ -158,7 +158,6 @@ describe('admin catalogue (e2e)', () => {
         expect(await titlesFor({ issue: 'no-artwork' })).toEqual(['Catan'])
         expect(await titlesFor({ issue: 'no-spanish' })).toEqual(['', 'Catan', 'Hanabi'])
         expect(await titlesFor({ issue: 'no-tags' })).toEqual(['', 'Hanabi'])
-        expect(await titlesFor({ issue: 'guessed-values' })).toEqual(['Hanabi'])
         await request(app.getHttpServer()).get('/admin/games').query({ issue: 'nonsense' }).set(asAdmin).expect(400)
     })
 
@@ -203,8 +202,7 @@ describe('admin catalogue (e2e)', () => {
                 maxPlayers: 5,
                 gameAvgDuration: 25,
                 translations: { en: 'Hanabi', es: 'Hanabi (ES)' },
-                // Two players is still the value old approvals guessed, so it stays listed for a check.
-                issues: ['no-artwork', 'guessed-values'],
+                issues: ['no-artwork'],
             }),
         )
         expect(response.body.tags.map((tag: { id: number }) => tag.id)).toEqual([1, 4])

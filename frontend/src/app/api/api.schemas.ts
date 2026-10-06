@@ -115,7 +115,7 @@ export const adminGameSchema: z.ZodMiniType<AdminGameType> = z.object({
     maxPlayers: z.number(),
     translations: z.object({ en: z.string(), es: z.string() }),
     tags: z.array(z.object({ id: z.number(), name: z.string(), categoryName: z.string() })),
-    issues: z.array(z.enum(['no-title', 'no-artwork', 'no-spanish', 'no-tags', 'guessed-values'])),
+    issues: z.array(z.enum(['no-title', 'no-artwork', 'no-spanish', 'no-tags'])),
 })
 
 export const adminGamesSchema: z.ZodMiniType<AdminGamesResultType> = z.object({
@@ -132,7 +132,6 @@ export const adminOverviewSchema: z.ZodMiniType<AdminOverviewType> = z.object({
         'no-artwork': z.number(),
         'no-spanish': z.number(),
         'no-tags': z.number(),
-        'guessed-values': z.number(),
     }),
     tags: z.object({ unused: z.number(), emptyCategories: z.number() }),
     catalogue: z.object({

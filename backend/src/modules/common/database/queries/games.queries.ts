@@ -28,10 +28,7 @@ const CATALOGUE_LENGTH: Record<GameLength, string> = {
     epic: 'g.gameAvgDuration > 120',
 }
 
-/**
- * Catalogue data problems, as SQL over `Game g`. The guessed-values check finds games approved
- * before #86, when a proposal without players or length got 60 min and 2-4 players.
- */
+/** Catalogue data problems, as SQL over `Game g`. */
 export const CATALOGUE_QUALITY: Record<CatalogueQualityIssue, string> = {
     'no-title': "NOT EXISTS (SELECT 1 FROM GameTranslation en WHERE en.gameId = g.id AND en.languageCode = 'en')",
     'no-artwork': "g.imageUrl = ''",
@@ -41,13 +38,6 @@ export const CATALOGUE_QUALITY: Record<CatalogueQualityIssue, string> = {
           AND es.title <> COALESCE((SELECT en.title FROM GameTranslation en WHERE en.gameId = g.id AND en.languageCode = 'en'), '')
     )`,
     'no-tags': 'NOT EXISTS (SELECT 1 FROM GameTag gt WHERE gt.gameId = g.id)',
-    'guessed-values': `EXISTS (
-        SELECT 1 FROM GameProposal p
-        WHERE p.createdGameId = g.id
-          AND ((p.gameAvgDuration IS NULL AND g.gameAvgDuration = 60)
-            OR (p.minPlayers IS NULL AND g.minPlayers = 2)
-            OR (p.maxPlayers IS NULL AND g.maxPlayers = 4))
-    )`,
 }
 
 const CATALOGUE_ORDER: Record<BrowseSort, string> = {

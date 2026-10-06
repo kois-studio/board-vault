@@ -25,11 +25,6 @@ export const CATALOGUE_ISSUES: Array<{ value: CatalogueIssue; label: string; hin
         hint: 'No Spanish title, or the same as the English one. Some games do keep their name.',
     },
     { value: 'no-tags', label: 'No tags', hint: 'Without tags the game is missing from tag filters and suggestions.' },
-    {
-        value: 'guessed-values',
-        label: 'Guessed values',
-        hint: 'Approved before review existed, with 60 min or 2–4 players guessed. A correct guess stays listed.',
-    },
 ]
 
 /** The admin catalogue: every game, searchable and filterable by Browse's filters and by data problem. */
