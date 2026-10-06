@@ -1,6 +1,7 @@
 import { BadRequestException, ConflictException, ForbiddenException, Injectable, NotFoundException } from '@nestjs/common'
 
 import { mapMeetDetailsResult } from '../../../common/mappers/meet-details.mapper.js'
+import { parseStoredDate, toIsoDate } from '../../../common/utils/stored-date.js'
 import { DatabaseService } from '../../common/database/database.service.js'
 
 import type { MeetWithAttendeesAndGames } from '../../../common/types/meet.type.js'
@@ -244,9 +245,9 @@ export class SessionsService {
         }
 
         // A night started or finished before its date was played now, so History keeps it in order (#94).
-        const sessionDate = String(sessionRow[3])
+        const sessionDate = toIsoDate(String(sessionRow[3]))
         const now = new Date()
-        const movedDate = body.status !== 'cancelled' && Date.parse(sessionDate) > now.getTime() ? now.toISOString() : undefined
+        const movedDate = body.status !== 'cancelled' && parseStoredDate(sessionDate) > now.getTime() ? now.toISOString() : undefined
 
         const result = await this.databaseService.sessions.updateMeetStatus(sessionId, currentStatus, body.status, movedDate)
 

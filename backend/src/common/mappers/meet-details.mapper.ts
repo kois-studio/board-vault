@@ -1,3 +1,5 @@
+import { toIsoDate } from '../utils/stored-date.js'
+
 import type { GameDto } from '../types/game.type.js'
 import type { MeetWithAttendeesAndGames } from '../types/meet.type.js'
 import type { UserGetDto } from '../types/user.type.js'
@@ -12,7 +14,7 @@ export function mapMeetDetailsResult(resultSet: ResultSet): MeetWithAttendeesAnd
         id: Number(row[0]),
         groupId: Number(row[1]),
         createdBy: Number(row[2]),
-        meetDate: String(row[3]),
+        meetDate: toIsoDate(String(row[3])),
         isConfirmed: Boolean(row[4]),
         attendees: JSON.parse(String(row[5])) as Array<UserGetDto['id']>,
         attendeeStatuses: JSON.parse(String(row[6])) as MeetWithAttendeesAndGames['attendeeStatuses'],

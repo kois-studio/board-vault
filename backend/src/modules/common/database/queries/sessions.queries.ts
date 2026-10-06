@@ -761,7 +761,7 @@ export class SessionQueries {
                           WHERE mpg.meetId = m.id AND gp.accountId = ?
                       )
                   )
-                ORDER BY m.meetDate DESC, m.id DESC
+                ORDER BY datetime(m.meetDate) DESC, m.id DESC
             `,
             args: [accountId, accountId, accountId, accountId, accountId],
         })

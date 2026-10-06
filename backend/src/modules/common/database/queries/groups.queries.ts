@@ -689,7 +689,7 @@ export class GroupQueries {
             }),
             this.database.execute({
                 sql: `
-                    SELECT ${gameColumns}, COUNT(*) AS sessions, MAX(m.meetDate) AS lastPlayedAt
+                    SELECT ${gameColumns}, COUNT(*) AS sessions, MAX(datetime(m.meetDate)) AS lastPlayedAt
                     FROM MeetGame mg
                     JOIN Meet m ON m.id = mg.meetId AND m.groupId = ? AND m.status = 'completed'
                     JOIN Game g ON g.id = mg.gameId
