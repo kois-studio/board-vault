@@ -4,6 +4,7 @@ import { AuthOnlyGuard, SHOWS_AUTH_HANDOFF } from './core/guards/auth.guard'
 import { GuestOnlyGuard } from './core/guards/auth-redirect.guard'
 import { LayoutBasicComponent } from './layout/layout-basic/layout-basic.component'
 import { LayoutCompleteComponent } from './layout/layout-complete/layout-complete.component'
+import { LandingComponent } from './pages/landing/landing.component'
 
 /**
  * Which route uses LayoutBasicComponent and which uses LayoutCompleteComponent?
@@ -30,8 +31,9 @@ export const routes: Routes = [
                 loadChildren: () => import('./modules/admin/admin.routes').then((r) => r.ADMIN_ROUTES),
                 canActivate: [AdminGuard],
             },
-            // accessible to everyone
-            { path: '', loadComponent: () => import('./pages/landing/landing.component').then((m) => m.LandingComponent) }, // cannot move it to routes[n>0] unless routes[0].path !== ''
+            // accessible to everyone. Bundled with the app, not lazy: it is the first page most visitors see, and
+            // a separate chunk costs a round trip before its largest paint (#92). Its samples are still deferred.
+            { path: '', component: LandingComponent }, // cannot move it to routes[n>0] unless routes[0].path !== ''
             // accessible to unauthenticated users
             {
                 path: 'login',

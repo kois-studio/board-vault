@@ -207,6 +207,10 @@ operational details.
   same rating again no longer repeats it in Recent Activity. Title searches
   read `%` and `_` as plain characters, so `__` or `%%` no longer list the
   whole catalogue.
+- Public pages no longer wait for Clerk: it loads after the first page has
+  painted, and `/login` and `/register` render without it. With a Clerk key,
+  as in production, Lighthouse performance goes from about 76 to 94–96, and
+  CI now audits with a (fake) key too.
 
 ### Added
 

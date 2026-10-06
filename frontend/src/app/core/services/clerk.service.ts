@@ -1,5 +1,7 @@
 import { computed, Injectable, signal } from '@angular/core'
+import { NavigationCancel, NavigationEnd, NavigationError, Router } from '@angular/router'
 import type { Clerk } from '@clerk/clerk-js'
+import { filter, firstValueFrom } from 'rxjs'
 
 type ClerkLoadOptions = NonNullable<Parameters<Clerk['load']>[0]>
 type ClerkUiConstructor = NonNullable<ClerkLoadOptions['ui']>['ClerkUI']
@@ -28,19 +30,20 @@ export class ClerkService {
     public readonly isSignedIn = signal(false)
     public readonly userId = signal<string | null>(null)
 
-    private loaded: Promise<void> = Promise.resolve()
+    private loaded: Promise<void> | null = null
 
     /**
-     * Starts loading Clerk. Pages render meanwhile; anything that needs the
-     * session (route guards, API tokens) waits for whenLoaded().
+     * Starts loading Clerk once the first page has painted, so public pages
+     * never wait for it (#92). Anything that needs the session sooner (route
+     * guards, API tokens) starts it through whenLoaded().
      */
-    public initialize(): Promise<void> {
-        this.loaded = this.load()
-        return this.loaded
+    public initialize(firstPagePainted: Promise<void>): void {
+        void firstPagePainted.then(() => this.whenLoaded())
     }
 
-    /** Resolves once Clerk has loaded, or failed to; it never rejects. */
+    /** Starts loading Clerk if nothing has yet. Resolves once it has loaded, or failed to; it never rejects. */
     public whenLoaded(): Promise<void> {
+        this.loaded ??= this.load()
         return this.loaded
     }
 
@@ -54,8 +57,6 @@ export class ClerkService {
         }
 
         try {
-            // Let the first page paint before downloading and parsing Clerk.
-            await afterFirstPaint()
             const { Clerk: ClerkConstructor } = await import('@clerk/clerk-js')
             const clerkUiCtor = await this.loadClerkUiScript()
             const clerk = new ClerkConstructor(environment.clerkPublishableKey)
@@ -76,7 +77,7 @@ export class ClerkService {
     }
 
     public async getToken(): Promise<string | null> {
-        await this.loaded
+        await this.whenLoaded()
         return (await this.clerk?.session?.getToken()) ?? null
     }
 
@@ -226,9 +227,21 @@ export class ClerkService {
     }
 }
 
-/** Resolves when the browser is idle after rendering, or after a second at most. */
-function afterFirstPaint(): Promise<void> {
-    return new Promise((resolve) => {
+/**
+ * Resolves after the first navigation settles and its page has painted. Clerk is about 500 KB:
+ * requested any earlier, it competes with the page and Lighthouse counts it against the
+ * largest contentful paint.
+ */
+export async function afterFirstPagePaint(router: Router): Promise<void> {
+    await firstValueFrom(
+        router.events.pipe(
+            filter((event) => event instanceof NavigationEnd || event instanceof NavigationCancel || event instanceof NavigationError),
+        ),
+    )
+    // The routed page renders in this task and paints on the next frame. Two frames later that paint has
+    // been presented; then wait for the browser to be idle, a second at most.
+    await new Promise<void>((resolve) => requestAnimationFrame(() => requestAnimationFrame(() => resolve())))
+    await new Promise<void>((resolve) => {
         if (typeof requestIdleCallback === 'function') requestIdleCallback(() => resolve(), { timeout: 1000 })
         else setTimeout(resolve, 0)
     })

@@ -1,4 +1,6 @@
 // Serves the production build for the Lighthouse audit like Vercel does: gzip, and index.html for app routes.
+// It also serves a runtime config with a Clerk key, as production has (#92), so the audit downloads and
+// runs Clerk's bundle. The key is fake: its frontend API is on `.invalid`, so Clerk's next request fails at once.
 import { createReadStream, existsSync, statSync } from 'node:fs'
 import { createServer } from 'node:http'
 import { extname, join, normalize, resolve } from 'node:path'
@@ -20,6 +22,11 @@ const types = {
     '.woff2': 'font/woff2',
 }
 
+const runtimeConfig = `globalThis.__BOARD_VAULT_RUNTIME_CONFIG__ = ${JSON.stringify({
+    clerkPublishableKey: `pk_test_${Buffer.from('clerk.board-vault.invalid$').toString('base64')}`,
+    selfRegistrationEnabled: false,
+})};\n`
+
 if (!existsSync(join(root, 'index.html'))) {
     console.error(`serve-dist: no build in ${root}; run the frontend build first.`)
     process.exit(1)
@@ -27,6 +34,11 @@ if (!existsSync(join(root, 'index.html'))) {
 
 createServer((request, response) => {
     const path = normalize(decodeURIComponent(new URL(request.url ?? '/', 'http://localhost').pathname))
+    if (path === '/runtime-config.js') {
+        response.writeHead(200, { 'Content-Type': 'text/javascript' })
+        response.end(runtimeConfig)
+        return
+    }
     const candidate = join(root, path)
     const file = candidate.startsWith(root) && existsSync(candidate) && statSync(candidate).isFile() ? candidate : join(root, 'index.html')
 

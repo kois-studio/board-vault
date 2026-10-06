@@ -10,11 +10,16 @@ so a release is always audited. The configuration is
 - `/` (landing), `/login` and `/register`, three runs each, on Lighthouse's
   default mobile profile. The build is served by
   [`frontend/scripts/serve-dist.mjs`](../../frontend/scripts/serve-dist.mjs)
-  with gzip and the app-route fallback, as Vercel does.
+  with gzip and the app-route fallback, as Vercel does. It also serves a
+  runtime config with a Clerk publishable key, as production has, so the
+  audit downloads and runs Clerk's bundle. The key is fake: its frontend API
+  is on `.invalid`, so Clerk's next request fails at once and no Clerk
+  instance is contacted.
 - `is-crawlable` is skipped: the private beta asks search engines not to index
   it on purpose.
-- CI builds have no Clerk key, so the "errors in console" check fails there
-  and costs a few best-practice points. Production does not have that error.
+- With the fake key Clerk cannot finish loading, so the "errors in console"
+  check fails and costs a few best-practice points. Production does not have
+  that error.
 
 Signed-in pages are not in Lighthouse because CI has no account. Their
 accessibility checks run with Playwright against the development Clerk
@@ -50,7 +55,13 @@ Median of three runs on the GitHub runner:
 
 The first audit scored 65 to 76. [#72](https://github.com/kois-studio/board-vault/issues/72)
 raised it by drawing the page before Clerk loads and bundling only the icons
-in use.
+in use. That baseline was measured without a Clerk key, and with one the
+pages still scored about 76: Clerk was requested before the page's largest
+paint, and `/login` and `/register` waited for it.
+[#92](https://github.com/kois-studio/board-vault/issues/92) starts Clerk
+after the first page has painted, stops `GuestOnlyGuard` waiting for it, and
+bundles the landing page with the app. Locally, with a key, that gives 94 to
+96 on all three pages and a landing LCP of 2.4 s, the same as without a key.
 
 ## Read a report
 
@@ -63,12 +74,13 @@ page.
 From `frontend/`, with Chrome installed:
 
 ```sh
-CLERK_PUBLISHABLE_KEY= bun run build
+bun run build
 bunx @lhci/cli@0.15.1 autorun --collect.numberOfRuns=1
 ```
 
-Leaving the key empty matches CI. Lighthouse uses a lot of CPU; one run per
-page is enough to check a change.
+`serve-dist.mjs` serves its own fake Clerk key whatever key the build has,
+so a local run matches CI. Lighthouse uses a lot of CPU; one run per page is
+enough to check a change.
 
 Don't lower a threshold to make a failure go away. Fix the regression, or
 record why the new baseline is expected and agree it in the issue.
