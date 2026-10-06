@@ -7664,6 +7664,7 @@
             "$ref": "#/components/schemas/GameViewRatingDto"
           },
           "similarGames": {
+            "description": "Up to four games sharing the most tags with this one; empty when none shares a tag.",
             "type": "array",
             "items": {
               "$ref": "#/components/schemas/GameCompleteDto"

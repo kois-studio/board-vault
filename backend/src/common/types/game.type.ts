@@ -201,6 +201,9 @@ export class GameViewDto {
     @ApiProperty({ type: GameViewRatingDto })
     ratingData: GameViewRatingDto
 
-    @ApiProperty({ type: [GameCompleteDto] })
+    @ApiProperty({
+        type: [GameCompleteDto],
+        description: 'Up to four games sharing the most tags with this one; empty when none shares a tag.',
+    })
     similarGames: Array<GameCompleteDto>
 }

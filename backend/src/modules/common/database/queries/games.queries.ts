@@ -472,6 +472,22 @@ export class GameQueries {
         })
     }
 
+    /** Up to `limit` other games, most tags in common with this one first; games sharing no tag are left out. */
+    getSimilarGameIds(gameId: number, limit: number) {
+        return this.database.execute({
+            sql: `
+                SELECT other.gameId
+                FROM GameTag mine
+                JOIN GameTag other ON other.tagId = mine.tagId AND other.gameId <> mine.gameId
+                WHERE mine.gameId = ?
+                GROUP BY other.gameId
+                ORDER BY COUNT(*) DESC, other.gameId
+                LIMIT ?
+            `,
+            args: [gameId, limit],
+        })
+    }
+
     getGameTags(gameId: number) {
         return this.database.execute({
             sql: `

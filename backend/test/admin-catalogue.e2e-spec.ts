@@ -162,6 +162,18 @@ describe('admin catalogue (e2e)', () => {
         await request(app.getHttpServer()).get('/admin/games').query({ issue: 'nonsense' }).set(asAdmin).expect(400)
     })
 
+    it('suggests games that share tags as similar, and none for a game without tags', async () => {
+        const similarTo = async (gameId: number) => {
+            const response = await request(app.getHttpServer()).get(`/collection/users/2/games/${gameId}`).set(asPlayer).expect(200)
+
+            return response.body.similarGames.map((game: { id: number }) => game.id)
+        }
+
+        expect(await similarTo(1)).toEqual([2])
+        expect(await similarTo(2)).toEqual([1])
+        expect(await similarTo(3)).toEqual([])
+    })
+
     it('keeps the catalogue admin-only', async () => {
         await request(app.getHttpServer()).get('/admin/games').set(asPlayer).expect(403)
         await request(app.getHttpServer()).patch('/admin/games/1').set(asPlayer).send({ minPlayers: 1 }).expect(403)

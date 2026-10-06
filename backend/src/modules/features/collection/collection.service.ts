@@ -105,15 +105,9 @@ export class CollectionService {
         const avgGroupsRating = await this.reviewsService.getAvgGroupsRating(userId, gameId)
         const avgGlobalRating = await this.reviewsService.getAvgGlobalRating(gameId)
 
-        // Get similar games
-        const similarGames = (
-            await Promise.all([
-                this.gamesService.getSafeGameById(gameId + 2),
-                this.gamesService.getSafeGameById(gameId + 1),
-                this.gamesService.getSafeGameById(gameId - 1),
-                this.gamesService.getSafeGameById(gameId - 2),
-            ])
-        ).filter(Boolean)
+        // Similar games: the ones sharing the most tags with this one
+        const similarGameIds = await this.gamesService.getSimilarGameIds(gameId)
+        const similarGames = await Promise.all(similarGameIds.map(id => this.gamesService.getSafeGameById(id)))
         const similarGamesFiltered = similarGames.filter(Boolean) as Array<GameDto>
 
         // Tags

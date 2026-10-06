@@ -110,6 +110,13 @@ export class GamesService {
         return game
     }
 
+    /** The ids of up to four games sharing the most tags with this one. */
+    async getSimilarGameIds(gameId: number): Promise<Array<number>> {
+        const resultSet = await this.databaseService.games.getSimilarGameIds(gameId, 4)
+
+        return resultSet.rows.map(row => Number(row[0]))
+    }
+
     async getSafeGameById(id: number): Promise<null | GameDto> {
         try {
             return await this.getGameById(id)
