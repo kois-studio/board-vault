@@ -276,7 +276,8 @@ operational details.
   Dune: Imperium – Uprising) have new images from their publishers or a
   shop, The Grimwood shows the placeholder until a source is found, and the
   BoardGameGeek copies were replaced. No page loads artwork
-  from another site any more.
+  from another site any more, and the 18 images kept in
+  `frontend/public/images/games` are gone.
 
 ## 0.1.0-beta.1 — public development baseline
 
