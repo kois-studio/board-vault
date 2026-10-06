@@ -13,6 +13,7 @@ import { CustomDatePipe } from '../../core/pipes/customDate.pipe'
 import { DataService } from '../../core/services/data.service'
 import { LoadingService } from '../../core/services/loading.service'
 import { mergeHistoryParticipants } from '../../core/utils/historyParticipants'
+import { upcomingState } from '../../core/utils/sessionTiming'
 
 /**
  * Home: the signed-in starting point. Groups live here (there is no separate
@@ -60,15 +61,17 @@ export class DashboardPageComponent {
         return this.groupNames().get(groupId) ?? 'Your group'
     }
 
-    /** The next three planned or running sessions across every group. */
-    public readonly upcomingSessions = computed(() => {
-        const now = Date.now() - 6 * 60 * 60 * 1000 // keep tonight's session visible for a few hours
-        return this.dataService
+    /** The next three running or planned game nights across every group, by date (the same rule as Play and Upcoming). */
+    public readonly upcomingSessions = computed(() =>
+        this.dataService
             .userMeets()
-            .filter((meet) => (meet.status === 'scheduled' || meet.status === 'active') && new Date(meet.meetDate).getTime() >= now)
+            .filter((meet) => {
+                const state = upcomingState(meet)
+                return state === 'live' || state === 'planned'
+            })
             .sort((a, b) => new Date(a.meetDate).getTime() - new Date(b.meetDate).getTime())
-            .slice(0, 3)
-    })
+            .slice(0, 3),
+    )
 
     /** The last three sessions you played, newest first. */
     public readonly recentlyPlayed = computed(() =>

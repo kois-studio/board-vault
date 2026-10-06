@@ -23,6 +23,11 @@ export type PlanGame = { game: GameCompleteType; title: string; owners: Array<st
 
 const DAY_MS = 24 * 60 * 60 * 1000
 
+/** The chosen day and time as one instant, in the browser's timezone; NaN until both are set. */
+function startTime(date: string | null, time: string | null): number {
+    return date && time ? new Date(`${date}T${time}`).getTime() : Number.NaN
+}
+
 /** YYYY-MM-DD in the browser's timezone. */
 function localDate(date: Date): string {
     const offset = date.getTimezoneOffset() * 60 * 1000
@@ -70,6 +75,14 @@ export class MeetNewComponent {
     public readonly timeForm = new FormControl('19:00', [Validators.required])
     private readonly dateValue = toSignal(this.dateForm.valueChanges, { initialValue: this.dateForm.value })
     private readonly timeValue = toSignal(this.timeForm.valueChanges, { initialValue: this.timeForm.value })
+    /** Set again on "Plan game night", so a time that passed while the page was open is caught then. */
+    private readonly checkedAt = signal(Date.now())
+    /** A start earlier than the current minute: that night is today but already under way or over. */
+    public readonly startsInThePast = computed(() => {
+        const now = Math.max(this.checkedAt(), Date.now())
+
+        return startTime(this.dateValue(), this.timeValue()) < Math.floor(now / 60_000) * 60_000
+    })
 
     public readonly groupPeople = signal<Array<GroupPersonWorkspaceType>>([])
     private readonly personCatalog = signal<Array<GameCompleteType>>([])
@@ -176,6 +189,7 @@ export class MeetNewComponent {
             Boolean(this.dateValue()) &&
             Boolean(this.timeValue()) &&
             (this.dateValue() ?? '') >= this.today &&
+            !this.startsInThePast() &&
             this.selectedAttendeeIds().length > 0,
     )
 
@@ -259,6 +273,7 @@ export class MeetNewComponent {
             this.timeForm.markAsTouched()
             return
         }
+        this.checkedAt.set(Date.now())
         if (!this.canCreate()) return
 
         this.isCreating.set(true)

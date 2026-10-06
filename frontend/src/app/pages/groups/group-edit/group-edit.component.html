@@ -43,12 +43,12 @@
             <section class="mt-6 grid grid-cols-1 gap-3 sm:grid-cols-3" aria-label="Group summary">
                 <article class="rounded-2xl border border-bv-border bg-bv-surface p-5">
                     <p class="text-sm text-secondary">People in the group</p>
-                    <p class="mt-2 text-3xl font-bold text-bv-text">{{ groupData.members.length }}</p>
+                    <p class="mt-2 text-3xl font-bold text-bv-text">{{ peopleCount }}</p>
                     <p class="mt-1 text-xs text-secondary">The friends who shape group decisions</p>
                 </article>
                 <article class="rounded-2xl border border-bv-border bg-bv-surface p-5">
                     <p class="text-sm text-secondary">Games available</p>
-                    <p class="mt-2 text-3xl font-bold text-bv-text">{{ totalGames.length }}</p>
+                    <p class="mt-2 text-3xl font-bold text-bv-text">{{ gameCount }}</p>
                     <p class="mt-1 text-xs text-secondary">The shared shelf for recommendations</p>
                 </article>
                 <article class="rounded-2xl border border-bv-border bg-bv-surface p-5">
@@ -212,8 +212,8 @@
 
             <section class="mt-8 rounded-3xl border border-bv-primary/30 bg-bv-primary-soft p-6" aria-labelledby="shared-context-heading">
                 <p class="text-sm font-semibold uppercase tracking-[0.18em] text-bv-primary">Shared context</p>
-                <h2 id="shared-context-heading" class="mt-1 text-2xl font-bold text-bv-text">{{ totalGames.length }} games are currently available to this group</h2>
-                <p class="mt-2 max-w-2xl text-secondary">The shared shelf comes from what members own. It is the foundation for recommendations and session planning—not a public catalog.</p>
+                <h2 id="shared-context-heading" class="mt-1 text-2xl font-bold text-bv-text">{{ gameCount }} games are currently available to this group</h2>
+                <p class="mt-2 max-w-2xl text-secondary">The shared shelf comes from what everyone in the group owns, with or without an account. It is the foundation for recommendations and session planning—not a public catalog.</p>
                 <a appButton variant="secondary" class="mt-5" [routerLink]="['/groups', groupData.id]" fragment="library">Open the shared library</a>
             </section>
 

@@ -4,7 +4,7 @@ import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms'
 import { ActivatedRoute, Router, RouterLink } from '@angular/router'
 import { firstValueFrom } from 'rxjs'
 import { Api } from '../../../api/api'
-import { ClerkGroupInvitationSummaryType, ClerkGroupInvitationType, GameType, GroupPersonWorkspaceType } from '../../../api/api.types'
+import { ClerkGroupInvitationSummaryType, ClerkGroupInvitationType, GroupPersonWorkspaceType } from '../../../api/api.types'
 import { CardAccountComponent } from '../../../components/card-account/card-account.component'
 import { ImageProfileComponent } from '../../../components/image-profile/image-profile.component'
 import { ToastService } from '../../../components/toast/toast.service'
@@ -15,6 +15,7 @@ import { LOADING_KEYS } from '../../../core/enums/loading-keys-enum'
 import { CustomDatePipe } from '../../../core/pipes/customDate.pipe'
 import { DataService } from '../../../core/services/data.service'
 import { LoadingService } from '../../../core/services/loading.service'
+import { groupGameCount, groupPeopleCount } from '../../../core/utils/groupCounts'
 
 @Component({
     imports: [
@@ -141,21 +142,14 @@ export class GroupEditComponent {
         void this.onInviteNewPerson()
     }
 
-    get totalGames(): Array<GameType> {
-        if (!this.groupData) {
-            return []
-        }
+    /** Members plus people without an account, as on Home and the group page. */
+    get peopleCount(): number {
+        return this.groupData ? groupPeopleCount(this.groupData) : 0
+    }
 
-        // index all games by gameId so we don't duplicate games
-        const games: Record<GameType['id'], GameType> = {}
-
-        for (const member of this.groupData.members) {
-            for (const game of member.games) {
-                games[game.id] = game
-            }
-        }
-
-        return Object.values(games)
+    /** Distinct games anyone in the group owns, members or people without an account. */
+    get gameCount(): number {
+        return this.groupData ? groupGameCount(this.groupData) : 0
     }
 
     markAsToRemove(accountId: number) {

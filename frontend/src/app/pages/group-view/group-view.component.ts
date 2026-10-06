@@ -31,6 +31,7 @@ import { DataService } from '../../core/services/data.service'
 import { LoadingService } from '../../core/services/loading.service'
 import { LocalStorageService } from '../../core/services/local-storage.service'
 import { formatAttendeeSummary } from '../../core/utils/formatAttendeeSummary'
+import { groupGameCount, groupPeopleCount } from '../../core/utils/groupCounts'
 import { formatWinners, historyWinnerNames, mergeHistoryParticipants } from '../../core/utils/historyParticipants'
 import { GroupViewService } from './group-view.service'
 
@@ -103,6 +104,9 @@ export class GroupViewComponent {
     public readonly isRecalculatingReviews$ = this.groupViewService.isRecalculatingReviews
     public readonly avgReviewsIndexComputed = this.groupViewService.avgReviewsIndexComputed
     public readonly totalUniqueGamesComputed = this.groupViewService.totalUniqueGamesComputed
+    // Group pulse: everyone in the group, with or without an account, as on Home.
+    public readonly groupPeopleCount = groupPeopleCount
+    public readonly groupGameCount = groupGameCount
 
     // --------------------------------------------------------------------------
     //        Component props

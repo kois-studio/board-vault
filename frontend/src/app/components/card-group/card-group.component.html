@@ -15,11 +15,16 @@
     <div class="space-y-5 p-5">
         <section aria-label="Group activity" class="grid grid-cols-1 gap-3 sm:grid-cols-2">
             <div class="rounded-xl bg-bv-primary-soft p-4">
-                <p class="text-xs font-semibold uppercase tracking-wide text-bv-primary">Next session</p>
-                @if (nextMeetingComputed(); as nextMeeting) {
+                @if (liveMeetingComputed(); as liveMeeting) {
+                    <p class="text-xs font-semibold uppercase tracking-wide text-bv-success">Happening now</p>
+                    <p class="mt-2 font-semibold">{{ liveMeeting.meetDate | customDate: true: liveMeeting.timezone }}</p>
+                    <a [routerLink]="['/sessions', liveMeeting.id]" class="mt-1 inline-block text-sm text-bv-primary underline hover:no-underline">Open game night</a>
+                } @else if (nextMeetingComputed(); as nextMeeting) {
+                    <p class="text-xs font-semibold uppercase tracking-wide text-bv-primary">Next session</p>
                     <p class="mt-2 font-semibold">{{ nextMeeting.meetDate | customDate: true: nextMeeting.timezone }}</p>
                     <a [routerLink]="['/sessions', nextMeeting.id]" class="mt-1 inline-block text-sm text-bv-primary underline hover:no-underline">Open plan</a>
                 } @else {
+                    <p class="text-xs font-semibold uppercase tracking-wide text-bv-primary">Next session</p>
                     <p class="mt-2 font-semibold">Nothing planned yet</p>
                     <a [routerLink]="['/groups', group().id, 'sessions', 'new']" class="mt-1 inline-block text-sm text-bv-primary underline hover:no-underline">Plan a game night</a>
                 }

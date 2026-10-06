@@ -7,6 +7,18 @@ import { CardGroupComponent } from './card-group.component'
 
 describe('CardGroupComponent social entry surface', () => {
     let fixture: ComponentFixture<CardGroupComponent>
+    const meet = (overrides: Partial<MeetType>): MeetType => ({
+        id: 21,
+        groupId: 7,
+        createdBy: 1,
+        meetDate: '2026-09-12T18:00:00.000Z',
+        isConfirmed: true,
+        status: 'scheduled',
+        timezone: 'Europe/Madrid',
+        notes: null,
+        ...overrides,
+    })
+    const userMeets = signal<Array<MeetType>>([])
 
     const group = {
         id: 7,
@@ -36,6 +48,11 @@ describe('CardGroupComponent social entry surface', () => {
     } as unknown as GroupWithMembersAndGames
 
     beforeEach(async () => {
+        // Two days before the planned night, whenever the tests run.
+        vi.useFakeTimers({ toFake: ['Date'] })
+        vi.setSystemTime(new Date('2026-09-10T10:00:00.000Z'))
+        userMeets.set([meet({})])
+
         await TestBed.configureTestingModule({
             imports: [CardGroupComponent],
             providers: [
@@ -44,18 +61,7 @@ describe('CardGroupComponent social entry surface', () => {
                     provide: DataService,
                     useValue: {
                         currentUser: signal(null),
-                        userMeets: signal([
-                            {
-                                id: 21,
-                                groupId: 7,
-                                createdBy: 1,
-                                meetDate: '2026-09-12T18:00:00.000Z',
-                                isConfirmed: true,
-                                status: 'scheduled',
-                                timezone: 'Europe/Madrid',
-                                notes: null,
-                            } as MeetType,
-                        ]),
+                        userMeets,
                     },
                 },
             ],
@@ -66,6 +72,8 @@ describe('CardGroupComponent social entry surface', () => {
         fixture.componentRef.setInput('invitations', [])
         fixture.detectChanges()
     })
+
+    afterEach(() => vi.useRealTimers())
 
     it('exposes explicit social actions instead of making the whole card one control', () => {
         const element = fixture.nativeElement as HTMLElement
@@ -86,5 +94,35 @@ describe('CardGroupComponent social entry surface', () => {
 
         expect(element.textContent).toContain('2 shared games')
         expect(element.textContent).toContain('2 games available')
+    })
+
+    it('shows a game night in progress as happening now, not as the next session', () => {
+        userMeets.set([meet({ id: 22, status: 'active', meetDate: '2026-09-08T17:00:00.000Z' }), meet({})])
+        fixture.detectChanges()
+        const element = fixture.nativeElement as HTMLElement
+
+        expect(element.textContent).toContain('Happening now')
+        expect(element.querySelector('a[href="/sessions/22"]')?.textContent?.trim()).toBe('Open game night')
+        expect(element.textContent).not.toContain('Next session')
+    })
+
+    it('does not offer a planned night whose evening is long over as next', () => {
+        userMeets.set([meet({ meetDate: '2026-09-08T17:00:00.000Z' })])
+        fixture.detectChanges()
+        const element = fixture.nativeElement as HTMLElement
+
+        expect(element.textContent).toContain('Next session')
+        expect(element.textContent).toContain('Nothing planned yet')
+        expect(element.querySelector('a[href="/sessions/21"]')).toBeNull()
+    })
+
+    it('counts people without an account and their games, like the group page', () => {
+        fixture.componentRef.setInput('group', {
+            ...group,
+            placeholders: [{ id: 5, displayName: 'Nora', avatar: null, gameIds: [12, 13] }],
+        })
+        fixture.detectChanges()
+
+        expect((fixture.nativeElement as HTMLElement).textContent).toContain('3 people · 3 shared games')
     })
 })
