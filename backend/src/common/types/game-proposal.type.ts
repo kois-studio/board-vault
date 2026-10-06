@@ -2,6 +2,8 @@ import { ApiProperty } from '@nestjs/swagger'
 import { Transform } from 'class-transformer'
 import { IsIn, IsInt, IsNotEmpty, IsOptional, IsString, MaxLength, Min } from 'class-validator'
 
+import { IsArtworkUrl } from '../validators/is-artwork-url.js'
+
 import { UserPublicDto } from './user.type.js'
 
 /**
@@ -130,6 +132,7 @@ export class CreateGameProposalBody {
     @IsOptional()
     @IsString()
     @MaxLength(2048)
+    @IsArtworkUrl()
     imageUrl?: string
 
     @ApiProperty({

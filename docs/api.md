@@ -39,6 +39,14 @@ Catalogue browsing and admin listings are paginated with a maximum page size
 enforced in the DTO. Per-account and per-group lists (collection, wishlist,
 members, sessions) are bounded by their owner and returned whole.
 
+## Dates
+
+Session dates (`meetDate`, `sessionDate`, `lastPlayedAt`) are answered as ISO
+8601 in UTC, such as `2026-10-08T18:00:00.000Z`, whatever shape they were
+stored in. A stored date with no zone, as SQLite's `CURRENT_TIMESTAMP` writes
+it, is UTC. SQL compares and orders them through `datetime()`, so mixed shapes
+sort by instant.
+
 ## Changing a route or DTO
 
 1. update the source contract and relevant response schemas;

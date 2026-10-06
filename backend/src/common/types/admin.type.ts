@@ -2,6 +2,8 @@ import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger'
 import { Transform, Type } from 'class-transformer'
 import { ArrayMaxSize, IsArray, IsIn, IsInt, IsNotEmpty, IsOptional, IsString, Max, MaxLength, Min, ValidateNested } from 'class-validator'
 
+import { IsArtworkUrl } from '../validators/is-artwork-url.js'
+
 import { GameProposalCompleteDto } from './game-proposal.type.js'
 import { GAME_LENGTHS, GameWithTagsAndTranslationsDto, BrowseGamesPaginationDto } from './game.type.js'
 
@@ -107,6 +109,7 @@ export class UpdateAdminGameBody {
     @IsOptional()
     @IsString()
     @MaxLength(2048)
+    @IsArtworkUrl()
     imageUrl?: string
 
     @ApiPropertyOptional({ example: 3, minimum: 1, maximum: 100 })
@@ -332,6 +335,7 @@ export class ApproveGameProposalBody {
     @IsOptional()
     @IsString()
     @MaxLength(2048)
+    @IsArtworkUrl()
     imageUrl?: string
 
     @ApiProperty({

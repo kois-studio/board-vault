@@ -60,12 +60,36 @@ describe('DatabaseService logging', () => {
 
         ;(service as unknown as { tursoClient: { execute: typeof execute } }).tursoClient = { execute }
 
-        await service.recommendations.getRecommendationCandidates([1, 2], 2, 120)
+        await service.recommendations.getRecommendationCandidates(7, [1, 2], 2, 120)
 
-        expect(execute).toHaveBeenCalledWith({
-            sql: expect.stringContaining('INNER JOIN OwnedGame ownedByAttendee'),
-            args: [1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 2, 2, 120],
-        })
+        const [{ sql, args }] = execute.mock.calls[0] as [{ sql: string; args: Array<number> }]
+
+        expect(sql).toContain('INNER JOIN OwnedGame ownedByAttendee')
+        expect(args).toEqual([1, 2, 1, 2, 7, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 2, 2, 120])
+        expect(sql.match(/\?/g)).toHaveLength(args.length)
+    })
+
+    it('reads the last time this group played a game, whether recorded by account or by group person', async () => {
+        const service = new DatabaseService({} as ConfigService)
+        const execute = vi.fn().mockResolvedValue({ rows: [] })
+
+        ;(service as unknown as { tursoClient: { execute: typeof execute } }).tursoClient = { execute }
+
+        await service.recommendations.getRecommendationCandidates(7, [1, 2], 2)
+        await service.recommendations.getGroupPersonRecommendationCandidates(7, [3, 4], 2, 90)
+
+        const [[accounts], [people]] = execute.mock.calls as [
+            [{ sql: string; args: Array<number> }],
+            [{ sql: string; args: Array<number> }],
+        ]
+
+        for (const { sql, args } of [accounts, people]) {
+            expect(sql).toContain('MAX(datetime(m.meetDate))')
+            expect(sql).toContain('AND m.groupId = ?')
+            expect(sql).toContain('FROM MeetPersonGame mpg')
+            expect(sql.match(/\?/g)).toHaveLength(args.length)
+        }
+        expect(people.args).toEqual([7, 3, 4, 7, 2, 2, 90])
     })
 
     it('stores recommendation feedback with its selected-attendee context', async () => {
@@ -697,7 +721,7 @@ describe('DatabaseService logging', () => {
 
         await service.collection.getAvgGroupsRating(6, 18)
 
-        const [{ sql, args }] = execute.mock.calls[0]
+        const [{ sql, args }] = execute.mock.calls[0] as [{ sql: string; args: Array<number> }]
 
         expect(sql).toContain('gr.accountId IN (')
         expect(sql).toContain('SELECT DISTINCT member.accountId')

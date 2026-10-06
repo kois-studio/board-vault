@@ -105,10 +105,23 @@ export class RecommendationQueries {
         })
     }
 
-    getRecommendationCandidates(attendeeIds: Array<number>, playerCount: number, availableMinutes?: number) {
+    getRecommendationCandidates(groupId: number, attendeeIds: Array<number>, playerCount: number, availableMinutes?: number) {
         const attendeePlaceholders = attendeeIds.map(() => '?').join(', ')
         const durationFilter = availableMinutes === undefined ? '' : 'AND (g.gameAvgDuration IS NULL OR g.gameAvgDuration <= ?)'
-        const args: Array<number> = [...attendeeIds, playerCount, playerCount]
+        // In the order the placeholders appear: owners, reviews, last played (group, then four attendee lists), the
+        // owned-game join, and the filters.
+        const args: Array<number> = [
+            ...attendeeIds,
+            ...attendeeIds,
+            groupId,
+            ...attendeeIds,
+            ...attendeeIds,
+            ...attendeeIds,
+            ...attendeeIds,
+            ...attendeeIds,
+            playerCount,
+            playerCount,
+        ]
 
         if (availableMinutes !== undefined) {
             args.push(availableMinutes)
@@ -134,13 +147,16 @@ export class RecommendationQueries {
                         FROM GameReview gr
                         WHERE gr.gameId = g.id AND gr.accountId IN (${attendeePlaceholders})
                     ) AS averageReview,
+                    -- This group's last night with the game where an attendee took part, recorded by
+                    -- account or by their linked group person (the session wizard records the latter).
                     (
-                        SELECT MAX(m.meetDate)
+                        SELECT MAX(datetime(m.meetDate))
                         FROM MeetGame mg
                         INNER JOIN Meet m ON m.id = mg.meetId
                         WHERE mg.gameId = g.id
                           AND mg.gameStatus = 'played'
                           AND m.status = 'completed'
+                          AND m.groupId = ?
                           AND (
                               EXISTS (
                                   SELECT 1
@@ -155,6 +171,22 @@ export class RecommendationQueries {
                                   WHERE mag.meetId = m.id
                                     AND mag.gameId = g.id
                                     AND mag.accountId IN (${attendeePlaceholders})
+                              )
+                              OR EXISTS (
+                                  SELECT 1
+                                  FROM MeetPersonAttendee mpa
+                                  INNER JOIN GroupPerson gp ON gp.id = mpa.groupPersonId
+                                  WHERE mpa.meetId = m.id
+                                    AND gp.accountId IN (${attendeePlaceholders})
+                                    AND mpa.attendanceStatus = 'attended'
+                              )
+                              OR EXISTS (
+                                  SELECT 1
+                                  FROM MeetPersonGame mpg
+                                  INNER JOIN GroupPerson gp ON gp.id = mpg.groupPersonId
+                                  WHERE mpg.meetId = m.id
+                                    AND mpg.gameId = g.id
+                                    AND gp.accountId IN (${attendeePlaceholders})
                               )
                           )
                     ) AS lastPlayedAt
@@ -172,14 +204,15 @@ export class RecommendationQueries {
                   ${durationFilter}
                 GROUP BY g.id
             `,
-            args: [...attendeeIds, ...attendeeIds, ...attendeeIds, ...attendeeIds, ...attendeeIds, ...args.slice(attendeeIds.length)],
+            args,
         })
     }
 
     getGroupPersonRecommendationCandidates(groupId: number, groupPersonIds: Array<number>, playerCount: number, availableMinutes?: number) {
         const personPlaceholders = groupPersonIds.map(() => '?').join(', ')
         const durationFilter = availableMinutes === undefined ? '' : 'AND (g.gameAvgDuration IS NULL OR g.gameAvgDuration <= ?)'
-        const args: Array<number> = [groupId, ...groupPersonIds, playerCount, playerCount]
+        // In order: the selected people's group, their ids, the group again for "last played", and the player count twice.
+        const args: Array<number> = [groupId, ...groupPersonIds, groupId, playerCount, playerCount]
 
         if (availableMinutes !== undefined) args.push(availableMinutes)
 
@@ -217,18 +250,29 @@ export class RecommendationQueries {
                         INNER JOIN selected_people reviewPerson ON reviewPerson.accountId = gr.accountId
                         WHERE gr.gameId = g.id AND reviewPerson.accountId IS NOT NULL
                     ) AS averageReview,
+                    -- This group's last night where a selected person played the game, recorded
+                    -- by account or by group person (the session wizard records the latter).
                     (
-                        SELECT MAX(m.meetDate)
+                        SELECT MAX(datetime(m.meetDate))
                         FROM MeetGame mg
                         INNER JOIN Meet m ON m.id = mg.meetId
                         WHERE mg.gameId = g.id
                           AND mg.gameStatus = 'played'
                           AND m.status = 'completed'
-                          AND EXISTS (
-                              SELECT 1
-                              FROM MeetAccountGame mag
-                              INNER JOIN selected_people playedPerson ON playedPerson.accountId = mag.accountId
-                              WHERE mag.meetId = m.id AND mag.gameId = g.id AND playedPerson.accountId IS NOT NULL
+                          AND m.groupId = ?
+                          AND (
+                              EXISTS (
+                                  SELECT 1
+                                  FROM MeetAccountGame mag
+                                  INNER JOIN selected_people playedPerson ON playedPerson.accountId = mag.accountId
+                                  WHERE mag.meetId = m.id AND mag.gameId = g.id AND playedPerson.accountId IS NOT NULL
+                              )
+                              OR EXISTS (
+                                  SELECT 1
+                                  FROM MeetPersonGame mpg
+                                  INNER JOIN selected_people playedPerson ON playedPerson.id = mpg.groupPersonId
+                                  WHERE mpg.meetId = m.id AND mpg.gameId = g.id
+                              )
                           )
                     ) AS lastPlayedAt,
                     COALESCE((

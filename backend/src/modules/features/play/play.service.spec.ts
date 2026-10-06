@@ -177,7 +177,7 @@ describe('PlayService history', () => {
             ],
             noResultReason: null,
         })
-        expect(database.getRecommendationCandidates).toHaveBeenCalledWith([1, 2], 2, 120)
+        expect(database.getRecommendationCandidates).toHaveBeenCalledWith(7, [1, 2], 2, 120)
     })
 
     it('names selected group people when explaining participant recommendations', async () => {
