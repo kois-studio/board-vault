@@ -6,6 +6,7 @@ import { ProviderTimeoutError, fetchWithTimeout } from '../../../common/http/pro
 import { structuredLog } from '../../../common/logging/structured-log.js'
 
 import { AccountQueries } from './queries/accounts.queries.js'
+import { ArtworkQueries } from './queries/artwork.queries.js'
 import { CollectionQueries } from './queries/collection.queries.js'
 import { GameQueries } from './queries/games.queries.js'
 import { GroupQueries } from './queries/groups.queries.js'
@@ -14,7 +15,7 @@ import { NotificationQueries } from './queries/notifications.queries.js'
 import { RecommendationQueries } from './queries/recommendations.queries.js'
 import { SessionQueries } from './queries/sessions.queries.js'
 
-export const CURRENT_SCHEMA_VERSION = '0017'
+export const CURRENT_SCHEMA_VERSION = '0018'
 
 /** Statements that only read, so running them twice is harmless. Any write keyword, even inside a `WITH`, makes it a write. */
 const READ_ONLY_SQL = /^\s*(SELECT|WITH)\b/i
@@ -35,6 +36,7 @@ export class DatabaseService implements OnModuleInit, OnModuleDestroy {
     private tursoClient: Client
 
     readonly accounts = new AccountQueries(this)
+    readonly artwork = new ArtworkQueries(this)
     readonly collection = new CollectionQueries(this)
     readonly games = new GameQueries(this)
     readonly groups = new GroupQueries(this)

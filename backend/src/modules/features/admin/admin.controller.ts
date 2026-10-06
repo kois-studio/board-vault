@@ -1,4 +1,5 @@
 import {
+    BadRequestException,
     Body,
     Controller,
     Delete,
@@ -15,7 +16,7 @@ import {
     UsePipes,
     ValidationPipe,
 } from '@nestjs/common'
-import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger'
+import { ApiBearerAuth, ApiBody, ApiConsumes, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger'
 
 import { AdminGuard } from '../../../common/guards/admin.guard.js'
 import { AuthGuard } from '../../../common/guards/auth.guard.js'
@@ -160,6 +161,22 @@ export class AdminController {
         @Body() body: UpdateAdminGameBody,
     ) {
         return this.adminService.updateGame(id, request.user.userId, body)
+    }
+
+    @Put('/games/:id/artwork')
+    @ApiOperation({ summary: "Replace a game's artwork with an uploaded image (up to 4 MB), such as a photo of the box" })
+    @ApiConsumes('image/jpeg', 'image/png', 'image/webp', 'image/avif', 'image/heic')
+    @ApiBody({ schema: { type: 'string', format: 'binary' } })
+    @ApiResponse({ status: 200, type: AdminGameDto })
+    @ApiResponse({ status: 400, description: 'Not an image Board Vault can read' })
+    @ApiResponse({ status: 404, description: 'Game not found' })
+    @ApiResponse({ status: 413, description: 'Larger than 4 MB' })
+    async uploadGameArtwork(@Req() request: { user: { userId: number }; body: unknown }, @Param('id', ParseIntPipe) id: number) {
+        if (!Buffer.isBuffer(request.body) || request.body.length === 0) {
+            throw new BadRequestException('Send the image file itself, with an image/… Content-Type.')
+        }
+
+        return this.adminService.uploadGameArtwork(id, request.user.userId, request.body)
     }
 
     // #endregion

@@ -38,6 +38,7 @@ describe('AdminProposalReviewComponent', () => {
         translations: { en: 'Azul', es: 'Azul' },
         tags: [],
         issues: [],
+        artworkSource: null,
     }
 
     let api: Record<string, ReturnType<typeof vi.fn>>

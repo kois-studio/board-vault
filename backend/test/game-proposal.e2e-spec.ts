@@ -9,6 +9,8 @@ import request from 'supertest'
 
 import { AppModule } from './../src/app.module.js'
 import { ClerkTokenVerifier } from './../src/modules/common/auth/clerk-token-verifier.js'
+import { ArtworkDownloader } from './../src/modules/core/artwork/artwork-downloader.js'
+import { FakeArtworkDownloader } from './fake-artwork-downloader.js'
 import { FakeClerkTokenVerifier, sessionFor } from './fake-clerk-token-verifier.js'
 import { removeTestDatabase } from './remove-test-database.js'
 
@@ -51,6 +53,8 @@ describe('proposing a game (e2e)', () => {
         const moduleFixture: TestingModule = await Test.createTestingModule({ imports: [AppModule] })
             .overrideProvider(ClerkTokenVerifier)
             .useValue(new FakeClerkTokenVerifier())
+            .overrideProvider(ArtworkDownloader)
+            .useValue(new FakeArtworkDownloader())
             .compile()
 
         app = moduleFixture.createNestApplication()
@@ -202,7 +206,7 @@ describe('proposing a game (e2e)', () => {
             expect(status.rows[0]?.status).toBe('pending')
         })
 
-        it('creates the game with exactly the reviewed values, both titles and the chosen tags', async () => {
+        it('creates the game with exactly the reviewed values, both titles, the chosen tags and its own copy of the artwork', async () => {
             const proposalId = await proposeBare('Codenames', { proposedTags: 'party' })
             const partyTag = await createTag('Party')
 
@@ -229,9 +233,16 @@ describe('proposing a game (e2e)', () => {
                 args: [gameId],
             })
             const tags = await database.execute({ sql: 'SELECT tagId FROM GameTag WHERE gameId = ?', args: [gameId] })
+            const artwork = await database.execute({
+                sql: 'SELECT hash, contentType, sourceUrl FROM GameArtwork WHERE gameId = ?',
+                args: [gameId],
+            })
 
+            expect(artwork.rows[0]).toEqual(
+                expect.objectContaining({ contentType: 'image/webp', sourceUrl: 'https://example.test/codenames.png' }),
+            )
             expect({ ...game.rows[0] }).toEqual({
-                imageUrl: 'https://example.test/codenames.png',
+                imageUrl: `/artwork/${gameId}-${String(artwork.rows[0]?.hash)}.webp`,
                 gameAvgDuration: 15,
                 minPlayers: 2,
                 maxPlayers: 8,
@@ -241,6 +252,27 @@ describe('proposing a game (e2e)', () => {
                 ['es', 'Código Secreto'],
             ])
             expect(tags.rows.map(row => Number(row.tagId))).toEqual([partyTag])
+        })
+
+        it('approves nothing while the artwork address is a dead link, and says why', async () => {
+            const proposalId = await proposeBare('Hanamikoji', { imageUrl: 'https://example.test/missing.png' })
+
+            const refused = await request(app.getHttpServer())
+                .post(`/admin/proposals/${proposalId}/approve`)
+                .set(asAdmin)
+                .send({ minPlayers: 2, maxPlayers: 2, gameAvgDuration: 15 })
+                .expect(400)
+            const status = await database.execute({ sql: 'SELECT status FROM GameProposal WHERE id = ?', args: [proposalId] })
+
+            expect(refused.body.message).toBe('Artwork: example.test answered 404.')
+            expect(status.rows[0]?.status).toBe('pending')
+
+            // Clearing the address approves it without artwork.
+            await request(app.getHttpServer())
+                .post(`/admin/proposals/${proposalId}/approve`)
+                .set(asAdmin)
+                .send({ minPlayers: 2, maxPlayers: 2, gameAvgDuration: 15, imageUrl: '' })
+                .expect(201)
         })
 
         it('refuses unknown tags and more minimum than maximum players', async () => {

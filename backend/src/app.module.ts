@@ -9,6 +9,7 @@ import { CacheModule } from './modules/common/cache/cache.module.js'
 import { DatabaseModule } from './modules/common/database/database.module.js'
 import { HealthModule } from './modules/common/health/health.module.js'
 // Core
+import { ArtworkModule } from './modules/core/artwork/artwork.module.js'
 import { CollectionActivityModule } from './modules/core/collection-activity/collection-activity.module.js'
 import { GameProposalModule } from './modules/core/game-proposal/game-proposal.module.js'
 import { GameTagsModule } from './modules/core/game-tags/game-tags.module.js'
@@ -45,6 +46,7 @@ import { SessionsModule } from './modules/features/sessions/sessions.module.js'
         DatabaseModule,
         HealthModule,
         // Core
+        ArtworkModule,
         CollectionActivityModule,
         GameProposalModule,
         GameTagsModule,

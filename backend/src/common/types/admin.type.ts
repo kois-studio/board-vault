@@ -79,6 +79,14 @@ export class AdminGameDto extends GameWithTagsAndTranslationsDto {
         description: 'Data problems this game has, as the issue filter defines them.',
     })
     issues: Array<CatalogueQualityIssue>
+
+    @ApiProperty({
+        type: String,
+        nullable: true,
+        example: 'https://www.example.com/catan.jpg',
+        description: 'Where the stored artwork was copied from; null for an upload or no artwork.',
+    })
+    artworkSource: string | null
 }
 
 /** Titles to save; an empty Spanish title removes it. */
@@ -105,7 +113,10 @@ export class UpdateAdminGameBody {
     @Type(() => AdminGameTitlesBody)
     translations?: AdminGameTitlesBody
 
-    @ApiPropertyOptional({ example: 'https://www.example.com/catan.jpg', description: 'Empty means no artwork.' })
+    @ApiPropertyOptional({
+        example: 'https://www.example.com/catan.jpg',
+        description: "An image address to copy into Board Vault, the game's current artwork address to keep it, or empty to remove it.",
+    })
     @IsOptional()
     @IsString()
     @MaxLength(2048)
@@ -330,7 +341,7 @@ export class ApproveGameProposalBody {
     @ApiProperty({
         example: 'https://www.example.com/game-image.jpg',
         required: false,
-        description: 'Artwork URL; overrides the proposal. Empty means no artwork.',
+        description: "An image address to copy into Board Vault; overrides the proposal's. Empty means no artwork.",
     })
     @IsOptional()
     @IsString()

@@ -19,6 +19,7 @@ import {
 import { GameProposalCompleteDto } from '../../../common/types/game-proposal.type.js'
 import { SupportedLanguage } from '../../../common/types/game-translation.type.js'
 import { TagDto, GameTagWithCategoryDto } from '../../../common/types/tag.type.js'
+import { ArtworkService } from '../../../modules/core/artwork/artwork.service.js'
 import { GameProposalService } from '../../../modules/core/game-proposal/game-proposal.service.js'
 import { GameTagsService } from '../../../modules/core/game-tags/game-tags.service.js'
 import { GameTranslationService } from '../../../modules/core/game-translation/game-translation.service.js'
@@ -46,6 +47,7 @@ export class AdminService {
         private readonly gameProposalService: GameProposalService,
         private readonly databaseService: DatabaseService,
         private readonly cacheService: CacheService,
+        private readonly artworkService: ArtworkService,
     ) {}
 
     // #region Tag Categories
@@ -193,9 +195,8 @@ export class AdminService {
 
         if (tagIds?.length) await this.assertTagsExist(tagIds)
 
-        const game: Partial<Record<'imageUrl' | 'gameAvgDuration' | 'minPlayers' | 'maxPlayers', string | number>> = {}
+        const game: Partial<Record<'gameAvgDuration' | 'minPlayers' | 'maxPlayers', number>> = {}
 
-        if (body.imageUrl !== undefined) game.imageUrl = body.imageUrl.trim()
         if (body.minPlayers !== undefined) game.minPlayers = body.minPlayers
         if (body.maxPlayers !== undefined) game.maxPlayers = body.maxPlayers
         if (body.gameAvgDuration !== undefined) game.gameAvgDuration = body.gameAvgDuration
@@ -214,7 +215,16 @@ export class AdminService {
                 : null
         }
 
-        await this.databaseService.games.updateGameAtomically({ gameId, game, translations, tagIds })
+        // Copied before the transaction: a download can take seconds and must not hold the write lock.
+        const artwork = await this.artworkService.resolveChange(body.imageUrl, current.imageUrl)
+
+        await this.databaseService.games.updateGameAtomically({
+            gameId,
+            game,
+            artwork: artwork.kind === 'keep' ? undefined : artwork.kind === 'remove' ? null : artwork.artwork,
+            translations,
+            tagIds,
+        })
 
         await Promise.all([
             this.cacheService.deleteOne(`games:byId:${gameId}`),
@@ -225,11 +235,26 @@ export class AdminService {
         // Field names only: no titles or URLs in logs.
         const fields = [
             ...Object.keys(game),
+            ...(artwork.kind === 'keep' ? [] : ['artwork']),
             ...Object.keys(translations).map(language => `title.${language}`),
             ...(tagIds ? ['tags'] : []),
         ]
 
         this.LOGGER.log(structuredLog('admin.game.updated', { adminId, gameId, fields }))
+
+        return this.getAdminGame(gameId)
+    }
+
+    /** Replaces a game's artwork with an uploaded image, such as a photo of the box. */
+    async uploadGameArtwork(gameId: number, adminId: number, bytes: Buffer): Promise<AdminGameDto> {
+        // Throws 404 when the game does not exist.
+        await this.gameService.getGameById(gameId)
+
+        const artwork = await this.artworkService.copyFromUpload(bytes)
+
+        await this.databaseService.artwork.setGameArtwork(gameId, artwork)
+        await this.cacheService.deleteOne(`games:byId:${gameId}`)
+        this.LOGGER.log(structuredLog('admin.game.updated', { adminId, gameId, fields: ['artwork'] }))
 
         return this.getAdminGame(gameId)
     }
@@ -269,6 +294,7 @@ export class AdminService {
                 translations: { en: titleEn, es: String(row['titleEs'] ?? '') },
                 tags: tagsByGame.get(id) ?? [],
                 issues: CATALOGUE_QUALITY_ISSUES.filter(issue => Number(row[issue]) === 1),
+                artworkSource: row['artworkSource'] ? String(row['artworkSource']) : null,
             }
         })
     }
@@ -409,10 +435,13 @@ export class AdminService {
             if (unknown.length > 0) throw new BadRequestException(`Unknown tag ids: ${unknown.join(', ')}.`)
         }
 
+        // Empty means no artwork; the frontend shows its own placeholder. Copied before the transaction.
+        const artworkAddress = (approvalData.imageUrl ?? proposal.imageUrl ?? '').trim()
+        const artwork = artworkAddress ? await this.artworkService.copyFromAddress(artworkAddress) : null
+
         const gameData = {
             title: proposal.title,
-            // Empty means no artwork; the frontend shows its own placeholder.
-            imageUrl: approvalData.imageUrl ?? proposal.imageUrl ?? '',
+            artwork,
             gameAvgDuration: gameAvgDuration!,
             minPlayers: minPlayers!,
             maxPlayers: maxPlayers!,

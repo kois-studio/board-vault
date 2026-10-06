@@ -16,7 +16,7 @@
 
     <div class="grid gap-4 sm:grid-cols-[minmax(0,1fr)_6rem]">
         <div>
-            <label for="imageUrl" class="mb-1 block text-sm font-medium">Artwork URL</label>
+            <label for="imageUrl" class="mb-1 block text-sm font-medium">Artwork address</label>
             <input id="imageUrl" type="url" class="app-input" formControlName="imageUrl" placeholder="https://…" aria-describedby="imageUrl-hint" />
             <p id="imageUrl-hint" class="mt-1 text-sm" [class.text-bv-danger]="form().controls.imageUrl.invalid || imageFailed()" [class.text-bv-text-muted]="form().controls.imageUrl.valid && !imageFailed()">
                 @if (form().controls.imageUrl.invalid) {
@@ -24,9 +24,10 @@
                 } @else if (imageFailed()) {
                     This image doesn't load. Check the address.
                 } @else {
-                    Empty means no artwork; the app shows its placeholder.
+                    The address of the image itself. Board Vault keeps its own copy when you save; empty means no artwork.
                 }
             </p>
+            <ng-content select="[artworkExtra]" />
         </div>
         <div class="flex h-24 w-24 items-center justify-center overflow-hidden rounded-lg bg-bv-surface-2" aria-hidden="true">
             @if (imagePreview() && !imageFailed()) {

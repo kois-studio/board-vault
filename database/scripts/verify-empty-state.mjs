@@ -62,8 +62,8 @@ try {
                 THEN 'group-person-preference: ok' ELSE 'group-person-preference: missing' END;
             SELECT CASE WHEN EXISTS (SELECT 1 FROM pragma_table_info('Meet') WHERE name = 'notes')
                 THEN 'meet-notes: ok' ELSE 'meet-notes: missing' END;
-            SELECT CASE WHEN (SELECT COUNT(*) FROM SchemaMigrations) = 17
-                AND (SELECT MAX(version) FROM SchemaMigrations) = '0017'
+            SELECT CASE WHEN (SELECT COUNT(*) FROM SchemaMigrations) = 18
+                AND (SELECT MAX(version) FROM SchemaMigrations) = '0018'
                 THEN 'migration-state: ok' ELSE 'migration-state: invalid' END;
             SELECT CASE WHEN EXISTS (SELECT 1 FROM pragma_table_info('GroupPerson') WHERE name = 'claimEmail')
                 THEN 'group-person-claim-email: ok' ELSE 'group-person-claim-email: missing' END;
@@ -85,9 +85,11 @@ try {
                 THEN 'game-results: ok' ELSE 'game-results: missing' END;
             SELECT CASE WHEN EXISTS (SELECT 1 FROM pragma_table_info('GameProposal') WHERE name = 'addTo')
                 THEN 'proposal-add-to: ok' ELSE 'proposal-add-to: missing' END;
+            SELECT CASE WHEN EXISTS (SELECT 1 FROM sqlite_master WHERE type = 'table' AND name = 'GameArtwork')
+                THEN 'game-artwork: ok' ELSE 'game-artwork: missing' END;
         `,
     )
-    if (structure.code !== 0 || !structure.stdout.includes('group-interest: ok') || !structure.stdout.includes('group-decision: ok') || !structure.stdout.includes('group-person: ok') || !structure.stdout.includes('group-person-ownership: ok') || !structure.stdout.includes('group-person-preference: ok') || !structure.stdout.includes('meet-notes: ok') || !structure.stdout.includes('migration-state: ok') || !structure.stdout.includes('meet-person-attendee: ok') || !structure.stdout.includes('meet-person-game: ok') || !structure.stdout.includes('participant-feedback: ok') || !structure.stdout.includes('group-person-claim-email: ok') || !structure.stdout.includes('group-person-claim-expiry: ok') || !structure.stdout.includes('invitation-expiry: ok') || !structure.stdout.includes('invitation-group-person: ok') || !structure.stdout.includes('legacy-credentials-dropped: ok') || !structure.stdout.includes('game-results: ok') || !structure.stdout.includes('proposal-add-to: ok')) {
+    if (structure.code !== 0 || !structure.stdout.includes('group-interest: ok') || !structure.stdout.includes('group-decision: ok') || !structure.stdout.includes('group-person: ok') || !structure.stdout.includes('group-person-ownership: ok') || !structure.stdout.includes('group-person-preference: ok') || !structure.stdout.includes('meet-notes: ok') || !structure.stdout.includes('migration-state: ok') || !structure.stdout.includes('meet-person-attendee: ok') || !structure.stdout.includes('meet-person-game: ok') || !structure.stdout.includes('participant-feedback: ok') || !structure.stdout.includes('group-person-claim-email: ok') || !structure.stdout.includes('group-person-claim-expiry: ok') || !structure.stdout.includes('invitation-expiry: ok') || !structure.stdout.includes('invitation-group-person: ok') || !structure.stdout.includes('legacy-credentials-dropped: ok') || !structure.stdout.includes('game-results: ok') || !structure.stdout.includes('proposal-add-to: ok') || !structure.stdout.includes('game-artwork: ok')) {
         throw new Error(`Migrated schema assertions failed.\n${structure.stdout}\n${structure.stderr}`)
     }
 

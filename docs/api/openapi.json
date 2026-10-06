@@ -363,6 +363,36 @@
         ]
       }
     },
+    "/artwork/{file}": {
+      "get": {
+        "operationId": "ArtworkController_getArtwork",
+        "parameters": [
+          {
+            "name": "file",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The image"
+          },
+          "400": {
+            "description": "Not an artwork file name"
+          },
+          "404": {
+            "description": "The game has no artwork"
+          }
+        },
+        "summary": "A game's artwork, as `<gameId>-<hash>.webp`; cached for a year",
+        "tags": [
+          "artwork"
+        ]
+      }
+    },
     "/memberships": {
       "get": {
         "deprecated": true,
@@ -2774,6 +2804,86 @@
           }
         ],
         "summary": "Update a game: titles, artwork, players, length and tags, saved together",
+        "tags": [
+          "admin"
+        ]
+      }
+    },
+    "/admin/games/{id}/artwork": {
+      "put": {
+        "operationId": "AdminController_uploadGameArtwork",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "image/jpeg": {
+              "schema": {
+                "type": "string",
+                "format": "binary"
+              }
+            },
+            "image/png": {
+              "schema": {
+                "type": "string",
+                "format": "binary"
+              }
+            },
+            "image/webp": {
+              "schema": {
+                "type": "string",
+                "format": "binary"
+              }
+            },
+            "image/avif": {
+              "schema": {
+                "type": "string",
+                "format": "binary"
+              }
+            },
+            "image/heic": {
+              "schema": {
+                "type": "string",
+                "format": "binary"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AdminGameDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Not an image Board Vault can read"
+          },
+          "404": {
+            "description": "Game not found"
+          },
+          "413": {
+            "description": "Larger than 4 MB"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Replace a game's artwork with an uploaded image (up to 4 MB), such as a photo of the box",
         "tags": [
           "admin"
         ]
@@ -5541,7 +5651,8 @@
           },
           "imageUrl": {
             "type": "string",
-            "example": "https://www.example.com/image.jpg"
+            "example": "/artwork/12-0123456789abcdef.webp",
+            "description": "Artwork served by this API (a path to resolve against the API address), or empty for none."
           },
           "gameAvgDuration": {
             "type": "number",
@@ -6361,7 +6472,8 @@
           },
           "imageUrl": {
             "type": "string",
-            "example": "https://www.example.com/image.jpg"
+            "example": "/artwork/12-0123456789abcdef.webp",
+            "description": "Artwork served by this API (a path to resolve against the API address), or empty for none."
           },
           "gameAvgDuration": {
             "type": "number",
@@ -7055,7 +7167,8 @@
           },
           "imageUrl": {
             "type": "string",
-            "example": "https://www.example.com/image.jpg"
+            "example": "/artwork/12-0123456789abcdef.webp",
+            "description": "Artwork served by this API (a path to resolve against the API address), or empty for none."
           },
           "gameAvgDuration": {
             "type": "number",
@@ -7104,6 +7217,12 @@
                 "no-tags"
               ]
             }
+          },
+          "artworkSource": {
+            "type": "string",
+            "nullable": true,
+            "example": "https://www.example.com/catan.jpg",
+            "description": "Where the stored artwork was copied from; null for an upload or no artwork."
           }
         },
         "required": [
@@ -7115,7 +7234,8 @@
           "translations",
           "tags",
           "title",
-          "issues"
+          "issues",
+          "artworkSource"
         ]
       },
       "BrowseGamesPaginationDto": {
@@ -7192,7 +7312,7 @@
           "imageUrl": {
             "type": "string",
             "example": "https://www.example.com/catan.jpg",
-            "description": "Empty means no artwork."
+            "description": "An image address to copy into Board Vault, the game's current artwork address to keep it, or empty to remove it."
           },
           "minPlayers": {
             "type": "number",
@@ -7445,7 +7565,7 @@
           "imageUrl": {
             "type": "string",
             "example": "https://www.example.com/game-image.jpg",
-            "description": "Artwork URL; overrides the proposal. Empty means no artwork."
+            "description": "An image address to copy into Board Vault; overrides the proposal's. Empty means no artwork."
           },
           "gameAvgDuration": {
             "type": "number",

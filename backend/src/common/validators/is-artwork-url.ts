@@ -1,17 +1,19 @@
 import { registerDecorator, type ValidationOptions } from 'class-validator'
 
+import { ARTWORK_PATH } from '../artwork/artwork.js'
+
 /**
  * ## Artwork URL
- * Empty, meaning no artwork, or an absolute http(s) address with a host: the rule the artwork
- * fields in the app already apply (`https?://…`). Leading and trailing spaces are ignored, as
- * the services trim the value before saving it.
+ * Empty, meaning no artwork, an absolute http(s) address with a host (the rule the artwork fields
+ * in the app apply), or a stored `/artwork/…` path, which an admin form sends back to keep it.
+ * Leading and trailing spaces are ignored, as the services trim the value.
  */
 export function isArtworkUrl(value: unknown): boolean {
     if (typeof value !== 'string') return false
 
     const trimmed = value.trim()
 
-    if (trimmed === '') return true
+    if (trimmed === '' || ARTWORK_PATH.test(trimmed)) return true
 
     try {
         const url = new URL(trimmed)

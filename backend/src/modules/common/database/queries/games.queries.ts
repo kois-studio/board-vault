@@ -2,6 +2,8 @@ import { BadRequestException, NotFoundException } from '@nestjs/common'
 
 import { containsPattern, LIKE_ESCAPE } from '../like-pattern.js'
 
+import { gameArtworkStatements, type StoredArtwork } from './artwork.queries.js'
+
 import type { CatalogueQualityIssue } from '../../../../common/types/admin.type.js'
 import type { SupportedLanguage } from '../../../../common/types/game-translation.type.js'
 import type { BrowseSort, GameLength } from '../../../../common/types/game.type.js'
@@ -54,7 +56,8 @@ export class GameQueries {
         proposalId: number
         reviewerId: number
         title: string
-        imageUrl: string
+        /** The reviewed artwork, already copied; null for none. */
+        artwork: StoredArtwork | null
         gameAvgDuration: number
         minPlayers: number
         maxPlayers: number
@@ -67,10 +70,14 @@ export class GameQueries {
 
         try {
             const gameResult = await transaction.execute({
-                sql: 'INSERT INTO Game (imageUrl, gameAvgDuration, minPlayers, maxPlayers) VALUES (?, ?, ?, ?)',
-                args: [input.imageUrl, input.gameAvgDuration, input.minPlayers, input.maxPlayers],
+                sql: "INSERT INTO Game (imageUrl, gameAvgDuration, minPlayers, maxPlayers) VALUES ('', ?, ?, ?)",
+                args: [input.gameAvgDuration, input.minPlayers, input.maxPlayers],
             })
             const createdGameId = Number(gameResult.lastInsertRowid)
+
+            if (input.artwork) {
+                for (const statement of gameArtworkStatements(createdGameId, input.artwork)) await transaction.execute(statement)
+            }
 
             for (const translation of input.translations) {
                 await transaction.execute({
@@ -700,13 +707,14 @@ export class GameQueries {
         return this.database.execute({
             sql: `
                 SELECT g.id, g.imageUrl, g.gameAvgDuration, g.minPlayers, g.maxPlayers,
-                       COALESCE(en.title, '') AS titleEn, COALESCE(es.title, '') AS titleEs,
+                       COALESCE(en.title, '') AS titleEn, COALESCE(es.title, '') AS titleEs, art.sourceUrl AS artworkSource,
                        ${Object.entries(CATALOGUE_QUALITY)
                            .map(([issue, condition]) => `CASE WHEN ${condition} THEN 1 ELSE 0 END AS "${issue}"`)
                            .join(',\n                       ')}
                 FROM Game g
                 LEFT JOIN GameTranslation en ON en.gameId = g.id AND en.languageCode = 'en'
                 LEFT JOIN GameTranslation es ON es.gameId = g.id AND es.languageCode = 'es'
+                LEFT JOIN GameArtwork art ON art.gameId = g.id
                 ${where}
                 ORDER BY COALESCE(en.title, es.title, '') COLLATE NOCASE ASC, g.id ASC
                 LIMIT ? OFFSET ?
@@ -741,7 +749,9 @@ export class GameQueries {
     /** Saves an admin's changes to one game in one transaction. `es: null` removes the Spanish title. */
     async updateGameAtomically(input: {
         gameId: number
-        game: Partial<Record<'imageUrl' | 'gameAvgDuration' | 'minPlayers' | 'maxPlayers', string | number>>
+        game: Partial<Record<'gameAvgDuration' | 'minPlayers' | 'maxPlayers', number>>
+        /** New artwork, already copied; null removes it; undefined leaves it. */
+        artwork?: StoredArtwork | null
         translations: Partial<Record<SupportedLanguage, { title: string; normalizedTitle: string } | null>>
         tagIds?: Array<number>
     }): Promise<void> {
@@ -755,6 +765,10 @@ export class GameQueries {
                     sql: `UPDATE Game SET ${columns.map(([column]) => `${column} = ?`).join(', ')} WHERE id = ?`,
                     args: [...columns.map(([, value]) => value), input.gameId],
                 })
+            }
+
+            if (input.artwork !== undefined) {
+                for (const statement of gameArtworkStatements(input.gameId, input.artwork)) await transaction.execute(statement)
             }
 
             for (const [languageCode, translation] of Object.entries(input.translations)) {

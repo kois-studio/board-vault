@@ -1,6 +1,9 @@
-import { json, urlencoded, type NextFunction, type Request, type RequestHandler, type Response } from 'express'
+import { json, raw, urlencoded, type NextFunction, type Request, type RequestHandler, type Response } from 'express'
 
 export const REQUEST_BODY_LIMIT = '100kb'
+/** An admin's artwork upload; Vercel refuses request bodies above 4.5 MB anyway. */
+export const ARTWORK_UPLOAD_LIMIT = '4mb'
+const ARTWORK_UPLOAD_ROUTE = /^\/admin\/games\/\d+\/artwork(?:\?|$)/
 
 /** A request whose exact body bytes were kept for signature checks (webhook routes only). */
 export type RawBodyRequest = Request & { rawBody?: Buffer }
@@ -13,7 +16,15 @@ function keepWebhookRawBody(request: RawBodyRequest, _response: Response, buffer
 }
 
 export function createBodyParsers(): Array<RequestHandler> {
-    return [json({ limit: REQUEST_BODY_LIMIT, verify: keepWebhookRawBody }), urlencoded({ extended: false, limit: REQUEST_BODY_LIMIT })]
+    return [
+        json({ limit: REQUEST_BODY_LIMIT, verify: keepWebhookRawBody }),
+        urlencoded({ extended: false, limit: REQUEST_BODY_LIMIT }),
+        // Image bytes, only on the artwork upload route; everywhere else an image body stays unread.
+        raw({
+            limit: ARTWORK_UPLOAD_LIMIT,
+            type: request => ARTWORK_UPLOAD_ROUTE.test(request.url ?? '') && String(request.headers['content-type']).startsWith('image/'),
+        }),
+    ]
 }
 
 export function applySecurityHeaders(

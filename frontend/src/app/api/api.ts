@@ -399,6 +399,13 @@ export class Api {
             .pipe(map((response) => adminGameSchema.parse(response)))
     }
 
+    /** Replaces a game's artwork with an image file, such as a photo of the box. */
+    uploadGameArtwork(gameId: number, image: Blob) {
+        return this.http
+            .put<AdminGameType>(`${this.url}/admin/games/${gameId}/artwork`, image, { headers: { 'Content-Type': image.type } })
+            .pipe(map((response) => adminGameSchema.parse(response)))
+    }
+
     getAdminOverview() {
         return this.http.get<AdminOverviewType>(`${this.url}/admin/overview`).pipe(map((response) => adminOverviewSchema.parse(response)))
     }

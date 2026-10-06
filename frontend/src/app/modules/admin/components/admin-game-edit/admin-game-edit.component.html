@@ -21,7 +21,15 @@
         }
 
         <form class="space-y-6 rounded-lg border border-bv-border bg-bv-surface p-4 shadow-sm sm:p-6" [formGroup]="form" (ngSubmit)="save()" novalidate>
-            <app-admin-game-fields [form]="form" [tagGroups]="tagGroups()" [(selectedTagIds)]="selectedTagIds" />
+            <app-admin-game-fields [form]="form" [tagGroups]="tagGroups()" [(selectedTagIds)]="selectedTagIds">
+                <div artworkExtra class="mt-2 flex flex-wrap items-center gap-x-3 gap-y-2 text-sm text-bv-text-muted">
+                    <input #artworkFile type="file" accept="image/*" class="sr-only" tabindex="-1" aria-hidden="true" (change)="uploadArtwork(artworkFile)" />
+                    <button appButton type="button" variant="secondary" size="small" icon="camera" [loading]="isUploading()" (click)="artworkFile.click()">Upload an image</button>
+                    @if (game.artworkSource; as source) {
+                        <span class="min-w-0 break-all">Copied from <a class="underline hover:no-underline" [href]="source" target="_blank" rel="noopener noreferrer">{{ sourceHost(source) }}</a></span>
+                    }
+                </div>
+            </app-admin-game-fields>
 
             <div class="flex justify-end border-t border-bv-border pt-4">
                 <button appButton type="submit" icon="check" [loading]="isSaving()" [disabled]="form.invalid || playersOutOfOrder">Save changes</button>

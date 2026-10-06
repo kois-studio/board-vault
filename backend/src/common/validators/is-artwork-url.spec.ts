@@ -24,6 +24,11 @@ describe('isArtworkUrl', () => {
         expect(isArtworkUrl('https://')).toBe(false)
         expect(isArtworkUrl(42)).toBe(false)
     })
+
+    it('accepts a stored artwork path, which an admin form sends back to keep it', () => {
+        expect(isArtworkUrl('/artwork/12-0123456789abcdef.webp')).toBe(true)
+        expect(isArtworkUrl('/artwork/12-0123456789abcdef.png')).toBe(false)
+    })
 })
 
 describe('artwork URLs in request bodies', () => {

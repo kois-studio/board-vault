@@ -462,6 +462,8 @@ export type AdminGameType = GameWithTagsAndTranslationsType & {
     /** The English title. */
     title: string
     issues: Array<CatalogueIssue>
+    /** Where the stored artwork was copied from; null for an upload or no artwork. */
+    artworkSource: string | null
 }
 
 export type AdminGamesFilters = {

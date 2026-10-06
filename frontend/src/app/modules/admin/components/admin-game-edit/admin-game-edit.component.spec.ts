@@ -20,6 +20,7 @@ describe('AdminGameEditComponent', () => {
         translations: { en: 'Catan', es: 'Catan' },
         tags: [{ id: 4, name: 'Strategy', categoryName: 'Genre' }],
         issues: ['no-artwork', 'no-spanish'],
+        artworkSource: null,
     }
     let api: Record<string, ReturnType<typeof vi.fn>>
     let toast: { success: ReturnType<typeof vi.fn>; error: ReturnType<typeof vi.fn> }
@@ -93,5 +94,34 @@ describe('AdminGameEditComponent', () => {
         )
         await component.save()
         expect(toast.error).toHaveBeenCalledWith('Unknown tag ids: 9.')
+    })
+
+    it('uploads a photo as the artwork at once, keeping the other unsaved edits', async () => {
+        const fixture = await render()
+        await fixture.whenStable()
+        const component = fixture.componentInstance
+        const stored = 'http://localhost:3000/artwork/2-0123456789abcdef.webp'
+        api['uploadGameArtwork'] = vi.fn().mockReturnValue(of({ ...catan, imageUrl: stored, artworkSource: null, issues: ['no-spanish'] }))
+        const photo = new File(['photo'], 'catan.jpg', { type: 'image/jpeg' })
+        const input = { files: [photo], value: 'C:\\fakepath\\catan.jpg' } as unknown as HTMLInputElement
+
+        component.form.patchValue({ titleEs: 'Los colonos de Catán' })
+        await component.uploadArtwork(input)
+
+        expect(api['uploadGameArtwork']).toHaveBeenCalledWith(2, photo)
+        expect(component.form.getRawValue()).toEqual(expect.objectContaining({ imageUrl: stored, titleEs: 'Los colonos de Catán' }))
+        expect(input.value).toBe('')
+        expect(toast.success).toHaveBeenCalledWith('Artwork updated.')
+    })
+
+    it('refuses an image over 4 MB before sending it', async () => {
+        const fixture = await render()
+        api['uploadGameArtwork'] = vi.fn()
+        const huge = new File([new Uint8Array(4 * 1024 * 1024 + 1)], 'scan.png', { type: 'image/png' })
+
+        await fixture.componentInstance.uploadArtwork({ files: [huge], value: '' } as unknown as HTMLInputElement)
+
+        expect(api['uploadGameArtwork']).not.toHaveBeenCalled()
+        expect(toast.error).toHaveBeenCalledWith('Choose an image under 4 MB.')
     })
 })

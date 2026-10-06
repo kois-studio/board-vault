@@ -21,6 +21,9 @@ import { CATALOGUE_ISSUES } from '../admin-games-manage/admin-games-manage.compo
 import { AdminGamesManageService } from '../admin-games-manage/admin-games-manage.service'
 import { AdminPageHeaderComponent } from '../admin-page-header/admin-page-header.component'
 
+/** The API refuses uploads above 4 MB (Vercel's limit is 4.5 MB). */
+const ARTWORK_UPLOAD_LIMIT = 4 * 1024 * 1024
+
 /** One catalogue game, edited in one form and saved together. */
 @Component({
     selector: 'app-admin-game-edit',
@@ -46,6 +49,7 @@ export class AdminGameEditComponent implements OnInit {
     public readonly isLoading = signal(true)
     public readonly loadError = signal<string | null>(null)
     public readonly isSaving = signal(false)
+    public readonly isUploading = signal(false)
     public readonly tagGroups = signal<Array<TagGroup>>([])
     public readonly selectedTagIds = signal<ReadonlySet<number>>(new Set())
     public readonly form = createGameFieldsForm()
@@ -105,6 +109,41 @@ export class AdminGameEditComponent implements OnInit {
             this.toastService.error(typeof message === 'string' ? message : 'The game could not be saved. Try again.')
         } finally {
             this.isSaving.set(false)
+        }
+    }
+
+    /** The site an artwork was copied from, to name it briefly. */
+    public sourceHost(source: string): string {
+        try {
+            return new URL(source).hostname.replace(/^www\./, '')
+        } catch {
+            return source
+        }
+    }
+
+    /** Replaces the artwork with the chosen file right away; the other fields keep their unsaved edits. */
+    public async uploadArtwork(input: HTMLInputElement): Promise<void> {
+        const game = this.game()
+        const file = input.files?.[0]
+        input.value = ''
+        if (!game || !file) return
+        if (file.size > ARTWORK_UPLOAD_LIMIT) {
+            this.toastService.error('Choose an image under 4 MB.')
+            return
+        }
+
+        this.isUploading.set(true)
+        try {
+            const saved = await firstValueFrom(this.api.uploadGameArtwork(game.id, file))
+            this.game.set(saved)
+            this.form.controls.imageUrl.reset(saved.imageUrl)
+            this.toastService.success('Artwork updated.')
+        } catch (error) {
+            this.logger.error('Error uploading the artwork:', error)
+            const message = error instanceof HttpErrorResponse && error.status === 400 ? error.error?.message : null
+            this.toastService.error(typeof message === 'string' ? message : 'The image could not be uploaded. Try again.')
+        } finally {
+            this.isUploading.set(false)
         }
     }
 

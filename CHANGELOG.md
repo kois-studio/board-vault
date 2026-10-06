@@ -268,6 +268,15 @@ operational details.
   Clerk user is deleted (ADR-0013).
 - Rule-by-rule engineering-standards assessment in
   `docs/project-standards.yml`.
+- Board Vault keeps its own copy of every game's artwork (ADR-0015,
+  migration 0018). An image address an admin enters is downloaded, compressed
+  to WebP and served from `/artwork/…`, cached for a year; admins can also
+  upload a photo. Every existing game's image was checked and copied: the
+  broken ones (Lifeboat, Citadels, Sushi Go!, Virus!, What Do You Meme?,
+  Dune: Imperium – Uprising) have new images from their publishers or a
+  shop, The Grimwood shows the placeholder until a source is found, and the
+  BoardGameGeek copies were replaced. No page loads artwork
+  from another site any more.
 
 ## 0.1.0-beta.1 — public development baseline
 

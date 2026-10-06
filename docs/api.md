@@ -47,6 +47,16 @@ stored in. A stored date with no zone, as SQLite's `CURRENT_TIMESTAMP` writes
 it, is UTC. SQL compares and orders them through `datetime()`, so mixed shapes
 sort by instant.
 
+## Artwork
+
+Game artwork is served by the API itself (ADR-0015). A game's `imageUrl` is
+`/artwork/<gameId>-<hash>.webp`, a path to resolve against the API address,
+or empty for none. `GET /artwork/<file>` needs no token and is cached for a
+year, because the hash changes with the image. Admins set artwork by sending
+an image address (`PATCH /admin/games/:id`, proposal approval), which the API
+downloads and stores, or by uploading the file
+(`PUT /admin/games/:id/artwork`, image body up to 4 MB).
+
 ## Changing a route or DTO
 
 1. update the source contract and relevant response schemas;

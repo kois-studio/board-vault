@@ -13,7 +13,10 @@ export class GameDto {
     @ApiProperty({ example: 12345 })
     id: number
 
-    @ApiProperty({ example: 'https://www.example.com/image.jpg' })
+    @ApiProperty({
+        example: '/artwork/12-0123456789abcdef.webp',
+        description: 'Artwork served by this API (a path to resolve against the API address), or empty for none.',
+    })
     imageUrl: string
 
     @ApiProperty({ example: 120, description: 'The average duration of the game in minutes.' })

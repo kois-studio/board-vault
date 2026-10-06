@@ -1,5 +1,5 @@
 import * as z from 'zod/mini'
-
+import { resolveArtworkUrl } from '../core/utils/artworkUrl'
 import type {
     AdminGameProposalsType,
     AdminGamesResultType,
@@ -46,6 +46,12 @@ import type {
     UserType,
 } from './api.types'
 
+/** A game's artwork: stored artwork arrives as a path on the API and leaves here as a full address. */
+const artworkUrlSchema = z.pipe(
+    z.string(),
+    z.transform((imageUrl) => resolveArtworkUrl(imageUrl)),
+)
+
 export const clerkAuthStatusSchema = z.object({
     isValid: z.literal(true),
     userId: z.number(),
@@ -56,7 +62,7 @@ export const clerkAuthStatusSchema = z.object({
 export const gameCompleteSchema: z.ZodMiniType<GameCompleteType> = z.object({
     id: z.number(),
     title: z.optional(z.string()),
-    imageUrl: z.string(),
+    imageUrl: artworkUrlSchema,
     gameAvgDuration: z.number(),
     minPlayers: z.number(),
     maxPlayers: z.number(),
@@ -69,7 +75,7 @@ export const gameCompleteSchema: z.ZodMiniType<GameCompleteType> = z.object({
 const gameSchema: z.ZodMiniType<GameType> = z.object({
     id: z.number(),
     title: z.optional(z.string()),
-    imageUrl: z.string(),
+    imageUrl: artworkUrlSchema,
     gameAvgDuration: z.number(),
     minPlayers: z.number(),
     maxPlayers: z.number(),
@@ -109,13 +115,14 @@ export const catalogueTagsSchema: z.ZodMiniType<Array<CatalogueTagType>> = z.arr
 export const adminGameSchema: z.ZodMiniType<AdminGameType> = z.object({
     id: z.number(),
     title: z.string(),
-    imageUrl: z.string(),
+    imageUrl: artworkUrlSchema,
     gameAvgDuration: z.number(),
     minPlayers: z.number(),
     maxPlayers: z.number(),
     translations: z.object({ en: z.string(), es: z.string() }),
     tags: z.array(z.object({ id: z.number(), name: z.string(), categoryName: z.string() })),
     issues: z.array(z.enum(['no-title', 'no-artwork', 'no-spanish', 'no-tags'])),
+    artworkSource: z.nullable(z.string()),
 })
 
 export const adminGamesSchema: z.ZodMiniType<AdminGamesResultType> = z.object({

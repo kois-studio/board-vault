@@ -58,19 +58,21 @@ attempt may already have been applied.
 | `common/types/` | DTOs with `class-validator` decorators; they define the OpenAPI contract. |
 | `common/schemas/` | zod schemas that parse database rows. |
 | `common/validators/validateEnv.ts` | Startup environment checks. |
+| `common/artwork/` | Game artwork without Nest (ADR-0015): the guarded download (public http(s) only, 8 MB, 10 s) and the compression to WebP within 800 px. `backend/scripts/import-artwork.mjs` uses it too. |
 | `modules/common/auth/` | Clerk token verification, account resolution, Clerk invitations, `GET /auth/clerk/status`. |
 | `modules/common/database/` | `DatabaseService`: the connection, `execute`, and `transaction`. |
-| `modules/common/database/queries/` | All SQL, one class per domain (`accounts`, `groups`, `games`, `collection`, `invitations`, `notifications`, `sessions`, `recommendations`), one method per query. |
+| `modules/common/database/queries/` | All SQL, one class per domain (`accounts`, `artwork`, `groups`, `games`, `collection`, `invitations`, `notifications`, `sessions`, `recommendations`), one method per query. |
 | `modules/common/cache/` | Upstash Redis wrapper and the admin cache endpoints. |
 | `modules/common/health/` | `/health` (liveness) and `/health/ready` (database, cache, schema version). |
+| `modules/core/artwork` | `GET /artwork/<gameId>-<hash>.webp` (public, cached for a year) and the copying of artwork when an admin approves or edits a game. `ArtworkDownloader` is its own provider so tests answer without the network. |
 | `modules/core/*` | One module per domain entity: games, tags, translations, owned games, wishlist, reviews, collection activity, game proposals, groups (`UserGroup`), memberships, group people, invitations, notifications, meets (sessions), attendees, users. |
-| `modules/features/admin` | `/admin`: the overview (work queues and catalogue counts), the catalogue (list with data-quality filters, one-request game edits), tags and categories (including merge), and game proposals (admins only). |
+| `modules/features/admin` | `/admin`: the overview (work queues and catalogue counts), the catalogue (list with data-quality filters, one-request game edits, artwork uploads), tags and categories (including merge), and game proposals (admins only). |
 | `modules/features/collection` | `/collection/users/:userId/…`: private shelf, wishlist, reviews, activity. |
 | `modules/features/dashboard` | `/dashboard/users/:userId/…`: stats, groups, group creation and membership management. |
 | `modules/features/play` | `/play`: recommendations, recommendation feedback, play history. |
 | `modules/features/profile` | `/profile/users/:userId/…`: own profile, notifications, received invitations, game proposals. |
 | `modules/features/sessions` | `/sessions`: scheduled sessions, RSVP, attendance, shortlist, played games, status. Starting or finishing a session dated in the future moves its date to now; finishing with no game played needs `noGamesPlayed: true`. |
-| `test/` | Backend e2e tests; `fake-clerk-token-verifier.ts` replaces Clerk. |
+| `test/` | Backend e2e tests; `fake-clerk-token-verifier.ts` replaces Clerk and `fake-artwork-downloader.ts` the web. |
 
 `core` modules own an entity; `features` modules compose several of them for a
 screen of the app. New routes usually belong in a `features` module.
@@ -95,7 +97,7 @@ List `AuthGuard` first; the others read `request.user`.
 | --- | --- |
 | `app.routes.ts` | All routes and their guards. |
 | `app.config.ts` | Providers; starts Clerk once the first page has painted (`afterFirstPagePaint`). `AuthOnlyGuard`, `AdminGuard` and API tokens start it sooner if they need it (`ClerkService.whenLoaded`); public pages, `GuestOnlyGuard` included, never wait for it. |
-| `api/` | `Api` (every HTTP call), zod response schemas, shared types. |
+| `api/` | `Api` (every HTTP call), zod response schemas, shared types. The schemas turn stored artwork paths (`/artwork/…`) into full addresses on the API. |
 | `core/services/clerk.service.ts` | Clerk lifecycle, sign-in and sign-up modals, invitation tickets, session token. |
 | `core/services/login.service.ts` | Board Vault session state: verifies Clerk sessions with `/auth/clerk/status` and loads the current user. |
 | `core/services/data.service.ts` | Shared signals for the current user and loaded data. |
@@ -171,7 +173,9 @@ inline script in `index.html` applies the same rules before the first paint.
 - **Assets:** account records (email, username), private collections, group
   and session history, and the provider secrets in Vercel.
 - **Untrusted input** enters through the browser (every API request), Clerk
-  webhooks (signature-verified), and invitation links.
+  webhooks (signature-verified), invitation links, and the images an admin
+  points the API at: those are downloaded only from public addresses and
+  decoded and re-encoded before they are stored (ADR-0015).
 - **Trust boundary:** the API. The browser only holds a Clerk session token
   and the publishable key; the API verifies the token, resolves the local
   account, and authorizes every target object ([authentication.md](authentication.md)).

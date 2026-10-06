@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common'
 
 import { CacheModule } from '../../common/cache/cache.module.js'
 import { DatabaseModule } from '../../common/database/database.module.js'
+import { ArtworkModule } from '../../core/artwork/artwork.module.js'
 import { GameProposalModule } from '../../core/game-proposal/game-proposal.module.js'
 import { GameTagsModule } from '../../core/game-tags/game-tags.module.js'
 import { GameTranslationModule } from '../../core/game-translation/game-translation.module.js'
@@ -17,6 +18,7 @@ import { AdminService } from './admin.service.js'
     imports: [
         DatabaseModule,
         CacheModule,
+        ArtworkModule,
         GamesModule,
         TagsModule,
         GameTagsModule,

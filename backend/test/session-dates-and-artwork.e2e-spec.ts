@@ -8,6 +8,8 @@ import request from 'supertest'
 
 import { AppModule } from './../src/app.module.js'
 import { ClerkTokenVerifier } from './../src/modules/common/auth/clerk-token-verifier.js'
+import { ArtworkDownloader } from './../src/modules/core/artwork/artwork-downloader.js'
+import { FakeArtworkDownloader } from './fake-artwork-downloader.js'
 import { FakeClerkTokenVerifier, sessionFor } from './fake-clerk-token-verifier.js'
 import { removeTestDatabase } from './remove-test-database.js'
 
@@ -93,6 +95,8 @@ describe('session dates, last played, and artwork addresses (e2e)', () => {
         const moduleFixture: TestingModule = await Test.createTestingModule({ imports: [AppModule] })
             .overrideProvider(ClerkTokenVerifier)
             .useValue(new FakeClerkTokenVerifier())
+            .overrideProvider(ArtworkDownloader)
+            .useValue(new FakeArtworkDownloader())
             .compile()
 
         app = moduleFixture.createNestApplication()

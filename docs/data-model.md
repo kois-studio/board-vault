@@ -10,7 +10,7 @@ The database is SQLite through libSQL: a local file in development, Turso in
 production. The schema is
 [`database/schema/schema.sql`](../database/schema/schema.sql) (the 0001–0005
 baseline) plus the numbered files in
-[`database/migrations/`](../database/migrations/). Current version: **0017**.
+[`database/migrations/`](../database/migrations/). Current version: **0018**.
 All SQL lives in the per-domain query classes in
 [`database/queries/`](../backend/src/modules/common/database/queries/).
 
@@ -35,7 +35,8 @@ sessions they created, and more.
 | Table | What it holds | References (on delete) |
 | --- | --- | --- |
 | `Account` | A person who signs in: `email`, `username`, `displayName`, `avatar`, `isAdmin`, `isDeleted`, and `clerkUserId` (unique). No credentials (ADR-0012). | — |
-| `Game` | Catalogue game: image, duration, player counts. | — |
+| `Game` | Catalogue game: artwork address, duration, player counts. `imageUrl` is `/artwork/<id>-<hash>.webp` for stored artwork, or empty for none. | — |
+| `GameArtwork` | Board Vault's copy of a game's artwork (ADR-0015): compressed WebP bytes, size, the hash in its address, and the address it was copied from (NULL for an upload). | `Game` (cascade) |
 | `GameTranslation` | Title per language (`en`, `es`) and a normalized title for search. | `Game` (cascade) |
 | `TagCategory`, `Tag`, `GameTag` | Catalogue tagging. | `TagCategory` → `Tag` (cascade); `Game`, `Tag` (cascade) |
 | `GameProposal` | A user's request to add a game; admins approve, reject, or mark as duplicate. Approval creates the game with exactly the reviewed values: players and length must come from the proposal or the admin, never a default. A rejection's `reviewNotes` is the reason the proposer reads; a duplicate names the existing game in the proposer's notification (`duplicateOfGameId` in its data). `addTo` (`shelf`, `wishlist`, or NULL) is where the approved game goes for the proposer, added in the approval transaction. | submitter `Account` (cascade); reviewer `Account`, created `Game` (set null) |
