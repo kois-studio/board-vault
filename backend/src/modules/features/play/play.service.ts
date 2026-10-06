@@ -1,6 +1,7 @@
 import { BadRequestException, ForbiddenException, Injectable, Logger, NotFoundException } from '@nestjs/common'
 
 import { LogFeature } from '../../../common/decorators/logger.decorator.js'
+import { toIsoDate } from '../../../common/utils/stored-date.js'
 import { DatabaseService } from '../../common/database/database.service.js'
 import { GameTranslationService } from '../../core/game-translation/game-translation.service.js'
 import { GamesService } from '../../core/games/games.service.js'
@@ -55,6 +56,7 @@ export class PlayService {
         }
 
         const resultSet = await this.databaseService.recommendations.getRecommendationCandidates(
+            body.groupId,
             body.attendeeIds,
             body.attendeeIds.length,
             body.availableMinutes,
@@ -272,7 +274,7 @@ export class PlayService {
         const titleEs = String(row[6] ?? row[5])
         const attendeeOwnerCount = Number(row[7])
         const averageReview = row[8] === null || row[8] === undefined ? null : Number(row[8])
-        const lastPlayedAt = row[9] === null || row[9] === undefined ? null : String(row[9])
+        const lastPlayedAt = row[9] === null || row[9] === undefined ? null : toIsoDate(String(row[9]))
         const durationScore =
             availableMinutes !== undefined && gameAvgDuration > 0
                 ? Math.round(20 * Math.max(0, 1 - Math.abs(availableMinutes - gameAvgDuration) / availableMinutes))

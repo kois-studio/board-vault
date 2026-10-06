@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common'
 
+import { toIsoDate } from '../../../common/utils/stored-date.js'
 import { DatabaseService } from '../../common/database/database.service.js'
 
 import type { GameCompleteDto } from '../../../common/types/game.type.js'
@@ -58,7 +59,7 @@ export class GroupInsightsService {
             mostPlayed: mostPlayed.rows.map(row => ({
                 gameData: toGame(row),
                 sessions: Number(row[7] ?? 0),
-                lastPlayedAt: String(row[8] ?? ''),
+                lastPlayedAt: toIsoDate(String(row[8] ?? '')),
             })),
             neverPlayed: neverPlayed.rows.map(row => toGame(row)),
             neverPlayedCount: Number(neverPlayed.rows[0]?.[7] ?? 0),

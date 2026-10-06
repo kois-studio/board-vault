@@ -4,6 +4,7 @@ import { Injectable, Logger, NotFoundException } from '@nestjs/common'
 import { mapMeetDetailsResult } from '../../../common/mappers/meet-details.mapper.js'
 import { meetsSchema } from '../../../common/schemas/db-meet.schema.js'
 import { MeetDto, MeetWithAttendeesAndGames } from '../../../common/types/meet.type.js'
+import { toIsoDate } from '../../../common/utils/stored-date.js'
 import { DatabaseService } from '../../common/database/database.service.js'
 
 @Injectable()
@@ -17,7 +18,7 @@ export class MeetsService {
             id: Number(row[0]),
             groupId: Number(row[1]),
             createdBy: Number(row[2]),
-            meetDate: String(row[3]),
+            meetDate: toIsoDate(String(row[3])),
             isConfirmed: Boolean(row[4]),
             status: String(row[5] ?? 'completed') as MeetDto['status'],
             timezone: String(row[6] ?? 'UTC'),

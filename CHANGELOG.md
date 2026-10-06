@@ -223,6 +223,12 @@ operational details.
 - The admin "Guessed values" filter is gone. No game in the catalogue still
   had values guessed by old approvals, and the check flagged games whose
   reviewed values happened to be 60 min or 2–4 players.
+- Session dates come back in one shape, ISO in UTC: dates stored without a
+  zone (as SQLite writes them) were read in each reader's own time zone, so
+  the same night showed different times on the server and in the browser and
+  mixed shapes sorted wrongly. "Last played" in suggestions now counts the
+  group's nights recorded with group people and leaves out other groups'
+  nights. Game artwork must be an http(s) address, or empty for none.
 
 ### Added
 
