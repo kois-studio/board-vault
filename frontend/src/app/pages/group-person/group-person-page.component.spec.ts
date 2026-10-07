@@ -32,6 +32,16 @@ describe('GroupPersonPageComponent', () => {
             },
             { accountId: null, groupPersonId: 20, displayName: 'Nora', avatar: null, games: [game(2, 'Azul')], worth: 40, pricedGames: 1 },
             { accountId: null, groupPersonId: 23, displayName: 'Quim', avatar: null, games: [game(3, 'Hanabi')], worth: 0, pricedGames: 0 },
+            // A catalogue game whose title is missing still shows, and its link has a name.
+            {
+                accountId: null,
+                groupPersonId: 24,
+                displayName: 'Pablo',
+                avatar: null,
+                games: [game(63, ''), game(2, 'Azul')],
+                worth: 0,
+                pricedGames: 0,
+            },
         ],
     }
     const standings = [{ accountId: 1, groupPersonId: 30, displayName: 'Ana Ruiz', avatar: null, sessions: 4, gamesPlayed: 9, wins: 3 }]
@@ -88,6 +98,15 @@ describe('GroupPersonPageComponent', () => {
 
         expect(element.textContent).toContain('No retail prices are known for their games yet.')
         expect(element.textContent).not.toContain('≈')
+    })
+
+    it('names a game without a title instead of showing an empty card', async () => {
+        const { element } = await render({ personId: '24' })
+        const items = [...element.querySelectorAll('#person-games-heading + ul li')]
+
+        expect(items.map((item) => item.querySelector('p')?.textContent?.trim())).toEqual(['Untitled game', 'Azul'])
+        expect(items[0]?.querySelector('a')?.textContent).toContain('Untitled game')
+        expect(items[0]?.querySelector('p')?.getAttribute('title')).toBe('Untitled game')
     })
 
     it('says when the person is not in the group', async () => {

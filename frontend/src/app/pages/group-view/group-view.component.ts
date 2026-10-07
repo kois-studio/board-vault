@@ -1,7 +1,8 @@
 import { CommonModule } from '@angular/common'
 import { Component, computed, effect, inject, signal } from '@angular/core'
+import { toSignal } from '@angular/core/rxjs-interop'
 import { ActivatedRoute, Router, RouterLink } from '@angular/router'
-import { firstValueFrom } from 'rxjs'
+import { firstValueFrom, map } from 'rxjs'
 import { Api } from '../../api/api'
 import type {
     GameCompleteType,
@@ -86,6 +87,13 @@ export class GroupViewComponent {
     private readonly groupViewService = inject(GroupViewService)
     private readonly localStorageService = inject(LocalStorageService)
     private readonly toastService = inject(ToastService)
+    /**
+     * The group in the address. Angular keeps this page when only the id changes (the group
+     * switcher), so it is read as a signal: a one-time snapshot would keep showing the first group.
+     */
+    private readonly routeGroupId = toSignal(this.route.paramMap.pipe(map((params) => Number.parseInt(params.get('groupId') || '', 10))), {
+        requireSync: true,
+    })
 
     // --------------------------------------------------------------------------
     //        Services signals
@@ -320,7 +328,7 @@ export class GroupViewComponent {
     constructor() {
         effect(() => {
             const currentUser = this.currentUser$()
-            const groupId = Number.parseInt(this.route.snapshot.paramMap.get('groupId') || '', 10)
+            const groupId = this.routeGroupId()
             const group = this.userGroups$().find((group) => group.id === groupId)
 
             if (this.activeSelectionGroupId !== groupId) {
@@ -329,6 +337,10 @@ export class GroupViewComponent {
                 this.groupData$.set(null)
                 this.groupHistory$.set([])
                 this.groupHistoryError.set(false)
+                // The previous group's loads no longer finish here (isShowing); this group's loads set them again.
+                this.isLoading.set(false)
+                this.acquisitionBoardLoading.set(false)
+                this.groupPeopleLoading.set(false)
                 this.acquisitionBoard$.set([])
                 this.acquisitionBoardError.set(false)
                 this.insights$.set(null)
@@ -382,7 +394,7 @@ export class GroupViewComponent {
 
     public retryGroupHistory(): void {
         const currentUser = this.currentUser$()
-        const groupId = Number.parseInt(this.route.snapshot.paramMap.get('groupId') || '', 10)
+        const groupId = this.routeGroupId()
         if (!currentUser || Number.isNaN(groupId)) return
 
         this.loadGroupHistory(currentUser.id, groupId)
@@ -679,8 +691,8 @@ export class GroupViewComponent {
     /** The group's collection worth is a detail: if it fails, Group pulse simply leaves it out. */
     private loadCollection(groupId: number): void {
         this.api.getGroupCollection(groupId).subscribe({
-            next: (collection) => this.collection$.set(collection),
-            error: () => this.collection$.set(null),
+            next: (collection) => this.isShowing(groupId) && this.collection$.set(collection),
+            error: () => this.isShowing(groupId) && this.collection$.set(null),
         })
     }
 
@@ -694,8 +706,8 @@ export class GroupViewComponent {
     public loadInsights(groupId: number): void {
         this.insightsError.set(false)
         this.api.getGroupInsights(groupId).subscribe({
-            next: (insights) => this.insights$.set(insights),
-            error: () => this.insightsError.set(true),
+            next: (insights) => this.isShowing(groupId) && this.insights$.set(insights),
+            error: () => this.isShowing(groupId) && this.insightsError.set(true),
         })
     }
 
@@ -712,13 +724,14 @@ export class GroupViewComponent {
         this.acquisitionBoardLoading.set(true)
         this.acquisitionBoardError.set(false)
         this.api.getGroupAcquisitionBoard(groupId).subscribe({
-            next: (entries) => this.acquisitionBoard$.set(entries),
+            next: (entries) => this.isShowing(groupId) && this.acquisitionBoard$.set(entries),
             error: () => {
+                if (!this.isShowing(groupId)) return
                 this.acquisitionBoardLoading.set(false)
                 this.acquisitionBoardError.set(true)
                 this.acquisitionBoard$.set([])
             },
-            complete: () => this.acquisitionBoardLoading.set(false),
+            complete: () => this.isShowing(groupId) && this.acquisitionBoardLoading.set(false),
         })
     }
 
@@ -733,21 +746,22 @@ export class GroupViewComponent {
         this.groupPeopleLoading.set(true)
         this.groupPeopleError.set(false)
         this.api.getGroupPeople(groupId, this.includeArchivedGroupPeople()).subscribe({
-            next: (response) => this.groupPeople$.set(response.people),
+            next: (response) => this.isShowing(groupId) && this.groupPeople$.set(response.people),
             error: () => {
+                if (!this.isShowing(groupId)) return
                 this.groupPeopleLoading.set(false)
                 this.groupPeopleError.set(true)
                 this.groupPeople$.set([])
             },
-            complete: () => this.groupPeopleLoading.set(false),
+            complete: () => this.isShowing(groupId) && this.groupPeopleLoading.set(false),
         })
         this.loadGroupPersonCatalog(groupId)
     }
 
     private loadGroupPersonCatalog(groupId: number): void {
         this.api.getGroupPersonCatalog(groupId).subscribe({
-            next: (games) => this.groupPersonCatalog$.set(games),
-            error: () => this.groupPersonCatalog$.set([]),
+            next: (games) => this.isShowing(groupId) && this.groupPersonCatalog$.set(games),
+            error: () => this.isShowing(groupId) && this.groupPersonCatalog$.set([]),
         })
     }
 
@@ -756,7 +770,7 @@ export class GroupViewComponent {
         this.groupHistoryError.set(false)
         this.api.getGroupMeetings(userId, groupId).subscribe({
             next: (groupMeetings) => {
-                this.groupHistory$.set(groupMeetings)
+                if (this.isShowing(groupId)) this.groupHistory$.set(groupMeetings)
                 this.dataService.groupHistoryByGroupId.set({
                     ...this.dataService.groupHistoryByGroupId(),
                     [groupId]: groupMeetings,
@@ -764,13 +778,19 @@ export class GroupViewComponent {
             },
             error: (error) => {
                 console.error(error)
+                if (!this.isShowing(groupId)) return
                 this.isLoading.set(false)
                 this.groupHistoryError.set(true)
                 // Keep the cache unset so a retry can request the data again.
                 this.groupHistory$.set([])
             },
-            complete: () => this.isLoading.set(false),
+            complete: () => this.isShowing(groupId) && this.isLoading.set(false),
         })
+    }
+
+    /** An answer for another group, asked for before the switcher moved on, must not land on this one. */
+    private isShowing(groupId: number): boolean {
+        return this.routeGroupId() === groupId
     }
 
     // #region Getters
