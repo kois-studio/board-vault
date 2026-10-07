@@ -1,0 +1,41 @@
+<h2 class="pb-2 text-2xl font-bold tracking-wide">Profile</h2>
+<p class="pb-8 text-bv-text-muted">How people in your groups see you.</p>
+
+<div class="max-w-xl space-y-6">
+    <section aria-labelledby="avatar-heading" class="rounded-lg border border-bv-border p-4">
+        <h3 id="avatar-heading" class="font-semibold">Avatar</h3>
+        <div class="flex items-center gap-4 pt-3">
+            <div class="relative shrink-0 rounded-full border-4 border-bv-border">
+                <app-image-profile [avatar]="$safeNavigationMigration(currentUser$()?.avatar)" size="large" />
+                <button
+                    type="button"
+                    aria-label="Edit profile avatar"
+                    class="absolute inset-0 flex cursor-pointer items-center justify-center rounded-full bg-black/60 font-bold tracking-wider text-white opacity-90 duration-200 focus-visible:opacity-100 motion-safe:transition-opacity"
+                    (click)="showAvatarEditor()"
+                >
+                    <span class="text-sm">Edit</span>
+                </button>
+            </div>
+            <p class="text-sm text-bv-text-muted">Pick an emoji, an icon or your initials, and a colour.</p>
+        </div>
+    </section>
+
+    <section aria-labelledby="display-name-heading" class="rounded-lg border border-bv-border p-4">
+        <h3 id="display-name-heading" class="pb-3 font-semibold">Display name</h3>
+        <form-update-display-name />
+    </section>
+
+    <section aria-labelledby="username-heading" class="rounded-lg border border-bv-border p-4">
+        <h3 id="username-heading" class="font-semibold">Username</h3>
+        <p class="pt-2 font-mono" data-testid="profile-username">{{ currentUser$()?.username }}</p>
+        <p class="pt-2 text-sm text-bv-text-muted">
+            You sign in with it, and friends use it to invite you to a group. Change it in
+            <a routerLink="/settings/account" class="font-medium text-bv-primary underline-offset-2 hover:underline">Account</a>.
+        </p>
+    </section>
+
+    <p class="text-sm text-bv-text-muted">People in your groups see your avatar, display name and username. Your shelf and wishlist stay private.</p>
+</div>
+
+<!-- Avatar Editor Modal -->
+<app-modal-avatar-editor />

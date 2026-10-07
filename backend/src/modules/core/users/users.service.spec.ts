@@ -67,21 +67,25 @@ describe('UsersController profile update boundary', () => {
         await request(app.getHttpServer())
             .put('/users/1')
             .send({
-                username: 'safe-user',
                 displayName: 'Safe User',
                 avatar,
             })
             .expect(200)
 
         expect(updateUserProfile).toHaveBeenCalledWith(1, {
-            username: 'safe-user',
             displayName: 'Safe User',
             avatar,
         })
     })
 
     it('rejects privileged or unexpected fields before persistence', async () => {
-        await request(app.getHttpServer()).put('/users/1').send({ username: 'safe-user', isAdmin: true }).expect(400)
+        await request(app.getHttpServer()).put('/users/1').send({ displayName: 'Safe User', isAdmin: true }).expect(400)
+
+        expect(updateUserProfile).not.toHaveBeenCalled()
+    })
+
+    it('rejects a username change: Clerk owns the username', async () => {
+        await request(app.getHttpServer()).put('/users/1').send({ username: 'safe-user' }).expect(400)
 
         expect(updateUserProfile).not.toHaveBeenCalled()
     })

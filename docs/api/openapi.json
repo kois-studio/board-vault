@@ -146,34 +146,6 @@
         "tags": [
           "users"
         ]
-      },
-      "delete": {
-        "deprecated": true,
-        "operationId": "UsersController_deleteUserById",
-        "parameters": [
-          {
-            "name": "userId",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "number"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "The user has been succesfully deleted"
-          }
-        },
-        "security": [
-          {
-            "bearer": []
-          }
-        ],
-        "summary": "Delete a user by Id",
-        "tags": [
-          "users"
-        ]
       }
     },
     "/users/{userId}/games": {
@@ -5293,10 +5265,6 @@
       "UpdateUserBody": {
         "type": "object",
         "properties": {
-          "username": {
-            "type": "string",
-            "example": "sample-user"
-          },
           "displayName": {
             "type": "string",
             "example": "Sample User"

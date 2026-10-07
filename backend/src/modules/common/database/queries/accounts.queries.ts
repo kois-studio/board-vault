@@ -34,9 +34,10 @@ export class AccountQueries {
         })
     }
 
+    /** Case-insensitive: Clerk stores usernames in lower case, and people type them either way. */
     getUserByUsername(username: string) {
         return this.database.execute({
-            sql: `SELECT ${ACCOUNT_COLUMNS} FROM Account WHERE username = ?`,
+            sql: `SELECT ${ACCOUNT_COLUMNS} FROM Account WHERE lower(username) = lower(?)`,
             args: [username],
         })
     }
@@ -59,10 +60,6 @@ export class AccountQueries {
         const fields = []
         const args = []
 
-        if (partialUserDto.username) {
-            fields.push('username = ?')
-            args.push(partialUserDto.username)
-        }
         if (partialUserDto.displayName) {
             fields.push('displayName = ?')
             args.push(partialUserDto.displayName)
@@ -80,6 +77,13 @@ export class AccountQueries {
         await this.database.execute({ sql: `UPDATE Account SET ${fields.join(', ')} WHERE id = ?`, args })
 
         return this.getUserById(id)
+    }
+
+    updateUsername(id: number, username: string) {
+        return this.database.execute({
+            sql: 'UPDATE Account SET username = ? WHERE id = ?',
+            args: [username, id],
+        })
     }
 
     updateUserEmail(id: number, email: string) {

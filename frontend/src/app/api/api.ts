@@ -149,7 +149,6 @@ export class Api {
     updateUser(
         userId: number,
         requesBody: {
-            username?: string
             displayName?: string
             avatar?: UserType['avatar']
         },

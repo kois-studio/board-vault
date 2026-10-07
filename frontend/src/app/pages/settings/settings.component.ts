@@ -9,7 +9,7 @@ export const SETTINGS_SECTIONS: SidebarGroup = {
     items: [
         { label: 'Profile', icon: 'user-circle', link: '/settings/profile' },
         { label: 'Appearance', icon: 'palette', link: '/settings/appearance' },
-        { label: 'Security', icon: 'shield-lock', link: '/settings/security' },
+        { label: 'Account', icon: 'lock', link: '/settings/account' },
     ],
 }
 

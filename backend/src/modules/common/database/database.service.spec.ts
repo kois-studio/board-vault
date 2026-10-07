@@ -885,7 +885,7 @@ describe('DatabaseService logging', () => {
         ).rejects.toThrow('User not found')
 
         expect(execute).toHaveBeenCalledWith({
-            sql: 'SELECT id, email, username, avatar, displayName, created_at, isDeleted, isAdmin, clerkUserId FROM Account WHERE username = ? AND isDeleted = 0',
+            sql: 'SELECT id, email, username, avatar, displayName, created_at, isDeleted, isAdmin, clerkUserId FROM Account WHERE lower(username) = lower(?) AND isDeleted = 0',
             args: ['former-member'],
         })
         expect(execute).toHaveBeenCalledTimes(1)

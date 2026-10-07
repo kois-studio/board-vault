@@ -34,7 +34,7 @@ sessions they created, and more.
 
 | Table | What it holds | References (on delete) |
 | --- | --- | --- |
-| `Account` | A person who signs in: `email`, `username`, `displayName`, `avatar`, `isAdmin`, `isDeleted`, and `clerkUserId` (unique). No credentials (ADR-0012). | — |
+| `Account` | A person who signs in: `email`, `username`, `displayName`, `avatar`, `isAdmin`, `isDeleted`, and `clerkUserId` (unique). No credentials (ADR-0012). `email` and `username` are copies of Clerk's, kept in step by webhook; usernames match case-insensitively (ADR-0017). | — |
 | `Game` | Catalogue game: artwork address, duration, player counts. `imageUrl` is `/artwork/<id>-<hash>.webp` for stored artwork, or empty for none. `retailPriceCents` is the recommended retail price in euro cents (NULL when unknown); collection-worth estimates read it, never `OwnedGame.purchasePrice` (ADR-0016). | — |
 | `GameArtwork` | Board Vault's copy of a game's artwork (ADR-0015): compressed WebP bytes, size, the hash in its address, and the address it was copied from (NULL for an upload). | `Game` (cascade) |
 | `GameTranslation` | Title per language (`en`, `es`) and a normalized title for search. | `Game` (cascade) |

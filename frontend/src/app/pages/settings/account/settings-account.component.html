@@ -1,36 +1,31 @@
-<h2 class="text-2xl font-bold tracking-wide pb-2">Profile</h2>
-<p class="text-secondary pb-8">How you appear to people in your groups.</p>
+<h2 class="pb-2 text-2xl font-bold tracking-wide">Account</h2>
+<p class="pb-8 text-bv-text-muted">How you sign in to Board Vault.</p>
 
-<section aria-labelledby="avatar-heading" class="py-4">
-    <h3 id="avatar-heading" class="text-sm font-semibold text-secondary">Profile avatar</h3>
-    <div class="lg:items-center flex justify-start items-center pt-3">
-    <div class="relative border-4 border-bv-border rounded-full">
-        <!-- Original Image Profile Component -->
-        <app-image-profile [avatar]="$safeNavigationMigration(currentUser$()?.avatar)" size="large" />
+<div class="max-w-xl space-y-6">
+    <section class="rounded-lg border border-bv-border p-4" aria-labelledby="sign-in-heading">
+        <h3 id="sign-in-heading" class="font-semibold">Sign-in</h3>
+        <dl class="grid grid-cols-[auto_1fr] gap-x-6 gap-y-2 py-3">
+            <dt class="text-bv-text-muted">Username</dt>
+            <dd class="min-w-0 truncate font-mono" data-testid="account-username">{{ username() }}</dd>
+            <dt class="text-bv-text-muted">Email</dt>
+            <dd class="min-w-0 truncate" data-testid="account-email">{{ email() }}</dd>
+        </dl>
+        <p class="pb-4 text-sm text-bv-text-muted">
+            Your username, email addresses, password and signed-in devices are kept by Clerk, our sign-in provider.
+        </p>
+        @if (clerkIsAvailable()) {
+            <button appButton variant="secondary" icon="lock" (click)="openClerkProfile()">Manage sign-in</button>
+        } @else {
+            <p class="text-sm text-bv-warning" role="status">Sign-in settings are unavailable until authentication finishes loading.</p>
+        }
+    </section>
 
-        <!-- Edit button overlay -->
-        <button
-            type="button"
-            aria-label="Edit profile avatar"
-            class="absolute bottom-0 right-0 top-0 bg-black/60 text-white font-bold tracking-wider rounded-full h-full w-full flex items-center justify-center opacity-90 focus-visible:opacity-100 motion-safe:transition-opacity duration-200 cursor-pointer"
-            (click)="showAvatarEditor()"
-        >
-            <span class="text-sm">Edit</span>
-        </button>
-    </div>
-    </div>
-    <p class="mt-3 text-sm text-secondary">Your avatar and profile details are account information. They are shown to people in groups where you participate.</p>
-</section>
-
-<div class="lg:items-center items-start py-4">
-    <h3 class="text-bv-text-muted pb-1">Display Name</h3>
-    <form-update-display-name />
+    <section class="rounded-lg border border-bv-border p-4" aria-labelledby="delete-account-heading">
+        <h3 id="delete-account-heading" class="font-semibold">Delete account</h3>
+        <p class="py-2 text-bv-text-muted">
+            You can't delete your account yourself yet. We want your groups to keep their game history when someone leaves, and we're
+            still working out how.
+        </p>
+        <p class="text-sm text-bv-text-muted">If you need your account removed now, ask the project owner.</p>
+    </section>
 </div>
-
-<div class="lg:items-center items-start py-4">
-    <h3 class="text-bv-text-muted pb-1">Username</h3>
-    <form-update-username />
-</div>
-
-<!-- Avatar Editor Modal -->
-<app-modal-avatar-editor />
