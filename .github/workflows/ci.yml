@@ -30,6 +30,8 @@ jobs:
               run: npm run check:public-tree
             - name: Check docs links and Node version consistency
               run: npm run check:docs
+            - name: Check theme colour contrast
+              run: npm run check:contrast
 
     backend:
         name: Backend tests and build

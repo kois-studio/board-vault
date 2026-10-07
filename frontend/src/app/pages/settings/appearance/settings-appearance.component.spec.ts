@@ -3,7 +3,11 @@ import { ThemeService } from '../../../core/services/theme.service'
 import { SettingsAppearanceComponent } from './settings-appearance.component'
 
 describe('SettingsAppearanceComponent', () => {
-    afterEach(() => localStorage.clear())
+    afterEach(() => {
+        localStorage.clear()
+        delete document.documentElement.dataset['theme']
+        delete document.documentElement.dataset['textSize']
+    })
 
     function render() {
         const fixture = TestBed.createComponent(SettingsAppearanceComponent)
@@ -11,32 +15,75 @@ describe('SettingsAppearanceComponent', () => {
         return fixture
     }
 
-    function radios(element: HTMLElement): Array<HTMLInputElement> {
-        return Array.from(element.querySelectorAll<HTMLInputElement>('input[type="radio"][name="theme"]'))
+    function radios(element: HTMLElement, name: string): Array<HTMLInputElement> {
+        return Array.from(element.querySelectorAll<HTMLInputElement>(`input[type="radio"][name="${name}"]`))
     }
 
-    it('offers System, Light and Dark as one radio group, with System chosen by default', () => {
-        const fixture = render()
-        const element: HTMLElement = fixture.nativeElement
+    function labels(element: HTMLElement, name: string): Array<string | undefined> {
+        // The visible name, without the aria-hidden preview (the text size samples read "Aa").
+        return radios(element, name).map((radio) => {
+            const label = radio.closest('label')?.cloneNode(true) as HTMLElement | undefined
+            for (const preview of Array.from(label?.querySelectorAll('[aria-hidden="true"]') ?? [])) preview.remove()
+            return label?.textContent?.trim().split(/\s+/)[0]
+        })
+    }
 
-        expect(element.querySelector('legend')?.textContent).toContain('Theme')
-        expect(radios(element).map((radio) => radio.closest('label')?.textContent?.trim().split(/\s+/)[0])).toEqual([
-            'System',
-            'Light',
-            'Dark',
+    function choose(fixture: ReturnType<typeof render>, name: string, value: string): void {
+        radios(fixture.nativeElement, name)
+            .find((radio) => radio.value === value)
+            ?.click()
+        fixture.detectChanges()
+    }
+
+    it('groups the color scheme, the theme and the text size, each as one radio group', () => {
+        const element: HTMLElement = render().nativeElement
+
+        expect(Array.from(element.querySelectorAll('legend')).map((legend) => legend.textContent?.trim())).toEqual([
+            'Color scheme',
+            'Theme',
+            'Text size',
         ])
-        expect(radios(element).find((radio) => radio.checked)?.value).toBe('system')
+        expect(labels(element, 'scheme')).toEqual(['System', 'Light', 'Dark'])
+        expect(labels(element, 'palette')).toEqual(['Ciruela', 'Felt', 'Harbor', 'Graphite'])
+        expect(labels(element, 'text-size')).toEqual(['Default', 'Large', 'Larger'])
     })
 
-    it('saves the chosen theme', () => {
-        const fixture = render()
-        const dark = radios(fixture.nativeElement).find((radio) => radio.value === 'dark')
+    it('starts on System, Ciruela and the default size', () => {
+        const element: HTMLElement = render().nativeElement
 
-        dark?.click()
-        fixture.detectChanges()
+        expect(radios(element, 'scheme').find((radio) => radio.checked)?.value).toBe('system')
+        expect(radios(element, 'palette').find((radio) => radio.checked)?.value).toBe('ciruela')
+        expect(radios(element, 'text-size').find((radio) => radio.checked)?.value).toBe('default')
+    })
+
+    it('saves the chosen color scheme', () => {
+        const fixture = render()
+
+        choose(fixture, 'scheme', 'dark')
 
         expect(TestBed.inject(ThemeService).preference()).toBe('dark')
         expect(localStorage.getItem('theme')).toBe('dark')
-        expect(radios(fixture.nativeElement).find((radio) => radio.checked)?.value).toBe('dark')
+        expect(radios(fixture.nativeElement, 'scheme').find((radio) => radio.checked)?.value).toBe('dark')
+    })
+
+    it('saves the chosen theme, and the color scheme previews wear it', () => {
+        const fixture = render()
+
+        choose(fixture, 'palette', 'felt')
+
+        expect(TestBed.inject(ThemeService).palette()).toBe('felt')
+        expect(localStorage.getItem('palette')).toBe('felt')
+        const schemePreviews = fixture.nativeElement.querySelectorAll('fieldset:first-of-type [data-theme]')
+        expect(Array.from<HTMLElement>(schemePreviews).map((preview) => preview.dataset['theme'])).toEqual(['felt', 'felt', 'felt', 'felt'])
+    })
+
+    it('saves the chosen text size', () => {
+        const fixture = render()
+
+        choose(fixture, 'text-size', 'larger')
+
+        expect(TestBed.inject(ThemeService).textSize()).toBe('larger')
+        expect(localStorage.getItem('text-size')).toBe('larger')
+        expect(document.documentElement.dataset['textSize']).toBe('larger')
     })
 })

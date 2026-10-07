@@ -75,6 +75,7 @@ npm run verify:migrations # empty-database migration chain
 npm run verify:restore    # restore + migrate rehearsal
 npm run verify:rollback   # rollback rehearsal
 npm run check:docs        # local links + Node version consistency
+npm run check:contrast    # theme colour pairs meet WCAG AA
 ```
 
 Run the checks for the packages and boundaries you changed. Report failed or

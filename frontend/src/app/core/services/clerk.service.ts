@@ -1,4 +1,4 @@
-import { computed, Injectable, signal } from '@angular/core'
+import { computed, Injectable, inject, signal } from '@angular/core'
 import { NavigationCancel, NavigationEnd, NavigationError, Router } from '@angular/router'
 import type { Clerk } from '@clerk/clerk-js'
 import { filter, firstValueFrom } from 'rxjs'
@@ -7,6 +7,7 @@ type ClerkLoadOptions = NonNullable<Parameters<Clerk['load']>[0]>
 type ClerkUiConstructor = NonNullable<ClerkLoadOptions['ui']>['ClerkUI']
 
 import { environment } from '../../../environments/environment'
+import { THEME_COLORS, ThemeService } from './theme.service'
 
 /**
  * Thin browser-side adapter around Clerk.
@@ -17,6 +18,7 @@ import { environment } from '../../../environments/environment'
  */
 @Injectable({ providedIn: 'root' })
 export class ClerkService {
+    private readonly theme = inject(ThemeService)
     private clerk: Clerk | null = null
     private unsubscribe: (() => void) | null = null
 
@@ -60,8 +62,9 @@ export class ClerkService {
             const { Clerk: ClerkConstructor } = await import('@clerk/clerk-js')
             const clerkUiCtor = await this.loadClerkUiScript()
             const clerk = new ClerkConstructor(environment.clerkPublishableKey)
-            // Clerk's own UI takes the palette's light-mode primary (docs/design-system.md).
-            await clerk.load({ ui: { ClerkUI: clerkUiCtor }, appearance: { variables: { colorPrimary: '#8A2C7A' } } })
+            // Clerk's own UI takes the chosen theme's light-mode primary (docs/design-system.md).
+            const colorPrimary = THEME_COLORS[this.theme.palette()].primary
+            await clerk.load({ ui: { ClerkUI: clerkUiCtor }, appearance: { variables: { colorPrimary } } })
 
             this.clerk = clerk
             this.syncState()

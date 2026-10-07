@@ -58,7 +58,7 @@ describe('ProfileMenuComponent', () => {
         const labels = Array.from(element().querySelectorAll('#profile-menu li')).map((item) =>
             item.textContent?.replace(/\s+/g, ' ').trim(),
         )
-        expect(labels).toEqual(['Settings', expect.stringContaining('Theme'), 'My submissions'])
+        expect(labels).toEqual(['Settings', expect.stringContaining('Color scheme'), 'My submissions'])
         expect(element().querySelector('#profile-menu input[type="radio"][value="system"]')).not.toBeNull()
     })
 

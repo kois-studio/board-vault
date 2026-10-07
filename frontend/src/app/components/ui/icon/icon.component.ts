@@ -213,6 +213,8 @@ const LEGACY_ALIASES: Record<string, string> = {
     selector: 'app-icon',
     imports: [NgComponentOutlet],
     template: '<ng-container *ngComponentOutlet="iconComponent(); inputs: iconInputs()" />',
+    // The size in rem as well (styles.css), so icons grow with the text size chosen in Settings → Appearance.
+    host: { '[style.--icon-size]': 'remSize()' },
 })
 export class IconComponent {
     readonly name = input.required<string>()
@@ -230,6 +232,12 @@ export class IconComponent {
         strokeWidth: this.strokeWidth(),
         title: this.label(),
     }))
+
+    /** `size` in rem (16px to the rem), or null when it is not a plain number. */
+    public readonly remSize = computed(() => {
+        const pixels = Number(this.size())
+        return Number.isFinite(pixels) && pixels > 0 ? `${pixels / 16}rem` : null
+    })
 
     private readonly normalizedName = computed(() => {
         const value = String(this.name()).replace(/^bi-/, '').replace(/^fa-/, '')
