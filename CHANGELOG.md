@@ -158,6 +158,17 @@ operational details.
 
 ### Fixed
 
+- Artwork addresses with a made-up hash no longer return the image: they
+  redirect to the current address without reading it, so changing the hash
+  can't skip the CDN to load the database. Old addresses still reach
+  today's image through that redirect.
+- Deleting an account clears the cached views but keeps the rate-limit
+  counters, which share the same Redis; before, each deletion reset
+  everyone's limits. If the cache can't be cleared, the server logs a
+  warning instead of carrying on silently.
+- The older `DELETE /memberships/:accountId/:groupId` leaves a group the way
+  the app does: upcoming nights drop the person, history keeps them, and
+  the owner can't leave their own group.
 - Star ratings were drawn as outlines everywhere: the filled stars got both
   `fill-none` and a fill colour. They are filled again.
 - The session heading no longer reads the time twice to screen readers.

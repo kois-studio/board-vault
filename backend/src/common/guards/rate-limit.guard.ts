@@ -3,7 +3,7 @@ import { createHash } from 'node:crypto'
 import { CanActivate, ExecutionContext, HttpException, HttpStatus, Injectable, SetMetadata } from '@nestjs/common'
 import { Reflector } from '@nestjs/core'
 
-import { CacheService } from '../../modules/common/cache/cache.service.js'
+import { CacheService, RATE_LIMIT_KEY_PREFIX } from '../../modules/common/cache/cache.service.js'
 
 export const RATE_LIMIT_METADATA = 'board-vault:rate-limit'
 
@@ -45,7 +45,7 @@ export class RateLimitGuard implements CanActivate {
         const endpoint = request.route?.path ?? request.path ?? 'unknown'
         const bucket = Math.floor(Date.now() / 1000 / options.windowSeconds)
         const identifier = createHash('sha256').update(`${endpoint}:${caller}:${bucket}`).digest('hex')
-        const count = await this.cacheService.increment(`rate-limit:${identifier}`, options.windowSeconds)
+        const count = await this.cacheService.increment(`${RATE_LIMIT_KEY_PREFIX}${identifier}`, options.windowSeconds)
 
         // Redis is intentionally optional for local development. Production must
         // keep it enabled or this guard will fail open.
