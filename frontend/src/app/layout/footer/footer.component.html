@@ -5,7 +5,7 @@
                 <app-logo class="text-bv-primary" [size]="24" />
                 <span class="text-xl font-bold text-bv-text">Board Vault</span>
             </div>
-            <p class="mt-4 max-w-sm leading-7">A practical home for the games your group owns and the sessions you remember.</p>
+            <p class="mt-4 max-w-sm leading-7">A tidy home for your board game collection, and for the people you play with.</p>
         </div>
 
         <div>
@@ -13,6 +13,8 @@
             <ul class="mt-4 space-y-3">
                 <li><a routerLink="/" fragment="features" class="transition hover:text-bv-primary">Features</a></li>
                 <li><a routerLink="/" fragment="how-it-works" class="transition hover:text-bv-primary">How it works</a></li>
+                <li><a routerLink="/" fragment="questions" class="transition hover:text-bv-primary">FAQ</a></li>
+                <li><a href="https://github.com/kois-studio/board-vault" target="_blank" rel="noopener" class="transition hover:text-bv-primary">Source code on GitHub</a></li>
                 @if (isAuthenticated()) {
                     <li><a routerLink="/collection" class="transition hover:text-bv-primary">Collection</a></li>
                     <li><a routerLink="/dashboard" class="transition hover:text-bv-primary">Your groups</a></li>
@@ -27,7 +29,7 @@
                     <li><a routerLink="/settings" class="transition hover:text-bv-primary">Account settings</a></li>
                 } @else {
                     <li><a routerLink="/login" class="transition hover:text-bv-primary">Sign in</a></li>
-                    <li><a routerLink="/register" class="transition hover:text-bv-primary">Private beta access</a></li>
+                    <li><a routerLink="/register" class="transition hover:text-bv-primary">Create an account</a></li>
                 }
             </ul>
             <p class="mt-6 text-sm">Board Vault is an early product; privacy, terms, and support content will be added before public launch.</p>

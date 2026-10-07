@@ -16,16 +16,21 @@ test.describe('public navigation', () => {
         await page.goto('/')
 
         await expect(page).toHaveTitle(/Board Vault/i)
-        await expect(page.getByRole('heading', { name: /Game night, decided together/i })).toBeVisible()
-        // The steps render when their section scrolls into view (@defer).
-        await page.locator('#how-it-works').scrollIntoViewIfNeeded()
-        for (const step of ['Bring your shelf', 'Plan the night', 'Decide together', 'Remember']) {
+        await expect(page.getByRole('heading', { level: 1, name: /Every game you own, on one tidy shelf/i })).toBeVisible()
+        for (const step of [
+            'Add a game in seconds',
+            'Find the right game fast',
+            'Rate what you play, wish for what’s next',
+            'Share the shelf with your group',
+            'Plan the night, keep the history',
+        ]) {
             await expect(page.getByRole('heading', { name: step, exact: true })).toBeVisible()
         }
-        await expect(page.getByRole('link', { name: 'Home' })).toBeVisible()
-        const navigation = page.getByRole('navigation')
+        await expect(page.getByRole('link', { name: 'Board Vault home' })).toBeVisible()
+        const navigation = page.getByRole('navigation', { name: 'Primary navigation' })
         await expect(navigation.getByRole('link', { name: 'Features' })).toHaveAttribute('href', '/#features')
         await expect(navigation.getByRole('link', { name: 'How it works' })).toHaveAttribute('href', '/#how-it-works')
+        await expect(navigation.getByRole('link', { name: 'FAQ' })).toHaveAttribute('href', '/#questions')
         await expect(page.getByText('BoardMeet', { exact: false })).toHaveCount(0)
         await expect(page.locator('a[href="#"]')).toHaveCount(0)
     })
@@ -35,27 +40,32 @@ test.describe('public navigation', () => {
             await page.setViewportSize({ width, height: 900 })
             await page.goto('/')
 
-            await expect(page.getByRole('heading', { name: /Game night, decided together/i })).toBeVisible()
-            await expect(page.getByText(/During the beta you join with an invitation from a friend/i)).toBeVisible()
-            await expect(page.getByText(/For the people you play with, not the whole internet/i)).toBeVisible()
-            await expect(page.getByRole('link', { name: /Get invited|Create an account/ }).first()).toHaveAttribute('href', '/register')
+            await expect(page.getByRole('heading', { level: 1, name: /Every game you own/i })).toBeVisible()
+            await expect(page.getByRole('link', { name: 'Create your free account' }).first()).toHaveAttribute('href', '/register')
+            // The landing reads as the product; the invitation detail lives on the registration page.
+            await expect(page.getByText(/beta|invit/i)).toHaveCount(0)
             expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true)
         }
+
+        // "See how it works" stays on the landing page and moves to the features.
+        await page.getByRole('link', { name: 'See how it works' }).click()
+        await expect(page).toHaveURL(/\/#features$/)
+        await expect(page.locator('#features')).toBeInViewport()
     })
 
-    test('labels every product sample as an example and keeps it out of reach', async ({ page }) => {
+    test('filters the example shelf and shows only our own artwork', async ({ page }) => {
         await page.goto('/')
-        await page.locator('#how-it-works').scrollIntoViewIfNeeded()
 
-        const samples = page.locator('figure')
-        await expect(samples).toHaveCount(5)
-        for (const sample of await samples.all()) {
-            await expect(sample).toContainText('Example · Friday Crew')
-            await expect(sample.locator('figcaption')).toContainText('The real')
-            await expect(sample.locator('[inert]')).toHaveCount(1)
-        }
-        // Our own artwork only: no third-party box art on the public page.
-        for (const src of await page.locator('figure img').evaluateAll(images => images.map(image => image.getAttribute('src')))) {
+        const chips = page.getByRole('group', { name: 'Filter the example games by players' })
+        await expect(page.getByText('8 games', { exact: true })).toBeVisible()
+        await chips.getByRole('button', { name: '6 players' }).click()
+        await expect(chips.getByRole('button', { name: '6 players' })).toHaveAttribute('aria-pressed', 'true')
+        await expect(page.getByText('2 games', { exact: true })).toBeVisible()
+        await chips.getByRole('button', { name: 'All' }).click()
+        await expect(page.getByText('8 games', { exact: true })).toBeVisible()
+
+        // Made-up games with our own covers: no third-party box art on the public page.
+        for (const src of await page.locator('main img').evaluateAll(images => images.map(image => image.getAttribute('src')))) {
             expect(src).toMatch(/^\/images\/landing\//)
         }
     })
@@ -73,7 +83,7 @@ test.describe('public navigation', () => {
         await page.goto('/dashboard')
 
         await expect(page).toHaveURL(/\/$/)
-        await expect(page.getByRole('heading', { name: /Game night, decided together/i })).toBeVisible()
+        await expect(page.getByRole('heading', { level: 1, name: /Every game you own/i })).toBeVisible()
     })
 
     test('keeps the keyboard skip link on the current page', async ({ page }) => {
@@ -88,7 +98,7 @@ test.describe('public navigation', () => {
 
         await expect(page).toHaveURL(/\/login#main-content$/)
         await expect(page.locator('#main-content')).toBeFocused()
-        await expect(page.getByRole('heading', { name: /Game night, decided together/i })).toHaveCount(0)
+        await expect(page.getByRole('heading', { name: /Every game you own/i })).toHaveCount(0)
     })
 
     test('shows a not-found page for an unknown route', async ({ page }) => {

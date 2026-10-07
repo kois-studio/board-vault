@@ -52,11 +52,17 @@ export class LayoutHeaderComponent {
         })
     }
 
+    /** The landing page sections, linked from the signed-out bar. */
+    public readonly publicAnchors = [
+        { fragment: 'features', label: 'Features', icon: 'sparkle' },
+        { fragment: 'how-it-works', label: 'How it works', icon: 'users' },
+        { fragment: 'questions', label: 'FAQ', icon: 'circle-help' },
+    ]
+
     public readonly mobilePublicNavigation = [
-        { path: '/#features', label: 'Features', icon: 'sparkle' },
-        { path: '/#how-it-works', label: 'How it works', icon: 'file-text' },
-        { path: '/login', label: 'Log in', icon: 'arrow-right' },
-        { path: '/register', label: 'Private beta', icon: 'mail' },
+        ...this.publicAnchors.map(({ fragment, label, icon }) => ({ path: `/#${fragment}`, label, icon })),
+        { path: '/login', label: 'Log in', icon: 'user-circle' },
+        { path: '/register', label: 'Start free', icon: 'arrow-right' },
     ]
 
     public openClerkSignIn(): void {

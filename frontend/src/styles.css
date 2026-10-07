@@ -40,6 +40,7 @@
     --bv-player-7: #7e22ce;
     --bv-player-8: #be185d;
     --bv-on-player: #ffffff;
+    --bv-shadow-lift: 0 24px 48px -24px rgb(58 11 48 / 0.35);
 }
 
 .dark {
@@ -71,6 +72,7 @@
     --bv-player-7: #d8b4fe;
     --bv-player-8: #f9a8d4;
     --bv-on-player: #14101a;
+    --bv-shadow-lift: 0 24px 48px -24px rgb(0 0 0 / 0.6);
 }
 
 @theme inline {
@@ -101,6 +103,8 @@
     --color-bv-player-7: var(--bv-player-7);
     --color-bv-player-8: var(--bv-player-8);
     --color-bv-on-player: var(--bv-on-player);
+    /* `shadow-bv-lift`: the soft drop shadow of a card that sits above the page (landing covers and samples). */
+    --shadow-bv-lift: var(--bv-shadow-lift);
 }
 
 @layer components {
@@ -142,7 +146,8 @@
     .app-btn-primary,
     .app-btn-secondary,
     .app-btn-danger,
-    .app-btn-success {
+    .app-btn-success,
+    .app-btn-accent {
         @apply inline-flex cursor-pointer select-none items-center justify-center gap-2 rounded-lg border px-4 py-2 font-semibold tracking-wide transition duration-150 ease-out not-disabled:active:scale-95 disabled:cursor-not-allowed disabled:opacity-50 aria-disabled:pointer-events-none aria-disabled:opacity-50;
     }
 
@@ -160,6 +165,11 @@
 
     .app-btn-success {
         @apply border-transparent bg-bv-success text-bv-on-success shadow-sm not-disabled:hover:bg-bv-success/90;
+    }
+
+    /* Sunglow fill for a call to action that sits on a primary band. */
+    .app-btn-accent {
+        @apply border-transparent bg-bv-accent text-bv-on-accent shadow-sm not-disabled:hover:bg-bv-accent/90;
     }
 
     .app-btn-sm {

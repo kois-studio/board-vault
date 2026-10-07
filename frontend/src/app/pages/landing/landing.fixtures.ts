@@ -1,11 +1,8 @@
 import type { UserType } from '../../api/api.types'
-import type { HistoryEntryView } from '../../components/history-entry/history-entry.component'
 import type { RecommendationGroupSignal } from '../../components/recommendation-card/recommendation-card.component'
-import type { SessionStat } from '../../components/session-summary/session-summary.component'
-import type { SessionDateParts } from '../../core/utils/sessionTiming'
 
 /**
- * Friday Crew: the example group the landing page fills the real components with.
+ * Friday Crew: the example group the landing page samples are filled with.
  * The games are made up and the covers are ours (public/images/landing), so no publisher art appears.
  */
 
@@ -49,8 +46,27 @@ export const EXAMPLE_GAMES = {
 
 const games = EXAMPLE_GAMES
 
-/** Bring your shelf: games with the people who own them. */
-export const EXAMPLE_SHELF: Array<ExampleGame & { owners: Array<ExamplePerson> }> = [
+/** The fan of covers under the hero, and the shelf the "find" sample filters. */
+export const EXAMPLE_SHELF: Array<ExampleGame> = Object.values(games)
+
+/** Add: the catalogue search for "lantern", one of them already on the shelf. */
+export const EXAMPLE_SEARCH: Array<ExampleGame & { owned: boolean }> = [
+    { ...games.lanternHarbor, owned: false },
+    { ...games.nightTrain, owned: true },
+    { ...games.quietForest, owned: false },
+]
+
+/** Rate: ratings out of 10, shown as five stars like the rest of the app. */
+export const EXAMPLE_RATINGS: Array<{ game: ExampleGame; rating: number; plays: number }> = [
+    { game: games.lanternHarbor, rating: 10, plays: 7 },
+    { game: games.diceKitchen, rating: 8, plays: 12 },
+    { game: games.tidalTiles, rating: 6, plays: 3 },
+]
+
+export const EXAMPLE_WISH = games.skyOrchards
+
+/** Share: the group's games with the people who own them. */
+export const EXAMPLE_GROUP_SHELF: Array<ExampleGame & { owners: Array<ExamplePerson> }> = [
     { ...games.lanternHarbor, owners: [ana, mia] },
     { ...games.nightTrain, owners: [leo] },
     { ...games.diceKitchen, owners: [sam, jon] },
@@ -65,52 +81,28 @@ export type ExampleRecommendation = {
     signal: RecommendationGroupSignal | null
 }
 
-/** Decide: what fits the five coming tonight, for two hours. */
-export const EXAMPLE_RECOMMENDATIONS: Array<ExampleRecommendation> = [
-    {
-        game: games.lanternHarbor,
-        score: 92,
-        historyLabel: 'Last played 6 weeks ago',
-        reasons: ['Fits all 5 coming', 'Ana and Mia rated it 9', 'Fits in your 2 hours'],
-        signal: { interestedCount: 3, interestedNames: 'Leo, Sam, Jon', notForUsCount: 0 },
-    },
-    {
-        game: games.meepleMarket,
-        score: 84,
-        historyLabel: 'New to this group',
-        reasons: ['Fits all 5 coming', 'Jon has wanted to try it', '45 minutes, room for a second game'],
-        signal: null,
-    },
-    {
-        game: games.diceKitchen,
-        score: 77,
-        historyLabel: 'Last played 2 weeks ago',
-        reasons: ['Fits all 5 coming', 'Quick to teach'],
-        signal: null,
-    },
-]
+/** What fits the five coming tonight, for two hours. */
+export const EXAMPLE_RECOMMENDATION: ExampleRecommendation = {
+    game: games.lanternHarbor,
+    score: 92,
+    historyLabel: 'Last played 6 weeks ago',
+    reasons: ['Fits all 5 coming', 'Ana and Mia rated it 9', 'Fits in your 2 hours'],
+    signal: { interestedCount: 3, interestedNames: 'Leo, Sam, Jon', notForUsCount: 0 },
+}
 
-/** Plan: next Friday's game night. */
-export const EXAMPLE_SESSION: {
-    date: SessionDateParts
-    accessibleDate: string
-    timezone: string
-    relativeLabel: string
-    notes: string
-    stats: Array<SessionStat>
+/** Plan: next Friday's game night, and what the crew played last Friday. */
+export const EXAMPLE_NIGHT: {
+    weekday: string
+    day: string
+    title: string
+    meta: string
     rsvps: Array<{ person: ExamplePerson; answer: 'going' | 'not-going' | 'no-answer' }>
+    lastNight: Array<{ game: ExampleGame; winner: string }>
 } = {
-    date: { month: 'Oct', day: '16', weekday: 'Fri', time: '19:30', year: '2026' },
-    accessibleDate: '16 October 2026 at 19:30',
-    timezone: 'Europe/Madrid',
-    relativeLabel: 'in 4 days',
-    notes: 'At Mia’s. Sam brings snacks.',
-    stats: [
-        { label: 'Invited', value: 5 },
-        { label: 'Going', value: 3 },
-        { label: 'Shortlisted', value: 3 },
-        { label: 'Played', value: 0 },
-    ],
+    weekday: 'Fri',
+    day: '16',
+    title: 'Game night at Mia’s',
+    meta: '19:30 · in 4 days',
     rsvps: [
         { person: ana, answer: 'going' },
         { person: mia, answer: 'going' },
@@ -118,52 +110,9 @@ export const EXAMPLE_SESSION: {
         { person: leo, answer: 'no-answer' },
         { person: jon, answer: 'not-going' },
     ],
-}
-
-/** Decide together: the shortlist the group is voting on. */
-export const EXAMPLE_SHORTLIST: Array<ExampleGame> = [games.lanternHarbor, games.meepleMarket, games.skyOrchards]
-
-/** Remember: last Friday's night in the history. */
-export const EXAMPLE_HISTORY: HistoryEntryView = {
-    id: 'example',
-    title: EXAMPLE_GROUP,
-    dateLabel: '9 October 2026 at 19:30',
-    weekday: 'Fri',
-    day: '9',
-    link: null,
-    attendees: [ana, leo, sam, mia].map(({ key, name, avatar }) => ({ key, name, avatar })),
-    attendeeSummary: 'With Ana, Leo, Sam and Mia',
-    notes: 'Leo finally won Night Train.',
-    games: [
-        {
-            key: 'night-train',
-            title: games.nightTrain.title,
-            initials: 'NT',
-            imageUrl: games.nightTrain.imageUrl,
-            link: null,
-            winners: 'Leo won',
-            playedBy: 'Ana, Leo, Sam and Mia',
-            everyonePlayed: true,
-        },
-        {
-            key: 'tidal-tiles',
-            title: games.tidalTiles.title,
-            initials: 'TT',
-            imageUrl: games.tidalTiles.imageUrl,
-            link: null,
-            winners: 'Mia won',
-            playedBy: 'Ana and Mia',
-            everyonePlayed: false,
-        },
-        {
-            key: 'comet-run',
-            title: games.cometRun.title,
-            initials: 'CR',
-            imageUrl: games.cometRun.imageUrl,
-            link: null,
-            winners: 'Ana and Sam won',
-            playedBy: 'Ana, Leo, Sam and Mia',
-            everyonePlayed: true,
-        },
+    lastNight: [
+        { game: games.nightTrain, winner: 'Leo' },
+        { game: games.tidalTiles, winner: 'Mia' },
+        { game: games.cometRun, winner: 'Ana' },
     ],
 }

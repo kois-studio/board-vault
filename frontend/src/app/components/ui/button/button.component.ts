@@ -1,7 +1,7 @@
 import { Component, computed, ElementRef, inject, input } from '@angular/core'
 import { IconComponent } from '../icon/icon.component'
 
-export type ButtonVariant = 'primary' | 'secondary' | 'danger' | 'success'
+export type ButtonVariant = 'primary' | 'secondary' | 'danger' | 'success' | 'accent'
 export type ButtonSize = 'small' | 'medium' | 'large'
 
 const ICON_SIZE: Record<ButtonSize, number> = { small: 16, medium: 18, large: 21 }
@@ -30,6 +30,7 @@ const ICON_SIZE: Record<ButtonSize, number> = { small: 16, medium: 18, large: 21
         '[class.app-btn-secondary]': "variant() === 'secondary'",
         '[class.app-btn-danger]': "variant() === 'danger'",
         '[class.app-btn-success]': "variant() === 'success'",
+        '[class.app-btn-accent]': "variant() === 'accent'",
         '[class.app-btn-sm]': "size() === 'small'",
         '[class.app-btn-lg]': "size() === 'large'",
         '[class.w-full]': 'wide()',
