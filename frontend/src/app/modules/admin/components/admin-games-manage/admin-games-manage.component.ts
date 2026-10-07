@@ -25,6 +25,7 @@ export const CATALOGUE_ISSUES: Array<{ value: CatalogueIssue; label: string; hin
         hint: 'No Spanish title, or the same as the English one. Some games do keep their name.',
     },
     { value: 'no-tags', label: 'No tags', hint: 'Without tags the game is missing from tag filters and suggestions.' },
+    { value: 'no-price', label: 'No price', hint: 'Without a retail price the game is left out of collection worth estimates.' },
 ]
 
 /** The admin catalogue: every game, searchable and filterable by Browse's filters and by data problem. */

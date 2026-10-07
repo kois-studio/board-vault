@@ -134,6 +134,16 @@ export const routes: Routes = [
                 canActivate: [AuthOnlyGuard],
             },
             {
+                path: 'groups/:groupId/members/:accountId',
+                loadComponent: () => import('./pages/group-person/group-person-page.component').then((m) => m.GroupPersonPageComponent),
+                canActivate: [AuthOnlyGuard],
+            },
+            {
+                path: 'groups/:groupId/people/:personId',
+                loadComponent: () => import('./pages/group-person/group-person-page.component').then((m) => m.GroupPersonPageComponent),
+                canActivate: [AuthOnlyGuard],
+            },
+            {
                 path: 'sessions/:sessionId',
                 loadComponent: () => import('./pages/meet-view/meet-view.component').then((m) => m.MeetViewComponent),
                 canActivate: [AuthOnlyGuard],

@@ -21,6 +21,7 @@ describe('AdminGameEditComponent', () => {
         tags: [{ id: 4, name: 'Strategy', categoryName: 'Genre' }],
         issues: ['no-artwork', 'no-spanish'],
         artworkSource: null,
+        retailPrice: null,
     }
     let api: Record<string, ReturnType<typeof vi.fn>>
     let toast: { success: ReturnType<typeof vi.fn>; error: ReturnType<typeof vi.fn> }
@@ -65,7 +66,8 @@ describe('AdminGameEditComponent', () => {
             expect.objectContaining({ titleEn: 'Catan', titleEs: 'Catan', minPlayers: 3, maxPlayers: 4, gameAvgDuration: 90 }),
         )
 
-        component.form.patchValue({ imageUrl: 'https://example.test/catan.jpg', titleEs: 'Los colonos de Catán' })
+        // A price typed with too many decimals is sent to the cent.
+        component.form.patchValue({ imageUrl: 'https://example.test/catan.jpg', titleEs: 'Los colonos de Catán', retailPrice: 44.949 })
         component.selectedTagIds.set(new Set([4, 5]))
         await component.save()
 
@@ -75,6 +77,7 @@ describe('AdminGameEditComponent', () => {
             minPlayers: 3,
             maxPlayers: 4,
             gameAvgDuration: 90,
+            retailPrice: 44.95,
             tagIds: [4, 5],
         })
         expect(toast.success).toHaveBeenCalledWith('Saved.')

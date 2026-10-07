@@ -1,6 +1,19 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger'
 import { Transform, Type } from 'class-transformer'
-import { ArrayMaxSize, IsArray, IsIn, IsInt, IsNotEmpty, IsOptional, IsString, Max, MaxLength, Min, ValidateNested } from 'class-validator'
+import {
+    ArrayMaxSize,
+    IsArray,
+    IsIn,
+    IsInt,
+    IsNotEmpty,
+    IsNumber,
+    IsOptional,
+    IsString,
+    Max,
+    MaxLength,
+    Min,
+    ValidateNested,
+} from 'class-validator'
 
 import { IsArtworkUrl } from '../validators/is-artwork-url.js'
 
@@ -11,7 +24,7 @@ import type { GameLength } from './game.type.js'
 
 const ADMIN_PAGE_SIZE_MAX = 100
 
-export const CATALOGUE_QUALITY_ISSUES = ['no-title', 'no-artwork', 'no-spanish', 'no-tags'] as const
+export const CATALOGUE_QUALITY_ISSUES = ['no-title', 'no-artwork', 'no-spanish', 'no-tags', 'no-price'] as const
 export type CatalogueQualityIssue = (typeof CATALOGUE_QUALITY_ISSUES)[number]
 
 export class AdminGamesQuery {
@@ -61,7 +74,7 @@ export class AdminGamesQuery {
     @ApiPropertyOptional({
         enum: CATALOGUE_QUALITY_ISSUES,
         description:
-            'Only games with this data problem: no English title; no artwork; no Spanish title or one equal to the English; or no tags.',
+            'Only games with this data problem: no English title; no artwork; no Spanish title or one equal to the English; no tags; or no retail price.',
     })
     @IsOptional()
     @IsIn(CATALOGUE_QUALITY_ISSUES)
@@ -87,6 +100,14 @@ export class AdminGameDto extends GameWithTagsAndTranslationsDto {
         description: 'Where the stored artwork was copied from; null for an upload or no artwork.',
     })
     artworkSource: string | null
+
+    @ApiProperty({
+        type: Number,
+        nullable: true,
+        example: 39.95,
+        description: 'Recommended retail price in euros, for collection-worth estimates; null when unknown.',
+    })
+    retailPrice: number | null
 }
 
 /** Titles to save; an empty Spanish title removes it. */
@@ -143,6 +164,20 @@ export class UpdateAdminGameBody {
     @Min(1)
     @Max(1440)
     gameAvgDuration?: number
+
+    @ApiPropertyOptional({
+        type: Number,
+        nullable: true,
+        example: 39.95,
+        minimum: 0,
+        maximum: 5000,
+        description: 'Recommended retail price in euros (PVP); null removes it.',
+    })
+    @IsOptional()
+    @IsNumber({ allowNaN: false, allowInfinity: false, maxDecimalPlaces: 2 })
+    @Min(0)
+    @Max(5000)
+    retailPrice?: number | null
 
     @ApiPropertyOptional({ example: [1, 2], description: 'The whole set of tags; replaces the current ones.' })
     @IsOptional()
@@ -359,6 +394,13 @@ export class ApproveGameProposalBody {
     @Min(1)
     @Max(1440)
     gameAvgDuration?: number
+
+    @ApiProperty({ example: 39.95, required: false, minimum: 0, maximum: 5000, description: 'Recommended retail price in euros (PVP).' })
+    @IsOptional()
+    @IsNumber({ allowNaN: false, allowInfinity: false, maxDecimalPlaces: 2 })
+    @Min(0)
+    @Max(5000)
+    retailPrice?: number
 
     @ApiProperty({
         example: 3,

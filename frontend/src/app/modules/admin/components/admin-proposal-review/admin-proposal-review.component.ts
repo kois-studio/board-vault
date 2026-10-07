@@ -15,6 +15,7 @@ import {
     createGameFieldsForm,
     groupTags,
     playersOutOfOrder,
+    retailPriceValue,
     type TagGroup,
 } from '../admin-game-fields/admin-game-fields.component'
 import { AdminGameProposalsService } from '../admin-game-proposals/admin-game-proposals.service'
@@ -92,6 +93,7 @@ export class AdminProposalReviewComponent implements OnInit {
                 minPlayers: proposal.minPlayers,
                 maxPlayers: proposal.maxPlayers,
                 gameAvgDuration: proposal.gameAvgDuration,
+                retailPrice: null,
             })
             if (proposal.status !== 'pending') this.form.disable()
             void this.findPossibleDuplicates(proposal.title)
@@ -123,6 +125,7 @@ export class AdminProposalReviewComponent implements OnInit {
             minPlayers: value.minPlayers ?? undefined,
             maxPlayers: value.maxPlayers ?? undefined,
             gameAvgDuration: value.gameAvgDuration ?? undefined,
+            retailPrice: retailPriceValue(this.form) ?? undefined,
             tagIds: [...this.selectedTagIds()],
             reviewNotes: this.reviewNotes.value.trim() || undefined,
         })

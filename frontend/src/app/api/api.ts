@@ -26,6 +26,7 @@ import {
     gamesSchema,
     gameViewSchema,
     groupAcquisitionBoardSchema,
+    groupCollectionSchema,
     groupInsightsSchema,
     groupInvitationsSchema,
     groupPeopleSchema,
@@ -85,6 +86,7 @@ import type {
     GameType,
     GameViewType,
     GroupAcquisitionEntryType,
+    GroupCollectionType,
     GroupInsightsType,
     GroupPersonType,
     GroupPersonWorkspaceType,
@@ -534,16 +536,17 @@ export class Api {
             .pipe(map((response) => userHistorySchema.parse(response)))
     }
 
+    /** Everyone's games in the group and their approximate worth at retail price. */
+    getGroupCollection(groupId: number) {
+        return this.http
+            .get<GroupCollectionType>(`${this.url}/groups/${groupId}/collection`)
+            .pipe(map((response) => groupCollectionSchema.parse(response)))
+    }
+
     getGroupInsights(groupId: number) {
         return this.http
             .get<GroupInsightsType>(`${this.url}/groups/${groupId}/insights`)
             .pipe(map((response) => groupInsightsSchema.parse(response)))
-    }
-
-    setGroupSpendingShare(groupId: number, share: boolean) {
-        return this.http
-            .put<{ success: true }>(`${this.url}/groups/${groupId}/spending-share`, { share })
-            .pipe(map((response) => successSchema.parse(response)))
     }
 
     getGroupAcquisitionBoard(groupId: number) {

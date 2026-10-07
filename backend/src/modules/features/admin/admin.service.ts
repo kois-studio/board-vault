@@ -34,6 +34,10 @@ import type { TagCategoryWithTagsDto } from '../../../common/types/tag-category.
 
 const ADMIN_OVERVIEW_CACHE_KEY = 'admin:overview'
 
+/** Euros as the admin types them, stored as whole cents; null or absent means no price. */
+const toCents = (euros: number | null | undefined): number | null =>
+    euros === null || euros === undefined ? null : Math.round(euros * 100)
+
 @Injectable()
 export class AdminService {
     private readonly LOGGER = new Logger(AdminService.name)
@@ -195,11 +199,12 @@ export class AdminService {
 
         if (tagIds?.length) await this.assertTagsExist(tagIds)
 
-        const game: Partial<Record<'gameAvgDuration' | 'minPlayers' | 'maxPlayers', number>> = {}
+        const game: Partial<Record<'gameAvgDuration' | 'minPlayers' | 'maxPlayers' | 'retailPriceCents', number | null>> = {}
 
         if (body.minPlayers !== undefined) game.minPlayers = body.minPlayers
         if (body.maxPlayers !== undefined) game.maxPlayers = body.maxPlayers
         if (body.gameAvgDuration !== undefined) game.gameAvgDuration = body.gameAvgDuration
+        if (body.retailPrice !== undefined) game.retailPriceCents = toCents(body.retailPrice)
 
         const translations: Partial<Record<SupportedLanguage, { title: string; normalizedTitle: string } | null>> = {}
 
@@ -295,6 +300,10 @@ export class AdminService {
                 tags: tagsByGame.get(id) ?? [],
                 issues: CATALOGUE_QUALITY_ISSUES.filter(issue => Number(row[issue]) === 1),
                 artworkSource: row['artworkSource'] ? String(row['artworkSource']) : null,
+                retailPrice:
+                    row['retailPriceCents'] === null || row['retailPriceCents'] === undefined
+                        ? null
+                        : Number(row['retailPriceCents']) / 100,
             }
         })
     }
@@ -442,6 +451,7 @@ export class AdminService {
         const gameData = {
             title: proposal.title,
             artwork,
+            retailPriceCents: toCents(approvalData.retailPrice),
             gameAvgDuration: gameAvgDuration!,
             minPlayers: minPlayers!,
             maxPlayers: maxPlayers!,

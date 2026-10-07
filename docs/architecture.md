@@ -65,8 +65,8 @@ attempt may already have been applied.
 | `modules/common/cache/` | Upstash Redis wrapper and the admin cache endpoints. |
 | `modules/common/health/` | `/health` (liveness) and `/health/ready` (database, cache, schema version). |
 | `modules/core/artwork` | `GET /artwork/<gameId>-<hash>.webp` (public, cached for a year) and the copying of artwork when an admin approves or edits a game. `ArtworkDownloader` is its own provider so tests answer without the network. |
-| `modules/core/*` | One module per domain entity: games, tags, translations, owned games, wishlist, reviews, collection activity, game proposals, groups (`UserGroup`), memberships, group people, invitations, notifications, meets (sessions), attendees, users. |
-| `modules/features/admin` | `/admin`: the overview (work queues and catalogue counts), the catalogue (list with data-quality filters, one-request game edits, artwork uploads), tags and categories (including merge), and game proposals (admins only). |
+| `modules/core/*` | One module per domain entity: games, tags, translations, owned games, wishlist, reviews, collection activity, game proposals, groups (`UserGroup`; `GET /groups/:groupId/collection` gives everyone's games and approximate worth), memberships, group people, invitations, notifications, meets (sessions), attendees, users. |
+| `modules/features/admin` | `/admin`: the overview (work queues and catalogue counts), the catalogue (list with data-quality filters, one-request game edits with retail prices, artwork uploads), tags and categories (including merge), and game proposals (admins only). |
 | `modules/features/collection` | `/collection/users/:userId/…`: private shelf, wishlist, reviews, activity. |
 | `modules/features/dashboard` | `/dashboard/users/:userId/…`: stats, groups, group creation and membership management. |
 | `modules/features/play` | `/play`: recommendations, recommendation feedback, play history. |
@@ -135,7 +135,8 @@ component through `takeUntilDestroyed` or `toSignal`.
 | `/` | none | Landing |
 | `/login`, `/register` | `GuestOnlyGuard` | Clerk sign-in; invitations and the private-beta notice |
 | `/dashboard` | `AuthOnlyGuard` | Home: invitations, next game nights, your groups, recently played |
-| `/groups/:groupId` | `AuthOnlyGuard` | Group workspace (`/groups` redirects to Home) |
+| `/groups/:groupId` | `AuthOnlyGuard` | Group workspace (`/groups` redirects to Home); Group pulse shows the collection's approximate worth and links to each person |
+| `/groups/:groupId/members/:accountId`, `/groups/:groupId/people/:personId` | `AuthOnlyGuard` | One person in a group, with or without an account: the games they bring, their approximate collection worth (ADR-0016), and their game nights |
 | `/create-group`, `/groups/:groupId/edit` | `AuthOnlyGuard` | Group create and settings (invitations) |
 | `/groups/:groupId/people/:personId/claim` | `AuthOnlyGuard` | Claim a group person |
 | `/groups/:groupId/sessions/new`, `/sessions/:sessionId` | `AuthOnlyGuard` | Plan and view sessions |

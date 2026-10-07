@@ -1,0 +1,86 @@
+<container-wrapper>
+    <div class="space-y-8 pb-16 pt-6">
+        <a [routerLink]="['/groups', groupId()]" class="inline-flex min-h-11 items-center gap-2 text-sm font-medium text-bv-text-muted hover:text-bv-text">
+            <app-icon name="arrow-left" [size]="16" /> {{ groupName() }}
+        </a>
+
+        @if (isLoading()) {
+            <div class="flex justify-center py-16"><app-spinner size="large" /></div>
+        } @else if (loadError()) {
+            <div class="rounded-2xl border border-bv-warning/30 bg-bv-warning/10 p-5 text-sm" role="alert">
+                <p>This person could not be loaded.</p>
+                <button appButton variant="secondary" class="mt-4" icon="arrow-repeat" (click)="load()">Retry</button>
+            </div>
+        } @else if (person(); as person) {
+            <section class="flex items-center gap-4" aria-labelledby="person-name">
+                <app-image-profile size="large" class="shrink-0" [avatar]="person.avatar ?? initialsAvatar(person.displayName)" />
+                <div class="min-w-0">
+                    <h1 id="person-name" class="truncate text-3xl font-bold tracking-tight">{{ person.displayName }}</h1>
+                    <p class="mt-1 text-secondary">{{ person.accountId !== null ? 'Member of ' + groupName() : 'In ' + groupName() + ', without an account' }}</p>
+                </div>
+            </section>
+
+            <section class="grid grid-cols-1 gap-4 sm:grid-cols-2" aria-label="Collection and game nights">
+                <article class="rounded-2xl border border-bv-border bg-bv-surface p-5 shadow-sm">
+                    <h2 class="text-sm font-semibold uppercase tracking-[0.18em] text-bv-primary">Collection worth</h2>
+                    @if (person.pricedGames > 0) {
+                        <p class="mt-2 text-3xl font-bold">≈ {{ person.worth | currency: 'EUR' : 'symbol' : '1.0-0' }}</p>
+                        <p class="mt-2 text-sm text-secondary">
+                            From the retail prices of {{ person.pricedGames === person.games.length ? 'their ' + person.games.length : person.pricedGames + ' of their ' + person.games.length }} game{{ person.games.length === 1 ? '' : 's' }}. What anyone actually paid stays private.
+                        </p>
+                    } @else if (person.games.length > 0) {
+                        <p class="mt-2 text-sm text-secondary">No retail prices are known for their games yet.</p>
+                    } @else {
+                        <p class="mt-2 text-sm text-secondary">They bring no games to this group yet.</p>
+                    }
+                </article>
+                <article class="rounded-2xl border border-bv-border bg-bv-surface p-5 shadow-sm">
+                    <h2 class="text-sm font-semibold uppercase tracking-[0.18em] text-bv-primary">Game nights</h2>
+                    @if (standing(); as standing) {
+                        <dl class="mt-3 grid grid-cols-3 gap-3 text-center">
+                            <div class="rounded-xl bg-bv-bg p-3">
+                                <dt class="text-xs text-secondary">Wins</dt>
+                                <dd class="mt-1 text-2xl font-bold">{{ standing.wins }}</dd>
+                            </div>
+                            <div class="rounded-xl bg-bv-bg p-3">
+                                <dt class="text-xs text-secondary">Games</dt>
+                                <dd class="mt-1 text-2xl font-bold">{{ standing.gamesPlayed }}</dd>
+                            </div>
+                            <div class="rounded-xl bg-bv-bg p-3">
+                                <dt class="text-xs text-secondary">Nights</dt>
+                                <dd class="mt-1 text-2xl font-bold">{{ standing.sessions }}</dd>
+                            </div>
+                        </dl>
+                    } @else {
+                        <p class="mt-2 text-sm text-secondary">No finished game nights with this group yet.</p>
+                    }
+                </article>
+            </section>
+
+            <section aria-labelledby="person-games-heading">
+                <h2 id="person-games-heading" class="text-2xl font-bold">Games they bring</h2>
+                @if (person.games.length > 0) {
+                    <ul class="mt-4 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-5">
+                        @for (game of person.games; track game.id) {
+                            <li>
+                                <a [routerLink]="['/games', game.id]" class="group block rounded-2xl border border-bv-border bg-bv-surface p-2 shadow-sm transition hover:border-bv-primary">
+                                    <div class="aspect-square overflow-hidden rounded-xl">
+                                        <image-background class="h-full" [src]="game.imageUrl" [alt]="''" />
+                                    </div>
+                                    <p class="mt-2 truncate px-1 text-sm font-medium group-hover:text-bv-primary" [title]="game.title ?? ''">{{ game.title }}</p>
+                                </a>
+                            </li>
+                        }
+                    </ul>
+                } @else {
+                    <p class="mt-4 rounded-2xl border border-dashed border-bv-border p-5 text-secondary">No games on the shelf yet.</p>
+                }
+            </section>
+        } @else {
+            <div class="rounded-2xl border border-dashed border-bv-border p-6 text-center text-secondary">
+                <h1 class="text-xl font-semibold text-bv-text">This person is not in this group.</h1>
+                <a appButton variant="secondary" class="mt-4" [routerLink]="['/groups', groupId()]">Back to {{ groupName() }}</a>
+            </div>
+        }
+    </div>
+</container-wrapper>

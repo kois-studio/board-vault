@@ -17,7 +17,14 @@ export function createGameFieldsForm() {
         minPlayers: new FormControl<number | null>(null, [Validators.required, Validators.min(1), Validators.max(100)]),
         maxPlayers: new FormControl<number | null>(null, [Validators.required, Validators.min(1), Validators.max(100)]),
         gameAvgDuration: new FormControl<number | null>(null, [Validators.required, Validators.min(1), Validators.max(1440)]),
+        retailPrice: new FormControl<number | null>(null, [Validators.min(0), Validators.max(5000)]),
     })
+}
+
+/** The retail price as the API takes it: euros to the cent, or null when empty. */
+export function retailPriceValue(form: GameFieldsForm): number | null {
+    const price = form.getRawValue().retailPrice
+    return price === null || Number.isNaN(price) ? null : Math.round(price * 100) / 100
 }
 
 export type GameFieldsForm = ReturnType<typeof createGameFieldsForm>

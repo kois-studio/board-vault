@@ -164,14 +164,25 @@ export type GroupInsightsType = {
     mostPlayed: Array<{ gameData: GameCompleteType; sessions: number; lastPlayedAt: string }>
     neverPlayed: Array<GameCompleteType>
     neverPlayedCount: number
-    spending: Array<{
-        accountId: number
-        displayName: string
-        avatar: PublicUserType['avatar'] | null
-        totalSpent: number
-        pricedGames: number
-    }>
-    spendingShared: boolean
+}
+
+/** One person's games in a group and their approximate worth at retail price, in whole euros. */
+export type GroupCollectionPersonType = {
+    accountId: number | null
+    groupPersonId: number | null
+    displayName: string
+    avatar: PublicUserType['avatar'] | null
+    games: Array<GameCompleteType>
+    worth: number
+    pricedGames: number
+}
+
+/** The group's games and their approximate worth (ADR-0016): retail prices, never what anyone paid. */
+export type GroupCollectionType = {
+    worth: number
+    copies: number
+    pricedCopies: number
+    people: Array<GroupCollectionPersonType>
 }
 
 export type GroupAcquisitionEntryType = {
@@ -464,7 +475,7 @@ export type BrowseGamesResultType = {
 }
 
 /** A catalogue data problem, as the admin Games filter names it. */
-export type CatalogueIssue = 'no-title' | 'no-artwork' | 'no-spanish' | 'no-tags'
+export type CatalogueIssue = 'no-title' | 'no-artwork' | 'no-spanish' | 'no-tags' | 'no-price'
 
 export type AdminGameType = GameWithTagsAndTranslationsType & {
     /** The English title. */
@@ -472,6 +483,8 @@ export type AdminGameType = GameWithTagsAndTranslationsType & {
     issues: Array<CatalogueIssue>
     /** Where the stored artwork was copied from; null for an upload or no artwork. */
     artworkSource: string | null
+    /** Recommended retail price in euros; null when unknown. */
+    retailPrice: number | null
 }
 
 export type AdminGamesFilters = {
@@ -512,6 +525,8 @@ export type UpdateAdminGameType = {
     minPlayers?: number
     maxPlayers?: number
     gameAvgDuration?: number
+    /** Euros; null removes the price. */
+    retailPrice?: number | null
     tagIds?: Array<number>
 }
 
@@ -665,6 +680,7 @@ export type AdminGameProposalsType = {
 export type ApproveGameProposalType = {
     reviewNotes?: string
     imageUrl?: string
+    retailPrice?: number
     gameAvgDuration?: number
     minPlayers?: number
     maxPlayers?: number

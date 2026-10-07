@@ -6,6 +6,8 @@ import { Api } from '../../api/api'
 import type {
     GameCompleteType,
     GroupAcquisitionEntryType,
+    GroupCollectionPersonType,
+    GroupCollectionType,
     GroupInsightsType,
     GroupPersonPreferenceType,
     GroupPersonWorkspaceType,
@@ -33,6 +35,7 @@ import { LocalStorageService } from '../../core/services/local-storage.service'
 import { formatAttendeeSummary } from '../../core/utils/formatAttendeeSummary'
 import { groupGameCount, groupPeopleCount } from '../../core/utils/groupCounts'
 import { formatWinners, historyWinnerNames, mergeHistoryParticipants } from '../../core/utils/historyParticipants'
+import { initialsAvatar } from '../../core/utils/initialsAvatar'
 import { GroupViewService } from './group-view.service'
 
 type GroupLibraryContext = {
@@ -117,8 +120,8 @@ export class GroupViewComponent {
     public readonly acquisitionBoard$ = signal<Array<GroupAcquisitionEntryType>>([])
     public readonly insights$ = signal<GroupInsightsType | null>(null)
     public readonly insightsError = signal(false)
-    public readonly spendingShareSaving = signal(false)
-    public readonly spendingShareError = signal(false)
+    /** Everyone's games and their approximate worth; null until loaded, or when it could not be. */
+    public readonly collection$ = signal<GroupCollectionType | null>(null)
     private activeInsightsGroupId: number | null = null
     public readonly acquisitionBoardLoading = signal(false)
     public readonly acquisitionBoardError = signal(false)
@@ -321,8 +324,7 @@ export class GroupViewComponent {
                 this.acquisitionBoardError.set(false)
                 this.insights$.set(null)
                 this.insightsError.set(false)
-                this.spendingShareSaving.set(false)
-                this.spendingShareError.set(false)
+                this.collection$.set(null)
                 this.activeInsightsGroupId = null
                 this.groupPeople$.set([])
                 this.groupPeopleError.set(false)
@@ -349,6 +351,7 @@ export class GroupViewComponent {
             if (this.activeInsightsGroupId !== groupId) {
                 this.activeInsightsGroupId = groupId
                 this.loadInsights(groupId)
+                this.loadCollection(groupId)
             }
 
             if (this.activePeopleGroupId !== groupId) {
@@ -664,6 +667,21 @@ export class GroupViewComponent {
         }
     }
 
+    /** The group's collection worth is a detail: if it fails, Group pulse simply leaves it out. */
+    private loadCollection(groupId: number): void {
+        this.api.getGroupCollection(groupId).subscribe({
+            next: (collection) => this.collection$.set(collection),
+            error: () => this.collection$.set(null),
+        })
+    }
+
+    /** A person's page in this group: members by account, people without an account by their group person. */
+    public personLink(groupId: number, person: GroupCollectionPersonType): Array<string | number> {
+        return person.accountId !== null
+            ? ['/groups', groupId, 'members', person.accountId]
+            : ['/groups', groupId, 'people', person.groupPersonId ?? 0]
+    }
+
     public loadInsights(groupId: number): void {
         this.insightsError.set(false)
         this.api.getGroupInsights(groupId).subscribe({
@@ -672,43 +690,8 @@ export class GroupViewComponent {
         })
     }
 
-    public async setGroupSpendingShare(groupId: number, share: boolean): Promise<void> {
-        this.spendingShareSaving.set(true)
-        this.spendingShareError.set(false)
-        try {
-            await firstValueFrom(this.api.setGroupSpendingShare(groupId, share))
-            this.insights$.update((insights) =>
-                insights
-                    ? {
-                          ...insights,
-                          spendingShared: share,
-                          spending: share
-                              ? insights.spending
-                              : insights.spending.filter((member) => member.accountId !== this.currentUser$()?.id),
-                      }
-                    : insights,
-            )
-            this.loadInsights(groupId)
-        } catch {
-            this.spendingShareError.set(true)
-            this.toastService.error('Could not update spending sharing. Try again.')
-            this.loadInsights(groupId)
-        } finally {
-            this.spendingShareSaving.set(false)
-        }
-    }
-
     /** People without an account or avatar show their initials. */
-    public initialsAvatar(name: string): PublicUserType['avatar'] {
-        const initials = name
-            .split(/\s+/)
-            .filter(Boolean)
-            .map((word) => word[0])
-            .join('')
-            .slice(0, 2)
-            .toUpperCase()
-        return { type: 'initials', initials, backgroundColor: '#64748b', iconName: null, emoji: null }
-    }
+    public readonly initialsAvatar = initialsAvatar
 
     /** "3 wins · 7 games · 4 nights" */
     public standingSummary(standing: GroupStandingType): string {

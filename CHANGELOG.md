@@ -268,6 +268,12 @@ operational details.
   Clerk user is deleted (ADR-0013).
 - Rule-by-rule engineering-standards assessment in
   `docs/project-standards.yml`.
+- Each person in a group has a page with the games they bring, roughly what
+  their collection is worth, and their game nights; Group pulse shows the
+  group collection's approximate worth and links to everyone. Worth comes
+  from each game's recommended retail price, never from what anyone paid
+  (ADR-0016, migration 0019). Admins set the price when they edit or approve
+  a game, and the catalogue lists games without one. First version by Bruno.
 - Board Vault keeps its own copy of every game's artwork (ADR-0015,
   migration 0018). An image address an admin enters is downloaded, compressed
   to WebP and served from `/artwork/…`, cached for a year; admins can also

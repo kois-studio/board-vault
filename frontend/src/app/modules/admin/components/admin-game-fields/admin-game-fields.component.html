@@ -53,6 +53,13 @@
                 <input id="gameAvgDuration" type="number" inputmode="numeric" min="1" max="1440" class="app-input" formControlName="gameAvgDuration" />
             </div>
         </div>
+        <div class="grid grid-cols-2 gap-4 sm:grid-cols-3">
+            <div class="col-span-2 sm:col-span-1">
+                <label for="retailPrice" class="mb-1 block text-sm font-medium">Retail price (€)</label>
+                <input id="retailPrice" type="number" inputmode="decimal" min="0" max="5000" step="0.01" class="app-input" formControlName="retailPrice" aria-describedby="retailPrice-hint" [attr.aria-invalid]="form().controls.retailPrice.invalid" />
+            </div>
+            <p id="retailPrice-hint" class="col-span-2 self-end text-sm text-bv-text-muted sm:pb-2">The recommended retail price (PVP) in Spain. It only estimates what collections are worth; leave it empty if unknown.</p>
+        </div>
         @if (playersOutOfOrder) {
             <p class="text-sm text-bv-danger">Min players cannot be more than max players.</p>
         } @else if (!readonly() && missingRequired) {

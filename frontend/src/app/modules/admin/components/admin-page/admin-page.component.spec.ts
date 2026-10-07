@@ -9,7 +9,7 @@ import { AdminPageComponent, daysSince } from './admin-page.component'
 describe('AdminPageComponent', () => {
     const overview: AdminOverviewType = {
         proposals: { pending: 0, oldestPendingAt: null },
-        catalogueIssues: { 'no-title': 0, 'no-artwork': 4, 'no-spanish': 0, 'no-tags': 2 },
+        catalogueIssues: { 'no-title': 0, 'no-artwork': 4, 'no-spanish': 0, 'no-tags': 2, 'no-price': 0 },
         tags: { unused: 0, emptyCategories: 0 },
         catalogue: { games: 65, approvedLast30Days: 3, mostOwned: [{ gameId: 4, title: 'Azul', count: 6 }], mostWantedUnowned: [] },
         recentDecisions: [

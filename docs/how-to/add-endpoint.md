@@ -8,9 +8,7 @@ Example: `GET /collection/users/:userId/stats` for the signed-in user.
    `class-validator` decorators (the global `ValidationPipe` rejects unknown
    fields). Response DTOs use `@ApiProperty` so they appear in the contract.
    Never return `Account` credentials or private collection data to other
-   members, except for explicitly shared group spending aggregates
-   ([ADR-0006](../adr/0006-user-response-privacy.md),
-   [ADR-0016](../adr/0016-opt-in-group-spending-aggregates.md)).
+   members ([ADR-0006](../adr/0006-user-response-privacy.md)).
 3. **Add the SQL** as a method on the matching query class in
    `backend/src/modules/common/database/queries/` (for example
    `groups.queries.ts`); callers reach it as `databaseService.groups.<method>`.

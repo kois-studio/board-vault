@@ -218,6 +218,7 @@ describe('proposing a game (e2e)', () => {
                     maxPlayers: 8,
                     gameAvgDuration: 15,
                     imageUrl: 'https://example.test/codenames.png',
+                    retailPrice: 24.95,
                     translations: { en: 'Codenames', es: 'Código Secreto' },
                     tagIds: [partyTag],
                 })
@@ -225,7 +226,7 @@ describe('proposing a game (e2e)', () => {
             const gameId = Number(approved.body.createdGameId)
 
             const game = await database.execute({
-                sql: 'SELECT imageUrl, gameAvgDuration, minPlayers, maxPlayers FROM Game WHERE id = ?',
+                sql: 'SELECT imageUrl, gameAvgDuration, minPlayers, maxPlayers, retailPriceCents FROM Game WHERE id = ?',
                 args: [gameId],
             })
             const titles = await database.execute({
@@ -246,6 +247,7 @@ describe('proposing a game (e2e)', () => {
                 gameAvgDuration: 15,
                 minPlayers: 2,
                 maxPlayers: 8,
+                retailPriceCents: 2495,
             })
             expect(titles.rows.map(row => [row.languageCode, row.title])).toEqual([
                 ['en', 'Codenames'],

@@ -40,6 +40,7 @@ export const CATALOGUE_QUALITY: Record<CatalogueQualityIssue, string> = {
           AND es.title <> COALESCE((SELECT en.title FROM GameTranslation en WHERE en.gameId = g.id AND en.languageCode = 'en'), '')
     )`,
     'no-tags': 'NOT EXISTS (SELECT 1 FROM GameTag gt WHERE gt.gameId = g.id)',
+    'no-price': 'g.retailPriceCents IS NULL',
 }
 
 const CATALOGUE_ORDER: Record<BrowseSort, string> = {
@@ -58,6 +59,7 @@ export class GameQueries {
         title: string
         /** The reviewed artwork, already copied; null for none. */
         artwork: StoredArtwork | null
+        retailPriceCents: number | null
         gameAvgDuration: number
         minPlayers: number
         maxPlayers: number
@@ -70,8 +72,8 @@ export class GameQueries {
 
         try {
             const gameResult = await transaction.execute({
-                sql: "INSERT INTO Game (imageUrl, gameAvgDuration, minPlayers, maxPlayers) VALUES ('', ?, ?, ?)",
-                args: [input.gameAvgDuration, input.minPlayers, input.maxPlayers],
+                sql: "INSERT INTO Game (imageUrl, gameAvgDuration, minPlayers, maxPlayers, retailPriceCents) VALUES ('', ?, ?, ?, ?)",
+                args: [input.gameAvgDuration, input.minPlayers, input.maxPlayers, input.retailPriceCents],
             })
             const createdGameId = Number(gameResult.lastInsertRowid)
 
@@ -707,7 +709,7 @@ export class GameQueries {
         return this.database.execute({
             sql: `
                 SELECT g.id, g.imageUrl, g.gameAvgDuration, g.minPlayers, g.maxPlayers,
-                       COALESCE(en.title, '') AS titleEn, COALESCE(es.title, '') AS titleEs, art.sourceUrl AS artworkSource,
+                       COALESCE(en.title, '') AS titleEn, COALESCE(es.title, '') AS titleEs, art.sourceUrl AS artworkSource, g.retailPriceCents,
                        ${Object.entries(CATALOGUE_QUALITY)
                            .map(([issue, condition]) => `CASE WHEN ${condition} THEN 1 ELSE 0 END AS "${issue}"`)
                            .join(',\n                       ')}
@@ -749,7 +751,7 @@ export class GameQueries {
     /** Saves an admin's changes to one game in one transaction. `es: null` removes the Spanish title. */
     async updateGameAtomically(input: {
         gameId: number
-        game: Partial<Record<'gameAvgDuration' | 'minPlayers' | 'maxPlayers', number>>
+        game: Partial<Record<'gameAvgDuration' | 'minPlayers' | 'maxPlayers' | 'retailPriceCents', number | null>>
         /** New artwork, already copied; null removes it; undefined leaves it. */
         artwork?: StoredArtwork | null
         translations: Partial<Record<SupportedLanguage, { title: string; normalizedTitle: string } | null>>

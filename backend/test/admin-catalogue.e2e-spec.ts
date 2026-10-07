@@ -38,11 +38,12 @@ describe('admin catalogue (e2e)', () => {
 
                 -- Azul is complete; Catan has no artwork and the same Spanish title; Hanabi has no Spanish
                 -- title and no tags, and was approved from a proposal without players or length.
-                INSERT INTO Game (id, imageUrl, gameAvgDuration, minPlayers, maxPlayers) VALUES
-                    (1, 'https://example.test/azul.jpg', 45, 2, 4),
-                    (2, '', 90, 3, 4),
-                    (3, 'https://example.test/hanabi.jpg', 60, 2, 4),
-                    (4, 'https://example.test/orphan.jpg', 30, 1, 2);
+                -- The game without a title has no retail price either.
+                INSERT INTO Game (id, imageUrl, gameAvgDuration, minPlayers, maxPlayers, retailPriceCents) VALUES
+                    (1, 'https://example.test/azul.jpg', 45, 2, 4, 3999),
+                    (2, '', 90, 3, 4, 4495),
+                    (3, 'https://example.test/hanabi.jpg', 60, 2, 4, 1295),
+                    (4, 'https://example.test/orphan.jpg', 30, 1, 2, NULL);
                 INSERT INTO GameTranslation (gameId, languageCode, title, normalizedTitle) VALUES
                     (1, 'en', 'Azul', 'azul'), (1, 'es', 'Azul (edición)', 'azul (edicion)'),
                     (2, 'en', 'Catan', 'catan'), (2, 'es', 'Catan', 'catan'),
@@ -102,7 +103,7 @@ describe('admin catalogue (e2e)', () => {
         expect(response.body.pagination).toEqual({ currentPage: 1, totalPages: 1, totalItems: 4, itemsPerPage: 10 })
         // A game without any title sorts first, so it is easy to find.
         expect(response.body.games.map((game: { title: string; issues: string[] }) => [game.title, game.issues])).toEqual([
-            ['', ['no-title', 'no-spanish', 'no-tags']],
+            ['', ['no-title', 'no-spanish', 'no-tags', 'no-price']],
             ['Azul', []],
             ['Catan', ['no-artwork', 'no-spanish']],
             ['Hanabi', ['no-spanish', 'no-tags']],
@@ -124,7 +125,7 @@ describe('admin catalogue (e2e)', () => {
 
         expect(response.body).toEqual({
             proposals: { pending: 2, oldestPendingAt: '2026-09-01 10:00:00' },
-            catalogueIssues: { 'no-title': 1, 'no-artwork': 1, 'no-spanish': 3, 'no-tags': 2 },
+            catalogueIssues: { 'no-title': 1, 'no-artwork': 1, 'no-spanish': 3, 'no-tags': 2, 'no-price': 1 },
             tags: { unused: 0, emptyCategories: 0 },
             catalogue: {
                 games: 4,
@@ -158,6 +159,7 @@ describe('admin catalogue (e2e)', () => {
         expect(await titlesFor({ issue: 'no-artwork' })).toEqual(['Catan'])
         expect(await titlesFor({ issue: 'no-spanish' })).toEqual(['', 'Catan', 'Hanabi'])
         expect(await titlesFor({ issue: 'no-tags' })).toEqual(['', 'Hanabi'])
+        expect(await titlesFor({ issue: 'no-price' })).toEqual([''])
         await request(app.getHttpServer()).get('/admin/games').query({ issue: 'nonsense' }).set(asAdmin).expect(400)
     })
 

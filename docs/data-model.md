@@ -35,7 +35,7 @@ sessions they created, and more.
 | Table | What it holds | References (on delete) |
 | --- | --- | --- |
 | `Account` | A person who signs in: `email`, `username`, `displayName`, `avatar`, `isAdmin`, `isDeleted`, and `clerkUserId` (unique). No credentials (ADR-0012). | — |
-| `Game` | Catalogue game: artwork address, duration, player counts. `imageUrl` is `/artwork/<id>-<hash>.webp` for stored artwork, or empty for none. | — |
+| `Game` | Catalogue game: artwork address, duration, player counts. `imageUrl` is `/artwork/<id>-<hash>.webp` for stored artwork, or empty for none. `retailPriceCents` is the recommended retail price in euro cents (NULL when unknown); collection-worth estimates read it, never `OwnedGame.purchasePrice` (ADR-0016). | — |
 | `GameArtwork` | Board Vault's copy of a game's artwork (ADR-0015): compressed WebP bytes, size, the hash in its address, and the address it was copied from (NULL for an upload). | `Game` (cascade) |
 | `GameTranslation` | Title per language (`en`, `es`) and a normalized title for search. | `Game` (cascade) |
 | `TagCategory`, `Tag`, `GameTag` | Catalogue tagging. | `TagCategory` → `Tag` (cascade); `Game`, `Tag` (cascade) |
@@ -50,7 +50,6 @@ sessions they created, and more.
 | `Notification` | In-app notification. | `Account` (cascade) |
 | `GroupPerson` | A group-scoped participant, optionally linked to an account; carries the claim email and expiry. | `UserGroup`, creator `Account` (cascade); linked `Account` (set null) |
 | `GroupPersonGameOwnership`, `GroupPersonGamePreference` | Games a group person owns or likes, entered by a member. | `GroupPerson`, `Game`, entering `Account` (cascade); confirming `Account` (set null) |
-| `GroupSpendingShare` | A member's revocable, group-specific consent to show an aggregate of their recorded game purchase prices. | `GroupMembership` (cascade) |
 | `GroupGameInterest` | A member's interest in a game for the group. | `UserGroup`, `Account`, `Game` (cascade) |
 | `GroupAcquisitionDecision` | The group's acquisition decision for a game: `open`, `planned`, or `not_now`, with an optional note. | `UserGroup`, `Game`, deciding `Account` (cascade) |
 | `Meet` | A session (named `Meet` for historical reasons): date, status, timezone, notes. | `UserGroup`, creator `Account` (cascade) |
@@ -63,13 +62,8 @@ sessions they created, and more.
 
 ## Persistence rules
 
-- Private account data never appears in group-member projections, except for
-  the purchase-price aggregate that a member explicitly shares with that
-  specific group ([ADR-0006](adr/0006-user-response-privacy.md),
-  [ADR-0016](adr/0016-opt-in-group-spending-aggregates.md)).
-- Group spending totals include only recorded prices, reveal no individual
-  purchase details, and have no currency label because the collection does not
-  store currency.
+- Private account data never appears in group-member projections
+  ([ADR-0006](adr/0006-user-response-privacy.md)).
 - Group reads are membership-scoped. Group-person claims are bound to the
   invited email and group on the server.
 - Read `Account` rows through the explicit `ACCOUNT_COLUMNS` list in

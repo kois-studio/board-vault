@@ -39,6 +39,7 @@ describe('AdminProposalReviewComponent', () => {
         tags: [],
         issues: [],
         artworkSource: null,
+        retailPrice: null,
     }
 
     let api: Record<string, ReturnType<typeof vi.fn>>

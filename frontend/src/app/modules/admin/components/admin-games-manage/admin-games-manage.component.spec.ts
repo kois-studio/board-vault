@@ -20,6 +20,7 @@ describe('AdminGamesManageComponent', () => {
         tags: [],
         issues: ['no-artwork', 'no-spanish', 'no-tags'],
         artworkSource: null,
+        retailPrice: null,
     }
     let getAdminGames: ReturnType<typeof vi.fn>
 

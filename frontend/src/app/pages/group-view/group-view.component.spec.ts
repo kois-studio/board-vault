@@ -93,10 +93,4 @@ describe('group standings presentation', () => {
         expect(component.standingSummary(standing)).toBe('1 win · 3 games · 1 night')
         expect(component.standingSummary({ ...standing, wins: 0, gamesPlayed: 1, sessions: 2 })).toBe('0 wins · 1 game · 2 nights')
     })
-
-    it('falls back to initials for people without an avatar', () => {
-        const component = Object.create(GroupViewComponent.prototype) as GroupViewComponent
-
-        expect(component.initialsAvatar('ana belén')).toEqual(expect.objectContaining({ type: 'initials', initials: 'AB' }))
-    })
 })

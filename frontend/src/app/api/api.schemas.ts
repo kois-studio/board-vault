@@ -19,6 +19,7 @@ import type {
     GameType,
     GameViewType,
     GroupAcquisitionEntryType,
+    GroupCollectionType,
     GroupInsightsType,
     GroupType,
     GroupWithMembersAndGames,
@@ -121,8 +122,9 @@ export const adminGameSchema: z.ZodMiniType<AdminGameType> = z.object({
     maxPlayers: z.number(),
     translations: z.object({ en: z.string(), es: z.string() }),
     tags: z.array(z.object({ id: z.number(), name: z.string(), categoryName: z.string() })),
-    issues: z.array(z.enum(['no-title', 'no-artwork', 'no-spanish', 'no-tags'])),
+    issues: z.array(z.enum(['no-title', 'no-artwork', 'no-spanish', 'no-tags', 'no-price'])),
     artworkSource: z.nullable(z.string()),
+    retailPrice: z.nullable(z.number()),
 })
 
 export const adminGamesSchema: z.ZodMiniType<AdminGamesResultType> = z.object({
@@ -139,6 +141,7 @@ export const adminOverviewSchema: z.ZodMiniType<AdminOverviewType> = z.object({
         'no-artwork': z.number(),
         'no-spanish': z.number(),
         'no-tags': z.number(),
+        'no-price': z.number(),
     }),
     tags: z.object({ unused: z.number(), emptyCategories: z.number() }),
     catalogue: z.object({
@@ -236,6 +239,23 @@ const groupAcquisitionEntrySchema: z.ZodMiniType<GroupAcquisitionEntryType> = z.
 
 export const groupAcquisitionBoardSchema = z.array(groupAcquisitionEntrySchema)
 
+export const groupCollectionSchema: z.ZodMiniType<GroupCollectionType> = z.object({
+    worth: z.number(),
+    copies: z.number(),
+    pricedCopies: z.number(),
+    people: z.array(
+        z.object({
+            accountId: z.nullable(z.number()),
+            groupPersonId: z.nullable(z.number()),
+            displayName: z.string(),
+            avatar: z.nullable(avatarSchema),
+            games: z.array(gameCompleteSchema),
+            worth: z.number(),
+            pricedGames: z.number(),
+        }),
+    ),
+})
+
 export const groupInsightsSchema: z.ZodMiniType<GroupInsightsType> = z.object({
     sessions: z.number(),
     gamesPlayed: z.number(),
@@ -254,21 +274,6 @@ export const groupInsightsSchema: z.ZodMiniType<GroupInsightsType> = z.object({
     mostPlayed: z.array(z.object({ gameData: gameCompleteSchema, sessions: z.number(), lastPlayedAt: z.string() })),
     neverPlayed: z.array(gameCompleteSchema),
     neverPlayedCount: z.number(),
-    spending: z._default(
-        z.optional(
-            z.array(
-                z.object({
-                    accountId: z.number(),
-                    displayName: z.string(),
-                    avatar: z.nullable(avatarSchema),
-                    totalSpent: z.number(),
-                    pricedGames: z.number(),
-                }),
-            ),
-        ),
-        [],
-    ),
-    spendingShared: z._default(z.optional(z.boolean()), false),
 })
 
 const gameReviewSchema = z.object({

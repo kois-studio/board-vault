@@ -1398,15 +1398,15 @@
             "bearer": []
           }
         ],
-        "summary": "Get group history insights and spending shared by members",
+        "summary": "Get standings, most played and never played games from completed game nights",
         "tags": [
           "groups"
         ]
       }
     },
-    "/groups/{groupId}/spending-share": {
-      "put": {
-        "operationId": "GroupsController_setSpendingShare",
+    "/groups/{groupId}/collection": {
+      "get": {
+        "operationId": "GroupsController_getCollection",
         "parameters": [
           {
             "name": "groupId",
@@ -1417,19 +1417,16 @@
             }
           }
         ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/UpdateGroupSpendingShareBody"
-              }
-            }
-          }
-        },
         "responses": {
           "200": {
-            "description": "Spending sharing preference saved"
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GroupCollectionDto"
+                }
+              }
+            }
           }
         },
         "security": [
@@ -1437,7 +1434,7 @@
             "bearer": []
           }
         ],
-        "summary": "Choose whether to share recorded game spending with this group",
+        "summary": "Get everyone's games in the group and their approximate worth from catalogue retail prices",
         "tags": [
           "groups"
         ]
@@ -2724,14 +2721,15 @@
             "name": "issue",
             "required": false,
             "in": "query",
-            "description": "Only games with this data problem: no English title; no artwork; no Spanish title or one equal to the English; or no tags.",
+            "description": "Only games with this data problem: no English title; no artwork; no Spanish title or one equal to the English; no tags; or no retail price.",
             "schema": {
               "type": "string",
               "enum": [
                 "no-title",
                 "no-artwork",
                 "no-spanish",
-                "no-tags"
+                "no-tags",
+                "no-price"
               ]
             }
           }
@@ -6104,45 +6102,6 @@
           "lastPlayedAt"
         ]
       },
-      "GroupSpendingDto": {
-        "type": "object",
-        "properties": {
-          "accountId": {
-            "type": "number",
-            "example": 4
-          },
-          "displayName": {
-            "type": "string",
-            "example": "Lucía"
-          },
-          "avatar": {
-            "nullable": true,
-            "type": "object",
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/AvatarDto"
-              }
-            ]
-          },
-          "totalSpent": {
-            "type": "number",
-            "example": 248.5,
-            "description": "Sum of recorded purchase prices in the member’s private collection."
-          },
-          "pricedGames": {
-            "type": "number",
-            "example": 8,
-            "description": "Number of games with a recorded purchase price."
-          }
-        },
-        "required": [
-          "accountId",
-          "displayName",
-          "avatar",
-          "totalSpent",
-          "pricedGames"
-        ]
-      },
       "GroupInsightsDto": {
         "type": "object",
         "properties": {
@@ -6186,18 +6145,6 @@
             "type": "number",
             "example": 23,
             "description": "How many owned games the group has never played."
-          },
-          "spending": {
-            "description": "Members who chose to share their recorded game spending with this group.",
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/GroupSpendingDto"
-            }
-          },
-          "spendingShared": {
-            "type": "boolean",
-            "example": false,
-            "description": "Whether the requesting member shares their spending with this group."
           }
         },
         "required": [
@@ -6207,22 +6154,96 @@
           "standings",
           "mostPlayed",
           "neverPlayed",
-          "neverPlayedCount",
-          "spending",
-          "spendingShared"
+          "neverPlayedCount"
         ]
       },
-      "UpdateGroupSpendingShareBody": {
+      "GroupCollectionPersonDto": {
         "type": "object",
         "properties": {
-          "share": {
-            "type": "boolean",
-            "example": true,
-            "description": "Whether to share this account’s recorded game spending with this group."
+          "accountId": {
+            "type": "object",
+            "example": 4,
+            "nullable": true,
+            "description": "Set for a member with an account."
+          },
+          "groupPersonId": {
+            "type": "object",
+            "example": 12,
+            "nullable": true,
+            "description": "Set for a person in the group without an account."
+          },
+          "displayName": {
+            "type": "string",
+            "example": "Lucía"
+          },
+          "avatar": {
+            "nullable": true,
+            "type": "object",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/AvatarDto"
+              }
+            ]
+          },
+          "games": {
+            "description": "The games they bring, by title.",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/GameCompleteDto"
+            }
+          },
+          "worth": {
+            "type": "number",
+            "example": 410,
+            "description": "Approximate worth in whole euros: the sum of the retail prices known."
+          },
+          "pricedGames": {
+            "type": "number",
+            "example": 8,
+            "description": "How many of their games have a known retail price."
           }
         },
         "required": [
-          "share"
+          "accountId",
+          "groupPersonId",
+          "displayName",
+          "avatar",
+          "games",
+          "worth",
+          "pricedGames"
+        ]
+      },
+      "GroupCollectionDto": {
+        "type": "object",
+        "properties": {
+          "worth": {
+            "type": "number",
+            "example": 1240,
+            "description": "Approximate worth of every copy in the group, in whole euros."
+          },
+          "copies": {
+            "type": "number",
+            "example": 31,
+            "description": "Copies owned in the group; two people with the same game count twice."
+          },
+          "pricedCopies": {
+            "type": "number",
+            "example": 28,
+            "description": "Copies with a known retail price."
+          },
+          "people": {
+            "description": "Members first, then people without an account, by name.",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/GroupCollectionPersonDto"
+            }
+          }
+        },
+        "required": [
+          "worth",
+          "copies",
+          "pricedCopies",
+          "people"
         ]
       },
       "UserPublicDto": {
@@ -7319,7 +7340,8 @@
                 "no-title",
                 "no-artwork",
                 "no-spanish",
-                "no-tags"
+                "no-tags",
+                "no-price"
               ]
             }
           },
@@ -7328,6 +7350,12 @@
             "nullable": true,
             "example": "https://www.example.com/catan.jpg",
             "description": "Where the stored artwork was copied from; null for an upload or no artwork."
+          },
+          "retailPrice": {
+            "type": "number",
+            "nullable": true,
+            "example": 39.95,
+            "description": "Recommended retail price in euros, for collection-worth estimates; null when unknown."
           }
         },
         "required": [
@@ -7340,7 +7368,8 @@
           "tags",
           "title",
           "issues",
-          "artworkSource"
+          "artworkSource",
+          "retailPrice"
         ]
       },
       "BrowseGamesPaginationDto": {
@@ -7437,6 +7466,14 @@
             "minimum": 1,
             "maximum": 1440,
             "description": "Average length in minutes."
+          },
+          "retailPrice": {
+            "type": "number",
+            "nullable": true,
+            "example": 39.95,
+            "minimum": 0,
+            "maximum": 5000,
+            "description": "Recommended retail price in euros (PVP); null removes it."
           },
           "tagIds": {
             "example": [
@@ -7676,6 +7713,13 @@
             "type": "number",
             "example": 120,
             "description": "Average length in minutes; overrides the proposal. Required when the proposal has none."
+          },
+          "retailPrice": {
+            "type": "number",
+            "example": 39.95,
+            "minimum": 0,
+            "maximum": 5000,
+            "description": "Recommended retail price in euros (PVP)."
           },
           "minPlayers": {
             "type": "number",

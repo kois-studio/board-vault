@@ -15,6 +15,7 @@ import {
     createGameFieldsForm,
     groupTags,
     playersOutOfOrder,
+    retailPriceValue,
     type TagGroup,
 } from '../admin-game-fields/admin-game-fields.component'
 import { CATALOGUE_ISSUES } from '../admin-games-manage/admin-games-manage.component'
@@ -96,6 +97,7 @@ export class AdminGameEditComponent implements OnInit {
                     minPlayers: value.minPlayers ?? undefined,
                     maxPlayers: value.maxPlayers ?? undefined,
                     gameAvgDuration: value.gameAvgDuration ?? undefined,
+                    retailPrice: retailPriceValue(this.form),
                     tagIds: [...this.selectedTagIds()],
                 }),
             )
@@ -157,6 +159,7 @@ export class AdminGameEditComponent implements OnInit {
             minPlayers: game.minPlayers,
             maxPlayers: game.maxPlayers,
             gameAvgDuration: game.gameAvgDuration,
+            retailPrice: game.retailPrice,
         })
     }
 }

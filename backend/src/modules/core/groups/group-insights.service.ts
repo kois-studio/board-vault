@@ -4,7 +4,7 @@ import { toIsoDate } from '../../../common/utils/stored-date.js'
 import { DatabaseService } from '../../common/database/database.service.js'
 
 import type { GameCompleteDto } from '../../../common/types/game.type.js'
-import type { GroupInsightsDto } from '../../../common/types/group-insights.type.js'
+import type { GroupCollectionDto, GroupCollectionPersonDto, GroupInsightsDto } from '../../../common/types/group-insights.type.js'
 import type { AvatarDto } from '../../../common/types/user.type.js'
 import type { Row } from '@libsql/client'
 
@@ -39,11 +39,8 @@ const toNullableId = (value: unknown): number | null => (value === null || value
 export class GroupInsightsService {
     constructor(private readonly databaseService: DatabaseService) {}
 
-    async getInsights(groupId: number, accountId: number): Promise<GroupInsightsDto> {
-        const { totals, standings, mostPlayed, neverPlayed, spending, spendingShare } = await this.databaseService.groups.getGroupInsights(
-            groupId,
-            accountId,
-        )
+    async getInsights(groupId: number): Promise<GroupInsightsDto> {
+        const { totals, standings, mostPlayed, neverPlayed } = await this.databaseService.groups.getGroupInsights(groupId)
         const total = totals.rows[0]
 
         return {
@@ -66,19 +63,53 @@ export class GroupInsightsService {
             })),
             neverPlayed: neverPlayed.rows.map(row => toGame(row)),
             neverPlayedCount: Number(neverPlayed.rows[0]?.[7] ?? 0),
-            spending: spending.rows.map(row => ({
-                accountId: Number(row[0]),
-                displayName: String(row[1] ?? ''),
-                avatar: toAvatar(row[2]),
-                totalSpent: Number(row[3] ?? 0),
-                pricedGames: Number(row[4] ?? 0),
-            })),
-            spendingShared: Number(spendingShare.rows[0]?.[0] ?? 0) === 1,
         }
     }
 
-    async setSpendingShare(groupId: number, accountId: number, share: boolean): Promise<{ success: true }> {
-        await this.databaseService.groups.setGroupSpendingShare(groupId, accountId, share)
-        return { success: true }
+    /** Everyone's games in the group and their approximate worth, from catalogue retail prices only. */
+    async getCollection(groupId: number): Promise<GroupCollectionDto> {
+        const rows = (await this.databaseService.groups.getGroupCollection(groupId)).rows
+        const people = new Map<string, GroupCollectionPersonDto & { cents: number }>()
+        let totalCents = 0
+        let copies = 0
+        let pricedCopies = 0
+
+        for (const row of rows) {
+            const accountId = toNullableId(row[0])
+            const groupPersonId = toNullableId(row[1])
+            const key = accountId === null ? `person:${groupPersonId}` : `account:${accountId}`
+            const person = people.get(key) ?? {
+                accountId,
+                groupPersonId,
+                displayName: String(row[2] ?? ''),
+                avatar: toAvatar(row[3]),
+                games: [],
+                worth: 0,
+                pricedGames: 0,
+                cents: 0,
+            }
+
+            people.set(key, person)
+            if (row[4] === null || row[4] === undefined) continue
+
+            // Columns 4–10 are the game, in the order toGame reads.
+            person.games.push(toGame(Array.from({ length: 7 }, (_, index) => row[4 + index]) as unknown as Row))
+            copies++
+
+            const cents = row[11] === null || row[11] === undefined ? null : Number(row[11])
+
+            if (cents === null) continue
+            person.cents += cents
+            person.pricedGames++
+            totalCents += cents
+            pricedCopies++
+        }
+
+        return {
+            worth: Math.round(totalCents / 100),
+            copies,
+            pricedCopies,
+            people: [...people.values()].map(({ cents, ...person }) => ({ ...person, worth: Math.round(cents / 100) })),
+        }
     }
 }

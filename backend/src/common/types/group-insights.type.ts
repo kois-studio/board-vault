@@ -1,5 +1,4 @@
 import { ApiProperty } from '@nestjs/swagger'
-import { IsBoolean, IsDefined } from 'class-validator'
 
 import { GameCompleteDto } from './game.type.js'
 import { AvatarDto } from './user.type.js'
@@ -42,23 +41,6 @@ export class GroupGamePlayCountDto {
     lastPlayedAt: string
 }
 
-export class GroupSpendingDto {
-    @ApiProperty({ example: 4 })
-    accountId: number
-
-    @ApiProperty({ example: 'Lucía' })
-    displayName: string
-
-    @ApiProperty({ type: AvatarDto, nullable: true })
-    avatar: AvatarDto | null
-
-    @ApiProperty({ example: 248.5, description: 'Sum of recorded purchase prices in the member’s private collection.' })
-    totalSpent: number
-
-    @ApiProperty({ example: 8, description: 'Number of games with a recorded purchase price.' })
-    pricedGames: number
-}
-
 export class GroupInsightsDto {
     @ApiProperty({ example: 8, description: 'Completed game nights.' })
     sessions: number
@@ -80,17 +62,46 @@ export class GroupInsightsDto {
 
     @ApiProperty({ example: 23, description: 'How many owned games the group has never played.' })
     neverPlayedCount: number
-
-    @ApiProperty({ type: [GroupSpendingDto], description: 'Members who chose to share their recorded game spending with this group.' })
-    spending: Array<GroupSpendingDto>
-
-    @ApiProperty({ example: false, description: 'Whether the requesting member shares their spending with this group.' })
-    spendingShared: boolean
 }
 
-export class UpdateGroupSpendingShareBody {
-    @ApiProperty({ example: true, description: 'Whether to share this account’s recorded game spending with this group.' })
-    @IsDefined()
-    @IsBoolean()
-    share: boolean
+/** One person's games in a group, and what they are worth at retail price. */
+export class GroupCollectionPersonDto {
+    @ApiProperty({ example: 4, nullable: true, description: 'Set for a member with an account.' })
+    accountId: number | null
+
+    @ApiProperty({ example: 12, nullable: true, description: 'Set for a person in the group without an account.' })
+    groupPersonId: number | null
+
+    @ApiProperty({ example: 'Lucía' })
+    displayName: string
+
+    @ApiProperty({ type: AvatarDto, nullable: true })
+    avatar: AvatarDto | null
+
+    @ApiProperty({ type: [GameCompleteDto], description: 'The games they bring, by title.' })
+    games: Array<GameCompleteDto>
+
+    @ApiProperty({ example: 410, description: 'Approximate worth in whole euros: the sum of the retail prices known.' })
+    worth: number
+
+    @ApiProperty({ example: 8, description: 'How many of their games have a known retail price.' })
+    pricedGames: number
+}
+
+/**
+ * The group's games and their approximate worth (ADR-0016). Worth comes from catalogue retail
+ * prices, never from what anyone recorded paying.
+ */
+export class GroupCollectionDto {
+    @ApiProperty({ example: 1240, description: 'Approximate worth of every copy in the group, in whole euros.' })
+    worth: number
+
+    @ApiProperty({ example: 31, description: 'Copies owned in the group; two people with the same game count twice.' })
+    copies: number
+
+    @ApiProperty({ example: 28, description: 'Copies with a known retail price.' })
+    pricedCopies: number
+
+    @ApiProperty({ type: [GroupCollectionPersonDto], description: 'Members first, then people without an account, by name.' })
+    people: Array<GroupCollectionPersonDto>
 }

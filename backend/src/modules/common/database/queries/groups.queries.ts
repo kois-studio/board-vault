@@ -622,10 +622,44 @@ export class GroupQueries {
     }
 
     /**
+     * Everyone's games in a group with their retail prices: members (accounts) and the active people
+     * without an account, as the group's counts define them. One row per person and game; a person
+     * with no games has one row with no game.
+     */
+    getGroupCollection(groupId: number) {
+        return this.database.execute({
+            sql: `
+                WITH owners AS (
+                    SELECT a.id AS accountId, NULL AS groupPersonId,
+                           COALESCE(NULLIF(a.displayName, ''), a.username) AS displayName, a.avatar, og.gameId
+                    FROM GroupMembership gm
+                    JOIN Account a ON a.id = gm.accountId AND a.isDeleted = 0
+                    LEFT JOIN OwnedGame og ON og.accountId = a.id
+                    WHERE gm.groupId = ?
+                    UNION ALL
+                    SELECT NULL, gp.id, gp.displayName, gp.avatar, o.gameId
+                    FROM GroupPerson gp
+                    LEFT JOIN GroupPersonGameOwnership o ON o.groupPersonId = gp.id AND o.status = 'asserted'
+                    WHERE gp.groupId = ? AND gp.kind = 'placeholder' AND gp.status = 'active'
+                )
+                SELECT owners.accountId, owners.groupPersonId, owners.displayName, owners.avatar,
+                       g.id, g.imageUrl, g.gameAvgDuration, g.minPlayers, g.maxPlayers, en.title, es.title, g.retailPriceCents
+                FROM owners
+                LEFT JOIN Game g ON g.id = owners.gameId
+                LEFT JOIN GameTranslation en ON en.gameId = g.id AND en.languageCode = 'en'
+                LEFT JOIN GameTranslation es ON es.gameId = g.id AND es.languageCode = 'es'
+                ORDER BY owners.accountId IS NULL, owners.displayName COLLATE NOCASE, owners.accountId, owners.groupPersonId,
+                         COALESCE(en.title, es.title) COLLATE NOCASE
+            `,
+            args: [groupId, groupId],
+        })
+    }
+
+    /**
      * Standings, play counts and never-played games from the group's completed
      * game nights: four reads for the whole group, however many people it has.
      */
-    async getGroupInsights(groupId: number, accountId: number) {
+    async getGroupInsights(groupId: number) {
         // Who played what, once per person: a group person linked to an account counts as the account.
         const completedPlays = `
             WITH completed AS (SELECT id FROM Meet WHERE groupId = ? AND status = 'completed'),
@@ -652,7 +686,7 @@ export class GroupQueries {
             LEFT JOIN GameTranslation gt_en ON gt_en.gameId = g.id AND gt_en.languageCode = 'en'
             LEFT JOIN GameTranslation gt_es ON gt_es.gameId = g.id AND gt_es.languageCode = 'es'`
 
-        const [totals, standings, mostPlayed, neverPlayed, spending, spendingShare] = await Promise.all([
+        const [totals, standings, mostPlayed, neverPlayed] = await Promise.all([
             this.database.execute({
                 sql: `${completedPlays}
                     SELECT
@@ -726,47 +760,9 @@ export class GroupQueries {
                     LIMIT 12`,
                 args: [groupId, groupId, groupId],
             }),
-            this.database.execute({
-                sql: `
-                    SELECT
-                        a.id,
-                        COALESCE(gp.displayName, NULLIF(a.displayName, ''), a.username) AS displayName,
-                        COALESCE(gp.avatar, a.avatar) AS avatar,
-                        COALESCE(SUM(og.purchasePrice), 0) AS totalSpent,
-                        COUNT(og.purchasePrice) AS pricedGames
-                    FROM GroupSpendingShare share
-                    JOIN GroupMembership gm ON gm.groupId = share.groupId AND gm.accountId = share.accountId
-                    JOIN Account a ON a.id = share.accountId
-                    LEFT JOIN GroupPerson gp ON gp.groupId = share.groupId AND gp.accountId = share.accountId
-                    LEFT JOIN OwnedGame og ON og.accountId = share.accountId AND og.purchasePrice IS NOT NULL
-                    WHERE share.groupId = ?
-                    GROUP BY a.id, gp.id
-                    ORDER BY totalSpent DESC, displayName COLLATE NOCASE, a.id`,
-                args: [groupId],
-            }),
-            this.database.execute({
-                sql: 'SELECT EXISTS(SELECT 1 FROM GroupSpendingShare WHERE groupId = ? AND accountId = ?)',
-                args: [groupId, accountId],
-            }),
         ])
 
-        return { totals, standings, mostPlayed, neverPlayed, spending, spendingShare }
-    }
-
-    async setGroupSpendingShare(groupId: number, accountId: number, share: boolean) {
-        if (share) {
-            return this.database.execute({
-                sql: `
-                    INSERT OR IGNORE INTO GroupSpendingShare (groupId, accountId)
-                    VALUES (?, ?)`,
-                args: [groupId, accountId],
-            })
-        }
-
-        return this.database.execute({
-            sql: 'DELETE FROM GroupSpendingShare WHERE groupId = ? AND accountId = ?',
-            args: [groupId, accountId],
-        })
+        return { totals, standings, mostPlayed, neverPlayed }
     }
 
     getGroupAcquisitionBoard(groupId: number) {
