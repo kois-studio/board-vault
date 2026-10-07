@@ -34,6 +34,30 @@
         ]
       }
     },
+    "/auth/account": {
+      "delete": {
+        "description": "Removes private data, keeps the person in group history as \"Deleted account\", passes owned groups on, and then deletes the Clerk user. Cannot be undone.",
+        "operationId": "AuthController_deleteAccount",
+        "parameters": [],
+        "responses": {
+          "204": {
+            "description": "The account was deleted"
+          },
+          "401": {
+            "description": "The Clerk session is missing, invalid, or expired"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Delete the signed-in account (ADR-0018)",
+        "tags": [
+          "auth"
+        ]
+      }
+    },
     "/users": {
       "get": {
         "deprecated": true,
@@ -5479,6 +5503,15 @@
               }
             ]
           },
+          "standing": {
+            "type": "string",
+            "enum": [
+              "member",
+              "left",
+              "deleted"
+            ],
+            "description": "`left`: archived, or their account is no longer a member. `deleted`: their account was deleted."
+          },
           "createdAt": {
             "type": "string",
             "example": "2026-09-25 12:00:00"
@@ -5500,6 +5533,7 @@
           "kind",
           "status",
           "displayName",
+          "standing",
           "createdAt",
           "updatedAt",
           "claimedAt"
@@ -8310,6 +8344,47 @@
           "groupId"
         ]
       },
+      "HistoryUserDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number",
+            "example": 1
+          },
+          "username": {
+            "type": "string",
+            "example": "sample-user"
+          },
+          "displayName": {
+            "type": "string",
+            "example": "Sample User"
+          },
+          "avatar": {
+            "description": "The avatar of the user.",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/AvatarDto"
+              }
+            ]
+          },
+          "standing": {
+            "type": "string",
+            "enum": [
+              "member",
+              "left",
+              "deleted"
+            ],
+            "description": "Whether they are still in the group, left it, or deleted their account."
+          }
+        },
+        "required": [
+          "id",
+          "username",
+          "displayName",
+          "avatar",
+          "standing"
+        ]
+      },
       "HistoryPersonDto": {
         "type": "object",
         "properties": {
@@ -8336,13 +8411,23 @@
             "nullable": true,
             "example": 7,
             "description": "The linked account, also listed in attendedBy/playedBy for sessions recorded with accounts."
+          },
+          "standing": {
+            "type": "string",
+            "enum": [
+              "member",
+              "left",
+              "deleted"
+            ],
+            "description": "Whether they are still in the group, left it, or deleted their account."
           }
         },
         "required": [
           "id",
           "displayName",
           "avatar",
-          "accountId"
+          "accountId",
+          "standing"
         ]
       },
       "GamePlayedDto": {
@@ -8360,7 +8445,7 @@
             "description": "The users who played the game in that meet.",
             "type": "array",
             "items": {
-              "$ref": "#/components/schemas/UserPublicDto"
+              "$ref": "#/components/schemas/HistoryUserDto"
             }
           },
           "playedByPeople": {
@@ -8419,7 +8504,7 @@
             "description": "The group members recorded as actually attending the session.",
             "type": "array",
             "items": {
-              "$ref": "#/components/schemas/UserPublicDto"
+              "$ref": "#/components/schemas/HistoryUserDto"
             }
           },
           "attendedByPeople": {

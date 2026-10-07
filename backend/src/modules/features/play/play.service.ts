@@ -130,7 +130,7 @@ export class PlayService {
         }
 
         const people = await this.databaseService.groups.getGroupPeople(body.groupId)
-        const activePersonIds = new Set(people.rows.filter(row => String(row[4]) === 'active').map(row => Number(row[0])))
+        const activePersonIds = new Set(people.rows.filter(row => row[10] === 'member').map(row => Number(row[0])))
 
         if (body.groupPersonIds.some(personId => !activePersonIds.has(personId))) {
             throw new BadRequestException('Every selected person must belong to the group')
@@ -210,7 +210,7 @@ export class PlayService {
         }
 
         const people = await this.databaseService.groups.getGroupPeople(body.groupId)
-        const activePersonIds = new Set(people.rows.filter(row => String(row[4]) === 'active').map(row => Number(row[0])))
+        const activePersonIds = new Set(people.rows.filter(row => row[10] === 'member').map(row => Number(row[0])))
 
         if (body.participantIds.some(personId => !activePersonIds.has(personId))) {
             throw new BadRequestException('Every participant must belong to the selected group')

@@ -2,6 +2,7 @@ import { fakeDatabase } from '../../../../test/fake-database.js'
 
 import { ClerkWebhookService } from './clerk-webhook.service.js'
 
+import type { AccountDeletionService } from './account-deletion.service.js'
 import type { WebhookEvent } from '@clerk/backend/webhooks'
 import type { Mock } from 'vitest'
 
@@ -32,11 +33,16 @@ function createService(overrides: Record<string, Mock> = {}) {
         getUserByUsername: vi.fn().mockResolvedValue({ rows: [] }),
         updateUsername: vi.fn().mockResolvedValue({ rowsAffected: 1 }),
         updateUserEmail: vi.fn().mockResolvedValue({ rowsAffected: 1 }),
-        softDeleteUserById: vi.fn().mockResolvedValue({ rowsAffected: 1 }),
         ...overrides,
     }
 
-    return { service: new ClerkWebhookService(fakeDatabase(queries)), queries }
+    const accountDeletion = { deleteAccountForClerkUser: vi.fn().mockResolvedValue(undefined) }
+
+    return {
+        service: new ClerkWebhookService(fakeDatabase(queries), accountDeletion as unknown as AccountDeletionService),
+        queries,
+        accountDeletion,
+    }
 }
 
 describe('ClerkWebhookService', () => {
@@ -118,29 +124,17 @@ describe('ClerkWebhookService', () => {
         const { service, queries } = createService({ getUserByClerkId: vi.fn().mockResolvedValue({ rows: [] }) })
 
         await service.handle(userUpdated('new@example.com'))
-        await service.handle(userDeleted)
 
         expect(queries.updateUserEmail).not.toHaveBeenCalled()
         expect(queries.updateUsername).not.toHaveBeenCalled()
-        expect(queries.softDeleteUserById).not.toHaveBeenCalled()
     })
 
-    it('soft-deletes the linked account when its Clerk user is deleted', async () => {
-        const { service, queries } = createService()
+    it('runs the account deletion when its Clerk user is deleted', async () => {
+        const { service, accountDeletion } = createService()
 
         await service.handle(userDeleted)
 
-        expect(queries.softDeleteUserById).toHaveBeenCalledWith(7)
-    })
-
-    it('treats a repeated deletion as done', async () => {
-        const { service, queries } = createService({
-            getUserByClerkId: vi.fn().mockResolvedValue({ rows: [{ ...account, isDeleted: 1 }] }),
-        })
-
-        await service.handle(userDeleted)
-
-        expect(queries.softDeleteUserById).not.toHaveBeenCalled()
+        expect(accountDeletion.deleteAccountForClerkUser).toHaveBeenCalledWith('user_7')
     })
 
     it('ignores other event types', async () => {

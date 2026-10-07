@@ -168,8 +168,8 @@ export class DashboardService {
             throw new BadRequestException('Owner cannot leave group')
         }
 
-        // Step 2: Delete the membership
-        await this.groupMembershipsService.deleteGroupMembershipById(userId, groupId)
+        // Step 2: Leave: upcoming sessions drop them, history keeps them (ADR-0018)
+        await this.databaseService.groups.leaveGroup(userId, groupId)
 
         return { success: true }
     }
@@ -183,8 +183,12 @@ export class DashboardService {
             throw new ForbiddenException('You are not the owner of this group')
         }
 
-        // Step 2: Delete the membership
-        await this.groupMembershipsService.deleteGroupMembershipById(memberId, groupId)
+        if (memberId === userId) {
+            throw new BadRequestException('Owner cannot leave group')
+        }
+
+        // Step 2: Same as leaving: upcoming sessions drop them, history keeps them (ADR-0018)
+        await this.databaseService.groups.leaveGroup(memberId, groupId)
 
         return { success: true }
     }

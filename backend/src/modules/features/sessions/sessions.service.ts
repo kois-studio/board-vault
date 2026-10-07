@@ -70,7 +70,7 @@ export class SessionsService {
 
         if (usesGroupPeople) {
             const people = await this.getGroupPeople(body.groupId)
-            const activePeople = new Set(people.rows.filter(row => String(row[4]) === 'active').map(row => Number(row[0])))
+            const activePeople = new Set(people.rows.filter(row => row[10] === 'member').map(row => Number(row[0])))
 
             if (groupPersonIds.some(groupPersonId => !activePeople.has(groupPersonId))) {
                 throw new BadRequestException('Every participant must be active in the selected group')
@@ -175,7 +175,7 @@ export class SessionsService {
 
         if (usesGroupPeople) {
             const people = await this.getGroupPeople(body.groupId)
-            const activePeople = new Set(people.rows.filter(row => String(row[4]) === 'active').map(row => Number(row[0])))
+            const activePeople = new Set(people.rows.filter(row => row[10] === 'member').map(row => Number(row[0])))
 
             if (groupPersonIds.some(groupPersonId => !activePeople.has(groupPersonId))) {
                 throw new BadRequestException('Every participant must be active in the selected group')
@@ -292,16 +292,17 @@ export class SessionsService {
         }
 
         const people = groupPersonIds.length > 0 ? await this.getGroupPeople(groupId) : { rows: [] }
-        const activePeople = new Set(people.rows.filter(row => String(row[4]) === 'active').map(row => Number(row[0])))
+        const activePeople = new Set(people.rows.filter(row => row[10] === 'member').map(row => Number(row[0])))
+        const existingPersonIds = await this.getMeetPersonIds(sessionId)
 
-        if (groupPersonIds.some(groupPersonId => !activePeople.has(groupPersonId))) {
+        // Someone already in the session may stay after leaving the group; only current members can be added.
+        if (groupPersonIds.some(groupPersonId => !activePeople.has(groupPersonId) && !existingPersonIds.includes(groupPersonId))) {
             throw new BadRequestException('Every participant must be active in the session group')
         }
 
         const nextAttendeeIds = new Set(attendeeIds)
         const nextPersonIds = new Set(groupPersonIds)
         const existingAccountIds = await this.databaseService.sessions.getMeetAttendeeIds(sessionId)
-        const existingPersonIds = await this.getMeetPersonIds(sessionId)
         const playedAccountParticipants = await this.databaseService.sessions.getMeetPlayedGameParticipants(sessionId)
         const playedPersonParticipants = await this.getMeetPlayedGameParticipants(sessionId)
 

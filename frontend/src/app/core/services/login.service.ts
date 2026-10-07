@@ -183,6 +183,20 @@ export class LoginService {
         return path === '/' || path === '/login' || path === '/register'
     }
 
+    /** After the account was deleted (ADR-0018): its Clerk user is gone, so signing out may fail and that is fine. */
+    public async leaveAfterAccountDeletion(): Promise<void> {
+        try {
+            await this.clerkService.signOut()
+        } catch {
+            // The session ended with the Clerk user.
+        }
+        this._performLogoutCleanup()
+        this.clerkAuthHandoffState.set('idle')
+        this.clerkAuthHandoffError.set(null)
+        await this.router.navigate(['/'])
+        this.toastService.success('Your account was deleted.')
+    }
+
     /**
      * Public method for when a user explicitly clicks a logout button.
      * Shows a success toast.

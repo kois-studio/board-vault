@@ -3,7 +3,7 @@
 - **Status:** Accepted
 - **Date:** 2026-10-07
 - **Supersedes:** None
-- **Superseded by:** None
+- **Superseded by:** [ADR-0018](0018-account-deletion-and-leaving-groups.md), for account deletion only
 
 ## Context
 

@@ -22,7 +22,7 @@
                 @if (item.attendees.length > 0) {
                 <div class="flex shrink-0 -space-x-2" aria-hidden="true">
                     @for (person of item.attendees.slice(0, 6); track person.key) {
-                    <app-image-profile size="small" class="rounded-full ring-2 ring-bv-surface" [avatar]="person.avatar" [title]="person.name" />
+                    <app-image-profile size="small" class="rounded-full ring-2 ring-bv-surface" [class.opacity-50]="person.standing === 'left'" [avatar]="person.avatar" [title]="person.name" />
                     }
                 </div>
                 }

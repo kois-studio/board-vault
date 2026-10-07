@@ -44,7 +44,7 @@ active status. Owner-only mutations manage placeholder names, ownership, and
 preferences; ordinary group members can read and use participant identities.
 RSVP remains a real-account capability, while organizers record attendance for
 placeholders. Account deletion or leaving a group must not delete historical
-participant references.
+participant references (how they show afterwards: ADR-0018).
 
 Migrations are additive and preserve the legacy account-oriented session and
 invitation contracts during rollout. Live rollout still requires the normal

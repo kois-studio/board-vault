@@ -11,16 +11,30 @@ tag. Release notes must describe product boundaries honestly and must not
 include credentials, personal data, provider identifiers, or private
 operational details.
 
+### Added
+
+- You can delete your account in Settings → Account. It removes your shelf,
+  wishlist, ratings and the rest of your private data, takes you out of your
+  groups, and passes the groups you own to the member who joined first.
+  Game nights you already played keep you, as "Deleted account", so your
+  friends' history stays complete. You confirm by typing your username.
+
 ### Changed
 
+- When someone leaves a group, past game nights still list them, as
+  "Name (left)" with a faded avatar, instead of looking like a current
+  member. They come off the group's upcoming nights, and nights they
+  organised pass to the group owner. People who left can't be added to new
+  sessions. Archived people stay in the nights they played, too.
+- Deleting a group removes its game nights first, so it no longer fails on a
+  database that enforces foreign keys once the group has history.
 - Settings are reorganised. **Profile** is how people in your groups see you:
   avatar, display name, and your username, shown read-only. **Account**
   replaces Security: it shows your username and email and opens the sign-in
   panel to change them, your password, and your devices. The sign-in panel no
   longer offers a photo or a first and last name, which Board Vault never
   showed. Your username is now the one you sign in with everywhere, and
-  inviting someone by username ignores upper and lower case. Deleting your
-  own account is switched off until it can keep your groups' history intact.
+  inviting someone by username ignores upper and lower case.
 - Settings → Appearance offers themes besides plum: Felt (card-table green),
   Harbor (sea blue), and Graphite (grays), each in light and dark, and a
   text size (Default, Large, Larger) that makes text, buttons, and icons

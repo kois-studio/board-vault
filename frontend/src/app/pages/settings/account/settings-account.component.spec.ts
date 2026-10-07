@@ -1,8 +1,11 @@
 import { signal } from '@angular/core'
 import { ComponentFixture, TestBed } from '@angular/core/testing'
+import { of, throwError } from 'rxjs'
+import { Api } from '../../../api/api'
 import type { UserType } from '../../../api/api.types'
 import { ClerkService } from '../../../core/services/clerk.service'
 import { DataService } from '../../../core/services/data.service'
+import { LoginService } from '../../../core/services/login.service'
 import { SettingsAccountComponent } from './settings-account.component'
 
 describe('SettingsAccountComponent', () => {
@@ -24,6 +27,8 @@ describe('SettingsAccountComponent', () => {
         openUserProfile: vi.fn(),
     }
     const dataService = { currentUser: signal<UserType | null>(null) }
+    const api = { deleteAccount: vi.fn() }
+    const loginService = { leaveAfterAccountDeletion: vi.fn().mockResolvedValue(undefined) }
 
     const text = (testId: string) => (fixture.nativeElement as HTMLElement).querySelector(`[data-testid="${testId}"]`)?.textContent?.trim()
 
@@ -33,12 +38,16 @@ describe('SettingsAccountComponent', () => {
         clerkService.username.set(null)
         clerkService.primaryEmail.set(null)
         clerkService.openUserProfile.mockClear()
+        api.deleteAccount.mockReset().mockReturnValue(of(undefined))
+        loginService.leaveAfterAccountDeletion.mockClear()
 
         await TestBed.configureTestingModule({
             imports: [SettingsAccountComponent],
             providers: [
                 { provide: ClerkService, useValue: clerkService },
                 { provide: DataService, useValue: dataService },
+                { provide: Api, useValue: api },
+                { provide: LoginService, useValue: loginService },
             ],
         }).compileComponents()
 
@@ -76,11 +85,55 @@ describe('SettingsAccountComponent', () => {
         expect(clerkService.openUserProfile).toHaveBeenCalledTimes(1)
     })
 
-    it('explains that deletion is not available, with no delete control', () => {
-        const element: HTMLElement = fixture.nativeElement
+    const element = () => fixture.nativeElement as HTMLElement
+    const byTestId = (testId: string) => element().querySelector<HTMLElement>(`[data-testid="${testId}"]`)
+    const typeConfirmation = (value: string) => {
+        const input = byTestId('delete-account-confirmation') as HTMLInputElement
+        input.value = value
+        input.dispatchEvent(new Event('input'))
+        fixture.detectChanges()
+    }
 
-        expect(element.textContent).toContain("You can't delete your account yourself yet")
-        expect(Array.from(element.querySelectorAll('button')).some((button) => /delete/i.test(button.textContent ?? ''))).toBe(false)
+    it('explains what deleting keeps and removes, and asks for the username before deleting', () => {
+        expect(element().textContent).toContain('Deleted account')
+        expect(byTestId('delete-account-confirmation')).toBeNull()
+
+        byTestId('delete-account')?.click()
+        fixture.detectChanges()
+
+        const confirm = byTestId('confirm-delete-account') as HTMLButtonElement
+        expect(confirm.disabled).toBe(true)
+
+        typeConfirmation('someone-else')
+        expect(confirm.disabled).toBe(true)
+
+        typeConfirmation('Organizer')
+        expect(confirm.disabled).toBe(false)
+        expect(api.deleteAccount).not.toHaveBeenCalled()
+    })
+
+    it('deletes the account and signs out', async () => {
+        byTestId('delete-account')?.click()
+        fixture.detectChanges()
+        typeConfirmation('organizer')
+
+        await fixture.componentInstance.deleteAccount()
+
+        expect(api.deleteAccount).toHaveBeenCalledTimes(1)
+        expect(loginService.leaveAfterAccountDeletion).toHaveBeenCalledTimes(1)
+    })
+
+    it('says so when the deletion fails, and stays signed in', async () => {
+        api.deleteAccount.mockReturnValue(throwError(() => new Error('offline')))
+        byTestId('delete-account')?.click()
+        fixture.detectChanges()
+        typeConfirmation('organizer')
+
+        await fixture.componentInstance.deleteAccount()
+        fixture.detectChanges()
+
+        expect(element().querySelector('[role="alert"]')?.textContent).toContain('could not be deleted')
+        expect(loginService.leaveAfterAccountDeletion).not.toHaveBeenCalled()
     })
 
     it('says when Clerk is not available', () => {

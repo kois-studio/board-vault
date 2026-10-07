@@ -616,6 +616,11 @@ export class Api {
             .pipe(map((response) => successSchema.parse(response)))
     }
 
+    /** Deletes the signed-in account (ADR-0018). Cannot be undone. */
+    deleteAccount() {
+        return this.http.delete<void>(`${this.url}/auth/account`)
+    }
+
     leaveGroup(userId: number, groupId: number) {
         return this.http
             .delete<{ success: true }>(`${this.url}/dashboard/users/${userId}/groups/${groupId}/members`, {})

@@ -22,13 +22,22 @@ collection, reviews, memberships, groups they created (and everything in them),
 sessions they created, and more.
 
 - **Never `DELETE FROM Account` and never drop or rebuild the `Account` table.**
-  Accounts are soft-deleted with `isDeleted = 1`, including when their Clerk
-  user is deleted ([ADR-0013](adr/0013-clerk-user-lifecycle.md)). A unit test
+  Deleting an account keeps the row with `isDeleted = 1` and nothing personal
+  on it, removes the person's private data explicitly, and keeps their group
+  people in history as "Deleted account"
+  ([ADR-0018](adr/0018-account-deletion-and-leaving-groups.md),
+  `account-deletion.queries.ts`). A unit test
   ([`account-invariants.spec.ts`](../backend/src/modules/common/database/account-invariants.spec.ts))
   fails if either statement appears in the backend.
 - Column removal uses `ALTER TABLE … DROP COLUMN`, which does not fire cascades.
 - `MeetPersonAttendee`, `MeetPersonGame`, and `MeetGameResult` use `RESTRICT`
   on `GroupPerson`: a group person with session history cannot be deleted.
+  Deleting a group therefore deletes its session rows first
+  (`group-lifecycle.ts`).
+- A group person's **standing** (`member`, `left`, `deleted`) is not stored:
+  group-person reads derive it from the account and the membership (ADR-0018).
+  Leaving a group deletes only the membership and the person's place in
+  scheduled sessions; completed sessions never change.
 
 ## Tables
 

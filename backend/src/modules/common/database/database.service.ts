@@ -5,6 +5,7 @@ import { ConfigService } from '@nestjs/config'
 import { ProviderTimeoutError, fetchWithTimeout } from '../../../common/http/provider-timeout.js'
 import { structuredLog } from '../../../common/logging/structured-log.js'
 
+import { AccountDeletionQueries } from './queries/account-deletion.queries.js'
 import { AccountQueries } from './queries/accounts.queries.js'
 import { ArtworkQueries } from './queries/artwork.queries.js'
 import { CollectionQueries } from './queries/collection.queries.js'
@@ -36,6 +37,7 @@ export class DatabaseService implements OnModuleInit, OnModuleDestroy {
     private tursoClient: Client
 
     readonly accounts = new AccountQueries(this)
+    readonly accountDeletion = new AccountDeletionQueries(this)
     readonly artwork = new ArtworkQueries(this)
     readonly collection = new CollectionQueries(this)
     readonly games = new GameQueries(this)

@@ -31,6 +31,7 @@ describe('PlayService history', () => {
                 accountPlays: new Map([[10, [{ gameId: 42, accountId: 1 }]]]),
             }),
             getGroupPeople: vi.fn().mockResolvedValue({ rows: [] }),
+            getAccountStandings: vi.fn().mockResolvedValue({ rows: [{ groupId: 7, accountId: 1, standing: 'left' }] }),
         })
         const service = new PlayService(
             {
@@ -46,7 +47,7 @@ describe('PlayService history', () => {
         const history = await service.getUserGamesHistory(1)
 
         expect(history).toHaveLength(1)
-        expect(history[0]?.gamesPlayed[0]?.playedBy.map(user => user.id)).toEqual([1])
+        expect(history[0]?.gamesPlayed[0]?.playedBy.map(user => [user.id, user.standing])).toEqual([[1, 'left']])
         expect(meets.getMeetsByIdsForAccount).toHaveBeenCalledWith([10, 11], 1)
         expect(database.sessions.getHistoryDetailsByMeetIds).toHaveBeenCalledTimes(1)
         expect(database.sessions.getHistoryDetailsByMeetIds).toHaveBeenCalledWith([10])
@@ -88,8 +89,8 @@ describe('PlayService history', () => {
             }),
             getGroupPeople: vi.fn().mockResolvedValue({
                 rows: [
-                    [3, 7, 6, 'linked', 'active', 'bloddsword', null],
-                    [9, 7, null, 'placeholder', 'active', 'Guest', JSON.stringify(guestAvatar)],
+                    [3, 7, 6, 'linked', 'active', 'bloddsword', null, null, null, null, 'member'],
+                    [9, 7, null, 'placeholder', 'active', 'Guest', JSON.stringify(guestAvatar), null, null, null, 'member'],
                 ],
             }),
         })
@@ -112,8 +113,8 @@ describe('PlayService history', () => {
         const [record] = await service.getUserGamesHistory(6)
 
         const expectedPeople = [
-            { id: 3, displayName: 'bloddsword', accountId: 6, avatar: accountAvatar },
-            { id: 9, displayName: 'Guest', accountId: null, avatar: guestAvatar },
+            { id: 3, displayName: 'bloddsword', accountId: 6, avatar: accountAvatar, standing: 'member' },
+            { id: 9, displayName: 'Guest', accountId: null, avatar: guestAvatar, standing: 'member' },
         ]
 
         expect(record?.attendedBy).toEqual([])
@@ -186,8 +187,8 @@ describe('PlayService history', () => {
             getGroupMemberIds: vi.fn().mockResolvedValue([1]),
             getGroupPeople: vi.fn().mockResolvedValue({
                 rows: [
-                    [12, 7, null, 'placeholder', 'active', 'Ana'],
-                    [13, 7, 1, 'linked', 'active', 'Carlos'],
+                    [12, 7, null, 'placeholder', 'active', 'Ana', null, null, null, null, 'member'],
+                    [13, 7, 1, 'linked', 'active', 'Carlos', null, null, null, null, 'member'],
                 ],
             }),
             getGroupPersonRecommendationCandidates: vi.fn().mockResolvedValue({

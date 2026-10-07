@@ -6,7 +6,7 @@ test.describe('settings account UX', () => {
     test.skip(!storageState, 'Set a disposable Clerk storage state to run the settings account journey.')
     test.use({ storageState })
 
-    test('shows sign-in details and keeps deletion truthful', async ({ page }) => {
+    test('shows sign-in details and asks before deleting', async ({ page }) => {
         await page.goto('/settings/account')
 
         const sections = page.getByRole('navigation', { name: 'Settings sections' })
@@ -16,7 +16,14 @@ test.describe('settings account UX', () => {
         await expect(page.getByTestId('account-username')).not.toBeEmpty()
         await expect(page.getByRole('button', { name: 'Manage sign-in' })).toBeVisible()
         await expect(page.getByRole('heading', { name: 'Delete account' })).toBeVisible()
-        await expect(page.getByText(/can't delete your account yourself yet/i)).toBeVisible()
+        await expect(page.getByText(/can't be undone/i).first()).toBeVisible()
+
+        // Opening the confirmation and backing out deletes nothing: the storage state stays usable.
+        await page.getByTestId('delete-account').click()
+        const dialog = page.getByRole('dialog', { name: 'Delete your account?' })
+        await expect(dialog.getByTestId('confirm-delete-account')).toBeDisabled()
+        await dialog.getByRole('button', { name: 'Keep my account' }).click()
+        await expect(dialog).toHaveCount(0)
     })
 
     test('keeps the old security address working', async ({ page }) => {

@@ -7,6 +7,7 @@ import type {
     GameResultEntryType,
     GameType,
     GroupPersonWorkspaceType,
+    GroupStanding,
     GroupWithMembersAndGames,
     MeetType,
     MeetWithAttendeesAndGamesType,
@@ -24,7 +25,7 @@ import { ImageBackgroundComponent } from '../../components/ui/image-background/i
 import { CustomDatePipe } from '../../core/pipes/customDate.pipe'
 import { DataService } from '../../core/services/data.service'
 import type { Nullable } from '../../core/types/commons.type'
-import { formatWinners } from '../../core/utils/historyParticipants'
+import { formatWinners, nameWithStanding } from '../../core/utils/historyParticipants'
 import { downloadSessionIcs, googleCalendarUrl } from '../../core/utils/sessionCalendar'
 import { relativeDay, type SessionDateParts, sessionDateParts } from '../../core/utils/sessionTiming'
 
@@ -34,8 +35,11 @@ export type SessionPerson = {
     key: string
     accountId: number | null
     personId: number | null
+    /** With "(left)" for someone who left the group. */
     displayName: string
     avatar: PublicUserType['avatar']
+    /** Past sessions keep people who left or deleted their account (ADR-0018). */
+    standing: GroupStanding
 }
 
 type ResultDraft = Record<string, { isWinner: boolean; score: number | null }>
@@ -151,7 +155,8 @@ export class MeetViewComponent {
             this.groupData = groupData
 
             if (typeof this.api.getGroupPeople === 'function') {
-                this.groupPeople = (await firstValueFrom(this.api.getGroupPeople(this.meetData.groupId))).people
+                // Archived and former people too: the session may have them, and keeps them (ADR-0018).
+                this.groupPeople = (await firstValueFrom(this.api.getGroupPeople(this.meetData.groupId, true))).people
             }
             if (this.isGroupPersonSession && typeof this.api.getGroupPersonCatalog === 'function') {
                 this.groupPersonCatalog = await firstValueFrom(this.api.getGroupPersonCatalog(this.meetData.groupId))
@@ -261,7 +266,9 @@ export class MeetViewComponent {
     /** Everyone who could be invited: the members, or the group people. */
     get invitablePeople(): Array<SessionPerson> {
         if (this.isGroupPersonSession) {
-            return this.groupPeople.filter((person) => person.person.status !== 'archived').map((person) => this.#fromGroupPerson(person))
+            return this.groupPeople
+                .filter((person) => person.person.status !== 'archived' && (person.person.standing ?? 'member') === 'member')
+                .map((person) => this.#fromGroupPerson(person))
         }
         return (this.groupData?.members ?? []).map((member) => this.#fromAccount(member))
     }
@@ -1097,16 +1104,19 @@ export class MeetViewComponent {
             personId: null,
             displayName: member.displayName || member.username,
             avatar: member.avatar,
+            standing: 'member',
         }
     }
 
     #fromGroupPerson({ person }: GroupPersonWorkspaceType): SessionPerson {
         const linked = person.accountId === null ? undefined : this.groupData?.members.find((member) => member.id === person.accountId)
+        const standing = person.standing ?? 'member'
         return {
             key: `p${person.id}`,
             accountId: person.accountId,
             personId: person.id,
-            displayName: person.displayName,
+            displayName: nameWithStanding(person.displayName, standing),
+            standing,
             avatar: person.avatar ??
                 linked?.avatar ?? {
                     type: 'initials',

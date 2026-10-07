@@ -140,6 +140,15 @@ export class GroupViewComponent {
     public readonly isLeavingGroup = signal(false)
 
     public readonly claimableGroupPersonComputed = computed(() => this.groupPeople$().find((person) => person.claimable) ?? null)
+    /** The people list: members who left or deleted their account show only with the archived people (ADR-0018). */
+    public readonly visibleGroupPeopleComputed = computed(() =>
+        this.groupPeople$().filter(
+            (person) =>
+                person.person.kind === 'placeholder' ||
+                (person.person.standing ?? 'member') === 'member' ||
+                this.includeArchivedGroupPeople(),
+        ),
+    )
     public readonly currentUserHasGroupPersonComputed = computed(() => {
         const userId = this.currentUser$()?.id
         return (
@@ -711,6 +720,13 @@ export class GroupViewComponent {
             },
             complete: () => this.acquisitionBoardLoading.set(false),
         })
+    }
+
+    /** The badge on a group person: no account, a member, or someone no longer in the group. */
+    public groupPersonBadge(person: GroupPersonWorkspaceType['person']): string {
+        if (person.standing === 'deleted') return 'Deleted account'
+        if (person.standing === 'left') return person.kind === 'linked' ? 'Left the group' : 'Archived'
+        return person.kind === 'linked' ? 'Member' : 'No account yet'
     }
 
     public loadGroupPeople(groupId: number): void {

@@ -2,6 +2,8 @@ import { Injectable, Logger } from '@nestjs/common'
 
 import { DatabaseService } from '../database/database.service.js'
 
+import { AccountDeletionService } from './account-deletion.service.js'
+
 import type { UserJSON } from '@clerk/backend'
 import type { WebhookEvent } from '@clerk/backend/webhooks'
 
@@ -15,14 +17,17 @@ import type { WebhookEvent } from '@clerk/backend/webhooks'
 export class ClerkWebhookService {
     private readonly logger = new Logger(ClerkWebhookService.name)
 
-    constructor(private readonly databaseService: DatabaseService) {}
+    constructor(
+        private readonly databaseService: DatabaseService,
+        private readonly accountDeletionService: AccountDeletionService,
+    ) {}
 
     async handle(event: WebhookEvent): Promise<void> {
         switch (event.type) {
             case 'user.updated':
                 return this.syncUser(event.data)
             case 'user.deleted':
-                return this.softDeleteAccount(event.data.id)
+                return event.data.id ? this.accountDeletionService.deleteAccountForClerkUser(event.data.id) : undefined
             default:
                 return
         }
@@ -66,17 +71,6 @@ export class ClerkWebhookService {
 
         await this.databaseService.accounts.updateUsername(account.id, user.username)
         this.logger.log('Synced a username change from Clerk')
-    }
-
-    private async softDeleteAccount(clerkUserId: string | undefined): Promise<void> {
-        if (!clerkUserId) return
-
-        const account = await this.findLinkedAccount(clerkUserId)
-
-        if (!account) return
-
-        await this.databaseService.accounts.softDeleteUserById(account.id)
-        this.logger.log('Soft-deleted an account whose Clerk user was deleted')
     }
 
     /** The active account linked to a Clerk user, or null when there is none or it is already deleted. */
