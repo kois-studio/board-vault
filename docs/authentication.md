@@ -15,7 +15,9 @@ The main state transitions are:
    - a linked account (matching `clerkUserId`) is used, unless it is deleted;
    - otherwise, a Clerk user with a verified primary email is provisioned as a
      new account when it arrives through a group invitation or self-registration
-     is enabled (ADR-0008);
+     is enabled (ADR-0008). A group invitation is checked first: if its inviter
+     no longer owns the group (or the group is gone), it is refused with 404 and
+     no account is created;
    - a verified email that already belongs to an unlinked account is refused
      with `409 ACCOUNT_EMAIL_CONFLICT` and is never linked automatically;
 5. `AuthGuard` admits requests with a resolved account, and later guards apply
@@ -57,8 +59,11 @@ profile row (photo, name) and delete section are hidden with
 instance, for every user (the instance-wide switch is Dashboard-only: *User &
 authentication → Allow users to delete their accounts*). People delete their
 account in Settings → Account instead: `DELETE /auth/account` removes their
-data, keeps them in group history as "Deleted account", and then deletes the
-Clerk user ([ADR-0018](adr/0018-account-deletion-and-leaving-groups.md)).
+data, keeps them in group history as "Deleted account", revokes the pending
+Clerk group invitations they sent, and then deletes the Clerk user
+([ADR-0018](adr/0018-account-deletion-and-leaving-groups.md)). The
+`user.deleted` webhook revokes them too. A revocation Clerk refuses is logged;
+the deletion stands.
 
 ## Changes made in Clerk
 

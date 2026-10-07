@@ -24,6 +24,7 @@ export class AccountDeletionService {
     /** The signed-in person deletes their own account. */
     async deleteOwnAccount(accountId: number, clerkUserId: string): Promise<void> {
         await this.deleteAccountData(accountId)
+        await this.revokeSentInvitations(accountId)
 
         try {
             await this.clerkIdentityService.deleteClerkUser(clerkUserId)
@@ -43,7 +44,23 @@ export class AccountDeletionService {
         if (!row || Boolean(row.isDeleted)) return
 
         await this.deleteAccountData(Number(row.id))
+        await this.revokeSentInvitations(Number(row.id))
         this.logger.log('Deleted an account whose Clerk user was deleted')
+    }
+
+    /**
+     * Invitations sent go with the account (ADR-0018). Board Vault's own are deleted in the
+     * transaction; Clerk's are revoked here, so their links stop working instead of opening an
+     * account that the group no longer takes in. The deletion stands even if Clerk fails.
+     */
+    private async revokeSentInvitations(accountId: number): Promise<void> {
+        try {
+            const { failed } = await this.clerkIdentityService.revokeInvitationsFrom(accountId)
+
+            if (failed > 0) this.logger.warn('Deleted an account, but some of its group invitations could not be revoked in Clerk')
+        } catch {
+            this.logger.warn('Deleted an account, but its group invitations could not be read from Clerk to revoke them')
+        }
     }
 
     private async deleteAccountData(accountId: number): Promise<void> {
