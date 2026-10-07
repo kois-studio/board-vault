@@ -410,7 +410,7 @@ export class DataService {
 
     // #region form-update-profile
 
-    public updateCurrentUserData(requestBody: { username?: string; displayName?: string; avatar?: UserType['avatar'] }) {
+    public updateCurrentUserData(requestBody: { displayName?: string; avatar?: UserType['avatar'] }) {
         const currentUser = this.currentUser()
         if (!currentUser) {
             return
@@ -430,9 +430,6 @@ export class DataService {
                             if (!member) return group
 
                             // update the user data inside that group
-                            if (requestBody.username) {
-                                member.username = requestBody.username
-                            }
                             if (requestBody.displayName) {
                                 member.displayName = requestBody.displayName
                             }

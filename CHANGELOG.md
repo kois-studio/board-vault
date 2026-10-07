@@ -13,6 +13,14 @@ operational details.
 
 ### Changed
 
+- Settings are reorganised. **Profile** is how people in your groups see you:
+  avatar, display name, and your username, shown read-only. **Account**
+  replaces Security: it shows your username and email and opens the sign-in
+  panel to change them, your password, and your devices. The sign-in panel no
+  longer offers a photo or a first and last name, which Board Vault never
+  showed. Your username is now the one you sign in with everywhere, and
+  inviting someone by username ignores upper and lower case. Deleting your
+  own account is switched off until it can keep your groups' history intact.
 - Settings → Appearance offers themes besides plum: Felt (card-table green),
   Harbor (sea blue), and Graphite (grays), each in light and dark, and a
   text size (Default, Large, Larger) that makes text, buttons, and icons

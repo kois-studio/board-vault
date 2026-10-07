@@ -136,10 +136,11 @@ describe('single-user group claim workflow (e2e)', () => {
             .send({ gameId: 10, preference: 'favorite' })
             .expect(200)
 
+        // Typed with different letter case: usernames match case-insensitively.
         const invitationTarget = await request(app.getHttpServer())
             .post('/invitations/byUsername')
             .set(withAuth(organizerToken))
-            .send({ groupId, username: 'member', groupPersonId: anaId })
+            .send({ groupId, username: 'Member', groupPersonId: anaId })
             .expect(201)
 
         expect(invitationTarget.body.username).toBe('member')

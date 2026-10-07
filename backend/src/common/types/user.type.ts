@@ -102,16 +102,10 @@ export class UserSelfDto extends PickType(UserGetDto, ['id', 'email', 'username'
 export class UserPublicDto extends PickType(UserGetDto, ['id', 'username', 'displayName', 'avatar']) {}
 
 /**
- * PUT /users/:userId requests --> safe profile fields only
+ * PUT /users/:userId requests --> safe profile fields only.
+ * The username is not one of them: Clerk owns it (ADR-0017).
  */
 export class UpdateUserBody {
-    @ApiProperty({ example: 'sample-user', required: false })
-    @IsOptional()
-    @IsString()
-    @IsNotEmpty()
-    @MaxLength(50)
-    username?: string
-
     @ApiProperty({ example: 'Sample User', required: false })
     @IsOptional()
     @IsString()

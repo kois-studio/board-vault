@@ -143,7 +143,7 @@ component through `takeUntilDestroyed` or `toSignal`.
 | `/collection`, `/collection/…` | `AuthOnlyGuard` | Collection hub (a card per subpage and recent activity); My Games, browse, reviews, wishlist, propose a game |
 | `/games/:gameId` | `AuthOnlyGuard` | Game detail |
 | `/play`, `/play/…` | `AuthOnlyGuard` | Play hub (a card per subpage); upcoming, recommendations, log a session, history |
-| `/settings`, `/settings/profile`, `/settings/appearance`, `/settings/security` | `AuthOnlyGuard` | Settings: profile, theme, and Clerk account security (`/settings/account` redirects to profile) |
+| `/settings`, `/settings/profile`, `/settings/appearance`, `/settings/account` | `AuthOnlyGuard` | Settings: how groups see you, theme and text size, and sign-in through Clerk's panel (`/settings/security` redirects to account; ADR-0017) |
 | `/admin`, `/admin/panel`, `/admin/proposals`, `/admin/proposals/:id`, `/admin/manage-games`, `/admin/manage-games/:id`, `/admin/manage-tags` | `AdminGuard` | Administration: overview (on desktop `/admin` opens it; on phones it is the list of areas), proposals and the review of one, the catalogue and the edit form of one game, tags (lazy chunk, inside the app layout) |
 
 The app has three sections: Home (groups and their pages), Collection

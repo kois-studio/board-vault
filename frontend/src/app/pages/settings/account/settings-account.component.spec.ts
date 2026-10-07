@@ -1,12 +1,11 @@
 import { signal } from '@angular/core'
 import { ComponentFixture, TestBed } from '@angular/core/testing'
-import { provideRouter } from '@angular/router'
-import { Api } from '../../../api/api'
 import type { UserType } from '../../../api/api.types'
+import { ClerkService } from '../../../core/services/clerk.service'
 import { DataService } from '../../../core/services/data.service'
 import { SettingsAccountComponent } from './settings-account.component'
 
-describe('SettingsAccountComponent avatar editor', () => {
+describe('SettingsAccountComponent', () => {
     let fixture: ComponentFixture<SettingsAccountComponent>
 
     const currentUser: UserType = {
@@ -18,67 +17,76 @@ describe('SettingsAccountComponent avatar editor', () => {
         createdAt: '2026-09-01T10:00:00.000Z',
     }
 
-    const dataService = {
-        currentUser: signal<UserType | null>(null),
-        updateCurrentUserData: vi.fn().mockName('updateCurrentUserData'),
+    const clerkService = {
+        isAvailable: signal(true),
+        username: signal<string | null>(null),
+        primaryEmail: signal<string | null>(null),
+        openUserProfile: vi.fn(),
     }
-    const api = { updateUser: vi.fn().mockName('updateUser') }
+    const dataService = { currentUser: signal<UserType | null>(null) }
 
-    const dialog = (): HTMLElement | null => fixture.nativeElement.querySelector('app-modal-avatar-editor app-avatar-editor')
+    const text = (testId: string) => (fixture.nativeElement as HTMLElement).querySelector(`[data-testid="${testId}"]`)?.textContent?.trim()
 
     beforeEach(async () => {
         dataService.currentUser.set(structuredClone(currentUser))
-        dataService.updateCurrentUserData.mockClear()
-        api.updateUser.mockClear()
+        clerkService.isAvailable.set(true)
+        clerkService.username.set(null)
+        clerkService.primaryEmail.set(null)
+        clerkService.openUserProfile.mockClear()
 
         await TestBed.configureTestingModule({
             imports: [SettingsAccountComponent],
-            providers: [provideRouter([]), { provide: DataService, useValue: dataService }, { provide: Api, useValue: api }],
+            providers: [
+                { provide: ClerkService, useValue: clerkService },
+                { provide: DataService, useValue: dataService },
+            ],
         }).compileComponents()
 
         fixture = TestBed.createComponent(SettingsAccountComponent)
         fixture.detectChanges()
     })
 
-    it('opens the avatar editor from the Edit button and closes it again', () => {
-        expect(dialog()).toBeNull()
-
-        const editButton = fixture.nativeElement.querySelector('button[aria-label="Edit profile avatar"]') as HTMLButtonElement
-        editButton.click()
-        fixture.detectChanges()
-
-        expect(dialog()).not.toBeNull()
-
-        const closeButton = fixture.nativeElement.querySelector('button[aria-label="Close avatar editor"]') as HTMLButtonElement
-        closeButton.click()
-        fixture.detectChanges()
-
-        expect(dialog()).toBeNull()
+    it('falls back to the account copy until Clerk has loaded', () => {
+        expect(text('account-username')).toBe('organizer')
+        expect(text('account-email')).toBe('organizer+clerk_test@example.com')
     })
 
-    it('saves a chosen avatar once, through the shared profile update', () => {
-        ;(fixture.nativeElement.querySelector('button[aria-label="Edit profile avatar"]') as HTMLButtonElement).click()
+    it('shows the values Clerk holds', () => {
+        clerkService.username.set('organizer2')
+        clerkService.primaryEmail.set('new+clerk_test@example.com')
         fixture.detectChanges()
 
-        const editor = fixture.debugElement.query((element) => element.name === 'app-avatar-editor')
-        editor.componentInstance.selectColor('#10B981')
-
-        expect(dataService.updateCurrentUserData).toHaveBeenCalledTimes(1)
-        expect(dataService.updateCurrentUserData).toHaveBeenCalledWith({
-            avatar: expect.objectContaining({ backgroundColor: '#10B981', type: 'icon', iconName: 'person-fill' }),
-        })
-        expect(api.updateUser).not.toHaveBeenCalled()
+        expect(text('account-username')).toBe('organizer2')
+        expect(text('account-email')).toBe('new+clerk_test@example.com')
     })
 
-    it('leaves the current user unchanged until the save succeeds', () => {
-        ;(fixture.nativeElement.querySelector('button[aria-label="Edit profile avatar"]') as HTMLButtonElement).click()
+    it('shows a username changed in Clerk everywhere before the webhook lands', () => {
+        clerkService.username.set('organizer2')
         fixture.detectChanges()
 
-        const editor = fixture.debugElement.query((element) => element.name === 'app-avatar-editor')
-        editor.componentInstance.selectColor('#10B981')
+        expect(dataService.currentUser()?.username).toBe('organizer2')
+    })
+
+    it('opens the Clerk panel to manage sign-in', () => {
+        const button = Array.from((fixture.nativeElement as HTMLElement).querySelectorAll('button')).find((candidate) =>
+            candidate.textContent?.includes('Manage sign-in'),
+        )
+        button?.click()
+
+        expect(clerkService.openUserProfile).toHaveBeenCalledTimes(1)
+    })
+
+    it('explains that deletion is not available, with no delete control', () => {
+        const element: HTMLElement = fixture.nativeElement
+
+        expect(element.textContent).toContain("You can't delete your account yourself yet")
+        expect(Array.from(element.querySelectorAll('button')).some((button) => /delete/i.test(button.textContent ?? ''))).toBe(false)
+    })
+
+    it('says when Clerk is not available', () => {
+        clerkService.isAvailable.set(false)
         fixture.detectChanges()
 
-        // updateCurrentUserData is stubbed, as if the request failed: the shared user state must not show the change.
-        expect(dataService.currentUser()?.avatar).toEqual(currentUser.avatar)
+        expect((fixture.nativeElement as HTMLElement).querySelector('[role="status"]')?.textContent).toContain('unavailable')
     })
 })

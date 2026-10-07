@@ -10,6 +10,25 @@ import { environment } from '../../../environments/environment'
 import { THEME_COLORS, ThemeService } from './theme.service'
 
 /**
+ * Sections of Clerk's account panel that Board Vault does not use (ADR-0017):
+ * - the profile row (photo, first and last name), because Settings → Profile owns how people appear;
+ * - account deletion, until the deletion flow in #102 exists.
+ * Hiding them is cosmetic. Clerk's names are turned off and self-deletion is disabled per user.
+ */
+const CLERK_HIDDEN_SECTIONS = {
+    profileSection__profile: { display: 'none' },
+    profileSection__danger: { display: 'none' },
+}
+
+/** Clerk's panel calls its first page "Profile"; in Board Vault, Profile is how groups see you. */
+const CLERK_LOCALIZATION = {
+    userProfile: {
+        navbar: { title: 'Sign-in', description: 'Manage how you sign in to Board Vault.', account: 'Sign-in' },
+        start: { headerTitle__account: 'Sign-in details' },
+    },
+}
+
+/**
  * Thin browser-side adapter around Clerk.
  *
  * Clerk is the only identity provider (ADR-0012). This service owns the Clerk
@@ -31,6 +50,9 @@ export class ClerkService {
     public readonly isAvailable = computed(() => this.isConfigured() && this.isLoaded() && !this.initializationError())
     public readonly isSignedIn = signal(false)
     public readonly userId = signal<string | null>(null)
+    /** Clerk owns the username and email (ADR-0017); the local account copy follows by webhook. */
+    public readonly username = signal<string | null>(null)
+    public readonly primaryEmail = signal<string | null>(null)
 
     private loaded: Promise<void> | null = null
 
@@ -64,7 +86,11 @@ export class ClerkService {
             const clerk = new ClerkConstructor(environment.clerkPublishableKey)
             // Clerk's own UI takes the chosen theme's light-mode primary (docs/design-system.md).
             const colorPrimary = THEME_COLORS[this.theme.palette()].primary
-            await clerk.load({ ui: { ClerkUI: clerkUiCtor }, appearance: { variables: { colorPrimary } } })
+            await clerk.load({
+                ui: { ClerkUI: clerkUiCtor },
+                appearance: { variables: { colorPrimary }, elements: CLERK_HIDDEN_SECTIONS },
+                localization: CLERK_LOCALIZATION,
+            })
 
             this.clerk = clerk
             this.syncState()
@@ -150,6 +176,8 @@ export class ClerkService {
         const isSignedIn = this.clerk?.isSignedIn ?? false
         this.isSignedIn.set(isSignedIn)
         this.userId.set(isSignedIn ? (this.clerk?.user?.id ?? null) : null)
+        this.username.set(isSignedIn ? (this.clerk?.user?.username ?? null) : null)
+        this.primaryEmail.set(isSignedIn ? (this.clerk?.user?.primaryEmailAddress?.emailAddress ?? null) : null)
     }
 
     public destroy(): void {
@@ -159,6 +187,8 @@ export class ClerkService {
         this.initializationError.set(null)
         this.isSignedIn.set(false)
         this.userId.set(null)
+        this.username.set(null)
+        this.primaryEmail.set(null)
     }
 
     private loadClerkUiScript(): Promise<ClerkUiConstructor> {

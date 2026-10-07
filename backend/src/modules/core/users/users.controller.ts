@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, ParseIntPipe, Put, UseGuards, UsePipes, ValidationPipe } from '@nestjs/common'
+import { Body, Controller, Get, Param, ParseIntPipe, Put, UseGuards, UsePipes, ValidationPipe } from '@nestjs/common'
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger'
 
 import { AdminGuard } from '../../../common/guards/admin.guard.js'
@@ -41,21 +41,12 @@ export class UsersController {
     @ApiResponse({ status: 200, description: 'The user has been successfully updated.' })
     @ApiResponse({ status: 404, description: 'User not found.' })
     updateUser(@Param('userId', ParseIntPipe) userId: number, @Body() partialUserDto: UpdateUserBody) {
-        const { username, displayName, avatar } = partialUserDto ?? {}
+        const { displayName, avatar } = partialUserDto ?? {}
 
         return this.usersService.updateUser(userId, {
-            ...(username !== undefined ? { username } : {}),
             ...(displayName !== undefined ? { displayName } : {}),
             ...(avatar !== undefined ? { avatar } : {}),
         })
-    }
-
-    @UseGuards(UserOwnershipGuard)
-    @Delete('/:userId')
-    @ApiOperation({ summary: 'Delete a user by Id', deprecated: true })
-    @ApiResponse({ status: 200, description: 'The user has been succesfully deleted' })
-    async deleteUserById(@Param('userId', ParseIntPipe) userId: number) {
-        return this.usersService.deleteUserById(userId)
     }
 
     @UseGuards(UserOwnershipGuard)

@@ -42,17 +42,33 @@ Clerk Organizations are not used. Groups, memberships, and roles are
 application-owned ([ADR-0007](adr/0007-group-membership-policy.md)), and every
 group operation is authorized against local membership rows.
 
+## Who owns what
+
+Clerk owns the sign-in details: the username, email addresses, password, and
+signed-in devices. Board Vault owns how people appear in groups: the display
+name and the avatar ([ADR-0017](adr/0017-profile-and-sign-in-ownership.md)).
+Settings → Account shows the username and email and opens Clerk's panel to
+change them; Settings → Profile edits the display name and avatar and shows
+the username read-only.
+
+Clerk's first and last name are turned off in every instance, and the panel's
+profile row (photo, name) and delete section are hidden with
+`appearance.elements` in `ClerkService`. Self-deletion is off for every user
+until the deletion flow is defined (#102). The instance-wide switch is
+Dashboard-only: *User & authentication → Allow users to delete their
+accounts*.
+
 ## Changes made in Clerk
 
 Clerk tells the API about user changes through signed webhooks
 ([ADR-0013](adr/0013-clerk-user-lifecycle.md)). A verified primary email change
-updates the linked account unless another account has that email; deleting
-the Clerk user soft-deletes the account, so it can no longer sign in while
-group history keeps its references. The endpoint is off unless
+or a username change updates the linked account unless another account
+already has that value; deleting the Clerk user soft-deletes the account, so it
+can no longer sign in while group history keeps its references. The endpoint is off unless
 `CLERK_WEBHOOK_SIGNING_SECRET` is set.
 
 Sign-in never waits for a webhook: every request verifies the Clerk session
-token itself. A delayed or failed delivery only delays the email or deletion
+token itself. A delayed or failed delivery only delays the email, username, or deletion
 sync; Clerk retries it, and failures stay visible in the Clerk dashboard's
 webhook log.
 
@@ -61,7 +77,7 @@ webhook log.
 | Concern | File |
 | --- | --- |
 | Token verification | [`backend/src/modules/common/auth/clerk-token-verifier.ts`](../backend/src/modules/common/auth/clerk-token-verifier.ts) |
-| Clerk webhooks (email sync, deletion) | [`backend/src/modules/common/auth/clerk-webhook.service.ts`](../backend/src/modules/common/auth/clerk-webhook.service.ts) |
+| Clerk webhooks (email and username sync, deletion) | [`backend/src/modules/common/auth/clerk-webhook.service.ts`](../backend/src/modules/common/auth/clerk-webhook.service.ts) |
 | Account resolution and provisioning, Clerk invitations | [`backend/src/modules/common/auth/clerk-identity.service.ts`](../backend/src/modules/common/auth/clerk-identity.service.ts) |
 | Sets `request.user` on every request | [`backend/src/common/middlewares/clerk-session.middleware.ts`](../backend/src/common/middlewares/clerk-session.middleware.ts) |
 | Requires a resolved account | [`backend/src/common/guards/auth.guard.ts`](../backend/src/common/guards/auth.guard.ts) |

@@ -143,17 +143,6 @@ export class UsersService {
         return { success: true }
     }
 
-    async deleteUserById(id: number): Promise<{ success: boolean }> {
-        this.LOGGER.log('Deleting user')
-        const resultSet = await this.databaseService.accounts.softDeleteUserById(id)
-
-        if (resultSet.rowsAffected === 0) {
-            throw new NotFoundException(`User with id ${id} not found`)
-        }
-
-        return { success: true }
-    }
-
     async updateGames(accountId: number, gamesToAdd: number[], gamesToRemove: number[]): Promise<{ success: boolean }> {
         this.LOGGER.log('Updating games for user')
         try {

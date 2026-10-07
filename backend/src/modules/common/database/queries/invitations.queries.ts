@@ -75,7 +75,7 @@ export class InvitationQueries {
 
     async createInvitationByUsername(invitationDto: CreateInvitationByUsernameBody) {
         const toAccount = await this.database.execute({
-            sql: `SELECT ${ACCOUNT_COLUMNS} FROM Account WHERE username = ? AND isDeleted = 0`,
+            sql: `SELECT ${ACCOUNT_COLUMNS} FROM Account WHERE lower(username) = lower(?) AND isDeleted = 0`,
             args: [invitationDto.username],
         })
 

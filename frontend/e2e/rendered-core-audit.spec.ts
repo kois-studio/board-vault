@@ -6,7 +6,7 @@ const sessionId = process.env['PLAYWRIGHT_SESSION_ID']
 
 // Admin pages need an admin storage state: set PLAYWRIGHT_AUDIT_ADMIN=1 to include them.
 const adminRoutes = process.env['PLAYWRIGHT_AUDIT_ADMIN'] ? ['/admin/panel', '/admin/proposals', '/admin/manage-games', '/admin/manage-tags'] : []
-const coreRoutes = ['/groups/:groupId', '/groups/:groupId/edit', '/groups/:groupId/sessions/new', '/collection', '/play/upcoming-sessions', '/play/history', '/settings/profile', '/settings/appearance', '/settings/security']
+const coreRoutes = ['/groups/:groupId', '/groups/:groupId/edit', '/groups/:groupId/sessions/new', '/collection', '/play/upcoming-sessions', '/play/history', '/settings/profile', '/settings/appearance', '/settings/account']
 
 function accessibleNameScript() {
     return () => {

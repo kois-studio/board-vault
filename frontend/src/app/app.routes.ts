@@ -162,10 +162,9 @@ export const routes: Routes = [
                     {
                         path: 'profile',
                         loadComponent: () =>
-                            import('./pages/settings/account/settings-account.component').then((m) => m.SettingsAccountComponent),
+                            import('./pages/settings/profile/settings-profile.component').then((m) => m.SettingsProfileComponent),
                         canActivate: [AuthOnlyGuard],
                     },
-                    { path: 'account', redirectTo: 'profile', pathMatch: 'full' },
                     {
                         path: 'appearance',
                         loadComponent: () =>
@@ -173,11 +172,13 @@ export const routes: Routes = [
                         canActivate: [AuthOnlyGuard],
                     },
                     {
-                        path: 'security',
+                        path: 'account',
                         loadComponent: () =>
-                            import('./pages/settings/security/settings-security.component').then((m) => m.SettingsSecurityComponent),
+                            import('./pages/settings/account/settings-account.component').then((m) => m.SettingsAccountComponent),
                         canActivate: [AuthOnlyGuard],
                     },
+                    // Security became Account (ADR-0017).
+                    { path: 'security', redirectTo: 'account', pathMatch: 'full' },
                 ],
             },
         ],
