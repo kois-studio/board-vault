@@ -3,7 +3,7 @@
 - **Status:** Accepted
 - **Date:** 2026-10-01
 - **Supersedes:** None
-- **Superseded by:** None
+- **Superseded by:** [ADR-0018](0018-account-deletion-and-leaving-groups.md), for `user.deleted` only
 
 ## Context
 
@@ -26,7 +26,9 @@ Clerk notifies the API through signed webhooks at `POST /webhooks/clerk`.
   If another account already has that email, nothing changes and a warning is
   logged; resolving it is an operator task, consistent with ADR-0012's "never
   link by email alone".
-- **`user.deleted`: soft-delete the account.** The linked account is marked
+- **`user.deleted`: soft-delete the account.** *(Since ADR-0018 it runs the
+  full account deletion instead: personal data removed, history kept as
+  "Deleted account".)* The linked account is marked
   `isDeleted`, exactly like the existing account deletion. The row stays, so
   group history, sessions, and other members' records keep their references.
   The account can no longer sign in. Rows are never hard-deleted (see the

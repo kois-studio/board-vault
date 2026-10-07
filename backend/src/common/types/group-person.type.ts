@@ -6,6 +6,9 @@ import { AvatarDto } from './user.type.js'
 
 export type GroupPersonKind = 'placeholder' | 'linked'
 export type GroupPersonStatus = 'active' | 'archived'
+/** Where a person stands in their group (ADR-0018): history keeps everyone, and shows who left or deleted their account. */
+export type GroupPersonStanding = 'member' | 'left' | 'deleted'
+export const GROUP_PERSON_STANDINGS: Array<GroupPersonStanding> = ['member', 'left', 'deleted']
 export type GroupPersonOwnershipStatus = 'asserted' | 'rejected' | 'disputed'
 export type GroupPersonOwnershipSource = 'placeholder_setup' | 'account_collection' | 'claimed_import'
 export type GroupPersonPreference = 'favorite' | 'like' | 'neutral' | 'avoid'
@@ -31,6 +34,12 @@ export class GroupPersonDto {
 
     @ApiPropertyOptional({ type: AvatarDto, nullable: true })
     avatar: AvatarDto | null
+
+    @ApiProperty({
+        enum: GROUP_PERSON_STANDINGS,
+        description: '`left`: archived, or their account is no longer a member. `deleted`: their account was deleted.',
+    })
+    standing: GroupPersonStanding
 
     @ApiProperty({ example: '2026-09-25 12:00:00' })
     createdAt: string

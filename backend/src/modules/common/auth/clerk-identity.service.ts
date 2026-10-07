@@ -209,6 +209,17 @@ export class ClerkIdentityService {
         return provisionedAccount
     }
 
+    /** Removes the Clerk user behind a deleted account; a user Clerk no longer has counts as removed. */
+    async deleteClerkUser(clerkUserId: string): Promise<void> {
+        await this.withClerkProviderBoundary(async () => {
+            try {
+                await this.getClerkClient().users.deleteUser(clerkUserId)
+            } catch (error) {
+                if ((error as { status?: number }).status !== 404) throw error
+            }
+        })
+    }
+
     private async findUser(lookup: () => Promise<UserGetDto>): Promise<UserGetDto | null> {
         try {
             return await lookup()

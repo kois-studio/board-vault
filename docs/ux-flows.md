@@ -13,6 +13,10 @@ mobile states. Invitation and participant-claim flows must distinguish a real
 account from a group-scoped placeholder and must not expose another account's
 private collection.
 
+History keeps everyone who played. Someone who left the group shows as
+"Name (left)" with a muted avatar; a deleted account shows as "Deleted
+account" with a grey avatar (ADR-0018). Neither changes a session's counts.
+
 Browser coverage should use disposable local databases and synthetic provider
 identities. It must not depend on production data, personal accounts, or
 committed browser storage state.

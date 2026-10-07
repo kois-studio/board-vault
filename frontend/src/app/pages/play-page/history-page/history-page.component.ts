@@ -141,7 +141,12 @@ export class HistoryPageComponent {
             weekday: when.weekday,
             day: when.day,
             link: ['/sessions', meet.id],
-            attendees: attendees.map((person) => ({ key: person.key, name: person.displayName, avatar: this.avatarFor(person) })),
+            attendees: attendees.map((person) => ({
+                key: person.key,
+                name: person.displayName,
+                avatar: this.avatarFor(person),
+                standing: person.standing,
+            })),
             attendeeSummary: this.getAttendeeSummary(attendees),
             notes: meet.notes,
             games: record.gamesPlayed.map((gamePlayed) => {

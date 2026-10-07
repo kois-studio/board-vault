@@ -53,18 +53,21 @@ the username read-only.
 
 Clerk's first and last name are turned off in every instance, and the panel's
 profile row (photo, name) and delete section are hidden with
-`appearance.elements` in `ClerkService`. Self-deletion is off for every user
-until the deletion flow is defined (#102). The instance-wide switch is
-Dashboard-only: *User & authentication → Allow users to delete their
-accounts*.
+`appearance.elements` in `ClerkService`. Clerk's self-deletion is off in every
+instance, for every user (the instance-wide switch is Dashboard-only: *User &
+authentication → Allow users to delete their accounts*). People delete their
+account in Settings → Account instead: `DELETE /auth/account` removes their
+data, keeps them in group history as "Deleted account", and then deletes the
+Clerk user ([ADR-0018](adr/0018-account-deletion-and-leaving-groups.md)).
 
 ## Changes made in Clerk
 
 Clerk tells the API about user changes through signed webhooks
 ([ADR-0013](adr/0013-clerk-user-lifecycle.md)). A verified primary email change
 or a username change updates the linked account unless another account
-already has that value; deleting the Clerk user soft-deletes the account, so it
-can no longer sign in while group history keeps its references. The endpoint is off unless
+already has that value; deleting the Clerk user runs the same account deletion
+as Settings → Account, so it can no longer sign in while group history keeps
+its place (ADR-0018). The endpoint is off unless
 `CLERK_WEBHOOK_SIGNING_SECRET` is set.
 
 Sign-in never waits for a webhook: every request verifies the Clerk session
@@ -78,6 +81,7 @@ webhook log.
 | --- | --- |
 | Token verification | [`backend/src/modules/common/auth/clerk-token-verifier.ts`](../backend/src/modules/common/auth/clerk-token-verifier.ts) |
 | Clerk webhooks (email and username sync, deletion) | [`backend/src/modules/common/auth/clerk-webhook.service.ts`](../backend/src/modules/common/auth/clerk-webhook.service.ts) |
+| Account deletion | [`backend/src/modules/common/auth/account-deletion.service.ts`](../backend/src/modules/common/auth/account-deletion.service.ts), [`account-deletion.queries.ts`](../backend/src/modules/common/database/queries/account-deletion.queries.ts) |
 | Account resolution and provisioning, Clerk invitations | [`backend/src/modules/common/auth/clerk-identity.service.ts`](../backend/src/modules/common/auth/clerk-identity.service.ts) |
 | Sets `request.user` on every request | [`backend/src/common/middlewares/clerk-session.middleware.ts`](../backend/src/common/middlewares/clerk-session.middleware.ts) |
 | Requires a resolved account | [`backend/src/common/guards/auth.guard.ts`](../backend/src/common/guards/auth.guard.ts) |

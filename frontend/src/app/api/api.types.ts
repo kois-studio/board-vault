@@ -106,6 +106,9 @@ export type GroupWithMembersAndGames = GroupType & {
     placeholders: Array<{ id: number; displayName: string; avatar: PublicUserType['avatar'] | null; gameIds: Array<number> }>
 }
 
+/** Where someone stands in a group (ADR-0018): history keeps people who left or deleted their account. */
+export type GroupStanding = 'member' | 'left' | 'deleted'
+
 export type GroupPersonType = {
     id: number
     groupId: number
@@ -114,6 +117,8 @@ export type GroupPersonType = {
     status: 'active' | 'archived'
     displayName: string
     avatar: PublicUserType['avatar'] | null
+    /** Absent from older API responses: a member. */
+    standing?: GroupStanding
     createdAt: string
     updatedAt: string
     claimedAt: string | null
@@ -543,14 +548,24 @@ export type AdminGamesResultType = {
 // --------------------------------------------------------------------------
 // #region play
 // --------------------------------------------------------------------------
+export type HistoryPersonType = {
+    id: number
+    displayName: string
+    avatar: PublicUserType['avatar'] | null
+    accountId?: number | null
+    standing?: GroupStanding
+}
+
+export type HistoryUserType = PublicUserType & { standing?: GroupStanding }
+
 export type HistoryRecordType = {
     meetData: MeetType
-    attendedBy: Array<PublicUserType>
-    attendedByPeople?: Array<{ id: number; displayName: string; avatar: PublicUserType['avatar'] | null; accountId?: number | null }>
+    attendedBy: Array<HistoryUserType>
+    attendedByPeople?: Array<HistoryPersonType>
     gamesPlayed: Array<{
         gameData: GameCompleteType
-        playedBy: Array<PublicUserType>
-        playedByPeople?: Array<{ id: number; displayName: string; avatar: PublicUserType['avatar'] | null; accountId?: number | null }>
+        playedBy: Array<HistoryUserType>
+        playedByPeople?: Array<HistoryPersonType>
         winnerAccountIds?: Array<number>
         winnerPersonIds?: Array<number>
     }>

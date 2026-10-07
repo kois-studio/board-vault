@@ -2,6 +2,8 @@ import { BadRequestException, NotFoundException } from '@nestjs/common'
 
 import { containsPattern, LIKE_ESCAPE } from '../like-pattern.js'
 
+import { deleteGroupRows, departGroup } from './group-lifecycle.js'
+
 import type { ClerkGroupInvitationMetadata } from '../../../../common/types/clerk-invitation.type.js'
 import type { GroupGameInterestBody } from '../../../../common/types/group-game-interest.type.js'
 import type { CreateGroupMembershipBody } from '../../../../common/types/group-membership.type.js'
@@ -13,6 +15,23 @@ import type {
 } from '../../../../common/types/group-person.type.js'
 import type { CreateGroupBody, UpdateGroupBody } from '../../../../common/types/group.type.js'
 import type { DatabaseService } from '../database.service.js'
+
+/**
+ * Where a group person stands in their group, as column 10 of every group-person read
+ * (ADR-0018): `deleted` when their account is deleted, `left` when they were archived or
+ * their account is no longer a member (the owner always is), otherwise `member`.
+ */
+const PERSON_STANDING = `
+    CASE
+        WHEN gp.accountId IS NOT NULL AND EXISTS (SELECT 1 FROM Account a WHERE a.id = gp.accountId AND a.isDeleted = 1) THEN 'deleted'
+        WHEN gp.status = 'archived' THEN 'left'
+        WHEN gp.kind = 'linked'
+            AND NOT EXISTS (SELECT 1 FROM GroupMembership gm WHERE gm.groupId = gp.groupId AND gm.accountId = gp.accountId)
+            AND NOT EXISTS (SELECT 1 FROM UserGroup ug WHERE ug.id = gp.groupId AND ug.createdBy = gp.accountId) THEN 'left'
+        ELSE 'member'
+    END AS standing`
+
+const PERSON_COLUMNS = `gp.id, gp.groupId, gp.accountId, gp.kind, gp.status, gp.displayName, gp.avatar, gp.createdAt, gp.updatedAt, gp.claimedAt, ${PERSON_STANDING}`
 
 /** Groups, memberships, group people, and acquisition interest. */
 export class GroupQueries {
@@ -164,11 +183,20 @@ export class GroupQueries {
         return this.getGroupById(id)
     }
 
-    deleteGroupById(id: number) {
-        return this.database.execute({
-            sql: 'DELETE FROM UserGroup WHERE id = ?',
-            args: [id],
-        })
+    async deleteGroupById(id: number) {
+        const transaction = await this.database.transaction('write')
+
+        try {
+            const rowsAffected = await deleteGroupRows(transaction, id)
+
+            await transaction.commit()
+            return { rowsAffected }
+        } catch (error) {
+            await transaction.rollback()
+            throw error
+        } finally {
+            transaction.close()
+        }
     }
 
     getGroupMemberships() {
@@ -281,17 +309,7 @@ export class GroupQueries {
     getGroupPeople(groupId: number, includeArchived = false) {
         return this.database.execute({
             sql: `
-                SELECT
-                    gp.id,
-                    gp.groupId,
-                    gp.accountId,
-                    gp.kind,
-                    gp.status,
-                    gp.displayName,
-                    gp.avatar,
-                    gp.createdAt,
-                    gp.updatedAt,
-                    gp.claimedAt
+                SELECT ${PERSON_COLUMNS}
                 FROM GroupPerson gp
                 WHERE gp.groupId = ? ${includeArchived ? '' : "AND gp.status = 'active'"}
                 ORDER BY gp.status ASC, gp.displayName COLLATE NOCASE ASC, gp.id ASC
@@ -341,9 +359,28 @@ export class GroupQueries {
         })
     }
 
+    /** Where each account stands in each group, the account-only twin of a person's standing. */
+    getAccountStandings(groupIds: Array<number>, accountIds: Array<number>) {
+        return this.database.execute({
+            sql: `
+                SELECT ug.id AS groupId, a.id AS accountId,
+                    CASE
+                        WHEN a.isDeleted = 1 THEN 'deleted'
+                        WHEN ug.createdBy = a.id
+                            OR EXISTS (SELECT 1 FROM GroupMembership gm WHERE gm.groupId = ug.id AND gm.accountId = a.id) THEN 'member'
+                        ELSE 'left'
+                    END AS standing
+                FROM UserGroup ug
+                CROSS JOIN Account a
+                WHERE ug.id IN (${groupIds.map(() => '?').join(', ')}) AND a.id IN (${accountIds.map(() => '?').join(', ')})
+            `,
+            args: [...groupIds, ...accountIds],
+        })
+    }
+
     getGroupPersonById(groupPersonId: number, groupId: number) {
         return this.database.execute({
-            sql: 'SELECT id, groupId, accountId, kind, status, displayName, avatar, createdAt, updatedAt, claimedAt FROM GroupPerson WHERE id = ? AND groupId = ?',
+            sql: `SELECT ${PERSON_COLUMNS} FROM GroupPerson gp WHERE gp.id = ? AND gp.groupId = ?`,
             args: [groupPersonId, groupId],
         })
     }
@@ -372,7 +409,7 @@ export class GroupQueries {
 
     getLinkedGroupPersonByAccount(groupId: number, accountId: number) {
         return this.database.execute({
-            sql: "SELECT id, groupId, accountId, kind, status, displayName, avatar, createdAt, updatedAt, claimedAt FROM GroupPerson WHERE groupId = ? AND accountId = ? AND kind = 'linked'",
+            sql: `SELECT ${PERSON_COLUMNS} FROM GroupPerson gp WHERE gp.groupId = ? AND gp.accountId = ? AND gp.kind = 'linked'`,
             args: [groupId, accountId],
         })
     }
@@ -959,6 +996,21 @@ export class GroupQueries {
             sql: 'INSERT INTO GroupMembership (accountId, groupId) VALUES (?, ?)',
             args: [groupDto.accountId, groupDto.groupId],
         })
+    }
+
+    /** Leaving or being removed: the membership goes, history stays (ADR-0018). */
+    async leaveGroup(accountId: number, groupId: number) {
+        const transaction = await this.database.transaction('write')
+
+        try {
+            await departGroup(transaction, accountId, groupId)
+            await transaction.commit()
+        } catch (error) {
+            await transaction.rollback()
+            throw error
+        } finally {
+            transaction.close()
+        }
     }
 
     deleteGroupMembershipById(accountId: number, groupId: number) {

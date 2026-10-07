@@ -1,6 +1,6 @@
 import { Component, input } from '@angular/core'
 import { RouterLink } from '@angular/router'
-import type { UserType } from '../../api/api.types'
+import type { GroupStanding, UserType } from '../../api/api.types'
 import { ImageProfileComponent } from '../image-profile/image-profile.component'
 import { IconComponent } from '../ui/icon/icon.component'
 
@@ -14,7 +14,8 @@ export type HistoryEntryView = {
     day: string
     /** Router link to the session; null renders no Open link. */
     link: Array<string | number> | null
-    attendees: Array<{ key: string; name: string; avatar: UserType['avatar'] | null }>
+    /** `left` mutes the avatar: they are no longer in the group (ADR-0018). */
+    attendees: Array<{ key: string; name: string; avatar: UserType['avatar'] | null; standing?: GroupStanding }>
     /** "With Ana, Leo and 3 more". */
     attendeeSummary: string
     notes: string | null

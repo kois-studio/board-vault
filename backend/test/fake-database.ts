@@ -1,4 +1,5 @@
 import { DatabaseService } from '../src/modules/common/database/database.service.js'
+import { AccountDeletionQueries } from '../src/modules/common/database/queries/account-deletion.queries.js'
 import { AccountQueries } from '../src/modules/common/database/queries/accounts.queries.js'
 import { CollectionQueries } from '../src/modules/common/database/queries/collection.queries.js'
 import { GameQueries } from '../src/modules/common/database/queries/games.queries.js'
@@ -10,6 +11,7 @@ import { SessionQueries } from '../src/modules/common/database/queries/sessions.
 
 const DOMAINS = {
     accounts: AccountQueries,
+    accountDeletion: AccountDeletionQueries,
     collection: CollectionQueries,
     games: GameQueries,
     groups: GroupQueries,

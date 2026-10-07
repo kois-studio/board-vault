@@ -2,6 +2,7 @@ import { ApiProperty } from '@nestjs/swagger'
 import { ArrayMinSize, ArrayUnique, IsArray, IsIn, IsInt, IsOptional, Max, Min } from 'class-validator'
 
 import { GameCompleteDto } from '../../../common/types/game.type.js'
+import { GROUP_PERSON_STANDINGS, type GroupPersonStanding } from '../../../common/types/group-person.type.js'
 import { MeetDto } from '../../../common/types/meet.type.js'
 import { UserPublicDto } from '../../../common/types/user.type.js'
 import { AvatarDto } from '../../../common/types/user.type.js'
@@ -25,14 +26,23 @@ export class HistoryPersonDto {
         description: 'The linked account, also listed in attendedBy/playedBy for sessions recorded with accounts.',
     })
     accountId: number | null
+
+    @ApiProperty({ enum: GROUP_PERSON_STANDINGS, description: 'Whether they are still in the group, left it, or deleted their account.' })
+    standing: GroupPersonStanding
+}
+
+/** An account in a session recorded with accounts, and where it stands in that group now. */
+export class HistoryUserDto extends UserPublicDto {
+    @ApiProperty({ enum: GROUP_PERSON_STANDINGS, description: 'Whether they are still in the group, left it, or deleted their account.' })
+    standing: GroupPersonStanding
 }
 
 class GamePlayedDto {
     @ApiProperty({ type: GameCompleteDto, description: 'The game data.' })
     gameData: GameCompleteDto
 
-    @ApiProperty({ type: [UserPublicDto], description: 'The users who played the game in that meet.' })
-    playedBy: Array<UserPublicDto>
+    @ApiProperty({ type: [HistoryUserDto], description: 'The users who played the game in that meet.' })
+    playedBy: Array<HistoryUserDto>
 
     @ApiProperty({ type: [HistoryPersonDto], required: false })
     playedByPeople?: Array<HistoryPersonDto>
@@ -51,8 +61,8 @@ export class HistoryRecordDto {
     @ApiProperty({ type: [GamePlayedDto], description: 'The games played in that meet.' })
     gamesPlayed: Array<GamePlayedDto>
 
-    @ApiProperty({ type: [UserPublicDto], description: 'The group members recorded as actually attending the session.' })
-    attendedBy: Array<UserPublicDto>
+    @ApiProperty({ type: [HistoryUserDto], description: 'The group members recorded as actually attending the session.' })
+    attendedBy: Array<HistoryUserDto>
 
     @ApiProperty({ type: [HistoryPersonDto], required: false })
     attendedByPeople?: Array<HistoryPersonDto>

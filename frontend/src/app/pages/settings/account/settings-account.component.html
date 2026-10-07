@@ -20,12 +20,57 @@
         }
     </section>
 
-    <section class="rounded-lg border border-bv-border p-4" aria-labelledby="delete-account-heading">
+    <section class="rounded-lg border border-bv-danger/40 p-4" aria-labelledby="delete-account-heading">
         <h3 id="delete-account-heading" class="font-semibold">Delete account</h3>
-        <p class="py-2 text-bv-text-muted">
-            You can't delete your account yourself yet. We want your groups to keep their game history when someone leaves, and we're
-            still working out how.
-        </p>
-        <p class="text-sm text-bv-text-muted">If you need your account removed now, ask the project owner.</p>
+        <p class="py-2 text-bv-text-muted">This can't be undone. Deleting your account:</p>
+        <ul class="list-disc space-y-1 pb-2 pl-5 text-sm text-bv-text-muted">
+            <li>Removes your shelf, wishlist, ratings, notifications and invitations.</li>
+            <li>Takes you out of your groups and their upcoming game nights.</li>
+            <li>Keeps the nights you already played, so your groups' history stays complete. You appear there as "Deleted account", without your name or avatar.</li>
+            <li>Passes each group you own to the member who joined it first. A group with nobody else in it is deleted.</li>
+            <li>Removes your sign-in, so you can't sign back in to this account.</li>
+        </ul>
+        <button appButton variant="danger" icon="trash" data-testid="delete-account" (click)="startDeletion()">Delete account…</button>
     </section>
+
 </div>
+
+@if (isConfirmingDeletion()) {
+    <div class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4" (click)="cancelDeletion()">
+        <section
+            appDialog
+            (dialogClosed)="cancelDeletion()"
+            class="w-full max-w-md rounded-lg border border-bv-border bg-bv-surface p-6 shadow-2xl"
+            aria-labelledby="delete-account-title"
+            aria-describedby="delete-account-description"
+            (click)="$event.stopPropagation()"
+        >
+            <h2 id="delete-account-title" class="text-xl font-bold">Delete your account?</h2>
+            <p id="delete-account-description" class="py-3 text-sm text-bv-text-muted">
+                Your groups keep the nights you played, as "Deleted account". Everything else goes, and this can't be undone.
+            </p>
+            <label class="block text-sm font-medium" for="delete-account-confirmation">
+                Type your username, <span class="font-mono">{{ username() }}</span>, to confirm
+            </label>
+            <input
+                id="delete-account-confirmation"
+                class="app-input mt-1 w-full font-mono"
+                autocomplete="off"
+                autocapitalize="off"
+                spellcheck="false"
+                data-testid="delete-account-confirmation"
+                [value]="deletionConfirmation()"
+                (input)="deletionConfirmation.set($any($event.target).value)"
+            />
+            @if (deletionFailed()) {
+                <p class="pt-3 text-sm text-bv-danger" role="alert">Your account could not be deleted. Nothing was changed; try again.</p>
+            }
+            <div class="flex flex-wrap justify-end gap-3 pt-5">
+                <button appButton variant="secondary" [disabled]="isDeleting()" (click)="cancelDeletion()">Keep my account</button>
+                <button appButton variant="danger" data-testid="confirm-delete-account" [loading]="isDeleting()" [disabled]="!canConfirmDeletion()" (click)="deleteAccount()">
+                    Delete my account
+                </button>
+            </div>
+        </section>
+    </div>
+}

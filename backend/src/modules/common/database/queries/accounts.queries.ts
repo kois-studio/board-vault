@@ -92,11 +92,4 @@ export class AccountQueries {
             args: [email, id],
         })
     }
-
-    softDeleteUserById(id: number) {
-        return this.database.execute({
-            sql: 'UPDATE Account SET isDeleted = true WHERE id = ?',
-            args: [id],
-        })
-    }
 }

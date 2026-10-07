@@ -266,6 +266,7 @@ export class GroupPeopleService {
             createdAt: String(row[7]),
             updatedAt: String(row[8]),
             claimedAt: row[9] === null ? null : String(row[9]),
+            standing: String(row[10] ?? 'member') as GroupPersonDto['standing'],
         }
     }
 

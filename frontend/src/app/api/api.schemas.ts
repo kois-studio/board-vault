@@ -206,6 +206,9 @@ const avatarSchema = z.object({
     initials: z.string(),
 })
 
+/** Where someone stands in a group (ADR-0018); absent from older API responses, which means a member. */
+const standingSchema = z.optional(z.enum(['member', 'left', 'deleted']))
+
 export const publicUserSchema = z.object({
     id: z.number(),
     username: z.string(),
@@ -384,6 +387,7 @@ const groupPersonSchema = z.object({
     status: z.enum(['active', 'archived']),
     displayName: z.string(),
     avatar: z.nullable(avatarSchema),
+    standing: standingSchema,
     createdAt: z.string(),
     updatedAt: z.string(),
     claimedAt: z.nullable(z.string()),
@@ -534,33 +538,25 @@ export const meetDetailsSchema: z.ZodMiniType<MeetWithAttendeesAndGamesType> = z
     ),
 })
 
+const historyPersonSchema = z.object({
+    id: z.number(),
+    displayName: z.string(),
+    avatar: z.nullable(avatarSchema),
+    accountId: z.optional(z.nullable(z.number())),
+    standing: standingSchema,
+})
+
+const historyUserSchema = z.object({ ...publicUserSchema.shape, standing: standingSchema })
+
 const historyRecordSchema: z.ZodMiniType<HistoryRecordType> = z.object({
     meetData: meetFields,
-    attendedBy: z.array(publicUserSchema),
-    attendedByPeople: z.optional(
-        z.array(
-            z.object({
-                id: z.number(),
-                displayName: z.string(),
-                avatar: z.nullable(avatarSchema),
-                accountId: z.optional(z.nullable(z.number())),
-            }),
-        ),
-    ),
+    attendedBy: z.array(historyUserSchema),
+    attendedByPeople: z.optional(z.array(historyPersonSchema)),
     gamesPlayed: z.array(
         z.object({
             gameData: gameCompleteSchema,
-            playedBy: z.array(publicUserSchema),
-            playedByPeople: z.optional(
-                z.array(
-                    z.object({
-                        id: z.number(),
-                        displayName: z.string(),
-                        avatar: z.nullable(avatarSchema),
-                        accountId: z.optional(z.nullable(z.number())),
-                    }),
-                ),
-            ),
+            playedBy: z.array(historyUserSchema),
+            playedByPeople: z.optional(z.array(historyPersonSchema)),
             winnerAccountIds: z.optional(z.array(z.number())),
             winnerPersonIds: z.optional(z.array(z.number())),
         }),

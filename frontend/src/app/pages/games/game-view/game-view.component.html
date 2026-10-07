@@ -140,7 +140,7 @@
                     </span>
                     <span class="flex shrink-0 items-center -space-x-2">
                       @for (player of session.players.slice(0, 5); track player.key) {
-                        <app-image-profile [title]="player.displayName" class="rounded-full border-2 border-bv-border" [avatar]="player.avatar" />
+                        <app-image-profile [title]="player.displayName" class="rounded-full border-2 border-bv-border" [class.opacity-50]="player.standing === 'left'" [avatar]="player.avatar" />
                       }
                       @if (session.players.length > 5) {
                         <span class="pl-3 text-sm text-secondary">+{{ session.players.length - 5 }}</span>

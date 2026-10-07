@@ -117,8 +117,8 @@ describe('SessionsService', () => {
 
         database.getGroupPeople.mockResolvedValue({
             rows: [
-                [10, 7, null, 'placeholder', 'active', 'Ana'],
-                [11, 7, 2, 'linked', 'active', 'example-member'],
+                [10, 7, null, 'placeholder', 'active', 'Ana', null, null, null, null, 'member'],
+                [11, 7, 2, 'linked', 'active', 'example-member', null, null, null, null, 'member'],
             ],
         })
         database.getGroupAvailableGameIdsForPeople.mockResolvedValue([84])
@@ -146,7 +146,9 @@ describe('SessionsService', () => {
     it('schedules a session with placeholder participants', async () => {
         const database = createDatabaseMock()
 
-        database.getGroupPeople.mockResolvedValue({ rows: [[10, 7, null, 'placeholder', 'active', 'Ana']] })
+        database.getGroupPeople.mockResolvedValue({
+            rows: [[10, 7, null, 'placeholder', 'active', 'Ana', null, null, null, null, 'member']],
+        })
         database.getGroupAvailableGameIdsForPeople.mockResolvedValue([84])
         const service = new SessionsService(fakeDatabase(database))
 

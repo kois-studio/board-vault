@@ -19,9 +19,36 @@ describe('mergeHistoryParticipants', () => {
         ]
 
         expect(mergeHistoryParticipants([], people)).toEqual([
-            { key: 'account:6', accountId: 6, personId: 3, displayName: 'bloddsword', username: 'bloddsword', avatar: avatar('😎') },
-            { key: 'person:9', accountId: null, personId: 9, displayName: 'Guest', username: 'Guest', avatar: null },
+            {
+                key: 'account:6',
+                accountId: 6,
+                personId: 3,
+                displayName: 'bloddsword',
+                username: 'bloddsword',
+                avatar: avatar('😎'),
+                standing: 'member',
+            },
+            { key: 'person:9', accountId: null, personId: 9, displayName: 'Guest', username: 'Guest', avatar: null, standing: 'member' },
         ])
+    })
+
+    it('keeps people who left or deleted their account, so a night still has everyone who played (ADR-0018)', () => {
+        const people = [
+            { id: 1, displayName: 'Carlos', avatar: null, accountId: 1, standing: 'member' as const },
+            { id: 2, displayName: 'Deleted account', avatar: null, accountId: 2, standing: 'deleted' as const },
+            { id: 3, displayName: 'Jose', avatar: null, accountId: 3, standing: 'left' as const },
+        ]
+
+        const participants = mergeHistoryParticipants([], people)
+
+        expect(participants.map((participant) => [participant.displayName, participant.standing])).toEqual([
+            ['Carlos', 'member'],
+            ['Deleted account', 'deleted'],
+            ['Jose (left)', 'left'],
+        ])
+        expect(formatWinners(historyWinnerNames({ playedBy: [], playedByPeople: people, winnerPersonIds: [2, 3] }))).toBe(
+            'Deleted account and Jose (left) won',
+        )
     })
 
     it('counts a person once when the session lists both the account and the linked group person', () => {
