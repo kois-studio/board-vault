@@ -1,6 +1,6 @@
 import { TestBed } from '@angular/core/testing'
 import { ActivatedRoute, convertToParamMap, provideRouter } from '@angular/router'
-import { of } from 'rxjs'
+import { type Observable, of, throwError } from 'rxjs'
 import { Api } from '../../api/api'
 import type { GameCompleteType, GroupCollectionType } from '../../api/api.types'
 import { DataService } from '../../core/services/data.service'
@@ -36,10 +36,13 @@ describe('GroupPersonPageComponent', () => {
     }
     const standings = [{ accountId: 1, groupPersonId: 30, displayName: 'Ana Ruiz', avatar: null, sessions: 4, gamesPlayed: 9, wins: 3 }]
 
-    const render = async (params: Record<string, string>) => {
+    const render = async (
+        params: Record<string, string>,
+        { insights = of({ standings }) as Observable<unknown>, groups = [{ id: 10, name: 'Thursdays' }] } = {},
+    ) => {
         const api = {
             getGroupCollection: vi.fn().mockReturnValue(of(collection)),
-            getGroupInsights: vi.fn().mockReturnValue(of({ standings })),
+            getGroupInsights: vi.fn().mockReturnValue(insights),
         }
         TestBed.configureTestingModule({
             imports: [GroupPersonPageComponent],
@@ -47,13 +50,13 @@ describe('GroupPersonPageComponent', () => {
                 provideRouter([]),
                 { provide: ActivatedRoute, useValue: { paramMap: of(convertToParamMap({ groupId: '10', ...params })) } },
                 { provide: Api, useValue: api },
-                { provide: DataService, useValue: { userGroups: () => [{ id: 10, name: 'Thursdays' }] } },
+                { provide: DataService, useValue: { userGroups: () => groups } },
             ],
         })
         const fixture = TestBed.createComponent(GroupPersonPageComponent)
         await fixture.whenStable()
         fixture.detectChanges()
-        return { element: fixture.nativeElement as HTMLElement, api }
+        return { element: fixture.nativeElement as HTMLElement, api, fixture }
     }
 
     it("shows a member's approximate collection worth, their games and their game nights", async () => {
@@ -88,6 +91,40 @@ describe('GroupPersonPageComponent', () => {
 
         expect(element.textContent).toContain('No retail prices are known for their games yet.')
         expect(element.textContent).not.toContain('≈')
+    })
+
+    it('keeps the collection when only their game nights fail, and retries those alone', async () => {
+        const { element, api, fixture } = await render({ accountId: '1' }, { insights: throwError(() => new Error('offline')) })
+
+        expect(element.textContent).toContain('≈ €45')
+        expect(element.textContent).not.toContain('This person could not be loaded.')
+        expect(element.textContent).toContain('Their game nights could not be loaded.')
+
+        api.getGroupInsights.mockReturnValue(of({ standings }))
+        const retry = [...element.querySelectorAll('button')].find((button) => button.textContent?.trim() === 'Retry')
+        retry?.click()
+        await fixture.whenStable()
+        fixture.detectChanges()
+
+        expect(api.getGroupCollection).toHaveBeenCalledTimes(1)
+        expect(element.textContent).not.toContain('Their game nights could not be loaded.')
+        expect(element.textContent).toMatch(/Winss*3/)
+    })
+
+    it('does not call the group "Group" while the groups are still loading', async () => {
+        const { element } = await render({ accountId: '1' }, { groups: [] })
+
+        expect(element.textContent).toContain('Member of this group')
+        expect(element.querySelector('a')?.textContent).toContain('Back to the group')
+        expect(element.textContent).not.toContain('Member of Group')
+    })
+
+    it('offers a way back to the group when the person is not in it, before the groups load', async () => {
+        const { element } = await render({ accountId: '99' }, { groups: [] })
+
+        const back = [...element.querySelectorAll('a')].map((link) => link.textContent?.trim())
+        expect(back).toContain('Back to the group')
+        expect(back).not.toContain('Back to')
     })
 
     it('says when the person is not in the group', async () => {

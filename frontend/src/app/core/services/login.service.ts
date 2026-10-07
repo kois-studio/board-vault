@@ -190,6 +190,9 @@ export class LoginService {
         } catch {
             // The session ended with the Clerk user.
         }
+        // Whether or not Clerk reported it: a signed-in Clerk user here would be verified again, get a
+        // 401 for the deleted account, and show "session expired" over "account deleted".
+        this.clerkService.forgetSession()
         this._performLogoutCleanup()
         this.clerkAuthHandoffState.set('idle')
         this.clerkAuthHandoffError.set(null)

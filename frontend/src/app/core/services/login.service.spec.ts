@@ -147,3 +147,64 @@ describe('LoginService account readiness', () => {
         expect(service.clerkAuthHandoffError()).toContain('fresh invitation')
     })
 })
+
+describe('LoginService after the account is deleted', () => {
+    const setup = (signOut: () => Promise<void>) => {
+        const clerk = {
+            isSignedIn: signal(true),
+            userId: signal<string | null>('clerk_7'),
+            isInvitationFlow: signal(false),
+            signOut: vi.fn(signOut),
+            forgetSession: vi.fn(() => {
+                clerk.isSignedIn.set(false)
+                clerk.userId.set(null)
+            }),
+        }
+        const api = { clerkAuthStatus: vi.fn(() => of({ isValid: false })), getUserById: vi.fn() }
+        const navigate = vi.fn().mockResolvedValue(true)
+        const toast = { error: vi.fn(), success: vi.fn() }
+
+        TestBed.configureTestingModule({
+            providers: [
+                LoginService,
+                { provide: Api, useValue: api },
+                { provide: Router, useValue: { navigate, url: '/settings/account' } },
+                { provide: LogService, useValue: { log: vi.fn(), error: vi.fn() } },
+                { provide: ToastService, useValue: toast },
+                { provide: LoadingService, useValue: { start: vi.fn(), finish: vi.fn(), setAllLoadingTo: vi.fn() } },
+                { provide: ClerkService, useValue: clerk },
+                { provide: DataService, useValue: { currentUser: signal<{ id: number } | null>({ id: 7 }) } },
+            ],
+        })
+        const service = TestBed.inject(LoginService)
+        service.isAuthenticated.set(true)
+        TestBed.tick()
+        return { service, clerk, api, navigate, toast }
+    }
+
+    it('signs out for good even when Clerk cannot sign out a user it already deleted', async () => {
+        const { service, clerk, api, navigate, toast } = setup(() => Promise.reject(new Error('user not found')))
+
+        await service.leaveAfterAccountDeletion()
+        TestBed.tick()
+
+        expect(clerk.forgetSession).toHaveBeenCalled()
+        expect(clerk.userId()).toBeNull()
+        expect(service.isAuthenticated()).toBe(false)
+        // Nothing asks the API about the deleted account, so no "session expired" follows.
+        expect(api.clerkAuthStatus).not.toHaveBeenCalled()
+        expect(navigate).toHaveBeenCalledWith(['/'])
+        expect(toast.success).toHaveBeenCalledWith('Your account was deleted.')
+        expect(toast.error).not.toHaveBeenCalled()
+    })
+
+    it('forgets the session too when Clerk signs out without reporting it', async () => {
+        const { service, clerk, api } = setup(() => Promise.resolve())
+
+        await service.leaveAfterAccountDeletion()
+        TestBed.tick()
+
+        expect(clerk.userId()).toBeNull()
+        expect(api.clerkAuthStatus).not.toHaveBeenCalled()
+    })
+})

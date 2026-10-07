@@ -1,3 +1,9 @@
+import { signal } from '@angular/core'
+import { TestBed } from '@angular/core/testing'
+import { ActivatedRoute, convertToParamMap, provideRouter } from '@angular/router'
+import { type Observable, of, Subject, throwError } from 'rxjs'
+import { Api } from '../../api/api'
+import { DataService } from '../../core/services/data.service'
 import { formatAttendeeSummary } from '../../core/utils/formatAttendeeSummary'
 import { GroupViewComponent, shouldShowFirstGroupSetup } from './group-view.component'
 
@@ -92,5 +98,102 @@ describe('group standings presentation', () => {
 
         expect(component.standingSummary(standing)).toBe('1 win · 3 games · 1 night')
         expect(component.standingSummary({ ...standing, wins: 0, gamesPlayed: 1, sessions: 2 })).toBe('0 wins · 1 game · 2 nights')
+    })
+})
+
+describe('GroupViewComponent collection worth', () => {
+    const setup = (collection: Observable<unknown>) => {
+        const api = {
+            getGroupCollection: vi.fn(() => collection),
+            getGroupInsights: vi.fn(() => of(null)),
+            getGroupAcquisitionBoard: vi.fn(() => of([])),
+            getGroupPeople: vi.fn(() => of({ people: [] })),
+            getGroupPersonCatalog: vi.fn(() => of([])),
+            getGroupMeetings: vi.fn(() => of([])),
+        }
+        const dataService = {
+            currentUser: signal({ id: 6 }),
+            userGroups: signal([{ id: 1, name: 'DuckDevs', createdBy: 6, members: [{ id: 6, games: [] }], placeholders: [] }]),
+            userGroupsError: signal(false),
+            userMeets: signal([]),
+            invitationsGroupIndex: signal({}),
+            groupHistoryByGroupId: signal({}),
+        }
+        TestBed.configureTestingModule({
+            providers: [
+                provideRouter([]),
+                { provide: ActivatedRoute, useValue: { snapshot: { paramMap: convertToParamMap({ groupId: '1' }) } } },
+                { provide: Api, useValue: api },
+                { provide: DataService, useValue: dataService },
+            ],
+        })
+        const component = TestBed.runInInjectionContext(() => new GroupViewComponent())
+        TestBed.tick()
+        return { component, api }
+    }
+
+    it('shows it is loading, instead of the line for a group without data', () => {
+        const pending = new Subject<never>()
+        const { component } = setup(pending)
+
+        expect(component.collectionLoading()).toBe(true)
+        expect(component.collectionError()).toBe(false)
+    })
+
+    it('says when it could not be loaded, and loads it again on retry', () => {
+        const { component, api } = setup(throwError(() => new Error('offline')))
+
+        expect(component.collectionLoading()).toBe(false)
+        expect(component.collectionError()).toBe(true)
+        expect(component.collection$()).toBeNull()
+
+        api.getGroupCollection.mockReturnValue(of({ worth: 567, copies: 29, pricedCopies: 20, people: [] }))
+        component.retryCollection()
+
+        expect(api.getGroupCollection).toHaveBeenLastCalledWith(1)
+        expect(component.collectionError()).toBe(false)
+        expect(component.collection$()?.worth).toBe(567)
+    })
+})
+
+describe('GroupViewComponent collection worth retries', () => {
+    it('keeps the newest answer when an older retry fails late', () => {
+        const first = new Subject<never>()
+        const api = {
+            getGroupCollection: vi.fn<(groupId: number) => Observable<unknown>>(() => first),
+            getGroupInsights: vi.fn(() => of(null)),
+            getGroupAcquisitionBoard: vi.fn(() => of([])),
+            getGroupPeople: vi.fn(() => of({ people: [] })),
+            getGroupPersonCatalog: vi.fn(() => of([])),
+            getGroupMeetings: vi.fn(() => of([])),
+        }
+        TestBed.configureTestingModule({
+            providers: [
+                provideRouter([]),
+                { provide: ActivatedRoute, useValue: { snapshot: { paramMap: convertToParamMap({ groupId: '1' }) } } },
+                { provide: Api, useValue: api },
+                {
+                    provide: DataService,
+                    useValue: {
+                        currentUser: signal({ id: 6 }),
+                        userGroups: signal([{ id: 1, name: 'DuckDevs', createdBy: 6, members: [{ id: 6, games: [] }], placeholders: [] }]),
+                        userGroupsError: signal(false),
+                        userMeets: signal([]),
+                        invitationsGroupIndex: signal({}),
+                        groupHistoryByGroupId: signal({}),
+                    },
+                },
+            ],
+        })
+        const component = TestBed.runInInjectionContext(() => new GroupViewComponent())
+        TestBed.tick()
+
+        api.getGroupCollection.mockReturnValue(of({ worth: 567, copies: 29, pricedCopies: 20, people: [] }))
+        component.retryCollection()
+        first.error(new Error('slow and failed'))
+
+        expect(component.collection$()?.worth).toBe(567)
+        expect(component.collectionError()).toBe(false)
+        expect(component.collectionLoading()).toBe(false)
     })
 })

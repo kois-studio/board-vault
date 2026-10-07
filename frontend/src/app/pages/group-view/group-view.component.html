@@ -308,6 +308,13 @@
                                 </ul>
                             </div>
                         }
+                    } @else if (collectionLoading()) {
+                        <p class="mt-5 text-sm text-secondary" role="status">Adding up the collection…</p>
+                    } @else if (collectionError()) {
+                        <div class="mt-5 text-sm" role="alert">
+                            <p>The collection’s worth and who brings what could not be loaded.</p>
+                            <button type="button" class="mt-1 font-medium text-bv-primary underline" (click)="retryCollection()">Retry</button>
+                        </div>
                     } @else {
                         <p class="mt-5 text-sm text-secondary">The more sessions you record, the better the group’s memory becomes.</p>
                     }

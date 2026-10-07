@@ -274,6 +274,13 @@ operational details.
   mixed shapes sorted wrongly. "Last played" in suggestions now counts the
   group's nights recorded with group people and leaves out other groups'
   nights. Game artwork must be an http(s) address, or empty for none.
+- After deleting your account, the app no longer stays half signed in when
+  Clerk can't sign out a user it already removed: no "session expired"
+  over "account deleted", and the header shows Log in again.
+- Group pulse says when the collection's worth is loading or could not be
+  loaded, with a retry, instead of the line for a group with no data. On a
+  person's page, failed game nights no longer hide the collection, and a
+  link opened directly no longer calls the group "Group" while it loads.
 
 ### Added
 
