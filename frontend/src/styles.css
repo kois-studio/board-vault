@@ -75,6 +75,122 @@
     --bv-shadow-lift: 0 24px 48px -24px rgb(0 0 0 / 0.6);
 }
 
+/*
+ * Themes (Settings → Appearance). Ciruela above is the default; each theme
+ * below swaps the neutrals and the primary for its light and dark halves, and
+ * keeps everything else from Ciruela: Sunglow, the status colours (they carry
+ * meaning) and the player colours (they identify people). The page wears one
+ * on `<html data-theme="…">`; a preview wears one on any element, next to
+ * `.theme-light` or `.dark`. `npm run check:contrast` checks every pair.
+ */
+[data-theme="felt"] {
+    --bv-bg: #e8f1ed;
+    --bv-surface: #ffffff;
+    --bv-surface-2: #dbe9e3;
+    --bv-border: #c3d8cf;
+    --bv-text: #10241d;
+    --bv-text-muted: #4a6158;
+    --bv-primary: #0f6e62;
+    --bv-on-primary: #ffffff;
+    --bv-primary-soft: #dcefe9;
+    --bv-on-primary-soft: #0b5249;
+    --bv-shadow-lift: 0 24px 48px -24px rgb(8 40 34 / 0.35);
+}
+
+[data-theme="felt"].dark {
+    --bv-bg: #161f1c;
+    --bv-surface: #1d2925;
+    --bv-surface-2: #27352f;
+    --bv-border: #37483f;
+    --bv-text: #edf5f1;
+    --bv-text-muted: #a6bdb3;
+    --bv-primary: #6fd3bf;
+    --bv-on-primary: #062a24;
+    --bv-primary-soft: #173a33;
+    --bv-on-primary-soft: #a5e8d9;
+    --bv-shadow-lift: 0 24px 48px -24px rgb(0 0 0 / 0.6);
+}
+
+[data-theme="harbor"] {
+    --bv-bg: #eaf0f7;
+    --bv-surface: #ffffff;
+    --bv-surface-2: #dfe7f1;
+    --bv-border: #c9d5e4;
+    --bv-text: #102033;
+    --bv-text-muted: #4a5a6e;
+    --bv-primary: #1f5fa8;
+    --bv-on-primary: #ffffff;
+    --bv-primary-soft: #e0ebf8;
+    --bv-on-primary-soft: #17487f;
+    --bv-shadow-lift: 0 24px 48px -24px rgb(12 32 58 / 0.35);
+}
+
+[data-theme="harbor"].dark {
+    --bv-bg: #171c23;
+    --bv-surface: #1f262f;
+    --bv-surface-2: #29323d;
+    --bv-border: #3a4553;
+    --bv-text: #eef3f8;
+    --bv-text-muted: #a9b7c7;
+    --bv-primary: #8dbdf2;
+    --bv-on-primary: #0b2340;
+    --bv-primary-soft: #1c3150;
+    --bv-on-primary-soft: #b9d7f7;
+    --bv-shadow-lift: 0 24px 48px -24px rgb(0 0 0 / 0.6);
+}
+
+[data-theme="graphite"] {
+    --bv-bg: #eeeff1;
+    --bv-surface: #ffffff;
+    --bv-surface-2: #e3e5e9;
+    --bv-border: #d0d4da;
+    --bv-text: #17191d;
+    --bv-text-muted: #555b65;
+    --bv-primary: #3a4250;
+    --bv-on-primary: #ffffff;
+    --bv-primary-soft: #e4e7ec;
+    --bv-on-primary-soft: #2b313b;
+    --bv-shadow-lift: 0 24px 48px -24px rgb(20 22 26 / 0.35);
+}
+
+[data-theme="graphite"].dark {
+    --bv-bg: #1a1b1e;
+    --bv-surface: #222326;
+    --bv-surface-2: #2c2e32;
+    --bv-border: #3d4046;
+    --bv-text: #f1f2f4;
+    --bv-text-muted: #aeb3bb;
+    --bv-primary: #c9d2df;
+    --bv-on-primary: #1a1b1e;
+    --bv-primary-soft: #33363c;
+    --bv-on-primary-soft: #e0e4ea;
+    --bv-shadow-lift: 0 24px 48px -24px rgb(0 0 0 / 0.6);
+}
+
+/*
+ * When the device asks for more contrast, every theme pulls its secondary text
+ * and borders towards the main text. Last, so it outranks the theme blocks.
+ */
+@media (prefers-contrast: more) {
+    :root,
+    .theme-light,
+    .dark,
+    [data-theme],
+    [data-theme].dark {
+        --bv-text-muted: color-mix(in oklab, var(--bv-text) 85%, var(--bv-bg));
+        --bv-border: color-mix(in oklab, var(--bv-text) 50%, var(--bv-bg));
+    }
+}
+
+/* Text size (Settings → Appearance): everything is sized in rem, so the root size scales the whole app. */
+html[data-text-size="large"] {
+    font-size: 112.5%;
+}
+
+html[data-text-size="larger"] {
+    font-size: 125%;
+}
+
 @theme inline {
     --color-bv-bg: var(--bv-bg);
     --color-bv-surface: var(--bv-surface);
@@ -182,6 +298,12 @@
 
     .text-secondary {
         @apply text-bv-text-muted;
+    }
+
+    /* `<app-icon>` sizes in rem, so icons grow with the text size; a size class on the icon still wins. */
+    app-icon[style*="--icon-size"] > svg {
+        width: var(--icon-size);
+        height: var(--icon-size);
     }
 }
 

@@ -28,10 +28,10 @@ Plum is the primary colour, Sunglow the accent, and the backgrounds are lilac
 not `bg-white dark:bg-zinc-900`. **Do not use Tailwind's palette colours
 (`zinc`, `indigo`, `red`, …) in templates.**
 
-People choose System (the default, following the device), Light, or Dark in
-**Settings → Appearance**. To show the light tokens inside a dark page (as
-the Appearance previews do), wrap the element in `class="theme-light"`; `class="dark"`
-does the opposite.
+People choose a **color scheme** (System, the default, following the device;
+Light; or Dark) and a **theme** (below) in **Settings → Appearance**. To show
+the light tokens inside a dark page (as the Appearance previews do), wrap the
+element in `class="theme-light"`; `class="dark"` does the opposite.
 
 | Token | Tailwind class example | Use | Light | Dark |
 | --- | --- | --- | --- | --- |
@@ -54,6 +54,48 @@ does the opposite.
 `--bv-on-success`, `--bv-on-warning`, and `--bv-on-danger` are our additions
 (white in light mode, dark plum in dark mode) for text on a filled status
 colour, such as the danger button.
+
+### Themes
+
+Ciruela is the Board Vault palette and the default. For people who would
+rather not look at plum all day, three more themes change the neutrals
+(background, surfaces, border, text), the primary family, and the shadow, in
+light and dark. Sunglow, the status colours, and the player colours stay the
+same in every theme, so a player's colour never changes meaning.
+
+| Theme | Feel | Light bg / primary | Dark bg / primary |
+| --- | --- | --- | --- |
+| Ciruela | Plum and lilac (default) | `#F3EDF9` / `#8A2C7A` | `#201C20` / `#E58AD0` |
+| Felt | The green of a card table | `#E8F1ED` / `#0F6E62` | `#161F1C` / `#6FD3BF` |
+| Harbor | Deep sea blue | `#EAF0F7` / `#1F5FA8` | `#171C23` / `#8DBDF2` |
+| Graphite | Quiet grays | `#EEEFF1` / `#3A4250` | `#1A1B1E` / `#C9D2DF` |
+
+Felt, Harbor, and Graphite are proposals awaiting the designer's review.
+
+- A theme is `data-theme="felt"` on `<html>`, set by
+  [`ThemeService`](../frontend/src/app/core/services/theme.service.ts) and,
+  before Angular starts, by the script in `index.html`. Its blocks in
+  `styles.css` follow Ciruela's (`[data-theme="felt"]` for light,
+  `[data-theme="felt"].dark` for dark); equal specificity, so source order
+  wins. To preview a theme anywhere, put `data-theme` on the element together
+  with `theme-light` or `dark`.
+- Adding a theme: a light and a dark block that set the same tokens as Felt,
+  the browser bar colours in `index.html` and `THEME_COLORS` in
+  `theme.service.ts` (equal to its `--bv-bg`), an option on the Appearance
+  page, and a passing `npm run check:contrast`.
+- Write components with `bv-*` tokens and they work in every theme. A
+  hard-coded plum (in an SVG, a gradient, Clerk) will look wrong in Felt.
+
+### Text size and high contrast
+
+- **Text size** (Default, Large 112.5%, Larger 125%) sets the root font size
+  through `data-text-size` on `<html>`. Tailwind sizes in `rem`, so text,
+  spacing, and buttons grow together. Size things in Tailwind units or `rem`,
+  not `px`, or they will not grow. `<app-icon [size]="18">` takes pixels at
+  the default size and renders them in `rem`.
+- **High contrast** follows the device (`prefers-contrast: more`) with no
+  setting of its own: muted text and borders move toward the main text
+  colour in every theme.
 
 ### Rules
 
@@ -112,10 +154,15 @@ from the earlier avatar palette onto the nearest player colour.
 
 ### Contrast (WCAG AA)
 
-Text needs 4.5:1, large text and icons 3:1. Every text pair in the table
-above passes in both themes (the lowest is muted text on surface-2, 5.8:1);
-the one failing pair is Sunglow as an icon on a light surface (1.4:1), which
-the rules above forbid. Check new pairs before adding them.
+Text needs 4.5:1, large text and icons 3:1.
+[`scripts/check-theme-contrast.mjs`](../scripts/check-theme-contrast.mjs)
+(`npm run check:contrast`, run in CI) checks every theme in light and dark:
+text, muted text, and primary on the bg and both surfaces; status colours on
+the bg and surface; each `on-*` colour on its fill; and rating stars at 3:1.
+Two known exceptions: Sunglow as an icon on a light surface (1.4:1), which
+the rules above forbid, and status text on surface-2 (4.2:1 in Ciruela
+light), so keep success, warning, and danger text off surface-2. Add new
+pairs to the script before using them.
 
 Use `lucide-angular` icons alongside text; icons are supporting language,
 not the only label for an action.

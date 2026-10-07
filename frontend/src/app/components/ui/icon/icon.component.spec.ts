@@ -30,4 +30,16 @@ describe('IconComponent', () => {
 
         await vi.waitFor(() => expect(fixture.componentInstance.iconComponent()?.name).toContain('LucideX'))
     })
+
+    it('gives its size in rem, so it grows with the chosen text size', () => {
+        const fixture = render('menu')
+        const host: HTMLElement = fixture.nativeElement
+
+        expect(host.style.getPropertyValue('--icon-size')).toBe('1.25rem')
+
+        fixture.componentRef.setInput('size', 18)
+        fixture.detectChanges()
+
+        expect(host.style.getPropertyValue('--icon-size')).toBe('1.125rem')
+    })
 })

@@ -13,6 +13,12 @@ operational details.
 
 ### Changed
 
+- Settings → Appearance offers themes besides plum: Felt (card-table green),
+  Harbor (sea blue), and Graphite (grays), each in light and dark, and a
+  text size (Default, Large, Larger) that makes text, buttons, and icons
+  bigger everywhere. Player colours stay the same in every theme. When the
+  device asks for more contrast, muted text and borders get darker. The
+  System/Light/Dark choice is now called "Color scheme".
 - A new landing page, collection first: "Every game you own, on one tidy
   shelf." Five short rows show adding a game, filtering the shelf (the
   example chips work), rating and wishing, sharing with a group, and planning

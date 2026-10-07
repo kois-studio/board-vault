@@ -1,50 +1,110 @@
 <h2 class="pb-2 text-2xl font-bold tracking-wide">Appearance</h2>
-<p class="pb-8 text-bv-text-muted">Choose how Board Vault looks. The choice is saved on this device.</p>
+<p class="pb-8 text-bv-text-muted">Choose how Board Vault looks. Your choices are saved on this device.</p>
 
-<fieldset class="min-w-0">
-    <legend class="pb-3 font-semibold">Theme</legend>
-    <div class="grid gap-4 sm:grid-cols-3">
-        @for (option of options; track option.value) {
-        <label
-            class="block cursor-pointer rounded-xl border-2 bg-bv-surface p-2 transition-colors has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-bv-primary has-[:focus-visible]:ring-offset-2 motion-reduce:transition-none"
-            [class]="preference() === option.value ? 'border-bv-primary' : 'border-bv-border hover:border-bv-text-muted'"
-        >
-            <input
-                type="radio"
-                name="theme"
-                class="sr-only"
-                [value]="option.value"
-                [checked]="preference() === option.value"
-                (change)="choose(option.value)"
-            />
-            <div aria-hidden="true" class="overflow-hidden rounded-lg border border-bv-border">
-                @switch (option.value) {
-                @case ('system') {
-                <div class="grid grid-cols-2">
-                    <div class="theme-light"><ng-container *ngTemplateOutlet="preview" /></div>
-                    <div class="dark"><ng-container *ngTemplateOutlet="preview" /></div>
+<div class="space-y-10">
+    <fieldset class="min-w-0">
+        <legend class="pb-3 font-semibold">Color scheme</legend>
+        <div class="grid gap-4 sm:grid-cols-3">
+            @for (option of schemes; track option.value) {
+            <label [class]="optionClass(preference() === option.value)">
+                <input
+                    type="radio"
+                    name="scheme"
+                    class="sr-only"
+                    [value]="option.value"
+                    [checked]="preference() === option.value"
+                    (change)="chooseScheme(option.value)"
+                />
+                <!-- The previews wear the chosen theme, so they show what each scheme looks like with it. -->
+                <div aria-hidden="true" class="overflow-hidden rounded-lg border border-bv-border">
+                    @switch (option.value) {
+                    @case ('system') {
+                    <div class="grid grid-cols-2">
+                        <div class="theme-light" [attr.data-theme]="palette()"><ng-container *ngTemplateOutlet="preview" /></div>
+                        <div class="dark" [attr.data-theme]="palette()"><ng-container *ngTemplateOutlet="preview" /></div>
+                    </div>
+                    }
+                    @case ('light') {
+                    <div class="theme-light" [attr.data-theme]="palette()"><ng-container *ngTemplateOutlet="preview" /></div>
+                    }
+                    @case ('dark') {
+                    <div class="dark" [attr.data-theme]="palette()"><ng-container *ngTemplateOutlet="preview" /></div>
+                    }
+                    }
                 </div>
-                }
-                @case ('light') {
-                <div class="theme-light"><ng-container *ngTemplateOutlet="preview" /></div>
-                }
-                @case ('dark') {
-                <div class="dark"><ng-container *ngTemplateOutlet="preview" /></div>
-                }
-                }
-            </div>
-            <span class="flex items-center gap-2 px-1 pt-3 font-semibold">
-                <app-icon [name]="option.icon" [size]="16" />
-                {{ option.label }}
-                @if (preference() === option.value) {
-                <app-icon name="check" [size]="18" className="ml-auto text-bv-primary" />
-                }
-            </span>
-            <span class="block px-1 pb-1 pt-1 text-sm text-bv-text-muted">{{ option.description }}</span>
-        </label>
+                <ng-container *ngTemplateOutlet="optionLabel; context: { $implicit: option, chosen: preference() === option.value }" />
+            </label>
+            }
+        </div>
+    </fieldset>
+
+    <fieldset class="min-w-0">
+        <legend class="pb-1 font-semibold">Theme</legend>
+        <p class="pb-3 text-sm text-bv-text-muted">Changes the background and main color. Player colors stay the same in every theme.</p>
+        <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            @for (option of palettes; track option.value) {
+            <label [class]="optionClass(palette() === option.value)">
+                <input
+                    type="radio"
+                    name="palette"
+                    class="sr-only"
+                    [value]="option.value"
+                    [checked]="palette() === option.value"
+                    (change)="choosePalette(option.value)"
+                />
+                <!-- The theme's light and dark halves: its background with a glow of its main color. -->
+                <div aria-hidden="true" class="flex justify-center gap-3 rounded-lg bg-bv-surface-2 py-4">
+                    @for (mode of ['theme-light', 'dark']; track mode) {
+                    <span [class]="mode" [attr.data-theme]="option.value">
+                        <span
+                            class="block size-14 rounded-full border border-bv-border bg-bv-bg bg-[radial-gradient(circle_at_30%_28%,var(--bv-primary)_0%,transparent_62%),radial-gradient(circle_at_78%_82%,var(--bv-primary-soft)_0%,transparent_55%)] shadow-sm"
+                        ></span>
+                    </span>
+                    }
+                </div>
+                <ng-container *ngTemplateOutlet="optionLabel; context: { $implicit: option, chosen: palette() === option.value }" />
+            </label>
+            }
+        </div>
+    </fieldset>
+
+    <fieldset class="min-w-0">
+        <legend class="pb-1 font-semibold">Text size</legend>
+        <p class="pb-3 text-sm text-bv-text-muted">Makes text, buttons and icons bigger across Board Vault.</p>
+        <div class="grid gap-4 sm:grid-cols-3">
+            @for (option of textSizes; track option.value) {
+            <label [class]="optionClass(textSize() === option.value)">
+                <input
+                    type="radio"
+                    name="text-size"
+                    class="sr-only"
+                    [value]="option.value"
+                    [checked]="textSize() === option.value"
+                    (change)="chooseTextSize(option.value)"
+                />
+                <!-- Fixed pixel sizes: the sample shows the difference whatever size is chosen now. -->
+                <div aria-hidden="true" class="flex h-20 items-center justify-center rounded-lg bg-bv-surface-2 font-semibold" [style.font-size.px]="option.sample">
+                    Aa
+                </div>
+                <ng-container *ngTemplateOutlet="optionLabel; context: { $implicit: option, chosen: textSize() === option.value }" />
+            </label>
+            }
+        </div>
+    </fieldset>
+</div>
+
+<ng-template #optionLabel let-option let-chosen="chosen">
+    <span class="flex items-center gap-2 px-1 pt-3 font-semibold">
+        @if (option.icon) {
+        <app-icon [name]="option.icon" [size]="16" />
         }
-    </div>
-</fieldset>
+        {{ option.label }}
+        @if (chosen) {
+        <app-icon name="check" [size]="18" className="ml-auto text-bv-primary" />
+        }
+    </span>
+    <span class="block px-1 pb-1 pt-1 text-sm text-bv-text-muted">{{ option.description }}</span>
+</ng-template>
 
 <!-- A miniature of the app drawn with the theme tokens: header, a card, and a primary button. -->
 <ng-template #preview>

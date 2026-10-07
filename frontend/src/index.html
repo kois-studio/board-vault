@@ -26,16 +26,27 @@
         <meta name="twitter:title" content="Board Vault — Game night, remembered" />
         <meta name="twitter:description" content="A private workspace for recurring board-game groups to decide, play, and remember together." />
 
-        <!-- Applies the theme before the first paint; ThemeService (core/services/theme.service.ts) takes over after. -->
+        <!-- Applies the appearance before the first paint; ThemeService (core/services/theme.service.ts) takes over after. -->
         <script>
             ;(() => {
-                let saved = null
+                // Each theme's --bv-bg, a copy of THEME_COLORS in theme.service.ts.
+                const colors = {
+                    ciruela: { light: '#F3EDF9', dark: '#201C20' },
+                    felt: { light: '#E8F1ED', dark: '#161F1C' },
+                    harbor: { light: '#EAF0F7', dark: '#171C23' },
+                    graphite: { light: '#EEEFF1', dark: '#1A1B1E' },
+                }
+                const saved = {}
                 try {
-                    saved = localStorage.getItem('theme')
+                    for (const key of ['theme', 'palette', 'text-size']) saved[key] = localStorage.getItem(key)
                 } catch {}
-                const dark = saved === 'dark' || (saved !== 'light' && window.matchMedia('(prefers-color-scheme: dark)').matches)
-                document.documentElement.classList.toggle('dark', dark)
-                for (const meta of document.querySelectorAll('meta[name="theme-color"]')) meta.content = dark ? '#201C20' : '#F3EDF9'
+                const root = document.documentElement
+                const dark = saved.theme === 'dark' || (saved.theme !== 'light' && window.matchMedia('(prefers-color-scheme: dark)').matches)
+                const palette = Object.hasOwn(colors, saved.palette) ? saved.palette : 'ciruela'
+                root.classList.toggle('dark', dark)
+                root.dataset.theme = palette
+                if (saved['text-size'] === 'large' || saved['text-size'] === 'larger') root.dataset.textSize = saved['text-size']
+                for (const meta of document.querySelectorAll('meta[name="theme-color"]')) meta.content = colors[palette][dark ? 'dark' : 'light']
             })()
         </script>
     </head>
