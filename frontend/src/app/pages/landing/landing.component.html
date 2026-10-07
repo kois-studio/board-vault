@@ -1,32 +1,163 @@
-<main>
-    <!-- Hero: the promise, and a live recommendation for the example group. -->
-    <section class="bg-gradient-to-b from-bv-surface to-bv-primary-soft px-4 py-16 sm:px-6 lg:px-8 lg:py-24">
-        <div class="mx-auto grid max-w-6xl grid-cols-1 items-center gap-12 lg:grid-cols-[1fr_1fr]">
-            <div>
-                <p class="mb-4 text-sm font-semibold uppercase tracking-[0.2em] text-bv-primary">Board Vault</p>
-                <h1 class="text-4xl font-bold tracking-tight text-bv-text md:text-6xl">Game night, decided together.</h1>
-                <p class="mt-6 max-w-xl text-lg leading-8 text-bv-text-muted">
-                    A private space for the group you play with: the games you own between you, the nights you plan, and everything you played.
-                </p>
-                <div class="mt-10 flex flex-col gap-4 sm:flex-row">
-                    <a routerLink="/register" class="rounded-lg bg-bv-primary px-6 py-3 text-center font-medium text-bv-on-primary shadow-lg transition hover:bg-bv-primary/90 hover:shadow-xl">
-                        {{ registrationCta() }}
+<div class="overflow-x-clip">
+    <!-- Hero: the promise is the collection; groups and game nights come next. -->
+    <section class="mx-auto flex max-w-6xl flex-col gap-7 px-4 pb-8 pt-12 lg:pb-12 lg:pt-28">
+        <p class="text-sm font-bold uppercase tracking-[0.12em] text-bv-primary">Board game collection manager</p>
+        <h1 class="max-w-[11em] text-[clamp(2.75rem,7.4vw,6.5rem)] font-extrabold leading-[0.96] tracking-[-0.045em] text-balance text-bv-text">
+            Every game you own, on one tidy shelf.
+        </h1>
+        <div class="flex flex-wrap items-end justify-between gap-x-12 gap-y-6">
+            <p class="max-w-[32em] text-[clamp(1.125rem,1.6vw,1.3125rem)] leading-relaxed text-bv-text-muted">
+                Board Vault keeps your collection organised. Add a game in seconds, filter by players, rate what you’ve played, and share the shelf with the people you
+                play with.
+            </p>
+            <div class="flex flex-col gap-3">
+                <div class="flex flex-wrap gap-3">
+                    <a appButton size="large" routerLink="/register" class="min-h-14">
+                        Create your free account
+                        <app-icon name="arrow-right" [size]="18" />
                     </a>
-                    <a routerLink="/login" class="rounded-lg border border-bv-border bg-bv-surface px-6 py-3 text-center font-medium text-bv-text transition hover:bg-bv-surface-2">Sign in</a>
+                    <a appButton size="large" variant="secondary" appInPageLink="features" class="min-h-14">See how it works</a>
                 </div>
-                <p class="mt-5 text-sm text-bv-text-muted">
-                    {{ selfRegistrationEnabled() ? 'Start with the people and games you already know.' : 'During the beta you join with an invitation from a friend.' }}
-                </p>
+                <p class="text-sm text-bv-text-muted">Free to use. Works in any browser.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- A fan of covers. Our own artwork for made-up games: no publisher art on the public page. -->
+    <div class="overflow-hidden pb-[clamp(3.5rem,8vw,6.5rem)] pt-6" aria-hidden="true">
+        <ul class="flex min-w-max justify-center gap-[clamp(0.75rem,1.6vw,1.25rem)] px-5">
+            @for (cover of covers; track cover.id) {
+            <li class="w-[clamp(7.5rem,13vw,11.25rem)]" [style.transform]="cover.transform">
+                <img class="aspect-square w-full rounded-xl shadow-bv-lift" [src]="cover.imageUrl" alt="" width="180" height="180" />
+            </li>
+            }
+        </ul>
+    </div>
+
+    <!-- What it does: five rows, each with a small sample filled with the example group. -->
+    <section id="features" class="mx-auto max-w-6xl scroll-mt-4 px-4 py-[clamp(3rem,7vw,6rem)]" aria-label="Features">
+        <div class="flex flex-col gap-[clamp(4rem,9vw,7.5rem)]">
+            <!-- 01 Add -->
+            <div class="grid grid-cols-[repeat(auto-fit,minmax(min(100%,25rem),1fr))] items-center gap-[clamp(2rem,6vw,5rem)]">
+                <div class="flex max-w-[30rem] flex-col gap-3.5">
+                    <span class="text-[0.9375rem] font-extrabold text-bv-primary">01</span>
+                    <h2 class="text-[clamp(1.75rem,3.4vw,2.5rem)] font-extrabold leading-[1.1] tracking-[-0.025em] text-balance text-bv-text">Add a game in seconds</h2>
+                    <p class="text-lg leading-relaxed text-bv-text-muted">Search the catalogue and tap Add. The box art, player count and play time come with it.</p>
+                </div>
+                <div class="rounded-2xl border border-bv-border bg-bv-surface p-5 shadow-sm">
+                    <div class="flex h-12 items-center gap-2.5 rounded-lg border-2 border-bv-primary px-3.5 text-bv-text">
+                        <app-icon name="search" [size]="18" className="text-bv-text-muted" />
+                        <span>lantern<span class="ml-px inline-block h-5 w-px translate-y-1 bg-bv-text" aria-hidden="true"></span></span>
+                    </div>
+                    <ul class="mt-3">
+                        @for (result of search; track result.id) {
+                        <li class="flex items-center gap-3.5 py-2.5">
+                            <img class="size-12 shrink-0 rounded-lg" [src]="result.imageUrl" alt="" width="48" height="48" />
+                            <div class="min-w-0 flex-1">
+                                <p class="truncate text-[0.9375rem] font-bold text-bv-text">{{ result.title }}</p>
+                                <p class="text-[0.8125rem] text-bv-text-muted">{{ result.minPlayers }}–{{ result.maxPlayers }} · {{ result.minutes }} min</p>
+                            </div>
+                            @if (result.owned) {
+                            <span class="rounded-full bg-bv-primary-soft px-3 py-1 text-[0.8125rem] font-semibold text-bv-on-primary-soft">On your shelf</span>
+                            } @else {
+                            <span class="rounded-lg border border-bv-border px-3 py-1.5 text-sm font-semibold text-bv-text">Add</span>
+                            }
+                        </li>
+                        }
+                    </ul>
+                </div>
             </div>
 
-            <app-example-frame caption="The real suggestions screen, filled with a sample group. Every reason comes from the group’s own games, ratings and history.">
-                <div class="mb-3 flex flex-wrap items-baseline justify-between gap-2 px-1">
-                    <p class="font-semibold text-bv-text">What should {{ group }} play tonight?</p>
-                    <p class="text-sm text-bv-text-muted">5 coming · 2 hours</p>
+            <!-- 02 Find: the chips work. -->
+            <div class="grid grid-cols-[repeat(auto-fit,minmax(min(100%,25rem),1fr))] items-center gap-[clamp(2rem,6vw,5rem)]">
+                <div class="flex max-w-[30rem] flex-col gap-3.5 lg:order-2">
+                    <span class="text-[0.9375rem] font-extrabold text-bv-primary">02</span>
+                    <h2 class="text-[clamp(1.75rem,3.4vw,2.5rem)] font-extrabold leading-[1.1] tracking-[-0.025em] text-balance text-bv-text">Find the right game fast</h2>
+                    <p class="text-lg leading-relaxed text-bv-text-muted">Filter by how many people are playing, and sort by title or by play time.</p>
                 </div>
-                <ol class="grid gap-3">
-                    @for (recommendation of recommendations; track recommendation.game.id; let first = $first) {
-                    <li>
+                <div class="rounded-2xl border border-bv-border bg-bv-surface p-5 shadow-bv-lift lg:order-1">
+                    <div class="flex items-baseline justify-between gap-3">
+                        <p class="text-xl font-bold text-bv-text">My games</p>
+                        <p class="text-sm text-bv-text-muted" aria-live="polite">{{ shelf().length }} {{ shelf().length === 1 ? 'game' : 'games' }}</p>
+                    </div>
+                    <div class="mt-3.5 flex flex-wrap gap-2" role="group" aria-label="Filter the example games by players">
+                        @for (count of playerFilters; track count) {
+                        <button type="button" class="app-chip" [attr.aria-pressed]="players() === count" (click)="players.set(count)">
+                            {{ count === null ? 'All' : count + ' players' }}
+                        </button>
+                        }
+                    </div>
+                    <ul class="mt-4 grid min-h-[9.5rem] grid-cols-[repeat(auto-fill,minmax(6.5rem,1fr))] gap-3">
+                        @for (item of shelf(); track item.id) {
+                        <li>
+                            <img class="aspect-square w-full rounded-lg" [src]="item.imageUrl" alt="" width="104" height="104" />
+                            <p class="mt-1.5 truncate text-[0.8125rem] font-semibold text-bv-text">{{ item.title }}</p>
+                            <p class="text-xs text-bv-text-muted">{{ item.minPlayers }}–{{ item.maxPlayers }} · {{ item.minutes }} min</p>
+                        </li>
+                        }
+                    </ul>
+                </div>
+            </div>
+
+            <!-- 03 Rate -->
+            <div class="grid grid-cols-[repeat(auto-fit,minmax(min(100%,25rem),1fr))] items-center gap-[clamp(2rem,6vw,5rem)]">
+                <div class="flex max-w-[30rem] flex-col gap-3.5">
+                    <span class="text-[0.9375rem] font-extrabold text-bv-primary">03</span>
+                    <h2 class="text-[clamp(1.75rem,3.4vw,2.5rem)] font-extrabold leading-[1.1] tracking-[-0.025em] text-balance text-bv-text">Rate what you play, wish for what’s next</h2>
+                    <p class="text-lg leading-relaxed text-bv-text-muted">Give each game a rating after you play it, and keep a wishlist of the ones you want to get.</p>
+                </div>
+                <ul class="divide-y divide-bv-border rounded-2xl border border-bv-border bg-bv-surface px-5 py-2 shadow-sm">
+                    @for (item of ratings; track item.game.id) {
+                    <li class="flex items-center gap-3.5 py-3">
+                        <img class="size-12 shrink-0 rounded-lg" [src]="item.game.imageUrl" alt="" width="48" height="48" />
+                        <div class="min-w-0 flex-1">
+                            <p class="truncate text-[0.9375rem] font-bold text-bv-text">{{ item.game.title }}</p>
+                            <p class="text-[0.8125rem] text-bv-text-muted">Played {{ item.plays }} times</p>
+                        </div>
+                        <review-display class="text-sm" [review]="item.rating" />
+                    </li>
+                    }
+                    <li class="flex items-center gap-3.5 py-3">
+                        <img class="size-12 shrink-0 rounded-lg" [src]="wish.imageUrl" alt="" width="48" height="48" />
+                        <div class="min-w-0 flex-1">
+                            <p class="truncate text-[0.9375rem] font-bold text-bv-text">{{ wish.title }}</p>
+                            <p class="text-[0.8125rem] text-bv-text-muted">On your wishlist</p>
+                        </div>
+                        <app-icon name="heart" [size]="20" fill="currentColor" className="text-bv-danger" label="On your wishlist" />
+                    </li>
+                </ul>
+            </div>
+
+            <!-- 04 Share: "How it works" lands here, where the collection turns into a group. -->
+            <div id="how-it-works" class="grid scroll-mt-4 grid-cols-[repeat(auto-fit,minmax(min(100%,25rem),1fr))] items-center gap-[clamp(2rem,6vw,5rem)]">
+                <div class="flex max-w-[30rem] flex-col gap-3.5 lg:order-2">
+                    <span class="text-[0.9375rem] font-extrabold text-bv-primary">04</span>
+                    <h2 class="text-[clamp(1.75rem,3.4vw,2.5rem)] font-extrabold leading-[1.1] tracking-[-0.025em] text-balance text-bv-text">Share the shelf with your group</h2>
+                    <p class="text-lg leading-relaxed text-bv-text-muted">
+                        Create a group and see everyone’s games in one place, who owns each one, and suggestions that fit the people coming.
+                    </p>
+                </div>
+                <div class="lg:order-1">
+                    <div class="rounded-2xl border border-bv-border bg-bv-surface p-5 shadow-sm">
+                        <div class="flex items-baseline justify-between gap-3">
+                            <p class="font-bold text-bv-text">{{ group }}</p>
+                            <p class="text-[0.8125rem] text-bv-text-muted">5 members · 23 games</p>
+                        </div>
+                        <ul class="mt-3.5 grid grid-cols-4 gap-2.5">
+                            @for (item of groupShelf; track item.id) {
+                            <li class="relative">
+                                <img class="aspect-square w-full rounded-lg" [src]="item.imageUrl" [alt]="item.title" width="104" height="104" />
+                                <span class="absolute right-1.5 top-1.5 flex -space-x-2" aria-hidden="true">
+                                    @for (owner of item.owners; track owner.key) {
+                                    <app-image-profile size="small" class="rounded-full ring-2 ring-bv-surface" [avatar]="owner.avatar" />
+                                    }
+                                </span>
+                                <span class="sr-only">Owned by {{ item.owners.map((owner) => owner.name).join(' and ') }}</span>
+                            </li>
+                            }
+                        </ul>
+                    </div>
+                    <div class="relative -mt-2 ml-[clamp(0rem,4vw,2.5rem)] rounded-2xl shadow-bv-lift">
                         <app-recommendation-card
                             [title]="recommendation.game.title"
                             [imageUrl]="recommendation.game.imageUrl"
@@ -36,188 +167,91 @@
                             [historyLabel]="recommendation.historyLabel"
                             [reasons]="recommendation.reasons"
                             [score]="recommendation.score"
-                            [isTopPick]="first"
+                            [isTopPick]="true"
                             [signal]="recommendation.signal"
                         />
-                    </li>
-                    }
-                </ol>
-            </app-example-frame>
-        </div>
-    </section>
-
-    <!-- How a game night works: four beats, each with a live sample. -->
-    <section id="how-it-works" class="bg-bv-surface px-4 py-20 sm:px-6 lg:px-8">
-        <div class="mx-auto max-w-6xl">
-            <div class="max-w-2xl">
-                <p class="text-sm font-semibold uppercase tracking-[0.2em] text-bv-primary">How a game night works</p>
-                <h2 class="mt-3 text-3xl font-bold text-bv-text">From “what can we play?” to “remember when Leo won?”</h2>
+                    </div>
+                </div>
             </div>
 
-            @defer (on viewport) {
-            <ol class="mt-14 grid gap-20">
-                <li class="grid items-center gap-8 lg:grid-cols-[0.8fr_1.2fr] lg:gap-12">
-                    <div>
-                        <span class="text-sm font-bold text-bv-primary">01</span>
-                        <h3 class="mt-2 text-2xl font-semibold text-bv-text">Bring your shelf</h3>
-                        <p class="mt-3 leading-7 text-bv-text-muted">Everyone adds the games they own. The group sees what is actually available tonight, and who has it.</p>
-                    </div>
-                    <app-example-frame>
-                        <ul class="grid grid-cols-2 gap-3 sm:grid-cols-4">
-                            @for (item of shelf; track item.id) {
-                            <li class="relative">
-                                <app-card-game [title]="item.title" [imageUrl]="item.imageUrl" [gameAvgDuration]="item.minutes" [minPlayers]="item.minPlayers" [maxPlayers]="item.maxPlayers" />
-                                <span class="absolute right-2 top-2 flex -space-x-2">
-                                    @for (owner of item.owners; track owner.key) {
-                                    <app-image-profile size="small" class="rounded-full ring-2 ring-bv-surface" [avatar]="owner.avatar" />
-                                    }
-                                </span>
-                                <span class="sr-only">Owned by {{ item.owners.map((owner) => owner.name).join(' and ') }}</span>
-                            </li>
-                            }
-                        </ul>
-                    </app-example-frame>
-                </li>
-
-                <li class="grid items-center gap-8 lg:grid-cols-[1.2fr_0.8fr] lg:gap-12">
-                    <div class="lg:order-2">
-                        <span class="text-sm font-bold text-bv-primary">02</span>
-                        <h3 class="mt-2 text-2xl font-semibold text-bv-text">Plan the night</h3>
-                        <p class="mt-3 leading-7 text-bv-text-muted">Pick a date and invite the group. Everyone answers in one tap, and you see who is coming at a glance.</p>
-                    </div>
-                    <app-example-frame class="lg:order-1">
-                        <app-session-summary
-                            status="scheduled"
-                            [headingLevel]="3"
-                            [date]="session.date"
-                            [groupName]="group"
-                            [timezone]="session.timezone"
-                            [relativeLabel]="session.relativeLabel"
-                            [accessibleDate]="session.accessibleDate"
-                            [notes]="session.notes"
-                            [stats]="session.stats"
-                        >
-                            <ul class="mt-5 grid gap-2 sm:grid-cols-2" aria-label="Who is coming">
-                                @for (rsvp of session.rsvps; track rsvp.person.key) {
-                                @let label = rsvpLabels[rsvp.answer];
-                                <li class="flex items-center gap-3 rounded-lg bg-bv-surface-2 p-2">
-                                    <app-image-profile size="small" [avatar]="rsvp.person.avatar" />
-                                    <span class="font-medium">{{ rsvp.person.name }}</span>
-                                    <span class="ml-auto flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-semibold" [class]="label.tone">
-                                        <app-icon [name]="label.icon" [size]="12" />
-                                        {{ label.text }}
-                                    </span>
-                                </li>
-                                }
-                            </ul>
-                        </app-session-summary>
-                    </app-example-frame>
-                </li>
-
-                <li class="grid items-center gap-8 lg:grid-cols-[0.8fr_1.2fr] lg:gap-12">
-                    <div>
-                        <span class="text-sm font-bold text-bv-primary">03</span>
-                        <h3 class="mt-2 text-2xl font-semibold text-bv-text">Decide together</h3>
-                        <p class="mt-3 leading-7 text-bv-text-muted">
-                            Board Vault suggests games that fit the people coming and the time you have, and says why. Shortlist a few and let everyone vote.
+            <!-- 05 Plan and remember -->
+            <div class="grid grid-cols-[repeat(auto-fit,minmax(min(100%,25rem),1fr))] items-center gap-[clamp(2rem,6vw,5rem)]">
+                <div class="flex max-w-[30rem] flex-col gap-3.5">
+                    <span class="text-[0.9375rem] font-extrabold text-bv-primary">05</span>
+                    <h2 class="text-[clamp(1.75rem,3.4vw,2.5rem)] font-extrabold leading-[1.1] tracking-[-0.025em] text-balance text-bv-text">Plan the night, keep the history</h2>
+                    <p class="text-lg leading-relaxed text-bv-text-muted">
+                        Set a date and see who’s coming. Afterwards, record what you played and who won, so the next pick is easier.
+                    </p>
+                </div>
+                <div class="rounded-2xl border border-bv-border bg-bv-surface p-5 shadow-sm">
+                    <div class="flex items-center gap-3.5">
+                        <p class="flex h-[3.875rem] w-[3.625rem] shrink-0 flex-col items-center justify-center rounded-lg bg-bv-primary leading-none text-bv-on-primary">
+                            <span class="text-xs font-bold uppercase">{{ night.weekday }}</span>
+                            <span class="mt-1 text-2xl font-extrabold">{{ night.day }}</span>
                         </p>
+                        <div>
+                            <p class="text-lg font-bold text-bv-text">{{ night.title }}</p>
+                            <p class="text-sm text-bv-text-muted">{{ night.meta }}</p>
+                        </div>
                     </div>
-                    <app-example-frame>
-                        <div class="rounded-lg border border-bv-border bg-bv-surface p-4">
-                            <p class="text-sm font-semibold">Shortlist</p>
-                            <ul class="mt-2 flex flex-wrap gap-2">
-                                @for (game of shortlist; track game.id; let first = $first) {
-                                <li><span class="app-chip" [attr.aria-pressed]="first">{{ game.title }}</span></li>
-                                }
-                            </ul>
-                        </div>
-                        @if (recommendations[0]; as top) {
-                        <div class="mt-3">
-                            <app-recommendation-card
-                                [title]="top.game.title"
-                                [imageUrl]="top.game.imageUrl"
-                                [minutes]="top.game.minutes"
-                                [minPlayers]="top.game.minPlayers"
-                                [maxPlayers]="top.game.maxPlayers"
-                                [historyLabel]="top.historyLabel"
-                                [reasons]="top.reasons"
-                                [score]="top.score"
-                                [isTopPick]="true"
-                                [signal]="top.signal"
-                            >
-                                <div class="mt-4 flex gap-1">
-                                    <span class="app-chip px-2.5" aria-pressed="true"><app-icon name="thumbs-up" [size]="16" /><span class="sr-only">Interested</span></span>
-                                    <span class="app-chip px-2.5"><app-icon name="thumbs-down" [size]="16" /><span class="sr-only">Not for us</span></span>
-                                </div>
-                            </app-recommendation-card>
-                        </div>
+                    <ul class="mt-4 flex flex-wrap gap-2" aria-label="Who is coming">
+                        @for (rsvp of night.rsvps; track rsvp.person.key) {
+                        @let label = rsvpLabels[rsvp.answer];
+                        <li class="flex items-center gap-2 rounded-full bg-bv-surface-2 py-1 pl-1 pr-3 text-sm">
+                            <app-image-profile size="small" [avatar]="rsvp.person.avatar" />
+                            <span class="text-bv-text">{{ rsvp.person.name }}</span>
+                            <span class="font-semibold" [class]="label.tone">{{ label.text }}</span>
+                        </li>
                         }
-                    </app-example-frame>
-                </li>
-
-                <li class="grid items-center gap-8 lg:grid-cols-[1.2fr_0.8fr] lg:gap-12">
-                    <div class="lg:order-2">
-                        <span class="text-sm font-bold text-bv-primary">04</span>
-                        <h3 class="mt-2 text-2xl font-semibold text-bv-text">Remember</h3>
-                        <p class="mt-3 leading-7 text-bv-text-muted">
-                            Mark what you played and who won. The history keeps every night, and the next suggestions learn from it.
-                        </p>
-                    </div>
-                    <app-example-frame class="lg:order-1">
-                        <app-history-entry [entry]="history" />
-                    </app-example-frame>
-                </li>
-            </ol>
-            } @placeholder {
-            <div class="mt-14 min-h-[80rem]" aria-hidden="true"></div>
-            }
-        </div>
-    </section>
-
-    <!-- Privacy and what makes it different. -->
-    <section id="features" class="bg-bv-bg px-4 py-20 sm:px-6 lg:px-8">
-        <div class="mx-auto max-w-6xl">
-            <div class="max-w-2xl">
-                <p class="text-sm font-semibold uppercase tracking-[0.2em] text-bv-primary">Made for your group</p>
-                <h2 class="mt-3 text-3xl font-bold text-bv-text">For the people you play with, not the whole internet.</h2>
+                    </ul>
+                    <p class="mt-5 border-t border-bv-border pt-4 text-[0.8125rem] font-bold uppercase tracking-wider text-bv-text-muted">Last Friday</p>
+                    <ul class="mt-2 grid gap-2">
+                        @for (play of night.lastNight; track play.game.id) {
+                        <li class="flex items-center gap-3">
+                            <img class="size-9 shrink-0 rounded-md" [src]="play.game.imageUrl" alt="" width="36" height="36" />
+                            <span class="flex-1 font-medium text-bv-text">{{ play.game.title }}</span>
+                            <span class="rounded-full bg-bv-accent px-2.5 py-0.5 text-xs font-bold text-bv-on-accent">{{ play.winner }} won</span>
+                        </li>
+                        }
+                    </ul>
+                </div>
             </div>
-            <ul class="mt-12 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-                @for (point of privacyPoints; track point.title) {
-                <li class="rounded-2xl border border-bv-border bg-bv-surface p-6">
-                    <span class="flex h-10 w-10 items-center justify-center rounded-lg bg-bv-primary-soft text-bv-on-primary-soft"><app-icon [name]="point.icon" [size]="20" /></span>
-                    <h3 class="mt-4 text-lg font-semibold text-bv-text">{{ point.title }}</h3>
-                    <p class="mt-2 leading-7 text-bv-text-muted">{{ point.text }}</p>
-                </li>
-                }
-            </ul>
         </div>
     </section>
 
     <!-- Questions -->
-    <section id="questions" class="bg-bv-surface px-4 py-20 sm:px-6 lg:px-8">
-        <div class="mx-auto max-w-3xl">
-            <h2 class="text-3xl font-bold text-bv-text">Questions</h2>
-            <div class="mt-8 divide-y divide-bv-border border-y border-bv-border">
+    <section id="questions" class="mx-auto max-w-6xl scroll-mt-4 px-4 py-[clamp(3rem,7vw,6rem)]">
+        <div class="grid grid-cols-[repeat(auto-fit,minmax(min(100%,21.25rem),1fr))] gap-[clamp(2rem,6vw,5rem)]">
+            <div class="flex max-w-[26rem] flex-col gap-3.5">
+                <h2 class="text-[clamp(1.75rem,3.4vw,2.5rem)] font-extrabold leading-[1.1] tracking-[-0.025em] text-bv-text">Questions</h2>
+                <p class="leading-relaxed text-bv-text-muted">
+                    Your wishlist and your account are private. A group sees the games its members own and how they rated them, so the suggestions fit everyone.
+                </p>
+            </div>
+            <div class="divide-y divide-bv-border self-start border-y border-bv-border">
                 @for (item of questions; track item.q) {
-                <details class="group py-2">
-                    <summary class="flex min-h-11 cursor-pointer list-none items-center justify-between gap-4 rounded-lg py-2 font-semibold text-bv-text focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-bv-primary [&::-webkit-details-marker]:hidden">
+                <details class="group">
+                    <summary
+                        class="flex min-h-15 cursor-pointer list-none items-center justify-between gap-4 rounded-lg py-3 text-[1.0625rem] font-semibold text-bv-text focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-bv-primary [&::-webkit-details-marker]:hidden"
+                    >
                         {{ item.q }}
                         <app-icon name="chevron-down" [size]="18" className="shrink-0 transition group-open:rotate-180 motion-reduce:transition-none" />
                     </summary>
-                    <p class="pb-3 leading-7 text-bv-text-muted">{{ item.a }}</p>
+                    <p class="max-w-[36em] pb-4 leading-relaxed text-bv-text-muted">{{ item.a }}</p>
                 </details>
                 }
             </div>
         </div>
     </section>
 
-    <section class="bg-bv-primary px-4 py-20 text-bv-on-primary sm:px-6 lg:px-8">
-        <div class="mx-auto flex max-w-6xl flex-col items-start justify-between gap-8 md:flex-row md:items-center">
-            <div>
-                <h2 class="text-3xl font-bold">Bring your group’s next game night here.</h2>
-                <p class="mt-3 max-w-xl text-bv-on-primary/90">Your games, your people, your history, in one private place.</p>
+    <!-- Closing call to action -->
+    <section class="mx-auto max-w-6xl px-4 pb-[clamp(1rem,4vw,2rem)] pt-[clamp(1.5rem,4vw,3rem)]">
+        <div class="flex flex-wrap items-end justify-between gap-8 rounded-[1.25rem] bg-bv-primary p-[clamp(2.25rem,6vw,4.5rem)] text-bv-on-primary">
+            <div class="max-w-xl">
+                <h2 class="max-w-[14em] text-[clamp(1.875rem,4vw,3rem)] font-extrabold leading-[1.05] tracking-[-0.03em] text-balance">Put your collection in order tonight.</h2>
+                <p class="mt-3 text-lg text-bv-on-primary/80">Free account. Your first game is a search away.</p>
             </div>
-            <a routerLink="/register" class="rounded-lg bg-bv-surface px-6 py-3 font-semibold text-bv-primary transition hover:bg-bv-primary-soft">{{ registrationCta() }}</a>
+            <a appButton variant="accent" size="large" routerLink="/register" class="min-h-[3.375rem]">Create your free account</a>
         </div>
     </section>
-</main>
+</div>

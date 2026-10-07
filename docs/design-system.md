@@ -199,7 +199,7 @@ native element, so every attribute and directive (`routerLink`,
 <a appButton variant="secondary" routerLink="/collection/browse" icon="plus-lg">Add games</a>
 ```
 
-- Inputs: `variant` (`primary`, `secondary`, `danger`, `success`), `size`
+- Inputs: `variant` (`primary`, `secondary`, `danger`, `success`, `accent`), `size`
   (`small`, `medium`, `large`), `icon`, `loading`, `disabled`, `wide`, and
   `type` on buttons.
 - `type` defaults to `button`; set `type="submit"` for the form's submit
@@ -212,6 +212,9 @@ native element, so every attribute and directive (`routerLink`,
   unstyled.
 - Do not use the `app-btn-*` classes in templates or rebuild a button from
   colour utilities; they are the component's internals in `styles.css`.
+- `accent` is Sunglow with `on-accent` text, only for a call to action on a
+  primary band (the landing page's closing card), where a primary button
+  would disappear.
 - Coloured buttons keep white text in both themes; buttons shrink by 5% while
   pressed. Toggle chips, tabs, menu items, and icon-only controls are not
   buttons in this sense and keep their own styles.
@@ -260,13 +263,15 @@ no strokes or effects.
 - **Session surface:** show lifecycle state, attendance, games, and the next
   action together. Destructive completion or cancellation requires an
   explicit confirmation.
-- **Product samples (landing page):** show the real components, never
-  screenshots. Feed them from `pages/landing/landing.fixtures.ts` (the
-  example group "Friday Crew"), wrap each in `<app-example-frame>` (dashed
-  outline, "Example" chip, caption, `inert` content), and use only our own
-  artwork from `public/images/landing/`. A component shown there takes
-  `input()`s only (`app-recommendation-card`, `app-session-summary`,
-  `app-history-entry`, `app-card-game`), so the sample and the app can't drift.
+- **Product samples (landing page):** small samples of the app, never
+  screenshots, filled from `pages/landing/landing.fixtures.ts` (the example
+  group "Friday Crew") and set in plain surface cards. Reuse a real
+  component where it fits (`app-recommendation-card`, `review-display`,
+  `app-image-profile`); the rest is light markup. Only our own artwork from
+  `public/images/landing/` appears: made-up games, never publisher box art.
+  A sample shows no controls that do nothing: either it works (the shelf
+  filter chips) or it is plain text. A card that floats above the page uses
+  `shadow-bv-lift`.
 - **State surface:** loading, empty, error, permission, and partial-failure
   messages belong near the affected content and should include the safest
   useful next action.

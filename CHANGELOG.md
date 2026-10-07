@@ -13,6 +13,14 @@ operational details.
 
 ### Changed
 
+- A new landing page, collection first: "Every game you own, on one tidy
+  shelf." Five short rows show adding a game, filtering the shelf (the
+  example chips work), rating and wishing, sharing with a group, and planning
+  a night, all with our own made-up games. The questions say plainly what a
+  group sees (the games you own and your ratings) and what stays private
+  (your wishlist and account). The header and footer drop the private-beta
+  wording and link the FAQ and the source code. The design came from Claude
+  Design; the Spanish copy waits for the app to speak Spanish.
 - The API runs on NestJS 12 and TypeScript 6 as an ES module package, and
   its tests run on Vitest, like the frontend's.
 - Browse filters the catalogue by number of players, length, and tags (a
@@ -122,6 +130,8 @@ operational details.
 
 ### Fixed
 
+- Star ratings were drawn as outlines everywhere: the filled stars got both
+  `fill-none` and a fill colour. They are filled again.
 - The session heading no longer reads the time twice to screen readers.
 - A game's page lists its plays newest first, with every night reachable
   through "Show all", and shows who played on nights recorded with group

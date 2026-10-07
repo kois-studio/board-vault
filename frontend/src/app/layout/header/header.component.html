@@ -34,23 +34,19 @@
         } @else if (!clerkIsSignedIn()) {
         <div class="ml-auto hidden items-center gap-6 lg:flex">
             <nav aria-label="Primary navigation" class="flex items-center gap-6">
-                <a routerLink="/" fragment="features" class="text-bv-text-muted hover:text-bv-text">Features</a>
-                <a routerLink="/" fragment="how-it-works" class="text-bv-text-muted hover:text-bv-text">How it works</a>
+                @for (item of publicAnchors; track item.fragment) {
+                <a routerLink="/" [fragment]="item.fragment" class="font-medium text-bv-text-muted hover:text-bv-text">{{ item.label }}</a>
+                }
             </nav>
-            @if (clerkIsAvailable()) {
-            <button type="button" class="cursor-pointer" (click)="openClerkSignIn()">Log In</button>
-            @if (selfRegistrationEnabled()) {
-            <button appButton type="button" (click)="openClerkSignUp()">Sign Up</button>
+            @if (clerkIsAvailable() && selfRegistrationEnabled()) {
+            <button type="button" class="cursor-pointer font-medium" (click)="openClerkSignIn()">Log in</button>
+            <button appButton type="button" (click)="openClerkSignUp()">Start free</button>
+            } @else if (clerkIsAvailable()) {
+            <button type="button" class="cursor-pointer font-medium" (click)="openClerkSignIn()">Log in</button>
+            <a appButton routerLink="/register">Start free</a>
             } @else {
-            <a routerLink="/register" class="font-medium text-bv-primary">Private beta</a>
-            }
-            } @else {
-            <a routerLink="/login">Log In</a>
-            @if (selfRegistrationEnabled()) {
-            <a appButton routerLink="/register">Sign Up</a>
-            } @else {
-            <a routerLink="/register" class="font-medium text-bv-primary">Private beta</a>
-            }
+            <a routerLink="/login" class="font-medium">Log in</a>
+            <a appButton routerLink="/register">Start free</a>
             }
         </div>
         <button
@@ -68,7 +64,7 @@
 
     @if (isMobileNavigationOpen() && !isAuthenticated()) {
     <nav id="mobile-navigation" class="border-t border-bv-border px-4 py-3 lg:hidden" aria-label="Mobile navigation">
-        <div class="grid grid-cols-2 gap-2 sm:grid-cols-4">
+        <div class="grid grid-cols-2 gap-2 sm:grid-cols-5">
             @for (item of mobilePublicNavigation; track item.path) {
             <a
                 [routerLink]="item.path"

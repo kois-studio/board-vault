@@ -32,7 +32,7 @@ export const routes: Routes = [
                 canActivate: [AdminGuard],
             },
             // accessible to everyone. Bundled with the app, not lazy: it is the first page most visitors see, and
-            // a separate chunk costs a round trip before its largest paint (#92). Its samples are still deferred.
+            // a separate chunk costs a round trip before its largest paint (#92). Its sample images are the same eight hero covers, so they come from the cache.
             { path: '', component: LandingComponent }, // cannot move it to routes[n>0] unless routes[0].path !== ''
             // accessible to unauthenticated users
             {

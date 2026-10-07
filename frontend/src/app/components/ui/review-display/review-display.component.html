@@ -2,10 +2,10 @@
     <span class="font-medium">{{ hasRating ? parseReview(review()) : '—' }}</span>
     <div class="flex items-center" role="img" [attr.aria-label]="ratingLabel">
         @for (star of fullStars; track $index) {
-            <app-icon name="star" [size]="16" className="fill-bv-warning text-bv-warning dark:fill-bv-accent dark:text-bv-accent" />
+            <app-icon name="star" [size]="16" fill="currentColor" className="text-bv-warning dark:text-bv-accent" />
         }
         @for (star of halfStars; track $index) {
-            <app-icon name="star-half" [size]="16" className="fill-bv-warning text-bv-warning dark:fill-bv-accent dark:text-bv-accent" />
+            <app-icon name="star-half" [size]="16" fill="currentColor" className="text-bv-warning dark:text-bv-accent" />
         }
         @for (star of emptyStars; track $index) {
             <app-icon name="star" [size]="16" className="text-bv-border" />
