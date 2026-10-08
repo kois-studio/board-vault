@@ -269,7 +269,7 @@
                             <div class="mt-6">
                                 <h3 class="mb-2 text-sm font-semibold">Mark a game as played</h3>
                                 @if (totalGames.length === 0) {
-                                    <p class="rounded-lg border border-dashed border-bv-border p-4 text-sm text-bv-text-muted">There are no games in the invited players’ collections yet.</p>
+                                    <p class="rounded-lg border border-dashed border-bv-border p-4 text-sm text-bv-text-muted">Nobody coming has games in Board Vault yet.</p>
                                 } @else {
                                     <div class="grid grid-cols-1 gap-2 sm:grid-cols-2">
                                         @for (game of markable; track game.id) {
@@ -280,7 +280,7 @@
                                                         <span class="block truncate text-sm font-medium">{{ gameTitle(game) }}</span>
                                                         <span class="block text-xs text-bv-text-muted">
                                                             @if (!game.active) {
-                                                                Nobody invited owns it
+                                                                Nobody coming owns it
                                                             } @else if (meet.plannedGames.includes(game.id)) {
                                                                 Shortlisted · {{ game.minPlayers }}–{{ game.maxPlayers }} players
                                                             } @else {
@@ -295,7 +295,7 @@
                                     </div>
                                     @if (!showAllGamesForPlayed && hiddenPlayableGameCount > 0) {
                                         <button type="button" class="mt-3 text-sm font-semibold text-bv-primary hover:underline" (click)="showAllGamesForPlayed = true">
-                                            Show {{ hiddenPlayableGameCount }} more games nobody invited owns
+                                            Show {{ hiddenPlayableGameCount }} more games nobody coming owns
                                         </button>
                                     }
                                 }
@@ -316,7 +316,7 @@
                     </div>
                     @if (canShapeNight && isEditingShortlist) {
                         <fieldset class="mb-4 rounded-lg border border-bv-primary/30 p-4">
-                            <legend class="px-1 text-sm font-semibold">Choose from the invited players’ games</legend>
+                            <legend class="px-1 text-sm font-semibold">Choose from the games of the people coming</legend>
                             <div class="mt-2 flex flex-wrap gap-2">
                                 @for (game of totalGames; track game.id) {
                                     @if (game.active) {
@@ -354,6 +354,57 @@
                         <p class="mt-3 text-sm text-bv-text-muted">Once the night starts, mark here the games the group actually plays.</p>
                     }
                 </section>
+
+                <!-- Suggestions: what fits the people coming -->
+                @if (meet.status === 'scheduled') {
+                    <section aria-labelledby="suggestions-heading" [attr.aria-busy]="suggestionsLoading()">
+                        <div class="mb-3 flex flex-wrap items-baseline justify-between gap-2">
+                            <h2 id="suggestions-heading" class="text-lg font-semibold">Suggestions for this night</h2>
+                            <a class="text-sm font-semibold text-bv-primary hover:underline" routerLink="/play/recommendations" [queryParams]="{ groupId: meet.groupId }">More options</a>
+                        </div>
+                        <p class="mb-3 text-sm text-bv-text-muted">
+                            From the games of the {{ comingCount }} {{ comingCount === 1 ? 'person' : 'people' }} coming. They change as people answer.
+                        </p>
+                        @if (comingCount === 0) {
+                            <p class="rounded-lg border border-dashed border-bv-border p-4 text-sm text-bv-text-muted">Nobody is coming yet, so there is nothing to suggest.</p>
+                        } @else if (suggestionsError()) {
+                            <p class="rounded-lg border border-bv-warning/30 bg-bv-warning/10 p-4 text-sm" role="alert">
+                                Suggestions could not be loaded.
+                                <button type="button" class="ml-2 font-semibold underline" (click)="loadSuggestions()">Retry</button>
+                            </p>
+                        } @else if (suggestionsLoading() && !suggestions()) {
+                            <p class="rounded-lg border border-dashed border-bv-border p-4 text-sm text-bv-text-muted" role="status">Finding games that fit…</p>
+                        } @else if (topSuggestions.length === 0) {
+                            <p class="rounded-lg border border-dashed border-bv-border p-4 text-sm text-bv-text-muted">{{ suggestions()?.noResultReason || 'No game fits the people coming yet.' }}</p>
+                        } @else {
+                            <ol class="grid grid-cols-1 gap-3 transition-opacity xl:grid-cols-2" [class.opacity-60]="suggestionsLoading()">
+                                @for (suggestion of topSuggestions; track suggestion.gameData.id; let first = $first) {
+                                    @let gameId = suggestion.gameData.id;
+                                    <li>
+                                        <app-recommendation-card
+                                            [title]="gameTitle(suggestion.gameData)"
+                                            [imageUrl]="suggestion.gameData.imageUrl"
+                                            [link]="['/games', gameId]"
+                                            [minutes]="suggestion.gameData.gameAvgDuration"
+                                            [minPlayers]="suggestion.gameData.minPlayers"
+                                            [maxPlayers]="suggestion.gameData.maxPlayers"
+                                            [historyLabel]="suggestion.explanation.lastPlayedAt ? 'Last played ' + (suggestion.explanation.lastPlayedAt | customDate) : 'New to this group'"
+                                            [reasons]="suggestion.explanation.reasons"
+                                            [score]="suggestion.score"
+                                            [isTopPick]="first"
+                                        >
+                                            @if (meet.plannedGames.includes(gameId)) {
+                                                <p class="mt-3 flex items-center gap-1.5 text-sm font-medium text-bv-success"><app-icon name="check" [size]="16" aria-hidden="true" /> On the shortlist</p>
+                                            } @else if (canShapeNight) {
+                                                <button appButton variant="secondary" size="small" type="button" class="mt-3" icon="plus" [disabled]="isUpdatingShortlist" (click)="addSuggestionToShortlist(gameId)">Add to shortlist</button>
+                                            }
+                                        </app-recommendation-card>
+                                    </li>
+                                }
+                            </ol>
+                        }
+                    </section>
+                }
 
                 @if (canLeaveFeedback && playedGameDetails.length > 0) {
                     <section aria-labelledby="feedback-heading">

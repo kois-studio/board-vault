@@ -119,6 +119,98 @@ describe('MeetViewComponent participant safeguards', () => {
         })
     })
 
+    describe('deciding on the night', () => {
+        const scheduled = async () => {
+            const context = await setup()
+            const meet = context.component.meetData
+            if (meet) {
+                meet.status = 'scheduled'
+                meet.playedGames = []
+                meet.playedGameParticipants = []
+                meet.attendees = [1, 2]
+                meet.attendeeStatuses = [
+                    { accountId: 1, rsvpStatus: 'accepted', attendanceStatus: 'unknown' },
+                    { accountId: 2, rsvpStatus: 'declined', attendanceStatus: 'unknown' },
+                ]
+            }
+            context.component.groupData = {
+                ...context.component.groupData,
+                members: [
+                    {
+                        id: 1,
+                        username: 'ana',
+                        displayName: 'Ana',
+                        avatar: null,
+                        games: [{ id: 42, titleTranslations: { en: 'Azul' } }],
+                        reviews: [],
+                    },
+                    {
+                        id: 2,
+                        username: 'bo',
+                        displayName: 'Bo',
+                        avatar: null,
+                        games: [{ id: 43, titleTranslations: { en: 'Catan' } }],
+                        reviews: [],
+                    },
+                ],
+            } as never
+            return context
+        }
+
+        it('only offers the games of the people coming', async () => {
+            const { component } = await scheduled()
+
+            expect(component.comingAccountIds).toEqual([1])
+            expect(component.totalGames.map((game) => [game.id, game.active])).toEqual([
+                [42, true],
+                [43, false],
+            ])
+        })
+
+        it('asks for suggestions for the people coming, and lets the organizer shortlist one', async () => {
+            const { component, api } = await scheduled()
+            const suggestion = { gameData: { id: 43 }, score: 80, explanation: { reasons: [], lastPlayedAt: null } }
+            Object.assign(api, {
+                getRecommendations: vi
+                    .fn()
+                    .mockReturnValue(of({ groupId: 7, attendeeIds: [1], recommendations: [suggestion], noResultReason: null })),
+                updateSessionShortlist: vi.fn().mockReturnValue(of({ sessionId: 99, plannedGameIds: [42, 43] })),
+            })
+
+            await component.loadSuggestions()
+            expect((api as unknown as { getRecommendations: ReturnType<typeof vi.fn> }).getRecommendations).toHaveBeenCalledWith({
+                groupId: 7,
+                attendeeIds: [1],
+            })
+            expect(component.topSuggestions.map((entry) => entry.gameData.id)).toEqual([43])
+
+            await component.addSuggestionToShortlist(43)
+            expect((api as unknown as { updateSessionShortlist: ReturnType<typeof vi.fn> }).updateSessionShortlist).toHaveBeenCalledWith(
+                99,
+                { plannedGameIds: [42, 43] },
+            )
+            expect(component.meetData?.plannedGames).toEqual([42, 43])
+        })
+
+        it('asks for nothing when everyone has declined', async () => {
+            const { component, api } = await scheduled()
+            component.meetData?.attendeeStatuses.splice(0, 1, { accountId: 1, rsvpStatus: 'declined', attendanceStatus: 'unknown' })
+            const getRecommendations = vi.fn()
+            Object.assign(api, { getRecommendations })
+
+            await component.loadSuggestions()
+            expect(getRecommendations).not.toHaveBeenCalled()
+            expect(component.suggestionsError()).toBe(false)
+        })
+
+        it('does not suggest anything once the night has started', async () => {
+            const { component } = await setup()
+
+            await component.loadSuggestions()
+            expect(component.suggestions()).toBeNull()
+        })
+    })
+
     it('does not allow a played game to lose its final participant', async () => {
         const { component, api, toastService } = await setup()
         const meetData = component.meetData

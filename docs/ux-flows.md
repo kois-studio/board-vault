@@ -24,6 +24,13 @@ invited), started or finished (everyone who did not decline), or cancelled
 (everyone invited). Members hear when someone joins their group. The person
 who acted is never notified. Each notification links to the night or group.
 
+A scheduled night is where the group decides what to play. Its games on
+offer are the games of the people coming: invited and not declined.
+Declining takes your games off the night; they stay listed as "nobody coming
+owns it". The night shows the four best suggestions for the people coming,
+which refresh as answers and invites change. The organizer can add one to the
+shortlist in one tap.
+
 History keeps everyone who played. Someone who left the group shows as
 "Name (left)" with a muted avatar; a deleted account shows as "Deleted
 account" with a grey avatar (ADR-0018). Neither changes a session's counts.

@@ -12,9 +12,11 @@ import type {
     MeetType,
     MeetWithAttendeesAndGamesType,
     PublicUserType,
+    RecommendationsType,
     UserType,
 } from '../../api/api.types'
 import { ImageProfileComponent } from '../../components/image-profile/image-profile.component'
+import { RecommendationCardComponent } from '../../components/recommendation-card/recommendation-card.component'
 import { type SessionStat, SessionSummaryComponent } from '../../components/session-summary/session-summary.component'
 import { ToastService } from '../../components/toast/toast.service'
 import { ButtonComponent } from '../../components/ui/button/button.component'
@@ -60,6 +62,7 @@ const resultKey = (entry: Pick<GameResultEntryType, 'accountId' | 'groupPersonId
         ImageBackgroundComponent,
         ContainerWrapperComponent,
         DialogDirective,
+        RecommendationCardComponent,
         StarRatingComponent,
     ],
     templateUrl: 'meet-view.component.html',
@@ -97,6 +100,11 @@ export class MeetViewComponent {
     public editingResultsGameId: number | null = null
     public resultsDraft: ResultDraft = {}
     public isSavingResults = false
+    /** Suggestions for a scheduled night, from the games of the people coming. */
+    public readonly suggestions = signal<RecommendationsType | null>(null)
+    public readonly suggestionsLoading = signal(false)
+    public readonly suggestionsError = signal(false)
+    private suggestionsRequest = 0
     // Components are OnPush by default: state set after an await needs a nudge to render.
     private readonly changeDetector = inject(ChangeDetectorRef)
 
@@ -169,6 +177,7 @@ export class MeetViewComponent {
             this.#indexReviews(groupData)
 
             this.loaded = true
+            void this.loadSuggestions()
         } catch {
             this.loaded = false
             this.loadError.set(true)
@@ -730,6 +739,7 @@ export class MeetViewComponent {
             this.toastService.success(rsvpToast(result.rsvpStatus))
             // Home and Upcoming show your answer too.
             this.dataService.refreshUserMeets()
+            void this.loadSuggestions()
         } catch {
             this.actionError.set('Could not save your RSVP. Try again from this page.')
             this.toastService.error('Could not save your RSVP.')
@@ -811,6 +821,28 @@ export class MeetViewComponent {
         return this.totalGames.filter((game) => this.showAllGamesForPlayed || game.active || played(game))
     }
 
+    /** Invited accounts who have not declined: their games are on offer for the night. */
+    get comingAccountIds(): Array<number> {
+        const declined = new Set(
+            (this.meetData?.attendeeStatuses ?? []).filter((status) => status.rsvpStatus === 'declined').map((status) => status.accountId),
+        )
+        return (this.meetData?.attendees ?? []).filter((accountId) => !declined.has(accountId))
+    }
+
+    /** Invited group people who have not declined. */
+    get comingPersonIds(): Array<number> {
+        const declined = new Set(
+            (this.meetData?.participantStatuses ?? [])
+                .filter((status) => status.rsvpStatus === 'declined')
+                .map((status) => status.groupPersonId),
+        )
+        return (this.meetData?.participants ?? []).filter((personId) => !declined.has(personId))
+    }
+
+    get comingCount(): number {
+        return this.isGroupPersonSession ? this.comingPersonIds.length : this.comingAccountIds.length
+    }
+
     get totalGames(): Array<GameCompleteType & { active: boolean }> {
         const games: Array<GameCompleteType & { active: boolean }> = []
 
@@ -819,7 +851,7 @@ export class MeetViewComponent {
         }
 
         if (this.isGroupPersonSession) {
-            const selectedPersonIds = new Set(this.meetData?.participants ?? [])
+            const selectedPersonIds = new Set(this.comingPersonIds)
             const availableGameIds = new Set<number>()
             for (const person of this.groupPeople) {
                 if (!selectedPersonIds.has(person.person.id)) continue
@@ -845,9 +877,10 @@ export class MeetViewComponent {
             })
         }
 
+        const comingAccountIds = new Set(this.comingAccountIds)
         for (const member of this.groupData.members) {
-            // add the games of the non-selected members as inactive
-            if (!this.meetData?.attendees.includes(member.id)) {
+            // The games of people not coming (not invited, or declined) are listed but not on offer.
+            if (!comingAccountIds.has(member.id)) {
                 for (const game of member.games) {
                     if (!games.find((g) => g.id === game.id)) {
                         games.push({ ...game, active: false })
@@ -922,6 +955,49 @@ export class MeetViewComponent {
         }
     }
 
+    /** Loads suggestions for a scheduled night from the people coming; the latest request wins. */
+    async loadSuggestions(): Promise<void> {
+        const meet = this.meetData
+        if (meet?.status !== 'scheduled' || this.comingCount === 0) {
+            // Nobody coming: nothing to suggest, and the API needs at least one person.
+            this.suggestionsRequest++
+            this.suggestions.set(null)
+            this.suggestionsLoading.set(false)
+            this.suggestionsError.set(false)
+            return
+        }
+        const request = ++this.suggestionsRequest
+        this.suggestionsLoading.set(true)
+        this.suggestionsError.set(false)
+        try {
+            const result = await firstValueFrom(
+                this.isGroupPersonSession
+                    ? this.api.getParticipantRecommendations({ groupId: meet.groupId, groupPersonIds: this.comingPersonIds })
+                    : this.api.getRecommendations({ groupId: meet.groupId, attendeeIds: this.comingAccountIds }),
+            )
+            if (request === this.suggestionsRequest) this.suggestions.set(result)
+        } catch {
+            if (request === this.suggestionsRequest) {
+                this.suggestions.set(null)
+                this.suggestionsError.set(true)
+            }
+        } finally {
+            if (request === this.suggestionsRequest) this.suggestionsLoading.set(false)
+            this.changeDetector.markForCheck()
+        }
+    }
+
+    /** The four best fits, for the night page; the full list lives on What to play. */
+    get topSuggestions(): RecommendationsType['recommendations'] {
+        return this.suggestions()?.recommendations.slice(0, 4) ?? []
+    }
+
+    async addSuggestionToShortlist(gameId: number): Promise<void> {
+        if (!this.meetData || !this.canShapeNight || this.meetData.plannedGames.includes(gameId)) return
+        this.plannedGameIdsDraft = [...this.meetData.plannedGames, gameId]
+        await this.savePlannedGames()
+    }
+
     get skippedGames(): Array<GameCompleteType & { active: boolean }> {
         if (!this.meetData) return []
         const gamesById = new Map(this.totalGames.map((game) => [game.id, game]))
@@ -957,6 +1033,7 @@ export class MeetViewComponent {
         this.isPersistingChanges = true
         try {
             await this.#saveAttendeesSelection()
+            void this.loadSuggestions()
         } catch {
             this.meetData.attendees = previousAttendees
         } finally {
@@ -985,6 +1062,7 @@ export class MeetViewComponent {
         this.isPersistingChanges = true
         try {
             await this.#saveAttendeesSelection()
+            void this.loadSuggestions()
         } catch {
             this.meetData.participants = previousParticipants
         } finally {
