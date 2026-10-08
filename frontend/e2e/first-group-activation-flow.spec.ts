@@ -25,10 +25,10 @@ test.describe('first-group activation flow', () => {
             const createGroupButton = ownerPage.getByRole('button', { name: 'Create group' })
             await expect(createGroupButton).toBeEnabled()
             await createGroupButton.click()
-            await expect(ownerPage).toHaveURL(/\/groups\/\d+$/)
+            await expect(ownerPage).toHaveURL(/\/groups\/\d+\/edit$/)
             await expect(ownerPage.getByRole('heading', { name: groupName, exact: true })).toBeVisible()
 
-            const groupId = ownerPage.url().match(/\/groups\/(\d+)$/)?.[1]
+            const groupId = ownerPage.url().match(/\/groups\/(\d+)\/edit$/)?.[1]
             expect(groupId).toBeTruthy()
 
             await ownerPage.goto(`${baseURL}/groups/${groupId}/edit`)

@@ -208,6 +208,9 @@ not the only label for an action.
   (`class="absolute right-2 top-2"`). It reads and updates
   `DataService.userWishlist`, slides open to name its action with a mouse or
   keyboard focus, and its toast offers Undo. Hide it once the game is owned.
+- **Rating a game:** `<app-star-rating [value]="review" [label]="title"
+  (rated)="save($event)" />` is five stars on the 0–10 review scale (each
+  star is 2). Reviews and the after-the-night ratings on a session use it.
 - **Toggle chips:** `<button type="button" class="app-chip"
   [attr.aria-pressed]="isChosen">` for filters and choices (group, people,
   durations, players). The chosen chip takes the primary fill. Wrap a set in

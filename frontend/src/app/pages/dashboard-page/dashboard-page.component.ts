@@ -82,7 +82,8 @@ export class DashboardPageComponent {
             .slice(0, 3),
     )
 
-    public readonly firstGroupId = computed(() => this.userGroups$()[0]?.id ?? null)
+    /** With one group, plan straight into it; with several, the user picks the group first. */
+    public readonly onlyGroupId = computed(() => (this.userGroups$().length === 1 ? (this.userGroups$()[0]?.id ?? null) : null))
     public readonly hasGames = computed(() => this.dataService.userGames().length > 0)
     /** Onboarding tips only make sense until the basics exist. */
     public readonly showGettingStarted = computed(

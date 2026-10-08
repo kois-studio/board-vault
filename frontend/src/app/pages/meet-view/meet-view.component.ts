@@ -22,6 +22,7 @@ import { ContainerWrapperComponent } from '../../components/ui/container-wrapper
 import { DialogDirective } from '../../components/ui/dialog/dialog.directive'
 import { IconComponent } from '../../components/ui/icon/icon.component'
 import { ImageBackgroundComponent } from '../../components/ui/image-background/image-background.component'
+import { StarRatingComponent } from '../../components/ui/star-rating/star-rating.component'
 import { CustomDatePipe } from '../../core/pipes/customDate.pipe'
 import { DataService } from '../../core/services/data.service'
 import type { Nullable } from '../../core/types/commons.type'
@@ -59,6 +60,7 @@ const resultKey = (entry: Pick<GameResultEntryType, 'accountId' | 'groupPersonId
         ImageBackgroundComponent,
         ContainerWrapperComponent,
         DialogDirective,
+        StarRatingComponent,
     ],
     templateUrl: 'meet-view.component.html',
 })

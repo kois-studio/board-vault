@@ -22,6 +22,13 @@ export type PlanPerson = { id: number; name: string; avatar: PublicUserType['ava
 export type PlanGame = { game: GameCompleteType; title: string; owners: Array<string>; fits: boolean }
 
 const DAY_MS = 24 * 60 * 60 * 1000
+const DEFAULT_START_TIME = '19:00'
+
+/** Today if the default start is still ahead, otherwise tomorrow, so the form never opens on a time that has passed. */
+export function defaultSessionDay(now: Date): string {
+    const today = localDate(now)
+    return startTime(today, DEFAULT_START_TIME) > now.getTime() ? today : localDate(new Date(now.getTime() + DAY_MS))
+}
 
 /** The chosen day and time as one instant, in the browser's timezone; NaN until both are set. */
 function startTime(date: string | null, time: string | null): number {
@@ -68,11 +75,11 @@ export class MeetNewComponent {
 
     public readonly today = localDate(new Date())
     public readonly localTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone
-    public readonly dateForm = new FormControl(this.today, [
+    public readonly dateForm = new FormControl(defaultSessionDay(new Date()), [
         Validators.required,
         (control) => (control.value && control.value < this.today ? { futureDate: true } : null),
     ])
-    public readonly timeForm = new FormControl('19:00', [Validators.required])
+    public readonly timeForm = new FormControl(DEFAULT_START_TIME, [Validators.required])
     private readonly dateValue = toSignal(this.dateForm.valueChanges, { initialValue: this.dateForm.value })
     private readonly timeValue = toSignal(this.timeForm.valueChanges, { initialValue: this.timeForm.value })
     /** Set again on "Plan game night", so a time that passed while the page was open is caught then. */
