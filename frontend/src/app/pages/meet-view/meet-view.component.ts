@@ -198,8 +198,28 @@ export class MeetViewComponent {
 
     // #region Getters
 
-    get canManageLifecycle(): boolean {
-        return Boolean(this.meetData && this.userData && this.meetData.createdBy === this.userData.id)
+    /** Whoever planned the night, or the group owner: shapes the night (invites, shortlist) and can cancel it (ADR-0019). */
+    get isOrganizer(): boolean {
+        const userId = this.userData?.id
+        return Boolean(
+            this.meetData && userId !== undefined && (this.meetData.createdBy === userId || this.groupData?.createdBy === userId),
+        )
+    }
+
+    /** The organizer, or anyone invited who has not declined: runs the night (start, play, attendance, finish). */
+    get hasPlayerRole(): boolean {
+        const rsvp = this.currentRsvpStatus
+        return this.isOrganizer || (rsvp !== null && rsvp !== 'declined')
+    }
+
+    /** Can record play and start or finish the night right now. */
+    get canRunNight(): boolean {
+        return this.hasPlayerRole && this.canEditSession
+    }
+
+    /** Can change who is invited and the shortlist right now. */
+    get canShapeNight(): boolean {
+        return this.isOrganizer && this.canEditSession
     }
 
     get canEditSession(): boolean {
@@ -348,6 +368,11 @@ export class MeetViewComponent {
             : this.isGameParticipant(gameId, person.accountId ?? 0)
     }
 
+    /** Whoever played a game was there (ADR-0019), so their attendance cannot be turned off. */
+    playedAnyGame(person: SessionPerson): boolean {
+        return (this.meetData?.playedGames ?? []).some((gameId) => this.isPlayer(gameId, person))
+    }
+
     togglePlayer(gameId: number, person: SessionPerson): void {
         if (person.personId !== null) void this.toggleGroupPersonGameParticipant(gameId, person.personId)
         else if (person.accountId !== null) void this.toggleGameParticipant(gameId, person.accountId)
@@ -478,13 +503,13 @@ export class MeetViewComponent {
 
     /** Before its date, starting the night asks first: the night is then dated now (#94). */
     public requestStart(): void {
-        if (!this.canManageLifecycle || !this.canEditSession || this.isUpdatingStatus) return
+        if (!this.canRunNight || this.isUpdatingStatus) return
         if (this.isDatedInFuture) this.pendingStatus.set('active')
         else void this.updateStatus('active')
     }
 
     public requestStatusUpdate(status: 'completed' | 'cancelled'): void {
-        if (!this.canManageLifecycle || !this.canEditSession || this.isUpdatingStatus) return
+        if ((status === 'cancelled' ? !this.canShapeNight : !this.canRunNight) || this.isUpdatingStatus) return
         this.pendingStatus.set(status)
     }
 
@@ -522,12 +547,7 @@ export class MeetViewComponent {
     }
 
     get canRecordAttendance(): boolean {
-        return Boolean(
-            this.meetData &&
-                this.userData &&
-                this.meetData.createdBy === this.userData.id &&
-                (this.meetData.status === 'active' || this.meetData.status === 'completed'),
-        )
+        return this.hasPlayerRole && (this.meetData?.status === 'active' || this.meetData?.status === 'completed')
     }
 
     get canLeaveFeedback(): boolean {
@@ -668,7 +688,7 @@ export class MeetViewComponent {
     }
 
     async updateStatus(status: 'active' | 'completed' | 'cancelled', noGamesPlayed = false): Promise<void> {
-        if (!this.meetData || !this.canManageLifecycle || !this.canEditSession) return
+        if (!this.meetData || (status === 'cancelled' ? !this.canShapeNight : !this.canRunNight)) return
 
         this.actionError.set(null)
         this.isUpdatingStatus = true
@@ -780,14 +800,14 @@ export class MeetViewComponent {
     public showAllGamesForPlayed = false
 
     get hiddenPlayableGameCount(): number {
-        if (!this.canEditSession) return 0
+        if (!this.canRunNight) return 0
         return this.totalGames.filter((game) => !game.active && !this.meetData?.playedGames?.includes(game.id)).length
     }
 
     /** Read-only sessions show only what was played; editable ones show what can be marked. */
     get playedSectionGames(): Array<GameCompleteType & { active: boolean }> {
         const played = (game: GameCompleteType) => Boolean(this.meetData?.playedGames?.includes(game.id))
-        if (!this.canEditSession) return this.totalGames.filter(played)
+        if (!this.canRunNight) return this.totalGames.filter(played)
         return this.totalGames.filter((game) => this.showAllGamesForPlayed || game.active || played(game))
     }
 
@@ -872,7 +892,7 @@ export class MeetViewComponent {
     }
 
     togglePlannedGame(gameId: number): void {
-        if (!this.canManageLifecycle || !this.canEditSession || this.isUpdatingShortlist) return
+        if (!this.canShapeNight || this.isUpdatingShortlist) return
 
         this.plannedGameIdsDraft = this.isPlannedGame(gameId)
             ? this.plannedGameIdsDraft.filter((id) => id !== gameId)
@@ -880,7 +900,7 @@ export class MeetViewComponent {
     }
 
     async savePlannedGames(): Promise<void> {
-        if (!this.meetData || !this.canManageLifecycle || !this.canEditSession || this.isUpdatingShortlist) return
+        if (!this.meetData || !this.canShapeNight || this.isUpdatingShortlist) return
 
         this.actionError.set(null)
         const previousIds = [...this.meetData.plannedGames]
@@ -914,7 +934,7 @@ export class MeetViewComponent {
     // TODO: rethink the click system, it should be done with a straightforward click(id) instead of so much logic
 
     async onClickMember(memberId: number): Promise<void> {
-        if (!this.meetData || !this.canEditSession || this.isPersistingChanges) {
+        if (!this.meetData || !this.canShapeNight || this.isPersistingChanges) {
             return
         }
 
@@ -946,7 +966,7 @@ export class MeetViewComponent {
     }
 
     async onClickGroupPerson(personId: number): Promise<void> {
-        if (!this.meetData || !this.isGroupPersonSession || !this.canEditSession || this.isPersistingChanges) return
+        if (!this.meetData || !this.isGroupPersonSession || !this.canShapeNight || this.isPersistingChanges) return
 
         if (this.isGroupPersonAttendeeRemovalBlocked(personId)) {
             this.toastService.error(
@@ -974,7 +994,7 @@ export class MeetViewComponent {
     }
 
     async onClickGame(gameId: number): Promise<void> {
-        if (!this.meetData || !this.canEditSession || this.isPersistingChanges) {
+        if (!this.meetData || !this.canRunNight || this.isPersistingChanges) {
             return
         }
 
@@ -1024,7 +1044,7 @@ export class MeetViewComponent {
     }
 
     async toggleGameParticipant(gameId: number, memberId: number): Promise<void> {
-        if (!this.meetData || !this.canEditSession || this.isPersistingChanges || !this.meetData.playedGames.includes(gameId)) return
+        if (!this.meetData || !this.canRunNight || this.isPersistingChanges || !this.meetData.playedGames.includes(gameId)) return
 
         const currentParticipantIds = this.getGameParticipantIds(gameId)
         if (currentParticipantIds.includes(memberId) && currentParticipantIds.length === 1) {
@@ -1062,7 +1082,7 @@ export class MeetViewComponent {
         if (
             !this.meetData ||
             !this.isGroupPersonSession ||
-            !this.canEditSession ||
+            !this.canRunNight ||
             this.isPersistingChanges ||
             !this.meetData.playedGames.includes(gameId)
         )

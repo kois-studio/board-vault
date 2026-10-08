@@ -21,6 +21,7 @@ deployment-specific evidence, live data, credentials, and personal details.
 - [0016 — Approximate collection worth from retail prices](0016-approximate-collection-worth.md)
 - [0017 — Who owns the profile and the sign-in details](0017-profile-and-sign-in-ownership.md)
 - [0018 — Account deletion and leaving a group](0018-account-deletion-and-leaving-groups.md)
+- [0019 — Who may do what on a game night](0019-session-permissions.md)
 
 Accepted ADRs are durable constraints unless a later ADR explicitly supersedes
 them. Create an ADR when a decision changes architecture, persistence,

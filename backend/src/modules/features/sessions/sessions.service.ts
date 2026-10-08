@@ -224,13 +224,21 @@ export class SessionsService {
     }
 
     async updateSessionStatus(actorAccountId: number, sessionId: number, body: UpdateSessionStatusBody): Promise<SessionStatusUpdatedDto> {
-        const session = await this.databaseService.sessions.getMeetByIdForCreator(sessionId, actorAccountId)
-
-        const [sessionRow] = session.rows
-
-        if (!sessionRow) {
-            throw new ForbiddenException('Only the session organizer can change its status')
-        }
+        // Anyone playing can start or finish the night; cancelling it is the organizer's call.
+        const sessionRow =
+            body.status === 'cancelled'
+                ? await this.requireSessionRole(
+                      sessionId,
+                      actorAccountId,
+                      'organizer',
+                      'Only the organizer or the group owner can cancel a game night',
+                  )
+                : await this.requireSessionRole(
+                      sessionId,
+                      actorAccountId,
+                      'player',
+                      'Only people coming to the game night can start or finish it',
+                  )
 
         const currentStatus = String(sessionRow[5] ?? 'completed') as SessionStatusUpdatedDto['status']
         const allowedTransitions: Record<SessionStatusUpdatedDto['status'], Array<UpdateSessionStatusBody['status']>> = {
@@ -263,6 +271,10 @@ export class SessionsService {
             throw new NotFoundException(`Session with id ${sessionId} not found`)
         }
 
+        if (body.status !== 'cancelled') {
+            await this.databaseService.sessions.markPlayersAttended(sessionId)
+        }
+
         await this.activityNotifier.sessionChanged(sessionId, actorAccountId, body.status)
 
         return { sessionId, status: body.status, sessionDate: movedDate ?? sessionDate }
@@ -273,13 +285,12 @@ export class SessionsService {
         sessionId: number,
         body: UpdateSessionAttendeesBody,
     ): Promise<SessionAttendeesUpdatedDto> {
-        const session = await this.databaseService.sessions.getMeetByIdForCreator(sessionId, actorAccountId)
-
-        const [sessionRow] = session.rows
-
-        if (!sessionRow) {
-            throw new ForbiddenException('Only the session organizer can manage attendees')
-        }
+        const sessionRow = await this.requireSessionRole(
+            sessionId,
+            actorAccountId,
+            'organizer',
+            'Only the organizer or the group owner can change who is invited',
+        )
 
         const attendeeIds = [...new Set(body.attendeeIds ?? [])]
         const groupPersonIds = [...new Set(body.groupPersonIds ?? [])]
@@ -343,13 +354,12 @@ export class SessionsService {
         sessionId: number,
         body: UpdateSessionShortlistBody,
     ): Promise<SessionShortlistUpdatedDto> {
-        const session = await this.databaseService.sessions.getMeetByIdForCreator(sessionId, actorAccountId)
-
-        const [sessionRow] = session.rows
-
-        if (!sessionRow) {
-            throw new ForbiddenException('Only the session organizer can manage the shortlist')
-        }
+        const sessionRow = await this.requireSessionRole(
+            sessionId,
+            actorAccountId,
+            'organizer',
+            'Only the organizer or the group owner can change the shortlist',
+        )
 
         const status = String(sessionRow[5] ?? 'completed') as SessionStatusUpdatedDto['status']
 
@@ -383,13 +393,12 @@ export class SessionsService {
         sessionId: number,
         body: UpdateSessionPlayedGamesBody,
     ): Promise<SessionPlayedGamesUpdatedDto> {
-        const session = await this.databaseService.sessions.getMeetByIdForCreator(sessionId, actorAccountId)
-
-        const [sessionRow] = session.rows
-
-        if (!sessionRow) {
-            throw new ForbiddenException('Only the session organizer can record games played')
-        }
+        const sessionRow = await this.requireSessionRole(
+            sessionId,
+            actorAccountId,
+            'player',
+            'Only people coming to the game night can record what was played',
+        )
 
         const status = String(sessionRow[5] ?? 'completed') as SessionStatusUpdatedDto['status']
 
@@ -466,6 +475,10 @@ export class SessionsService {
             throw new ConflictException('The session changed while played games were being updated. Reload and try again.')
         }
 
+        if (status === 'active') {
+            await this.databaseService.sessions.markPlayersAttended(sessionId)
+        }
+
         const updatedSession = {
             playedGameIds: result.playedGameIds,
             skippedGameIds: result.skippedGameIds,
@@ -517,13 +530,12 @@ export class SessionsService {
         sessionId: number,
         body: UpdateSessionAttendanceBody,
     ): Promise<SessionAttendanceUpdatedDto> {
-        const session = await this.databaseService.sessions.getMeetByIdForCreator(sessionId, actorAccountId)
-
-        const [sessionRow] = session.rows
-
-        if (!sessionRow) {
-            throw new ForbiddenException('Only the session organizer can record attendance')
-        }
+        const sessionRow = await this.requireSessionRole(
+            sessionId,
+            actorAccountId,
+            'player',
+            'Only people coming to the game night can record who came',
+        )
 
         const status = String(sessionRow[5] ?? 'completed')
 
@@ -551,6 +563,8 @@ export class SessionsService {
         if (invitedPersonIds.size > 0) {
             await this.databaseService.sessions.updateMeetPersonAttendance(sessionId, attendedPersonIds)
         }
+        // Whoever played a game was there, whatever the list said.
+        await this.databaseService.sessions.markPlayersAttended(sessionId)
 
         return { sessionId, attendedIds, attendedPersonIds: invitedPersonIds.size > 0 ? attendedPersonIds : undefined }
     }
@@ -621,6 +635,29 @@ export class SessionsService {
 
     // Call queries on their domain object (databaseService.groups / .sessions): they read
     // this.database, so calling them with databaseService as `this` fails at runtime.
+    /**
+     * Who may do what on a game night (ADR-0019). The organizer is whoever planned it or the group owner;
+     * a player is the organizer or anyone invited who has not declined. Throws 403 with `forbidden`
+     * when the actor lacks the role, and 404 when the session is not in one of their groups.
+     */
+    private async requireSessionRole(sessionId: number, actorAccountId: number, role: 'organizer' | 'player', forbidden: string) {
+        const [sessionRow] = (await this.databaseService.sessions.getMeetAccessForAccount(sessionId, actorAccountId)).rows
+
+        if (!sessionRow) {
+            throw new NotFoundException(`Session with id ${sessionId} not found`)
+        }
+
+        const isOrganizer = Number(sessionRow[2]) === actorAccountId || Number(sessionRow[8]) === 1
+        const myRsvpStatus = sessionRow[9] === null || sessionRow[9] === undefined ? null : String(sessionRow[9])
+        const isPlayer = isOrganizer || (myRsvpStatus !== null && myRsvpStatus !== 'declined')
+
+        if (role === 'organizer' ? !isOrganizer : !isPlayer) {
+            throw new ForbiddenException(forbidden)
+        }
+
+        return sessionRow
+    }
+
     private async getMeetPersonIds(sessionId: number): Promise<Array<number>> {
         const sessions = this.databaseService.sessions
 

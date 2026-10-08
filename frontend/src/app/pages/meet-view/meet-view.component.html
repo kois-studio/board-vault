@@ -44,9 +44,9 @@
                 </div>
             }
 
-            @if ((canManageLifecycle && canEditSession) || canAddToCalendar) {
+            @if (canRunNight || canShapeNight || canAddToCalendar) {
                 <div class="mt-5 flex flex-wrap items-center gap-3 border-t border-bv-border pt-5">
-                    @if (canManageLifecycle && canEditSession) {
+                    @if (canRunNight) {
                         @if (meet.status === 'scheduled') {
                             <button appButton type="button" icon="dice-5" [disabled]="isUpdatingStatus" (click)="requestStart()">Start game night</button>
                         } @else {
@@ -69,11 +69,11 @@
                             </div>
                         </details>
                     }
-                    @if (canManageLifecycle && canEditSession) {
+                    @if (canShapeNight) {
                         <button type="button" class="ml-auto rounded text-sm font-medium text-bv-danger underline-offset-2 hover:underline disabled:opacity-60" [disabled]="isUpdatingStatus" (click)="requestStatusUpdate('cancelled')">Cancel game night</button>
                     }
                 </div>
-                @if (canManageLifecycle && meet.status === 'scheduled') {
+                @if (canRunNight && meet.status === 'scheduled') {
                     <p class="mt-3 text-sm text-bv-text-muted">Start the night when the group sits down to play. Then mark the games you play, who played, and who won.</p>
                 }
             }
@@ -111,7 +111,7 @@
                             }
                             @case ('completed') {
                                 @if (noGames) {
-                                    Mark the games you played before finishing. If the night didn’t happen, cancel it instead. You can also finish it with nothing played.
+                                    Mark the games you played before finishing. If the night didn’t happen, {{ canShapeNight ? 'cancel it instead' : 'ask the organizer to cancel it' }}. You can also finish it with nothing played.
                                 } @else {
                                     The night joins the group’s history. Played games, players and attendance can no longer change, but anyone can still record who won.
                                 }
@@ -134,7 +134,9 @@
                     <div class="mt-6 flex flex-col-reverse gap-3 sm:flex-row sm:flex-wrap sm:justify-end">
                         <button appButton variant="secondary" type="button" (click)="cancelStatusUpdate()">Keep editing</button>
                         @if (noGames) {
-                            <button appButton variant="danger" type="button" [disabled]="isUpdatingStatus" (click)="confirmStatusUpdate('cancelled')">Cancel game night</button>
+                            @if (canShapeNight) {
+                                <button appButton variant="danger" type="button" [disabled]="isUpdatingStatus" (click)="confirmStatusUpdate('cancelled')">Cancel game night</button>
+                            }
                             <button appButton type="button" [disabled]="isUpdatingStatus" (click)="confirmStatusUpdate()">Finish anyway</button>
                         } @else {
                             <button appButton [variant]="requestedStatus === 'cancelled' ? 'danger' : 'primary'" type="button" [disabled]="isUpdatingStatus" (click)="confirmStatusUpdate()">
@@ -156,7 +158,7 @@
                 @if (meet.status !== 'scheduled' || playedGamesCount > 0) {
                     <section aria-labelledby="played-heading">
                         <div class="mb-3 flex items-baseline justify-between gap-3">
-                            <h2 id="played-heading" class="text-lg font-semibold">{{ canEditSession ? 'Played tonight' : 'Played' }}</h2>
+                            <h2 id="played-heading" class="text-lg font-semibold">{{ canRunNight ? 'Played tonight' : 'Played' }}</h2>
                             @if (isPersistingChanges) {
                                 <span class="text-sm text-bv-text-muted" role="status">Saving…</span>
                             }
@@ -164,7 +166,7 @@
 
                         @if (playedGameDetails.length === 0) {
                             <p class="rounded-lg border border-dashed border-bv-border p-4 text-sm text-bv-text-muted">
-                                {{ canEditSession ? 'Nothing marked yet. Tap a game below when the group starts playing it.' : 'No games were recorded for this game night.' }}
+                                {{ canRunNight ? 'Nothing marked yet. Tap a game below when the group starts playing it.' : canEditSession ? 'Nothing marked yet.' : 'No games were recorded for this game night.' }}
                             </p>
                         } @else {
                             <ul class="space-y-3">
@@ -189,7 +191,7 @@
                                                         <p class="mt-0.5 text-sm text-bv-text-muted">{{ players.length }} player{{ players.length === 1 ? '' : 's' }}</p>
                                                     }
                                                 </div>
-                                                @if (canEditSession) {
+                                                @if (canRunNight) {
                                                     <button type="button" class="shrink-0 rounded text-sm font-medium text-bv-text-muted underline-offset-2 hover:text-bv-danger hover:underline disabled:opacity-60" [disabled]="isPersistingChanges" [attr.aria-label]="'Unmark ' + gameTitle(game) + ' as played'" (click)="onClickGame(game.id)">Unmark</button>
                                                 }
                                             </div>
@@ -227,7 +229,7 @@
                                                     </ol>
                                                 }
 
-                                                @if (canEditSession) {
+                                                @if (canRunNight) {
                                                     <div class="mt-3" role="group" [attr.aria-label]="'Who played ' + gameTitle(game)">
                                                         <p class="mb-2 text-xs font-medium text-bv-text-muted">Who played</p>
                                                         <div class="flex flex-wrap gap-2">
@@ -262,7 +264,7 @@
                             </ul>
                         }
 
-                        @if (canEditSession) {
+                        @if (canRunNight) {
                             @let markable = playedSectionGames;
                             <div class="mt-6">
                                 <h3 class="mb-2 text-sm font-semibold">Mark a game as played</h3>
@@ -306,13 +308,13 @@
                 <section aria-labelledby="shortlist-heading">
                     <div class="mb-3 flex items-baseline justify-between gap-3">
                         <h2 id="shortlist-heading" class="text-lg font-semibold">Shortlist</h2>
-                        @if (canManageLifecycle && canEditSession) {
+                        @if (canShapeNight) {
                             <button type="button" class="rounded text-sm font-semibold text-bv-primary hover:underline" [attr.aria-expanded]="isEditingShortlist" (click)="isEditingShortlist = !isEditingShortlist">
                                 {{ isEditingShortlist ? 'Close' : 'Edit' }}
                             </button>
                         }
                     </div>
-                    @if (canManageLifecycle && canEditSession && isEditingShortlist) {
+                    @if (canShapeNight && isEditingShortlist) {
                         <fieldset class="mb-4 rounded-lg border border-bv-primary/30 p-4">
                             <legend class="px-1 text-sm font-semibold">Choose from the invited players’ games</legend>
                             <div class="mt-2 flex flex-wrap gap-2">
@@ -387,14 +389,14 @@
                 <div class="rounded-lg border border-bv-border bg-bv-surface p-4 shadow-sm lg:sticky lg:top-4">
                     <div class="flex items-baseline justify-between gap-3">
                         <h2 id="people-heading" class="text-lg font-semibold">{{ meet.status === 'completed' ? 'Who came' : meet.status === 'cancelled' ? 'Who was invited' : 'Who’s coming' }}</h2>
-                        @if (canEditSession) {
+                        @if (canShapeNight) {
                             <button type="button" class="rounded text-sm font-semibold text-bv-primary hover:underline" [attr.aria-expanded]="isEditingInvites" (click)="isEditingInvites = !isEditingInvites">
                                 {{ isEditingInvites ? 'Done' : 'Edit' }}
                             </button>
                         }
                     </div>
 
-                    @if (isEditingInvites && canEditSession) {
+                    @if (isEditingInvites && canShapeNight) {
                         <div class="mt-3 flex flex-wrap gap-2" role="group" aria-label="Who is invited">
                             @for (person of invitablePeople; track person.key) {
                                 <button type="button" class="app-chip max-w-full" [attr.aria-pressed]="isInvited(person)" [attr.aria-label]="inviteToggleLabel(person)" [disabled]="isPersistingChanges || isInviteLocked(person)" (click)="toggleInvite(person)">
@@ -419,7 +421,7 @@
                                     <span class="block text-xs" [class]="rsvp === 'accepted' ? 'text-bv-success' : rsvp === 'declined' ? 'text-bv-danger' : 'text-bv-text-muted'">{{ rsvpLabel(person) }}</span>
                                 </span>
                                 @if (canRecordAttendance) {
-                                    <button type="button" class="app-chip shrink-0" [attr.aria-pressed]="attended(person)" [attr.aria-label]="person.displayName + ' was there'" [disabled]="isUpdatingAttendance" (click)="toggleAttended(person)">
+                                    <button type="button" class="app-chip shrink-0" [attr.aria-pressed]="attended(person) || playedAnyGame(person)" [attr.aria-label]="person.displayName + ' was there'" [title]="playedAnyGame(person) ? 'Played a game, so was there' : ''" [disabled]="isUpdatingAttendance || playedAnyGame(person)" (click)="toggleAttended(person)">
                                         <app-icon name="check" [size]="14" aria-hidden="true" /> There
                                     </button>
                                 } @else if (meet.status === 'completed' && attended(person)) {
@@ -429,7 +431,7 @@
                         }
                     </ul>
                     @if (canRecordAttendance) {
-                        <p class="mt-2 text-xs text-bv-text-muted">Mark who actually came. It can differ from who said they would.</p>
+                        <p class="mt-2 text-xs text-bv-text-muted">Mark who actually came. Anyone who played a game counts as there.</p>
                     }
                 </div>
             </aside>

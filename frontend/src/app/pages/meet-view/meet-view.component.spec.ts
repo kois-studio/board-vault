@@ -81,6 +81,44 @@ describe('MeetViewComponent participant safeguards', () => {
         return { component, api, dataService, toastService }
     }
 
+    describe('roles (ADR-0019)', () => {
+        it('lets an invitee who is coming run the night, but not shape or cancel it', async () => {
+            const { component } = await setup()
+            component.userData = { id: 2 } as typeof component.userData
+
+            expect(component.isOrganizer).toBe(false)
+            expect(component.canRunNight).toBe(true)
+            expect(component.canShapeNight).toBe(false)
+            expect(component.canRecordAttendance).toBe(true)
+        })
+
+        it('takes the night away from someone who declined', async () => {
+            const { component } = await setup()
+            component.userData = { id: 2 } as typeof component.userData
+            component.meetData?.attendeeStatuses.splice(1, 1, { accountId: 2, rsvpStatus: 'declined', attendanceStatus: 'unknown' })
+
+            expect(component.canRunNight).toBe(false)
+            expect(component.canRecordAttendance).toBe(false)
+        })
+
+        it('makes the group owner an organizer of every night in the group', async () => {
+            const { component } = await setup()
+            component.userData = { id: 3 } as typeof component.userData
+            component.groupData = { ...component.groupData, createdBy: 3 } as never
+
+            expect(component.isOrganizer).toBe(true)
+            expect(component.canShapeNight).toBe(true)
+            expect(component.canRunNight).toBe(true)
+        })
+
+        it('counts whoever played a game as there', async () => {
+            const { component } = await setup()
+            const ana = component.invitedPeople.find((person) => person.accountId === 1)
+
+            expect(ana && component.playedAnyGame(ana)).toBe(true)
+        })
+    })
+
     it('does not allow a played game to lose its final participant', async () => {
         const { component, api, toastService } = await setup()
         const meetData = component.meetData
