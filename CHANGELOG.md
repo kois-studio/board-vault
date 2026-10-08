@@ -267,6 +267,11 @@ operational details.
   painted, and `/login` and `/register` render without it. With a Clerk key,
   as in production, Lighthouse performance goes from about 76 to 94–96, and
   CI now audits with a (fake) key too.
+- Deleting an account revokes the group invitations it sent through Clerk,
+  as ADR-0018 already said for invitations sent: their links stop working
+  instead of signing people up into nothing. An invitation the group no
+  longer honours (its inviter no longer owns the group) is refused before
+  an account is created, so nobody ends up with an account and no group.
 - A failed group creation or invitation shows one message, next to the form,
   instead of the same error again as a toast. Inviting an unknown username or
   an email with a pending invitation says so.

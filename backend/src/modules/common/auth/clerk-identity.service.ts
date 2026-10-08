@@ -82,7 +82,59 @@ export class ClerkIdentityService {
     async getGroupInvitations(groupId: number, inviterAccountId: number): Promise<Array<ClerkGroupInvitationSummaryDto>> {
         await this.assertGroupOwner(groupId, inviterAccountId)
 
-        const invitations: Array<ClerkGroupInvitationSummaryDto> = []
+        const invitations = await this.listPendingGroupInvitations()
+
+        return invitations
+            .filter(({ metadata }) => metadata.groupId === groupId && metadata.inviterAccountId === inviterAccountId)
+            .map(({ invitation }) => ({
+                invitationId: invitation.id,
+                emailAddress: invitation.emailAddress,
+                status: 'pending' as const,
+                createdAt: new Date(invitation.createdAt).toISOString(),
+            }))
+    }
+
+    /**
+     * Revokes every pending group invitation an account sent, for account deletion (ADR-0018:
+     * invitations sent go with the account). Their links stop working in Clerk, instead of opening
+     * an account that no group takes in. Placeholder claims they targeted are released.
+     * Returns how many could not be revoked; the rest are revoked even if one fails.
+     */
+    async revokeInvitationsFrom(inviterAccountId: number): Promise<{ revoked: number; failed: number }> {
+        const invitations = (await this.listPendingGroupInvitations()).filter(
+            ({ metadata }) => metadata.inviterAccountId === inviterAccountId,
+        )
+        let revoked = 0
+        let failed = 0
+        const clerkClient = this.getClerkClient()
+
+        for (const { invitation, metadata } of invitations) {
+            try {
+                await this.withClerkProviderBoundary(() => clerkClient.invitations.revokeInvitation(invitation.id))
+                if (metadata.groupPersonId !== undefined) {
+                    await this.databaseService.groups.clearGroupPersonClaimEmail(
+                        metadata.groupPersonId,
+                        metadata.groupId,
+                        invitation.emailAddress,
+                    )
+                }
+                revoked++
+            } catch {
+                failed++
+            }
+        }
+
+        return { revoked, failed }
+    }
+
+    /** Every pending Clerk invitation that carries Board Vault group metadata, all pages. */
+    private async listPendingGroupInvitations(): Promise<
+        Array<{ invitation: { id: string; emailAddress: string; createdAt: number }; metadata: ClerkGroupInvitationMetadata }>
+    > {
+        const invitations: Array<{
+            invitation: { id: string; emailAddress: string; createdAt: number }
+            metadata: ClerkGroupInvitationMetadata
+        }> = []
         const clerkClient = this.getClerkClient()
         const limit = 500
         let offset = 0
@@ -107,16 +159,7 @@ export class ClerkIdentityService {
                     continue
                 }
 
-                if (!metadata || metadata.groupId !== groupId || metadata.inviterAccountId !== inviterAccountId) {
-                    continue
-                }
-
-                invitations.push({
-                    invitationId: invitation.id,
-                    emailAddress: invitation.emailAddress,
-                    status: 'pending',
-                    createdAt: new Date(invitation.createdAt).toISOString(),
-                })
+                if (metadata) invitations.push({ invitation, metadata })
             }
 
             offset += page.data.length
@@ -198,6 +241,10 @@ export class ClerkIdentityService {
 
         if (!groupInvitation) {
             assertSelfRegistrationEnabled()
+        } else {
+            // Checked before the account exists: an invitation the group no longer honours (its owner
+            // changed or the group is gone) must not leave an account that belongs to no group.
+            await this.assertInvitationStillValid(groupInvitation)
         }
 
         const provisionedAccount = await this.provisionAccount(clerkUserId, clerkUser, primaryEmail)
@@ -247,6 +294,14 @@ export class ClerkIdentityService {
             500,
             'The invitation redirect is not configured',
         )
+    }
+
+    private async assertInvitationStillValid(invitation: ClerkGroupInvitationMetadata): Promise<void> {
+        const group = await this.databaseService.groups.getGroupById(invitation.groupId)
+
+        if (Number(group.rows[0]?.[2]) !== invitation.inviterAccountId) {
+            throw new NotFoundException('The group invitation is no longer valid')
+        }
     }
 
     private async assertGroupOwner(groupId: number, inviterAccountId: number): Promise<void> {

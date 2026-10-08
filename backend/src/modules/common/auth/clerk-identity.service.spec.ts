@@ -23,6 +23,7 @@ describe('ClerkIdentityService', () => {
         getGroupById: vi.fn(),
         getGroupPersonById: vi.fn(),
         setGroupPersonClaimEmail: vi.fn(),
+        clearGroupPersonClaimEmail: vi.fn(),
         joinGroupFromClerkInvitation: vi.fn(),
     }
     const service = new ClerkIdentityService(configService as never, usersService as never, fakeDatabase(databaseService))
@@ -158,6 +159,7 @@ describe('ClerkIdentityService', () => {
         usersService.getUserByEmail.mockRejectedValue(new NotFoundException())
         usersService.createClerkUser.mockResolvedValue({ success: true })
         usersService.getUserByClerkId.mockResolvedValue({ id: 9, email: 'invite@example.com', isAdmin: false })
+        databaseService.getGroupById.mockResolvedValue({ rows: [[12, 'Friends', 7]] })
 
         try {
             await expect(service.resolveAccount('user_invited')).resolves.toEqual({ id: 9, email: 'invite@example.com', isAdmin: false })
@@ -172,6 +174,88 @@ describe('ClerkIdentityService', () => {
             if (previousRegistrationSetting === undefined) delete process.env.BOARD_VAULT_SELF_REGISTRATION_ENABLED
             else process.env.BOARD_VAULT_SELF_REGISTRATION_ENABLED = previousRegistrationSetting
         }
+    })
+
+    it('does not open an account for an invitation whose inviter no longer owns the group', async () => {
+        mockedCreateClerkClient.mockReturnValue({
+            users: {
+                getUser: vi.fn().mockResolvedValue({
+                    username: 'invited-player',
+                    primaryEmailAddressId: 'email_1',
+                    emailAddresses: [{ id: 'email_1', emailAddress: 'invite@example.com', verification: { status: 'verified' } }],
+                    publicMetadata: { boardVaultGroupInvitation: { groupId: 12, inviterAccountId: 7, version: 1 } },
+                }),
+            },
+        } as never)
+        usersService.getUserByClerkId.mockReset().mockRejectedValue(new NotFoundException())
+        // The inviter deleted their account; the group passed to account 8.
+        databaseService.getGroupById.mockResolvedValue({ rows: [[12, 'Friends', 8]] })
+
+        await expect(service.resolveAccount('user_invited')).rejects.toThrow('The group invitation is no longer valid')
+        expect(usersService.createClerkUser).not.toHaveBeenCalled()
+        expect(databaseService.joinGroupFromClerkInvitation).not.toHaveBeenCalled()
+    })
+
+    it('revokes every pending invitation a deleted account sent, and releases the placeholders they targeted', async () => {
+        const invitation = (id: string, metadata: object) => ({
+            id,
+            emailAddress: `${id}@example.com`,
+            status: 'pending',
+            createdAt: 1757066400000,
+            publicMetadata: { boardVaultGroupInvitation: metadata },
+        })
+        const getInvitationList = vi
+            .fn()
+            .mockResolvedValueOnce({
+                totalCount: 4,
+                data: [
+                    invitation('to_group', { groupId: 12, inviterAccountId: 7, version: 1 }),
+                    invitation('to_placeholder', { groupId: 12, inviterAccountId: 7, version: 2, groupPersonId: 30 }),
+                ],
+            })
+            .mockResolvedValueOnce({
+                totalCount: 4,
+                data: [
+                    invitation('from_someone_else', { groupId: 12, inviterAccountId: 8, version: 1 }),
+                    { id: 'unrelated', emailAddress: 'x@example.com', status: 'pending', createdAt: 1, publicMetadata: {} },
+                ],
+            })
+        const revokeInvitation = vi.fn().mockResolvedValue({})
+
+        mockedCreateClerkClient.mockReturnValue({ invitations: { getInvitationList, revokeInvitation } } as never)
+
+        await expect(service.revokeInvitationsFrom(7)).resolves.toEqual({ revoked: 2, failed: 0 })
+        expect(revokeInvitation.mock.calls).toEqual([['to_group'], ['to_placeholder']])
+        expect(databaseService.clearGroupPersonClaimEmail).toHaveBeenCalledWith(30, 12, 'to_placeholder@example.com')
+        expect(getInvitationList).toHaveBeenNthCalledWith(2, { limit: 500, offset: 2, orderBy: '-created_at', status: 'pending' })
+    })
+
+    it('keeps revoking when one invitation fails, and counts it', async () => {
+        const getInvitationList = vi.fn().mockResolvedValue({
+            totalCount: 2,
+            data: [
+                {
+                    id: 'a',
+                    emailAddress: 'a@example.com',
+                    status: 'pending',
+                    createdAt: 1,
+                    publicMetadata: { boardVaultGroupInvitation: { groupId: 12, inviterAccountId: 7, version: 1 } },
+                },
+                {
+                    id: 'b',
+                    emailAddress: 'b@example.com',
+                    status: 'pending',
+                    createdAt: 1,
+                    publicMetadata: { boardVaultGroupInvitation: { groupId: 13, inviterAccountId: 7, version: 1 } },
+                },
+            ],
+        })
+        const revokeInvitation = vi.fn().mockRejectedValueOnce(new Error('Clerk unavailable')).mockResolvedValue({})
+
+        mockedCreateClerkClient.mockReturnValue({ invitations: { getInvitationList, revokeInvitation } } as never)
+
+        await expect(service.revokeInvitationsFrom(7)).resolves.toEqual({ revoked: 1, failed: 1 })
+        expect(revokeInvitation).toHaveBeenCalledTimes(2)
     })
 
     it('creates a Clerk group invitation with private metadata and a configured redirect', async () => {
