@@ -26,7 +26,7 @@ describe('SettingsAccountComponent', () => {
         primaryEmail: signal<string | null>(null),
         openUserProfile: vi.fn(),
     }
-    const dataService = { currentUser: signal<UserType | null>(null) }
+    const dataService = { currentUser: signal<UserType | null>(null), refreshCurrentUser: vi.fn<() => Promise<void>>() }
     const api = { deleteAccount: vi.fn() }
     const loginService = { leaveAfterAccountDeletion: vi.fn().mockResolvedValue(undefined) }
 
@@ -34,6 +34,7 @@ describe('SettingsAccountComponent', () => {
 
     beforeEach(async () => {
         dataService.currentUser.set(structuredClone(currentUser))
+        dataService.refreshCurrentUser.mockReset().mockResolvedValue(undefined)
         clerkService.isAvailable.set(true)
         clerkService.username.set(null)
         clerkService.primaryEmail.set(null)
@@ -69,11 +70,66 @@ describe('SettingsAccountComponent', () => {
         expect(text('account-email')).toBe('new+clerk_test@example.com')
     })
 
-    it('shows a username changed in Clerk everywhere before the webhook lands', () => {
-        clerkService.username.set('organizer2')
-        fixture.detectChanges()
+    describe('a username changed in Clerk', () => {
+        beforeEach(() => vi.useFakeTimers())
+        afterEach(() => vi.useRealTimers())
 
-        expect(dataService.currentUser()?.username).toBe('organizer2')
+        it('reads the account again until the webhook lands, without inventing it locally', async () => {
+            let reads = 0
+            dataService.refreshCurrentUser.mockImplementation(async () => {
+                // The webhook lands between the first and the second read.
+                if (++reads === 2) dataService.currentUser.set({ ...structuredClone(currentUser), username: 'organizer2' })
+            })
+
+            clerkService.username.set('organizer2')
+            fixture.detectChanges()
+            expect(dataService.currentUser()?.username).toBe('organizer')
+
+            await vi.advanceTimersByTimeAsync(1_500)
+            expect(reads).toBe(1)
+            expect(dataService.currentUser()?.username).toBe('organizer')
+
+            await vi.advanceTimersByTimeAsync(5_000)
+            fixture.detectChanges()
+            expect(reads).toBe(2)
+            expect(dataService.currentUser()?.username).toBe('organizer2')
+
+            await vi.advanceTimersByTimeAsync(60_000)
+            fixture.detectChanges()
+            expect(reads).toBe(2)
+            expect(text('account-username-behind')).toBeUndefined()
+        })
+
+        it('says when Board Vault still has the old username after a few reads', async () => {
+            clerkService.username.set('taken-name')
+            fixture.detectChanges()
+
+            await vi.advanceTimersByTimeAsync(1_500 + 5_000 + 15_000)
+            fixture.detectChanges()
+
+            expect(dataService.refreshCurrentUser).toHaveBeenCalledTimes(3)
+            expect(dataService.currentUser()?.username).toBe('organizer')
+            expect(text('account-username-behind')).toContain('Your groups still see you as organizer')
+        })
+
+        it('reads nothing when Clerk and the account agree', async () => {
+            clerkService.username.set('organizer')
+            fixture.detectChanges()
+
+            await vi.advanceTimersByTimeAsync(60_000)
+
+            expect(dataService.refreshCurrentUser).not.toHaveBeenCalled()
+        })
+
+        it('stops reading when the page closes', async () => {
+            clerkService.username.set('organizer2')
+            fixture.detectChanges()
+            fixture.destroy()
+
+            await vi.advanceTimersByTimeAsync(60_000)
+
+            expect(dataService.refreshCurrentUser).not.toHaveBeenCalled()
+        })
     })
 
     it('opens the Clerk panel to manage sign-in', () => {

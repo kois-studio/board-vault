@@ -1,11 +1,89 @@
 import { signal } from '@angular/core'
 import { TestBed } from '@angular/core/testing'
 import { ActivatedRoute, convertToParamMap, provideRouter } from '@angular/router'
-import { type Observable, of, Subject, throwError } from 'rxjs'
+import { BehaviorSubject, type Observable, of, Subject, throwError } from 'rxjs'
 import { Api } from '../../api/api'
 import { DataService } from '../../core/services/data.service'
 import { formatAttendeeSummary } from '../../core/utils/formatAttendeeSummary'
 import { GroupViewComponent, shouldShowFirstGroupSetup } from './group-view.component'
+
+describe('GroupViewComponent switching groups', () => {
+    const group = (id: number, name: string) => ({ id, name, createdBy: 6, members: [{ id: 6, games: [] }], placeholders: [] })
+
+    const setup = () => {
+        const params = new BehaviorSubject(convertToParamMap({ groupId: '1' }))
+        const collections: Record<number, Subject<unknown>> = { 1: new Subject(), 4: new Subject() }
+        const api = {
+            getGroupCollection: vi.fn((groupId: number) => collections[groupId]),
+            getGroupInsights: vi.fn(() => of(null)),
+            getGroupAcquisitionBoard: vi.fn(() => of([])),
+            getGroupPeople: vi.fn(() => of({ people: [] })),
+            getGroupPersonCatalog: vi.fn(() => of([])),
+            getGroupMeetings: vi.fn(() => of([])),
+        }
+        const dataService = {
+            currentUser: signal({ id: 6 }),
+            userGroups: signal([group(1, 'DuckDevs'), group(4, 'Private group')]),
+            userGroupsError: signal(false),
+            userMeets: signal([]),
+            invitationsGroupIndex: signal({}),
+            groupHistoryByGroupId: signal<Record<number, Array<never>>>({}),
+        }
+
+        TestBed.configureTestingModule({
+            providers: [
+                provideRouter([]),
+                { provide: ActivatedRoute, useValue: { paramMap: params, snapshot: { paramMap: params.value } } },
+                { provide: Api, useValue: api },
+                { provide: DataService, useValue: dataService },
+            ],
+        })
+        const component = TestBed.runInInjectionContext(() => new GroupViewComponent())
+        TestBed.tick()
+        return { component, params, collections, api, dataService }
+    }
+
+    it('shows the group the switcher moved to, without a reload', () => {
+        const { component, params, api } = setup()
+        expect(component.groupData$()?.id).toBe(1)
+
+        params.next(convertToParamMap({ groupId: '4' }))
+        TestBed.tick()
+
+        expect(component.groupData$()?.name).toBe('Private group')
+        expect(api.getGroupCollection).toHaveBeenLastCalledWith(4)
+        expect(api.getGroupMeetings).toHaveBeenLastCalledWith(6, 4)
+    })
+
+    it('does not stay loading when it leaves a group whose history was still loading', () => {
+        const { component, params, api, dataService } = setup()
+        const pending = new Subject<never>()
+        api.getGroupMeetings.mockReturnValueOnce(pending)
+
+        component.retryGroupHistory()
+        expect(component.isLoading()).toBe(true)
+
+        // Group 4's history is already known, so nothing new loads for it.
+        dataService.groupHistoryByGroupId.set({ 4: [] })
+        params.next(convertToParamMap({ groupId: '4' }))
+        TestBed.tick()
+        pending.complete()
+
+        expect(component.isLoading()).toBe(false)
+    })
+
+    it('ignores an answer for the previous group that arrives after switching', () => {
+        const { component, params, collections } = setup()
+
+        params.next(convertToParamMap({ groupId: '4' }))
+        TestBed.tick()
+        collections[1]?.next({ totalWorth: 567, people: [] })
+        expect(component.collection$()).toBeNull()
+
+        collections[4]?.next({ totalWorth: 334, people: [] })
+        expect(component.collection$()).toEqual({ totalWorth: 334, people: [] })
+    })
+})
 
 describe('formatAttendeeSummary', () => {
     it('uses an honest fallback when no attendance was recorded', () => {
@@ -122,7 +200,13 @@ describe('GroupViewComponent collection worth', () => {
         TestBed.configureTestingModule({
             providers: [
                 provideRouter([]),
-                { provide: ActivatedRoute, useValue: { snapshot: { paramMap: convertToParamMap({ groupId: '1' }) } } },
+                {
+                    provide: ActivatedRoute,
+                    useValue: {
+                        paramMap: of(convertToParamMap({ groupId: '1' })),
+                        snapshot: { paramMap: convertToParamMap({ groupId: '1' }) },
+                    },
+                },
                 { provide: Api, useValue: api },
                 { provide: DataService, useValue: dataService },
             ],
@@ -170,7 +254,13 @@ describe('GroupViewComponent collection worth retries', () => {
         TestBed.configureTestingModule({
             providers: [
                 provideRouter([]),
-                { provide: ActivatedRoute, useValue: { snapshot: { paramMap: convertToParamMap({ groupId: '1' }) } } },
+                {
+                    provide: ActivatedRoute,
+                    useValue: {
+                        paramMap: of(convertToParamMap({ groupId: '1' })),
+                        snapshot: { paramMap: convertToParamMap({ groupId: '1' }) },
+                    },
+                },
                 { provide: Api, useValue: api },
                 {
                     provide: DataService,

@@ -2,15 +2,23 @@
     <div class="grid gap-4 sm:grid-cols-2">
         <div>
             <label for="titleEn" class="mb-1 block text-sm font-medium">English title</label>
-            <input id="titleEn" class="app-input" formControlName="titleEn" [attr.aria-invalid]="form().controls.titleEn.touched && form().controls.titleEn.invalid" />
-            @if (form().controls.titleEn.touched && form().controls.titleEn.invalid) {
-                <p class="mt-1 text-sm text-bv-danger">The English title is required.</p>
+            <input
+                id="titleEn"
+                class="app-input"
+                formControlName="titleEn"
+                [attr.aria-invalid]="showTitleEnError"
+                [attr.aria-describedby]="showTitleEnError ? 'titleEn-error' : null"
+            />
+            @if (showTitleEnError) {
+                <p id="titleEn-error" class="mt-1 text-sm text-bv-danger">{{ titleError('titleEn') }}</p>
             }
         </div>
         <div>
             <label for="titleEs" class="mb-1 block text-sm font-medium">Spanish title</label>
-            <input id="titleEs" class="app-input" formControlName="titleEs" aria-describedby="titleEs-hint" />
-            <p id="titleEs-hint" class="mt-1 text-sm text-bv-text-muted">Leave it empty if there is no Spanish edition.</p>
+            <input id="titleEs" class="app-input" formControlName="titleEs" aria-describedby="titleEs-hint" [attr.aria-invalid]="form().controls.titleEs.invalid" />
+            <p id="titleEs-hint" class="mt-1 text-sm" [class.text-bv-danger]="form().controls.titleEs.invalid" [class.text-bv-text-muted]="!form().controls.titleEs.invalid">
+                {{ form().controls.titleEs.invalid ? titleError('titleEs') : 'Leave it empty if there is no Spanish edition.' }}
+            </p>
         </div>
     </div>
 
@@ -18,7 +26,7 @@
         <div>
             <label for="imageUrl" class="mb-1 block text-sm font-medium">Artwork address</label>
             <input id="imageUrl" type="url" class="app-input" formControlName="imageUrl" placeholder="https://…" aria-describedby="imageUrl-hint" />
-            <p id="imageUrl-hint" class="mt-1 text-sm" [class.text-bv-danger]="form().controls.imageUrl.invalid || imageFailed()" [class.text-bv-text-muted]="form().controls.imageUrl.valid && !imageFailed()">
+            <p id="imageUrl-hint" class="mt-1 text-sm" [class.text-bv-danger]="form().controls.imageUrl.invalid || imageFailed()" [class.text-bv-text-muted]="!form().controls.imageUrl.invalid && !imageFailed()">
                 @if (form().controls.imageUrl.invalid) {
                     Use a full http(s) address.
                 } @else if (imageFailed()) {
@@ -58,10 +66,18 @@
                 <label for="retailPrice" class="mb-1 block text-sm font-medium">Retail price (€)</label>
                 <input id="retailPrice" type="number" inputmode="decimal" min="0" max="5000" step="0.01" class="app-input" formControlName="retailPrice" aria-describedby="retailPrice-hint" [attr.aria-invalid]="form().controls.retailPrice.invalid" />
             </div>
-            <p id="retailPrice-hint" class="col-span-2 self-end text-sm text-bv-text-muted sm:pb-2">The recommended retail price (PVP) in Spain. It only estimates what collections are worth; leave it empty if unknown.</p>
+            <p id="retailPrice-hint" class="col-span-2 self-end text-sm sm:pb-2" [class.text-bv-danger]="form().controls.retailPrice.invalid" [class.text-bv-text-muted]="!form().controls.retailPrice.invalid">
+                @if (form().controls.retailPrice.invalid) {
+                    The price goes from €0 to €5,000, in euros and cents.
+                } @else {
+                    The recommended retail price in Spain. It only estimates what collections are worth; leave it empty if unknown.
+                }
+            </p>
         </div>
         @if (playersOutOfOrder) {
             <p class="text-sm text-bv-danger">Min players cannot be more than max players.</p>
+        } @else if (playersOrLengthOutOfRange) {
+            <p class="text-sm text-bv-danger">Players go from 1 to 100, and the length from 1 to 1,440 minutes.</p>
         } @else if (!readonly() && missingRequired) {
             <p class="text-sm text-bv-text-muted">{{ requiredHint() }}</p>
         }

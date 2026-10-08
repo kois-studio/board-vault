@@ -160,6 +160,21 @@ operational details.
 
 - Star ratings were drawn as outlines everywhere: the filled stars got both
   `fill-none` and a fill colour. They are filled again.
+- Switching group with the group page's selector shows the chosen group;
+  before, the address changed but the page kept the previous one until a
+  reload. An answer for the previous group that arrives late no longer
+  lands on the new one.
+- Clerk's sign-in and account panels open in the theme chosen in
+  Appearance, not the one the page loaded with.
+- A username changed in Clerk is no longer copied into the app before
+  Board Vault has it: Account reads the account again until the change
+  arrives, and says so if Board Vault still has the old username, which
+  happens when the new one is already taken.
+- The admin game form says why Save is off: a price outside €0–5,000,
+  players or length out of range, or a title over 200 characters, each
+  with its own message.
+- A game without a title shows as "Untitled game" on a person's page in a
+  group, instead of an empty card.
 - The session heading no longer reads the time twice to screen readers.
 - A game's page lists its plays newest first, with every night reachable
   through "Show all", and shows who played on nights recorded with group

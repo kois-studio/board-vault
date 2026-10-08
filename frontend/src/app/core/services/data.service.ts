@@ -408,6 +408,25 @@ export class DataService {
     //      3. Give feedback to the user with toasts
     // --------------------------------------------------------------------------
 
+    /**
+     * Reads the signed-in account again, for changes made outside Board Vault, such as a username
+     * changed in Clerk that reaches the account by webhook (ADR-0017). It replaces `currentUser`
+     * only when the username differs, because every replacement reloads the user's data.
+     * A failed read keeps what is there; the caller can try again.
+     */
+    public async refreshCurrentUser(): Promise<void> {
+        const user = this.currentUser()
+        if (!user) return
+
+        try {
+            const fresh = await firstValueFrom(this.api.getUserById(user.id))
+            const current = this.currentUser()
+            if (current?.id === fresh.id && current.username !== fresh.username) this.currentUser.set(fresh)
+        } catch {
+            // Nothing changes until the next read.
+        }
+    }
+
     // #region form-update-profile
 
     public updateCurrentUserData(requestBody: { displayName?: string; avatar?: UserType['avatar'] }) {

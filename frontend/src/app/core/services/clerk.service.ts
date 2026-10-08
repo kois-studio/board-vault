@@ -86,11 +86,9 @@ export class ClerkService {
             const { Clerk: ClerkConstructor } = await import('@clerk/clerk-js')
             const clerkUiCtor = await this.loadClerkUiScript()
             const clerk = new ClerkConstructor(environment.clerkPublishableKey)
-            // Clerk's own UI takes the chosen theme's light-mode primary (docs/design-system.md).
-            const colorPrimary = THEME_COLORS[this.theme.palette()].primary
             await clerk.load({
                 ui: { ClerkUI: clerkUiCtor },
-                appearance: { variables: { colorPrimary }, elements: CLERK_HIDDEN_SECTIONS },
+                appearance: { ...this.themeAppearance(), elements: CLERK_HIDDEN_SECTIONS },
                 localization: CLERK_LOCALIZATION,
             })
 
@@ -115,14 +113,17 @@ export class ClerkService {
     }
 
     public openSignIn(): void {
-        this.clerk?.openSignIn({ withSignUp: this.isSelfRegistrationEnabled() || this.isInvitationFlow() })
+        this.clerk?.openSignIn({
+            withSignUp: this.isSelfRegistrationEnabled() || this.isInvitationFlow(),
+            appearance: this.themeAppearance(),
+        })
     }
 
     public openSignUp(): void {
         if (!this.isSelfRegistrationEnabled() && !this.isInvitationFlow()) {
             return
         }
-        this.clerk?.openSignUp()
+        this.clerk?.openSignUp({ appearance: this.themeAppearance() })
     }
 
     public async completeInvitationSignUp(username: string, password: string): Promise<void> {
@@ -169,7 +170,16 @@ export class ClerkService {
     }
 
     public openUserProfile(): void {
-        this.clerk?.openUserProfile()
+        this.clerk?.openUserProfile({ appearance: this.themeAppearance() })
+    }
+
+    /**
+     * Clerk's own UI takes the chosen theme's light-mode primary (docs/design-system.md). It is read
+     * each time a panel opens, because Clerk keeps the appearance it loaded with and the theme can
+     * change in Appearance without a reload. Clerk merges it with the global appearance.
+     */
+    private themeAppearance() {
+        return { variables: { colorPrimary: THEME_COLORS[this.theme.palette()].primary } }
     }
 
     public async signOut(): Promise<void> {

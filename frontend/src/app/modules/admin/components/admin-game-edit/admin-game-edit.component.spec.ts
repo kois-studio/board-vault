@@ -26,9 +26,9 @@ describe('AdminGameEditComponent', () => {
     let api: Record<string, ReturnType<typeof vi.fn>>
     let toast: { success: ReturnType<typeof vi.fn>; error: ReturnType<typeof vi.fn> }
 
-    const render = async () => {
+    const render = async (game: AdminGameType = catan) => {
         api = {
-            getAdminGame: vi.fn().mockReturnValue(of(catan)),
+            getAdminGame: vi.fn().mockReturnValue(of(game)),
             getAdminTags: vi.fn().mockReturnValue(
                 of([
                     { id: 4, name: 'Strategy', categoryId: 1, gameCount: 1 },
@@ -81,6 +81,55 @@ describe('AdminGameEditComponent', () => {
             tagIds: [4, 5],
         })
         expect(toast.success).toHaveBeenCalledWith('Saved.')
+    })
+
+    it('says why Save is off when a price, a number or a title is out of range', async () => {
+        const fixture = await render()
+        const component = fixture.componentInstance
+        const element = fixture.nativeElement as HTMLElement
+        const priceHint = () => element.querySelector('#retailPrice-hint')
+
+        component.form.patchValue({ retailPrice: 9999 })
+        fixture.detectChanges()
+        expect(element.querySelector('#retailPrice')?.getAttribute('aria-invalid')).toBe('true')
+        expect(priceHint()?.textContent).toContain('The price goes from €0 to €5,000')
+        expect(priceHint()?.classList).toContain('text-bv-danger')
+
+        component.form.patchValue({ retailPrice: 45, maxPlayers: 120 })
+        fixture.detectChanges()
+        expect(priceHint()?.textContent).toContain('It only estimates what collections are worth')
+        expect(element.textContent).toContain('Players go from 1 to 100, and the length from 1 to 1,440 minutes.')
+        expect(element.textContent).not.toContain('are required')
+
+        component.form.patchValue({ maxPlayers: 4 })
+        const title = element.querySelector<HTMLInputElement>('#titleEn')
+        const typeTitle = (value: string) => {
+            if (!title) throw new Error('No English title field')
+            title.value = value
+            title.dispatchEvent(new Event('input'))
+            title.dispatchEvent(new Event('blur'))
+            fixture.detectChanges()
+        }
+
+        typeTitle('x'.repeat(201))
+        expect(element.querySelector('#titleEn-error')?.textContent).toContain('Keep the title to 200 characters.')
+        expect(title?.getAttribute('aria-describedby')).toBe('titleEn-error')
+
+        typeTitle('')
+        expect(element.querySelector('#titleEn-error')?.textContent).toContain('The English title is required.')
+    })
+
+    it('says at once when a game loads with a title that is too long, and puts range problems before missing values', async () => {
+        const longTitle = 'x'.repeat(201)
+        const fixture = await render({ ...catan, title: longTitle, translations: { en: longTitle, es: '' } })
+        const element = fixture.nativeElement as HTMLElement
+
+        expect(element.querySelector('#titleEn-error')?.textContent).toContain('Keep the title to 200 characters.')
+
+        fixture.componentInstance.form.patchValue({ minPlayers: 0, gameAvgDuration: null })
+        fixture.detectChanges()
+        expect(element.textContent).toContain('Players go from 1 to 100')
+        expect(element.textContent).not.toContain('are required')
     })
 
     it('does not save more minimum than maximum players, and shows the server’s reason for a 400', async () => {
