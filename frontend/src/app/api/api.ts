@@ -18,6 +18,7 @@ import {
     clerkAuthStatusSchema,
     clerkGroupInvitationSchema,
     clerkGroupInvitationSummariesSchema,
+    clerkSyncResultSchema,
     createdGroupSchema,
     gameCompleteSchema,
     gameOwnedSchema,
@@ -75,6 +76,7 @@ import type {
     CatalogueTagType,
     ClerkGroupInvitationSummaryType,
     ClerkGroupInvitationType,
+    ClerkSyncResultType,
     CollectionActivityWithGameDataType,
     CreateGameProposalType,
     CreatePlaySessionRequest,
@@ -614,6 +616,13 @@ export class Api {
         return this.http
             .put<{ success: true }>(`${this.url}/groups/${groupId}/acquisition-board/${gameId}/decision`, { status })
             .pipe(map((response) => successSchema.parse(response)))
+    }
+
+    /** Copies the signed-in user's username and primary email from Clerk now, instead of waiting for the webhook (ADR-0017). */
+    syncFromClerk() {
+        return this.http
+            .post<ClerkSyncResultType>(`${this.url}/auth/sync-from-clerk`, {})
+            .pipe(map((response) => clerkSyncResultSchema.parse(response)))
     }
 
     /** Deletes the signed-in account (ADR-0018). Cannot be undone. */

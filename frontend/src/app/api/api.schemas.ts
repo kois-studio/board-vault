@@ -9,6 +9,7 @@ import type {
     CatalogueTagType,
     ClerkGroupInvitationSummaryType,
     ClerkGroupInvitationType,
+    ClerkSyncResultType,
     CollectionActivityWithGameDataType,
     CreatedGroupType,
     GameCompleteType,
@@ -680,6 +681,12 @@ export const recommendationSignalsSchema: z.ZodMiniType<RecommendationSignalsTyp
 })
 
 export const successSchema = z.object({ success: z.literal(true) })
+
+const clerkFieldSyncSchema = z.enum(['unchanged', 'updated', 'taken'])
+export const clerkSyncResultSchema: z.ZodMiniType<ClerkSyncResultType> = z.object({
+    username: clerkFieldSyncSchema,
+    email: clerkFieldSyncSchema,
+})
 export const createdGroupSchema: z.ZodMiniType<CreatedGroupType> = z.object({
     success: z.literal(true),
     groupId: z.int().check(z.positive()),

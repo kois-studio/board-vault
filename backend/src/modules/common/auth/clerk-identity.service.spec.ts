@@ -53,6 +53,17 @@ describe('ClerkIdentityService', () => {
         databaseService.joinGroupFromClerkInvitation.mockResolvedValue(undefined)
     })
 
+    it('reads the username and primary email Clerk has now, for syncing', async () => {
+        await expect(service.getClerkProfile('user_new')).resolves.toEqual({
+            clerkUserId: 'user_new',
+            username: 'new-player',
+            primaryEmail: 'new@example.com',
+            primaryEmailVerified: true,
+        })
+        // Nothing here resolves an account: drop the one-time lookup beforeEach queued for provisioning.
+        usersService.getUserByClerkId.mockReset()
+    })
+
     it('provisions a local account for a new Clerk identity', async () => {
         const result = await service.resolveAccount('user_new')
 

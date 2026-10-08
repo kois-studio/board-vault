@@ -13,6 +13,11 @@ operational details.
 
 ### Added
 
+- A username changed in Clerk reaches Board Vault at once: Settings →
+  Account asks the API to copy it from Clerk (`POST /auth/sync-from-clerk`)
+  instead of waiting for the webhook, and says plainly when another account
+  already has it. It works on a local API too, which never receives
+  webhooks; `docs/how-to/run-with-clerk.md` explains what else that changes.
 - You can delete your account in Settings → Account. It removes your shelf,
   wishlist, ratings and the rest of your private data, takes you out of your
   groups, and passes the groups you own to the member who joined first.
@@ -180,10 +185,8 @@ operational details.
   lands on the new one.
 - Clerk's sign-in and account panels open in the theme chosen in
   Appearance, not the one the page loaded with.
-- A username changed in Clerk is no longer copied into the app before
-  Board Vault has it: Account reads the account again until the change
-  arrives, and says so if Board Vault still has the old username, which
-  happens when the new one is already taken.
+- A username changed in Clerk is no longer shown in the app before Board
+  Vault has it (an already taken one never would be).
 - The admin game form says why Save is off: a price outside €0–5,000,
   players or length out of range, or a title over 200 characters, each
   with its own message.

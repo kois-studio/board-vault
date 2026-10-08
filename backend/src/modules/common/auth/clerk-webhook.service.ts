@@ -1,8 +1,7 @@
-import { Injectable, Logger } from '@nestjs/common'
-
-import { DatabaseService } from '../database/database.service.js'
+import { Injectable } from '@nestjs/common'
 
 import { AccountDeletionService } from './account-deletion.service.js'
+import { ClerkAccountSyncService } from './clerk-account-sync.service.js'
 
 import type { UserJSON } from '@clerk/backend'
 import type { WebhookEvent } from '@clerk/backend/webhooks'
@@ -15,17 +14,16 @@ import type { WebhookEvent } from '@clerk/backend/webhooks'
  */
 @Injectable()
 export class ClerkWebhookService {
-    private readonly logger = new Logger(ClerkWebhookService.name)
-
     constructor(
-        private readonly databaseService: DatabaseService,
+        private readonly clerkAccountSyncService: ClerkAccountSyncService,
         private readonly accountDeletionService: AccountDeletionService,
     ) {}
 
     async handle(event: WebhookEvent): Promise<void> {
         switch (event.type) {
             case 'user.updated':
-                return this.syncUser(event.data)
+                await this.syncUser(event.data)
+                return
             case 'user.deleted':
                 return event.data.id ? this.accountDeletionService.deleteAccountForClerkUser(event.data.id) : undefined
             default:
@@ -35,52 +33,13 @@ export class ClerkWebhookService {
 
     /** Clerk owns the email and the username (ADR-0017); the account keeps a copy of each. */
     private async syncUser(user: UserJSON): Promise<void> {
-        const account = await this.findLinkedAccount(user.id)
-
-        if (!account) return
-
-        await this.syncPrimaryEmail(user, account)
-        await this.syncUsername(user, account)
-    }
-
-    private async syncPrimaryEmail(user: UserJSON, account: LinkedAccount): Promise<void> {
         const primary = user.email_addresses.find(emailAddress => emailAddress.id === user.primary_email_address_id)
 
-        if (!primary || primary.verification?.status !== 'verified' || primary.email_address === account.email) return
-
-        const owner = (await this.databaseService.accounts.getUserByEmail(primary.email_address)).rows[0]
-
-        if (owner && Number(owner.id) !== account.id) {
-            this.logger.warn('A Clerk primary email change was not synced: the email belongs to another account')
-            return
-        }
-
-        await this.databaseService.accounts.updateUserEmail(account.id, primary.email_address)
-        this.logger.log('Synced a primary email change from Clerk')
-    }
-
-    private async syncUsername(user: UserJSON, account: LinkedAccount): Promise<void> {
-        if (!user.username || user.username === account.username) return
-
-        const owner = (await this.databaseService.accounts.getUserByUsername(user.username)).rows[0]
-
-        if (owner && Number(owner.id) !== account.id) {
-            this.logger.warn('A Clerk username change was not synced: the username belongs to another account')
-            return
-        }
-
-        await this.databaseService.accounts.updateUsername(account.id, user.username)
-        this.logger.log('Synced a username change from Clerk')
-    }
-
-    /** The active account linked to a Clerk user, or null when there is none or it is already deleted. */
-    private async findLinkedAccount(clerkUserId: string): Promise<LinkedAccount | null> {
-        const row = (await this.databaseService.accounts.getUserByClerkId(clerkUserId)).rows[0]
-
-        if (!row || Boolean(row.isDeleted)) return null
-
-        return { id: Number(row.id), email: String(row.email), username: String(row.username) }
+        await this.clerkAccountSyncService.apply({
+            clerkUserId: user.id,
+            username: user.username,
+            primaryEmail: primary?.email_address ?? null,
+            primaryEmailVerified: primary?.verification?.status === 'verified',
+        })
     }
 }
-
-type LinkedAccount = { id: number; email: string; username: string }

@@ -2,7 +2,7 @@ import { signal } from '@angular/core'
 import { ComponentFixture, TestBed } from '@angular/core/testing'
 import { of, throwError } from 'rxjs'
 import { Api } from '../../../api/api'
-import type { UserType } from '../../../api/api.types'
+import type { ClerkSyncResultType, UserType } from '../../../api/api.types'
 import { ClerkService } from '../../../core/services/clerk.service'
 import { DataService } from '../../../core/services/data.service'
 import { LoginService } from '../../../core/services/login.service'
@@ -26,7 +26,7 @@ describe('SettingsAccountComponent', () => {
         primaryEmail: signal<string | null>(null),
         openUserProfile: vi.fn(),
     }
-    const dataService = { currentUser: signal<UserType | null>(null), refreshCurrentUser: vi.fn<() => Promise<void>>() }
+    const dataService = { currentUser: signal<UserType | null>(null), syncFromClerk: vi.fn<() => Promise<ClerkSyncResultType | null>>() }
     const api = { deleteAccount: vi.fn() }
     const loginService = { leaveAfterAccountDeletion: vi.fn().mockResolvedValue(undefined) }
 
@@ -34,7 +34,7 @@ describe('SettingsAccountComponent', () => {
 
     beforeEach(async () => {
         dataService.currentUser.set(structuredClone(currentUser))
-        dataService.refreshCurrentUser.mockReset().mockResolvedValue(undefined)
+        dataService.syncFromClerk.mockReset().mockResolvedValue({ username: 'unchanged', email: 'unchanged' })
         clerkService.isAvailable.set(true)
         clerkService.username.set(null)
         clerkService.primaryEmail.set(null)
@@ -71,64 +71,64 @@ describe('SettingsAccountComponent', () => {
     })
 
     describe('a username changed in Clerk', () => {
-        beforeEach(() => vi.useFakeTimers())
-        afterEach(() => vi.useRealTimers())
+        const settle = async () => {
+            await fixture.whenStable()
+            fixture.detectChanges()
+        }
 
-        it('reads the account again until the webhook lands, without inventing it locally', async () => {
-            let reads = 0
-            dataService.refreshCurrentUser.mockImplementation(async () => {
-                // The webhook lands between the first and the second read.
-                if (++reads === 2) dataService.currentUser.set({ ...structuredClone(currentUser), username: 'organizer2' })
+        it('copies it to the account right away, without inventing it locally', async () => {
+            dataService.syncFromClerk.mockImplementation(async () => {
+                dataService.currentUser.set({ ...structuredClone(currentUser), username: 'organizer2' })
+                return { username: 'updated', email: 'unchanged' }
             })
 
             clerkService.username.set('organizer2')
             fixture.detectChanges()
-            expect(dataService.currentUser()?.username).toBe('organizer')
+            await settle()
 
-            await vi.advanceTimersByTimeAsync(1_500)
-            expect(reads).toBe(1)
-            expect(dataService.currentUser()?.username).toBe('organizer')
-
-            await vi.advanceTimersByTimeAsync(5_000)
-            fixture.detectChanges()
-            expect(reads).toBe(2)
+            expect(dataService.syncFromClerk).toHaveBeenCalledTimes(1)
             expect(dataService.currentUser()?.username).toBe('organizer2')
-
-            await vi.advanceTimersByTimeAsync(60_000)
-            fixture.detectChanges()
-            expect(reads).toBe(2)
             expect(text('account-username-behind')).toBeUndefined()
         })
 
-        it('says when Board Vault still has the old username after a few reads', async () => {
+        it('says when another account already has the username', async () => {
+            dataService.syncFromClerk.mockResolvedValue({ username: 'taken', email: 'unchanged' })
+
             clerkService.username.set('taken-name')
             fixture.detectChanges()
+            await settle()
 
-            await vi.advanceTimersByTimeAsync(1_500 + 5_000 + 15_000)
-            fixture.detectChanges()
-
-            expect(dataService.refreshCurrentUser).toHaveBeenCalledTimes(3)
             expect(dataService.currentUser()?.username).toBe('organizer')
-            expect(text('account-username-behind')).toContain('Your groups still see you as organizer')
+            expect(text('account-username-behind')).toContain('taken-name is already taken in Board Vault')
+            expect(text('account-username-behind')).toContain('still see you as organizer')
         })
 
-        it('reads nothing when Clerk and the account agree', async () => {
-            clerkService.username.set('organizer')
-            fixture.detectChanges()
+        it('says when the copy failed, and asks to reload', async () => {
+            dataService.syncFromClerk.mockResolvedValue(null)
 
-            await vi.advanceTimersByTimeAsync(60_000)
-
-            expect(dataService.refreshCurrentUser).not.toHaveBeenCalled()
-        })
-
-        it('stops reading when the page closes', async () => {
             clerkService.username.set('organizer2')
             fixture.detectChanges()
-            fixture.destroy()
+            await settle()
 
-            await vi.advanceTimersByTimeAsync(60_000)
+            expect(text('account-username-behind')).toContain('could not be saved yet')
+        })
 
-            expect(dataService.refreshCurrentUser).not.toHaveBeenCalled()
+        it('copies nothing when Clerk and the account agree', async () => {
+            clerkService.username.set('organizer')
+            fixture.detectChanges()
+            await settle()
+
+            expect(dataService.syncFromClerk).not.toHaveBeenCalled()
+        })
+
+        it('copies each new username once', async () => {
+            clerkService.username.set('organizer2')
+            fixture.detectChanges()
+            await settle()
+            fixture.detectChanges()
+            await settle()
+
+            expect(dataService.syncFromClerk).toHaveBeenCalledTimes(1)
         })
     })
 
