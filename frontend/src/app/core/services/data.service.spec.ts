@@ -4,7 +4,7 @@ import { Api } from '../../api/api'
 import type { UserType } from '../../api/api.types'
 import { DataService } from './data.service'
 
-describe('DataService.refreshCurrentUser', () => {
+describe('DataService account refresh', () => {
     const user: UserType = {
         id: 1,
         email: 'organizer+clerk_test@example.com',
@@ -14,16 +14,23 @@ describe('DataService.refreshCurrentUser', () => {
         createdAt: '2026-09-01T10:00:00.000Z',
     }
 
-    const setup = (answer: () => ReturnType<Api['getUserById']>) => {
+    const setup = (
+        answer: () => ReturnType<Api['getUserById']>,
+        sync: () => ReturnType<Api['syncFromClerk']> = () => of({ username: 'unchanged', email: 'unchanged' }),
+    ) => {
         const getUserById = vi.fn(answer)
+        const syncFromClerk = vi.fn(sync)
         // Every other read the service starts for a signed-in user answers empty.
-        const api = new Proxy({}, { get: (_target, name) => (name === 'getUserById' ? getUserById : () => of([])) })
+        const api = new Proxy(
+            {},
+            { get: (_target, name) => (name === 'getUserById' ? getUserById : name === 'syncFromClerk' ? syncFromClerk : () => of([])) },
+        )
 
         TestBed.configureTestingModule({ providers: [{ provide: Api, useValue: api }] })
         const service = TestBed.inject(DataService)
         service.currentUser.set(structuredClone(user))
         TestBed.tick()
-        return { service, getUserById }
+        return { service, getUserById, syncFromClerk }
     }
 
     it('takes the username the server has now', async () => {
@@ -51,5 +58,37 @@ describe('DataService.refreshCurrentUser', () => {
         await expect(service.refreshCurrentUser()).resolves.toBeUndefined()
 
         expect(service.currentUser()).toBe(before)
+    })
+
+    it('copies from Clerk, then takes the new username', async () => {
+        const { service, syncFromClerk } = setup(
+            () => of({ ...user, username: 'organizer2' }),
+            () => of({ username: 'updated', email: 'unchanged' }),
+        )
+
+        await expect(service.syncFromClerk()).resolves.toEqual({ username: 'updated', email: 'unchanged' })
+
+        expect(syncFromClerk).toHaveBeenCalledTimes(1)
+        expect(service.currentUser()?.username).toBe('organizer2')
+    })
+
+    it('reads nothing again when Clerk had nothing new to copy', async () => {
+        const { service, getUserById } = setup(
+            () => of({ ...user }),
+            () => of({ username: 'taken', email: 'unchanged' }),
+        )
+
+        await expect(service.syncFromClerk()).resolves.toEqual({ username: 'taken', email: 'unchanged' })
+
+        expect(getUserById).not.toHaveBeenCalled()
+    })
+
+    it('answers null when the copy fails', async () => {
+        const { service } = setup(
+            () => of({ ...user }),
+            () => throwError(() => new Error('offline')),
+        )
+
+        await expect(service.syncFromClerk()).resolves.toBeNull()
     })
 })

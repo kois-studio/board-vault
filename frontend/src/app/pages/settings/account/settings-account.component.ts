@@ -1,4 +1,4 @@
-import { Component, computed, DestroyRef, effect, inject, signal, untracked } from '@angular/core'
+import { Component, computed, effect, inject, signal, untracked } from '@angular/core'
 import { firstValueFrom } from 'rxjs'
 import { Api } from '../../../api/api'
 import { ButtonComponent } from '../../../components/ui/button/button.component'
@@ -6,9 +6,6 @@ import { DialogDirective } from '../../../components/ui/dialog/dialog.directive'
 import { ClerkService } from '../../../core/services/clerk.service'
 import { DataService } from '../../../core/services/data.service'
 import { LoginService } from '../../../core/services/login.service'
-
-/** When to read the account again after Clerk reports a new username: the webhook usually lands within seconds. */
-const USERNAME_SYNC_DELAYS_MS = [1_500, 5_000, 15_000]
 
 /**
  * How you sign in, and deleting the account. Clerk owns the username, email
@@ -33,51 +30,38 @@ export class SettingsAccountComponent {
 
     /** The username Board Vault has; groups invite and see you by it. */
     public readonly accountUsername = computed(() => this.dataService.currentUser()?.username ?? null)
-    /** Clerk has a newer username that has not reached Board Vault after a few reads. */
-    public readonly usernameBehind = signal(false)
+    /**
+     * Copying a username changed in Clerk: `taken` when another account has it, `failed` when it
+     * could not be copied now. Idle otherwise, including while the copy runs.
+     */
+    public readonly usernameSync = signal<'idle' | 'taken' | 'failed'>('idle')
     private usernameSyncFor: string | null = null
-    private usernameSyncTimer: ReturnType<typeof setTimeout> | null = null
 
     constructor() {
-        // A username changed in Clerk's panel reaches the account by webhook, a moment later. Read the
-        // account again until it arrives, so every page shows what Board Vault really has. Copying
-        // Clerk's value into the account would show a name the server may never take (one already in use).
+        // A username changed in Clerk's panel is copied to the account right away, read by the API from
+        // Clerk (ADR-0017), instead of waiting for the webhook, which never reaches a local API. Copying
+        // Clerk's value here would show a name the server may never take (one already in use).
         effect(() => {
             const wanted = this.clerkService.username()
             const current = this.accountUsername()
             untracked(() => {
                 if (!wanted || !current || wanted === current) {
-                    this.stopUsernameSync()
-                    this.usernameBehind.set(false)
+                    this.usernameSyncFor = null
+                    this.usernameSync.set('idle')
                 } else if (this.usernameSyncFor !== wanted) {
-                    this.startUsernameSync(wanted)
+                    void this.syncUsername(wanted)
                 }
             })
         })
-        inject(DestroyRef).onDestroy(() => this.stopUsernameSync())
     }
 
-    private startUsernameSync(wanted: string): void {
-        this.stopUsernameSync()
+    private async syncUsername(wanted: string): Promise<void> {
         this.usernameSyncFor = wanted
-        this.usernameBehind.set(false)
-
-        const read = (attempt: number) => {
-            this.usernameSyncTimer = setTimeout(async () => {
-                await this.dataService.refreshCurrentUser()
-                // Arrived (the effect stops the sync), or Clerk changed again (a new sync runs).
-                if (this.usernameSyncFor !== wanted || this.accountUsername() === wanted) return
-                if (attempt + 1 < USERNAME_SYNC_DELAYS_MS.length) read(attempt + 1)
-                else this.usernameBehind.set(true)
-            }, USERNAME_SYNC_DELAYS_MS[attempt])
-        }
-        read(0)
-    }
-
-    private stopUsernameSync(): void {
-        if (this.usernameSyncTimer) clearTimeout(this.usernameSyncTimer)
-        this.usernameSyncTimer = null
-        this.usernameSyncFor = null
+        this.usernameSync.set('idle')
+        const result = await this.dataService.syncFromClerk()
+        // Clerk changed again meanwhile: that change runs its own sync.
+        if (this.usernameSyncFor !== wanted || this.accountUsername() === wanted) return
+        this.usernameSync.set(result?.username === 'taken' ? 'taken' : 'failed')
     }
 
     public readonly isConfirmingDeletion = signal(false)

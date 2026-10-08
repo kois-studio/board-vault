@@ -10,10 +10,15 @@
             <dt class="text-bv-text-muted">Email</dt>
             <dd class="min-w-0 truncate" data-testid="account-email">{{ email() }}</dd>
         </dl>
-        @if (usernameBehind()) {
+        @if (usernameSync() === 'taken') {
             <p class="pb-3 text-sm text-bv-warning" role="status" data-testid="account-username-behind">
-                Your groups still see you as <span class="font-mono">{{ accountUsername() }}</span>. If that doesn’t change in a minute, the new
-                username may already be taken in Board Vault: choose another in Manage sign-in.
+                <span class="font-mono">{{ username() }}</span> is already taken in Board Vault, so your groups still see you as
+                <span class="font-mono">{{ accountUsername() }}</span>. Choose another username in Manage sign-in.
+            </p>
+        } @else if (usernameSync() === 'failed') {
+            <p class="pb-3 text-sm text-bv-warning" role="status" data-testid="account-username-behind">
+                Your groups still see you as <span class="font-mono">{{ accountUsername() }}</span>: the new username could not be saved yet.
+                Reload the page to try again.
             </p>
         }
         <p class="pb-4 text-sm text-bv-text-muted">

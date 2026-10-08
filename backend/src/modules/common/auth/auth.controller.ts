@@ -1,17 +1,24 @@
-import { Controller, Delete, Get, HttpCode, Req, UseGuards } from '@nestjs/common'
+import { Controller, Delete, Get, HttpCode, NotFoundException, Post, Req, UseGuards } from '@nestjs/common'
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger'
 
 import { AuthGuard } from '../../../common/guards/auth.guard.js'
-import { SessionStatusDto } from '../../../common/types/auth.type.js'
+import { RateLimit, RateLimitGuard } from '../../../common/guards/rate-limit.guard.js'
+import { ClerkSyncResultDto, SessionStatusDto } from '../../../common/types/auth.type.js'
 
 import { AccountDeletionService } from './account-deletion.service.js'
+import { ClerkAccountSyncService } from './clerk-account-sync.service.js'
+import { ClerkIdentityService } from './clerk-identity.service.js'
 
 import type { AuthenticatedUser } from '../../../common/types/auth.type.js'
 
 @ApiTags('auth')
 @Controller('auth')
 export class AuthController {
-    constructor(private readonly accountDeletionService: AccountDeletionService) {}
+    constructor(
+        private readonly accountDeletionService: AccountDeletionService,
+        private readonly clerkIdentityService: ClerkIdentityService,
+        private readonly clerkAccountSyncService: ClerkAccountSyncService,
+    ) {}
 
     @Get('/clerk/status')
     @UseGuards(AuthGuard)
@@ -27,6 +34,28 @@ export class AuthController {
             isAdmin: request.user.isAdmin,
             clerkUserId: request.user.clerkUserId,
         }
+    }
+
+    @Post('/sync-from-clerk')
+    @UseGuards(AuthGuard, RateLimitGuard)
+    @RateLimit(30, 3600)
+    @ApiBearerAuth()
+    @HttpCode(200)
+    @ApiOperation({
+        summary: "Copy the signed-in user's username and primary email from Clerk now (ADR-0017)",
+        description:
+            'Reads the user from Clerk with the secret key, so nothing comes from the request, and applies it as the user.updated webhook does. The app calls it after a change in Clerk instead of waiting for the webhook, which never reaches a local API.',
+    })
+    @ApiResponse({ status: 200, type: ClerkSyncResultDto, description: 'What changed; `taken` means another account has the value' })
+    @ApiResponse({ status: 401, description: 'The Clerk session is missing, invalid, or expired' })
+    @ApiResponse({ status: 429, description: 'Too many requests' })
+    async syncFromClerk(@Req() request: { user: AuthenticatedUser }): Promise<ClerkSyncResultDto> {
+        const profile = await this.clerkIdentityService.getClerkProfile(request.user.clerkUserId)
+        const result = await this.clerkAccountSyncService.apply(profile)
+
+        if (!result) throw new NotFoundException('The Board Vault account is unavailable')
+
+        return result
     }
 
     @Delete('/account')

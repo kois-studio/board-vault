@@ -109,6 +109,10 @@ export type GroupWithMembersAndGames = GroupType & {
 /** Where someone stands in a group (ADR-0018): history keeps people who left or deleted their account. */
 export type GroupStanding = 'member' | 'left' | 'deleted'
 
+/** What `POST /auth/sync-from-clerk` did with each field: already equal, copied, or held by another account. */
+export type ClerkFieldSync = 'unchanged' | 'updated' | 'taken'
+export type ClerkSyncResultType = { username: ClerkFieldSync; email: ClerkFieldSync }
+
 export type GroupPersonType = {
     id: number
     groupId: number

@@ -2,6 +2,7 @@ import { effect, Injectable, inject, signal } from '@angular/core'
 import { catchError, concatMap, finalize, firstValueFrom, forkJoin, of, Subject, takeUntil, tap, throwError } from 'rxjs'
 import { Api } from '../../api/api'
 import type {
+    ClerkSyncResultType,
     CollectionActivityWithGameDataType,
     GameCompleteType,
     GameProposalType,
@@ -409,10 +410,22 @@ export class DataService {
     // --------------------------------------------------------------------------
 
     /**
-     * Reads the signed-in account again, for changes made outside Board Vault, such as a username
-     * changed in Clerk that reaches the account by webhook (ADR-0017). It replaces `currentUser`
-     * only when the username differs, because every replacement reloads the user's data.
-     * A failed read keeps what is there; the caller can try again.
+     * Copies the signed-in user's username and primary email from Clerk to the account now
+     * (ADR-0017), then reads the account again if either changed. Null when the copy failed.
+     */
+    public async syncFromClerk(): Promise<ClerkSyncResultType | null> {
+        try {
+            const result = await firstValueFrom(this.api.syncFromClerk())
+            if (result.username === 'updated' || result.email === 'updated') await this.refreshCurrentUser()
+            return result
+        } catch {
+            return null
+        }
+    }
+
+    /**
+     * Reads the signed-in account again. It replaces `currentUser` only when the username or email
+     * differs, because every replacement reloads the user's data. A failed read keeps what is there.
      */
     public async refreshCurrentUser(): Promise<void> {
         const user = this.currentUser()
@@ -421,7 +434,8 @@ export class DataService {
         try {
             const fresh = await firstValueFrom(this.api.getUserById(user.id))
             const current = this.currentUser()
-            if (current?.id === fresh.id && current.username !== fresh.username) this.currentUser.set(fresh)
+            if (current?.id === fresh.id && (current.username !== fresh.username || current.email !== fresh.email))
+                this.currentUser.set(fresh)
         } catch {
             // Nothing changes until the next read.
         }

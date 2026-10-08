@@ -75,6 +75,15 @@ as Settings → Account, so it can no longer sign in while group history keeps
 its place (ADR-0018). The endpoint is off unless
 `CLERK_WEBHOOK_SIGNING_SECRET` is set.
 
+Changes made in Board Vault's Settings don't wait for the webhook. After
+Clerk's panel reports a new username, Settings → Account calls
+`POST /auth/sync-from-clerk`: the API reads the signed-in user from Clerk with
+its secret key (nothing comes from the request) and applies the same sync as
+the webhook, answering `updated`, `unchanged`, or `taken` for the username and
+the email. The page then says plainly when the username is taken. The webhook
+still covers changes made outside the app. A local API never receives
+webhooks; see [Run with Clerk](how-to/run-with-clerk.md#webhooks-dont-reach-your-machine).
+
 Sign-in never waits for a webhook: every request verifies the Clerk session
 token itself. A delayed or failed delivery only delays the email, username, or deletion
 sync; Clerk retries it, and failures stay visible in the Clerk dashboard's
@@ -86,6 +95,7 @@ webhook log.
 | --- | --- |
 | Token verification | [`backend/src/modules/common/auth/clerk-token-verifier.ts`](../backend/src/modules/common/auth/clerk-token-verifier.ts) |
 | Clerk webhooks (email and username sync, deletion) | [`backend/src/modules/common/auth/clerk-webhook.service.ts`](../backend/src/modules/common/auth/clerk-webhook.service.ts) |
+| Copying the username and email from Clerk (webhook and `POST /auth/sync-from-clerk`) | [`backend/src/modules/common/auth/clerk-account-sync.service.ts`](../backend/src/modules/common/auth/clerk-account-sync.service.ts) |
 | Account deletion | [`backend/src/modules/common/auth/account-deletion.service.ts`](../backend/src/modules/common/auth/account-deletion.service.ts), [`account-deletion.queries.ts`](../backend/src/modules/common/database/queries/account-deletion.queries.ts) |
 | Account resolution and provisioning, Clerk invitations | [`backend/src/modules/common/auth/clerk-identity.service.ts`](../backend/src/modules/common/auth/clerk-identity.service.ts) |
 | Sets `request.user` on every request | [`backend/src/common/middlewares/clerk-session.middleware.ts`](../backend/src/common/middlewares/clerk-session.middleware.ts) |

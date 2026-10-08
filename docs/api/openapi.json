@@ -34,6 +34,40 @@
         ]
       }
     },
+    "/auth/sync-from-clerk": {
+      "post": {
+        "description": "Reads the user from Clerk with the secret key, so nothing comes from the request, and applies it as the user.updated webhook does. The app calls it after a change in Clerk instead of waiting for the webhook, which never reaches a local API.",
+        "operationId": "AuthController_syncFromClerk",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "What changed; `taken` means another account has the value",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ClerkSyncResultDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "The Clerk session is missing, invalid, or expired"
+          },
+          "429": {
+            "description": "Too many requests"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Copy the signed-in user's username and primary email from Clerk now (ADR-0017)",
+        "tags": [
+          "auth"
+        ]
+      }
+    },
     "/auth/account": {
       "delete": {
         "description": "Removes private data, keeps the person in group history as \"Deleted account\", passes owned groups on, and then deletes the Clerk user. Cannot be undone.",
@@ -5211,6 +5245,35 @@
           "userId",
           "isAdmin",
           "clerkUserId"
+        ]
+      },
+      "ClerkSyncResultDto": {
+        "type": "object",
+        "properties": {
+          "username": {
+            "type": "string",
+            "enum": [
+              "unchanged",
+              "updated",
+              "taken"
+            ],
+            "example": "updated",
+            "description": "`taken`: another account has this username"
+          },
+          "email": {
+            "type": "string",
+            "enum": [
+              "unchanged",
+              "updated",
+              "taken"
+            ],
+            "example": "unchanged",
+            "description": "Only a verified primary email is copied. `taken`: another account has it"
+          }
+        },
+        "required": [
+          "username",
+          "email"
         ]
       },
       "AvatarDto": {

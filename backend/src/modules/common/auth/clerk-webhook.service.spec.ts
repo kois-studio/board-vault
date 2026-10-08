@@ -1,5 +1,6 @@
 import { fakeDatabase } from '../../../../test/fake-database.js'
 
+import { ClerkAccountSyncService } from './clerk-account-sync.service.js'
 import { ClerkWebhookService } from './clerk-webhook.service.js'
 
 import type { AccountDeletionService } from './account-deletion.service.js'
@@ -39,7 +40,10 @@ function createService(overrides: Record<string, Mock> = {}) {
     const accountDeletion = { deleteAccountForClerkUser: vi.fn().mockResolvedValue(undefined) }
 
     return {
-        service: new ClerkWebhookService(fakeDatabase(queries), accountDeletion as unknown as AccountDeletionService),
+        service: new ClerkWebhookService(
+            new ClerkAccountSyncService(fakeDatabase(queries)),
+            accountDeletion as unknown as AccountDeletionService,
+        ),
         queries,
         accountDeletion,
     }
@@ -143,5 +147,35 @@ describe('ClerkWebhookService', () => {
         await service.handle({ type: 'session.created', object: 'event', data: {} } as unknown as WebhookEvent)
 
         expect(queries.getUserByClerkId).not.toHaveBeenCalled()
+    })
+})
+
+describe('ClerkAccountSyncService results', () => {
+    const profile = (username: string) => ({ clerkUserId: 'user_7', username, primaryEmail: 'old@example.com', primaryEmailVerified: true })
+    const create = (overrides: Record<string, Mock> = {}) =>
+        new ClerkAccountSyncService(
+            fakeDatabase({
+                getUserByClerkId: vi.fn().mockResolvedValue({ rows: [account] }),
+                getUserByEmail: vi.fn().mockResolvedValue({ rows: [] }),
+                getUserByUsername: vi.fn().mockResolvedValue({ rows: [] }),
+                updateUsername: vi.fn().mockResolvedValue({ rowsAffected: 1 }),
+                updateUserEmail: vi.fn().mockResolvedValue({ rowsAffected: 1 }),
+                ...overrides,
+            }),
+        )
+
+    it('reports what it copied, and what another account already has', async () => {
+        await expect(create().apply(profile('ana_plays'))).resolves.toEqual({ username: 'updated', email: 'unchanged' })
+        await expect(create().apply(profile('ana'))).resolves.toEqual({ username: 'unchanged', email: 'unchanged' })
+        await expect(
+            create({ getUserByUsername: vi.fn().mockResolvedValue({ rows: [{ id: 9 }] }) }).apply(profile('ana_plays')),
+        ).resolves.toEqual({ username: 'taken', email: 'unchanged' })
+    })
+
+    it('answers null for a deleted or unknown account', async () => {
+        await expect(create({ getUserByClerkId: vi.fn().mockResolvedValue({ rows: [] }) }).apply(profile('x'))).resolves.toBeNull()
+        await expect(
+            create({ getUserByClerkId: vi.fn().mockResolvedValue({ rows: [{ ...account, isDeleted: 1 }] }) }).apply(profile('x')),
+        ).resolves.toBeNull()
     })
 })

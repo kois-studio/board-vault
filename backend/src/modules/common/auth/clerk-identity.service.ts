@@ -14,6 +14,7 @@ import {
 import { UsersService } from '../../core/users/users.service.js'
 import { DatabaseService } from '../database/database.service.js'
 
+import type { ClerkProfile } from './clerk-account-sync.service.js'
 import type { AvatarDto, UserGetDto } from '../../../common/types/user.type.js'
 
 @Injectable()
@@ -254,6 +255,19 @@ export class ClerkIdentityService {
         }
 
         return provisionedAccount
+    }
+
+    /** The username and primary email Clerk has now, read with the secret key, for `POST /auth/sync-from-clerk`. */
+    async getClerkProfile(clerkUserId: string): Promise<ClerkProfile> {
+        const user = await this.withClerkProviderBoundary(() => this.getClerkClient().users.getUser(clerkUserId))
+        const primary = user.emailAddresses.find(emailAddress => emailAddress.id === user.primaryEmailAddressId)
+
+        return {
+            clerkUserId,
+            username: user.username,
+            primaryEmail: primary?.emailAddress ?? null,
+            primaryEmailVerified: primary?.verification?.status === 'verified',
+        }
     }
 
     /** Removes the Clerk user behind a deleted account; a user Clerk no longer has counts as removed. */

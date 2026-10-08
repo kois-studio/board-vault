@@ -31,6 +31,27 @@ Locally, the link points at `BOARD_VAULT_CLERK_INVITATION_REDIRECT_URL`
 (default `http://localhost:4200/register`). Use `+clerk_test` addresses so no
 real mail is sent.
 
+## Webhooks don't reach your machine
+
+Clerk sends its webhooks to an address on the internet, so a local API never
+receives them. What that changes locally:
+
+- **A username or email changed in Settings → Account → Manage sign-in**
+  still lands: the app then calls `POST /auth/sync-from-clerk`, and the API
+  reads the user from Clerk itself, as in production.
+- **The same change made anywhere else** (the Clerk Dashboard, Clerk's
+  Backend API, the `clerk` CLI) reaches your database only after you open
+  Settings → Account while signed in as that user, which runs the same sync.
+- **Deleting a user in Clerk** does not delete its local account. Delete
+  accounts through Settings → Account instead (`DELETE /auth/account`).
+
+To receive real deliveries, for example while working on the webhook
+handler, expose the API with a tunnel (`ngrok http 3000`, or similar), add
+`https://<tunnel>/webhooks/clerk` as an endpoint in the **development**
+instance's Dashboard (*Webhooks*), and put its signing secret in
+`CLERK_WEBHOOK_SIGNING_SECRET` in `backend/.env`. Remove the endpoint when
+you finish: deliveries to a dead tunnel fail and are retried for days.
+
 ## Common problems
 
 | Symptom | Cause |
