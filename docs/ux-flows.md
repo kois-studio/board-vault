@@ -19,6 +19,11 @@ their answer and lets them change it while the night is scheduled or live.
 The session list (`GET /play/users/:userId/meets`) carries the caller's own
 `myRsvpStatus` for that.
 
+People hear about a game night in their inbox: when it is planned (everyone
+invited), started or finished (everyone who did not decline), or cancelled
+(everyone invited). Members hear when someone joins their group. The person
+who acted is never notified. Each notification links to the night or group.
+
 History keeps everyone who played. Someone who left the group shows as
 "Name (left)" with a muted avatar; a deleted account shows as "Deleted
 account" with a grey avatar (ADR-0018). Neither changes a session's counts.

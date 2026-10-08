@@ -1,5 +1,6 @@
 import { BadRequestException, ForbiddenException, NotFoundException } from '@nestjs/common'
 
+import { fakeActivityNotifier } from '../../../../test/fake-activity-notifier.js'
 import { fakeDatabase } from '../../../../test/fake-database.js'
 
 import { GroupMembershipsService } from './group-memberships.service.js'
@@ -11,7 +12,7 @@ describe('GroupMembershipsService join policy', () => {
             getInvitationByGroupAndRecipient: vi.fn().mockResolvedValue({ rows: [] }),
             acceptInvitationAtomically,
         })
-        const service = new GroupMembershipsService(databaseService)
+        const service = new GroupMembershipsService(databaseService, fakeActivityNotifier())
 
         await expect(service.createGroupMembershipFromInvitation(7, 12)).rejects.toThrow(ForbiddenException)
         expect(acceptInvitationAtomically).not.toHaveBeenCalled()
@@ -23,7 +24,7 @@ describe('GroupMembershipsService join policy', () => {
             getInvitationByGroupAndRecipient: vi.fn().mockResolvedValue({ rows: [[42]] }),
             acceptInvitationAtomically,
         })
-        const service = new GroupMembershipsService(databaseService)
+        const service = new GroupMembershipsService(databaseService, fakeActivityNotifier())
 
         await expect(service.createGroupMembershipFromInvitation(7, 12)).resolves.toEqual({ success: true })
         expect(acceptInvitationAtomically).toHaveBeenCalledWith(42, 7, 12)
@@ -39,7 +40,7 @@ describe('GroupMembershipsService leaving through DELETE /memberships', () => {
             leaveGroup,
         })
 
-        return { service: new GroupMembershipsService(databaseService), leaveGroup }
+        return { service: new GroupMembershipsService(databaseService, fakeActivityNotifier()), leaveGroup }
     }
 
     it('leaves the way the app does, so upcoming sessions drop the person and history keeps them', async () => {

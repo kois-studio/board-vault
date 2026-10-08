@@ -6,6 +6,7 @@ import { DatabaseService } from '../../common/database/database.service.js'
 import { GameProposalService } from '../../core/game-proposal/game-proposal.service.js'
 import { GroupsService } from '../../core/groups/groups.service.js'
 import { InvitationsService } from '../../core/invitations/invitations.service.js'
+import { ActivityNotifier } from '../../core/notifications/activity-notifier.service.js'
 import { NotificationsService } from '../../core/notifications/notifications.service.js'
 import { UsersService } from '../../core/users/users.service.js'
 
@@ -24,6 +25,7 @@ export class ProfileService {
         private readonly invitationsService: InvitationsService,
         private readonly databaseService: DatabaseService,
         private readonly gameProposalService: GameProposalService,
+        private readonly activityNotifier: ActivityNotifier,
     ) {}
 
     @LogFeature(new Logger('ProfileService'))
@@ -73,9 +75,7 @@ export class ProfileService {
 
         // Membership creation and invitation consumption must commit together.
         await this.databaseService.invitations.acceptInvitationAtomically(invitationId, userId, invitationData.groupId)
-
-        // Owner notifications are intentionally deferred until the
-        // notification contract defines delivery and unread semantics.
+        await this.activityNotifier.memberJoined(invitationData.groupId, userId)
 
         return { success: true }
     }

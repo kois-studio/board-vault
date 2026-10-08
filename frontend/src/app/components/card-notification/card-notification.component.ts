@@ -6,6 +6,14 @@ import { formatDate } from '../../core/utils/formatDate'
 import { ButtonComponent } from '../ui/button/button.component'
 import { IconComponent } from '../ui/icon/icon.component'
 
+/** Notifications about a game night link to it; the label says what to do there. */
+const SESSION_LINK_LABELS: Record<string, string> = {
+    meeting_scheduled: 'Answer',
+    session_started: 'Open the game night',
+    session_finished: 'Rate what you played',
+    session_cancelled: 'See the game night',
+}
+
 @Component({
     imports: [ButtonComponent, IconComponent, RouterLink],
     selector: 'app-card-notification',
@@ -32,6 +40,15 @@ export class CardNotificationComponent {
         const duplicateOfGameId = notification.data?.['duplicateOfGameId']
         if (notification.type === 'game_proposal_duplicate' && typeof duplicateOfGameId === 'number') {
             return { path: ['/games', duplicateOfGameId], label: 'Open the existing game' }
+        }
+        const sessionId = notification.data?.['meeting']
+        const sessionLabel = SESSION_LINK_LABELS[notification.type]
+        if (typeof sessionId === 'number' && sessionLabel) {
+            return { path: ['/sessions', sessionId], label: sessionLabel }
+        }
+        const groupId = notification.data?.['group']
+        if (notification.type === 'user_joined_group' && typeof groupId === 'number') {
+            return { path: ['/groups', groupId], label: 'Open the group' }
         }
         if (notification.type === 'game_proposal_submitted') {
             return { path: ['/admin', 'proposals'], label: 'Review proposals' }
@@ -60,6 +77,11 @@ export class CardNotificationComponent {
                 game_proposal_approved: 'circle-check',
                 game_proposal_rejected: 'circle-x',
                 game_proposal_duplicate: 'files',
+                meeting_scheduled: 'calendar-plus',
+                session_started: 'dice-5',
+                session_finished: 'calendar-check',
+                session_cancelled: 'circle-x',
+                user_joined_group: 'user-check',
             }[type] ?? 'info'
         )
     }

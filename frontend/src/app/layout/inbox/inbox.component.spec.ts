@@ -29,6 +29,7 @@ describe('InboxComponent', () => {
         retryUserNotifications: vi.fn(),
         updateNotification: vi.fn(),
         deleteNotification: vi.fn(),
+        refreshSharedActivity: vi.fn(),
     }
 
     const element = () => fixture.nativeElement as HTMLElement
@@ -61,6 +62,7 @@ describe('InboxComponent', () => {
         fixture.detectChanges()
 
         expect(trigger().getAttribute('aria-expanded')).toBe('true')
+        expect(dataService.refreshSharedActivity).toHaveBeenCalled()
         expect(element().querySelector('#inbox-panel')?.textContent).toContain('No invitations waiting.')
         expect(element().querySelectorAll('app-card-notification')).toHaveLength(3)
 
@@ -78,5 +80,12 @@ describe('InboxComponent', () => {
 
         expect(element().querySelector('#inbox-panel')).toBeNull()
         expect(document.activeElement).toBe(trigger())
+    })
+
+    it('looks for new activity when the app comes back into view', () => {
+        dataService.refreshSharedActivity.mockClear()
+        document.dispatchEvent(new Event('visibilitychange'))
+
+        expect(dataService.refreshSharedActivity).toHaveBeenCalledTimes(document.visibilityState === 'visible' ? 1 : 0)
     })
 })
