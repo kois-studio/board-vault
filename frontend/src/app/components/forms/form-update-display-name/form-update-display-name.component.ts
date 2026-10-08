@@ -26,7 +26,6 @@ export class FormUpdateDisplayNameComponent {
     public updateProfileFormGroup = new FormGroup({
         displayName: new FormControl(this.currentUser$()?.displayName ?? '', [
             Validators.required,
-            Validators.minLength(4),
             Validators.maxLength(20),
         ]),
     })
