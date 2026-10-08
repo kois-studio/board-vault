@@ -158,6 +158,51 @@ export class SessionQueries {
         })
     }
 
+    /**
+     * A session the account can see (it is in the group), with what decides what they may do (ADR-0019):
+     * columns 0-7 as `getMeetByIdForCreator`, then 8 `isGroupOwner` (1/0) and 9 the account's own answer
+     * (null when not invited, directly or through a linked group person).
+     */
+    getMeetAccessForAccount(meetId: number, accountId: number) {
+        return this.database.execute({
+            sql: `
+                SELECT m.id, m.groupId, m.createdBy, m.meetDate, m.isConfirmed,
+                    m.status, m.timezone, m.notes,
+                    CASE WHEN g.createdBy = ? THEN 1 ELSE 0 END AS isGroupOwner,
+                    COALESCE(
+                        (SELECT ma.rsvpStatus FROM MeetAttendee ma WHERE ma.meetId = m.id AND ma.accountId = ?),
+                        (SELECT mpa.rsvpStatus FROM MeetPersonAttendee mpa
+                            INNER JOIN GroupPerson gp ON gp.id = mpa.groupPersonId
+                            WHERE mpa.meetId = m.id AND gp.accountId = ?)
+                    ) AS myRsvpStatus
+                FROM Meet m
+                INNER JOIN UserGroup g ON g.id = m.groupId
+                INNER JOIN GroupMembership gm ON gm.groupId = m.groupId AND gm.accountId = ?
+                WHERE m.id = ?
+            `,
+            args: [accountId, accountId, accountId, accountId, meetId],
+        })
+    }
+
+    /** Whoever played a game in the session was there: mark them attended, never the other way round. */
+    async markPlayersAttended(meetId: number): Promise<void> {
+        // Each update only ever sets 'attended', so the two need no transaction and can be repeated.
+        await this.database.execute({
+            sql: `
+                UPDATE MeetAttendee SET attendanceStatus = 'attended'
+                WHERE meetId = ? AND accountId IN (SELECT accountId FROM MeetAccountGame WHERE meetId = ?)
+            `,
+            args: [meetId, meetId],
+        })
+        await this.database.execute({
+            sql: `
+                UPDATE MeetPersonAttendee SET attendanceStatus = 'attended'
+                WHERE meetId = ? AND groupPersonId IN (SELECT groupPersonId FROM MeetPersonGame WHERE meetId = ?)
+            `,
+            args: [meetId, meetId],
+        })
+    }
+
     /** Number of games marked as played in a session. */
     countPlayedMeetGames(meetId: number) {
         return this.database.execute({

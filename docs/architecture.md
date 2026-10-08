@@ -71,7 +71,7 @@ attempt may already have been applied.
 | `modules/features/dashboard` | `/dashboard/users/:userId/…`: stats, groups, group creation and membership management. |
 | `modules/features/play` | `/play`: recommendations, recommendation feedback, play history. |
 | `modules/features/profile` | `/profile/users/:userId/…`: own profile, notifications, received invitations, game proposals. |
-| `modules/features/sessions` | `/sessions`: scheduled sessions, RSVP, attendance, shortlist, played games, status. Starting or finishing a session dated in the future moves its date to now; finishing with no game played needs `noGamesPlayed: true`. |
+| `modules/features/sessions` | `/sessions`: scheduled sessions, RSVP, attendance, shortlist, played games, status. Who may do what follows [ADR-0019](adr/0019-session-permissions.md): the organizer or group owner changes invites and the shortlist and can cancel; anyone invited who has not declined starts, records play and attendance, and finishes. Players always count as attended. Starting or finishing a session dated in the future moves its date to now; finishing with no game played needs `noGamesPlayed: true`. |
 | `test/` | Backend e2e tests; `fake-clerk-token-verifier.ts` replaces Clerk and `fake-artwork-downloader.ts` the web. |
 
 `core` modules own an entity; `features` modules compose several of them for a

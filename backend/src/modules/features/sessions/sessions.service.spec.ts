@@ -23,7 +23,7 @@ function createDatabaseMock() {
         createCompletedSession: vi.fn().mockResolvedValue({ lastInsertRowid: 12 }),
         createScheduledSession: vi.fn().mockResolvedValue({ lastInsertRowid: 13 }),
         replaceMeetAttendees: vi.fn().mockResolvedValue(true),
-        getMeetByIdForCreator: vi
+        getMeetAccessForAccount: vi
             .fn()
             .mockResolvedValue({ rows: [[12, 7, 1, '2026-08-16T19:30:00.000Z', 0, 'scheduled', 'Europe/Madrid', null]] }),
         getMeetDetailsByIdForAccount: vi.fn(),
@@ -36,6 +36,7 @@ function createDatabaseMock() {
         getGroupPeople: vi.fn().mockResolvedValue({ rows: [] }),
         getGroupAvailableGameIdsForPeople: vi.fn().mockResolvedValue([]),
         updateMeetAttendance: vi.fn().mockResolvedValue(undefined),
+        markPlayersAttended: vi.fn().mockResolvedValue(undefined),
         replaceMeetPlannedGames: vi.fn().mockResolvedValue(true),
         getMeetPlayedGameParticipants: vi.fn().mockResolvedValue([]),
         replaceMeetPlayedGames: vi.fn().mockResolvedValue({ applied: true, playedGameIds: [42], skippedGameIds: [43] }),
@@ -311,7 +312,7 @@ describe('SessionsService', () => {
     it('lets the organizer record actual attendance for an active session', async () => {
         const database = createDatabaseMock()
 
-        database.getMeetByIdForCreator.mockResolvedValue({
+        database.getMeetAccessForAccount.mockResolvedValue({
             rows: [[13, 7, 1, '2026-08-16T19:30:00.000Z', 0, 'active', 'Europe/Madrid', null]],
         })
         const service = new SessionsService(fakeDatabase(database))
@@ -323,7 +324,7 @@ describe('SessionsService', () => {
     it('rejects attendance for members who were not invited', async () => {
         const database = createDatabaseMock()
 
-        database.getMeetByIdForCreator.mockResolvedValue({
+        database.getMeetAccessForAccount.mockResolvedValue({
             rows: [[13, 7, 1, '2026-08-16T19:30:00.000Z', 0, 'active', 'Europe/Madrid', null]],
         })
         const service = new SessionsService(fakeDatabase(database))
@@ -337,7 +338,7 @@ describe('SessionsService', () => {
     it('allows the organizer to record that nobody attended', async () => {
         const database = createDatabaseMock()
 
-        database.getMeetByIdForCreator.mockResolvedValue({
+        database.getMeetAccessForAccount.mockResolvedValue({
             rows: [[13, 7, 1, '2026-08-16T19:30:00.000Z', 1, 'completed', 'Europe/Madrid', null]],
         })
         const service = new SessionsService(fakeDatabase(database))
@@ -349,7 +350,7 @@ describe('SessionsService', () => {
     it('lets the organizer edit the shortlist on an active session', async () => {
         const database = createDatabaseMock()
 
-        database.getMeetByIdForCreator.mockResolvedValue({
+        database.getMeetAccessForAccount.mockResolvedValue({
             rows: [[13, 7, 1, '2026-08-16T19:30:00.000Z', 0, 'active', 'Europe/Madrid', null]],
         })
         const service = new SessionsService(fakeDatabase(database))
@@ -404,7 +405,7 @@ describe('SessionsService', () => {
     it('records group-level played games while preserving the compatibility participant fallback', async () => {
         const database = createDatabaseMock()
 
-        database.getMeetByIdForCreator.mockResolvedValue({
+        database.getMeetAccessForAccount.mockResolvedValue({
             rows: [[13, 7, 1, '2026-08-21T19:30:00.000Z', 0, 'active', 'Europe/Madrid', null]],
         })
         database.getMeetPlayedGameParticipants.mockResolvedValue([{ gameId: 42, participantIds: [1, 2] }])
@@ -428,7 +429,7 @@ describe('SessionsService', () => {
     it('records mixed account and group-person game participants and reports stale-write conflicts', async () => {
         const database = createDatabaseMock()
 
-        database.getMeetByIdForCreator.mockResolvedValue({
+        database.getMeetAccessForAccount.mockResolvedValue({
             rows: [[13, 7, 1, '2026-08-21T19:30:00.000Z', 0, 'active', 'Europe/Madrid', null]],
         })
         database.getMeetAttendeeIds.mockResolvedValue([1])
@@ -456,7 +457,7 @@ describe('SessionsService', () => {
     it('validates per-game participants against the session attendees', async () => {
         const database = createDatabaseMock()
 
-        database.getMeetByIdForCreator.mockResolvedValue({
+        database.getMeetAccessForAccount.mockResolvedValue({
             rows: [[13, 7, 1, '2026-08-21T19:30:00.000Z', 0, 'active', 'Europe/Madrid', null]],
         })
         const service = new SessionsService(fakeDatabase(database))
@@ -473,7 +474,7 @@ describe('SessionsService', () => {
     it('rejects a played game without participants', async () => {
         const database = createDatabaseMock()
 
-        database.getMeetByIdForCreator.mockResolvedValue({
+        database.getMeetAccessForAccount.mockResolvedValue({
             rows: [[13, 7, 1, '2026-08-21T19:30:00.000Z', 0, 'active', 'Europe/Madrid', null]],
         })
         const service = new SessionsService(fakeDatabase(database))
@@ -490,7 +491,7 @@ describe('SessionsService', () => {
     it('rejects played games unavailable to the session group', async () => {
         const database = createDatabaseMock()
 
-        database.getMeetByIdForCreator.mockResolvedValue({
+        database.getMeetAccessForAccount.mockResolvedValue({
             rows: [[13, 7, 1, '2026-08-21T19:30:00.000Z', 0, 'active', 'Europe/Madrid', null]],
         })
         const service = new SessionsService(fakeDatabase(database))
@@ -556,7 +557,7 @@ describe('SessionsService', () => {
     it('refuses to finish a night with no game played unless the organizer confirms it', async () => {
         const database = createDatabaseMock()
 
-        database.getMeetByIdForCreator.mockResolvedValue({
+        database.getMeetAccessForAccount.mockResolvedValue({
             rows: [[12, 7, 1, '2026-08-16T19:30:00.000Z', 0, 'active', 'Europe/Madrid', null]],
         })
         database.countPlayedMeetGames.mockResolvedValue({ rows: [{ played: 0 }] })
@@ -583,21 +584,68 @@ describe('SessionsService', () => {
     it('rejects invalid lifecycle transitions', async () => {
         const database = createDatabaseMock()
 
-        database.getMeetByIdForCreator.mockResolvedValue({ rows: [[12, 7, 1, '2026-08-16T19:30:00.000Z', 1, 'completed', 'UTC', null]] })
+        database.getMeetAccessForAccount.mockResolvedValue({ rows: [[12, 7, 1, '2026-08-16T19:30:00.000Z', 1, 'completed', 'UTC', null]] })
         const service = new SessionsService(fakeDatabase(database))
 
         await expect(service.updateSessionStatus(1, 12, { status: 'active' })).rejects.toThrow(BadRequestException)
         expect(database.updateMeetStatus).not.toHaveBeenCalled()
     })
 
-    it('requires the organizer to transition a session', async () => {
-        const database = createDatabaseMock()
+    describe('who may do what (ADR-0019)', () => {
+        // Session 12 in group 7, planned by account 1; the actor is account 2.
+        const accessRow = (isGroupOwner: 0 | 1, myRsvpStatus: string | null, status = 'scheduled') => ({
+            rows: [[12, 7, 1, '2026-08-16T19:30:00.000Z', 0, status, 'Europe/Madrid', null, isGroupOwner, myRsvpStatus]],
+        })
+        const asActor = (row: ReturnType<typeof accessRow> | { rows: [] }) => {
+            const database = createDatabaseMock()
 
-        database.getMeetByIdForCreator.mockResolvedValue({ rows: [] })
-        const service = new SessionsService(fakeDatabase(database))
+            database.getMeetAccessForAccount.mockResolvedValue(row)
+            return { database, service: new SessionsService(fakeDatabase(database)) }
+        }
 
-        await expect(service.updateSessionStatus(2, 12, { status: 'cancelled' })).rejects.toThrow(ForbiddenException)
-        expect(database.updateMeetStatus).not.toHaveBeenCalled()
+        it('lets an invitee who is coming start the night, but not cancel it', async () => {
+            const { database, service } = asActor(accessRow(0, 'accepted'))
+
+            await expect(service.updateSessionStatus(2, 12, { status: 'cancelled' })).rejects.toThrow(ForbiddenException)
+            await expect(service.updateSessionStatus(2, 12, { status: 'active' })).resolves.toMatchObject({ status: 'active' })
+            expect(database.updateMeetStatus).toHaveBeenCalledTimes(1)
+            expect(database.markPlayersAttended).toHaveBeenCalledWith(12)
+        })
+
+        it('keeps someone who declined, or was not invited, from running the night', async () => {
+            for (const rsvp of ['declined', null]) {
+                const { database, service } = asActor(accessRow(0, rsvp))
+
+                await expect(service.updateSessionStatus(2, 12, { status: 'active' })).rejects.toThrow(ForbiddenException)
+                await expect(service.updateSessionPlayedGames(2, 12, { playedGameIds: [42] })).rejects.toThrow(ForbiddenException)
+                await expect(service.updateSessionAttendance(2, 12, { attendedIds: [1] })).rejects.toThrow(ForbiddenException)
+                expect(database.updateMeetStatus).not.toHaveBeenCalled()
+            }
+        })
+
+        it('keeps the invite list and the shortlist with the organizer', async () => {
+            const { service } = asActor(accessRow(0, 'accepted'))
+
+            await expect(service.updateSessionAttendees(2, 12, { attendeeIds: [1, 2] })).rejects.toThrow(ForbiddenException)
+            await expect(service.updateSessionShortlist(2, 12, { plannedGameIds: [42] })).rejects.toThrow(ForbiddenException)
+        })
+
+        it('treats the group owner as an organizer of every night in the group', async () => {
+            const { database, service } = asActor(accessRow(1, null))
+
+            await expect(service.updateSessionShortlist(2, 12, { plannedGameIds: [42] })).resolves.toEqual({
+                sessionId: 12,
+                plannedGameIds: [42],
+            })
+            await expect(service.updateSessionStatus(2, 12, { status: 'cancelled' })).resolves.toMatchObject({ status: 'cancelled' })
+            expect(database.markPlayersAttended).not.toHaveBeenCalled()
+        })
+
+        it('answers 404 for a night outside the actor’s groups', async () => {
+            const { service } = asActor({ rows: [] })
+
+            await expect(service.updateSessionStatus(2, 12, { status: 'cancelled' })).rejects.toThrow(NotFoundException)
+        })
     })
 
     it('replaces attendees for an organizer-owned active session', async () => {
@@ -644,7 +692,7 @@ describe('SessionsService', () => {
     it('rejects attendee replacement on a completed session', async () => {
         const database = createDatabaseMock()
 
-        database.getMeetByIdForCreator.mockResolvedValue({ rows: [[12, 7, 1, '2026-08-16T19:30:00.000Z', 1, 'completed', 'UTC', null]] })
+        database.getMeetAccessForAccount.mockResolvedValue({ rows: [[12, 7, 1, '2026-08-16T19:30:00.000Z', 1, 'completed', 'UTC', null]] })
         const service = new SessionsService(fakeDatabase(database))
 
         await expect(service.updateSessionAttendees(1, 12, { attendeeIds: [1] })).rejects.toThrow(BadRequestException)
