@@ -40,6 +40,11 @@ operational details.
 
 ### Changed
 
+- The group page is shorter and reads top to bottom: the next night and the
+  group's pulse, recent nights, standings, the library (filter it by number
+  of players), games to buy, and people. Choosing who plays and what to play
+  moved to the game night itself. Members see "Plan a game night" at the
+  top; leaving the group is at the end of People.
 - Anyone coming to a game night can start it, record what was played and
   who came, and finish it; the organizer or the group owner still decides
   who is invited and can cancel (ADR-0019). Whoever played a game counts as

@@ -33,7 +33,7 @@ test.describe('group destructive-flow UX', () => {
         test('keeps leaving in the group workspace and redirects the legacy URL', async ({ page }) => {
             await page.goto(`/groups/${groupId}`)
 
-            await page.getByRole('button', { name: 'Leave group' }).click()
+            await page.getByRole('button', { name: 'Leave this group' }).click()
             const dialog = page.getByRole('dialog')
             await expect(dialog).toBeVisible()
             await expect(dialog.getByRole('heading', { name: /Leave .+\?/ })).toBeVisible()
@@ -42,7 +42,7 @@ test.describe('group destructive-flow UX', () => {
 
             await dialog.getByRole('button', { name: 'Keep group access' }).click()
             await expect(dialog).toBeHidden()
-            await expect(page.getByRole('button', { name: 'Leave group' })).toBeFocused()
+            await expect(page.getByRole('button', { name: 'Leave this group' })).toBeFocused()
 
             await page.goto(`/groups/${groupId}/leave`)
             await expect(page).toHaveURL(new RegExp(`/groups/${groupId}$`))

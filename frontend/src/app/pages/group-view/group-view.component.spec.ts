@@ -4,6 +4,7 @@ import { ActivatedRoute, convertToParamMap, provideRouter } from '@angular/route
 import { BehaviorSubject, type Observable, of, Subject, throwError } from 'rxjs'
 import { Api } from '../../api/api'
 import { DataService } from '../../core/services/data.service'
+import { LoadingService } from '../../core/services/loading.service'
 import { formatAttendeeSummary } from '../../core/utils/formatAttendeeSummary'
 import { GroupViewComponent, shouldShowFirstGroupSetup } from './group-view.component'
 
@@ -285,5 +286,102 @@ describe('GroupViewComponent collection worth retries', () => {
         expect(component.collection$()?.worth).toBe(567)
         expect(component.collectionError()).toBe(false)
         expect(component.collectionLoading()).toBe(false)
+    })
+})
+
+describe('GroupViewComponent page layout', () => {
+    const game = (id: number, minPlayers: number, maxPlayers: number) => ({
+        id,
+        title: `Game ${id}`,
+        titleTranslations: { en: `Game ${id}`, es: `Game ${id}` },
+        minPlayers,
+        maxPlayers,
+        gameAvgDuration: 45,
+        imageUrl: null,
+    })
+    const group = {
+        id: 1,
+        name: 'DuckDevs',
+        createdBy: 6,
+        members: [
+            { id: 6, username: 'owner', displayName: 'Owner', avatar: null, games: [game(42, 2, 4)], reviews: [] },
+            { id: 7, username: 'member', displayName: 'Member', avatar: null, games: [game(43, 5, 8), game(42, 2, 4)], reviews: [] },
+        ],
+        placeholders: [],
+    }
+
+    const render = async (currentUserId: number) => {
+        const params = new BehaviorSubject(convertToParamMap({ groupId: '1' }))
+        await TestBed.configureTestingModule({
+            imports: [GroupViewComponent],
+            providers: [
+                provideRouter([]),
+                { provide: ActivatedRoute, useValue: { paramMap: params, snapshot: { paramMap: params.value } } },
+                {
+                    provide: Api,
+                    useValue: {
+                        getGroupCollection: vi.fn(() => of(null)),
+                        getGroupInsights: vi.fn(() => of(null)),
+                        getGroupAcquisitionBoard: vi.fn(() => of([])),
+                        getGroupPeople: vi.fn(() => of({ people: [] })),
+                        getGroupPersonCatalog: vi.fn(() => of([])),
+                        getGroupMeetings: vi.fn(() => of([])),
+                    },
+                },
+                {
+                    provide: DataService,
+                    useValue: {
+                        currentUser: signal({ id: currentUserId }),
+                        userGroups: signal([group]),
+                        userGroupsError: signal(false),
+                        userMeets: signal([]),
+                        invitationsGroupIndex: signal({}),
+                        groupHistoryByGroupId: signal<Record<number, Array<never>>>({ 1: [] }),
+                    },
+                },
+                { provide: LoadingService, useValue: { loadingStatesIndex: signal({}) } },
+            ],
+        }).compileComponents()
+        const fixture = TestBed.createComponent(GroupViewComponent)
+        fixture.detectChanges()
+        await fixture.whenStable()
+        fixture.detectChanges()
+        return fixture
+    }
+
+    it('lays the sections out in the order they read, with no throwaway member picker', async () => {
+        const fixture = await render(7)
+        const element = fixture.nativeElement as HTMLElement
+        const ids = [...element.querySelectorAll('section[id]')].map((section) => section.id)
+
+        expect(ids).toEqual(['overview', 'history', 'library', 'acquire', 'people'])
+        expect(element.textContent).not.toContain('Who is playing?')
+        // Tab order follows what is shown: nothing is moved around with CSS order.
+        expect([...element.querySelectorAll('[class]')].some((node) => [...node.classList].some((name) => /^order-/.test(name)))).toBe(
+            false,
+        )
+    })
+
+    it('gives members a plan button up top and the way out at the bottom', async () => {
+        const fixture = await render(7)
+        const buttons = [...(fixture.nativeElement as HTMLElement).querySelectorAll('button')].map((button) => button.textContent?.trim())
+
+        expect(buttons).toContain('Plan a game night')
+        expect(buttons).not.toContain('Leave group')
+        expect(buttons).toContain('Leave this group')
+    })
+
+    it('filters the library by number of players, and back', async () => {
+        const fixture = await render(6)
+        const component = fixture.componentInstance
+
+        expect(component.totalUniqueGamesComputed().map((entry) => [entry.id, entry.quantity])).toEqual([
+            [42, 2],
+            [43, 1],
+        ])
+        component.setPlayerCount(6)
+        expect(component.totalUniqueGamesComputed().map((entry) => entry.id)).toEqual([43])
+        component.setPlayerCount(6)
+        expect(component.totalUniqueGamesComputed()).toHaveLength(2)
     })
 })

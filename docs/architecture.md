@@ -120,7 +120,7 @@ for the previous account are cancelled, so the next account starts empty
 | `DataService` | The current user and everything loaded for them: games, groups, invitations, notifications, reviews, sessions, history, wishlist, activity, proposals, stats. `refreshSharedActivity()` quietly reloads notifications, invitations and game nights (at most once a minute) when the inbox opens or the tab comes back into view. |
 | `LoginService` | Whether the session is ready, the current user id, and whether they are an admin. |
 | `PendingProposalsService` | The pending proposal count behind the admin badges. |
-| `GroupViewService` | The open group and its member and game filters. |
+| `GroupViewService` | The open group and its library filter (number of players). |
 | `BrowsePageService` | Catalogue search results, term, page, filters (players, length, tags, hide owned, sort) and the tag list. The page URL is the source of truth for the term and filters (`?q=&players=&length=&tags=&hideOwned=&sort=`), so a filtered view survives a reload and can be shared; filtering runs on the server. |
 | `AdminGamesManageService` | Admin catalogue search results and term. |
 
@@ -135,7 +135,7 @@ component through `takeUntilDestroyed` or `toSignal`.
 | `/` | none | Landing |
 | `/login`, `/register` | `GuestOnlyGuard` | Clerk sign-in; invitations and the private-beta notice |
 | `/dashboard` | `AuthOnlyGuard` | Home: invitations, next game nights (answer them from the card), your groups, recently played |
-| `/groups/:groupId` | `AuthOnlyGuard` | Group workspace (`/groups` redirects to Home); Group pulse shows the collection's approximate worth and links to each person |
+| `/groups/:groupId` | `AuthOnlyGuard` | Group page (`/groups` redirects to Home), top to bottom: next night and Group pulse (approximate worth, links to each person), recent nights, standings, library (filtered by number of players), games to buy, people. Deciding what to play happens on the night |
 | `/groups/:groupId/members/:accountId`, `/groups/:groupId/people/:personId` | `AuthOnlyGuard` | One person in a group, with or without an account: the games they bring, their approximate collection worth (ADR-0016), and their game nights |
 | `/create-group`, `/groups/:groupId/edit` | `AuthOnlyGuard` | Group create and settings (invitations) |
 | `/groups/:groupId/people/:personId/claim` | `AuthOnlyGuard` | Claim a group person |
