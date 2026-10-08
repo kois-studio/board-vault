@@ -13,6 +13,17 @@ operational details.
 
 ### Added
 
+- A game night is where the group decides what to play. Its games on offer
+  are those of the people coming (invited and not declined), and it shows
+  the best suggestions for them, which change as people answer. Anyone
+  coming can add a suggestion to the shortlist and vote for the games they'd
+  play; the shortlist puts the most wanted first. What to play offers
+  "Add to <next night>" when the group already has one planned.
+- Notifications for game nights: planned, started, finished, and cancelled,
+  plus someone joining your group. Each links to the night or group, and the
+  inbox looks for new ones when you open it or come back to the app.
+- Answer "Can you make it?" straight from Home and Upcoming, which also show
+  your answer on every night you're invited to.
 - A username changed in Clerk reaches Board Vault at once: Settings →
   Account asks the API to copy it from Clerk (`POST /auth/sync-from-clerk`)
   instead of waiting for the webhook, and says plainly when another account
@@ -26,6 +37,14 @@ operational details.
 
 ### Changed
 
+- Anyone coming to a game night can start it, record what was played and
+  who came, and finish it; the organizer or the group owner still decides
+  who is invited and can cancel (ADR-0019). Whoever played a game counts as
+  there. Before, only the organizer could, so a night stayed open when they
+  were away.
+- Group names can be 2 to 40 characters (were 4 to 20), and creating a group
+  takes you straight to inviting people. Planning a night after 19:00
+  starts on tomorrow. Ratings after a night use the same stars as Reviews.
 - The frontend's initial bundle budget is now a warning at 1 MB and an
   error at 1.25 MB (it was 850 kB and 1 MB), with headroom for features;
   it stays an alarm for sudden jumps. See the audit how-to.

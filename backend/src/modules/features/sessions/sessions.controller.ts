@@ -1,4 +1,18 @@
-import { Body, Controller, Get, Param, ParseIntPipe, Patch, Post, Put, Req, UseGuards, UsePipes, ValidationPipe } from '@nestjs/common'
+import {
+    Body,
+    Controller,
+    Delete,
+    Get,
+    Param,
+    ParseIntPipe,
+    Patch,
+    Post,
+    Put,
+    Req,
+    UseGuards,
+    UsePipes,
+    ValidationPipe,
+} from '@nestjs/common'
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger'
 
 import { AuthGuard } from '../../../common/guards/auth.guard.js'
@@ -9,6 +23,8 @@ import {
     ScheduledSessionCreatedDto,
     SessionAttendeesUpdatedDto,
     SessionShortlistUpdatedDto,
+    SessionGameProposedDto,
+    SessionGameVotesUpdatedDto,
     SessionPlayedGamesUpdatedDto,
     SessionCreatedDto,
     SessionRsvpUpdatedDto,
@@ -61,7 +77,7 @@ export class SessionsController {
     @ApiOperation({ summary: 'Replace the attendees of an editable session' })
     @ApiResponse({ status: 200, type: SessionAttendeesUpdatedDto })
     @ApiResponse({ status: 400, description: 'The session must retain at least one group member.' })
-    @ApiResponse({ status: 403, description: 'Only the session organizer may manage attendees.' })
+    @ApiResponse({ status: 403, description: 'Only the organizer or the group owner may change who is invited (ADR-0019).' })
     updateSessionAttendees(
         @Req() request: { user: { userId: number } },
         @Param('sessionId', ParseIntPipe) sessionId: number,
@@ -74,7 +90,7 @@ export class SessionsController {
     @ApiOperation({ summary: 'Replace the planned games of an editable session' })
     @ApiResponse({ status: 200, type: SessionShortlistUpdatedDto })
     @ApiResponse({ status: 400, description: 'The planned games must be owned by at least one group member.' })
-    @ApiResponse({ status: 403, description: 'Only the session organizer may manage the shortlist.' })
+    @ApiResponse({ status: 403, description: 'Only the organizer or the group owner may replace the shortlist (ADR-0019).' })
     updateSessionShortlist(
         @Req() request: { user: { userId: number } },
         @Param('sessionId', ParseIntPipe) sessionId: number,
@@ -83,11 +99,49 @@ export class SessionsController {
         return this.sessionsService.updateSessionShortlist(request.user.userId, sessionId, body)
     }
 
+    @Post(':sessionId/shortlist/:gameId')
+    @ApiOperation({ summary: 'Add one game to the shortlist, with the caller’s vote' })
+    @ApiResponse({ status: 201, type: SessionGameProposedDto })
+    @ApiResponse({ status: 400, description: 'The game must be owned by at least one group member, and the night still open.' })
+    @ApiResponse({ status: 403, description: 'Only people coming to the game night may add games (ADR-0019).' })
+    proposeSessionGame(
+        @Req() request: { user: { userId: number } },
+        @Param('sessionId', ParseIntPipe) sessionId: number,
+        @Param('gameId', ParseIntPipe) gameId: number,
+    ) {
+        return this.sessionsService.proposeSessionGame(request.user.userId, sessionId, gameId)
+    }
+
+    @Put(':sessionId/votes/:gameId')
+    @ApiOperation({ summary: 'Vote for a shortlisted game: the caller would play it on the night' })
+    @ApiResponse({ status: 200, type: SessionGameVotesUpdatedDto })
+    @ApiResponse({ status: 400, description: 'Only shortlisted games of an open night can be voted for.' })
+    @ApiResponse({ status: 403, description: 'Only people coming to the game night may vote (ADR-0019).' })
+    voteForSessionGame(
+        @Req() request: { user: { userId: number } },
+        @Param('sessionId', ParseIntPipe) sessionId: number,
+        @Param('gameId', ParseIntPipe) gameId: number,
+    ) {
+        return this.sessionsService.setSessionGameVote(request.user.userId, sessionId, gameId, true)
+    }
+
+    @Delete(':sessionId/votes/:gameId')
+    @ApiOperation({ summary: 'Take back the caller’s vote for a shortlisted game' })
+    @ApiResponse({ status: 200, type: SessionGameVotesUpdatedDto })
+    @ApiResponse({ status: 403, description: 'Only people coming to the game night may vote (ADR-0019).' })
+    removeVoteForSessionGame(
+        @Req() request: { user: { userId: number } },
+        @Param('sessionId', ParseIntPipe) sessionId: number,
+        @Param('gameId', ParseIntPipe) gameId: number,
+    ) {
+        return this.sessionsService.setSessionGameVote(request.user.userId, sessionId, gameId, false)
+    }
+
     @Patch(':sessionId/played-games')
     @ApiOperation({ summary: 'Replace the games actually played in an editable session' })
     @ApiResponse({ status: 200, type: SessionPlayedGamesUpdatedDto })
     @ApiResponse({ status: 400, description: 'Every played game must be owned by at least one group member.' })
-    @ApiResponse({ status: 403, description: 'Only the session organizer may record games played.' })
+    @ApiResponse({ status: 403, description: 'Only people coming to the game night may record games played (ADR-0019).' })
     updateSessionPlayedGames(
         @Req() request: { user: { userId: number } },
         @Param('sessionId', ParseIntPipe) sessionId: number,
@@ -111,7 +165,7 @@ export class SessionsController {
     @Patch(':sessionId/attendance')
     @ApiOperation({ summary: 'Record which invited members actually attended a session' })
     @ApiResponse({ status: 200, type: SessionAttendanceUpdatedDto })
-    @ApiResponse({ status: 403, description: 'Only the session organizer can record attendance.' })
+    @ApiResponse({ status: 403, description: 'Only people coming to the game night may record attendance (ADR-0019).' })
     updateSessionAttendance(
         @Req() request: { user: { userId: number } },
         @Param('sessionId', ParseIntPipe) sessionId: number,

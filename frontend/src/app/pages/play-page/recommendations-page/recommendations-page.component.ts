@@ -1,8 +1,9 @@
 import { Component, computed, effect, inject, signal, untracked } from '@angular/core'
-import { ActivatedRoute, RouterLink } from '@angular/router'
+import { ActivatedRoute, Router, RouterLink } from '@angular/router'
 import { firstValueFrom } from 'rxjs'
 import { Api } from '../../../api/api'
 import type {
+    AccountMeetType,
     GroupPersonWorkspaceType,
     GroupWithMembersAndGames,
     RecommendationSignalsType,
@@ -15,6 +16,7 @@ import {
     RecommendationCardComponent,
     RecommendationGroupSignal,
 } from '../../../components/recommendation-card/recommendation-card.component'
+import { ToastService } from '../../../components/toast/toast.service'
 import { ButtonComponent } from '../../../components/ui/button/button.component'
 import { ContainerWrapperComponent } from '../../../components/ui/container-wrapper/container-wrapper.component'
 import { IconComponent } from '../../../components/ui/icon/icon.component'
@@ -24,6 +26,7 @@ import { LOADING_KEYS } from '../../../core/enums/loading-keys-enum'
 import { CustomDatePipe } from '../../../core/pipes/customDate.pipe'
 import { DataService } from '../../../core/services/data.service'
 import { LoadingService } from '../../../core/services/loading.service'
+import { sessionDateParts, upcomingState } from '../../../core/utils/sessionTiming'
 
 type RecommendationDecisionLens = 'balanced' | 'fresh' | 'favorite'
 
@@ -65,6 +68,8 @@ export class RecommendationsPageComponent {
     private readonly route = inject(ActivatedRoute)
     private readonly dataService = inject(DataService)
     private readonly loadingService = inject(LoadingService)
+    private readonly toastService = inject(ToastService)
+    private readonly router = inject(Router)
 
     public readonly userGroups = this.dataService.userGroups
     public readonly userGroupsError = this.dataService.userGroupsError
@@ -83,6 +88,56 @@ export class RecommendationsPageComponent {
     public readonly feedbackErrors = signal<Record<number, string>>({})
     public readonly selectedGroup = computed(() => this.userGroups().find((group) => group.id === this.selectedGroupId()) ?? null)
     public readonly pageTitle = computed(() => this.getDecisionTitle(this.selectedGroup()))
+
+    /**
+     * The group's next planned night that you can add games to (you are coming, or you organize it),
+     * so a suggestion goes onto that night instead of starting a new one.
+     */
+    public readonly nextNight = computed<AccountMeetType | null>(() => {
+        const group = this.selectedGroup()
+        const userId = this.dataService.currentUser()?.id
+        if (!group || userId === undefined) return null
+        return (
+            this.dataService
+                .userMeets()
+                .filter((meet) => meet.groupId === group.id && upcomingState(meet) === 'planned')
+                .filter(
+                    (meet) =>
+                        meet.createdBy === userId ||
+                        group.createdBy === userId ||
+                        meet.myRsvpStatus === 'pending' ||
+                        meet.myRsvpStatus === 'accepted',
+                )
+                .sort((a, b) => new Date(a.meetDate).getTime() - new Date(b.meetDate).getTime())[0] ?? null
+        )
+    })
+    public readonly nextNightLabel = computed(() => {
+        const night = this.nextNight()
+        if (!night) return ''
+        const parts = sessionDateParts(night)
+        return `${parts.weekday} ${parts.day} ${parts.month}`
+    })
+    public readonly addingToNight = signal<number | null>(null)
+    public readonly addedToNight = signal<Record<number, boolean>>({})
+
+    /** Puts a suggestion on the next night's shortlist, with your vote. */
+    public async addToNextNight(gameId: number): Promise<void> {
+        const night = this.nextNight()
+        if (!night || this.addingToNight() !== null) return
+        this.addingToNight.set(gameId)
+        try {
+            await firstValueFrom(this.api.proposeSessionGame(night.id, gameId))
+            this.addedToNight.update((added) => ({ ...added, [gameId]: true }))
+            this.toastService.success(`Added to the ${this.nextNightLabel()} shortlist.`, {
+                label: 'Open',
+                run: () => void this.router.navigate(['/sessions', night.id]),
+            })
+        } catch {
+            this.toastService.error('Could not add the game to that night.')
+        } finally {
+            this.addingToNight.set(null)
+        }
+    }
     public readonly lensHint = computed(() => LENS_HINTS[this.decisionLens()])
     public readonly durationLabel = computed(() => {
         const minutes = this.availableMinutes()

@@ -311,6 +311,8 @@ export type MeetWithAttendeesAndGamesType = MeetType & {
     playedGamePersonParticipants?: Array<MeetPlayedGameParticipantsType>
     /** Missing from servers older than results. */
     gameResults?: Array<MeetGameResultsType>
+    /** Votes on shortlisted games, oldest first; games without votes are left out. */
+    gameVotes: Array<MeetGameVotesType>
 }
 
 /** One participant's result in a played game: an account or a group person, never both. */
@@ -397,6 +399,12 @@ export type SessionAttendeesUpdatedType = {
 export type UpdateSessionShortlistRequest = {
     plannedGameIds: Array<number>
 }
+
+export type MeetGameVotesType = { gameId: number; accountIds: Array<number> }
+
+export type SessionGameProposedType = { sessionId: number; plannedGameIds: Array<number>; gameVotes: Array<MeetGameVotesType> }
+
+export type SessionGameVotesUpdatedType = { sessionId: number; gameVotes: Array<MeetGameVotesType> }
 
 export type SessionShortlistUpdatedType = {
     sessionId: number

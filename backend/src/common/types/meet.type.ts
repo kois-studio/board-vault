@@ -39,6 +39,14 @@ export class AccountMeetDto extends MeetDto {
     myRsvpStatus: 'pending' | 'accepted' | 'declined' | null
 }
 
+export class MeetGameVotesDto {
+    @ApiProperty({ example: 42 })
+    gameId: number
+
+    @ApiProperty({ example: [1, 2], description: 'Accounts that would play this shortlisted game on the night, oldest vote first.' })
+    accountIds: Array<number>
+}
+
 export class MeetAttendeeStatusDto {
     @ApiProperty({ example: 12345 })
     accountId: number
@@ -121,4 +129,7 @@ export class MeetWithAttendeesAndGames extends MeetDto {
 
     @ApiProperty({ type: [MeetGameResultsDto], description: 'Winners and scores of the played games that have results.' })
     gameResults: Array<MeetGameResultsDto>
+
+    @ApiProperty({ type: [MeetGameVotesDto], description: 'Votes on shortlisted games; games without votes are left out.' })
+    gameVotes: Array<MeetGameVotesDto>
 }

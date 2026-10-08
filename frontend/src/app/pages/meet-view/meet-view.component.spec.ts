@@ -28,6 +28,7 @@ describe('MeetViewComponent participant safeguards', () => {
         skippedGames: [],
         playedGameParticipants: [{ gameId: 42, participantIds: [1, 2] }],
         gameResults: [],
+        gameVotes: [],
     })
 
     const setup = async () => {
@@ -167,29 +168,56 @@ describe('MeetViewComponent participant safeguards', () => {
             ])
         })
 
-        it('asks for suggestions for the people coming, and lets the organizer shortlist one', async () => {
+        it('asks for suggestions for the people coming, and adds one to the shortlist with your vote', async () => {
             const { component, api } = await scheduled()
             const suggestion = { gameData: { id: 43 }, score: 80, explanation: { reasons: [], lastPlayedAt: null } }
-            Object.assign(api, {
-                getRecommendations: vi
-                    .fn()
-                    .mockReturnValue(of({ groupId: 7, attendeeIds: [1], recommendations: [suggestion], noResultReason: null })),
-                updateSessionShortlist: vi.fn().mockReturnValue(of({ sessionId: 99, plannedGameIds: [42, 43] })),
-            })
+            const getRecommendations = vi
+                .fn()
+                .mockReturnValue(of({ groupId: 7, attendeeIds: [1], recommendations: [suggestion], noResultReason: null }))
+            const proposeSessionGame = vi
+                .fn()
+                .mockReturnValue(of({ sessionId: 99, plannedGameIds: [42, 43], gameVotes: [{ gameId: 43, accountIds: [1] }] }))
+            Object.assign(api, { getRecommendations, proposeSessionGame })
 
             await component.loadSuggestions()
-            expect((api as unknown as { getRecommendations: ReturnType<typeof vi.fn> }).getRecommendations).toHaveBeenCalledWith({
-                groupId: 7,
-                attendeeIds: [1],
-            })
+            expect(getRecommendations).toHaveBeenCalledWith({ groupId: 7, attendeeIds: [1] })
             expect(component.topSuggestions.map((entry) => entry.gameData.id)).toEqual([43])
 
             await component.addSuggestionToShortlist(43)
-            expect((api as unknown as { updateSessionShortlist: ReturnType<typeof vi.fn> }).updateSessionShortlist).toHaveBeenCalledWith(
-                99,
-                { plannedGameIds: [42, 43] },
-            )
+            expect(proposeSessionGame).toHaveBeenCalledWith(99, 43)
             expect(component.meetData?.plannedGames).toEqual([42, 43])
+            expect(component.hasMyVote(43)).toBe(true)
+        })
+
+        it('orders the shortlist by votes and toggles your vote', async () => {
+            const { component, api } = await scheduled()
+            const meet = component.meetData
+            if (!meet) return
+            meet.plannedGames = [42, 43]
+            meet.attendeeStatuses = [
+                { accountId: 1, rsvpStatus: 'accepted', attendanceStatus: 'unknown' },
+                { accountId: 2, rsvpStatus: 'accepted', attendanceStatus: 'unknown' },
+            ]
+            meet.gameVotes = [{ gameId: 43, accountIds: [2] }]
+
+            expect(component.plannedGames.map((game) => game.id)).toEqual([43, 42])
+            expect(component.voterNames(43)).toBe('Bo')
+
+            const setSessionGameVote = vi.fn().mockReturnValue(
+                of({
+                    sessionId: 99,
+                    gameVotes: [
+                        { gameId: 43, accountIds: [2] },
+                        { gameId: 42, accountIds: [1] },
+                    ],
+                }),
+            )
+            Object.assign(api, { setSessionGameVote })
+            await component.toggleVote(42)
+
+            expect(setSessionGameVote).toHaveBeenCalledWith(99, 42, true)
+            expect(component.hasMyVote(42)).toBe(true)
+            expect(component.voterNames(42)).toBe('you')
         })
 
         it('asks for nothing when everyone has declined', async () => {
@@ -516,6 +544,7 @@ describe('MeetViewComponent rendered lifecycle actions', () => {
         plannedGames: [],
         skippedGames: [],
         playedGameParticipants: [],
+        gameVotes: [],
     })
 
     const setup = async () => {

@@ -17,7 +17,7 @@ import {
     ValidateNested,
 } from 'class-validator'
 
-import { GameResultEntryDto } from './meet.type.js'
+import { GameResultEntryDto, MeetGameVotesDto } from './meet.type.js'
 
 export class PlaySessionGameBody {
     @ApiProperty({ example: 42 })
@@ -245,6 +245,25 @@ export class SessionShortlistUpdatedDto {
 
     @ApiProperty({ example: [42, 84] })
     plannedGameIds: Array<number>
+}
+
+export class SessionGameProposedDto {
+    @ApiProperty({ example: 12 })
+    sessionId: number
+
+    @ApiProperty({ example: [42, 84] })
+    plannedGameIds: Array<number>
+
+    @ApiProperty({ type: [MeetGameVotesDto] })
+    gameVotes: Array<MeetGameVotesDto>
+}
+
+export class SessionGameVotesUpdatedDto {
+    @ApiProperty({ example: 12 })
+    sessionId: number
+
+    @ApiProperty({ type: [MeetGameVotesDto] })
+    gameVotes: Array<MeetGameVotesDto>
 }
 
 export class UpdateSessionPlayedGamesBody {

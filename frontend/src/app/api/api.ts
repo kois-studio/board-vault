@@ -42,6 +42,8 @@ import {
     sessionAttendanceUpdatedSchema,
     sessionAttendeesUpdatedSchema,
     sessionCreatedSchema,
+    sessionGameProposedSchema,
+    sessionGameVotesUpdatedSchema,
     sessionPlayedGamesUpdatedSchema,
     sessionRsvpUpdatedSchema,
     sessionShortlistUpdatedSchema,
@@ -108,6 +110,8 @@ import type {
     SessionAttendanceUpdatedType,
     SessionAttendeesUpdatedType,
     SessionCreatedType,
+    SessionGameProposedType,
+    SessionGameVotesUpdatedType,
     SessionPlayedGamesUpdatedType,
     SessionRsvpUpdatedType,
     SessionShortlistUpdatedType,
@@ -306,6 +310,20 @@ export class Api {
         return this.http
             .patch<SessionShortlistUpdatedType>(`${this.url}/sessions/${sessionId}/shortlist`, body)
             .pipe(map((response) => sessionShortlistUpdatedSchema.parse(response)))
+    }
+
+    /** Adds a game to a night's shortlist, with the caller's vote (anyone coming, ADR-0019). */
+    proposeSessionGame(sessionId: number, gameId: number) {
+        return this.http
+            .post<SessionGameProposedType>(`${this.url}/sessions/${sessionId}/shortlist/${gameId}`, {})
+            .pipe(map((response) => sessionGameProposedSchema.parse(response)))
+    }
+
+    setSessionGameVote(sessionId: number, gameId: number, voted: boolean) {
+        const url = `${this.url}/sessions/${sessionId}/votes/${gameId}`
+        return (voted ? this.http.put<SessionGameVotesUpdatedType>(url, {}) : this.http.delete<SessionGameVotesUpdatedType>(url)).pipe(
+            map((response) => sessionGameVotesUpdatedSchema.parse(response)),
+        )
     }
 
     updateSessionPlayedGames(sessionId: number, body: UpdateSessionPlayedGamesRequest) {

@@ -28,8 +28,10 @@ A scheduled night is where the group decides what to play. Its games on
 offer are the games of the people coming: invited and not declined.
 Declining takes your games off the night; they stay listed as "nobody coming
 owns it". The night shows the four best suggestions for the people coming,
-which refresh as answers and invites change. The organizer can add one to the
-shortlist in one tap.
+which refresh as answers and invites change. Anyone coming can add one to the
+shortlist (it starts with their vote) and vote for shortlisted games; the
+shortlist puts the most wanted first. What to play offers "Add to <next
+night>" for the group's next planned night you are coming to.
 
 History keeps everyone who played. Someone who left the group shows as
 "Name (left)" with a muted avatar; a deleted account shows as "Deleted
