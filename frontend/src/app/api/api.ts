@@ -64,6 +64,7 @@ import {
     wishlistResponseSchema,
 } from './api.schemas'
 import type {
+    AccountMeetType,
     AdminGameProposalsType,
     AdminGameProposalType,
     AdminGamesFilters,
@@ -653,7 +654,7 @@ export class Api {
 
     getUserMeets(userId: number) {
         return this.http
-            .get<Array<MeetType>>(`${this.url}/play/users/${userId}/meets`)
+            .get<Array<AccountMeetType>>(`${this.url}/play/users/${userId}/meets`)
             .pipe(map((response) => userMeetsSchema.parse(response)))
     }
 

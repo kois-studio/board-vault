@@ -58,8 +58,8 @@
             } @else {
                 <ul class="grid grid-cols-1 gap-4 md:grid-cols-3">
                     @for (meet of upcomingSessions(); track meet.id) {
-                        <li>
-                            <a [routerLink]="['/sessions', meet.id]" class="flex h-full items-start gap-4 rounded-2xl border border-bv-border bg-bv-surface p-5 transition hover:border-bv-primary/30 hover:shadow-sm">
+                        <li class="flex h-full flex-col rounded-2xl border bg-bv-surface transition hover:shadow-sm" [class]="meet.myRsvpStatus === 'pending' ? 'border-bv-primary/40' : 'border-bv-border hover:border-bv-primary/30'">
+                            <a [routerLink]="['/sessions', meet.id]" class="flex flex-1 items-start gap-4 rounded-2xl p-5">
                                 <span class="rounded-xl bg-bv-primary-soft p-3 text-bv-on-primary-soft" aria-hidden="true"><app-icon name="calendar" [size]="22" /></span>
                                 <span class="min-w-0">
                                     <span class="block font-semibold">{{ meet.meetDate | customDate: true: meet.timezone }}</span>
@@ -69,6 +69,9 @@
                                     }
                                 </span>
                             </a>
+                            @if (meet.myRsvpStatus) {
+                                <app-session-answer class="block border-t border-bv-border px-5 py-3" [session]="meet" />
+                            }
                         </li>
                     }
                 </ul>

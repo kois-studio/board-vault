@@ -3,6 +3,11 @@ import { RouterLink } from '@angular/router'
 import type { HistoryRecordType } from '../../api/api.types'
 import { CardGroupComponent } from '../../components/card-group/card-group.component'
 import { CardInvitationComponent } from '../../components/card-invitation/card-invitation.component'
+/**
+ * Home: the signed-in starting point. Groups live here (there is no separate
+ * groups page), together with what is coming up and what was played lately.
+ */
+import { SessionAnswerComponent } from '../../components/session-answer/session-answer.component'
 import { SkeletonCardGroupComponent } from '../../components/skeletons/skeleton-card-group/skeleton-card-group.component'
 import { ButtonComponent } from '../../components/ui/button/button.component'
 import { ContainerWrapperComponent } from '../../components/ui/container-wrapper/container-wrapper.component'
@@ -15,12 +20,9 @@ import { LoadingService } from '../../core/services/loading.service'
 import { mergeHistoryParticipants } from '../../core/utils/historyParticipants'
 import { upcomingState } from '../../core/utils/sessionTiming'
 
-/**
- * Home: the signed-in starting point. Groups live here (there is no separate
- * groups page), together with what is coming up and what was played lately.
- */
 @Component({
     imports: [
+        SessionAnswerComponent,
         ButtonComponent,
         RouterLink,
         ContainerWrapperComponent,

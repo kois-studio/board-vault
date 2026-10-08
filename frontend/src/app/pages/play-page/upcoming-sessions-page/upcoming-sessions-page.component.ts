@@ -1,6 +1,6 @@
 import { Component, computed, effect, inject, signal, untracked } from '@angular/core'
 import { ActivatedRoute, Router, RouterLink } from '@angular/router'
-import type { MeetType } from '../../../api/api.types'
+import type { AccountMeetType } from '../../../api/api.types'
 import { ButtonComponent } from '../../../components/ui/button/button.component'
 import { ContainerWrapperComponent } from '../../../components/ui/container-wrapper/container-wrapper.component'
 import { IconComponent } from '../../../components/ui/icon/icon.component'
@@ -11,7 +11,7 @@ import { DataService } from '../../../core/services/data.service'
 import { LoadingService } from '../../../core/services/loading.service'
 import { relativeDay, sessionDateParts, type UpcomingState, upcomingState } from '../../../core/utils/sessionTiming'
 
-type UpcomingSection = { state: UpcomingState; title: string; hint: string; sessions: Array<MeetType> }
+type UpcomingSection = { state: UpcomingState; title: string; hint: string; sessions: Array<AccountMeetType> }
 
 /** Row colours per state: waiting for results (warning), live (success), planned (primary). */
 const STATE_STYLES: Record<UpcomingState, { row: string; date: string; pill: string; action: string }> = {
@@ -35,8 +35,18 @@ const STATE_STYLES: Record<UpcomingState, { row: string; date: string; pill: str
     },
 }
 
+import { SessionAnswerComponent } from '../../../components/session-answer/session-answer.component'
+
 @Component({
-    imports: [RouterLink, ContainerWrapperComponent, CustomDatePipe, PageHeaderComponent, ButtonComponent, IconComponent],
+    imports: [
+        SessionAnswerComponent,
+        RouterLink,
+        ContainerWrapperComponent,
+        CustomDatePipe,
+        PageHeaderComponent,
+        ButtonComponent,
+        IconComponent,
+    ],
     templateUrl: 'upcoming-sessions-page.component.html',
 })
 export class UpcomingSessionsPageComponent {
@@ -69,7 +79,7 @@ export class UpcomingSessionsPageComponent {
     })
 
     public readonly sections = computed((): Array<UpcomingSection> => {
-        const byState: Record<UpcomingState, Array<MeetType>> = { 'wrap-up': [], live: [], planned: [] }
+        const byState: Record<UpcomingState, Array<AccountMeetType>> = { 'wrap-up': [], live: [], planned: [] }
         const sorted = [...this.userMeets$()].sort((a, b) => new Date(a.meetDate).getTime() - new Date(b.meetDate).getTime())
         for (const meet of sorted) {
             const state = upcomingState(meet)

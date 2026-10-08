@@ -2,6 +2,7 @@ import { effect, Injectable, inject, signal } from '@angular/core'
 import { catchError, concatMap, finalize, firstValueFrom, forkJoin, of, Subject, takeUntil, tap, throwError } from 'rxjs'
 import { Api } from '../../api/api'
 import type {
+    AccountMeetType,
     ClerkSyncResultType,
     CollectionActivityWithGameDataType,
     GameCompleteType,
@@ -11,7 +12,6 @@ import type {
     HistoryRecordType,
     InvitationWithAccountsData,
     InvitationWithExtraData,
-    MeetType,
     NotificationType,
     UserProposalStatsType,
     UserStatsType,
@@ -19,6 +19,7 @@ import type {
 } from '../../api/api.types'
 import { ToastService } from '../../components/toast/toast.service'
 import { LOADING_KEYS } from '../enums/loading-keys-enum'
+import { rsvpToast } from '../utils/rsvp'
 import { LoadingService } from './loading.service'
 import { LogService } from './log.service'
 
@@ -44,7 +45,7 @@ export class DataService {
     public readonly userNotifications = signal<Array<NotificationType>>([])
     public readonly userInvitations = signal<Array<InvitationWithExtraData>>([])
     public readonly userReviews = signal<Array<GameReviewWithGameData>>([])
-    public readonly userMeets = signal<Array<MeetType>>([])
+    public readonly userMeets = signal<Array<AccountMeetType>>([])
     public readonly userHistory = signal<Array<HistoryRecordType>>([])
     public readonly userGamesError = signal(false)
     public readonly userGroupsError = signal(false)
@@ -592,6 +593,20 @@ export class DataService {
                     }
                 },
             })
+    }
+
+    // #region answer a session
+
+    /** Answers a game night from a list (Home, Upcoming) and updates that list in place. */
+    public answerSession(sessionId: number, rsvpStatus: 'accepted' | 'declined') {
+        return this.api.updateSessionRsvp(sessionId, { rsvpStatus }).pipe(
+            tap((result) => {
+                this.userMeets.update((meets) =>
+                    meets.map((meet) => (meet.id === result.sessionId ? { ...meet, myRsvpStatus: result.rsvpStatus } : meet)),
+                )
+                this.toastService.success(rsvpToast(result.rsvpStatus))
+            }),
+        )
     }
 
     // #region create group

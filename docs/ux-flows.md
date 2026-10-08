@@ -13,6 +13,12 @@ mobile states. Invitation and participant-claim flows must distinguish a real
 account from a group-scoped placeholder and must not expose another account's
 private collection.
 
+Answering a game night should never need a detour: wherever a night is
+listed for someone it invites (Home, Upcoming), `<app-session-answer>` shows
+their answer and lets them change it while the night is scheduled or live.
+The session list (`GET /play/users/:userId/meets`) carries the caller's own
+`myRsvpStatus` for that.
+
 History keeps everyone who played. Someone who left the group shows as
 "Name (left)" with a muted avatar; a deleted account shows as "Deleted
 account" with a grey avatar (ADR-0018). Neither changes a session's counts.
