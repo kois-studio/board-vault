@@ -294,6 +294,61 @@ export class SessionQueries {
         }
     }
 
+    /** Per-night votes (#114): one row per account and shortlisted game. */
+    async getMeetGameVotes(meetId: number): Promise<Array<{ gameId: number; accountIds: Array<number> }>> {
+        const result = await this.database.execute({
+            sql: 'SELECT gameId, accountId FROM MeetGameVote WHERE meetId = ? ORDER BY rowid',
+            args: [meetId],
+        })
+        const byGame = new Map<number, Array<number>>()
+
+        for (const row of result.rows) {
+            const gameId = Number(row[0])
+
+            byGame.set(gameId, [...(byGame.get(gameId) ?? []), Number(row[1])])
+        }
+        return [...byGame].map(([gameId, accountIds]) => ({ gameId, accountIds }))
+    }
+
+    async getMeetPlannedGameIds(meetId: number): Promise<Array<number>> {
+        const result = await this.database.execute({
+            sql: "SELECT gameId FROM MeetGame WHERE meetId = ? AND gameStatus = 'planned' ORDER BY createdAt, gameId",
+            args: [meetId],
+        })
+
+        return result.rows.map(row => Number(row[0]))
+    }
+
+    /** Adds one game to the shortlist; a game already on the night (planned or played) stays as it is. */
+    addMeetPlannedGame(meetId: number, gameId: number) {
+        return this.database.execute({
+            sql: "INSERT OR IGNORE INTO MeetGame (meetId, gameId, gameStatus) VALUES (?, ?, 'planned')",
+            args: [meetId, gameId],
+        })
+    }
+
+    addMeetGameVote(meetId: number, gameId: number, accountId: number) {
+        return this.database.execute({
+            sql: 'INSERT OR IGNORE INTO MeetGameVote (meetId, gameId, accountId) VALUES (?, ?, ?)',
+            args: [meetId, gameId, accountId],
+        })
+    }
+
+    removeMeetGameVote(meetId: number, gameId: number, accountId: number) {
+        return this.database.execute({
+            sql: 'DELETE FROM MeetGameVote WHERE meetId = ? AND gameId = ? AND accountId = ?',
+            args: [meetId, gameId, accountId],
+        })
+    }
+
+    /** Votes follow the shortlist: a game taken off it loses its votes. */
+    deleteMeetGameVotesOffShortlist(meetId: number) {
+        return this.database.execute({
+            sql: 'DELETE FROM MeetGameVote WHERE meetId = ? AND gameId NOT IN (SELECT gameId FROM MeetGame WHERE meetId = ?)',
+            args: [meetId, meetId],
+        })
+    }
+
     async replaceMeetPlayedGames(
         meetId: number,
         games: Array<{ gameId: number; participantIds: Array<number> }>,

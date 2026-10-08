@@ -138,7 +138,15 @@
                                 [signal]="getGroupSignal(gameId)"
                             >
                                 <div class="mt-4 flex flex-wrap items-center justify-between gap-2">
-                                    <a appButton variant="secondary" size="small" icon="calendar-plus" [routerLink]="['/groups', result.groupId, 'sessions', 'new']" [queryParams]="{ plannedGameId: gameId, participantIds: getRecommendationParticipantIds(result) }">Plan with this game</a>
+                                    @if (nextNight(); as night) {
+                                        @if (addedToNight()[gameId]) {
+                                            <a class="flex items-center gap-1.5 text-sm font-medium text-bv-success hover:underline" [routerLink]="['/sessions', night.id]"><app-icon name="check" [size]="16" aria-hidden="true" /> On the {{ nextNightLabel() }} shortlist</a>
+                                        } @else {
+                                            <button appButton variant="secondary" size="small" type="button" icon="calendar-plus" [disabled]="addingToNight() !== null" (click)="addToNextNight(gameId)">Add to {{ nextNightLabel() }}</button>
+                                        }
+                                    } @else {
+                                        <a appButton variant="secondary" size="small" icon="calendar-plus" [routerLink]="['/groups', result.groupId, 'sessions', 'new']" [queryParams]="{ plannedGameId: gameId, participantIds: getRecommendationParticipantIds(result) }">Plan with this game</a>
+                                    }
                                     <div class="flex gap-1" role="group" [attr.aria-label]="'Your opinion on ' + getGameTitle(recommendation)">
                                         <button type="button" class="app-chip px-2.5" aria-label="Interested" title="Interested" [attr.aria-pressed]="feedback === 'interested'" [disabled]="feedback === 'saving'" (click)="saveFeedback(gameId, 'interested')">
                                             <app-icon name="thumbs-up" [size]="16" aria-hidden="true" />

@@ -35,6 +35,8 @@ export function mapMeetDetailsResult(resultSet: ResultSet): MeetWithAttendeesAnd
               }
             : {}),
         gameResults: groupGameResults(row.length > 17 ? row[17] : null),
+        // Filled by the sessions service, which reads votes separately.
+        gameVotes: [],
     }
 }
 

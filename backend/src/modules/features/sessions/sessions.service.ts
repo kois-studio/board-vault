@@ -12,6 +12,8 @@ import type {
     ScheduledSessionCreatedDto,
     SessionAttendeesUpdatedDto,
     SessionShortlistUpdatedDto,
+    SessionGameProposedDto,
+    SessionGameVotesUpdatedDto,
     SessionPlayedGamesUpdatedDto,
     SessionStatusUpdatedDto,
     SessionCreatedDto,
@@ -41,6 +43,8 @@ export class SessionsService {
         if (!session) {
             throw new NotFoundException(`Session with id ${sessionId} not found`)
         }
+
+        session.gameVotes = await this.databaseService.sessions.getMeetGameVotes(sessionId)
 
         return session
     }
@@ -385,7 +389,77 @@ export class SessionsService {
         if (applied === false) {
             throw new ConflictException('The session changed while the shortlist was being updated. Reload and try again.')
         }
+        await this.databaseService.sessions.deleteMeetGameVotesOffShortlist(sessionId)
         return { sessionId, plannedGameIds }
+    }
+
+    /**
+     * Anyone coming adds a game to the shortlist, with their vote (#114, ADR-0019). The game must be
+     * owned by someone in the group, like any shortlisted game; one already on the night stays as it is.
+     */
+    async proposeSessionGame(actorAccountId: number, sessionId: number, gameId: number): Promise<SessionGameProposedDto> {
+        const sessionRow = await this.requireSessionRole(
+            sessionId,
+            actorAccountId,
+            'player',
+            'Only people coming to the game night can add games to its shortlist',
+        )
+        const status = String(sessionRow[5] ?? 'completed')
+
+        if (status !== 'scheduled' && status !== 'active') {
+            throw new BadRequestException(`Cannot change the shortlist of a ${status} session`)
+        }
+
+        const groupId = Number(sessionRow[1])
+        const availableGameIds = new Set(await this.databaseService.groups.getGroupAvailableGameIds(groupId))
+
+        for (const id of await this.getGroupAvailableGameIdsForPeople(groupId, await this.getMeetPersonIds(sessionId))) {
+            availableGameIds.add(id)
+        }
+
+        if (!availableGameIds.has(gameId)) {
+            throw new BadRequestException('Every planned game must be owned by at least one group member')
+        }
+
+        await this.databaseService.sessions.addMeetPlannedGame(sessionId, gameId)
+        await this.databaseService.sessions.addMeetGameVote(sessionId, gameId, actorAccountId)
+
+        return {
+            sessionId,
+            plannedGameIds: await this.databaseService.sessions.getMeetPlannedGameIds(sessionId),
+            gameVotes: await this.databaseService.sessions.getMeetGameVotes(sessionId),
+        }
+    }
+
+    /** Anyone coming says whether they would play a shortlisted game on the night. */
+    async setSessionGameVote(
+        actorAccountId: number,
+        sessionId: number,
+        gameId: number,
+        voted: boolean,
+    ): Promise<SessionGameVotesUpdatedDto> {
+        const sessionRow = await this.requireSessionRole(
+            sessionId,
+            actorAccountId,
+            'player',
+            'Only people coming to the game night can vote',
+        )
+        const status = String(sessionRow[5] ?? 'completed')
+
+        if (status !== 'scheduled' && status !== 'active') {
+            throw new BadRequestException(`Cannot vote on a ${status} session`)
+        }
+
+        if (voted) {
+            if (!(await this.databaseService.sessions.getMeetPlannedGameIds(sessionId)).includes(gameId)) {
+                throw new BadRequestException('Only shortlisted games can be voted for')
+            }
+            await this.databaseService.sessions.addMeetGameVote(sessionId, gameId, actorAccountId)
+        } else {
+            await this.databaseService.sessions.removeMeetGameVote(sessionId, gameId, actorAccountId)
+        }
+
+        return { sessionId, gameVotes: await this.databaseService.sessions.getMeetGameVotes(sessionId) }
     }
 
     async updateSessionPlayedGames(

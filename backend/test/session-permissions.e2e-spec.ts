@@ -94,6 +94,21 @@ describe('session permissions (e2e)', () => {
         await patch('status', 'user_tess', { status: 'active' }).expect(403)
     })
 
+    it('lets the people coming vote for shortlisted games and add their own (#114)', async () => {
+        const server = () => request(app.getHttpServer())
+        // Azul (1) is on the shortlist from the first test; Rita owns it.
+        await server().put('/sessions/60/votes/1').set(as('user_rita')).expect(200)
+        const proposed = (await server().post('/sessions/60/shortlist/1').set(as('user_pau')).expect(201)).body
+
+        expect(proposed).toEqual({ sessionId: 60, plannedGameIds: [1], gameVotes: [{ gameId: 1, accountIds: [3, 2] }] })
+        await server().put('/sessions/60/votes/1').set(as('user_sam')).expect(403)
+        await server().put('/sessions/60/votes/1').set(as('user_tess')).expect(403)
+
+        await server().delete('/sessions/60/votes/1').set(as('user_rita')).expect(200)
+        const details = (await server().get('/sessions/60').set(as('user_tess')).expect(200)).body
+        expect(details.gameVotes).toEqual([{ gameId: 1, accountIds: [2] }])
+    })
+
     it('lets an invitee who is coming start the night and record play, and players count as there', async () => {
         await patch('status', 'user_rita', { status: 'active' }).expect(200)
         await patch('played-games', 'user_rita', { playedGameIds: [1], games: [{ gameId: 1, participantIds: [3] }] }).expect(200)

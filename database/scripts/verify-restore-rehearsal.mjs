@@ -97,14 +97,14 @@ try {
     }
 
     const lines = restored.stdout.trim().split('\n').map(line => line.trim()).filter(Boolean)
-    const expected = ['ok', '2|2|2|1|2', 'Fixture Group|Fixture Game|2026-01-31 10:00:00', 'notes:ok', '19|0019', 'credentials:dropped']
+    const expected = ['ok', '2|2|2|1|2', 'Fixture Group|Fixture Game|2026-01-31 10:00:00', 'notes:ok', '20|0020', 'credentials:dropped']
     if (lines.join('\n') !== expected.join('\n')) {
         throw new Error(`Restored database assertions failed. Expected:\n${expected.join('\n')}\nReceived:\n${lines.join('\n')}`)
     }
 
     console.log('Synthetic SQLite backup/restore rehearsal: ok')
     console.log('Representative accounts, group membership, session attendance, played games, translations, and invitation history survived the copy.')
-    console.log('Pending migrations 0006–0019 applied successfully to the restored database; integrity and foreign-key checks passed.')
+    console.log('Pending migrations 0006–0020 applied successfully to the restored database; integrity and foreign-key checks passed.')
 } finally {
     await rm(temporaryDirectory, { recursive: true, force: true })
 }

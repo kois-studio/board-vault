@@ -1,4 +1,11 @@
 import { signal } from '@angular/core'
+import { TestBed } from '@angular/core/testing'
+import { ActivatedRoute, convertToParamMap, provideRouter } from '@angular/router'
+import { of } from 'rxjs'
+import { Api } from '../../../api/api'
+import { ToastService } from '../../../components/toast/toast.service'
+import { DataService } from '../../../core/services/data.service'
+import { LoadingService } from '../../../core/services/loading.service'
 import { RecommendationsPageComponent } from './recommendations-page.component'
 
 describe('RecommendationsPageComponent history context', () => {
@@ -60,5 +67,68 @@ describe('RecommendationsPageComponent history context', () => {
         expect(recommendations()).toBeNull()
         expect(recommendationSignals()).toBeNull()
         expect(feedbackState()).toEqual({})
+    })
+})
+
+describe('RecommendationsPageComponent and the next game night', () => {
+    const night = (overrides: Record<string, unknown>) => ({
+        id: 21,
+        groupId: 7,
+        createdBy: 9,
+        meetDate: '2099-10-09T17:00:00.000Z',
+        isConfirmed: false,
+        status: 'scheduled',
+        timezone: 'Europe/Madrid',
+        notes: null,
+        myRsvpStatus: 'pending',
+        ...overrides,
+    })
+
+    const setup = (meets: Array<ReturnType<typeof night>>) => {
+        const proposeSessionGame = vi.fn().mockReturnValue(of({ sessionId: 21, plannedGameIds: [42], gameVotes: [] }))
+        const toast = { success: vi.fn(), error: vi.fn() }
+        TestBed.configureTestingModule({
+            providers: [
+                provideRouter([]),
+                { provide: Api, useValue: { proposeSessionGame } },
+                { provide: ActivatedRoute, useValue: { snapshot: { queryParamMap: convertToParamMap({}) } } },
+                {
+                    provide: DataService,
+                    useValue: {
+                        currentUser: signal({ id: 1 }),
+                        userGroups: signal([{ id: 7, name: 'Fridays', createdBy: 9, members: [] }]),
+                        userGroupsError: signal(false),
+                        userMeets: signal(meets),
+                    },
+                },
+                { provide: LoadingService, useValue: { loadingStatesIndex: signal({}) } },
+                { provide: ToastService, useValue: toast },
+            ],
+        })
+        const component = TestBed.createComponent(RecommendationsPageComponent).componentInstance
+        component.selectedGroupId.set(7)
+        return { component, proposeSessionGame, toast }
+    }
+
+    it('offers the earliest planned night you are coming to, and adds the game to it', async () => {
+        const { component, proposeSessionGame } = setup([
+            night({ id: 22, meetDate: '2099-10-16T17:00:00.000Z' }),
+            night({ id: 21 }),
+            night({ id: 20, meetDate: '2099-10-02T17:00:00.000Z', myRsvpStatus: 'declined' }),
+            night({ id: 19, meetDate: '2099-10-01T17:00:00.000Z', status: 'cancelled' }),
+        ])
+
+        expect(component.nextNight()?.id).toBe(21)
+        expect(component.nextNightLabel()).toBe('Fri 9 Oct')
+
+        await component.addToNextNight(42)
+        expect(proposeSessionGame).toHaveBeenCalledWith(21, 42)
+        expect(component.addedToNight()[42]).toBe(true)
+    })
+
+    it('has no night to offer when you are not coming to any', () => {
+        const { component } = setup([night({ myRsvpStatus: 'declined' }), night({ id: 30, myRsvpStatus: null })])
+
+        expect(component.nextNight()).toBeNull()
     })
 })

@@ -29,7 +29,8 @@ caller's own answer. Nothing new is stored.
 
 | Action | Who may do it |
 | --- | --- |
-| Change who is invited, change the shortlist | Organizer |
+| Change who is invited, replace or trim the shortlist | Organizer |
+| Add a game to the shortlist, vote for shortlisted games | Player |
 | Cancel the night | Organizer |
 | Start and finish the night | Player |
 | Mark games played and who played them | Player |
@@ -53,8 +54,9 @@ role gets 403 with a sentence that names who may do it.
   (ADR-0009).
 - Declining a night takes away the right to run it. Changing your answer
   back to "I'm going" gives it back.
-- Letting invitees propose shortlist games is the next step (#114). It will
-  add a proposal action for players and leave the shortlist itself with the
-  organizer.
+- Players can add a game to the shortlist and vote for shortlisted games
+  (#114, `POST /sessions/:id/shortlist/:gameId`, `PUT|DELETE
+  /sessions/:id/votes/:gameId`). Replacing or trimming the shortlist stays
+  with the organizer.
 - The legacy `meet-attendees` routes keep their creator-only check. The app
   no longer calls them.

@@ -38,6 +38,8 @@ import type {
     SessionAttendanceUpdatedType,
     SessionAttendeesUpdatedType,
     SessionCreatedType,
+    SessionGameProposedType,
+    SessionGameVotesUpdatedType,
     SessionPlayedGamesUpdatedType,
     SessionRsvpUpdatedType,
     SessionShortlistUpdatedType,
@@ -488,6 +490,8 @@ const meetFields = z.object({
 
 export const meetSchema: z.ZodMiniType<MeetType> = meetFields
 
+const gameVotesSchema = z.object({ gameId: z.number(), accountIds: z.array(z.number()) })
+
 export const meetDetailsSchema: z.ZodMiniType<MeetWithAttendeesAndGamesType> = z.extend(meetFields, {
     attendees: z.array(z.number()),
     attendeeStatuses: z.array(
@@ -538,6 +542,7 @@ export const meetDetailsSchema: z.ZodMiniType<MeetWithAttendeesAndGamesType> = z
             }),
         ),
     ),
+    gameVotes: z._default(z.optional(z.array(gameVotesSchema)), []),
 })
 
 const historyPersonSchema = z.object({
@@ -623,6 +628,17 @@ export const sessionAttendeesUpdatedSchema: z.ZodMiniType<SessionAttendeesUpdate
 export const sessionShortlistUpdatedSchema: z.ZodMiniType<SessionShortlistUpdatedType> = z.object({
     sessionId: z.number(),
     plannedGameIds: z.array(z.number()),
+})
+
+export const sessionGameProposedSchema: z.ZodMiniType<SessionGameProposedType> = z.object({
+    sessionId: z.number(),
+    plannedGameIds: z.array(z.number()),
+    gameVotes: z.array(gameVotesSchema),
+})
+
+export const sessionGameVotesUpdatedSchema: z.ZodMiniType<SessionGameVotesUpdatedType> = z.object({
+    sessionId: z.number(),
+    gameVotes: z.array(gameVotesSchema),
 })
 
 export const sessionPlayedGamesUpdatedSchema: z.ZodMiniType<SessionPlayedGamesUpdatedType> = z.object({

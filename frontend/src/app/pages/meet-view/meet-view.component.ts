@@ -908,12 +908,54 @@ export class MeetViewComponent {
         })
     }
 
+    /** The shortlist, most-voted first; ties keep the order games were added. */
     get plannedGames(): Array<GameCompleteType & { active: boolean }> {
         if (!this.meetData) return []
         const gamesById = new Map(this.totalGames.map((game) => [game.id, game]))
         return this.meetData.plannedGames
             .map((gameId) => gamesById.get(gameId))
             .filter((game): game is GameCompleteType & { active: boolean } => game !== undefined)
+            .map((game, index) => ({ game, index, votes: this.votesFor(game.id).length }))
+            .sort((a, b) => b.votes - a.votes || a.index - b.index)
+            .map(({ game }) => game)
+    }
+
+    /** The accounts that would play this shortlisted game, oldest vote first. */
+    votesFor(gameId: number): Array<number> {
+        return this.meetData?.gameVotes?.find((votes) => votes.gameId === gameId)?.accountIds ?? []
+    }
+
+    hasMyVote(gameId: number): boolean {
+        return this.userData !== null && this.votesFor(gameId).includes(this.userData.id)
+    }
+
+    /** "Ana, Bo" for the people who voted, by their names in the group. */
+    voterNames(gameId: number): string {
+        const members = new Map((this.groupData?.members ?? []).map((member) => [member.id, member.displayName || member.username]))
+        return this.votesFor(gameId)
+            .map((accountId) => (accountId === this.userData?.id ? 'you' : (members.get(accountId) ?? 'Someone')))
+            .join(', ')
+    }
+
+    /** Anyone coming can vote and add games while the night is open (ADR-0019, #114). */
+    get canProposeGames(): boolean {
+        return this.canRunNight
+    }
+
+    public readonly votingGameId = signal<number | null>(null)
+
+    async toggleVote(gameId: number): Promise<void> {
+        if (!this.meetData || !this.canProposeGames || this.votingGameId() !== null) return
+        this.votingGameId.set(gameId)
+        try {
+            const result = await firstValueFrom(this.api.setSessionGameVote(this.meetData.id, gameId, !this.hasMyVote(gameId)))
+            this.meetData.gameVotes = result.gameVotes
+        } catch {
+            this.toastService.error('Your vote could not be saved. Try again.')
+        } finally {
+            this.votingGameId.set(null)
+            this.changeDetector.markForCheck()
+        }
     }
 
     get plannedGameIdsDraftChanged(): boolean {
@@ -992,10 +1034,23 @@ export class MeetViewComponent {
         return this.suggestions()?.recommendations.slice(0, 4) ?? []
     }
 
+    /** Adds a suggested game to the shortlist with your vote; anyone coming can. */
     async addSuggestionToShortlist(gameId: number): Promise<void> {
-        if (!this.meetData || !this.canShapeNight || this.meetData.plannedGames.includes(gameId)) return
-        this.plannedGameIdsDraft = [...this.meetData.plannedGames, gameId]
-        await this.savePlannedGames()
+        if (!this.meetData || !this.canProposeGames || this.isUpdatingShortlist || this.meetData.plannedGames.includes(gameId)) return
+        this.isUpdatingShortlist = true
+        try {
+            const result = await firstValueFrom(this.api.proposeSessionGame(this.meetData.id, gameId))
+            this.meetData.plannedGames = result.plannedGameIds
+            this.meetData.gameVotes = result.gameVotes
+            this.plannedGameIdsDraft = [...result.plannedGameIds]
+            this.meetDataCopyOriginal = JSON.parse(JSON.stringify(this.meetData))
+            this.toastService.success('Added to the shortlist, with your vote.')
+        } catch {
+            this.toastService.error('Could not add the game to the shortlist.')
+        } finally {
+            this.isUpdatingShortlist = false
+            this.changeDetector.markForCheck()
+        }
     }
 
     get skippedGames(): Array<GameCompleteType & { active: boolean }> {

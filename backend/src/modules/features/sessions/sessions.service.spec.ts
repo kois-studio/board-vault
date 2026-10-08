@@ -38,6 +38,12 @@ function createDatabaseMock() {
         getGroupAvailableGameIdsForPeople: vi.fn().mockResolvedValue([]),
         updateMeetAttendance: vi.fn().mockResolvedValue(undefined),
         markPlayersAttended: vi.fn().mockResolvedValue(undefined),
+        getMeetGameVotes: vi.fn().mockResolvedValue([]),
+        getMeetPlannedGameIds: vi.fn().mockResolvedValue([42]),
+        addMeetPlannedGame: vi.fn().mockResolvedValue({ rowsAffected: 1 }),
+        addMeetGameVote: vi.fn().mockResolvedValue({ rowsAffected: 1 }),
+        removeMeetGameVote: vi.fn().mockResolvedValue({ rowsAffected: 1 }),
+        deleteMeetGameVotesOffShortlist: vi.fn().mockResolvedValue({ rowsAffected: 0 }),
         replaceMeetPlannedGames: vi.fn().mockResolvedValue(true),
         getMeetPlayedGameParticipants: vi.fn().mockResolvedValue([]),
         replaceMeetPlayedGames: vi.fn().mockResolvedValue({ applied: true, playedGameIds: [42], skippedGameIds: [43] }),
@@ -86,6 +92,7 @@ describe('SessionsService', () => {
             timezone: 'Europe/Madrid',
             notes: 'A memorable night',
             gameResults: [],
+            gameVotes: [],
         })
         expect(database.getMeetDetailsByIdForAccount).toHaveBeenCalledWith(12, 2)
     })
@@ -594,6 +601,57 @@ describe('SessionsService', () => {
 
         await expect(service.updateSessionStatus(1, 12, { status: 'active' })).rejects.toThrow(BadRequestException)
         expect(database.updateMeetStatus).not.toHaveBeenCalled()
+    })
+
+    describe('shortlist proposals and votes (#114)', () => {
+        const asActor = (isGroupOwner: 0 | 1, myRsvpStatus: string | null, status = 'scheduled') => {
+            const database = createDatabaseMock()
+            database.getMeetAccessForAccount.mockResolvedValue({
+                rows: [[12, 7, 1, '2026-08-16T19:30:00.000Z', 0, status, 'Europe/Madrid', null, isGroupOwner, myRsvpStatus]],
+            })
+            return { database, service: new SessionsService(fakeDatabase(database), fakeActivityNotifier()) }
+        }
+
+        it('lets someone coming add a group game to the shortlist, with their vote', async () => {
+            const { database, service } = asActor(0, 'accepted')
+            database.getMeetPlannedGameIds.mockResolvedValue([42, 43])
+            database.getMeetGameVotes.mockResolvedValue([{ gameId: 43, accountIds: [2] }])
+
+            await expect(service.proposeSessionGame(2, 12, 43)).resolves.toEqual({
+                sessionId: 12,
+                plannedGameIds: [42, 43],
+                gameVotes: [{ gameId: 43, accountIds: [2] }],
+            })
+            expect(database.addMeetPlannedGame).toHaveBeenCalledWith(12, 43)
+            expect(database.addMeetGameVote).toHaveBeenCalledWith(12, 43, 2)
+        })
+
+        it('refuses a game nobody in the group owns, and people who are not coming', async () => {
+            await expect(asActor(0, 'accepted').service.proposeSessionGame(2, 12, 99)).rejects.toThrow(BadRequestException)
+            await expect(asActor(0, 'declined').service.proposeSessionGame(2, 12, 42)).rejects.toThrow(ForbiddenException)
+            await expect(asActor(0, null).service.setSessionGameVote(2, 12, 42, true)).rejects.toThrow(ForbiddenException)
+        })
+
+        it('votes only for shortlisted games of an open night, and takes votes back', async () => {
+            const { database, service } = asActor(0, 'pending')
+
+            await expect(service.setSessionGameVote(2, 12, 43, true)).rejects.toThrow(BadRequestException)
+            await service.setSessionGameVote(2, 12, 42, true)
+            expect(database.addMeetGameVote).toHaveBeenCalledWith(12, 42, 2)
+            await service.setSessionGameVote(2, 12, 42, false)
+            expect(database.removeMeetGameVote).toHaveBeenCalledWith(12, 42, 2)
+
+            await expect(asActor(0, 'accepted', 'completed').service.setSessionGameVote(2, 12, 42, true)).rejects.toThrow(
+                BadRequestException,
+            )
+        })
+
+        it('drops the votes of games taken off the shortlist', async () => {
+            const { database, service } = asActor(1, null)
+
+            await service.updateSessionShortlist(2, 12, { plannedGameIds: [42] })
+            expect(database.deleteMeetGameVotesOffShortlist).toHaveBeenCalledWith(12)
+        })
     })
 
     describe('who may do what (ADR-0019)', () => {
