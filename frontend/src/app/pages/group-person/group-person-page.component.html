@@ -1,7 +1,7 @@
 <container-wrapper>
     <div class="space-y-8 pb-16 pt-6">
         <a [routerLink]="['/groups', groupId()]" class="inline-flex min-h-11 items-center gap-2 text-sm font-medium text-bv-text-muted hover:text-bv-text">
-            <app-icon name="arrow-left" [size]="16" /> {{ groupName() }}
+            <app-icon name="arrow-left" [size]="16" /> {{ groupName() ?? 'Back to the group' }}
         </a>
 
         @if (isLoading()) {
@@ -16,7 +16,7 @@
                 <app-image-profile size="large" class="shrink-0" [avatar]="person.avatar ?? initialsAvatar(person.displayName)" />
                 <div class="min-w-0">
                     <h1 id="person-name" class="truncate text-3xl font-bold tracking-tight">{{ person.displayName }}</h1>
-                    <p class="mt-1 text-secondary">{{ person.accountId !== null ? 'Member of ' + groupName() : 'In ' + groupName() + ', without an account' }}</p>
+                    <p class="mt-1 text-secondary">{{ person.accountId !== null ? 'Member of ' + (groupName() ?? 'this group') : 'In ' + (groupName() ?? 'this group') + ', without an account' }}</p>
                 </div>
             </section>
 
@@ -36,7 +36,12 @@
                 </article>
                 <article class="rounded-2xl border border-bv-border bg-bv-surface p-5 shadow-sm">
                     <h2 class="text-sm font-semibold uppercase tracking-[0.18em] text-bv-primary">Game nights</h2>
-                    @if (standing(); as standing) {
+                    @if (standingsError()) {
+                        <div class="mt-2 text-sm" role="alert">
+                            <p>Their game nights could not be loaded.</p>
+                            <button type="button" class="mt-1 font-medium text-bv-primary underline" (click)="loadStandings()">Retry</button>
+                        </div>
+                    } @else if (standing(); as standing) {
                         <dl class="mt-3 grid grid-cols-3 gap-3 text-center">
                             <div class="rounded-xl bg-bv-bg p-3">
                                 <dt class="text-xs text-secondary">Wins</dt>
@@ -79,7 +84,7 @@
         } @else {
             <div class="rounded-2xl border border-dashed border-bv-border p-6 text-center text-secondary">
                 <h1 class="text-xl font-semibold text-bv-text">This person is not in this group.</h1>
-                <a appButton variant="secondary" class="mt-4" [routerLink]="['/groups', groupId()]">Back to {{ groupName() }}</a>
+                <a appButton variant="secondary" class="mt-4" [routerLink]="['/groups', groupId()]">Back to {{ groupName() ?? 'the group' }}</a>
             </div>
         }
     </div>

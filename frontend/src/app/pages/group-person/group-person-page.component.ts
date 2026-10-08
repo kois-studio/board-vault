@@ -46,8 +46,11 @@ export class GroupPersonPageComponent {
     private readonly standings = signal<Array<GroupStandingType>>([])
     public readonly isLoading = signal(true)
     public readonly loadError = signal(false)
+    /** Game nights are a detail of the page: if they fail, the collection still shows. */
+    public readonly standingsError = signal(false)
 
-    public readonly groupName = computed(() => this.dataService.userGroups().find((group) => group.id === this.groupId())?.name ?? 'Group')
+    /** Null until the groups arrive, as on a link opened directly. */
+    public readonly groupName = computed(() => this.dataService.userGroups().find((group) => group.id === this.groupId())?.name ?? null)
     public readonly person = computed(
         () =>
             this.collection()?.people.find((person) =>
@@ -73,17 +76,19 @@ export class GroupPersonPageComponent {
     public async load(): Promise<void> {
         this.isLoading.set(true)
         this.loadError.set(false)
+        const [collection] = await Promise.allSettled([firstValueFrom(this.api.getGroupCollection(this.groupId())), this.loadStandings()])
+        if (collection.status === 'fulfilled') this.collection.set(collection.value)
+        else this.loadError.set(true)
+        this.isLoading.set(false)
+    }
+
+    public async loadStandings(): Promise<void> {
+        this.standingsError.set(false)
         try {
-            const [collection, insights] = await Promise.all([
-                firstValueFrom(this.api.getGroupCollection(this.groupId())),
-                firstValueFrom(this.api.getGroupInsights(this.groupId())),
-            ])
-            this.collection.set(collection)
+            const insights = await firstValueFrom(this.api.getGroupInsights(this.groupId()))
             this.standings.set(insights.standings)
         } catch {
-            this.loadError.set(true)
-        } finally {
-            this.isLoading.set(false)
+            this.standingsError.set(true)
         }
     }
 }

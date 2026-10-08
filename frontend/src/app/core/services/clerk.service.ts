@@ -55,6 +55,8 @@ export class ClerkService {
     public readonly primaryEmail = signal<string | null>(null)
 
     private loaded: Promise<void> | null = null
+    /** The session forgetSession() let go of. Clerk may still hold it, but Board Vault never uses it again. */
+    private forgottenSessionId: string | null = null
 
     /**
      * Starts loading Clerk once the first page has painted, so public pages
@@ -105,7 +107,9 @@ export class ClerkService {
 
     public async getToken(): Promise<string | null> {
         await this.whenLoaded()
-        return (await this.clerk?.session?.getToken()) ?? null
+        const session = this.clerk?.session
+        if (!session || session.id === this.forgottenSessionId) return null
+        return (await session.getToken()) ?? null
     }
 
     public openSignIn(): void {
@@ -182,8 +186,23 @@ export class ClerkService {
         await this.clerk?.signOut()
     }
 
+    /**
+     * Forgets the signed-in user Board Vault reads, without waiting for Clerk. After the account is
+     * deleted its Clerk user is gone, and signing out can fail or never report the change: the app must
+     * not keep acting signed in and ask the API again. Clerk stays loaded, so signing in again works.
+     */
+    public forgetSession(): void {
+        this.forgottenSessionId = this.clerk?.session?.id ?? null
+        this.isSignedIn.set(false)
+        this.userId.set(null)
+        this.username.set(null)
+        this.primaryEmail.set(null)
+    }
+
     private syncState(): void {
-        const isSignedIn = this.clerk?.isSignedIn ?? false
+        // A later Clerk event (a token refresh, the tab regaining focus) must not bring a forgotten session back.
+        const forgotten = this.forgottenSessionId !== null && this.clerk?.session?.id === this.forgottenSessionId
+        const isSignedIn = (this.clerk?.isSignedIn ?? false) && !forgotten
         this.isSignedIn.set(isSignedIn)
         this.userId.set(isSignedIn ? (this.clerk?.user?.id ?? null) : null)
         this.username.set(isSignedIn ? (this.clerk?.user?.username ?? null) : null)
@@ -194,6 +213,7 @@ export class ClerkService {
         this.unsubscribe?.()
         this.unsubscribe = null
         this.clerk = null
+        this.forgottenSessionId = null
         this.initializationError.set(null)
         this.isSignedIn.set(false)
         this.userId.set(null)

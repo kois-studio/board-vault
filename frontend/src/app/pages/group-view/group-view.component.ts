@@ -130,6 +130,9 @@ export class GroupViewComponent {
     public readonly insightsError = signal(false)
     /** Everyone's games and their approximate worth; null until loaded, or when it could not be. */
     public readonly collection$ = signal<GroupCollectionType | null>(null)
+    public readonly collectionLoading = signal(false)
+    public readonly collectionError = signal(false)
+    private collectionRequest = 0
     private activeInsightsGroupId: number | null = null
     public readonly acquisitionBoardLoading = signal(false)
     public readonly acquisitionBoardError = signal(false)
@@ -346,6 +349,8 @@ export class GroupViewComponent {
                 this.insights$.set(null)
                 this.insightsError.set(false)
                 this.collection$.set(null)
+                this.collectionLoading.set(false)
+                this.collectionError.set(false)
                 this.activeInsightsGroupId = null
                 this.groupPeople$.set([])
                 this.groupPeopleError.set(false)
@@ -688,12 +693,30 @@ export class GroupViewComponent {
         }
     }
 
-    /** The group's collection worth is a detail: if it fails, Group pulse simply leaves it out. */
+    /** The group's collection worth and who brings what, in Group pulse. A failure says so, with a retry. */
     private loadCollection(groupId: number): void {
+        const request = ++this.collectionRequest
+        this.collectionLoading.set(true)
+        this.collectionError.set(false)
         this.api.getGroupCollection(groupId).subscribe({
-            next: (collection) => this.isShowing(groupId) && this.collection$.set(collection),
-            error: () => this.isShowing(groupId) && this.collection$.set(null),
+            next: (collection) => {
+                // An answer for a group this page no longer shows, or for an older retry, is dropped.
+                if (!this.isShowing(groupId) || request !== this.collectionRequest) return
+                this.collection$.set(collection)
+                this.collectionLoading.set(false)
+            },
+            error: () => {
+                if (!this.isShowing(groupId) || request !== this.collectionRequest) return
+                this.collection$.set(null)
+                this.collectionLoading.set(false)
+                this.collectionError.set(true)
+            },
         })
+    }
+
+    public retryCollection(): void {
+        const groupId = this.groupData$()?.id
+        if (groupId) this.loadCollection(groupId)
     }
 
     /** A person's page in this group: members by account, people without an account by their group person. */
