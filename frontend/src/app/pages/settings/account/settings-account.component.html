@@ -10,6 +10,12 @@
             <dt class="text-bv-text-muted">Email</dt>
             <dd class="min-w-0 truncate" data-testid="account-email">{{ email() }}</dd>
         </dl>
+        @if (usernameBehind()) {
+            <p class="pb-3 text-sm text-bv-warning" role="status" data-testid="account-username-behind">
+                Your groups still see you as <span class="font-mono">{{ accountUsername() }}</span>. If that doesn’t change in a minute, the new
+                username may already be taken in Board Vault: choose another in Manage sign-in.
+            </p>
+        }
         <p class="pb-4 text-sm text-bv-text-muted">
             Your username, email addresses, password and signed-in devices are kept by Clerk, our sign-in provider.
         </p>

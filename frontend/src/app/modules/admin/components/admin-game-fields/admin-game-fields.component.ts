@@ -5,11 +5,13 @@ import { IconComponent } from '../../../../components/ui/icon/icon.component'
 
 export type TagGroup = { id: number; name: string; tags: Array<TagType> }
 
+const TITLE_MAX_LENGTH = 200
+
 /** The catalogue fields of one game, as an admin approves or edits them. */
 export function createGameFieldsForm() {
     return new FormGroup({
-        titleEn: new FormControl('', { nonNullable: true, validators: [Validators.required, Validators.maxLength(200)] }),
-        titleEs: new FormControl('', { nonNullable: true, validators: [Validators.maxLength(200)] }),
+        titleEn: new FormControl('', { nonNullable: true, validators: [Validators.required, Validators.maxLength(TITLE_MAX_LENGTH)] }),
+        titleEs: new FormControl('', { nonNullable: true, validators: [Validators.maxLength(TITLE_MAX_LENGTH)] }),
         imageUrl: new FormControl('', {
             nonNullable: true,
             validators: [Validators.pattern(/^https?:\/\/.+/), Validators.maxLength(2048)],
@@ -106,7 +108,25 @@ export class AdminGameFieldsComponent {
 
     public get missingRequired(): boolean {
         const { minPlayers, maxPlayers, gameAvgDuration } = this.form().controls
-        return minPlayers.invalid || maxPlayers.invalid || gameAvgDuration.invalid
+        return [minPlayers, maxPlayers, gameAvgDuration].some((control) => control.hasError('required'))
+    }
+
+    /** A number outside what the API takes: Save stays off, so say why. */
+    public get playersOrLengthOutOfRange(): boolean {
+        const { minPlayers, maxPlayers, gameAvgDuration } = this.form().controls
+        return [minPlayers, maxPlayers, gameAvgDuration].some((control) => control.hasError('min') || control.hasError('max'))
+    }
+
+    /** Required shows once the field was left; too long shows at once, as a form can load that way. */
+    public get showTitleEnError(): boolean {
+        const control = this.form().controls.titleEn
+        return control.invalid && (control.touched || control.hasError('maxlength'))
+    }
+
+    public titleError(field: 'titleEn' | 'titleEs'): string {
+        const control = this.form().controls[field]
+        if (control.hasError('required')) return 'The English title is required.'
+        return `Keep the title to ${TITLE_MAX_LENGTH} characters.`
     }
 
     public isTagSelected(tagId: number): boolean {

@@ -3,6 +3,7 @@ import { NavigationEnd, NavigationStart, Router } from '@angular/router'
 import { Subject } from 'rxjs'
 
 import { afterFirstPagePaint, ClerkService } from './clerk.service'
+import { THEME_COLORS, ThemeService } from './theme.service'
 
 describe('ClerkService loading', () => {
     it('starts loading only when the first page has painted', async () => {
@@ -30,6 +31,36 @@ describe('ClerkService loading', () => {
         await service.getToken()
 
         expect(load).toHaveBeenCalledTimes(1)
+    })
+})
+
+describe('ClerkService appearance', () => {
+    const setup = () => {
+        const service = TestBed.inject(ClerkService)
+        const clerk = { openSignIn: vi.fn(), openSignUp: vi.fn(), openUserProfile: vi.fn() }
+        ;(service as unknown as { clerk: typeof clerk }).clerk = clerk
+        service.isSelfRegistrationEnabled.set(true)
+        return { service, clerk, theme: TestBed.inject(ThemeService) }
+    }
+    const primaryOf = (mock: ReturnType<typeof vi.fn>) => mock.mock.lastCall?.[0]?.appearance?.variables?.colorPrimary
+
+    it('opens every Clerk panel in the theme chosen now, not the one Clerk loaded with', () => {
+        const { service, clerk, theme } = setup()
+
+        theme.palette.set('felt')
+        service.openUserProfile()
+        service.openSignIn()
+        service.openSignUp()
+
+        expect(primaryOf(clerk.openUserProfile)).toBe(THEME_COLORS.felt.primary)
+        expect(primaryOf(clerk.openSignIn)).toBe(THEME_COLORS.felt.primary)
+        expect(primaryOf(clerk.openSignUp)).toBe(THEME_COLORS.felt.primary)
+        expect(clerk.openSignIn.mock.lastCall?.[0]?.withSignUp).toBe(true)
+
+        theme.palette.set('harbor')
+        service.openUserProfile()
+
+        expect(primaryOf(clerk.openUserProfile)).toBe(THEME_COLORS.harbor.primary)
     })
 })
 
