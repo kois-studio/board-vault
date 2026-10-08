@@ -430,7 +430,7 @@ describe('MeetViewComponent rendered lifecycle actions', () => {
         await fixture.whenStable()
         const element = fixture.nativeElement as HTMLElement
         const button = (name: string) => [...element.querySelectorAll('button')].find((b) => b.textContent?.trim() === name)
-        return { fixture, button, statusResponse, rsvpResponse }
+        return { fixture, button, statusResponse, rsvpResponse, dataService }
     }
 
     it('asks before starting a night ahead of its date, then shows it live and dated now', async () => {
@@ -468,7 +468,7 @@ describe('MeetViewComponent rendered lifecycle actions', () => {
     })
 
     it('marks you as going and frees the RSVP buttons once the RSVP is saved', async () => {
-        const { fixture, button, rsvpResponse } = await setup()
+        const { fixture, button, rsvpResponse, dataService } = await setup()
 
         button('I’m going')?.click()
         await fixture.whenStable()
@@ -481,5 +481,7 @@ describe('MeetViewComponent rendered lifecycle actions', () => {
         expect(button('I’m going')?.getAttribute('aria-pressed')).toBe('true')
         expect(button('I’m going')?.disabled).toBe(false)
         expect(button('Can’t make it')?.disabled).toBe(false)
+        // Home and Upcoming list your answer too.
+        expect(dataService.refreshUserMeets).toHaveBeenCalled()
     })
 })

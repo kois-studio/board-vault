@@ -706,6 +706,8 @@ export class MeetViewComponent {
                 if (attendeeStatus) attendeeStatus.rsvpStatus = result.rsvpStatus
             }
             this.toastService.success(rsvpToast(result.rsvpStatus))
+            // Home and Upcoming show your answer too.
+            this.dataService.refreshUserMeets()
         } catch {
             this.actionError.set('Could not save your RSVP. Try again from this page.')
             this.toastService.error('Could not save your RSVP.')
