@@ -111,7 +111,7 @@
                             }
                             @case ('completed') {
                                 @if (noGames) {
-                                    Mark the games you played before finishing. If the night didn’t happen, cancel it instead. You can also finish it with nothing played.
+                                    Mark the games you played before finishing. If the night didn’t happen, {{ canShapeNight ? 'cancel it instead' : 'ask the organizer to cancel it' }}. You can also finish it with nothing played.
                                 } @else {
                                     The night joins the group’s history. Played games, players and attendance can no longer change, but anyone can still record who won.
                                 }
@@ -134,7 +134,9 @@
                     <div class="mt-6 flex flex-col-reverse gap-3 sm:flex-row sm:flex-wrap sm:justify-end">
                         <button appButton variant="secondary" type="button" (click)="cancelStatusUpdate()">Keep editing</button>
                         @if (noGames) {
-                            <button appButton variant="danger" type="button" [disabled]="isUpdatingStatus" (click)="confirmStatusUpdate('cancelled')">Cancel game night</button>
+                            @if (canShapeNight) {
+                                <button appButton variant="danger" type="button" [disabled]="isUpdatingStatus" (click)="confirmStatusUpdate('cancelled')">Cancel game night</button>
+                            }
                             <button appButton type="button" [disabled]="isUpdatingStatus" (click)="confirmStatusUpdate()">Finish anyway</button>
                         } @else {
                             <button appButton [variant]="requestedStatus === 'cancelled' ? 'danger' : 'primary'" type="button" [disabled]="isUpdatingStatus" (click)="confirmStatusUpdate()">
