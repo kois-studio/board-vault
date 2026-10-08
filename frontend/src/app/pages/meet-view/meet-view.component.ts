@@ -26,6 +26,7 @@ import { CustomDatePipe } from '../../core/pipes/customDate.pipe'
 import { DataService } from '../../core/services/data.service'
 import type { Nullable } from '../../core/types/commons.type'
 import { formatWinners, nameWithStanding } from '../../core/utils/historyParticipants'
+import { rsvpToast } from '../../core/utils/rsvp'
 import { downloadSessionIcs, googleCalendarUrl } from '../../core/utils/sessionCalendar'
 import { relativeDay, type SessionDateParts, sessionDateParts } from '../../core/utils/sessionTiming'
 
@@ -704,7 +705,7 @@ export class MeetViewComponent {
                 const attendeeStatus = this.meetData.attendeeStatuses.find((attendee) => attendee.accountId === this.userData?.id)
                 if (attendeeStatus) attendeeStatus.rsvpStatus = result.rsvpStatus
             }
-            this.toastService.success(result.rsvpStatus === 'accepted' ? 'You are marked as going.' : 'Your RSVP was declined.')
+            this.toastService.success(rsvpToast(result.rsvpStatus))
         } catch {
             this.actionError.set('Could not save your RSVP. Try again from this page.')
             this.toastService.error('Could not save your RSVP.')

@@ -131,6 +131,21 @@ describe('session dates, last played, and artwork addresses (e2e)', () => {
             expect(session.meetDate).toBe('2026-09-20T19:30:00.000Z')
         })
 
+        it("lists each session with the caller's own answer, from an account or a group-person invite", async () => {
+            const meets = (await request(app.getHttpServer()).get('/play/users/1/meets').set(as('user_ana')).expect(200)).body as Array<{
+                id: number
+                myRsvpStatus: string | null
+            }>
+
+            // 50 invites Ana as a group person, 52 and 53 as an account; 51 invites only Ben.
+            expect(Object.fromEntries(meets.map(meet => [meet.id, meet.myRsvpStatus]))).toEqual({
+                50: 'accepted',
+                51: null,
+                52: 'accepted',
+                53: 'accepted',
+            })
+        })
+
         it('dates history in ISO too, so the app orders it by instant whatever shape each date was stored in', async () => {
             const history = (await request(app.getHttpServer()).get('/play/users/1/history').set(as('user_ana')).expect(200))
                 .body as Array<{
