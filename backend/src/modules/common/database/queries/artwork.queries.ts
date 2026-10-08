@@ -41,11 +41,14 @@ export function gameArtworkStatements(gameId: number, artwork: StoredArtwork | n
 export class ArtworkQueries {
     constructor(private readonly database: DatabaseService) {}
 
-    /** The stored image of a game, to serve it. */
-    getGameArtwork(gameId: number) {
+    /**
+     * The stored image of a game, to serve it. The bytes come only when `hash` is the current one:
+     * an older or made-up address costs no image read.
+     */
+    getGameArtwork(gameId: number, hash: string) {
         return this.database.execute({
-            sql: 'SELECT hash, contentType, bytes FROM GameArtwork WHERE gameId = ?',
-            args: [gameId],
+            sql: 'SELECT hash, contentType, CASE WHEN hash = ? THEN bytes END AS bytes FROM GameArtwork WHERE gameId = ?',
+            args: [hash, gameId],
         })
     }
 

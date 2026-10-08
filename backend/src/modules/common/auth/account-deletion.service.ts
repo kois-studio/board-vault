@@ -66,6 +66,11 @@ export class AccountDeletionService {
     private async deleteAccountData(accountId: number): Promise<void> {
         await this.databaseService.accountDeletion.deleteAccount(accountId)
         // Reviews, collections, and group views of many people change at once; clearing the cache is always safe.
-        await this.cacheService.deleteAll()
+        // Rate limits are not cache: they stay, or every deletion would reset everyone's limits.
+        const cleared = await this.cacheService.deleteCachedData()
+
+        if (!cleared && this.cacheService.isEnabled()) {
+            this.logger.warn('Deleted an account, but the cache could not be cleared; cached views expire on their own within a day')
+        }
     }
 }

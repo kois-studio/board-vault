@@ -1,5 +1,12 @@
 import { ResultSet } from '@libsql/client'
-import { ForbiddenException, Injectable, InternalServerErrorException, Logger, NotFoundException } from '@nestjs/common'
+import {
+    BadRequestException,
+    ForbiddenException,
+    Injectable,
+    InternalServerErrorException,
+    Logger,
+    NotFoundException,
+} from '@nestjs/common'
 
 import { groupMembreshipsSchema } from '../../../common/schemas/index.js'
 import { CreateGroupMembershipBody, GroupMembershipDto } from '../../../common/types/group-membership.type.js'
@@ -96,13 +103,25 @@ export class GroupMembershipsService {
         return this.databaseService.invitations.acceptInvitationAtomically(Number(row[0]), accountId, groupId)
     }
 
+    /**
+     * The older way to leave a group. It leaves exactly like `DELETE /dashboard/users/:userId/groups/:groupId/members`:
+     * upcoming sessions drop the person, history keeps them, and the owner cannot leave (ADR-0018).
+     */
     async deleteGroupMembershipById(accountId: number, groupId: number): Promise<{ success: boolean }> {
-        this.LOGGER.log('Deleting membership')
-        const resultSet = await this.databaseService.groups.deleteGroupMembershipById(accountId, groupId)
+        this.LOGGER.log('Leaving a group through its membership')
+        const membership = await this.databaseService.groups.getGroupMembershipById(accountId, groupId)
 
-        if (resultSet.rowsAffected === 0) {
+        if (membership.rows.length === 0) {
             throw new NotFoundException(`Membership with id ${accountId} ${groupId} not found`)
         }
+
+        const [group] = (await this.databaseService.groups.getGroupById(groupId)).rows
+
+        if (Number(group?.['createdBy']) === accountId) {
+            throw new BadRequestException('Owner cannot leave group')
+        }
+
+        await this.databaseService.groups.leaveGroup(accountId, groupId)
 
         return { success: true }
     }

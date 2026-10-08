@@ -1,6 +1,6 @@
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common'
 
-import { ArtworkError, processArtwork, storedArtworkPath } from '../../../common/artwork/artwork.js'
+import { ArtworkError, artworkPath, processArtwork, storedArtworkPath } from '../../../common/artwork/artwork.js'
 import { DatabaseService } from '../../common/database/database.service.js'
 
 import { ArtworkDownloader } from './artwork-downloader.js'
@@ -9,6 +9,9 @@ import type { StoredArtwork } from '../../common/database/queries/artwork.querie
 
 /** What an admin asked for a game's artwork: keep it, remove it, or copy a new one. */
 export type ArtworkChange = { kind: 'keep' } | { kind: 'remove' } | { kind: 'replace'; artwork: StoredArtwork }
+
+/** The image at its current address, or where the game's current image lives. */
+export type ArtworkToServe = { kind: 'image'; bytes: Buffer; contentType: string } | { kind: 'moved'; path: string }
 
 /**
  * Game artwork Board Vault keeps itself (ADR-0015): copied from an address or an upload when an
@@ -52,19 +55,21 @@ export class ArtworkService {
     }
 
     /**
-     * The stored image of a game. `current` is false when the address names an older image: the
-     * caller serves today's image without long caching.
+     * The stored image of a game, or, when the address names another hash (an older image, or a
+     * made-up one), the current address to send the browser to instead.
      */
-    async getForServing(gameId: number, hash: string): Promise<{ bytes: Buffer; contentType: string; current: boolean }> {
-        const row = (await this.databaseService.artwork.getGameArtwork(gameId)).rows[0]
+    async getForServing(gameId: number, hash: string): Promise<ArtworkToServe> {
+        if (!Number.isSafeInteger(gameId)) throw new NotFoundException('This game has no artwork.')
+
+        const row = (await this.databaseService.artwork.getGameArtwork(gameId, hash)).rows[0]
 
         if (!row) throw new NotFoundException('This game has no artwork.')
 
-        return {
-            bytes: Buffer.from(row['bytes'] as ArrayBuffer),
-            contentType: String(row['contentType']),
-            current: String(row['hash']) === hash,
-        }
+        const currentHash = String(row['hash'])
+
+        if (currentHash !== hash) return { kind: 'moved', path: artworkPath(gameId, currentHash) }
+
+        return { kind: 'image', bytes: Buffer.from(row['bytes'] as ArrayBuffer), contentType: String(row['contentType']) }
     }
 
     async getSource(gameId: number): Promise<string | null> {

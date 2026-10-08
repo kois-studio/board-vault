@@ -52,7 +52,10 @@ sort by instant.
 Game artwork is served by the API itself (ADR-0015). A game's `imageUrl` is
 `/artwork/<gameId>-<hash>.webp`, a path to resolve against the API address,
 or empty for none. `GET /artwork/<file>` needs no token and is cached for a
-year, because the hash changes with the image. Admins set artwork by sending
+year, because the hash changes with the image. An address with any other
+hash, such as one a page kept from before the artwork changed, answers
+`302` to the current address, cached for five minutes, and never reads the
+image. Admins set artwork by sending
 an image address (`PATCH /admin/games/:id`, proposal approval), which the API
 downloads and stores, or by uploading the file
 (`PUT /admin/games/:id/artwork`, image body up to 4 MB).

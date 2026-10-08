@@ -40,8 +40,13 @@ export class GroupMembershipsController {
 
     @UseGuards(UserOwnershipGuard)
     @Delete('/:accountId/:groupId')
-    @ApiOperation({ summary: 'Delete a membership by Id' })
-    @ApiResponse({ status: 200, description: 'The membership has been succesfully deleted' })
+    @ApiOperation({
+        summary: 'Leave a group, as DELETE /dashboard/users/:userId/groups/:groupId/members does',
+        deprecated: true,
+    })
+    @ApiResponse({ status: 200, description: 'Left the group: upcoming sessions drop you, history keeps you' })
+    @ApiResponse({ status: 400, description: 'The owner cannot leave the group' })
+    @ApiResponse({ status: 404, description: 'Membership not found' })
     async deleteGroupMembershipById(@Param('accountId', ParseIntPipe) accountId: number, @Param('groupId', ParseIntPipe) groupId: number) {
         return this.groupMembershipsService.deleteGroupMembershipById(accountId, groupId)
     }
