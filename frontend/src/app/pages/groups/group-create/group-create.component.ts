@@ -16,7 +16,7 @@ export class GroupCreateComponent {
     // --------------------------------------------------------------------------
     //        DATA for this component
     // --------------------------------------------------------------------------
-    public groupNameForm = new FormControl('', [Validators.required, Validators.minLength(4), Validators.maxLength(20)])
+    public groupNameForm = new FormControl('', [Validators.required, Validators.minLength(2), Validators.maxLength(40)])
     public readonly isLoading = signal(false)
     public readonly createError = signal<string | null>(null)
     public readonly currentUser$ = this.dataService.currentUser
@@ -51,7 +51,8 @@ export class GroupCreateComponent {
         try {
             const createdGroup = await firstValueFrom(this.dataService.createGroup(this.groupNameForm.value))
             this.groupNameForm.reset()
-            await this.router.navigate(['/groups', createdGroup.groupId])
+            // Inviting people is the next step, so start there.
+            await this.router.navigate(['/groups', createdGroup.groupId, 'edit'])
         } catch {
             this.createError.set('We could not create the group. Check your connection and try again; your group name is still here.')
         } finally {

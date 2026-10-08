@@ -1,0 +1,23 @@
+<div class="flex items-center gap-0.5" role="group" [attr.aria-label]="'Your rating for ' + label()">
+    @for (star of STARS; track star) {
+        <button
+            type="button"
+            class="cursor-pointer p-0.5 disabled:cursor-not-allowed disabled:opacity-60 motion-safe:transition-transform motion-safe:hover:scale-110"
+            [attr.aria-label]="'Rate ' + star / 2 + ' out of 5 stars for ' + label()"
+            [attr.aria-pressed]="value() === star"
+            [disabled]="disabled()"
+            (click)="rated.emit(star)"
+            (mouseover)="hover.set(star)"
+            (mouseleave)="hover.set(0)"
+            (focus)="hover.set(star)"
+            (blur)="hover.set(0)"
+        >
+            <app-icon
+                name="star"
+                [size]="20"
+                [fill]="isFilled(star) ? 'currentColor' : 'none'"
+                [className]="isFilled(star) ? 'fill-bv-warning text-bv-warning dark:fill-bv-accent dark:text-bv-accent' : 'text-bv-text-muted'"
+            />
+        </button>
+    }
+</div>
