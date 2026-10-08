@@ -958,8 +958,12 @@ export class MeetViewComponent {
     /** Loads suggestions for a scheduled night from the people coming; the latest request wins. */
     async loadSuggestions(): Promise<void> {
         const meet = this.meetData
-        if (meet?.status !== 'scheduled') {
+        if (meet?.status !== 'scheduled' || this.comingCount === 0) {
+            // Nobody coming: nothing to suggest, and the API needs at least one person.
+            this.suggestionsRequest++
             this.suggestions.set(null)
+            this.suggestionsLoading.set(false)
+            this.suggestionsError.set(false)
             return
         }
         const request = ++this.suggestionsRequest

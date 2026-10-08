@@ -192,6 +192,17 @@ describe('MeetViewComponent participant safeguards', () => {
             expect(component.meetData?.plannedGames).toEqual([42, 43])
         })
 
+        it('asks for nothing when everyone has declined', async () => {
+            const { component, api } = await scheduled()
+            component.meetData?.attendeeStatuses.splice(0, 1, { accountId: 1, rsvpStatus: 'declined', attendanceStatus: 'unknown' })
+            const getRecommendations = vi.fn()
+            Object.assign(api, { getRecommendations })
+
+            await component.loadSuggestions()
+            expect(getRecommendations).not.toHaveBeenCalled()
+            expect(component.suggestionsError()).toBe(false)
+        })
+
         it('does not suggest anything once the night has started', async () => {
             const { component } = await setup()
 

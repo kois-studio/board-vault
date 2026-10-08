@@ -365,7 +365,9 @@
                         <p class="mb-3 text-sm text-bv-text-muted">
                             From the games of the {{ comingCount }} {{ comingCount === 1 ? 'person' : 'people' }} coming. They change as people answer.
                         </p>
-                        @if (suggestionsError()) {
+                        @if (comingCount === 0) {
+                            <p class="rounded-lg border border-dashed border-bv-border p-4 text-sm text-bv-text-muted">Nobody is coming yet, so there is nothing to suggest.</p>
+                        } @else if (suggestionsError()) {
                             <p class="rounded-lg border border-bv-warning/30 bg-bv-warning/10 p-4 text-sm" role="alert">
                                 Suggestions could not be loaded.
                                 <button type="button" class="ml-2 font-semibold underline" (click)="loadSuggestions()">Retry</button>
