@@ -5088,6 +5088,108 @@
         ]
       }
     },
+    "/sessions/{sessionId}/games/{gameId}/bringer": {
+      "put": {
+        "operationId": "SessionsController_setSessionGameBringer",
+        "parameters": [
+          {
+            "name": "sessionId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "gameId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SetSessionGameBringerBody"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SessionGameBringersUpdatedDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "The bringer must own the game and be coming, and the game be on the shortlist."
+          },
+          "403": {
+            "description": "Only people coming may bring games; only the organizer may name someone else."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Say who brings a shortlisted game: yourself, or (organizer) a group person who owns it",
+        "tags": [
+          "sessions"
+        ]
+      },
+      "delete": {
+        "operationId": "SessionsController_clearSessionGameBringer",
+        "parameters": [
+          {
+            "name": "sessionId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "gameId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SessionGameBringersUpdatedDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Clear who brings a shortlisted game (the bringer or the organizer)",
+        "tags": [
+          "sessions"
+        ]
+      }
+    },
     "/sessions/{sessionId}/played-games": {
       "patch": {
         "operationId": "SessionsController_updateSessionPlayedGames",
@@ -7049,6 +7151,32 @@
           "accountIds"
         ]
       },
+      "MeetGameBringerDto": {
+        "type": "object",
+        "properties": {
+          "gameId": {
+            "type": "number",
+            "example": 42
+          },
+          "accountId": {
+            "type": "object",
+            "example": 1,
+            "nullable": true,
+            "description": "The account bringing the game, when it is an account."
+          },
+          "groupPersonId": {
+            "type": "object",
+            "example": null,
+            "nullable": true,
+            "description": "The group person bringing the game, when the organizer named one."
+          }
+        },
+        "required": [
+          "gameId",
+          "accountId",
+          "groupPersonId"
+        ]
+      },
       "MeetWithAttendeesAndGames": {
         "type": "object",
         "properties": {
@@ -7165,6 +7293,13 @@
             "items": {
               "$ref": "#/components/schemas/MeetGameVotesDto"
             }
+          },
+          "gameBringers": {
+            "description": "Who brings each shortlisted game; games nobody has claimed are left out.",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/MeetGameBringerDto"
+            }
           }
         },
         "required": [
@@ -7185,7 +7320,8 @@
           "participantStatuses",
           "playedGamePersonParticipants",
           "gameResults",
-          "gameVotes"
+          "gameVotes",
+          "gameBringers"
         ]
       },
       "TagCategoryWithTagsDto": {
@@ -9183,6 +9319,16 @@
             ],
             "nullable": true,
             "description": "The caller's own answer; null when they are not invited."
+          },
+          "gamesToBring": {
+            "example": [
+              42
+            ],
+            "description": "Shortlisted games the caller has said they will bring to this night.",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
           }
         },
         "required": [
@@ -9193,7 +9339,8 @@
           "isConfirmed",
           "status",
           "timezone",
-          "myRsvpStatus"
+          "myRsvpStatus",
+          "gamesToBring"
         ]
       },
       "UserSelfDto": {
@@ -9847,6 +9994,35 @@
         "required": [
           "sessionId",
           "gameVotes"
+        ]
+      },
+      "SetSessionGameBringerBody": {
+        "type": "object",
+        "properties": {
+          "groupPersonId": {
+            "type": "number",
+            "example": 31,
+            "description": "A group person who owns the game and is coming; only the organizer can name one. Leave out to bring it yourself."
+          }
+        }
+      },
+      "SessionGameBringersUpdatedDto": {
+        "type": "object",
+        "properties": {
+          "sessionId": {
+            "type": "number",
+            "example": 12
+          },
+          "gameBringers": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/MeetGameBringerDto"
+            }
+          }
+        },
+        "required": [
+          "sessionId",
+          "gameBringers"
         ]
       },
       "UpdateSessionPlayedGamesBody": {

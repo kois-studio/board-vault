@@ -280,7 +280,7 @@ export type MeetType = {
 export type RsvpStatus = 'pending' | 'accepted' | 'declined'
 
 /** A session in the caller's list, with their own answer (null when they are not invited). */
-export type AccountMeetType = MeetType & { myRsvpStatus: RsvpStatus | null }
+export type AccountMeetType = MeetType & { myRsvpStatus: RsvpStatus | null; gamesToBring: Array<number> }
 
 export type MeetAttendeeStatusType = {
     accountId: number
@@ -313,6 +313,8 @@ export type MeetWithAttendeesAndGamesType = MeetType & {
     gameResults?: Array<MeetGameResultsType>
     /** Votes on shortlisted games, oldest first; games without votes are left out. */
     gameVotes: Array<MeetGameVotesType>
+    /** Who brings each shortlisted game; games nobody has claimed are left out. */
+    gameBringers: Array<MeetGameBringerType>
 }
 
 /** One participant's result in a played game: an account or a group person, never both. */
@@ -401,6 +403,10 @@ export type UpdateSessionShortlistRequest = {
 }
 
 export type MeetGameVotesType = { gameId: number; accountIds: Array<number> }
+
+export type MeetGameBringerType = { gameId: number; accountId: number | null; groupPersonId: number | null }
+
+export type SessionGameBringersUpdatedType = { sessionId: number; gameBringers: Array<MeetGameBringerType> }
 
 export type SessionGameProposedType = { sessionId: number; plannedGameIds: Array<number>; gameVotes: Array<MeetGameVotesType> }
 

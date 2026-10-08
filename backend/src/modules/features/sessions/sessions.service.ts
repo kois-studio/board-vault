@@ -14,6 +14,8 @@ import type {
     SessionShortlistUpdatedDto,
     SessionGameProposedDto,
     SessionGameVotesUpdatedDto,
+    SessionGameBringersUpdatedDto,
+    SetSessionGameBringerBody,
     SessionPlayedGamesUpdatedDto,
     SessionStatusUpdatedDto,
     SessionCreatedDto,
@@ -45,6 +47,7 @@ export class SessionsService {
         }
 
         session.gameVotes = await this.databaseService.sessions.getMeetGameVotes(sessionId)
+        session.gameBringers = await this.databaseService.sessions.getMeetGameBringers(sessionId)
 
         return session
     }
@@ -462,6 +465,63 @@ export class SessionsService {
         return { sessionId, gameVotes: await this.databaseService.sessions.getMeetGameVotes(sessionId) }
     }
 
+    /**
+     * Who brings a shortlisted game (#115). Someone coming who owns it can say they will bring it;
+     * the organizer can name a group person who owns it and is coming. The bringer or the organizer
+     * can clear it. One bringer per game: a new one replaces the old.
+     */
+    async setSessionGameBringer(
+        actorAccountId: number,
+        sessionId: number,
+        gameId: number,
+        body: SetSessionGameBringerBody | null,
+    ): Promise<SessionGameBringersUpdatedDto> {
+        const sessionRow = await this.requireSessionRole(
+            sessionId,
+            actorAccountId,
+            'player',
+            'Only people coming to the game night can bring games',
+        )
+        const status = String(sessionRow[5] ?? 'completed')
+        const isOrganizer = Number(sessionRow[2]) === actorAccountId || Number(sessionRow[8]) === 1
+
+        if (status !== 'scheduled' && status !== 'active') {
+            throw new BadRequestException(`Cannot change who brings games to a ${status} session`)
+        }
+
+        const sessions = this.databaseService.sessions
+
+        if (body === null) {
+            const current = (await sessions.getMeetGameBringers(sessionId)).find(bringer => bringer.gameId === gameId)
+
+            if (current && current.accountId !== actorAccountId && !isOrganizer) {
+                throw new ForbiddenException('Only the person bringing a game, or the organizer, can change it')
+            }
+            await sessions.setMeetGameBringer(sessionId, gameId, { accountId: null, groupPersonId: null })
+        } else if (body.groupPersonId !== undefined) {
+            if (!isOrganizer) {
+                throw new ForbiddenException('Only the organizer or the group owner can name who brings a game')
+            }
+            const comingPersonIds = await sessions.getMeetComingPersonIds(sessionId)
+
+            if (!comingPersonIds.includes(body.groupPersonId) || !(await sessions.groupPersonOwnsGame(body.groupPersonId, gameId))) {
+                throw new BadRequestException('The person bringing a game must own it and be coming')
+            }
+            if (!(await sessions.setMeetGameBringer(sessionId, gameId, { accountId: null, groupPersonId: body.groupPersonId }))) {
+                throw new BadRequestException('Only shortlisted games can be brought')
+            }
+        } else {
+            if (!(await sessions.accountOwnsGame(actorAccountId, gameId, Number(sessionRow[1])))) {
+                throw new BadRequestException('You can only bring a game you own')
+            }
+            if (!(await sessions.setMeetGameBringer(sessionId, gameId, { accountId: actorAccountId, groupPersonId: null }))) {
+                throw new BadRequestException('Only shortlisted games can be brought')
+            }
+        }
+
+        return { sessionId, gameBringers: await sessions.getMeetGameBringers(sessionId) }
+    }
+
     async updateSessionPlayedGames(
         actorAccountId: number,
         sessionId: number,
@@ -594,6 +654,13 @@ export class SessionsService {
 
         if (result.rowsAffected !== 1) {
             throw new NotFoundException('Session invite not found')
+        }
+
+        // Someone who can't make it no longer brings anything (#115).
+        if (body.rsvpStatus === 'declined') {
+            const personId = personAttendee?.rows[0] ? Number(personAttendee.rows[0][1]) : null
+
+            await this.databaseService.sessions.clearMeetGameBringers(sessionId, actorAccountId, personId)
         }
 
         return { sessionId, rsvpStatus: body.rsvpStatus }

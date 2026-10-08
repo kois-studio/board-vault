@@ -109,6 +109,29 @@ describe('session permissions (e2e)', () => {
         expect(details.gameVotes).toEqual([{ gameId: 1, accountIds: [2] }])
     })
 
+    it('lets the owner of a shortlisted game bring it, and clears that when they decline (#115)', async () => {
+        const server = () => request(app.getHttpServer())
+        const toBring = async () =>
+            (
+                (await server().get('/play/users/3/meets').set(as('user_rita')).expect(200)).body as Array<{
+                    id: number
+                    gamesToBring: Array<number>
+                }>
+            ).find(meet => meet.id === 60)?.gamesToBring
+
+        // Rita owns Azul; Paula does not.
+        await server().put('/sessions/60/games/1/bringer').set(as('user_pau')).send({}).expect(400)
+        await server().put('/sessions/60/games/1/bringer').set(as('user_rita')).send({}).expect(200)
+        expect(await toBring()).toEqual([1])
+        expect((await server().get('/sessions/60').set(as('user_pau')).expect(200)).body.gameBringers).toEqual([
+            { gameId: 1, accountId: 3, groupPersonId: null },
+        ])
+
+        await server().patch('/sessions/60/rsvp').set(as('user_rita')).send({ rsvpStatus: 'declined' }).expect(200)
+        expect(await toBring()).toEqual([])
+        await server().patch('/sessions/60/rsvp').set(as('user_rita')).send({ rsvpStatus: 'accepted' }).expect(200)
+    })
+
     it('lets an invitee who is coming start the night and record play, and players count as there', async () => {
         await patch('status', 'user_rita', { status: 'active' }).expect(200)
         await patch('played-games', 'user_rita', { playedGameIds: [1], games: [{ gameId: 1, participantIds: [3] }] }).expect(200)

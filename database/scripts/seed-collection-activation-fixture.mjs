@@ -39,8 +39,8 @@ try {
     }
 
     const migration = await client.execute('SELECT MAX(version) AS version FROM SchemaMigrations')
-    if (String(migration.rows[0]?.version ?? '') !== '0020') {
-        throw new Error('The target database must be migrated through 0020 before seeding the collection fixture.')
+    if (String(migration.rows[0]?.version ?? '') !== '0021') {
+        throw new Error('The target database must be migrated through 0021 before seeding the collection fixture.')
     }
 
     transaction = await client.transaction('write')

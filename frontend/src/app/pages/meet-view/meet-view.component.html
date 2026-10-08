@@ -339,7 +339,10 @@
                         <ul class="grid grid-cols-1 gap-2 sm:grid-cols-2">
                             @for (game of plannedGames; track game.id) {
                                 @let voteCount = votesFor(game.id).length;
-                                <li class="flex min-w-0 items-center gap-2 rounded-lg border border-bv-border bg-bv-surface p-2 transition hover:border-bv-primary/50">
+                                @let bringer = bringerOf(game.id);
+                                @let owners = comingOwners(game.id);
+                                <li class="min-w-0 rounded-lg border border-bv-border bg-bv-surface p-2 transition hover:border-bv-primary/50">
+                                    <div class="flex min-w-0 items-center gap-2">
                                     <a [routerLink]="['/games', game.id]" class="flex min-w-0 flex-1 items-center gap-3">
                                         <image-background [src]="game.imageUrl" [alt]="gameTitle(game) + ' cover'" class="h-12 w-12 shrink-0" />
                                         <span class="min-w-0">
@@ -366,6 +369,29 @@
                                         <span class="flex shrink-0 items-center gap-1 text-sm text-bv-text-muted" [attr.aria-label]="voteCount + ' votes'">
                                             <app-icon name="thumbs-up" [size]="16" aria-hidden="true" /> {{ voteCount }}
                                         </span>
+                                    }
+                                    </div>
+                                    @if (meet.status === 'scheduled') {
+                                        <div class="mt-2 flex flex-wrap items-center gap-2 border-t border-bv-border pt-2 text-xs">
+                                            @if (bringer) {
+                                                <span class="mr-auto flex min-w-0 items-center gap-1.5 font-medium text-bv-text"><app-icon name="check" [size]="14" className="shrink-0 text-bv-success" aria-hidden="true" /><span class="truncate">{{ bringer.isMe ? 'You’re bringing it' : bringer.name + ' brings it' }}</span></span>
+                                                @if (bringer.isMe || canShapeNight) {
+                                                    <button type="button" class="font-medium text-bv-text-muted underline-offset-2 hover:underline" [disabled]="bringingGameId() !== null" (click)="setBringer(game.id, null)">{{ bringer.isMe ? 'I won’t bring it' : 'Clear' }}</button>
+                                                }
+                                            } @else if (owners.length === 0) {
+                                                <span class="mr-auto font-medium text-bv-warning">Nobody coming owns it</span>
+                                            } @else {
+                                                <span class="mr-auto min-w-0 truncate text-bv-text-muted">Nobody is bringing it yet · owned by {{ namesOf(owners) }}</span>
+                                            }
+                                            @if (!bringer?.isMe && canBring(game.id)) {
+                                                <button type="button" class="app-chip py-1 text-xs" [disabled]="bringingGameId() !== null" (click)="setBringer(game.id, {})">I’ll bring it</button>
+                                            }
+                                            @if (!bringer) {
+                                                @for (person of placeholderOwners(game.id); track person.key) {
+                                                    <button type="button" class="app-chip max-w-full py-1 text-xs" [disabled]="bringingGameId() !== null" (click)="setBringer(game.id, { groupPersonId: person.personId ?? undefined })"><span class="truncate">{{ person.displayName }} brings it</span></button>
+                                                }
+                                            }
+                                        </div>
                                     }
                                 </li>
                             }

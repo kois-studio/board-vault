@@ -29,6 +29,7 @@ describe('MeetViewComponent participant safeguards', () => {
         playedGameParticipants: [{ gameId: 42, participantIds: [1, 2] }],
         gameResults: [],
         gameVotes: [],
+        gameBringers: [],
     })
 
     const setup = async () => {
@@ -218,6 +219,28 @@ describe('MeetViewComponent participant safeguards', () => {
             expect(setSessionGameVote).toHaveBeenCalledWith(99, 42, true)
             expect(component.hasMyVote(42)).toBe(true)
             expect(component.voterNames(42)).toBe('you')
+        })
+
+        it('lets you bring a shortlisted game you own, and names who brings it', async () => {
+            const { component, api } = await scheduled()
+            const meet = component.meetData
+            if (!meet) return
+            meet.plannedGames = [42, 43]
+
+            // Ana (you) owns Azul (42) and is coming; Bo owns Catan (43) but declined.
+            expect(component.canBring(42)).toBe(true)
+            expect(component.canBring(43)).toBe(false)
+            expect(component.comingOwners(43)).toEqual([])
+
+            const setSessionGameBringer = vi
+                .fn()
+                .mockReturnValue(of({ sessionId: 99, gameBringers: [{ gameId: 42, accountId: 1, groupPersonId: null }] }))
+            Object.assign(api, { setSessionGameBringer })
+            await component.setBringer(42, {})
+
+            expect(setSessionGameBringer).toHaveBeenCalledWith(99, 42, {})
+            expect(component.bringerOf(42)).toEqual({ name: 'Ana', isMe: true })
+            expect(component.bringerOf(43)).toBeNull()
         })
 
         it('asks for nothing when everyone has declined', async () => {
@@ -545,6 +568,7 @@ describe('MeetViewComponent rendered lifecycle actions', () => {
         skippedGames: [],
         playedGameParticipants: [],
         gameVotes: [],
+        gameBringers: [],
     })
 
     const setup = async () => {

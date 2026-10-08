@@ -43,8 +43,13 @@ export class MeetsService {
         this.LOGGER.log('Getting meetings for account')
         const resultSet = await this.databaseService.sessions.getMeetsForAccount(accountId)
         const rsvpById = new Map(resultSet.rows.map(row => [Number(row[0]), parseRsvpStatus(row[8])]))
+        const gamesToBring = await this.databaseService.sessions.getGamesToBringForAccount(accountId)
 
-        return this._parseResultSet(resultSet).map(meet => ({ ...meet, myRsvpStatus: rsvpById.get(meet.id) ?? null }))
+        return this._parseResultSet(resultSet).map(meet => ({
+            ...meet,
+            myRsvpStatus: rsvpById.get(meet.id) ?? null,
+            gamesToBring: gamesToBring.get(meet.id) ?? [],
+        }))
     }
 
     async getMeetById(id: number, accountId: number): Promise<MeetDto> {

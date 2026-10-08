@@ -25,6 +25,8 @@ import {
     SessionShortlistUpdatedDto,
     SessionGameProposedDto,
     SessionGameVotesUpdatedDto,
+    SessionGameBringersUpdatedDto,
+    SetSessionGameBringerBody,
     SessionPlayedGamesUpdatedDto,
     SessionCreatedDto,
     SessionRsvpUpdatedDto,
@@ -135,6 +137,31 @@ export class SessionsController {
         @Param('gameId', ParseIntPipe) gameId: number,
     ) {
         return this.sessionsService.setSessionGameVote(request.user.userId, sessionId, gameId, false)
+    }
+
+    @Put(':sessionId/games/:gameId/bringer')
+    @ApiOperation({ summary: 'Say who brings a shortlisted game: yourself, or (organizer) a group person who owns it' })
+    @ApiResponse({ status: 200, type: SessionGameBringersUpdatedDto })
+    @ApiResponse({ status: 400, description: 'The bringer must own the game and be coming, and the game be on the shortlist.' })
+    @ApiResponse({ status: 403, description: 'Only people coming may bring games; only the organizer may name someone else.' })
+    setSessionGameBringer(
+        @Req() request: { user: { userId: number } },
+        @Param('sessionId', ParseIntPipe) sessionId: number,
+        @Param('gameId', ParseIntPipe) gameId: number,
+        @Body() body: SetSessionGameBringerBody,
+    ) {
+        return this.sessionsService.setSessionGameBringer(request.user.userId, sessionId, gameId, body)
+    }
+
+    @Delete(':sessionId/games/:gameId/bringer')
+    @ApiOperation({ summary: 'Clear who brings a shortlisted game (the bringer or the organizer)' })
+    @ApiResponse({ status: 200, type: SessionGameBringersUpdatedDto })
+    clearSessionGameBringer(
+        @Req() request: { user: { userId: number } },
+        @Param('sessionId', ParseIntPipe) sessionId: number,
+        @Param('gameId', ParseIntPipe) gameId: number,
+    ) {
+        return this.sessionsService.setSessionGameBringer(request.user.userId, sessionId, gameId, null)
     }
 
     @Patch(':sessionId/played-games')

@@ -1223,9 +1223,10 @@ describe('DatabaseService logging', () => {
             sql: 'UPDATE Meet SET updatedAt = CURRENT_TIMESTAMP WHERE id = ? AND status = ?',
             args: [12, 'active'],
         })
+        // Only games leaving the list are deleted, so the others keep their bringer (#115).
         expect(transaction.execute).toHaveBeenCalledWith({
-            sql: "DELETE FROM MeetGame WHERE meetId = ? AND gameStatus = 'planned'",
-            args: [12],
+            sql: "DELETE FROM MeetGame WHERE meetId = ? AND gameStatus = 'planned' AND gameId NOT IN (?, ?)",
+            args: [12, 42, 43],
         })
         expect(transaction.batch).toHaveBeenCalledWith([
             expect.objectContaining({ args: [12, 42] }),
@@ -1236,6 +1237,10 @@ describe('DatabaseService logging', () => {
         transaction.execute.mockClear()
         transaction.batch.mockClear()
         await expect(service.sessions.replaceMeetPlannedGames(12, [], 'active')).resolves.toBe(true)
+        expect(transaction.execute).toHaveBeenCalledWith({
+            sql: "DELETE FROM MeetGame WHERE meetId = ? AND gameStatus = 'planned'",
+            args: [12],
+        })
         expect(transaction.batch).not.toHaveBeenCalled()
         expect(transaction.commit).toHaveBeenCalledTimes(2)
     })

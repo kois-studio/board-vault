@@ -16,6 +16,7 @@ describe('SessionAnswerComponent', () => {
         timezone: 'Europe/Madrid',
         notes: null,
         myRsvpStatus: 'pending',
+        gamesToBring: [],
     }
 
     const setup = (

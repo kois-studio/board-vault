@@ -42,6 +42,7 @@ import {
     sessionAttendanceUpdatedSchema,
     sessionAttendeesUpdatedSchema,
     sessionCreatedSchema,
+    sessionGameBringersUpdatedSchema,
     sessionGameProposedSchema,
     sessionGameVotesUpdatedSchema,
     sessionPlayedGamesUpdatedSchema,
@@ -110,6 +111,7 @@ import type {
     SessionAttendanceUpdatedType,
     SessionAttendeesUpdatedType,
     SessionCreatedType,
+    SessionGameBringersUpdatedType,
     SessionGameProposedType,
     SessionGameVotesUpdatedType,
     SessionPlayedGamesUpdatedType,
@@ -317,6 +319,16 @@ export class Api {
         return this.http
             .post<SessionGameProposedType>(`${this.url}/sessions/${sessionId}/shortlist/${gameId}`, {})
             .pipe(map((response) => sessionGameProposedSchema.parse(response)))
+    }
+
+    /** Says who brings a shortlisted game: yourself (no body), a group person (organizer), or nobody (`null`). */
+    setSessionGameBringer(sessionId: number, gameId: number, bringer: { groupPersonId?: number } | null) {
+        const url = `${this.url}/sessions/${sessionId}/games/${gameId}/bringer`
+        return (
+            bringer === null
+                ? this.http.delete<SessionGameBringersUpdatedType>(url)
+                : this.http.put<SessionGameBringersUpdatedType>(url, bringer)
+        ).pipe(map((response) => sessionGameBringersUpdatedSchema.parse(response)))
     }
 
     setSessionGameVote(sessionId: number, gameId: number, voted: boolean) {
