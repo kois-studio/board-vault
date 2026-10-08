@@ -1,5 +1,6 @@
 import { ForbiddenException } from '@nestjs/common'
 
+import { fakeActivityNotifier } from '../../../../test/fake-activity-notifier.js'
 import { fakeDatabase } from '../../../../test/fake-database.js'
 import { DatabaseService } from '../../common/database/database.service.js'
 import { GameProposalService } from '../../core/game-proposal/game-proposal.service.js'
@@ -31,6 +32,7 @@ describe('ProfileService invitation acceptance', () => {
             {} as InvitationsService,
             {} as DatabaseService,
             {} as GameProposalService,
+            fakeActivityNotifier(),
         )
 
         await expect(service.getUserById(8)).resolves.toEqual({
@@ -56,6 +58,7 @@ describe('ProfileService invitation acceptance', () => {
             invitationsService as unknown as InvitationsService,
             fakeDatabase(databaseService),
             {} as GameProposalService,
+            fakeActivityNotifier(),
         )
 
         await expect(service.acceptInvitation(7, 1)).rejects.toThrow(ForbiddenException)
@@ -77,6 +80,7 @@ describe('ProfileService invitation acceptance', () => {
             invitationsService as unknown as InvitationsService,
             fakeDatabase(databaseService),
             {} as GameProposalService,
+            fakeActivityNotifier(),
         )
 
         await expect(service.acceptInvitation(8, 1)).rejects.toThrow('This invitation has expired')

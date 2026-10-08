@@ -3,7 +3,7 @@ import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagg
 
 import { AuthGuard } from '../../../common/guards/auth.guard.js'
 import { UserOwnershipGuard } from '../../../common/guards/ownership.guard.js'
-import { MeetDto } from '../../../common/types/meet.type.js'
+import { AccountMeetDto } from '../../../common/types/meet.type.js'
 
 import { PlayService } from './play.service.js'
 import {
@@ -78,7 +78,7 @@ export class PlayController {
     @UseGuards(UserOwnershipGuard)
     @Get('/users/:userId/meets')
     @ApiOperation({ summary: 'List of all meets of the user', deprecated: false })
-    @ApiResponse({ status: 200, type: [MeetDto], description: 'List of all meets of the user' })
+    @ApiResponse({ status: 200, type: [AccountMeetDto], description: "List of all meets of the user, with the user's own RSVP" })
     async getUserMeets(@Param('userId', ParseIntPipe) userId: number) {
         return this.playService.getUserMeets(userId)
     }

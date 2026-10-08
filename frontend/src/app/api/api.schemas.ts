@@ -1,6 +1,7 @@
 import * as z from 'zod/mini'
 import { resolveArtworkUrl } from '../core/utils/artworkUrl'
 import type {
+    AccountMeetType,
     AdminGameProposalsType,
     AdminGamesResultType,
     AdminGameType,
@@ -566,7 +567,9 @@ const historyRecordSchema: z.ZodMiniType<HistoryRecordType> = z.object({
 
 export const userHistorySchema = z.array(historyRecordSchema)
 
-export const userMeetsSchema = z.array(meetFields)
+export const userMeetsSchema: z.ZodMiniType<Array<AccountMeetType>> = z.array(
+    z.extend(meetFields, { myRsvpStatus: z._default(z.optional(z.nullable(z.enum(['pending', 'accepted', 'declined']))), null) }),
+)
 
 export const userStatsSchema: z.ZodMiniType<UserStatsType> = z.object({
     totalGamesValue: z.number(),

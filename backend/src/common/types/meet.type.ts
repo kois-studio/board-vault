@@ -29,6 +29,16 @@ export class MeetDto {
     notes: string | null
 }
 
+export class AccountMeetDto extends MeetDto {
+    @ApiProperty({
+        example: 'pending',
+        enum: ['pending', 'accepted', 'declined'],
+        nullable: true,
+        description: "The caller's own answer; null when they are not invited.",
+    })
+    myRsvpStatus: 'pending' | 'accepted' | 'declined' | null
+}
+
 export class MeetAttendeeStatusDto {
     @ApiProperty({ example: 12345 })
     accountId: number

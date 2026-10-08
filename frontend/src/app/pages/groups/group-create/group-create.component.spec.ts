@@ -32,7 +32,7 @@ describe('GroupCreateComponent onboarding handoff', () => {
         await component.onCreateGroup()
 
         expect(dataService.createGroup).toHaveBeenCalledWith('Friday Crew')
-        expect(router.navigate).toHaveBeenCalledWith(['/groups', 42])
+        expect(router.navigate).toHaveBeenCalledWith(['/groups', 42, 'edit'])
     })
 
     it('keeps the name and exposes a retryable error when creation fails', async () => {

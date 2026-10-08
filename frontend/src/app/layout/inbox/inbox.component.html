@@ -6,7 +6,7 @@
         [attr.aria-label]="triggerLabel()"
         [attr.aria-expanded]="disclosure.isOpen()"
         aria-controls="inbox-panel"
-        (click)="disclosure.toggle()"
+        (click)="toggle()"
     >
         <app-icon name="bell" [size]="22" />
         @if (count()) {

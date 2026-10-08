@@ -3,9 +3,13 @@ import { Injectable, Logger, NotFoundException } from '@nestjs/common'
 
 import { mapMeetDetailsResult } from '../../../common/mappers/meet-details.mapper.js'
 import { meetsSchema } from '../../../common/schemas/db-meet.schema.js'
-import { MeetDto, MeetWithAttendeesAndGames } from '../../../common/types/meet.type.js'
+import { AccountMeetDto, MeetDto, MeetWithAttendeesAndGames } from '../../../common/types/meet.type.js'
 import { toIsoDate } from '../../../common/utils/stored-date.js'
 import { DatabaseService } from '../../common/database/database.service.js'
+
+function parseRsvpStatus(value: unknown): AccountMeetDto['myRsvpStatus'] {
+    return value === 'pending' || value === 'accepted' || value === 'declined' ? value : null
+}
 
 @Injectable()
 export class MeetsService {
@@ -35,11 +39,12 @@ export class MeetsService {
         return result.data
     }
 
-    async getMeetsForAccount(accountId: number): Promise<Array<MeetDto>> {
+    async getMeetsForAccount(accountId: number): Promise<Array<AccountMeetDto>> {
         this.LOGGER.log('Getting meetings for account')
         const resultSet = await this.databaseService.sessions.getMeetsForAccount(accountId)
+        const rsvpById = new Map(resultSet.rows.map(row => [Number(row[0]), parseRsvpStatus(row[8])]))
 
-        return this._parseResultSet(resultSet)
+        return this._parseResultSet(resultSet).map(meet => ({ ...meet, myRsvpStatus: rsvpById.get(meet.id) ?? null }))
     }
 
     async getMeetById(id: number, accountId: number): Promise<MeetDto> {

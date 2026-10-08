@@ -56,4 +56,30 @@ describe('CardNotificationComponent', () => {
         TestBed.resetTestingModule()
         expect(render(notification('invitation_accepted')).nativeElement.querySelector('a')).toBeNull()
     })
+
+    it('links game-night notifications to the night, saying what to do there', () => {
+        const cases: Array<[string, string]> = [
+            ['meeting_scheduled', 'Answer'],
+            ['session_started', 'Open the game night'],
+            ['session_finished', 'Rate what you played'],
+            ['session_cancelled', 'See the game night'],
+        ]
+        for (const [type, label] of cases) {
+            const link = render(notification(type, { account: 1, meeting: 21, group: 7 })).nativeElement.querySelector(
+                'a',
+            ) as HTMLAnchorElement
+            expect(link.textContent?.trim()).toBe(label)
+            expect(link.getAttribute('href')).toBe('/sessions/21')
+            TestBed.resetTestingModule()
+        }
+    })
+
+    it('links someone joining to the group', () => {
+        const link = render(notification('user_joined_group', { account: 3, group: 7 })).nativeElement.querySelector(
+            'a',
+        ) as HTMLAnchorElement
+
+        expect(link.textContent?.trim()).toBe('Open the group')
+        expect(link.getAttribute('href')).toBe('/groups/7')
+    })
 })

@@ -364,12 +364,7 @@
                                 <li class="flex min-w-0 items-center gap-3 rounded-lg border border-bv-border bg-bv-surface p-2">
                                     <image-background [src]="game.imageUrl" [alt]="gameTitle(game) + ' cover'" class="h-10 w-10 shrink-0" />
                                     <span class="min-w-0 flex-1 truncate text-sm font-medium">{{ gameTitle(game) }}</span>
-                                    <select class="app-input w-24 shrink-0" [disabled]="savingPostSessionRatings[game.id]" [value]="getMyRating(game.id) ?? ''" [attr.aria-label]="'Your rating for ' + gameTitle(game)" (change)="savePostSessionRating(game.id, +$any($event.target).value)">
-                                        <option value="">Rate</option>
-                                        @for (rating of [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]; track rating) {
-                                            <option [value]="rating">{{ rating }}/10</option>
-                                        }
-                                    </select>
+                                    <app-star-rating class="shrink-0" [value]="getMyRating(game.id)" [label]="gameTitle(game)" [disabled]="savingPostSessionRatings[game.id] ?? false" (rated)="savePostSessionRating(game.id, $event)" />
                                 </li>
                             }
                         </ul>

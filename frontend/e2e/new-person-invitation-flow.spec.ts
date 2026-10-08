@@ -43,8 +43,8 @@ test.describe('new-person invitation flow', () => {
             const groupName = `New invite ${Date.now().toString().slice(-8)}`
             await page.getByLabel('What should your group be called?').fill(groupName)
             await page.getByRole('button', { name: 'Create group', exact: true }).click()
-            await expect(page).toHaveURL(/\/groups\/\d+$/)
-            groupId = page.url().match(/\/groups\/(\d+)$/)?.[1]
+            await expect(page).toHaveURL(/\/groups\/\d+\/edit$/)
+            groupId = page.url().match(/\/groups\/(\d+)\/edit$/)?.[1]
             expect(groupId).toBeTruthy()
 
             await page.goto(`${baseURL}/groups/${groupId}/edit`)
