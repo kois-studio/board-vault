@@ -1,5 +1,5 @@
 import { effect, Injectable, inject, signal } from '@angular/core'
-import { catchError, concatMap, finalize, firstValueFrom, forkJoin, of, Subject, takeUntil, tap, throwError } from 'rxjs'
+import { catchError, concatMap, finalize, firstValueFrom, forkJoin, type Observable, of, Subject, takeUntil, tap, throwError } from 'rxjs'
 import { Api } from '../../api/api'
 import type {
     ClerkSyncResultType,
@@ -243,6 +243,34 @@ export class DataService {
     public retryUserNotifications(): void {
         const currentUser = this.currentUser()
         if (currentUser) this._getUserNotifications(currentUser.id)
+    }
+
+    private lastQuietRefresh = 0
+
+    /**
+     * Reloads what other people change while the app is open (notifications, invitations, game nights)
+     * without loading states or error toasts: the data already shown stays if a read fails.
+     * At most once a minute unless `force`.
+     */
+    public refreshSharedActivity(force = false): void {
+        const currentUser = this.currentUser()
+        const now = Date.now()
+        if (!currentUser || (!force && now - this.lastQuietRefresh < 60_000)) return
+        this.lastQuietRefresh = now
+        const quietly = <T>(read: Observable<T>, apply: (value: T) => void) =>
+            read.pipe(takeUntil(this.userChanged)).subscribe({ next: apply, error: () => undefined })
+        quietly(this.api.getUserNotifications(currentUser.id), (notifications) => {
+            this.userNotifications.set(notifications)
+            this.userNotificationsError.set(false)
+        })
+        quietly(this.api.getUserInvitations(currentUser.id), (invitations) => {
+            this.userInvitations.set(invitations)
+            this.userInvitationsError.set(false)
+        })
+        quietly(this.api.getUserMeets(currentUser.id), (meets) => {
+            this.userMeets.set(meets)
+            this.userMeetsError.set(false)
+        })
     }
 
     private _getUserReviews(accountId: number) {

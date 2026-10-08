@@ -1,4 +1,4 @@
-import { Component, computed, ElementRef, inject, viewChild } from '@angular/core'
+import { Component, computed, DestroyRef, DOCUMENT, ElementRef, inject, viewChild } from '@angular/core'
 import { CardInvitationComponent } from '../../components/card-invitation/card-invitation.component'
 import { CardNotificationComponent } from '../../components/card-notification/card-notification.component'
 import { ButtonComponent } from '../../components/ui/button/button.component'
@@ -28,6 +28,21 @@ export class InboxComponent {
 
     public readonly unreadCount = computed(() => this.notifications().filter((notification) => !notification.isRead).length)
     public readonly count = computed(() => this.invitations().length + this.unreadCount())
+    constructor() {
+        // Notifications come from other people's actions, so look again when the app comes back into view.
+        const document = inject(DOCUMENT)
+        const onVisible = () => {
+            if (document.visibilityState === 'visible') this.dataService.refreshSharedActivity()
+        }
+        document.addEventListener('visibilitychange', onVisible)
+        inject(DestroyRef).onDestroy(() => document.removeEventListener('visibilitychange', onVisible))
+    }
+
+    public toggle(): void {
+        if (!this.disclosure.isOpen()) this.dataService.refreshSharedActivity()
+        this.disclosure.toggle()
+    }
+
     public readonly triggerLabel = computed(() => {
         const count = this.count()
         return count ? `Inbox, ${count} new` : 'Inbox'

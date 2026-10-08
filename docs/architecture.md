@@ -117,7 +117,7 @@ for the previous account are cancelled, so the next account starts empty
 
 | Owner | Holds |
 | --- | --- |
-| `DataService` | The current user and everything loaded for them: games, groups, invitations, notifications, reviews, sessions, history, wishlist, activity, proposals, stats. |
+| `DataService` | The current user and everything loaded for them: games, groups, invitations, notifications, reviews, sessions, history, wishlist, activity, proposals, stats. `refreshSharedActivity()` quietly reloads notifications, invitations and game nights (at most once a minute) when the inbox opens or the tab comes back into view. |
 | `LoginService` | Whether the session is ready, the current user id, and whether they are an admin. |
 | `PendingProposalsService` | The pending proposal count behind the admin badges. |
 | `GroupViewService` | The open group and its member and game filters. |

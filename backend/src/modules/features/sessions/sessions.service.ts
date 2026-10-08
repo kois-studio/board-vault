@@ -3,6 +3,7 @@ import { BadRequestException, ConflictException, ForbiddenException, Injectable,
 import { mapMeetDetailsResult } from '../../../common/mappers/meet-details.mapper.js'
 import { parseStoredDate, toIsoDate } from '../../../common/utils/stored-date.js'
 import { DatabaseService } from '../../common/database/database.service.js'
+import { ActivityNotifier } from '../../core/notifications/activity-notifier.service.js'
 
 import type { MeetWithAttendeesAndGames } from '../../../common/types/meet.type.js'
 import type {
@@ -28,7 +29,10 @@ import type {
 
 @Injectable()
 export class SessionsService {
-    constructor(private readonly databaseService: DatabaseService) {}
+    constructor(
+        private readonly databaseService: DatabaseService,
+        private readonly activityNotifier: ActivityNotifier,
+    ) {}
 
     async getSessionDetails(actorAccountId: number, sessionId: number): Promise<MeetWithAttendeesAndGames> {
         const result = await this.databaseService.sessions.getMeetDetailsByIdForAccount(sessionId, actorAccountId)
@@ -209,8 +213,12 @@ export class SessionsService {
             plannedGameIds,
         })
 
+        const sessionId = Number(result.lastInsertRowid)
+
+        await this.activityNotifier.sessionPlanned(sessionId, actorAccountId)
+
         return {
-            sessionId: Number(result.lastInsertRowid),
+            sessionId,
             status: 'scheduled',
         }
     }
@@ -254,6 +262,8 @@ export class SessionsService {
         if (result.rowsAffected !== 1) {
             throw new NotFoundException(`Session with id ${sessionId} not found`)
         }
+
+        await this.activityNotifier.sessionChanged(sessionId, actorAccountId, body.status)
 
         return { sessionId, status: body.status, sessionDate: movedDate ?? sessionDate }
     }

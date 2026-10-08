@@ -11,12 +11,16 @@ import {
 import { groupMembreshipsSchema } from '../../../common/schemas/index.js'
 import { CreateGroupMembershipBody, GroupMembershipDto } from '../../../common/types/group-membership.type.js'
 import { DatabaseService } from '../../common/database/database.service.js'
+import { ActivityNotifier } from '../notifications/activity-notifier.service.js'
 
 @Injectable()
 export class GroupMembershipsService {
     private readonly LOGGER: Logger = new Logger(this.constructor.name)
 
-    constructor(private readonly databaseService: DatabaseService) {}
+    constructor(
+        private readonly databaseService: DatabaseService,
+        private readonly activityNotifier: ActivityNotifier,
+    ) {}
 
     private _parseResultSet(resultSet: ResultSet): Array<GroupMembershipDto> {
         const groupMemberships = resultSet.rows.map(row => ({
@@ -100,7 +104,11 @@ export class GroupMembershipsService {
             throw new ForbiddenException('A pending invitation is required to join this group')
         }
 
-        return this.databaseService.invitations.acceptInvitationAtomically(Number(row[0]), accountId, groupId)
+        const result = await this.databaseService.invitations.acceptInvitationAtomically(Number(row[0]), accountId, groupId)
+
+        await this.activityNotifier.memberJoined(groupId, accountId)
+
+        return result
     }
 
     /**

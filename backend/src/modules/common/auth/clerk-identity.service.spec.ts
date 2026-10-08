@@ -1,6 +1,7 @@
 import { createClerkClient } from '@clerk/backend'
 import { ForbiddenException, NotFoundException, UnauthorizedException } from '@nestjs/common'
 
+import { fakeActivityNotifier } from '../../../../test/fake-activity-notifier.js'
 import { fakeDatabase } from '../../../../test/fake-database.js'
 import { API_ERROR_CODES, BoardVaultHttpException } from '../../../common/http/api-error.js'
 
@@ -26,7 +27,12 @@ describe('ClerkIdentityService', () => {
         clearGroupPersonClaimEmail: vi.fn(),
         joinGroupFromClerkInvitation: vi.fn(),
     }
-    const service = new ClerkIdentityService(configService as never, usersService as never, fakeDatabase(databaseService))
+    const service = new ClerkIdentityService(
+        configService as never,
+        usersService as never,
+        fakeDatabase(databaseService),
+        fakeActivityNotifier(),
+    )
 
     beforeEach(() => {
         vi.clearAllMocks()
