@@ -158,6 +158,17 @@ operational details.
 
 ### Fixed
 
+- Artwork addresses with a made-up hash no longer return the image: they
+  redirect to the current address without reading it, so changing the hash
+  can't skip the CDN to load the database. Old addresses still reach
+  today's image through that redirect.
+- Deleting an account clears the cached views but keeps the rate-limit
+  counters, which share the same Redis; before, each deletion reset
+  everyone's limits. If the cache can't be cleared, the server logs a
+  warning instead of carrying on silently.
+- The older `DELETE /memberships/:accountId/:groupId` leaves a group the way
+  the app does: upcoming nights drop the person, history keeps them, and
+  the owner can't leave their own group.
 - Star ratings were drawn as outlines everywhere: the filled stars got both
   `fill-none` and a fill colour. They are filled again.
 - Switching group with the group page's selector shows the chosen group;
@@ -271,6 +282,11 @@ operational details.
   painted, and `/login` and `/register` render without it. With a Clerk key,
   as in production, Lighthouse performance goes from about 76 to 94–96, and
   CI now audits with a (fake) key too.
+- Deleting an account revokes the group invitations it sent through Clerk,
+  as ADR-0018 already said for invitations sent: their links stop working
+  instead of signing people up into nothing. An invitation the group no
+  longer honours (its inviter no longer owns the group) is refused before
+  an account is created, so nobody ends up with an account and no group.
 - A failed group creation or invitation shows one message, next to the form,
   instead of the same error again as a toast. Inviting an unknown username or
   an email with a pending invitation says so.

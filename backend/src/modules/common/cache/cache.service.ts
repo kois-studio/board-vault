@@ -9,6 +9,10 @@ import { CACHE_TTL } from './cache.types.js'
 const REDIS_REQUEST_TIMEOUT_MS = 250
 const REDIS_FAILURE_COOLDOWN_MS = 30_000
 
+/** Keys of `RateLimitGuard`; they share the Redis with the cache. */
+export const RATE_LIMIT_KEY_PREFIX = 'rate-limit:'
+const CLEAR_SCAN_COUNT = 500
+
 /**
  * This decorator wraps all the methods providing:
  * - A default response in case of redis being disabled in .env
@@ -100,6 +104,26 @@ export class CacheService {
     }
 
     /**
+     * Clears every cached view, but keeps the rate-limit counters stored in the same Redis, so
+     * clearing never lets anyone send more requests than allowed. False when nothing could be cleared.
+     */
+    @Wrapper(false)
+    async deleteCachedData(): Promise<boolean> {
+        let cursor = '0'
+
+        do {
+            const [next, keys] = await this.REDIS!.scan(cursor, { count: CLEAR_SCAN_COUNT })
+            const cached = keys.filter(key => !key.startsWith(RATE_LIMIT_KEY_PREFIX))
+
+            if (cached.length > 0) await this.REDIS!.del(...cached)
+            cursor = String(next)
+        } while (cursor !== '0')
+
+        this.LOGGER.log('REDIS: Cleared cached entries; rate limits kept')
+        return true
+    }
+
+    /**
      * /database/delete/:key
      */
     @Wrapper(false)
@@ -110,6 +134,11 @@ export class CacheService {
     }
 
     // #region non-endpoints
+    /** False when Redis is turned off in `.env`, as in local development and tests. */
+    isEnabled(): boolean {
+        return !this.REDIS_DISABLED
+    }
+
     async checkHealth(): Promise<'up' | 'down' | 'disabled'> {
         if (this.REDIS_DISABLED) {
             return 'disabled'

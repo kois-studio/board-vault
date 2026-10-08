@@ -1013,13 +1013,6 @@ export class GroupQueries {
         }
     }
 
-    deleteGroupMembershipById(accountId: number, groupId: number) {
-        return this.database.execute({
-            sql: 'DELETE FROM GroupMembership WHERE accountId = ? AND groupId = ?',
-            args: [accountId, groupId],
-        })
-    }
-
     deleteAllGroupMembershipByGroupId(groupId: number) {
         return this.database.execute({
             sql: 'DELETE FROM GroupMembership WHERE groupId = ?',
