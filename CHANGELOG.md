@@ -26,6 +26,9 @@ operational details.
 
 ### Changed
 
+- The frontend's initial bundle budget is now a warning at 1 MB and an
+  error at 1.25 MB (it was 850 kB and 1 MB), with headroom for features;
+  it stays an alarm for sudden jumps. See the audit how-to.
 - When someone leaves a group, past game nights still list them, as
   "Name (left)" with a faded avatar, instead of looking like a current
   member. They come off the group's upcoming nights, and nights they

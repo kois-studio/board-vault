@@ -42,6 +42,18 @@ under the baseline and catches real regressions, such as Clerk or a large
 library loading before the first paint. Treat the scores as signals; a
 passing score does not mean a page is accessible.
 
+## Bundle budget
+
+`ng build` also checks the size of the initial bundle (`budgets` in
+[`frontend/angular.json`](../../frontend/angular.json)): a warning above
+1 MB, a failed build above 1.25 MB. Angular measures it uncompressed; what
+a browser downloads is about a fifth of that (October 2026: 853 kB raw,
+158 kB transferred). The budget is an alarm for a sudden jump, such as a
+large library pulled into the first load by mistake, not a cap on features:
+when normal growth reaches the warning, check what grew, then raise it with
+some headroom. How fast pages load is judged by the Lighthouse thresholds
+above.
+
 ## Baseline (CI, October 2026)
 
 Median of three runs on the GitHub runner, with the fake Clerk key (after
