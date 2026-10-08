@@ -376,6 +376,9 @@
           "200": {
             "description": "The image"
           },
+          "302": {
+            "description": "Another hash: redirects to the game's current artwork"
+          },
           "400": {
             "description": "Not an artwork file name"
           },
@@ -497,6 +500,7 @@
         ]
       },
       "delete": {
+        "deprecated": true,
         "operationId": "GroupMembershipsController_deleteGroupMembershipById",
         "parameters": [
           {
@@ -518,7 +522,13 @@
         ],
         "responses": {
           "200": {
-            "description": "The membership has been succesfully deleted"
+            "description": "Left the group: upcoming sessions drop you, history keeps you"
+          },
+          "400": {
+            "description": "The owner cannot leave the group"
+          },
+          "404": {
+            "description": "Membership not found"
           }
         },
         "security": [
@@ -526,7 +536,7 @@
             "bearer": []
           }
         ],
-        "summary": "Delete a membership by Id",
+        "summary": "Leave a group, as DELETE /dashboard/users/:userId/groups/:groupId/members does",
         "tags": [
           "memberships"
         ]
