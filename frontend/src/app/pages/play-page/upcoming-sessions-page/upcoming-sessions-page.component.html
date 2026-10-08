@@ -79,8 +79,8 @@
                     <ul class="space-y-3">
                         @for (session of section.sessions; track session.id) {
                             @let when = dateParts(session);
-                            <li>
-                                <a [routerLink]="['/sessions', session.id]" class="group flex items-center gap-4 rounded-lg border bg-bv-surface p-4 transition hover:shadow-sm sm:gap-5" [class]="STATE_STYLES[section.state].row">
+                            <li class="rounded-lg border bg-bv-surface transition hover:shadow-sm" [class]="STATE_STYLES[section.state].row">
+                                <a [routerLink]="['/sessions', session.id]" class="group flex items-center gap-4 rounded-lg p-4 sm:gap-5">
                                     <span class="flex w-14 shrink-0 flex-col items-center rounded-lg py-2" [class]="STATE_STYLES[section.state].date" aria-hidden="true">
                                         <span class="text-xs font-semibold uppercase">{{ when.month }}</span>
                                         <span class="text-2xl font-bold leading-none">{{ when.day }}</span>
@@ -96,6 +96,9 @@
                                     <app-icon name="chevron-right" [size]="18" className="shrink-0 text-bv-text-muted transition group-hover:translate-x-0.5" aria-hidden="true" />
                                     <span class="sr-only">{{ session.meetDate | customDate: true: session.timezone }}</span>
                                 </a>
+                                @if (section.state !== 'wrap-up' && session.myRsvpStatus) {
+                                    <app-session-answer class="block border-t border-bv-border px-4 py-3" [session]="session" />
+                                }
                             </li>
                         }
                     </ul>

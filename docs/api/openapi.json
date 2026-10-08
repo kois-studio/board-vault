@@ -4400,13 +4400,13 @@
         ],
         "responses": {
           "200": {
-            "description": "List of all meets of the user",
+            "description": "List of all meets of the user, with the user's own RSVP",
             "content": {
               "application/json": {
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/MeetDto"
+                    "$ref": "#/components/schemas/AccountMeetDto"
                   }
                 }
               }
@@ -8952,6 +8952,71 @@
         "required": [
           "groupId",
           "signals"
+        ]
+      },
+      "AccountMeetDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number",
+            "example": 12345
+          },
+          "groupId": {
+            "type": "number",
+            "example": 12345
+          },
+          "createdBy": {
+            "type": "number",
+            "example": 12345
+          },
+          "meetDate": {
+            "type": "string",
+            "example": "2024-09-28 10:02:39"
+          },
+          "isConfirmed": {
+            "type": "boolean",
+            "example": true
+          },
+          "status": {
+            "type": "string",
+            "example": "completed",
+            "enum": [
+              "scheduled",
+              "active",
+              "completed",
+              "cancelled"
+            ]
+          },
+          "timezone": {
+            "type": "string",
+            "example": "UTC"
+          },
+          "notes": {
+            "type": "object",
+            "example": "Tried the new co-op expansion.",
+            "nullable": true
+          },
+          "myRsvpStatus": {
+            "type": "string",
+            "example": "pending",
+            "enum": [
+              "pending",
+              "accepted",
+              "declined"
+            ],
+            "nullable": true,
+            "description": "The caller's own answer; null when they are not invited."
+          }
+        },
+        "required": [
+          "id",
+          "groupId",
+          "createdBy",
+          "meetDate",
+          "isConfirmed",
+          "status",
+          "timezone",
+          "myRsvpStatus"
         ]
       },
       "UserSelfDto": {

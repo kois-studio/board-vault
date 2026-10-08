@@ -134,7 +134,7 @@ component through `takeUntilDestroyed` or `toSignal`.
 | --- | --- | --- |
 | `/` | none | Landing |
 | `/login`, `/register` | `GuestOnlyGuard` | Clerk sign-in; invitations and the private-beta notice |
-| `/dashboard` | `AuthOnlyGuard` | Home: invitations, next game nights, your groups, recently played |
+| `/dashboard` | `AuthOnlyGuard` | Home: invitations, next game nights (answer them from the card), your groups, recently played |
 | `/groups/:groupId` | `AuthOnlyGuard` | Group workspace (`/groups` redirects to Home); Group pulse shows the collection's approximate worth and links to each person |
 | `/groups/:groupId/members/:accountId`, `/groups/:groupId/people/:personId` | `AuthOnlyGuard` | One person in a group, with or without an account: the games they bring, their approximate collection worth (ADR-0016), and their game nights |
 | `/create-group`, `/groups/:groupId/edit` | `AuthOnlyGuard` | Group create and settings (invitations) |

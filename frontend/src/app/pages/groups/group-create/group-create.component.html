@@ -25,16 +25,16 @@
             required
             aria-describedby="group-name-help group-name-error"
             />
-          <p id="group-name-help" class="mt-2 text-sm text-bv-text-muted">Use a name your friends will recognize. You can manage the group and invite members next.</p>
+          <p id="group-name-help" class="mt-2 text-sm text-bv-text-muted">Use a name your friends will recognize. Next, you invite the people you play with.</p>
           <div id="group-name-error" aria-live="polite">
             @if (groupName.invalid && groupName.touched && groupName.hasError('required')) {
               <p class="mt-2 text-sm text-bv-danger" role="alert">Choose a group name to continue.</p>
             }
             @if (groupName.invalid && groupName.touched && groupName.hasError('minlength')) {
-              <p class="mt-2 text-sm text-bv-danger" role="alert">Use at least 4 characters so the name is easy to recognize.</p>
+              <p class="mt-2 text-sm text-bv-danger" role="alert">Use at least 2 characters.</p>
             }
             @if (groupName.invalid && groupName.touched && groupName.hasError('maxlength')) {
-              <p class="mt-2 text-sm text-bv-danger" role="alert">Keep the group name under 20 characters.</p>
+              <p class="mt-2 text-sm text-bv-danger" role="alert">Keep the group name to 40 characters or fewer.</p>
             }
           </div>
           <button appButton class="mt-6" type="submit" [disabled]="disableCreateButton" [loading]="isLoading()" variant="primary" [wide]="true">Create group</button>

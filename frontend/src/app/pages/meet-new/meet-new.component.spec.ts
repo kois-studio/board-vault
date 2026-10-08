@@ -8,7 +8,15 @@ import { ToastService } from '../../components/toast/toast.service'
 import { LOADING_KEYS } from '../../core/enums/loading-keys-enum'
 import { DataService } from '../../core/services/data.service'
 import { LoadingService } from '../../core/services/loading.service'
-import { MeetNewComponent } from './meet-new.component'
+import { defaultSessionDay, MeetNewComponent } from './meet-new.component'
+
+describe('defaultSessionDay', () => {
+    it('is today while 19:00 is ahead, and tomorrow from 19:00 on', () => {
+        expect(defaultSessionDay(new Date(2026, 9, 6, 18, 59))).toBe('2026-10-06')
+        expect(defaultSessionDay(new Date(2026, 9, 6, 19, 0))).toBe('2026-10-07')
+        expect(defaultSessionDay(new Date(2026, 9, 31, 22, 0))).toBe('2026-11-01')
+    })
+})
 
 describe('MeetNewComponent social handoff', () => {
     // The form defaults to today at 19:00; a morning clock keeps that start in the future whenever the tests run.
@@ -174,7 +182,10 @@ describe('MeetNewComponent social handoff', () => {
         vi.setSystemTime(new Date(2026, 9, 6, 20, 15))
         const { fixture, component } = await setup()
 
-        // Today at 19:00, the default, is already over at 20:15.
+        // After 19:00 the form opens on tomorrow; choosing today at 19:00 is already over at 20:15.
+        expect(component.dateForm.value).toBe('2026-10-07')
+        expect(component.startsInThePast()).toBe(false)
+        component.dateForm.setValue(component.today)
         expect(component.startsInThePast()).toBe(true)
         expect(component.canCreate()).toBe(false)
         fixture.detectChanges()

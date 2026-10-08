@@ -23,7 +23,7 @@ import type {
     RecommendationSignalsDto,
     RecommendationsDto,
 } from './play.types.js'
-import type { MeetDto } from '../../../common/types/meet.type.js'
+import type { AccountMeetDto } from '../../../common/types/meet.type.js'
 import type { AvatarDto, UserPublicDto } from '../../../common/types/user.type.js'
 
 @Injectable()
@@ -500,7 +500,7 @@ export class PlayService {
     }
 
     @LogFeature(new Logger('PlayService'))
-    async getUserMeets(userId: number): Promise<Array<MeetDto>> {
+    async getUserMeets(userId: number): Promise<Array<AccountMeetDto>> {
         const meets = await this.meetsService.getMeetsForAccount(userId)
 
         return meets.sort((a, b) => new Date(b.meetDate).getTime() - new Date(a.meetDate).getTime())
