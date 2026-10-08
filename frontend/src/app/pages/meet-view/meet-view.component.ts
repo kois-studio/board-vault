@@ -937,6 +937,67 @@ export class MeetViewComponent {
             .join(', ')
     }
 
+    // #region who brings what (#115)
+
+    /** Whether a person owns the game: their shelf, or ownership recorded for their group person. */
+    personOwnsGame(person: SessionPerson, gameId: number): boolean {
+        const shelf =
+            person.accountId === null ? [] : (this.groupData?.members.find((member) => member.id === person.accountId)?.games ?? [])
+        if (shelf.some((game) => game.id === gameId)) return true
+        const groupPerson =
+            person.personId !== null
+                ? this.groupPeople.find((entry) => entry.person.id === person.personId)
+                : this.groupPeople.find((entry) => entry.person.accountId === person.accountId)
+        return Boolean(groupPerson?.ownership.some((ownership) => ownership.gameId === gameId && ownership.status === 'asserted'))
+    }
+
+    /** The people coming (invited, not declined) who own the game. */
+    comingOwners(gameId: number): Array<SessionPerson> {
+        return this.invitedPeople.filter((person) => this.rsvpOf(person) !== 'declined' && this.personOwnsGame(person, gameId))
+    }
+
+    bringerOf(gameId: number): { name: string; isMe: boolean } | null {
+        const bringer = this.meetData?.gameBringers?.find((entry) => entry.gameId === gameId)
+        if (!bringer) return null
+        if (bringer.accountId !== null) {
+            const member = this.groupData?.members.find((entry) => entry.id === bringer.accountId)
+            return { name: member?.displayName || member?.username || 'Someone', isMe: bringer.accountId === this.userData?.id }
+        }
+        const person = this.groupPeople.find((entry) => entry.person.id === bringer.groupPersonId)
+        return { name: person?.person.displayName ?? 'Someone', isMe: false }
+    }
+
+    /** You are coming and own the game, so you can say you'll bring it. */
+    canBring(gameId: number): boolean {
+        return this.canProposeGames && this.comingOwners(gameId).some((person) => person.accountId === this.userData?.id)
+    }
+
+    /** People without an account who own the game and are coming: the organizer can say they bring it. */
+    placeholderOwners(gameId: number): Array<SessionPerson> {
+        if (!this.canShapeNight) return []
+        return this.comingOwners(gameId).filter((person) => person.personId !== null && person.accountId === null)
+    }
+
+    public readonly bringingGameId = signal<number | null>(null)
+
+    async setBringer(gameId: number, bringer: { groupPersonId?: number } | null): Promise<void> {
+        if (!this.meetData || this.bringingGameId() !== null) return
+        this.bringingGameId.set(gameId)
+        try {
+            const result = await firstValueFrom(this.api.setSessionGameBringer(this.meetData.id, gameId, bringer))
+            this.meetData.gameBringers = result.gameBringers
+            // Home lists what you are bringing.
+            this.dataService.refreshUserMeets()
+        } catch {
+            this.toastService.error('Could not save who brings the game. Try again.')
+        } finally {
+            this.bringingGameId.set(null)
+            this.changeDetector.markForCheck()
+        }
+    }
+
+    // #endregion
+
     /** Anyone coming can vote and add games while the night is open (ADR-0019, #114). */
     get canProposeGames(): boolean {
         return this.canRunNight

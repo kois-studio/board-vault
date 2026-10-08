@@ -81,6 +81,7 @@ describe('RecommendationsPageComponent and the next game night', () => {
         timezone: 'Europe/Madrid',
         notes: null,
         myRsvpStatus: 'pending',
+        gamesToBring: [],
         ...overrides,
     })
 

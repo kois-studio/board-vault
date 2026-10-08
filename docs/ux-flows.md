@@ -33,6 +33,12 @@ shortlist (it starts with their vote) and vote for shortlisted games; the
 shortlist puts the most wanted first. What to play offers "Add to <next
 night>" for the group's next planned night you are coming to.
 
+Each shortlisted game says who brings it. Someone coming who owns it taps
+"I'll bring it"; the organizer can name a person without an account who owns
+it. A game nobody coming owns is flagged, and one with owners but no bringer
+says so. Declining a night clears what you were bringing. Home shows "You're
+bringing: …" on each night.
+
 History keeps everyone who played. Someone who left the group shows as
 "Name (left)" with a muted avatar; a deleted account shows as "Deleted
 account" with a grey avatar (ADR-0018). Neither changes a session's counts.

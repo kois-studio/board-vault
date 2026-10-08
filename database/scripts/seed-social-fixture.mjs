@@ -71,8 +71,8 @@ if (gameResult.rows.length !== 1) {
 }
 
 const migrationResult = await client.execute("SELECT MAX(version) AS version FROM SchemaMigrations")
-if (String(migrationResult.rows[0]?.version ?? '') !== '0020') {
-    throw new Error('The target database must be migrated through 0020 before seeding the social fixture.')
+if (String(migrationResult.rows[0]?.version ?? '') !== '0021') {
+    throw new Error('The target database must be migrated through 0021 before seeding the social fixture.')
 }
 
 let transaction

@@ -19,6 +19,9 @@ operational details.
   coming can add a suggestion to the shortlist and vote for the games they'd
   play; the shortlist puts the most wanted first. What to play offers
   "Add to <next night>" when the group already has one planned.
+- Each shortlisted game on a night says who brings it. Owners who are coming
+  tap "I'll bring it", the organizer can name a friend without an account,
+  and games nobody coming owns are flagged. Home lists what you're bringing.
 - Notifications for game nights: planned, started, finished, and cancelled,
   plus someone joining your group. Each links to the night or group, and the
   inbox looks for new ones when you open it or come back to the app.

@@ -91,7 +91,7 @@ try {
 
     const recovered = await inspect(recoveryPath)
     const recoveredLines = recovered.stdout.trim().split('\n').map(line => line.trim()).filter(Boolean)
-    if (recovered.code !== 0 || recoveredLines.join('\n') !== 'ok\n2|20|0020') {
+    if (recovered.code !== 0 || recoveredLines.join('\n') !== 'ok\n2|21|0021') {
         throw new Error(`Recovered migration assertions failed. Received:\n${recovered.stdout}\n${recovered.stderr}`)
     }
 

@@ -1,6 +1,6 @@
 import { Component, computed, inject } from '@angular/core'
 import { RouterLink } from '@angular/router'
-import type { HistoryRecordType } from '../../api/api.types'
+import type { AccountMeetType, HistoryRecordType } from '../../api/api.types'
 import { CardGroupComponent } from '../../components/card-group/card-group.component'
 import { CardInvitationComponent } from '../../components/card-invitation/card-invitation.component'
 /**
@@ -59,6 +59,12 @@ export class DashboardPageComponent {
     })
 
     private readonly groupNames = computed(() => new Map(this.userGroups$().map((group) => [group.id, group.name])))
+    /** "Azul, Wingspan" for the games you said you'd bring; they are on your own shelf. */
+    public gamesToBringLabel(meet: AccountMeetType): string {
+        const shelf = new Map(this.dataService.userGames().map((game) => [game.id, game.titleTranslations.en || game.title || 'a game']))
+        return meet.gamesToBring.map((gameId) => shelf.get(gameId) ?? 'a game').join(', ')
+    }
+
     public groupName(groupId: number): string {
         return this.groupNames().get(groupId) ?? 'Your group'
     }

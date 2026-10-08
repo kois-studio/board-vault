@@ -38,6 +38,7 @@ import type {
     SessionAttendanceUpdatedType,
     SessionAttendeesUpdatedType,
     SessionCreatedType,
+    SessionGameBringersUpdatedType,
     SessionGameProposedType,
     SessionGameVotesUpdatedType,
     SessionPlayedGamesUpdatedType,
@@ -492,6 +493,8 @@ export const meetSchema: z.ZodMiniType<MeetType> = meetFields
 
 const gameVotesSchema = z.object({ gameId: z.number(), accountIds: z.array(z.number()) })
 
+const gameBringerSchema = z.object({ gameId: z.number(), accountId: z.nullable(z.number()), groupPersonId: z.nullable(z.number()) })
+
 export const meetDetailsSchema: z.ZodMiniType<MeetWithAttendeesAndGamesType> = z.extend(meetFields, {
     attendees: z.array(z.number()),
     attendeeStatuses: z.array(
@@ -543,6 +546,7 @@ export const meetDetailsSchema: z.ZodMiniType<MeetWithAttendeesAndGamesType> = z
         ),
     ),
     gameVotes: z._default(z.optional(z.array(gameVotesSchema)), []),
+    gameBringers: z._default(z.optional(z.array(gameBringerSchema)), []),
 })
 
 const historyPersonSchema = z.object({
@@ -573,7 +577,10 @@ const historyRecordSchema: z.ZodMiniType<HistoryRecordType> = z.object({
 export const userHistorySchema = z.array(historyRecordSchema)
 
 export const userMeetsSchema: z.ZodMiniType<Array<AccountMeetType>> = z.array(
-    z.extend(meetFields, { myRsvpStatus: z._default(z.optional(z.nullable(z.enum(['pending', 'accepted', 'declined']))), null) }),
+    z.extend(meetFields, {
+        myRsvpStatus: z._default(z.optional(z.nullable(z.enum(['pending', 'accepted', 'declined']))), null),
+        gamesToBring: z._default(z.optional(z.array(z.number())), []),
+    }),
 )
 
 export const userStatsSchema: z.ZodMiniType<UserStatsType> = z.object({
@@ -634,6 +641,11 @@ export const sessionGameProposedSchema: z.ZodMiniType<SessionGameProposedType> =
     sessionId: z.number(),
     plannedGameIds: z.array(z.number()),
     gameVotes: z.array(gameVotesSchema),
+})
+
+export const sessionGameBringersUpdatedSchema: z.ZodMiniType<SessionGameBringersUpdatedType> = z.object({
+    sessionId: z.number(),
+    gameBringers: z.array(gameBringerSchema),
 })
 
 export const sessionGameVotesUpdatedSchema: z.ZodMiniType<SessionGameVotesUpdatedType> = z.object({

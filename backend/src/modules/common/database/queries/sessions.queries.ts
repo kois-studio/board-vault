@@ -272,9 +272,12 @@ export class SessionQueries {
                 return false
             }
 
+            // Only games leaving the list go, so the rest keep their bringer and their place (#115).
             await transaction.execute({
-                sql: "DELETE FROM MeetGame WHERE meetId = ? AND gameStatus = 'planned'",
-                args: [meetId],
+                sql: `DELETE FROM MeetGame WHERE meetId = ? AND gameStatus = 'planned'${
+                    gameIds.length > 0 ? ` AND gameId NOT IN (${gameIds.map(() => '?').join(', ')})` : ''
+                }`,
+                args: [meetId, ...gameIds],
             })
             if (gameIds.length > 0) {
                 await transaction.batch(
@@ -292,6 +295,96 @@ export class SessionQueries {
         } finally {
             transaction.close()
         }
+    }
+
+    /** Invited group people who have not declined. */
+    async getMeetComingPersonIds(meetId: number): Promise<Array<number>> {
+        const result = await this.database.execute({
+            sql: "SELECT groupPersonId FROM MeetPersonAttendee WHERE meetId = ? AND rsvpStatus != 'declined'",
+            args: [meetId],
+        })
+
+        return result.rows.map(row => Number(row[0]))
+    }
+
+    /** Who brings each shortlisted game (#115); games nobody has claimed are left out. */
+    async getMeetGameBringers(meetId: number): Promise<Array<{ gameId: number; accountId: number | null; groupPersonId: number | null }>> {
+        const result = await this.database.execute({
+            sql: `
+                SELECT gameId, broughtByAccountId, broughtByPersonId FROM MeetGame
+                WHERE meetId = ? AND gameStatus = 'planned' AND (broughtByAccountId IS NOT NULL OR broughtByPersonId IS NOT NULL)
+            `,
+            args: [meetId],
+        })
+
+        return result.rows.map(row => ({
+            gameId: Number(row[0]),
+            accountId: row[1] === null ? null : Number(row[1]),
+            groupPersonId: row[2] === null ? null : Number(row[2]),
+        }))
+    }
+
+    /** Sets or clears who brings one shortlisted game; false when the game is not on the shortlist. */
+    async setMeetGameBringer(meetId: number, gameId: number, bringer: { accountId: number | null; groupPersonId: number | null }) {
+        const result = await this.database.execute({
+            sql: "UPDATE MeetGame SET broughtByAccountId = ?, broughtByPersonId = ? WHERE meetId = ? AND gameId = ? AND gameStatus = 'planned'",
+            args: [bringer.accountId, bringer.groupPersonId, meetId, gameId],
+        })
+
+        return result.rowsAffected === 1
+    }
+
+    /** Someone who can't make it no longer brings anything to that night. */
+    clearMeetGameBringers(meetId: number, accountId: number | null, groupPersonId: number | null) {
+        return this.database.execute({
+            sql: `
+                UPDATE MeetGame SET broughtByAccountId = NULL, broughtByPersonId = NULL
+                WHERE meetId = ? AND (broughtByAccountId = ? OR broughtByPersonId = ?)
+            `,
+            args: [meetId, accountId ?? -1, groupPersonId ?? -1],
+        })
+    }
+
+    /** Whether the account owns the game: on their shelf, or asserted for their group person in this group. */
+    async accountOwnsGame(accountId: number, gameId: number, groupId: number): Promise<boolean> {
+        const result = await this.database.execute({
+            sql: `
+                SELECT 1 FROM OwnedGame WHERE accountId = ? AND gameId = ?
+                UNION ALL
+                SELECT 1 FROM GroupPersonGameOwnership o
+                INNER JOIN GroupPerson gp ON gp.id = o.groupPersonId
+                WHERE gp.accountId = ? AND gp.groupId = ? AND o.gameId = ? AND o.status = 'asserted'
+                LIMIT 1
+            `,
+            args: [accountId, gameId, accountId, groupId, gameId],
+        })
+
+        return result.rows.length > 0
+    }
+
+    async groupPersonOwnsGame(groupPersonId: number, gameId: number): Promise<boolean> {
+        const result = await this.database.execute({
+            sql: "SELECT 1 FROM GroupPersonGameOwnership WHERE groupPersonId = ? AND gameId = ? AND status = 'asserted'",
+            args: [groupPersonId, gameId],
+        })
+
+        return result.rows.length > 0
+    }
+
+    /** The games an account has said it will bring, per session, for the sessions in its list. */
+    async getGamesToBringForAccount(accountId: number): Promise<Map<number, Array<number>>> {
+        const result = await this.database.execute({
+            sql: "SELECT meetId, gameId FROM MeetGame WHERE broughtByAccountId = ? AND gameStatus = 'planned' ORDER BY createdAt",
+            args: [accountId],
+        })
+        const byMeet = new Map<number, Array<number>>()
+
+        for (const row of result.rows) {
+            const meetId = Number(row[0])
+
+            byMeet.set(meetId, [...(byMeet.get(meetId) ?? []), Number(row[1])])
+        }
+        return byMeet
     }
 
     /** Per-night votes (#114): one row per account and shortlisted game. */

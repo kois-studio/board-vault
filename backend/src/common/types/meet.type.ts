@@ -37,6 +37,9 @@ export class AccountMeetDto extends MeetDto {
         description: "The caller's own answer; null when they are not invited.",
     })
     myRsvpStatus: 'pending' | 'accepted' | 'declined' | null
+
+    @ApiProperty({ example: [42], description: 'Shortlisted games the caller has said they will bring to this night.' })
+    gamesToBring: Array<number>
 }
 
 export class MeetGameVotesDto {
@@ -45,6 +48,17 @@ export class MeetGameVotesDto {
 
     @ApiProperty({ example: [1, 2], description: 'Accounts that would play this shortlisted game on the night, oldest vote first.' })
     accountIds: Array<number>
+}
+
+export class MeetGameBringerDto {
+    @ApiProperty({ example: 42 })
+    gameId: number
+
+    @ApiProperty({ example: 1, nullable: true, description: 'The account bringing the game, when it is an account.' })
+    accountId: number | null
+
+    @ApiProperty({ example: null, nullable: true, description: 'The group person bringing the game, when the organizer named one.' })
+    groupPersonId: number | null
 }
 
 export class MeetAttendeeStatusDto {
@@ -132,4 +146,7 @@ export class MeetWithAttendeesAndGames extends MeetDto {
 
     @ApiProperty({ type: [MeetGameVotesDto], description: 'Votes on shortlisted games; games without votes are left out.' })
     gameVotes: Array<MeetGameVotesDto>
+
+    @ApiProperty({ type: [MeetGameBringerDto], description: 'Who brings each shortlisted game; games nobody has claimed are left out.' })
+    gameBringers: Array<MeetGameBringerDto>
 }

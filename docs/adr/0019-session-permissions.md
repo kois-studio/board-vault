@@ -31,6 +31,8 @@ caller's own answer. Nothing new is stored.
 | --- | --- |
 | Change who is invited, replace or trim the shortlist | Organizer |
 | Add a game to the shortlist, vote for shortlisted games | Player |
+| Say you'll bring a shortlisted game you own | Player |
+| Name a group person who owns a game as its bringer, clear anyone's | Organizer |
 | Cancel the night | Organizer |
 | Start and finish the night | Player |
 | Mark games played and who played them | Player |

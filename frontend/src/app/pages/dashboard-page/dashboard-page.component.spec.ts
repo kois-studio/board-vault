@@ -8,8 +8,19 @@ import { DashboardPageComponent } from './dashboard-page.component'
 
 const inDays = (days: number) => new Date(Date.now() + days * 86_400_000).toISOString()
 
-function meet(id: number, groupId: number, days: number, status = 'scheduled') {
-    return { id, groupId, createdBy: 1, meetDate: inDays(days), isConfirmed: false, status, timezone: 'Europe/Madrid', notes: null }
+function meet(id: number, groupId: number, days: number, status = 'scheduled', gamesToBring: Array<number> = []) {
+    return {
+        id,
+        groupId,
+        createdBy: 1,
+        meetDate: inDays(days),
+        isConfirmed: false,
+        status,
+        timezone: 'Europe/Madrid',
+        notes: null,
+        myRsvpStatus: null,
+        gamesToBring,
+    }
 }
 
 async function renderHome(overrides: Record<string, unknown> = {}) {
@@ -134,5 +145,17 @@ describe('DashboardPageComponent (Home)', () => {
 
         expect(fixture.nativeElement.textContent).toContain('3 people')
         expect(fixture.nativeElement.textContent).toContain('2 people')
+    })
+
+    it('says which games you are bringing to a night', async () => {
+        const fixture = await renderHome({
+            userMeets: signal([meet(1, 10, 2, 'scheduled', [42, 43])]),
+            userGames: signal([
+                { id: 42, title: 'Azul', titleTranslations: { en: 'Azul' } },
+                { id: 43, title: 'Wingspan', titleTranslations: { en: 'Wingspan' } },
+            ]),
+        })
+
+        expect(fixture.nativeElement.querySelector('a[href="/sessions/1"]').textContent).toContain('You’re bringing: Azul, Wingspan')
     })
 })

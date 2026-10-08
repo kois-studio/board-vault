@@ -108,6 +108,7 @@ describe('DataService answering a session', () => {
             timezone: 'UTC',
             notes: null,
             myRsvpStatus: 'pending' as const,
+            gamesToBring: [],
         }
         service.userMeets.set([
             { ...session, id: 21 },

@@ -16,7 +16,7 @@ import { NotificationQueries } from './queries/notifications.queries.js'
 import { RecommendationQueries } from './queries/recommendations.queries.js'
 import { SessionQueries } from './queries/sessions.queries.js'
 
-export const CURRENT_SCHEMA_VERSION = '0020'
+export const CURRENT_SCHEMA_VERSION = '0021'
 
 /** Statements that only read, so running them twice is harmless. Any write keyword, even inside a `WITH`, makes it a write. */
 const READ_ONLY_SQL = /^\s*(SELECT|WITH)\b/i

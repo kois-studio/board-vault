@@ -67,6 +67,9 @@
                                     @if (meet.status === 'active') {
                                         <span class="mt-2 inline-block rounded-full bg-bv-success/10 px-2 py-0.5 text-xs font-semibold text-bv-success">Happening now</span>
                                     }
+                                    @if (gamesToBringLabel(meet); as games) {
+                                        <span class="mt-2 block text-sm"><span class="font-medium">You’re bringing:</span> {{ games }}</span>
+                                    }
                                 </span>
                             </a>
                             @if (meet.myRsvpStatus) {
