@@ -35,7 +35,7 @@ test.describe('first-group recovery flow', () => {
             await expect(createButton).toBeEnabled()
 
             await createButton.click()
-            await expect(page).toHaveURL(/\/groups\/\d+$/)
+            await expect(page).toHaveURL(/\/groups\/\d+\/edit$/)
             await expect(page.getByRole('heading', { name: groupName, exact: true })).toBeVisible()
         } finally {
             await context.close()
