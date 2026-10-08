@@ -4,7 +4,7 @@ import type { Mock } from 'vitest'
 
 type CacheServiceInternals = {
     LOGGER: { log: Mock; error: Mock }
-    REDIS: { get: Mock; set: Mock; incr: Mock; expire: Mock; keys: Mock; flushdb: Mock; ping: Mock }
+    REDIS: { get: Mock; set: Mock; incr: Mock; expire: Mock; keys: Mock; flushdb: Mock; ping: Mock; scan: Mock; del: Mock }
 }
 
 describe('CacheService logging', () => {
@@ -21,6 +21,8 @@ describe('CacheService logging', () => {
             keys: vi.fn().mockResolvedValue([]),
             flushdb: vi.fn().mockResolvedValue('OK'),
             ping: vi.fn().mockResolvedValue('PONG'),
+            scan: vi.fn().mockResolvedValue(['0', []]),
+            del: vi.fn().mockImplementation(async (...keys: Array<string>) => keys.length),
         }
         return { service, internals }
     }
@@ -91,5 +93,35 @@ describe('CacheService logging', () => {
 
         expect(internals.REDIS.ping).toHaveBeenCalledTimes(1)
         expect(internals.LOGGER.error).toHaveBeenCalledWith('Redis health check failed (Error)')
+    })
+
+    it('clears cached views page by page, but keeps the rate-limit counters', async () => {
+        const { service, internals } = createService()
+
+        internals.REDIS.scan
+            .mockResolvedValueOnce(['17', ['reviews:userReviewsWithGameData:7', 'rate-limit:abc', 'dashboard:stats:7']])
+            .mockResolvedValueOnce(['0', ['rate-limit:def', 'games:byId:3']])
+
+        await expect(service.deleteCachedData()).resolves.toBe(true)
+
+        expect(internals.REDIS.scan).toHaveBeenNthCalledWith(1, '0', { count: 500 })
+        expect(internals.REDIS.scan).toHaveBeenNthCalledWith(2, '17', { count: 500 })
+        expect(internals.REDIS.del.mock.calls).toEqual([['reviews:userReviewsWithGameData:7', 'dashboard:stats:7'], ['games:byId:3']])
+        expect(internals.REDIS.flushdb).not.toHaveBeenCalled()
+        expect(internals.LOGGER.log).toHaveBeenCalledWith('REDIS: Cleared cached entries; rate limits kept')
+    })
+
+    it('says so when the cache could not be cleared, instead of failing the caller', async () => {
+        const { service, internals } = createService()
+
+        internals.REDIS.scan.mockRejectedValueOnce(new Error('Redis unavailable'))
+
+        await expect(service.deleteCachedData()).resolves.toBe(false)
+        expect(internals.REDIS.del).not.toHaveBeenCalled()
+    })
+
+    it('knows when Redis is turned off', () => {
+        expect(new CacheService({ get: vi.fn().mockReturnValue('true') } as never).isEnabled()).toBe(false)
+        expect(createService().service.isEnabled()).toBe(true)
     })
 })

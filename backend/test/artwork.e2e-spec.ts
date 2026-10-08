@@ -116,7 +116,7 @@ describe('game artwork (e2e)', () => {
         expect(downloader.downloaded).toHaveLength(downloads)
     })
 
-    it('gives new artwork a new address, and serves an old address briefly with the current image', async () => {
+    it('gives new artwork a new address, and sends an old address to it briefly', async () => {
         const before = await imageUrlOf(2)
 
         await request(app.getHttpServer())
@@ -126,10 +126,29 @@ describe('game artwork (e2e)', () => {
             .expect(200)
 
         const after = await imageUrlOf(2)
-        const old = await request(app.getHttpServer()).get(before).expect(200)
+        const old = await request(app.getHttpServer()).get(before).expect(302)
 
         expect(after).not.toBe(before)
+        expect(new URL(old.headers['location']!, `http://api.test${before}`).pathname).toBe(after)
         expect(old.headers['cache-control']).toBe('public, max-age=300')
+        expect(old.headers['cdn-cache-control']).toBe('public, max-age=300')
+        expect(old.headers['content-type']).not.toBe('image/webp')
+    })
+
+    it('never serves the image for a made-up hash, so it cannot skip the cache', async () => {
+        const current = await imageUrlOf(2)
+        const [, gameId] = ARTWORK.exec(current)!
+
+        for (const hash of ['0000000000000000', 'ffffffffffffffff']) {
+            const answer = await request(app.getHttpServer()).get(`/artwork/${gameId}-${hash}.webp`).expect(302)
+
+            expect(new URL(answer.headers['location']!, `http://api.test/artwork/${gameId}-${hash}.webp`).pathname).toBe(current)
+            expect(answer.headers['cache-control']).toBe('public, max-age=300')
+        }
+
+        const served = await request(app.getHttpServer()).get(current).buffer(true).expect(200)
+
+        expect(served.headers['cache-control']).toBe('public, max-age=31536000, immutable')
     })
 
     it('replaces the artwork with an uploaded photo, for admins only', async () => {
@@ -204,5 +223,6 @@ describe('game artwork (e2e)', () => {
         await request(app.getHttpServer()).get('/artwork/2-0123456789abcdef.png').expect(400)
         await request(app.getHttpServer()).get('/artwork/..%2F..%2Fetc%2Fpasswd').expect(400)
         await request(app.getHttpServer()).get('/artwork/999-0123456789abcdef.webp').expect(404)
+        await request(app.getHttpServer()).get('/artwork/99999999999999999999999-0123456789abcdef.webp').expect(404)
     })
 })
