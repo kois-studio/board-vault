@@ -52,16 +52,23 @@ export type GameResultRow = { accountId: number | null; groupPersonId: number | 
 export class SessionQueries {
     constructor(private readonly database: DatabaseService) {}
 
+    /** Sessions in the account's groups, with the account's own RSVP (null when not invited). */
     getMeetsForAccount(accountId: number) {
         return this.database.execute({
             sql: `
                 SELECT DISTINCT m.id, m.groupId, m.createdBy, m.meetDate, m.isConfirmed,
-                    m.status, m.timezone, m.notes
+                    m.status, m.timezone, m.notes,
+                    COALESCE(
+                        (SELECT ma.rsvpStatus FROM MeetAttendee ma WHERE ma.meetId = m.id AND ma.accountId = ?),
+                        (SELECT mpa.rsvpStatus FROM MeetPersonAttendee mpa
+                            INNER JOIN GroupPerson gp ON gp.id = mpa.groupPersonId
+                            WHERE mpa.meetId = m.id AND gp.accountId = ?)
+                    ) AS myRsvpStatus
                 FROM Meet m
                 INNER JOIN GroupMembership gm ON gm.groupId = m.groupId
                 WHERE gm.accountId = ?
             `,
-            args: [accountId],
+            args: [accountId, accountId, accountId],
         })
     }
 

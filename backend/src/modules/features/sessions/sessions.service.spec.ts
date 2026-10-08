@@ -1,5 +1,6 @@
 import { BadRequestException, ForbiddenException, NotFoundException } from '@nestjs/common'
 
+import { fakeActivityNotifier } from '../../../../test/fake-activity-notifier.js'
 import { fakeDatabase } from '../../../../test/fake-database.js'
 
 import { SessionsService } from './sessions.service.js'
@@ -67,7 +68,7 @@ describe('SessionsService', () => {
                 ],
             ],
         })
-        const service = new SessionsService(fakeDatabase(database))
+        const service = new SessionsService(fakeDatabase(database), fakeActivityNotifier())
 
         await expect(service.getSessionDetails(2, 12)).resolves.toEqual({
             id: 12,
@@ -93,14 +94,14 @@ describe('SessionsService', () => {
         const database = createDatabaseMock()
 
         database.getMeetDetailsByIdForAccount.mockResolvedValue({ rows: [] })
-        const service = new SessionsService(fakeDatabase(database))
+        const service = new SessionsService(fakeDatabase(database), fakeActivityNotifier())
 
         await expect(service.getSessionDetails(99, 12)).rejects.toThrow(NotFoundException)
     })
 
     it('creates a completed session from group members and available games', async () => {
         const database = createDatabaseMock()
-        const service = new SessionsService(fakeDatabase(database))
+        const service = new SessionsService(fakeDatabase(database), fakeActivityNotifier())
 
         await expect(service.createCompletedSession(1, body)).resolves.toEqual({ sessionId: 12, status: 'completed' })
         expect(database.createCompletedSession).toHaveBeenCalledWith({
@@ -129,7 +130,7 @@ describe('SessionsService', () => {
             groupPersonIds: [10, 11],
             games: [{ gameId: 84, participantIds: [1], participantPersonIds: [10, 11] }],
         }
-        const service = new SessionsService(fakeDatabase(database))
+        const service = new SessionsService(fakeDatabase(database), fakeActivityNotifier())
 
         await expect(service.createCompletedSession(1, mixedBody)).resolves.toEqual({ sessionId: 12, status: 'completed' })
         expect(database.createCompletedSession).toHaveBeenCalledWith({
@@ -151,7 +152,7 @@ describe('SessionsService', () => {
             rows: [[10, 7, null, 'placeholder', 'active', 'Ana', null, null, null, null, 'member']],
         })
         database.getGroupAvailableGameIdsForPeople.mockResolvedValue([84])
-        const service = new SessionsService(fakeDatabase(database))
+        const service = new SessionsService(fakeDatabase(database), fakeActivityNotifier())
 
         await expect(
             service.createScheduledSession(1, {
@@ -177,7 +178,7 @@ describe('SessionsService', () => {
         const database = createDatabaseMock()
 
         database.getGroupById.mockResolvedValue({ rows: [] })
-        const service = new SessionsService(fakeDatabase(database))
+        const service = new SessionsService(fakeDatabase(database), fakeActivityNotifier())
 
         await expect(service.createCompletedSession(1, body)).rejects.toThrow(NotFoundException)
         expect(database.createCompletedSession).not.toHaveBeenCalled()
@@ -187,7 +188,7 @@ describe('SessionsService', () => {
         const database = createDatabaseMock()
 
         database.getGroupMemberIds.mockResolvedValue([2, 3])
-        const service = new SessionsService(fakeDatabase(database))
+        const service = new SessionsService(fakeDatabase(database), fakeActivityNotifier())
 
         await expect(service.createCompletedSession(1, body)).rejects.toThrow(ForbiddenException)
         expect(database.createCompletedSession).not.toHaveBeenCalled()
@@ -195,7 +196,7 @@ describe('SessionsService', () => {
 
     it('rejects attendees outside the selected group', async () => {
         const database = createDatabaseMock()
-        const service = new SessionsService(fakeDatabase(database))
+        const service = new SessionsService(fakeDatabase(database), fakeActivityNotifier())
 
         await expect(service.createCompletedSession(1, { ...body, attendeeIds: [1, 99] })).rejects.toThrow(BadRequestException)
         expect(database.createCompletedSession).not.toHaveBeenCalled()
@@ -203,7 +204,7 @@ describe('SessionsService', () => {
 
     it('rejects a completed session without attendees', async () => {
         const database = createDatabaseMock()
-        const service = new SessionsService(fakeDatabase(database))
+        const service = new SessionsService(fakeDatabase(database), fakeActivityNotifier())
 
         await expect(service.createCompletedSession(1, { ...body, attendeeIds: [] })).rejects.toThrow(
             'A completed session must have at least one attendee',
@@ -213,7 +214,7 @@ describe('SessionsService', () => {
 
     it('rejects games unavailable to the selected group', async () => {
         const database = createDatabaseMock()
-        const service = new SessionsService(fakeDatabase(database))
+        const service = new SessionsService(fakeDatabase(database), fakeActivityNotifier())
 
         await expect(service.createCompletedSession(1, { ...body, games: [{ gameId: 99, participantIds: [1] }] })).rejects.toThrow(
             BadRequestException,
@@ -223,7 +224,7 @@ describe('SessionsService', () => {
 
     it('rejects game participants who are not selected attendees', async () => {
         const database = createDatabaseMock()
-        const service = new SessionsService(fakeDatabase(database))
+        const service = new SessionsService(fakeDatabase(database), fakeActivityNotifier())
 
         await expect(service.createCompletedSession(1, { ...body, games: [{ gameId: 42, participantIds: [3] }] })).rejects.toThrow(
             BadRequestException,
@@ -233,7 +234,7 @@ describe('SessionsService', () => {
 
     it('rejects a completed game without participants', async () => {
         const database = createDatabaseMock()
-        const service = new SessionsService(fakeDatabase(database))
+        const service = new SessionsService(fakeDatabase(database), fakeActivityNotifier())
 
         await expect(service.createCompletedSession(1, { ...body, games: [{ gameId: 42, participantIds: [] }] })).rejects.toThrow(
             'Every played game must have at least one participant',
@@ -243,7 +244,8 @@ describe('SessionsService', () => {
 
     it('schedules a session for every current group member when attendees are omitted', async () => {
         const database = createDatabaseMock()
-        const service = new SessionsService(fakeDatabase(database))
+        const notifier = fakeActivityNotifier()
+        const service = new SessionsService(fakeDatabase(database), notifier)
         const scheduledBody = {
             groupId: 7,
             sessionDate: '2026-08-21T19:30:00.000Z',
@@ -259,11 +261,12 @@ describe('SessionsService', () => {
             attendeeIds: [1, 2, 3],
             plannedGameIds: [],
         })
+        expect(notifier.sessionPlanned).toHaveBeenCalledWith(13, 1)
     })
 
     it('schedules a session for selected group attendees', async () => {
         const database = createDatabaseMock()
-        const service = new SessionsService(fakeDatabase(database))
+        const service = new SessionsService(fakeDatabase(database), fakeActivityNotifier())
 
         await expect(
             service.createScheduledSession(1, {
@@ -289,7 +292,7 @@ describe('SessionsService', () => {
 
         database.getMeetAttendeeForAccount = vi.fn().mockResolvedValue({ rows: [[13, 2, 'pending', 'unknown', null, 'scheduled']] })
         database.updateMeetAttendeeRsvp = vi.fn().mockResolvedValue({ rowsAffected: 1 })
-        const service = new SessionsService(fakeDatabase(database))
+        const service = new SessionsService(fakeDatabase(database), fakeActivityNotifier())
 
         await expect(service.updateSessionRsvp(2, 13, { rsvpStatus: 'accepted' })).resolves.toEqual({
             sessionId: 13,
@@ -303,7 +306,7 @@ describe('SessionsService', () => {
 
         database.getMeetAttendeeForAccount = vi.fn().mockResolvedValue({ rows: [[13, 2, 'accepted', 'attended', null, 'completed']] })
         database.updateMeetAttendeeRsvp = vi.fn()
-        const service = new SessionsService(fakeDatabase(database))
+        const service = new SessionsService(fakeDatabase(database), fakeActivityNotifier())
 
         await expect(service.updateSessionRsvp(2, 13, { rsvpStatus: 'declined' })).rejects.toThrow('Cannot RSVP to a completed session')
         expect(database.updateMeetAttendeeRsvp).not.toHaveBeenCalled()
@@ -315,7 +318,7 @@ describe('SessionsService', () => {
         database.getMeetAccessForAccount.mockResolvedValue({
             rows: [[13, 7, 1, '2026-08-16T19:30:00.000Z', 0, 'active', 'Europe/Madrid', null]],
         })
-        const service = new SessionsService(fakeDatabase(database))
+        const service = new SessionsService(fakeDatabase(database), fakeActivityNotifier())
 
         await expect(service.updateSessionAttendance(1, 13, { attendedIds: [1] })).resolves.toEqual({ sessionId: 13, attendedIds: [1] })
         expect(database.updateMeetAttendance).toHaveBeenCalledWith(13, [1])
@@ -327,7 +330,7 @@ describe('SessionsService', () => {
         database.getMeetAccessForAccount.mockResolvedValue({
             rows: [[13, 7, 1, '2026-08-16T19:30:00.000Z', 0, 'active', 'Europe/Madrid', null]],
         })
-        const service = new SessionsService(fakeDatabase(database))
+        const service = new SessionsService(fakeDatabase(database), fakeActivityNotifier())
 
         await expect(service.updateSessionAttendance(1, 13, { attendedIds: [3] })).rejects.toThrow(
             'Attendance can only be recorded for invited members',
@@ -341,7 +344,7 @@ describe('SessionsService', () => {
         database.getMeetAccessForAccount.mockResolvedValue({
             rows: [[13, 7, 1, '2026-08-16T19:30:00.000Z', 1, 'completed', 'Europe/Madrid', null]],
         })
-        const service = new SessionsService(fakeDatabase(database))
+        const service = new SessionsService(fakeDatabase(database), fakeActivityNotifier())
 
         await expect(service.updateSessionAttendance(1, 13, { attendedIds: [] })).resolves.toEqual({ sessionId: 13, attendedIds: [] })
         expect(database.updateMeetAttendance).toHaveBeenCalledWith(13, [])
@@ -353,7 +356,7 @@ describe('SessionsService', () => {
         database.getMeetAccessForAccount.mockResolvedValue({
             rows: [[13, 7, 1, '2026-08-16T19:30:00.000Z', 0, 'active', 'Europe/Madrid', null]],
         })
-        const service = new SessionsService(fakeDatabase(database))
+        const service = new SessionsService(fakeDatabase(database), fakeActivityNotifier())
 
         await expect(service.updateSessionShortlist(1, 13, { plannedGameIds: [43, 42] })).resolves.toEqual({
             sessionId: 13,
@@ -364,7 +367,7 @@ describe('SessionsService', () => {
 
     it('rejects shortlist games that no group member owns', async () => {
         const database = createDatabaseMock()
-        const service = new SessionsService(fakeDatabase(database))
+        const service = new SessionsService(fakeDatabase(database), fakeActivityNotifier())
 
         await expect(service.updateSessionShortlist(1, 13, { plannedGameIds: [99] })).rejects.toThrow(
             'Every planned game must be owned by at least one group member',
@@ -374,7 +377,7 @@ describe('SessionsService', () => {
 
     it('rejects selected attendees outside the group', async () => {
         const database = createDatabaseMock()
-        const service = new SessionsService(fakeDatabase(database))
+        const service = new SessionsService(fakeDatabase(database), fakeActivityNotifier())
 
         await expect(
             service.createScheduledSession(1, {
@@ -389,7 +392,7 @@ describe('SessionsService', () => {
 
     it('rejects planned games unavailable to the selected group', async () => {
         const database = createDatabaseMock()
-        const service = new SessionsService(fakeDatabase(database))
+        const service = new SessionsService(fakeDatabase(database), fakeActivityNotifier())
 
         await expect(
             service.createScheduledSession(1, {
@@ -414,7 +417,7 @@ describe('SessionsService', () => {
             skippedGameIds: [43],
             playedGameParticipants: [{ gameId: 42, participantIds: [1, 2] }],
         })
-        const service = new SessionsService(fakeDatabase(database))
+        const service = new SessionsService(fakeDatabase(database), fakeActivityNotifier())
 
         await expect(service.updateSessionPlayedGames(1, 13, { playedGameIds: [42] })).resolves.toEqual({
             sessionId: 13,
@@ -441,7 +444,7 @@ describe('SessionsService', () => {
             skippedGameIds: [],
             playedGameParticipants: [],
         })
-        const service = new SessionsService(fakeDatabase(database))
+        const service = new SessionsService(fakeDatabase(database), fakeActivityNotifier())
 
         await expect(
             service.updateSessionPlayedGames(1, 13, {
@@ -460,7 +463,7 @@ describe('SessionsService', () => {
         database.getMeetAccessForAccount.mockResolvedValue({
             rows: [[13, 7, 1, '2026-08-21T19:30:00.000Z', 0, 'active', 'Europe/Madrid', null]],
         })
-        const service = new SessionsService(fakeDatabase(database))
+        const service = new SessionsService(fakeDatabase(database), fakeActivityNotifier())
 
         await expect(
             service.updateSessionPlayedGames(1, 13, {
@@ -477,7 +480,7 @@ describe('SessionsService', () => {
         database.getMeetAccessForAccount.mockResolvedValue({
             rows: [[13, 7, 1, '2026-08-21T19:30:00.000Z', 0, 'active', 'Europe/Madrid', null]],
         })
-        const service = new SessionsService(fakeDatabase(database))
+        const service = new SessionsService(fakeDatabase(database), fakeActivityNotifier())
 
         await expect(
             service.updateSessionPlayedGames(1, 13, {
@@ -494,7 +497,7 @@ describe('SessionsService', () => {
         database.getMeetAccessForAccount.mockResolvedValue({
             rows: [[13, 7, 1, '2026-08-21T19:30:00.000Z', 0, 'active', 'Europe/Madrid', null]],
         })
-        const service = new SessionsService(fakeDatabase(database))
+        const service = new SessionsService(fakeDatabase(database), fakeActivityNotifier())
 
         await expect(service.updateSessionPlayedGames(1, 13, { playedGameIds: [99] })).rejects.toThrow(
             'Every played game must be owned by at least one group member',
@@ -506,7 +509,7 @@ describe('SessionsService', () => {
         const database = createDatabaseMock()
 
         database.getGroupMemberIds.mockResolvedValue([2, 3])
-        const service = new SessionsService(fakeDatabase(database))
+        const service = new SessionsService(fakeDatabase(database), fakeActivityNotifier())
 
         await expect(
             service.createScheduledSession(1, {
@@ -520,7 +523,8 @@ describe('SessionsService', () => {
 
     it('allows an organizer to transition a scheduled session to active', async () => {
         const database = createDatabaseMock()
-        const service = new SessionsService(fakeDatabase(database))
+        const notifier = fakeActivityNotifier()
+        const service = new SessionsService(fakeDatabase(database), notifier)
 
         await expect(service.updateSessionStatus(1, 12, { status: 'active' })).resolves.toEqual({
             sessionId: 12,
@@ -528,12 +532,13 @@ describe('SessionsService', () => {
             sessionDate: '2026-08-16T19:30:00.000Z',
         })
         expect(database.updateMeetStatus).toHaveBeenCalledWith(12, 'scheduled', 'active', undefined)
+        expect(notifier.sessionChanged).toHaveBeenCalledWith(12, 1, 'active')
     })
 
     it('moves the date of a night started before it to now', async () => {
         vi.useFakeTimers({ now: new Date('2026-08-10T18:00:00.000Z') })
         const database = createDatabaseMock()
-        const service = new SessionsService(fakeDatabase(database))
+        const service = new SessionsService(fakeDatabase(database), fakeActivityNotifier())
 
         await expect(service.updateSessionStatus(1, 12, { status: 'active' })).resolves.toEqual({
             sessionId: 12,
@@ -547,7 +552,7 @@ describe('SessionsService', () => {
     it('keeps the date of a cancelled night, even a future one', async () => {
         vi.useFakeTimers({ now: new Date('2026-08-10T18:00:00.000Z') })
         const database = createDatabaseMock()
-        const service = new SessionsService(fakeDatabase(database))
+        const service = new SessionsService(fakeDatabase(database), fakeActivityNotifier())
 
         await service.updateSessionStatus(1, 12, { status: 'cancelled' })
         expect(database.updateMeetStatus).toHaveBeenCalledWith(12, 'scheduled', 'cancelled', undefined)
@@ -561,7 +566,7 @@ describe('SessionsService', () => {
             rows: [[12, 7, 1, '2026-08-16T19:30:00.000Z', 0, 'active', 'Europe/Madrid', null]],
         })
         database.countPlayedMeetGames.mockResolvedValue({ rows: [{ played: 0 }] })
-        const service = new SessionsService(fakeDatabase(database))
+        const service = new SessionsService(fakeDatabase(database), fakeActivityNotifier())
 
         await expect(service.updateSessionStatus(1, 12, { status: 'completed' })).rejects.toThrow('No game is marked as played')
         expect(database.updateMeetStatus).not.toHaveBeenCalled()
@@ -573,7 +578,7 @@ describe('SessionsService', () => {
 
     it('requires a scheduled session to become active before it can be completed', async () => {
         const database = createDatabaseMock()
-        const service = new SessionsService(fakeDatabase(database))
+        const service = new SessionsService(fakeDatabase(database), fakeActivityNotifier())
 
         await expect(service.updateSessionStatus(1, 12, { status: 'completed' })).rejects.toThrow(
             'Cannot change a scheduled session to completed',
@@ -585,7 +590,7 @@ describe('SessionsService', () => {
         const database = createDatabaseMock()
 
         database.getMeetAccessForAccount.mockResolvedValue({ rows: [[12, 7, 1, '2026-08-16T19:30:00.000Z', 1, 'completed', 'UTC', null]] })
-        const service = new SessionsService(fakeDatabase(database))
+        const service = new SessionsService(fakeDatabase(database), fakeActivityNotifier())
 
         await expect(service.updateSessionStatus(1, 12, { status: 'active' })).rejects.toThrow(BadRequestException)
         expect(database.updateMeetStatus).not.toHaveBeenCalled()
@@ -600,7 +605,7 @@ describe('SessionsService', () => {
             const database = createDatabaseMock()
 
             database.getMeetAccessForAccount.mockResolvedValue(row)
-            return { database, service: new SessionsService(fakeDatabase(database)) }
+            return { database, service: new SessionsService(fakeDatabase(database), fakeActivityNotifier()) }
         }
 
         it('lets an invitee who is coming start the night, but not cancel it', async () => {
@@ -650,7 +655,7 @@ describe('SessionsService', () => {
 
     it('replaces attendees for an organizer-owned active session', async () => {
         const database = createDatabaseMock()
-        const service = new SessionsService(fakeDatabase(database))
+        const service = new SessionsService(fakeDatabase(database), fakeActivityNotifier())
 
         await expect(service.updateSessionAttendees(1, 12, { attendeeIds: [1, 3] })).resolves.toEqual({
             sessionId: 12,
@@ -661,7 +666,7 @@ describe('SessionsService', () => {
 
     it('rejects attendee replacement when a target is outside the group', async () => {
         const database = createDatabaseMock()
-        const service = new SessionsService(fakeDatabase(database))
+        const service = new SessionsService(fakeDatabase(database), fakeActivityNotifier())
 
         await expect(service.updateSessionAttendees(1, 12, { attendeeIds: [1, 99] })).rejects.toThrow(BadRequestException)
         expect(database.replaceMeetAttendees).not.toHaveBeenCalled()
@@ -669,7 +674,7 @@ describe('SessionsService', () => {
 
     it('rejects replacing attendees with an empty set', async () => {
         const database = createDatabaseMock()
-        const service = new SessionsService(fakeDatabase(database))
+        const service = new SessionsService(fakeDatabase(database), fakeActivityNotifier())
 
         await expect(service.updateSessionAttendees(1, 12, { attendeeIds: [] })).rejects.toThrow(
             'A session must retain at least one attendee',
@@ -681,7 +686,7 @@ describe('SessionsService', () => {
         const database = createDatabaseMock()
 
         database.getMeetPlayedGameParticipants.mockResolvedValue([{ gameId: 42, participantIds: [2] }])
-        const service = new SessionsService(fakeDatabase(database))
+        const service = new SessionsService(fakeDatabase(database), fakeActivityNotifier())
 
         await expect(service.updateSessionAttendees(1, 12, { attendeeIds: [1] })).rejects.toThrow(
             'A member who played a recorded game cannot be removed from the session attendees',
@@ -693,7 +698,7 @@ describe('SessionsService', () => {
         const database = createDatabaseMock()
 
         database.getMeetAccessForAccount.mockResolvedValue({ rows: [[12, 7, 1, '2026-08-16T19:30:00.000Z', 1, 'completed', 'UTC', null]] })
-        const service = new SessionsService(fakeDatabase(database))
+        const service = new SessionsService(fakeDatabase(database), fakeActivityNotifier())
 
         await expect(service.updateSessionAttendees(1, 12, { attendeeIds: [1] })).rejects.toThrow(BadRequestException)
         expect(database.replaceMeetAttendees).not.toHaveBeenCalled()
@@ -715,7 +720,7 @@ describe('SessionsService', () => {
                 replaceGameResults: vi.fn().mockResolvedValue(undefined),
             }
 
-            return { database, service: new SessionsService(fakeDatabase(database)) }
+            return { database, service: new SessionsService(fakeDatabase(database), fakeActivityNotifier()) }
         }
 
         it('records several winners and keeps scores, also on a completed session', async () => {

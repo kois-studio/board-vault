@@ -277,6 +277,11 @@ export type MeetType = {
     notes: string | null
 }
 
+export type RsvpStatus = 'pending' | 'accepted' | 'declined'
+
+/** A session in the caller's list, with their own answer (null when they are not invited). */
+export type AccountMeetType = MeetType & { myRsvpStatus: RsvpStatus | null }
+
 export type MeetAttendeeStatusType = {
     accountId: number
     rsvpStatus: 'pending' | 'accepted' | 'declined'

@@ -1,0 +1,17 @@
+@if (canAnswer()) {
+    @let status = session().myRsvpStatus;
+    <div class="flex flex-wrap items-center gap-2">
+        <span
+            class="mr-auto text-sm font-medium"
+            [class]="status === 'accepted' ? 'text-bv-success' : status === 'declined' ? 'text-bv-text-muted' : 'text-bv-primary'"
+        >{{ label() }}</span>
+        <div class="flex gap-2" role="group" aria-label="Your answer">
+            <button type="button" class="app-chip" [attr.aria-pressed]="status === 'accepted'" [disabled]="isSaving()" (click)="answer('accepted')">
+                <app-icon name="thumbs-up" [size]="16" aria-hidden="true" /> I’m going
+            </button>
+            <button type="button" class="app-chip" [attr.aria-pressed]="status === 'declined'" [disabled]="isSaving()" (click)="answer('declined')">
+                <app-icon name="thumbs-down" [size]="16" aria-hidden="true" /> Can’t make it
+            </button>
+        </div>
+    </div>
+}

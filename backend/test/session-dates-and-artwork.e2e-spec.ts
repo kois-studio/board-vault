@@ -131,6 +131,21 @@ describe('session dates, last played, and artwork addresses (e2e)', () => {
             expect(session.meetDate).toBe('2026-09-20T19:30:00.000Z')
         })
 
+        it("lists each session with the caller's own answer, from an account or a group-person invite", async () => {
+            const meets = (await request(app.getHttpServer()).get('/play/users/1/meets').set(as('user_ana')).expect(200)).body as Array<{
+                id: number
+                myRsvpStatus: string | null
+            }>
+
+            // 50 invites Ana as a group person, 52 and 53 as an account; 51 invites only Ben.
+            expect(Object.fromEntries(meets.map(meet => [meet.id, meet.myRsvpStatus]))).toEqual({
+                50: 'accepted',
+                51: null,
+                52: 'accepted',
+                53: 'accepted',
+            })
+        })
+
         it('dates history in ISO too, so the app orders it by instant whatever shape each date was stored in', async () => {
             const history = (await request(app.getHttpServer()).get('/play/users/1/history').set(as('user_ana')).expect(200))
                 .body as Array<{
@@ -207,6 +222,45 @@ describe('session dates, last played, and artwork addresses (e2e)', () => {
             await update('not a url').expect(400)
             await update('https://example.test/catan-new.jpg').expect(200)
             await update('').expect(200)
+        })
+    })
+
+    // Last: it adds a session, which the date and last-played checks above do not expect.
+    describe('notifications', () => {
+        it('tells the other invitees when a night is planned and when it starts, never the organizer', async () => {
+            const notificationsOf = async (userId: number, clerkUserId: string) =>
+                (await request(app.getHttpServer()).get(`/profile/users/${userId}/notifications`).set(as(clerkUserId)).expect(200))
+                    .body as Array<{ type: string; message: string; data: { meeting?: number } }>
+
+            const created = (
+                await request(app.getHttpServer())
+                    .post('/sessions/scheduled')
+                    .set(as('user_ana'))
+                    .send({ groupId: 11, sessionDate: '2099-10-09T17:00:00.000Z', timezone: 'Europe/Madrid', attendeeIds: [1, 2] })
+                    .expect(201)
+            ).body as { sessionId: number }
+
+            const planned = await notificationsOf(2, 'user_ben')
+
+            expect(planned).toEqual([
+                expect.objectContaining({
+                    type: 'meeting_scheduled',
+                    message: 'Ana Ruiz planned a game night in Weekends for Fri 9 Oct, 19:00. Can you make it?',
+                    data: expect.objectContaining({ meeting: created.sessionId, group: 11 }),
+                }),
+            ])
+
+            await request(app.getHttpServer())
+                .patch(`/sessions/${created.sessionId}/status`)
+                .set(as('user_ana'))
+                .send({ status: 'active' })
+                .expect(200)
+
+            expect((await notificationsOf(2, 'user_ben')).map(notification => notification.type).sort()).toEqual([
+                'meeting_scheduled',
+                'session_started',
+            ])
+            expect(await notificationsOf(1, 'user_ana')).toEqual([])
         })
     })
 })

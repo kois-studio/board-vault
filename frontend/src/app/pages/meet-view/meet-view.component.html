@@ -111,7 +111,7 @@
                             }
                             @case ('completed') {
                                 @if (noGames) {
-                                    Mark the games you played before finishing. If the night didn’t happen, cancel it instead. You can also finish it with nothing played.
+                                    Mark the games you played before finishing. If the night didn’t happen, {{ canShapeNight ? 'cancel it instead' : 'ask the organizer to cancel it' }}. You can also finish it with nothing played.
                                 } @else {
                                     The night joins the group’s history. Played games, players and attendance can no longer change, but anyone can still record who won.
                                 }
@@ -134,7 +134,9 @@
                     <div class="mt-6 flex flex-col-reverse gap-3 sm:flex-row sm:flex-wrap sm:justify-end">
                         <button appButton variant="secondary" type="button" (click)="cancelStatusUpdate()">Keep editing</button>
                         @if (noGames) {
-                            <button appButton variant="danger" type="button" [disabled]="isUpdatingStatus" (click)="confirmStatusUpdate('cancelled')">Cancel game night</button>
+                            @if (canShapeNight) {
+                                <button appButton variant="danger" type="button" [disabled]="isUpdatingStatus" (click)="confirmStatusUpdate('cancelled')">Cancel game night</button>
+                            }
                             <button appButton type="button" [disabled]="isUpdatingStatus" (click)="confirmStatusUpdate()">Finish anyway</button>
                         } @else {
                             <button appButton [variant]="requestedStatus === 'cancelled' ? 'danger' : 'primary'" type="button" [disabled]="isUpdatingStatus" (click)="confirmStatusUpdate()">
@@ -411,12 +413,7 @@
                                 <li class="flex min-w-0 items-center gap-3 rounded-lg border border-bv-border bg-bv-surface p-2">
                                     <image-background [src]="game.imageUrl" [alt]="gameTitle(game) + ' cover'" class="h-10 w-10 shrink-0" />
                                     <span class="min-w-0 flex-1 truncate text-sm font-medium">{{ gameTitle(game) }}</span>
-                                    <select class="app-input w-24 shrink-0" [disabled]="savingPostSessionRatings[game.id]" [value]="getMyRating(game.id) ?? ''" [attr.aria-label]="'Your rating for ' + gameTitle(game)" (change)="savePostSessionRating(game.id, +$any($event.target).value)">
-                                        <option value="">Rate</option>
-                                        @for (rating of [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]; track rating) {
-                                            <option [value]="rating">{{ rating }}/10</option>
-                                        }
-                                    </select>
+                                    <app-star-rating class="shrink-0" [value]="getMyRating(game.id)" [label]="gameTitle(game)" [disabled]="savingPostSessionRatings[game.id] ?? false" (rated)="savePostSessionRating(game.id, $event)" />
                                 </li>
                             }
                         </ul>

@@ -29,6 +29,73 @@ export class NotificationQueries {
         })
     }
 
+    /** Several notifications in one statement, for an event that reaches many people. */
+    createNotifications(notifications: Array<CreateNotificationBody>) {
+        return this.database.execute({
+            sql: `INSERT INTO Notification (accountId, type, message, data) VALUES ${notifications.map(() => '(?, ?, ?, ?)').join(', ')}`,
+            args: notifications.flatMap(notification => [
+                notification.accountId,
+                notification.type,
+                notification.message,
+                JSON.stringify(notification.data || {}),
+            ]),
+        })
+    }
+
+    /** What a session notification says: its group, date and timezone. */
+    getSessionNotificationContext(sessionId: number) {
+        return this.database.execute({
+            sql: `
+                SELECT m.groupId, g.name, m.meetDate, m.timezone
+                FROM Meet m
+                INNER JOIN UserGroup g ON g.id = m.groupId
+                WHERE m.id = ?
+            `,
+            args: [sessionId],
+        })
+    }
+
+    /** The accounts a session invites, directly or through a linked group person, with their answer. */
+    getSessionInvitedAccounts(sessionId: number) {
+        return this.database.execute({
+            sql: `
+                SELECT ma.accountId, ma.rsvpStatus
+                FROM MeetAttendee ma
+                INNER JOIN Account a ON a.id = ma.accountId AND a.isDeleted = 0
+                WHERE ma.meetId = ?
+                UNION
+                SELECT gp.accountId, mpa.rsvpStatus
+                FROM MeetPersonAttendee mpa
+                INNER JOIN GroupPerson gp ON gp.id = mpa.groupPersonId
+                INNER JOIN Account a ON a.id = gp.accountId AND a.isDeleted = 0
+                WHERE mpa.meetId = ?
+            `,
+            args: [sessionId, sessionId],
+        })
+    }
+
+    /** The other members of a group, who hear when someone joins it. */
+    getGroupNotificationContext(groupId: number) {
+        return this.database.execute({
+            sql: `
+                SELECT g.name, gm.accountId
+                FROM UserGroup g
+                LEFT JOIN GroupMembership gm ON gm.groupId = g.id
+                LEFT JOIN Account a ON a.id = gm.accountId
+                WHERE g.id = ? AND (gm.accountId IS NULL OR a.isDeleted = 0)
+            `,
+            args: [groupId],
+        })
+    }
+
+    /** How a person is named in a notification: display name, else username. */
+    getAccountName(accountId: number) {
+        return this.database.execute({
+            sql: "SELECT COALESCE(NULLIF(TRIM(displayName), ''), username) FROM Account WHERE id = ?",
+            args: [accountId],
+        })
+    }
+
     createNotification(notificationDto: CreateNotificationBody) {
         // Serialize data to JSON string for storage
         const dataJson = JSON.stringify(notificationDto.data || {})

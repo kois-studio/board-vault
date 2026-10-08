@@ -1,11 +1,20 @@
 export enum NotificationTypeEnum {
     MEETING_SCHEDULED = 'meeting_scheduled',
+    SESSION_STARTED = 'session_started',
+    SESSION_FINISHED = 'session_finished',
+    SESSION_CANCELLED = 'session_cancelled',
     GAMES_ADDED = 'games_added',
     USER_JOINED_GROUP = 'user_joined_group',
     GAME_PROPOSAL_APPROVED = 'game_proposal_approved',
     GAME_PROPOSAL_REJECTED = 'game_proposal_rejected',
     GAME_PROPOSAL_SUBMITTED = 'game_proposal_submitted',
     GAME_PROPOSAL_DUPLICATE = 'game_proposal_duplicate',
+}
+
+type SessionNotificationData = {
+    account: number
+    meeting: number
+    group: number
 }
 
 export type NotificationDataMap = {
@@ -15,6 +24,10 @@ export type NotificationDataMap = {
         meeting: number
         group: number
     }
+    // {account} started / finished / cancelled the {meeting} of {group}
+    [NotificationTypeEnum.SESSION_STARTED]: SessionNotificationData
+    [NotificationTypeEnum.SESSION_FINISHED]: SessionNotificationData
+    [NotificationTypeEnum.SESSION_CANCELLED]: SessionNotificationData
     // {account} from {group} added {games[]}
     [NotificationTypeEnum.GAMES_ADDED]: {
         account: number

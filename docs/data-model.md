@@ -56,7 +56,7 @@ sessions they created, and more.
 | `UserGroup` | A group. | creator `Account` (cascade) |
 | `GroupMembership` | Account membership in a group. | `UserGroup`, `Account` (cascade) |
 | `Invitation` | Invitation of an existing account to a group, optionally to claim a group person; has an expiry. | `UserGroup`, both `Account`s (cascade); `GroupPerson` (set null) |
-| `Notification` | In-app notification. | `Account` (cascade) |
+| `Notification` | In-app notification. `type` says what happened: game proposals (`game_proposal_*`, from admin review), game nights (`meeting_scheduled`, `session_started`, `session_finished`, `session_cancelled`; `data` has `account`, `meeting`, `group`) and someone joining (`user_joined_group`; `data` has `account`, `group`). `ActivityNotifier` writes the game-night and joining ones after the change is saved, to everyone concerned except the person who acted; a failure is logged and never fails the change. | `Account` (cascade) |
 | `GroupPerson` | A group-scoped participant, optionally linked to an account; carries the claim email and expiry. | `UserGroup`, creator `Account` (cascade); linked `Account` (set null) |
 | `GroupPersonGameOwnership`, `GroupPersonGamePreference` | Games a group person owns or likes, entered by a member. | `GroupPerson`, `Game`, entering `Account` (cascade); confirming `Account` (set null) |
 | `GroupGameInterest` | A member's interest in a game for the group. | `UserGroup`, `Account`, `Game` (cascade) |

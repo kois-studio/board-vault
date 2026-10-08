@@ -22,8 +22,8 @@ test.describe('first-group invitation branches', () => {
             await ownerPage.getByRole('link', { name: 'Create a group' }).first().click()
             await ownerPage.getByLabel('What should your group be called?').fill(groupName)
             await ownerPage.getByRole('button', { name: 'Create group', exact: true }).click()
-            await expect(ownerPage).toHaveURL(/\/groups\/(\d+)$/)
-            const groupId = ownerPage.url().match(/\/groups\/(\d+)$/)?.[1]
+            await expect(ownerPage).toHaveURL(/\/groups\/(\d+)\/edit$/)
+            const groupId = ownerPage.url().match(/\/groups\/(\d+)\/edit$/)?.[1]
             expect(groupId).toBeTruthy()
 
             await ownerPage.goto(`${baseURL}/groups/${groupId}/edit`)

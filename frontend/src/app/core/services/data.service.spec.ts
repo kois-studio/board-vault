@@ -1,5 +1,5 @@
 import { TestBed } from '@angular/core/testing'
-import { of, throwError } from 'rxjs'
+import { firstValueFrom, of, throwError } from 'rxjs'
 import { Api } from '../../api/api'
 import type { UserType } from '../../api/api.types'
 import { DataService } from './data.service'
@@ -90,5 +90,33 @@ describe('DataService account refresh', () => {
         )
 
         await expect(service.syncFromClerk()).resolves.toBeNull()
+    })
+})
+
+describe('DataService answering a session', () => {
+    it('updates the answer in the session list and confirms it', async () => {
+        const updateSessionRsvp = vi.fn(() => of({ sessionId: 21, rsvpStatus: 'declined' as const }))
+        const api = new Proxy({}, { get: (_target, name) => (name === 'updateSessionRsvp' ? updateSessionRsvp : () => of([])) })
+        TestBed.configureTestingModule({ providers: [{ provide: Api, useValue: api }] })
+        const service = TestBed.inject(DataService)
+        const session = {
+            groupId: 7,
+            createdBy: 1,
+            meetDate: '2026-10-09T17:00:00.000Z',
+            isConfirmed: false,
+            status: 'scheduled' as const,
+            timezone: 'UTC',
+            notes: null,
+            myRsvpStatus: 'pending' as const,
+        }
+        service.userMeets.set([
+            { ...session, id: 21 },
+            { ...session, id: 22 },
+        ])
+
+        await firstValueFrom(service.answerSession(21, 'declined'))
+
+        expect(updateSessionRsvp).toHaveBeenCalledWith(21, { rsvpStatus: 'declined' })
+        expect(service.userMeets().map((meet) => meet.myRsvpStatus)).toEqual(['declined', 'pending'])
     })
 })

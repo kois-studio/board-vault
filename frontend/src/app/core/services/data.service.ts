@@ -1,7 +1,8 @@
 import { effect, Injectable, inject, signal } from '@angular/core'
-import { catchError, concatMap, finalize, firstValueFrom, forkJoin, of, Subject, takeUntil, tap, throwError } from 'rxjs'
+import { catchError, concatMap, finalize, firstValueFrom, forkJoin, type Observable, of, Subject, takeUntil, tap, throwError } from 'rxjs'
 import { Api } from '../../api/api'
 import type {
+    AccountMeetType,
     ClerkSyncResultType,
     CollectionActivityWithGameDataType,
     GameCompleteType,
@@ -11,7 +12,6 @@ import type {
     HistoryRecordType,
     InvitationWithAccountsData,
     InvitationWithExtraData,
-    MeetType,
     NotificationType,
     UserProposalStatsType,
     UserStatsType,
@@ -19,6 +19,7 @@ import type {
 } from '../../api/api.types'
 import { ToastService } from '../../components/toast/toast.service'
 import { LOADING_KEYS } from '../enums/loading-keys-enum'
+import { rsvpToast } from '../utils/rsvp'
 import { LoadingService } from './loading.service'
 import { LogService } from './log.service'
 
@@ -44,7 +45,7 @@ export class DataService {
     public readonly userNotifications = signal<Array<NotificationType>>([])
     public readonly userInvitations = signal<Array<InvitationWithExtraData>>([])
     public readonly userReviews = signal<Array<GameReviewWithGameData>>([])
-    public readonly userMeets = signal<Array<MeetType>>([])
+    public readonly userMeets = signal<Array<AccountMeetType>>([])
     public readonly userHistory = signal<Array<HistoryRecordType>>([])
     public readonly userGamesError = signal(false)
     public readonly userGroupsError = signal(false)
@@ -243,6 +244,34 @@ export class DataService {
     public retryUserNotifications(): void {
         const currentUser = this.currentUser()
         if (currentUser) this._getUserNotifications(currentUser.id)
+    }
+
+    private lastQuietRefresh = 0
+
+    /**
+     * Reloads what other people change while the app is open (notifications, invitations, game nights)
+     * without loading states or error toasts: the data already shown stays if a read fails.
+     * At most once a minute unless `force`.
+     */
+    public refreshSharedActivity(force = false): void {
+        const currentUser = this.currentUser()
+        const now = Date.now()
+        if (!currentUser || (!force && now - this.lastQuietRefresh < 60_000)) return
+        this.lastQuietRefresh = now
+        const quietly = <T>(read: Observable<T>, apply: (value: T) => void) =>
+            read.pipe(takeUntil(this.userChanged)).subscribe({ next: apply, error: () => undefined })
+        quietly(this.api.getUserNotifications(currentUser.id), (notifications) => {
+            this.userNotifications.set(notifications)
+            this.userNotificationsError.set(false)
+        })
+        quietly(this.api.getUserInvitations(currentUser.id), (invitations) => {
+            this.userInvitations.set(invitations)
+            this.userInvitationsError.set(false)
+        })
+        quietly(this.api.getUserMeets(currentUser.id), (meets) => {
+            this.userMeets.set(meets)
+            this.userMeetsError.set(false)
+        })
     }
 
     private _getUserReviews(accountId: number) {
@@ -592,6 +621,20 @@ export class DataService {
                     }
                 },
             })
+    }
+
+    // #region answer a session
+
+    /** Answers a game night from a list (Home, Upcoming) and updates that list in place. */
+    public answerSession(sessionId: number, rsvpStatus: 'accepted' | 'declined') {
+        return this.api.updateSessionRsvp(sessionId, { rsvpStatus }).pipe(
+            tap((result) => {
+                this.userMeets.update((meets) =>
+                    meets.map((meet) => (meet.id === result.sessionId ? { ...meet, myRsvpStatus: result.rsvpStatus } : meet)),
+                )
+                this.toastService.success(rsvpToast(result.rsvpStatus))
+            }),
+        )
     }
 
     // #region create group

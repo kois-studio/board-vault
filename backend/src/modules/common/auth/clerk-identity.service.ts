@@ -11,6 +11,7 @@ import {
     type ClerkGroupInvitationSummaryDto,
     type ClerkGroupInvitationMetadata,
 } from '../../../common/types/clerk-invitation.type.js'
+import { ActivityNotifier } from '../../core/notifications/activity-notifier.service.js'
 import { UsersService } from '../../core/users/users.service.js'
 import { DatabaseService } from '../database/database.service.js'
 
@@ -23,6 +24,7 @@ export class ClerkIdentityService {
         private readonly configService: ConfigService,
         private readonly usersService: UsersService,
         private readonly databaseService: DatabaseService,
+        private readonly activityNotifier: ActivityNotifier,
     ) {}
 
     async createGroupInvitation(
@@ -252,6 +254,7 @@ export class ClerkIdentityService {
 
         if (groupInvitation) {
             await this.databaseService.groups.joinGroupFromClerkInvitation(provisionedAccount.id, groupInvitation)
+            await this.activityNotifier.memberJoined(groupInvitation.groupId, provisionedAccount.id)
         }
 
         return provisionedAccount
