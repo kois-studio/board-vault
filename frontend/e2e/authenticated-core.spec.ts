@@ -58,14 +58,9 @@ test.describe('authenticated core navigation', () => {
         await expect(gameLinks.first()).toBeVisible()
         await expect(gameLinks.first()).toHaveAttribute('aria-label', /^View /)
 
-        await expect(page.getByRole('navigation', { name: 'Group workspace areas' }).locator('a')).toHaveText([
-            'Decide',
-            'Games to acquire',
-            'People',
-            'Sessions',
-            'Group library',
-            'History & insights',
-        ])
+        // In the order the sections appear; Standings only once the group has stats.
+        const areas = (await page.getByRole('navigation', { name: 'Group workspace areas' }).locator('a').allTextContents()).map((text) => text.trim())
+        expect(areas.filter((area) => area !== 'Standings')).toEqual(['History', 'Library', 'Games to buy', 'People'])
 
         await page.goto('/play/history')
         const historyGameLinks = page.locator('a[href^="/games/"]')

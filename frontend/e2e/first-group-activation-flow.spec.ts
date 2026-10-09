@@ -52,8 +52,8 @@ test.describe('first-group activation flow', () => {
 
             await ownerPage.goto(`${baseURL}/groups/${groupId}`)
             await expect(ownerPage.getByRole('heading', { name: new RegExp(`Make ${groupName} ready`) })).not.toBeVisible()
-            await expect(ownerPage.getByRole('heading', { name: `What should this group play?` })).toBeVisible()
-            await ownerPage.getByRole('link', { name: 'Find a game', exact: true }).click()
+            // Deciding what to play lives on the night and on What to play, not on the group page.
+            await ownerPage.goto(`${baseURL}/play/recommendations?groupId=${groupId}`)
 
             await expect(ownerPage.getByRole('heading', { name: `What should ${groupName} play?` })).toBeVisible()
             await ownerPage.getByRole('button', { name: 'Something new', exact: true }).click()
@@ -70,7 +70,7 @@ test.describe('first-group activation flow', () => {
             await expect(ownerPage.getByText(groupName, { exact: false })).toBeVisible()
 
             await inviteePage.goto(`${baseURL}/groups/${groupId}`)
-            await inviteePage.getByRole('button', { name: 'Leave group' }).click()
+            await inviteePage.getByRole('button', { name: 'Leave this group' }).click()
             const leaveDialog = inviteePage.getByRole('dialog')
             await expect(leaveDialog.getByRole('heading', { name: new RegExp(`Leave ${groupName}`) })).toBeVisible()
             await leaveDialog.getByRole('button', { name: 'Leave group', exact: true }).click()

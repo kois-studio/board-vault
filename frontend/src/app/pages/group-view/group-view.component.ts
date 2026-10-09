@@ -14,10 +14,8 @@ import type {
     GroupPersonWorkspaceType,
     GroupStandingType,
     HistoryRecordType,
-    InvitationWithAccountsData,
     PublicUserType,
 } from '../../api/api.types'
-import { CardAccountComponent } from '../../components/card-account/card-account.component'
 import { ImageProfileComponent } from '../../components/image-profile/image-profile.component'
 import { SkeletonHistoryComponent } from '../../components/skeletons/skeleton-history/skeleton-history.component'
 import { ToastService } from '../../components/toast/toast.service'
@@ -32,7 +30,6 @@ import { LOADING_KEYS } from '../../core/enums/loading-keys-enum'
 import { CustomDatePipe } from '../../core/pipes/customDate.pipe'
 import { DataService } from '../../core/services/data.service'
 import { LoadingService } from '../../core/services/loading.service'
-import { LocalStorageService } from '../../core/services/local-storage.service'
 import { formatAttendeeSummary } from '../../core/utils/formatAttendeeSummary'
 import { groupGameCount, groupPeopleCount } from '../../core/utils/groupCounts'
 import { formatWinners, historyWinnerNames, mergeHistoryParticipants } from '../../core/utils/historyParticipants'
@@ -63,7 +60,6 @@ export function shouldShowFirstGroupSetup(input: {
     imports: [
         RouterLink,
         ContainerWrapperComponent,
-        CardAccountComponent,
         CommonModule,
         CustomDatePipe,
         ImageBackgroundComponent,
@@ -85,7 +81,6 @@ export class GroupViewComponent {
     private readonly dataService = inject(DataService)
     private readonly loadingService = inject(LoadingService)
     private readonly groupViewService = inject(GroupViewService)
-    private readonly localStorageService = inject(LocalStorageService)
     private readonly toastService = inject(ToastService)
     /**
      * The group in the address. Angular keeps this page when only the id changes (the group
@@ -109,10 +104,8 @@ export class GroupViewComponent {
 
     // groupViewService
     public readonly groupData$ = this.groupViewService.groupData
-    public readonly selectedMembers$ = this.groupViewService.selectedMembers
-    public readonly isFilteringGames$ = this.groupViewService.isFilteringGames
-    public readonly isHidingMaxPlayers$ = this.groupViewService.isHidingMaxPlayers
-    public readonly isRecalculatingReviews$ = this.groupViewService.isRecalculatingReviews
+    public readonly playerCount$ = this.groupViewService.playerCount
+    public readonly PLAYER_COUNTS = [2, 3, 4, 5, 6]
     public readonly avgReviewsIndexComputed = this.groupViewService.avgReviewsIndexComputed
     public readonly totalUniqueGamesComputed = this.groupViewService.totalUniqueGamesComputed
     // Group pulse: everyone in the group, with or without an account, as on Home.
@@ -303,11 +296,6 @@ export class GroupViewComponent {
         return context
     })
 
-    public readonly selectedMembersLabel = computed(() => {
-        const selectedCount = this.selectedMembers$().length
-        return `${selectedCount} of ${this.groupData$()?.members.length ?? 0} selected`
-    })
-
     public getAttendeeSummary(attendees: Array<PublicUserType>, people: HistoryRecordType['attendedByPeople'] = []): string {
         // Older sessions list the same people as accounts and as group people: count each once.
         return formatAttendeeSummary(mergeHistoryParticipants(attendees, people))
@@ -364,10 +352,6 @@ export class GroupViewComponent {
 
             // set the group data
             this.groupData$.set(group)
-
-            // GroupViewService is shared across routes, so establish a fresh
-            // default selection whenever this component displays another group.
-            this.selectedMembers$.set(group.members.map((member) => member.id))
 
             if (this.activeAcquisitionGroupId !== groupId) {
                 this.activeAcquisitionGroupId = groupId
@@ -818,35 +802,10 @@ export class GroupViewComponent {
 
     // #region Getters
 
-    get invitationsList(): InvitationWithAccountsData[] {
-        const groupData = this.groupData$()
-        if (!groupData) {
-            return []
-        }
-        return this.invitationsGroupIndex$()[groupData.id] || []
-    }
-
     // #region Button Clicks
-
-    onClickSelectAll(): void {
-        const groupData = this.groupData$()
-        if (!groupData) return
-
-        const allMembersSelected = this.selectedMembers$().length === groupData.members.length
-        this.selectedMembers$.set(allMembersSelected ? [] : groupData.members.map((member) => member.id))
-    }
 
     onClickMeeting(meetId: number): void {
         this.router.navigate(['/sessions', meetId])
-    }
-
-    onClickMember(memberId: number) {
-        const currentSelected = this.selectedMembers$()
-        if (currentSelected.includes(memberId)) {
-            this.selectedMembers$.set(currentSelected.filter((id) => id !== memberId))
-        } else {
-            this.selectedMembers$.set([...currentSelected, memberId])
-        }
     }
 
     onClickEditGroup() {
@@ -886,21 +845,8 @@ export class GroupViewComponent {
 
     // #region Filters
 
-    public toggleGamesFilter(): void {
-        const newValue = !this.isFilteringGames$()
-        this.isFilteringGames$.set(newValue)
-        this.localStorageService.setItem('isFilteringGames', newValue.toString())
-    }
-
-    public toggleMaxPlayersFilter(): void {
-        const newValue = !this.isHidingMaxPlayers$()
-        this.isHidingMaxPlayers$.set(newValue)
-        this.localStorageService.setItem('isHidingMaxPlayers', newValue.toString())
-    }
-
-    public toggleRecalculateReviews(): void {
-        const newValue = !this.isRecalculatingReviews$()
-        this.isRecalculatingReviews$.set(newValue)
-        this.localStorageService.setItem('isRecalculatingReviews', newValue.toString())
+    /** Shows only games for this many players; choosing it again shows every game. */
+    public setPlayerCount(count: number): void {
+        this.playerCount$.update((current) => (current === count ? null : count))
     }
 }

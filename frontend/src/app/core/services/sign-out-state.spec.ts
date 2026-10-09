@@ -73,7 +73,7 @@ describe('signing out', () => {
         browse.searchControl.setValue('azul')
         browse.currentPage.set(3)
         groupView.groupData.set(group)
-        groupView.selectedMembers.set([1])
+        groupView.playerCount.set(4)
         adminGames.gamesList.set([game] as never)
         adminGames.searchControl.setValue('catan')
 
@@ -116,7 +116,7 @@ describe('signing out', () => {
         expect(data.userStats()).toEqual({ totalGamesValue: 0 })
         expect(pendingProposals.count()).toBeNull()
         expect([browse.browseGamesList(), browse.searchControl.value, browse.currentPage()]).toEqual([[], '', 1])
-        expect([groupView.groupData(), groupView.selectedMembers()]).toEqual([null, []])
+        expect([groupView.groupData(), groupView.playerCount()]).toEqual([null, null])
         expect([adminGames.gamesList(), adminGames.searchControl.value]).toEqual([[], ''])
     })
 

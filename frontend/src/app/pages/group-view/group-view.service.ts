@@ -11,14 +11,10 @@ export class GroupViewService {
     // --------------------------------------------------------------------------
     // #region           signals
     // --------------------------------------------------------------------------
-    // members
     public readonly groupData = signal<GroupWithMembersAndGames | null>(null)
-    public readonly selectedMembers = signal<number[]>([])
 
-    // filters
-    public readonly isFilteringGames = signal(false) // to filter out 'disabled' games
-    public readonly isHidingMaxPlayers = signal(false) // to disable games based on min/max players
-    public readonly isRecalculatingReviews = signal<boolean>(false) // to recalculate the reviews based on the selected members
+    /** Library filter: only games for this many players; null shows every game. */
+    public readonly playerCount = signal<number | null>(null)
 
     private readonly dataService = inject(DataService)
 
@@ -31,10 +27,7 @@ export class GroupViewService {
 
     public reset(): void {
         this.groupData.set(null)
-        this.selectedMembers.set([])
-        this.isFilteringGames.set(false)
-        this.isHidingMaxPlayers.set(false)
-        this.isRecalculatingReviews.set(false)
+        this.playerCount.set(null)
     }
 
     // --------------------------------------------------------------------------
@@ -75,25 +68,10 @@ export class GroupViewService {
         const result: Record<GameType['id'], { average: number; voters: number }> = {}
 
         for (const [gameId, value] of Object.entries(this._gameReviewsComputed())) {
-            let reviews: number[] = []
-
-            if (this.isRecalculatingReviews() && this.selectedMembers().length > 0) {
-                // Only include reviews from selected members
-                for (const [userId, review] of Object.entries(value)) {
-                    if (this.selectedMembers().includes(Number(userId))) {
-                        reviews.push(review)
-                    }
-                }
-            } else {
-                reviews = Object.values(value)
-            }
-
+            const reviews = Object.values(value)
             if (reviews.length > 0) {
                 const sum = reviews.reduce((acc, review) => acc + review, 0)
-                result[Number(gameId)] = {
-                    average: Number((sum / reviews.length).toFixed(2)),
-                    voters: reviews.length,
-                }
+                result[Number(gameId)] = { average: Number((sum / reviews.length).toFixed(2)), voters: reviews.length }
             }
         }
 
@@ -101,81 +79,27 @@ export class GroupViewService {
     })
 
     // --------------------------------------------------------------------------
-    // #region           total unique games
+    // #region           group library
     //
-    // is computed based on the group members and the selected members
+    // every game a member owns, with its number of copies, best rated first
     // --------------------------------------------------------------------------
-    public readonly totalUniqueGamesComputed = computed(
-        (): Array<
-            GameCompleteType & {
-                quantity: number // number of copies of the game in the group
-                active: boolean // to highlight or not in the UI
+    public readonly totalUniqueGamesComputed = computed((): Array<GameCompleteType & { quantity: number }> => {
+        const games = new Map<number, GameCompleteType & { quantity: number }>()
+        for (const member of this.groupData()?.members ?? []) {
+            for (const game of member.games) {
+                const existing = games.get(game.id)
+                if (existing) existing.quantity++
+                else games.set(game.id, { ...game, quantity: 1 })
             }
-        > => {
-            const games: Array<GameCompleteType & { quantity: number; active: boolean }> = []
+        }
 
-            // STEP 1: active/inactive games based on selected members (ownership)
-            for (const member of this.groupData()?.members ?? []) {
-                // add the games of the non-selected members as inactive
-                if (!this.selectedMembers().includes(member.id)) {
-                    for (const game of member.games) {
-                        const gameObject = games.find((g) => g.id === game.id)
-                        if (!gameObject) {
-                            games.push({ ...game, active: false, quantity: 1 })
-                        } else {
-                            gameObject.quantity++
-                        }
-                    }
-                }
-                // add the games of the selected members as active
-                else {
-                    for (const game of member.games) {
-                        const gameObject = games.find((g) => g.id === game.id)
-                        if (!gameObject) {
-                            games.push({ ...game, active: true, quantity: 1 })
-                        } else {
-                            // if was already added, simply update the active flag
-                            const existing = games.find((g) => g.id === game.id)
-                            if (existing) {
-                                existing.active = true
-                                existing.quantity++
-                            }
-                        }
-                    }
-                }
-            }
-
-            // STEP 2: disable the games which min/max players are not suitable for the selected members
-            if (this.isHidingMaxPlayers()) {
-                for (const game of games) {
-                    const tooManyPlayers = this.selectedMembers().length > game.maxPlayers
-                    const tooFewPlayers = this.selectedMembers().length < game.minPlayers
-
-                    if (tooManyPlayers || tooFewPlayers) {
-                        game.active = false
-                    }
-                }
-            }
-
-            games.sort((a, b) => {
-                const a_review = this.avgReviewsIndexComputed()[a.id]?.average ?? -1
-                const b_review = this.avgReviewsIndexComputed()[b.id]?.average ?? -1
-
-                if (a_review === b_review) {
-                    // Sort by number of voters if average reviews are the same
-                    const a_voters = this.avgReviewsIndexComputed()[a.id]?.voters ?? 0
-                    const b_voters = this.avgReviewsIndexComputed()[b.id]?.voters ?? 0
-                    return b_voters - a_voters
-                }
-                return b_review - a_review
+        const players = this.playerCount()
+        const reviews = this.avgReviewsIndexComputed()
+        return [...games.values()]
+            .filter((game) => players === null || (game.minPlayers <= players && players <= game.maxPlayers))
+            .sort((a, b) => {
+                const byAverage = (reviews[b.id]?.average ?? -1) - (reviews[a.id]?.average ?? -1)
+                return byAverage || (reviews[b.id]?.voters ?? 0) - (reviews[a.id]?.voters ?? 0)
             })
-
-            // STEP 3: hide the games which are not active
-            if (this.isFilteringGames()) {
-                return games.filter((game) => game.active)
-            }
-
-            return games
-        },
-    )
+    })
 }
