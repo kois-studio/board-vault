@@ -1,6 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" width="400" height="400">
-<rect width="400" height="400" fill="#047857"/>
-<rect x="70" y="80" width="56" height="170" rx="28" fill="#6EE7B7"/><rect x="145" y="50" width="56" height="200" rx="28" fill="#BEF264"/><rect x="220" y="90" width="56" height="160" rx="28" fill="#6EE7B7" opacity=".8"/><rect x="295" y="120" width="40" height="130" rx="20" fill="#BEF264" opacity=".7"/>
-<text x="40" y="318" font-family="Inter, system-ui, sans-serif" font-size="44" font-weight="800" fill="#FFFFFF">Quiet</text>
-<text x="40" y="366" font-family="Inter, system-ui, sans-serif" font-size="44" font-weight="800" fill="#FFFFFF">Forest</text>
-</svg>
