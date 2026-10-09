@@ -193,6 +193,8 @@ operational details.
 
 ### Fixed
 
+- Display names can be as short as you like: Ana, Pau or Leo no longer
+  become "Player Ana" at sign-up, and Settings → Profile accepts them.
 - Artwork addresses with a made-up hash no longer return the image: they
   redirect to the current address without reading it, so changing the hash
   can't skip the CDN to load the database. Old addresses still reach

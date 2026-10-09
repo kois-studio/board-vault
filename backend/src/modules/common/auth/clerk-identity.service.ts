@@ -432,9 +432,10 @@ export class ClerkIdentityService {
     private buildDisplayName(firstName: string | null, lastName: string | null, username: string | null, email: string): string {
         const fullName = [firstName, lastName].filter(Boolean).join(' ').trim()
 
-        const safeName = (fullName || username || email.split('@')[0] || '').slice(0, 255)
+        const safeName = (fullName || username || email.split('@')[0] || '').trim().slice(0, 100)
 
-        return safeName.length >= 4 ? safeName : `Player ${safeName}`
+        // Short names are real names ("Ana"); only an empty one needs a stand-in (#125).
+        return safeName || 'Player'
     }
 
     private buildAvatar(displayName: string): AvatarDto {
