@@ -7,6 +7,7 @@ import { IconComponent } from '../../components/ui/icon/icon.component'
 import { InPageLinkDirective } from '../../components/ui/in-page-link/in-page-link.directive'
 import { ReviewDisplayComponent } from '../../components/ui/review-display/review-display.component'
 import {
+    EXAMPLE_COVERS,
     EXAMPLE_GROUP,
     EXAMPLE_GROUP_SHELF,
     EXAMPLE_NIGHT,
@@ -17,8 +18,8 @@ import {
     EXAMPLE_WISH,
 } from './landing.fixtures'
 
-/** The rotation of each cover in the fan under the hero; odd ones also sit a little lower. */
-const COVER_TILT = [-6, 3, -2, 5, -4, 2, -5, 4]
+/** The rotation of each cover in the row under the hero, from the cover set; odd ones also sit a little lower. */
+const COVER_TILT = [-4, 2, 3, 2, -3, 1, -1, -2, -3, 4, -2, 2]
 
 @Component({
     imports: [
@@ -33,7 +34,7 @@ const COVER_TILT = [-6, 3, -2, 5, -4, 2, -5, 4]
     templateUrl: 'landing.component.html',
 })
 export class LandingComponent {
-    public readonly covers = EXAMPLE_SHELF.map((game, index) => ({
+    public readonly covers = EXAMPLE_COVERS.map((game, index) => ({
         ...game,
         transform: `rotate(${COVER_TILT[index % COVER_TILT.length]}deg)${index % 2 ? ' translateY(14px)' : ''}`,
     }))

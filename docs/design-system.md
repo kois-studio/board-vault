@@ -317,8 +317,15 @@ no strokes or effects.
   screenshots, filled from `pages/landing/landing.fixtures.ts` (the example
   group "Friday Crew") and set in plain surface cards. Reuse a real
   component where it fits (`app-recommendation-card`, `review-display`,
-  `app-image-profile`); the rest is light markup. Only our own artwork from
-  `public/images/landing/` appears: made-up games, never publisher box art.
+  `app-image-profile`); the rest is light markup. The games are real and
+  well known, but only our own artwork from `public/images/landing/`
+  appears: flat covers in the Board Vault style, never publisher box art.
+  Each cover is an SVG shown with `<img>`, which cannot load web fonts, so
+  its title text carries a subset of Nunito (OFL) embedded as `@font-face`
+  (or is converted to outlines). Under the hero, every cover drifts past in
+  a slow loop (the list rendered twice, moved by half its width); with
+  reduced motion the row stands still. The samples further down use eight
+  of the games, mixed, so the page doesn't read as the cover set in order.
   A sample shows no controls that do nothing: either it works (the shelf
   filter chips) or it is plain text. A card that floats above the page uses
   `shadow-bv-lift`.

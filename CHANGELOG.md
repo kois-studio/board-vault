@@ -40,6 +40,10 @@ operational details.
 
 ### Changed
 
+- The landing page shows real, well-known games (Catan, Carcassonne, UNO,
+  Ticket to Ride and more) in our own flat cover art instead of made-up
+  ones. The covers under the hero drift past in a slow loop, which stands
+  still with reduced motion.
 - Inviting someone takes one field: their username or their email. You no
   longer need to know first whether they have an account. A person without
   an account has an "Invite" link on the group page that opens the invite

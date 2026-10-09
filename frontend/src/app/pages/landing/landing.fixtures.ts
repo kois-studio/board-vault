@@ -3,7 +3,7 @@ import type { RecommendationGroupSignal } from '../../components/recommendation-
 
 /**
  * Friday Crew: the example group the landing page samples are filled with.
- * The games are made up and the covers are ours (public/images/landing), so no publisher art appears.
+ * The games are real; the covers are our own flat versions in the Board Vault style (public/images/landing), so no publisher art appears.
  */
 
 export type ExamplePerson = { key: string; name: string; avatar: UserType['avatar'] }
@@ -34,43 +34,59 @@ function game(id: string, title: string, minutes: number, minPlayers: number, ma
 }
 
 export const EXAMPLE_GAMES = {
-    lanternHarbor: game('lantern-harbor', 'Lantern Harbor', 60, 2, 5),
-    meepleMarket: game('meeple-market', 'Meeple Market', 45, 2, 5),
-    tidalTiles: game('tidal-tiles', 'Tidal Tiles', 30, 2, 4),
-    skyOrchards: game('sky-orchards', 'Sky Orchards', 75, 1, 4),
-    nightTrain: game('night-train', 'Night Train', 90, 3, 6),
-    quietForest: game('quiet-forest', 'Quiet Forest', 20, 1, 5),
-    diceKitchen: game('dice-kitchen', 'Dice Kitchen', 25, 2, 6),
-    cometRun: game('comet-run', 'Comet Run', 40, 2, 5),
+    catan: game('catan', 'Catan', 60, 3, 4),
+    carcassonne: game('carcassonne', 'Carcassonne', 35, 2, 5),
+    uno: game('uno', 'UNO', 30, 2, 10),
+    dobble: game('dobble', 'Dobble', 15, 2, 8),
+    clank: game('clank', 'Clank!', 60, 2, 4),
+    ticketToRide: game('ticket-to-ride', 'Ticket to Ride', 60, 2, 5),
+    azul: game('azul', 'Azul', 45, 2, 4),
+    codenames: game('codenames', 'Codenames', 15, 2, 8),
+    jenga: game('jenga', 'Jenga', 20, 1, 8),
+    dixit: game('dixit', 'Dixit', 30, 3, 6),
+    sevenWonders: game('7-wonders', '7 Wonders', 30, 3, 7),
+    scrabble: game('scrabble', 'Scrabble', 90, 2, 4),
 }
 
 const games = EXAMPLE_GAMES
 
-/** The fan of covers under the hero, and the shelf the "find" sample filters. */
-export const EXAMPLE_SHELF: Array<ExampleGame> = Object.values(games)
+/** The row of covers passing by under the hero: every game, in the order of the cover set. */
+export const EXAMPLE_COVERS: Array<ExampleGame> = Object.values(games)
 
-/** Add: the catalogue search for "lantern", one of them already on the shelf. */
+/** The shelf the "find" sample filters. */
+export const EXAMPLE_SHELF: Array<ExampleGame> = [
+    games.carcassonne,
+    games.ticketToRide,
+    games.sevenWonders,
+    games.uno,
+    games.jenga,
+    games.catan,
+    games.dobble,
+    games.clank,
+]
+
+/** Add: the catalogue search for "c", two of them already on the shelf. */
 export const EXAMPLE_SEARCH: Array<ExampleGame & { owned: boolean }> = [
-    { ...games.lanternHarbor, owned: false },
-    { ...games.nightTrain, owned: true },
-    { ...games.quietForest, owned: false },
+    { ...games.codenames, owned: false },
+    { ...games.catan, owned: true },
+    { ...games.carcassonne, owned: true },
 ]
 
 /** Rate: ratings out of 10, shown as five stars like the rest of the app. */
 export const EXAMPLE_RATINGS: Array<{ game: ExampleGame; rating: number; plays: number }> = [
-    { game: games.lanternHarbor, rating: 10, plays: 7 },
-    { game: games.diceKitchen, rating: 8, plays: 12 },
-    { game: games.tidalTiles, rating: 6, plays: 3 },
+    { game: games.carcassonne, rating: 10, plays: 7 },
+    { game: games.dobble, rating: 8, plays: 12 },
+    { game: games.sevenWonders, rating: 6, plays: 3 },
 ]
 
-export const EXAMPLE_WISH = games.skyOrchards
+export const EXAMPLE_WISH = games.azul
 
 /** Share: the group's games with the people who own them. */
 export const EXAMPLE_GROUP_SHELF: Array<ExampleGame & { owners: Array<ExamplePerson> }> = [
-    { ...games.lanternHarbor, owners: [ana, mia] },
-    { ...games.nightTrain, owners: [leo] },
-    { ...games.diceKitchen, owners: [sam, jon] },
-    { ...games.quietForest, owners: [mia] },
+    { ...games.carcassonne, owners: [ana, mia] },
+    { ...games.dixit, owners: [leo] },
+    { ...games.scrabble, owners: [sam, jon] },
+    { ...games.catan, owners: [mia] },
 ]
 
 export type ExampleRecommendation = {
@@ -83,7 +99,7 @@ export type ExampleRecommendation = {
 
 /** What fits the five coming tonight, for two hours. */
 export const EXAMPLE_RECOMMENDATION: ExampleRecommendation = {
-    game: games.lanternHarbor,
+    game: games.carcassonne,
     score: 92,
     historyLabel: 'Last played 6 weeks ago',
     reasons: ['Fits all 5 coming', 'Ana and Mia rated it 9', 'Fits in your 2 hours'],
@@ -111,8 +127,8 @@ export const EXAMPLE_NIGHT: {
         { person: jon, answer: 'not-going' },
     ],
     lastNight: [
-        { game: games.nightTrain, winner: 'Leo' },
-        { game: games.tidalTiles, winner: 'Mia' },
-        { game: games.cometRun, winner: 'Ana' },
+        { game: games.jenga, winner: 'Leo' },
+        { game: games.sevenWonders, winner: 'Mia' },
+        { game: games.clank, winner: 'Ana' },
     ],
 }

@@ -345,3 +345,14 @@ body {
     }
     /* biome-ignore-end lint/complexity/noImportantStyles: reduced motion */
 }
+
+/* The landing's row of covers drifts left forever; the list is rendered twice, so -50% lands on the same picture. */
+.landing-cover-row {
+    animation: landing-cover-drift 90s linear infinite;
+}
+
+@keyframes landing-cover-drift {
+    to {
+        transform: translateX(-50%);
+    }
+}

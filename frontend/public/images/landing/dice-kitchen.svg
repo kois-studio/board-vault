@@ -1,6 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" width="400" height="400">
-<rect width="400" height="400" fill="#C0392B"/>
-<rect x="80" y="70" width="110" height="110" rx="24" fill="#FFFFFF" transform="rotate(-10 135 125)"/><circle cx="110" cy="100" r="10" fill="#C0392B"/><circle cx="160" cy="145" r="10" fill="#C0392B"/><rect x="210" y="100" width="110" height="110" rx="24" fill="#FFD166" transform="rotate(12 265 155)"/><circle cx="265" cy="155" r="11" fill="#3A0B30"/>
-<text x="40" y="318" font-family="Inter, system-ui, sans-serif" font-size="44" font-weight="800" fill="#FFFFFF">Dice</text>
-<text x="40" y="366" font-family="Inter, system-ui, sans-serif" font-size="44" font-weight="800" fill="#FFFFFF">Kitchen</text>
-</svg>
