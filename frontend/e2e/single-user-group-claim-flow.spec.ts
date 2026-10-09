@@ -71,10 +71,10 @@ test.describe('single-user group claim flow', () => {
             await expect(preferenceButton).toContainText('favorite')
 
             await page.goto(`${baseURL}/groups/${groupId}/edit`)
-            const claimPersonSelect = page.getByLabel('Optional: invite them to claim a group person')
-            await claimPersonSelect.selectOption({ label: 'Claim Ana' })
-            await page.getByLabel('Their email address').fill(inviteeEmail ?? '')
-            await page.getByRole('button', { name: 'Send email invite', exact: true }).click()
+            const claimPersonSelect = page.getByLabel('Are they someone already in this group?')
+            await claimPersonSelect.selectOption({ label: 'Yes, they are Ana' })
+            await page.getByLabel('Their username or email').fill(inviteeEmail ?? '')
+            await page.getByRole('button', { name: 'Send invite', exact: true }).click()
 
             const invitationLink = await page.getByRole('link', { name: 'Open link' }).getAttribute('href')
             expect(invitationLink).toContain('/v1/tickets/accept?ticket=')

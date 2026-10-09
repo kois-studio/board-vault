@@ -26,7 +26,6 @@
                 <div class="flex flex-wrap items-center gap-3">
                     @if (isGroupOwner) {
                         <span class="rounded-full bg-bv-primary-soft px-3 py-1 text-sm font-semibold text-bv-on-primary-soft">Owner controls</span>
-                        <button appButton variant="danger" type="button" title="Delete group" (click)="onDeleteGroup()"><app-icon name="trash" [size]="16" className="mr-2" aria-hidden="true" />Delete group</button>
                     } @else {
                         <span class="rounded-full bg-bv-surface-2 px-3 py-1 text-sm font-semibold text-secondary">Member view</span>
                     }
@@ -61,83 +60,47 @@
             @if (isGroupOwner) {
                 <section class="mt-8" aria-labelledby="invite-people-heading">
                     <div>
-                        <p class="text-sm font-semibold uppercase tracking-[0.18em] text-bv-primary">Grow the group</p>
-                        <h2 id="invite-people-heading" class="mt-1 text-2xl font-bold text-bv-text">Invite the people you actually play with</h2>
-                        <p class="mt-2 max-w-3xl text-secondary">A private group becomes useful when it contains the friends, collections, and memories behind a real game night.</p>
+                        <h2 id="invite-people-heading" class="text-2xl font-bold text-bv-text">Invite the people you play with</h2>
+                        <p class="mt-2 max-w-3xl text-secondary">Whether or not they already have an account.</p>
                     </div>
 
-                    <div class="mt-5 grid grid-cols-1 gap-5 lg:grid-cols-2">
-                        <form class="rounded-3xl border border-bv-border bg-bv-surface p-6 shadow-sm" (submit)="onInviteUserSubmit($event)" novalidate>
-                            <div class="flex items-start gap-3">
-                                <span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-bv-primary-soft text-bv-on-primary-soft" aria-hidden="true"><app-icon name="user-plus" [size]="22" /></span>
-                                <div>
-                                    <h3 class="text-lg font-semibold text-bv-text">Invite an existing member</h3>
-                                    <p class="mt-1 text-sm leading-6 text-secondary">Use this when your friend already has a Board Vault account.</p>
-                                </div>
-                            </div>
-                            <label for="group-username-invite" class="mt-5 block text-sm font-semibold text-bv-text">Their username</label>
-                            <div class="mt-2 flex flex-col gap-3 sm:flex-row">
-                                <input id="group-username-invite" type="text" [formControl]="usernameToInvite" placeholder="friend_username" class="app-input min-w-0 flex-1" [class]="usernameClass" autocomplete="username" />
-                                <button appButton type="submit" class="shrink-0" [disabled]="disableInviteButton">{{ isLoading() ? 'Inviting…' : 'Send invite' }}</button>
-                            </div>
-                            <label for="group-username-claim-person" class="mt-4 block text-sm font-semibold text-bv-text">Optional: link them to a group person</label>
-                            <select id="group-username-claim-person" class="app-input mt-2" [value]="selectedClaimPersonId() ?? ''" (change)="selectedClaimPersonId.set($any($event.target).value ? +$any($event.target).value : null)">
-                                <option value="">Join as a new group person</option>
-                                @for (person of groupPeople(); track person.person.id) {
-                                    @if (person.person.kind === 'placeholder' && person.person.status === 'active') {
-                                        <option [value]="person.person.id">Claim {{ person.person.displayName }}</option>
-                                    }
+                    <form class="mt-5 rounded-3xl border border-bv-border bg-bv-surface p-6 shadow-sm" (submit)="onInviteSubmit($event)" novalidate>
+                        <label for="group-invite" class="block text-sm font-semibold text-bv-text">Their username or email</label>
+                        <div class="mt-2 flex flex-col gap-3 sm:flex-row">
+                            <input id="group-invite" type="text" [formControl]="inviteTarget" placeholder="friend_username or friend@example.com" class="app-input min-w-0 flex-1" [class.border-bv-danger]="inviteTarget.touched && inviteProblem() !== null" autocomplete="off" aria-describedby="group-invite-help group-invite-error" />
+                            <button appButton type="submit" class="shrink-0" [disabled]="isLoading()">{{ isLoading() ? 'Sending…' : 'Send invite' }}</button>
+                        </div>
+                        <p id="group-invite-help" class="mt-2 text-sm text-secondary">
+                            {{ inviteKind() === 'email' ? 'We email them a secure link; they join after creating their account.' : 'Someone who already has an account sees the invitation in their inbox.' }}
+                        </p>
+                        <div id="group-invite-error" aria-live="polite">
+                            @if (inviteTarget.touched && inviteProblem(); as problem) { <p class="mt-2 text-sm text-bv-danger">{{ problem }}</p> }
+                        </div>
+                        @if (claimablePeople().length > 0) {
+                            <label for="group-invite-person" class="mt-4 block text-sm font-semibold text-bv-text">Are they someone already in this group?</label>
+                            <select id="group-invite-person" class="app-input mt-2" [value]="selectedClaimPersonId() ?? ''" (change)="selectedClaimPersonId.set($any($event.target).value ? +$any($event.target).value : null)">
+                                <option value="">No, they join as themselves</option>
+                                @for (person of claimablePeople(); track person.person.id) {
+                                    <option [value]="person.person.id" [selected]="person.person.id === selectedClaimPersonId()">Yes, they are {{ person.person.displayName }}</option>
                                 }
                             </select>
-                            <div class="mt-2" aria-live="polite">
-                                @if (usernameToInvite.touched && usernameToInvite.hasError('required')) { <p class="text-sm text-bv-danger">Enter a username to continue.</p> }
-                                @if (usernameToInvite.touched && usernameToInvite.hasError('minlength')) { <p class="text-sm text-bv-danger">Use at least 4 characters.</p> }
-                                @if (usernameToInvite.touched && usernameToInvite.hasError('maxlength')) { <p class="text-sm text-bv-danger">Keep the username under 20 characters.</p> }
-                            </div>
-                            @if (existingInvitationError()) { <p class="mt-4 rounded-2xl border border-bv-danger/30 bg-bv-danger/10 p-4 text-sm text-bv-danger" role="alert">{{ existingInvitationError() }}</p> }
-                        </form>
-
-                        <form class="rounded-3xl border border-bv-primary/30 bg-bv-primary-soft p-6 shadow-sm" (submit)="onInviteNewPersonSubmit($event)" novalidate>
-                            <div class="flex items-start gap-3">
-                                <span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-bv-surface text-bv-primary" aria-hidden="true"><app-icon name="mail-plus" [size]="22" /></span>
-                                <div>
-                                    <h3 class="text-lg font-semibold text-bv-text">Invite someone new</h3>
-                                    <p class="mt-1 text-sm leading-6 text-secondary">Send a secure invitation for a friend who has not joined yet.</p>
+                            <p class="mt-2 text-xs text-secondary">They review what was recorded for that person and take over its history when they join.</p>
+                        }
+                        @if (inviteError()) { <p class="mt-4 rounded-2xl border border-bv-danger/30 bg-bv-danger/10 p-4 text-sm text-bv-danger" role="alert">{{ inviteError() }}</p> }
+                        @if (clerkInvitation(); as invitation) {
+                            <div class="mt-5 rounded-2xl border border-bv-success/30 bg-bv-success/10 p-4" role="status" aria-live="polite">
+                                <p class="font-semibold text-bv-success">Invitation sent to {{ invitation.emailAddress }}.</p>
+                                <p class="mt-1 text-sm text-secondary">Share the secure link directly if the email does not arrive.</p>
+                                <div class="mt-3 flex flex-wrap gap-3">
+                                    <button appButton variant="secondary" type="button" (click)="copyClerkInvitationLink()">Copy secure link</button>
+                                    <a appButton variant="secondary" [href]="invitation.url" target="_blank" rel="noreferrer">Open link</a>
                                 </div>
-                            </div>
-                            <label for="group-email-invite" class="mt-5 block text-sm font-semibold text-bv-text">Their email address</label>
-                            <label for="group-claim-person" class="mt-4 block text-sm font-semibold text-bv-text">Optional: invite them to claim a group person</label>
-                            <select id="group-claim-person" class="app-input mt-2" [value]="selectedClaimPersonId() ?? ''" (change)="selectedClaimPersonId.set($any($event.target).value ? +$any($event.target).value : null)">
-                                <option value="">Join as a new group person</option>
-                                @for (person of groupPeople(); track person.person.id) {
-                                    @if (person.person.kind === 'placeholder' && person.person.status === 'active') {
-                                        <option [value]="person.person.id">Claim {{ person.person.displayName }}</option>
-                                    }
+                                @if (copyLinkStatus() !== 'idle') {
+                                    <p class="mt-2 text-xs text-secondary">{{ copyLinkStatus() === 'copied' ? 'Secure link copied.' : copyLinkStatus() === 'unavailable' ? 'Clipboard access is unavailable; use Open link.' : 'The link could not be copied; use Open link.' }}</p>
                                 }
-                            </select>
-                            <div class="mt-2 flex flex-col gap-3 sm:flex-row">
-                                <input id="group-email-invite" type="email" [formControl]="emailToInvite" placeholder="friend@example.com" class="app-input min-w-0 flex-1" [class.border-bv-danger]="emailToInvite.invalid && (emailToInvite.dirty || emailToInvite.touched)" autocomplete="email" />
-                                <button appButton type="submit" class="shrink-0" [disabled]="isLoading() || emailToInvite.invalid">{{ isLoading() ? 'Sending…' : 'Send email invite' }}</button>
                             </div>
-                            <p class="mt-2 text-sm text-secondary">They join this private group after accepting and verifying their account.</p>
-                            @if (emailToInvite.touched && emailToInvite.hasError('required')) { <p class="mt-2 text-sm text-bv-danger">Enter an email address to continue.</p> }
-                            @if (emailToInvite.touched && emailToInvite.hasError('email')) { <p class="mt-2 text-sm text-bv-danger">Enter a valid email address.</p> }
-                            @if (newPersonInvitationError()) { <p class="mt-4 rounded-2xl border border-bv-danger/30 bg-bv-danger/10 p-4 text-sm text-bv-danger" role="alert">{{ newPersonInvitationError() }}</p> }
-                            @if (clerkInvitation(); as invitation) {
-                                <div class="mt-5 rounded-2xl border border-bv-success/30 bg-bv-success/10 p-4" role="status" aria-live="polite">
-                                    <p class="font-semibold text-bv-success">Invitation sent to {{ invitation.emailAddress }}.</p>
-                                    <p class="mt-1 text-sm text-secondary">Share the secure link directly if the email does not arrive.</p>
-                                    <div class="mt-3 flex flex-wrap gap-3">
-                                        <button appButton variant="secondary" type="button" (click)="copyClerkInvitationLink()">Copy secure link</button>
-                                        <a appButton variant="secondary" [href]="invitation.url" target="_blank" rel="noreferrer">Open link</a>
-                                    </div>
-                                    @if (copyLinkStatus() !== 'idle') {
-                                        <p class="mt-2 text-xs text-secondary">{{ copyLinkStatus() === 'copied' ? 'Secure link copied.' : copyLinkStatus() === 'unavailable' ? 'Clipboard access is unavailable; use Open link.' : 'The link could not be copied; use Open link.' }}</p>
-                                    }
-                                </div>
-                            }
-                        </form>
-                    </div>
+                        }
+                    </form>
                 </section>
 
                 <section class="mt-8 rounded-3xl border border-bv-border bg-bv-surface p-6 shadow-sm" aria-labelledby="pending-invitations-heading">
@@ -174,7 +137,11 @@
                                 @for (invitation of getPendingAccountInvitations(groupData.id); track invitation.id) {
                                     <li class="flex min-w-0 items-center justify-between gap-3 rounded-2xl bg-bv-bg p-4">
                                         <div class="flex min-w-0 items-center gap-3"><app-image-profile [avatar]="invitation.toAccount.avatar" /><div class="min-w-0"><p class="truncate font-medium text-bv-text">{{ invitation.toAccount.displayName }}</p><p class="truncate text-sm text-secondary">{{ invitation.toAccount.username }}</p></div></div>
-                                        <button appButton variant="danger" type="button" class="shrink-0" [attr.aria-pressed]="membersToRemoveFromGroup().includes(invitation.toAccountId)" (click)="markAsToRemove(invitation.toAccountId)">{{ membersToRemoveFromGroup().includes(invitation.toAccountId) ? 'Keep invitation' : 'Remove' }}</button>
+                                        @if (pendingRemoval() === 'i' + invitation.id) {
+                                            <div class="flex shrink-0 flex-wrap items-center gap-2" role="group" aria-label="Confirm withdrawing the invitation"><span class="text-xs text-secondary">Withdraw?</span><button appButton variant="danger" type="button" [disabled]="isLoading()" (click)="withdrawInvitation(invitation.id)">Yes, withdraw</button><button appButton variant="secondary" type="button" [disabled]="isLoading()" (click)="pendingRemoval.set(null)">Keep it</button></div>
+                                        } @else {
+                                            <button appButton variant="danger" type="button" class="shrink-0" [disabled]="isLoading()" (click)="pendingRemoval.set('i' + invitation.id)">Withdraw</button>
+                                        }
                                     </li>
                                 }
                             </ul>
@@ -192,21 +159,23 @@
                         <h2 id="members-heading" class="mt-1 text-2xl font-bold text-bv-text">Current members</h2>
                         <p class="mt-2 text-secondary">These members’ collections and play history shape this group’s recommendations.</p>
                     </div>
-                    @if (membersToRemoveFromGroup().length > 0) { <span class="text-sm font-medium text-bv-warning" role="status" aria-live="polite">{{ membersToRemoveFromGroup().length }} change{{ membersToRemoveFromGroup().length === 1 ? '' : 's' }} waiting to save</span> }
                 </div>
                 <ul class="mt-5 grid grid-cols-1 gap-3 lg:grid-cols-2">
                     @for (member of groupData.members; track member.id) {
                         <li class="flex min-w-0 items-center justify-between gap-3 rounded-2xl border border-bv-border bg-bv-bg p-4">
                             <div class="flex min-w-0 items-center gap-3"><app-card-account [member]="member" [isOwner]="groupData.createdBy === member.id" class="min-w-0" /><span class="shrink-0 text-xs text-secondary">{{ member.games.length }} game{{ member.games.length === 1 ? '' : 's' }}</span></div>
-                            @if (isGroupOwner && groupData.createdBy !== member.id) { <button appButton variant="danger" type="button" class="shrink-0" [attr.aria-pressed]="membersToRemoveFromGroup().includes(member.id)" (click)="markAsToRemove(member.id)">{{ membersToRemoveFromGroup().includes(member.id) ? 'Keep member' : 'Remove' }}</button> }
+                            @if (isGroupOwner && groupData.createdBy !== member.id) {
+                                @if (pendingRemoval() === 'm' + member.id) {
+                                    <div class="flex shrink-0 flex-wrap items-center gap-2" role="group" [attr.aria-label]="'Confirm removing ' + (member.displayName || member.username)"><span class="text-xs text-secondary">Remove from the group?</span><button appButton variant="danger" type="button" [disabled]="isLoading()" (click)="removeMember(member.id)">Yes, remove</button><button appButton variant="secondary" type="button" [disabled]="isLoading()" (click)="pendingRemoval.set(null)">Keep</button></div>
+                                } @else {
+                                    <button appButton variant="danger" type="button" class="shrink-0" [disabled]="isLoading()" (click)="pendingRemoval.set('m' + member.id)">Remove</button>
+                                }
+                            }
                         </li>
                     }
                 </ul>
-                @if (isGroupOwner && membersToRemoveFromGroup().length > 0) {
-                    <div class="mt-5 flex flex-col gap-3 rounded-2xl border border-bv-warning/30 bg-bv-warning/10 p-4 sm:flex-row sm:items-center sm:justify-between" role="alert">
-                        <p class="text-sm text-secondary">Removing someone takes away their access to this group’s plans and shared history. Save only if that is intentional.</p>
-                        <button appButton type="button" class="shrink-0" [disabled]="isLoading()" (click)="onSaveChanges()">{{ isLoading() ? 'Saving…' : 'Save membership changes' }}</button>
-                    </div>
+                @if (isGroupOwner) {
+                    <p class="mt-4 text-sm text-secondary">Someone removed loses access to the group’s plans; past game nights keep them.</p>
                 }
             </section>
 

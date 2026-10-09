@@ -45,14 +45,14 @@ test.describe('first-group invitation recovery flow', () => {
             await page.getByRole('link', { name: 'Create a group' }).first().click()
             await page.getByLabel('What should your group be called?').fill(groupName)
             await page.getByRole('button', { name: 'Create group', exact: true }).click()
-            await expect(page).toHaveURL(/\/groups\/\d+$/)
-            const groupId = page.url().match(/\/groups\/(\d+)$/)?.[1]
+            await expect(page).toHaveURL(/\/groups\/\d+\/edit$/)
+            const groupId = page.url().match(/\/groups\/(\d+)\/edit$/)?.[1]
             expect(groupId).toBeTruthy()
 
             await page.goto(`${baseURL}/groups/${groupId}/edit`)
-            const emailInput = page.getByLabel('Their email address')
+            const emailInput = page.getByLabel('Their username or email')
             await emailInput.fill(email)
-            const inviteButton = page.getByRole('button', { name: 'Send email invite', exact: true })
+            const inviteButton = page.getByRole('button', { name: 'Send invite', exact: true })
             await inviteButton.click()
 
             await expect(page.getByRole('alert')).toContainText('could not send the email invitation')

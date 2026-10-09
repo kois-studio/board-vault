@@ -27,7 +27,7 @@ test.describe('first-group invitation branches', () => {
             expect(groupId).toBeTruthy()
 
             await ownerPage.goto(`${baseURL}/groups/${groupId}/edit`)
-            await ownerPage.getByLabel('Their username').fill(inviteeUsername)
+            await ownerPage.getByLabel('Their username or email').fill(inviteeUsername)
             await ownerPage.getByRole('button', { name: 'Send invite', exact: true }).click()
             await expect(ownerPage.getByRole('heading', { name: 'Existing account invitations' })).toBeVisible()
 

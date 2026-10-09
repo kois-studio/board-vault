@@ -48,8 +48,8 @@ test.describe('new-person invitation flow', () => {
             expect(groupId).toBeTruthy()
 
             await page.goto(`${baseURL}/groups/${groupId}/edit`)
-            await page.getByLabel('Their email address').fill(inviteeEmail ?? '')
-            await page.getByRole('button', { name: 'Send email invite', exact: true }).click()
+            await page.getByLabel('Their username or email').fill(inviteeEmail ?? '')
+            await page.getByRole('button', { name: 'Send invite', exact: true }).click()
             const invitationLink = await page.getByRole('link', { name: 'Open link' }).getAttribute('href')
             expect(invitationLink).toContain('/v1/tickets/accept?ticket=')
             const ticket = invitationLink ? new URL(invitationLink).searchParams.get('ticket') : null
