@@ -1,6 +1,7 @@
 import { HttpErrorResponse } from '@angular/common/http'
-import { Component, effect, inject, signal } from '@angular/core'
-import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms'
+import { Component, computed, effect, inject, signal } from '@angular/core'
+import { toSignal } from '@angular/core/rxjs-interop'
+import { FormControl, ReactiveFormsModule } from '@angular/forms'
 import { ActivatedRoute, Router, RouterLink } from '@angular/router'
 import { firstValueFrom } from 'rxjs'
 import { Api } from '../../../api/api'
@@ -44,18 +45,24 @@ export class GroupEditComponent {
     //        DATA for this component
     // --------------------------------------------------------------------------
     public groupData: null | (typeof this.userGroups)[number] = null
-    public readonly membersToRemoveFromGroup = signal<Array<number>>([])
-    public usernameToInvite = new FormControl('', [Validators.required, Validators.minLength(4), Validators.maxLength(20)])
-    public emailToInvite = new FormControl('', [Validators.required, Validators.email, Validators.maxLength(320)])
+    /** `m<accountId>` or `i<invitationId>` while its inline confirmation is open. */
+    public readonly pendingRemoval = signal<string | null>(null)
+    /** A username or an email: an email gets a Clerk invitation, a username an in-app one. */
+    public readonly inviteTarget = new FormControl('', { nonNullable: true })
+    private readonly inviteValue = toSignal(this.inviteTarget.valueChanges, { initialValue: '' })
+    public readonly inviteKind = computed(() => (this.inviteValue().includes('@') ? 'email' : 'username'))
+    public readonly inviteError = signal<string | null>(null)
     public readonly clerkInvitation = signal<ClerkGroupInvitationType | null>(null)
     public readonly clerkPendingInvitations = signal<Array<ClerkGroupInvitationSummaryType>>([])
     public readonly clerkInvitationsLoading = signal(false)
     public readonly clerkInvitationsError = signal(false)
-    public readonly existingInvitationError = signal<string | null>(null)
-    public readonly newPersonInvitationError = signal<string | null>(null)
     public readonly pendingClerkRevokeId = signal<string | null>(null)
     public readonly groupPeople = signal<Array<GroupPersonWorkspaceType>>([])
     public readonly selectedClaimPersonId = signal<number | null>(null)
+    /** People without an account an invitation can hand over (ADR-0010: the invitee reviews and claims). */
+    public readonly claimablePeople = computed(() =>
+        this.groupPeople().filter(({ person }) => person.kind === 'placeholder' && person.status === 'active'),
+    )
     public readonly isDeleteDialogOpen = signal(false)
     public readonly isDeletingGroup = signal(false)
     public readonly isResolvingGroup = signal(true)
@@ -102,15 +109,6 @@ export class GroupEditComponent {
         })
     }
 
-    get username() {
-        return this.usernameToInvite
-    }
-
-    get usernameClass() {
-        if (!this.usernameToInvite.dirty && !this.usernameToInvite.touched) return ''
-        return this.usernameToInvite.valid ? 'border-bv-success' : 'border-bv-danger'
-    }
-
     get isGroupOwner() {
         return !!this.groupData && !!this.userData && this.groupData.createdBy === this.userData.id
     }
@@ -119,30 +117,33 @@ export class GroupEditComponent {
         return this.invitationsGroupIndex[groupId] ?? []
     }
 
-    get disableInviteButton() {
-        if (!this.groupData || !this.usernameToInvite.value) {
-            return true
+    /** What is wrong with the entry, in words; null when it can be sent. */
+    public inviteProblem(): string | null {
+        const value = this.inviteTarget.value.trim()
+        if (!value) return 'Enter their username or email.'
+        if (this.inviteKind() === 'email') {
+            return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value) && value.length <= 320 ? null : 'Enter a valid email address.'
         }
-        const usernames = this.groupData.members.map((member) => member.username)
-
-        const isUserAlreadyInGroup = usernames.includes(this.usernameToInvite.value)
-        const isUserAlreadyInvited = (this.invitationsGroupIndex[this.groupData.id] ?? []).some(
-            (invitation) => invitation.toAccount.username === this.usernameToInvite.value,
-        )
-        return this.isLoading() || this.usernameToInvite.invalid || isUserAlreadyInGroup || isUserAlreadyInvited
+        if (value.length < 4 || value.length > 20) return 'Usernames have 4 to 20 characters.'
+        const group = this.groupData
+        if (group?.members.some((member) => member.username.toLowerCase() === value.toLowerCase())) return 'They are already in this group.'
+        if (
+            (this.invitationsGroupIndex[group?.id ?? -1] ?? []).some(
+                (invitation) => invitation.toAccount.username.toLowerCase() === value.toLowerCase(),
+            )
+        ) {
+            return 'They already have an invitation waiting.'
+        }
+        return null
     }
 
-    public onInviteUserSubmit(event: SubmitEvent): void {
+    public onInviteSubmit(event: SubmitEvent): void {
         event.preventDefault()
-        void this.onInviteUser()
+        this.inviteTarget.markAsTouched()
+        if (this.inviteProblem() !== null) return
+        void (this.inviteKind() === 'email' ? this.onInviteNewPerson() : this.onInviteUser())
     }
 
-    public onInviteNewPersonSubmit(event: SubmitEvent): void {
-        event.preventDefault()
-        void this.onInviteNewPerson()
-    }
-
-    /** Members plus people without an account, as on Home and the group page. */
     get peopleCount(): number {
         return this.groupData ? groupPeopleCount(this.groupData) : 0
     }
@@ -152,26 +153,19 @@ export class GroupEditComponent {
         return this.groupData ? groupGameCount(this.groupData) : 0
     }
 
-    markAsToRemove(accountId: number) {
-        if (this.membersToRemoveFromGroup().includes(accountId)) {
-            this.membersToRemoveFromGroup.set(this.membersToRemoveFromGroup().filter((id) => id !== accountId))
-        } else {
-            this.membersToRemoveFromGroup.update((ids) => [...ids, accountId])
-        }
-    }
-
     async onInviteUser() {
-        if (!this.isGroupOwner || !this.groupData || !this.usernameToInvite.value || this.isLoading()) return
+        const username = this.inviteTarget.value.trim()
+        if (!this.isGroupOwner || !this.groupData || !username || this.isLoading()) return
         this.isLoading.set(true)
-        this.existingInvitationError.set(null)
+        this.inviteError.set(null)
+        this.clerkInvitation.set(null)
 
         try {
-            await firstValueFrom(
-                this.dataService.addInvitedToGroup(this.groupData.id, this.usernameToInvite.value, this.selectedClaimPersonId()),
-            )
-            this.usernameToInvite.reset()
+            await firstValueFrom(this.dataService.addInvitedToGroup(this.groupData.id, username, this.selectedClaimPersonId()))
+            this.inviteTarget.reset()
+            this.selectedClaimPersonId.set(null)
         } catch (error) {
-            this.existingInvitationError.set(
+            this.inviteError.set(
                 httpStatus(error) === 404
                     ? 'No Board Vault account has this username. Check it and try again; your entry is still here.'
                     : 'We could not send this invite. Check the username and try again; your entry is still here.',
@@ -182,21 +176,23 @@ export class GroupEditComponent {
     }
 
     async onInviteNewPerson() {
-        if (!this.isGroupOwner || !this.groupData || !this.emailToInvite.value || this.emailToInvite.invalid || this.isLoading()) return
+        const email = this.inviteTarget.value.trim()
+        if (!this.isGroupOwner || !this.groupData || !email || this.isLoading()) return
         this.isLoading.set(true)
         this.clerkInvitation.set(null)
         this.copyLinkStatus.set('idle')
-        this.newPersonInvitationError.set(null)
+        this.inviteError.set(null)
 
         try {
             const invitation = await firstValueFrom(
-                this.dataService.inviteNewPersonToGroup(this.groupData.id, this.emailToInvite.value, this.selectedClaimPersonId()),
+                this.dataService.inviteNewPersonToGroup(this.groupData.id, email, this.selectedClaimPersonId()),
             )
             this.clerkInvitation.set(invitation)
-            this.emailToInvite.reset()
+            this.inviteTarget.reset()
+            this.selectedClaimPersonId.set(null)
             await this.refreshClerkInvitations(this.groupData.id)
         } catch (error) {
-            this.newPersonInvitationError.set(
+            this.inviteError.set(
                 httpStatus(error) === 409
                     ? 'This email already has a pending invitation. Find it under Pending invitations, where you can revoke it and send a new one.'
                     : 'We could not send the email invitation. Check the address and try again; your entry is still here.',
@@ -209,9 +205,15 @@ export class GroupEditComponent {
     private loadGroupPeople(groupId: number): void {
         const loader = this.api.getGroupPeople
         if (typeof loader !== 'function') return
-        loader
-            .call(this.api, groupId)
-            .subscribe({ next: (response) => this.groupPeople.set(response.people), error: () => this.groupPeople.set([]) })
+        loader.call(this.api, groupId).subscribe({
+            next: (response) => {
+                this.groupPeople.set(response.people)
+                // "Invite" on a person without an account opens this page for them (?person=<id>).
+                const requested = Number(this.route.snapshot.queryParamMap.get('person'))
+                if (this.claimablePeople().some(({ person }) => person.id === requested)) this.selectedClaimPersonId.set(requested)
+            },
+            error: () => this.groupPeople.set([]),
+        })
     }
 
     private async loadClerkInvitations(groupId: number): Promise<void> {
@@ -270,24 +272,29 @@ export class GroupEditComponent {
         }
     }
 
-    async onSaveChanges() {
+    /** Removes a member at once, after its inline confirmation. */
+    async removeMember(accountId: number): Promise<void> {
         if (!this.isGroupOwner || !this.groupData || this.isLoading()) return
         this.isLoading.set(true)
-        const groupData = this.groupData
-
         try {
-            const invitations = this.invitationsGroupIndex[groupData.id] ?? []
-            const operations = this.membersToRemoveFromGroup().map((accountId) => {
-                const invitation = invitations.find((invitation) => invitation.toAccount.id === accountId)
-                return invitation
-                    ? firstValueFrom(this.dataService.removeInvitedFromGroup(invitation.id))
-                    : firstValueFrom(this.dataService.removeMemberFromGroup(groupData.id, accountId))
-            })
-
-            await Promise.all(operations)
-            this.membersToRemoveFromGroup.set([])
+            await firstValueFrom(this.dataService.removeMemberFromGroup(this.groupData.id, accountId))
+            this.pendingRemoval.set(null)
         } catch {
-            // Individual services present the request error; keep selections for a retry.
+            // The service explains the error; the confirmation stays open for a retry.
+        } finally {
+            this.isLoading.set(false)
+        }
+    }
+
+    /** Withdraws a pending in-app invitation, after its inline confirmation. */
+    async withdrawInvitation(invitationId: number): Promise<void> {
+        if (!this.isGroupOwner || this.isLoading()) return
+        this.isLoading.set(true)
+        try {
+            await firstValueFrom(this.dataService.removeInvitedFromGroup(invitationId))
+            this.pendingRemoval.set(null)
+        } catch {
+            // The service explains the error; the confirmation stays open for a retry.
         } finally {
             this.isLoading.set(false)
         }

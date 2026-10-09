@@ -32,7 +32,7 @@ test.describe('first-group activation flow', () => {
             expect(groupId).toBeTruthy()
 
             await ownerPage.goto(`${baseURL}/groups/${groupId}/edit`)
-            await ownerPage.getByLabel('Their username').fill(inviteeUsername)
+            await ownerPage.getByLabel('Their username or email').fill(inviteeUsername)
             await ownerPage.getByRole('button', { name: 'Send invite', exact: true }).click()
             await expect(ownerPage.getByRole('heading', { name: 'Existing account invitations' })).toBeVisible()
             await expect(ownerPage.getByRole('heading', { name: 'Existing account invitations' }).locator('..').getByText(inviteeUsername, { exact: true })).toBeVisible()

@@ -506,8 +506,8 @@
             <section id="people" class="scroll-mt-24 rounded-2xl border border-bv-primary/30 bg-bv-primary-soft/60 p-6" aria-labelledby="people-heading">
                 <div class="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
                     <div>
-                        <h2 id="people-heading" class="mt-1 text-2xl font-bold">Set up the people around your table</h2>
-                        <p class="mt-1 max-w-2xl text-secondary">Add friends as group profiles first. They do not need an account yet, and their history can be linked later.</p>
+                        <h2 id="people-heading" class="mt-1 text-2xl font-bold">People around your table</h2>
+                        <p class="mt-1 max-w-2xl text-secondary">Add friends by name; they don’t need an account. Invite them whenever they want to join, and their history comes with them.</p>
                     </div>
                     @if (isGroupOwnerComputed()) {
                         <div class="flex w-full gap-2 sm:w-auto">
@@ -535,9 +535,9 @@
                     </div>
                 } @else if (!currentUserHasGroupPersonComputed() && !isGroupOwnerComputed()) {
                     <div class="mt-5 rounded-2xl border border-bv-border bg-bv-surface p-4">
-                        <p class="font-semibold">Represent yourself in this group</p>
-                        <p class="mt-1 text-sm text-secondary">Your account is already a member, but is not yet represented in this group’s participant history. This only adds a group-scoped person record; it does not grant access or invite anyone.</p>
-                        <button appButton variant="secondary" type="button" class="mt-3" [disabled]="groupPersonMutationId() !== null" (click)="joinAsNewGroupPerson()">Add me to group history</button>
+                        <p class="font-semibold">You’re not in this group’s game nights yet</p>
+                        <p class="mt-1 text-sm text-secondary">Add yourself so you can be invited to nights and show up in its history.</p>
+                        <button appButton variant="secondary" type="button" class="mt-3" [disabled]="groupPersonMutationId() !== null" (click)="joinAsNewGroupPerson()">Add me</button>
                     </div>
                 }
 
@@ -566,7 +566,12 @@
                                         <p class="mt-1 text-xs text-secondary">{{ getGroupPersonOwnedGameCount(person) }} games · {{ person.preferences.length }} preferences</p>
                                     </div>
                                     @if (isGroupOwnerComputed() && person.person.kind === 'placeholder') {
-                                        <button type="button" class="text-xs text-secondary underline disabled:opacity-60" [disabled]="groupPersonMutationId() !== null" (click)="archiveGroupPerson(person)">{{ person.person.status === 'archived' ? 'Restore' : 'Archive' }}</button>
+                                        <div class="flex shrink-0 items-center gap-3">
+                                            @if (person.person.status === 'active') {
+                                                <a class="text-xs font-semibold text-bv-primary hover:underline" [routerLink]="['/groups', group.id, 'edit']" [queryParams]="{ person: person.person.id }" [attr.aria-label]="'Invite ' + person.person.displayName">Invite</a>
+                                            }
+                                            <button type="button" class="text-xs text-secondary underline disabled:opacity-60" [disabled]="groupPersonMutationId() !== null" (click)="archiveGroupPerson(person)">{{ person.person.status === 'archived' ? 'Restore' : 'Archive' }}</button>
+                                        </div>
                                     }
                                 </div>
                                 @let ownedGames = getGroupPersonOwnedGames(person);

@@ -40,6 +40,12 @@ operational details.
 
 ### Changed
 
+- Inviting someone takes one field: their username or their email. You no
+  longer need to know first whether they have an account. A person without
+  an account has an "Invite" link on the group page that opens the invite
+  with them chosen, so they take over their history when they join.
+  Removing a member or withdrawing an invitation happens at once after a
+  quick confirmation, instead of waiting for a separate save.
 - The group page is shorter and reads top to bottom: the next night and the
   group's pulse, recent nights, standings, the library (filter it by number
   of players), games to buy, and people. Choosing who plays and what to play

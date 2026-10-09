@@ -39,6 +39,12 @@ it. A game nobody coming owns is flagged, and one with owners but no bringer
 says so. Declining a night clears what you were bringing. Home shows "You're
 bringing: …" on each night.
 
+The group owner invites from one field on Manage group: a username sends an
+in-app invitation, an email a Clerk one. Either can name a person without an
+account; the invitee reviews what was recorded for that person and claims it
+(ADR-0010). Each such person on the group page has an "Invite" link that
+opens Manage group with them chosen (`?person=<id>`).
+
 History keeps everyone who played. Someone who left the group shows as
 "Name (left)" with a muted avatar; a deleted account shows as "Deleted
 account" with a grey avatar (ADR-0018). Neither changes a session's counts.
