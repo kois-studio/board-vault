@@ -59,6 +59,25 @@ describe('ClerkIdentityService', () => {
         databaseService.joinGroupFromClerkInvitation.mockResolvedValue(undefined)
     })
 
+    it('keeps a short first name as it is (#125)', async () => {
+        mockedCreateClerkClient.mockReturnValue({
+            users: {
+                getUser: vi.fn().mockResolvedValue({
+                    username: 'ana-plays',
+                    firstName: 'Ana',
+                    lastName: null,
+                    publicMetadata: {},
+                    primaryEmailAddressId: 'email_1',
+                    emailAddresses: [{ id: 'email_1', emailAddress: 'new@example.com', verification: { status: 'verified' } }],
+                }),
+            },
+        } as never)
+
+        await service.resolveAccount('user_new')
+
+        expect(usersService.createClerkUser).toHaveBeenCalledWith(expect.objectContaining({ displayName: 'Ana' }))
+    })
+
     it('reads the username and primary email Clerk has now, for syncing', async () => {
         await expect(service.getClerkProfile('user_new')).resolves.toEqual({
             clerkUserId: 'user_new',
