@@ -60,11 +60,11 @@ test.describe('public navigation', () => {
         await expect(page.getByText('8 games', { exact: true })).toBeVisible()
         await chips.getByRole('button', { name: '6 players' }).click()
         await expect(chips.getByRole('button', { name: '6 players' })).toHaveAttribute('aria-pressed', 'true')
-        await expect(page.getByText('2 games', { exact: true })).toBeVisible()
+        await expect(page.getByText('4 games', { exact: true })).toBeVisible()
         await chips.getByRole('button', { name: 'All' }).click()
         await expect(page.getByText('8 games', { exact: true })).toBeVisible()
 
-        // Made-up games with our own covers: no third-party box art on the public page.
+        // Real games in our own covers: no third-party box art on the public page.
         for (const src of await page.locator('main img').evaluateAll(images => images.map(image => image.getAttribute('src')))) {
             expect(src).toMatch(/^\/images\/landing\//)
         }
