@@ -49,6 +49,31 @@ History keeps everyone who played. Someone who left the group shows as
 "Name (left)" with a muted avatar; a deleted account shows as "Deleted
 account" with a grey avatar (ADR-0018). Neither changes a session's counts.
 
+## Home
+
+Home follows where the person is. Pending invitations always come first.
+
+- **No group yet:** one card to create the first group (an invitation shows
+  up above it), and a three-step checklist: create a group, add your games,
+  plan a night. Nothing that would still be empty is shown.
+- **Any group:** the next game night leads, with its date, group, how many are
+  going and have not answered, the shortlist (most-voted first), what you are
+  bringing, and your answer. The next two nights follow as short rows. With
+  nothing planned, one row offers to plan (straight into the group when there
+  is only one).
+- **One group:** a large card with its people and three shortcuts (what to
+  play, its library, its history). Its owner is nudged to invite people while
+  the group has fewer than four.
+- **Several groups:** compact rows, ordered by a night under way, then the
+  soonest planned, then the most recently played, each saying which.
+- **History:** the last three nights, or one row inviting to record a past
+  night when there are none.
+
+Creating another group is a small "+ New group" link; it is a rare action
+once someone has a group.
+
+## Browser coverage
+
 Browser coverage should use disposable local databases and synthetic provider
 identities. It must not depend on production data, personal accounts, or
 committed browser storage state.

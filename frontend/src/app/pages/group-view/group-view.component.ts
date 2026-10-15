@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common'
-import { Component, computed, effect, inject, signal } from '@angular/core'
+import { afterNextRender, Component, computed, effect, Injector, inject, signal } from '@angular/core'
 import { toSignal } from '@angular/core/rxjs-interop'
 import { ActivatedRoute, Router, RouterLink } from '@angular/router'
 import { firstValueFrom, map } from 'rxjs'
@@ -89,6 +89,10 @@ export class GroupViewComponent {
     private readonly routeGroupId = toSignal(this.route.paramMap.pipe(map((params) => Number.parseInt(params.get('groupId') || '', 10))), {
         requireSync: true,
     })
+    /** A section to open on, `/groups/1#library` from Home's group card. */
+    private readonly routeFragment = toSignal(this.route.fragment, { initialValue: null })
+    private readonly injector = inject(Injector)
+    private scrolledToFragment: string | null = null
 
     // --------------------------------------------------------------------------
     //        Services signals
@@ -322,6 +326,16 @@ export class GroupViewComponent {
     })
 
     constructor() {
+        // Scroll to the section once what sits above it has loaded, so it does not move away again.
+        effect(() => {
+            const fragment = this.routeFragment()
+            if (!fragment || !this.groupData$() || this.isLoading() || this.collectionLoading()) return
+            const key = `${this.routeGroupId()}#${fragment}`
+            if (this.scrolledToFragment === key) return
+            this.scrolledToFragment = key
+            afterNextRender({ read: () => document.getElementById(fragment)?.scrollIntoView() }, { injector: this.injector })
+        })
+
         effect(() => {
             const currentUser = this.currentUser$()
             const groupId = this.routeGroupId()

@@ -20,7 +20,7 @@ test.describe('first-group activation flow', () => {
         const inviteePage = await inviteeContext.newPage()
         try {
             await ownerPage.goto(`${baseURL}/dashboard`)
-            await ownerPage.getByRole('link', { name: 'Create a group' }).first().click()
+            await ownerPage.getByRole('link', { name: /Create (a|your first) group|New group/ }).first().click()
             await ownerPage.getByLabel('What should your group be called?').fill(groupName)
             const createGroupButton = ownerPage.getByRole('button', { name: 'Create group' })
             await expect(createGroupButton).toBeEnabled()

@@ -9,15 +9,15 @@ test.describe('authenticated core navigation', () => {
     test('opens the dashboard overview', async ({ page }) => {
         await page.goto('/dashboard')
 
-        await expect(page.getByRole('heading', { name: 'Your groups' })).toBeVisible()
-        await expect(page.locator('body')).toContainText('Your groups, the next game night, and what you played lately.')
+        await expect(page.getByRole('heading', { level: 1, name: /^(Hi|Welcome)\b/ })).toBeVisible()
+        // Whatever the account's state, Home has somewhere to start a group.
+        await expect(page.getByRole('link', { name: /Create (a|your first) group|New group/ }).first()).toHaveAttribute('href', '/create-group')
     })
 
     test('exposes working dashboard destinations', async ({ page }) => {
         await page.goto('/dashboard')
 
-        await expect(page.getByRole('link', { name: 'Create a group', exact: true })).toHaveAttribute('href', '/create-group')
-        await expect(page.getByRole('heading', { name: 'Your groups' })).toBeVisible()
+        await expect(page.getByRole('heading', { level: 1, name: /^(Hi|Welcome)\b/ })).toBeVisible()
         await expect(page.getByRole('navigation', { name: 'Section navigation' }).getByRole('link')).toHaveText(['Home', 'Collection', 'Play'])
     })
 
@@ -26,7 +26,7 @@ test.describe('authenticated core navigation', () => {
         await page.goto('/groups')
 
         await expect(page).toHaveURL(/\/dashboard$/)
-        await expect(page.getByRole('heading', { name: 'Your groups' })).toBeVisible()
+        await expect(page.getByRole('heading', { level: 1, name: /^(Hi|Welcome)\b/ })).toBeVisible()
 
         await page.goto('/collection')
 

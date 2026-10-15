@@ -42,7 +42,7 @@ test.describe('first-group invitation recovery flow', () => {
 
         try {
             await page.goto(`${baseURL}/dashboard`)
-            await page.getByRole('link', { name: 'Create a group' }).first().click()
+            await page.getByRole('link', { name: /Create (a|your first) group|New group/ }).first().click()
             await page.getByLabel('What should your group be called?').fill(groupName)
             await page.getByRole('button', { name: 'Create group', exact: true }).click()
             await expect(page).toHaveURL(/\/groups\/\d+\/edit$/)

@@ -134,7 +134,7 @@ component through `takeUntilDestroyed` or `toSignal`.
 | --- | --- | --- |
 | `/` | none | Landing |
 | `/login`, `/register` | `GuestOnlyGuard` | Clerk sign-in; invitations and the private-beta notice |
-| `/dashboard` | `AuthOnlyGuard` | Home: invitations, next game nights (answer them from the card), your groups, recently played |
+| `/dashboard` | `AuthOnlyGuard` | Home, by state (see [ux-flows](ux-flows.md#home)): invitations; then for a new account the first group and a set-up checklist; otherwise the next game night (answer it there), your group or groups, recently played, and on desktop a link to your page in the group |
 | `/groups/:groupId` | `AuthOnlyGuard` | Group page (`/groups` redirects to Home), top to bottom: next night and Group pulse (approximate worth, links to each person), recent nights, standings, library (filtered by number of players), games to buy, people. Deciding what to play happens on the night |
 | `/groups/:groupId/members/:accountId`, `/groups/:groupId/people/:personId` | `AuthOnlyGuard` | One person in a group, with or without an account: the games they bring, their approximate collection worth (ADR-0016), and their game nights |
 | `/create-group`, `/groups/:groupId/edit` | `AuthOnlyGuard` | Group create and settings (invitations) |

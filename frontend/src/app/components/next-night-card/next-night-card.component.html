@@ -1,0 +1,64 @@
+<article class="rounded-2xl border border-bv-primary/40 bg-bv-primary-soft p-5 lg:p-6" [attr.aria-labelledby]="'night-' + night().id">
+    <div class="lg:flex lg:items-center lg:justify-between lg:gap-8">
+        <div class="min-w-0">
+            <div class="flex items-center justify-between gap-3 lg:justify-start">
+                <p class="text-xs font-bold uppercase tracking-[0.14em] text-bv-on-primary-soft">{{ isLive() ? 'Game night' : 'Next game night' }}</p>
+                @if (isLive()) {
+                    <span class="rounded-full bg-bv-success px-2.5 py-0.5 text-xs font-bold text-bv-on-success">Happening now</span>
+                } @else {
+                    <span class="rounded-full bg-bv-primary px-2.5 py-0.5 text-xs font-bold text-bv-on-primary">{{ relative() }}</span>
+                }
+            </div>
+            <h2 [id]="'night-' + night().id" class="mt-2 text-xl font-extrabold tracking-tight lg:text-2xl">
+                <a [routerLink]="['/sessions', night().id]" class="rounded-sm hover:underline focus-visible:outline-2 focus-visible:outline-bv-primary">{{ when() }}</a>
+            </h2>
+            <p class="mt-1 text-sm text-secondary">
+                {{ groupName() }}
+                @if (summary(); as summary) {
+                    · {{ summary.going }} going
+                    @if (summary.waiting > 0) {
+                        · {{ summary.waiting }} {{ summary.waiting === 1 ? 'hasn’t' : 'haven’t' }} answered
+                    }
+                }
+            </p>
+
+            @if (covers().length > 0) {
+                <div class="mt-3 flex items-center gap-3 lg:hidden">
+                    <ng-container *ngTemplateOutlet="coverRow; context: { size: 'h-10 w-10' }" />
+                    <p class="min-w-0 text-sm text-secondary">{{ shortlistLine() }}</p>
+                </div>
+            }
+            @if (bringing()) {
+                <p class="mt-3 text-sm"><span class="font-semibold">You’re bringing:</span> {{ bringing() }}</p>
+            }
+        </div>
+
+        <div class="hidden shrink-0 flex-col items-end gap-3 lg:flex">
+            @if (covers().length > 0) {
+                <p class="text-xs text-secondary">{{ shortlistLine() }}</p>
+                <ng-container *ngTemplateOutlet="coverRow; context: { size: 'h-14 w-14' }" />
+            }
+            <a appButton [routerLink]="['/sessions', night().id]">Open the night</a>
+        </div>
+    </div>
+
+    <!-- Not invited: nothing to answer, so desktop has no row at all. -->
+    <div class="mt-4 flex items-center gap-3 border-t border-bv-primary/25 pt-3" [class]="night().myRsvpStatus === null ? 'lg:hidden' : ''">
+        <app-session-answer class="min-w-0 flex-1" [session]="night()" />
+        <a [routerLink]="['/sessions', night().id]" class="ml-auto shrink-0 text-sm font-semibold text-bv-primary hover:underline lg:hidden">Open<span class="sr-only"> the night</span> ›</a>
+    </div>
+</article>
+
+<ng-template #coverRow let-size="size">
+    <ul class="flex shrink-0 gap-1.5" aria-label="Shortlist">
+        @for (game of covers(); track game.id) {
+            <li class="relative flex items-center justify-center overflow-hidden rounded-lg bg-bv-surface-2 text-xs font-bold text-bv-text-muted" [class]="size" [title]="game.title">
+                <span aria-hidden="true">{{ game.title.slice(0, 2).toUpperCase() }}</span>
+                <span class="sr-only">{{ game.title }}</span>
+                @if (game.imageUrl) {
+                    <img [src]="game.imageUrl" alt="" loading="lazy" class="absolute inset-0 h-full w-full object-cover" (error)="hideBrokenImage($event)" />
+                }
+            </li>
+        }
+    </ul>
+</ng-template>
