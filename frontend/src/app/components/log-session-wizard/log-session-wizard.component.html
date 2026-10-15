@@ -141,7 +141,7 @@
                             <label class="relative block w-full sm:w-72">
                                 <span class="sr-only">Search the games</span>
                                 <app-icon name="search" [size]="16" className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-bv-text-muted" aria-hidden="true" />
-                                <input type="search" class="app-input pl-9" placeholder="Search {{ games().length }} games" [value]="gameQuery()" (input)="gameQuery.set($any($event.target).value)" />
+                                <input type="search" class="app-input pl-9" [placeholder]="'Search ' + (games().length | count: 'game')" [value]="gameQuery()" (input)="gameQuery.set($any($event.target).value)" />
                             </label>
                             <span class="text-sm text-bv-text-muted" aria-live="polite">{{ getSelectedGames().length }} chosen</span>
                         </div>
@@ -154,7 +154,7 @@
                                         <image-background class="block h-12 w-12 shrink-0" [src]="selection.game.imageUrl" [alt]="''" />
                                         <span class="min-w-0 flex-1">
                                             <span class="block font-semibold wrap-anywhere">{{ getGameTitle(selection.game) }}</span>
-                                            <span class="block text-xs text-bv-text-muted">{{ selection.game.gameAvgDuration }} min · {{ selection.game.minPlayers }}–{{ selection.game.maxPlayers }} players</span>
+                                            <span class="block text-xs text-bv-text-muted">{{ selection.game.gameAvgDuration }} min · {{ selection.game | players }}</span>
                                         </span>
                                         <span class="mr-2 flex h-5 w-5 shrink-0 items-center justify-center rounded border" [class]="selection.selected ? 'border-bv-primary bg-bv-primary text-bv-on-primary' : 'border-bv-border'" aria-hidden="true">
                                             @if (selection.selected) {

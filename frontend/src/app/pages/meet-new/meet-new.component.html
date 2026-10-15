@@ -128,7 +128,7 @@
                                         <span class="block truncate font-medium" [title]="entry.title">{{ entry.title }}</span>
                                         <span class="block truncate text-xs text-bv-text-muted" [title]="ownersLabel(entry)">{{ ownersLabel(entry) }}</span>
                                         <span class="block text-xs" [class]="entry.fits ? 'text-bv-text-muted' : 'text-bv-warning'">
-                                            {{ entry.game.minPlayers }}–{{ entry.game.maxPlayers }} players{{ entry.fits ? '' : ' · not for ' + invitedPeople().length }}
+                                            {{ entry.game | players }}{{ entry.fits ? '' : ' · not for ' + invitedPeople().length }}
                                         </span>
                                     </span>
                                     <span class="flex h-5 w-5 shrink-0 items-center justify-center rounded-full border" [class]="chosen ? 'border-bv-primary bg-bv-primary text-bv-on-primary' : 'border-bv-border'" aria-hidden="true">

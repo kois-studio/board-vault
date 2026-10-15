@@ -6,6 +6,7 @@ import { ButtonComponent } from '../../components/ui/button/button.component'
 import { IconComponent } from '../../components/ui/icon/icon.component'
 import { InPageLinkDirective } from '../../components/ui/in-page-link/in-page-link.directive'
 import { ReviewDisplayComponent } from '../../components/ui/review-display/review-display.component'
+import { PlayersPipe } from '../../core/pipes/count.pipe'
 import {
     EXAMPLE_COVERS,
     EXAMPLE_GROUP,
@@ -23,6 +24,7 @@ const COVER_TILT = [-4, 2, 3, 2, -3, 1, -1, -2, -3, 4, -2, 2]
 
 @Component({
     imports: [
+        PlayersPipe,
         RouterLink,
         ButtonComponent,
         IconComponent,

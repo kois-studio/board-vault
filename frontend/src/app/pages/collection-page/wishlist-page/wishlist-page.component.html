@@ -32,7 +32,7 @@
                 <div class="relative flex flex-col">
                     <a [routerLink]="['/games', game.id]" class="block flex-1 rounded-2xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-bv-primary">
                         <app-card-game
-                            [title]="game.titleTranslations.en"
+                            [title]="game | gameTitle"
                             [imageUrl]="game.imageUrl"
                             [gameAvgDuration]="game.gameAvgDuration"
                             [minPlayers]="game.minPlayers"

@@ -7,11 +7,14 @@ import { ContainerWrapperComponent } from '../../../components/ui/container-wrap
 import { IconComponent } from '../../../components/ui/icon/icon.component'
 import { PageHeaderComponent } from '../../../components/ui/page-header/page-header.component'
 import { LOADING_KEYS } from '../../../core/enums/loading-keys-enum'
+import { CountPipe } from '../../../core/pipes/count.pipe'
+import { GameTitlePipe } from '../../../core/pipes/game-title.pipe'
 import { DataService } from '../../../core/services/data.service'
 import { LoadingService } from '../../../core/services/loading.service'
-
 @Component({
     imports: [
+        GameTitlePipe,
+        CountPipe,
         ButtonComponent,
         CardGameComponent,
         ContainerWrapperComponent,

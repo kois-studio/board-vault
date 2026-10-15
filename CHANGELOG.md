@@ -335,6 +335,16 @@ operational details.
   instead of signing people up into nothing. An invitation the group no
   longer honours (its inviter no longer owns the group) is refused before
   an account is created, so nobody ends up with an account and no group.
+- A group page's "Next game night" is the next one again: a planned night
+  whose date has passed is waiting for results (Play › Upcoming), so it no
+  longer shows as next, the way Home and the group cards already did.
+- A game without a title shows as "Untitled game" in a group's recent
+  sessions and library, the game page, the collection, the wishlist, the
+  ratings and recent activity, instead of a blank name.
+- Counts read right with one: "1 game", "1 vote", "1 win", "1 preference",
+  "Played once"; a game for an exact number of players says "2 players",
+  not "2–2 players". Vote and win counts reach screen readers, and the
+  group page says "from retail prices for 3 of 5 copies".
 - A failed group creation or invitation shows one message, next to the form,
   instead of the same error again as a toast. Inviting an unknown username or
   an email with a pending invitation says so.

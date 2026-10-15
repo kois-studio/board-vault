@@ -25,14 +25,15 @@ import { DialogDirective } from '../../components/ui/dialog/dialog.directive'
 import { IconComponent } from '../../components/ui/icon/icon.component'
 import { ImageBackgroundComponent } from '../../components/ui/image-background/image-background.component'
 import { StarRatingComponent } from '../../components/ui/star-rating/star-rating.component'
+import { CountPipe, PlayersPipe } from '../../core/pipes/count.pipe'
 import { CustomDatePipe } from '../../core/pipes/customDate.pipe'
 import { DataService } from '../../core/services/data.service'
 import type { Nullable } from '../../core/types/commons.type'
+import { gameTitle } from '../../core/utils/gameTitle'
 import { formatWinners, nameWithStanding } from '../../core/utils/historyParticipants'
 import { rsvpToast } from '../../core/utils/rsvp'
 import { downloadSessionIcs, googleCalendarUrl } from '../../core/utils/sessionCalendar'
 import { relativeDay, type SessionDateParts, sessionDateParts } from '../../core/utils/sessionTiming'
-
 /** Someone in this session: a member account, or a group person in sessions recorded with group people. */
 export type SessionPerson = {
     /** `a<accountId>` or `p<groupPersonId>`, the same key the results use. */
@@ -53,6 +54,8 @@ const resultKey = (entry: Pick<GameResultEntryType, 'accountId' | 'groupPersonId
 
 @Component({
     imports: [
+        CountPipe,
+        PlayersPipe,
         ButtonComponent,
         SessionSummaryComponent,
         RouterLink,
@@ -507,7 +510,7 @@ export class MeetViewComponent {
     // #endregion
 
     gameTitle(game: GameCompleteType): string {
-        return game.titleTranslations.en || game.title || 'Untitled game'
+        return gameTitle(game)
     }
 
     /** Before its date, starting the night asks first: the night is then dated now (#94). */

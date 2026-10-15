@@ -17,6 +17,7 @@ import { ImageBackgroundComponent } from '../../../components/ui/image-backgroun
 import { SpinnerComponent } from '../../../components/ui/spinner/spinner.component'
 import { WishlistToggleComponent } from '../../../components/wishlist-toggle/wishlist-toggle.component'
 import { CustomDatePipe } from '../../../core/pipes/customDate.pipe'
+import { GameTitlePipe } from '../../../core/pipes/game-title.pipe'
 import { DataService } from '../../../core/services/data.service'
 import { mergeHistoryParticipants } from '../../../core/utils/historyParticipants'
 
@@ -25,6 +26,7 @@ const PLAYS_SHOWN = 6
 
 @Component({
     imports: [
+        GameTitlePipe,
         CommonModule,
         FormsModule,
         RouterLink,

@@ -1,6 +1,7 @@
 import { Component, computed, inject, input } from '@angular/core'
 import { RouterLink } from '@angular/router'
 import type { GroupWithMembersAndGames, InvitationWithAccountsData } from '../../api/api.types'
+import { CountPipe } from '../../core/pipes/count.pipe'
 import { CustomDatePipe } from '../../core/pipes/customDate.pipe'
 import { DataService } from '../../core/services/data.service'
 import { groupGameCount, groupPeopleCount } from '../../core/utils/groupCounts'
@@ -8,9 +9,8 @@ import { upcomingState } from '../../core/utils/sessionTiming'
 import { CardAccountComponent } from '../card-account/card-account.component'
 import { ButtonComponent } from '../ui/button/button.component'
 import { IconComponent } from '../ui/icon/icon.component'
-
 @Component({
-    imports: [ButtonComponent, CardAccountComponent, RouterLink, CustomDatePipe, IconComponent],
+    imports: [CountPipe, ButtonComponent, CardAccountComponent, RouterLink, CustomDatePipe, IconComponent],
     selector: 'app-card-group',
     templateUrl: 'card-group.component.html',
 })

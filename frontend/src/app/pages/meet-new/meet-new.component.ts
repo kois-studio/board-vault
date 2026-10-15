@@ -13,9 +13,10 @@ import { IconComponent } from '../../components/ui/icon/icon.component'
 import { ImageBackgroundComponent } from '../../components/ui/image-background/image-background.component'
 import { PageHeaderComponent } from '../../components/ui/page-header/page-header.component'
 import { LOADING_KEYS } from '../../core/enums/loading-keys-enum'
+import { PlayersPipe } from '../../core/pipes/count.pipe'
 import { DataService } from '../../core/services/data.service'
 import { LoadingService } from '../../core/services/loading.service'
-
+import { gameTitle } from '../../core/utils/gameTitle'
 /** Someone who can be invited: a member account, or a group person when the group has them. */
 export type PlanPerson = { id: number; name: string; avatar: PublicUserType['avatar']; gameIds: Set<number> }
 
@@ -54,6 +55,7 @@ function initialsAvatar(name: string): PublicUserType['avatar'] {
 
 @Component({
     imports: [
+        PlayersPipe,
         ReactiveFormsModule,
         RouterLink,
         ButtonComponent,
@@ -224,7 +226,7 @@ export class MeetNewComponent {
     }
 
     titleOf(game: GameCompleteType): string {
-        return game.titleTranslations.en || game.title || 'Untitled game'
+        return gameTitle(game)
     }
 
     isInvited(personId: number): boolean {
