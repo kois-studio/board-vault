@@ -258,8 +258,13 @@ export class GroupViewComponent {
     public readonly groupLibraryContextComputed = computed<Record<number, GroupLibraryContext>>(() => {
         const context: Record<number, GroupLibraryContext> = {}
 
-        for (const member of this.groupData$()?.members ?? []) {
-            for (const game of member.games) {
+        const owners = [
+            ...(this.groupData$()?.members ?? []).map((member) => ({ name: member.displayName || member.username, games: member.games })),
+            ...(this.groupData$()?.placeholders ?? []).map((person) => ({ name: person.displayName, games: person.games })),
+        ]
+
+        for (const owner of owners) {
+            for (const game of owner.games) {
                 const existing = context[game.id] ?? {
                     ownerNames: [],
                     playCount: 0,
@@ -267,7 +272,7 @@ export class GroupViewComponent {
                     lastPlayedTimezone: null,
                 }
 
-                const ownerName = member.displayName || member.username
+                const ownerName = owner.name
                 if (!existing.ownerNames.includes(ownerName)) {
                     existing.ownerNames.push(ownerName)
                 }
@@ -435,6 +440,8 @@ export class GroupViewComponent {
             this.newGroupPersonName.set('')
             this.toastService.success(`${displayName} was added to the group.`)
             this.loadGroupPeople(groupId)
+            // The library and the group's counts come from the groups overview.
+            this.dataService.refreshUserGroups()
         } catch {
             this.toastService.error('Could not add this person to the group.')
         } finally {
@@ -452,6 +459,7 @@ export class GroupViewComponent {
             await firstValueFrom(this.api.updateGroupPerson(groupId, person.person.id, { status: nextStatus }))
             this.toastService.success(nextStatus === 'active' ? 'The group person was restored.' : 'The group person was archived.')
             this.loadGroupPeople(groupId)
+            this.dataService.refreshUserGroups()
         } catch {
             this.toastService.error('Could not archive this group person.')
         } finally {
@@ -524,6 +532,7 @@ export class GroupViewComponent {
                 this.api.updateGroupPersonOwnership(groupId, person.person.id, gameId, status as 'asserted' | 'rejected' | 'disputed'),
             )
             this.loadGroupPeople(groupId)
+            this.dataService.refreshUserGroups()
         } catch {
             this.toastService.error('Could not update this person’s game ownership.')
         } finally {

@@ -81,12 +81,14 @@ export class GroupViewService {
     // --------------------------------------------------------------------------
     // #region           group library
     //
-    // every game a member owns, with its number of copies, best rated first
+    // every game someone in the group owns, with its number of copies, best rated first
     // --------------------------------------------------------------------------
     public readonly totalUniqueGamesComputed = computed((): Array<GameCompleteType & { quantity: number }> => {
         const games = new Map<number, GameCompleteType & { quantity: number }>()
-        for (const member of this.groupData()?.members ?? []) {
-            for (const game of member.games) {
+        const group = this.groupData()
+        // People without an account bring their games too.
+        for (const owner of [...(group?.members ?? []), ...(group?.placeholders ?? [])]) {
+            for (const game of owner.games) {
                 const existing = games.get(game.id)
                 if (existing) existing.quantity++
                 else games.set(game.id, { ...game, quantity: 1 })

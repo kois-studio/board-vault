@@ -21,9 +21,11 @@ describe('GroupViewComponent switching groups', () => {
             getGroupPeople: vi.fn(() => of({ people: [] })),
             getGroupPersonCatalog: vi.fn(() => of([])),
             getGroupMeetings: vi.fn(() => of([])),
+            updateGroupPersonOwnership: vi.fn(() => of({})),
         }
         const dataService = {
             currentUser: signal({ id: 6 }),
+            refreshUserGroups: vi.fn(),
             userGroups: signal([group(1, 'DuckDevs'), group(4, 'Private group')]),
             userGroupsError: signal(false),
             userMeets: signal([]),
@@ -43,6 +45,16 @@ describe('GroupViewComponent switching groups', () => {
         TestBed.tick()
         return { component, params, collections, api, dataService }
     }
+
+    it('reloads the groups after a placeholder game changes, so the library shows it', async () => {
+        const { component, api, dataService } = setup()
+        const person = { person: { id: 9 } } as Parameters<typeof component.setGroupPersonOwnership>[0]
+
+        await component.setGroupPersonOwnership(person, 42, { target: { value: 'asserted' } } as unknown as Event)
+
+        expect(api.updateGroupPersonOwnership).toHaveBeenCalledWith(1, 9, 42, 'asserted')
+        expect(dataService.refreshUserGroups).toHaveBeenCalled()
+    })
 
     it('shows the group the switcher moved to, without a reload', () => {
         const { component, params, api } = setup()
@@ -310,7 +322,7 @@ describe('GroupViewComponent page layout', () => {
         placeholders: [],
     }
 
-    const render = async (currentUserId: number) => {
+    const render = async (currentUserId: number, groupData: unknown = group) => {
         const params = new BehaviorSubject(convertToParamMap({ groupId: '1' }))
         await TestBed.configureTestingModule({
             imports: [GroupViewComponent],
@@ -332,7 +344,7 @@ describe('GroupViewComponent page layout', () => {
                     provide: DataService,
                     useValue: {
                         currentUser: signal({ id: currentUserId }),
-                        userGroups: signal([group]),
+                        userGroups: signal([groupData]),
                         userGroupsError: signal(false),
                         userMeets: signal([]),
                         invitationsGroupIndex: signal({}),
@@ -383,5 +395,22 @@ describe('GroupViewComponent page layout', () => {
         expect(component.totalUniqueGamesComputed().map((entry) => entry.id)).toEqual([43])
         component.setPlayerCount(6)
         expect(component.totalUniqueGamesComputed()).toHaveLength(2)
+    })
+
+    it('lists the games of people without an account, with their names', async () => {
+        const fixture = await render(6, {
+            ...group,
+            placeholders: [{ id: 9, displayName: 'Mirian', avatar: null, gameIds: [42, 44], games: [game(42, 2, 4), game(44, 2, 6)] }],
+        })
+        const component = fixture.componentInstance
+
+        expect(component.totalUniqueGamesComputed().map((entry) => [entry.id, entry.quantity])).toEqual([
+            [42, 3],
+            [43, 1],
+            [44, 1],
+        ])
+        expect(component.groupLibraryContextComputed()[42]?.ownerNames).toEqual(['Owner', 'Member', 'Mirian'])
+        fixture.detectChanges()
+        expect((fixture.nativeElement as HTMLElement).textContent).toContain('Owned by Mirian')
     })
 })

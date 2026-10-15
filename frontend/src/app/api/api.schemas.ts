@@ -376,7 +376,16 @@ const groupWithMembersAndGamesSchema: z.ZodMiniType<GroupWithMembersAndGames, un
     // Older APIs do not send placeholders yet.
     placeholders: z._default(
         z.optional(
-            z.array(z.object({ id: z.number(), displayName: z.string(), avatar: z.nullable(avatarSchema), gameIds: z.array(z.number()) })),
+            z.array(
+                z.object({
+                    id: z.number(),
+                    displayName: z.string(),
+                    avatar: z.nullable(avatarSchema),
+                    gameIds: z.array(z.number()),
+                    // Older APIs send only the ids.
+                    games: z._default(z.optional(z.array(gameCompleteSchema)), []),
+                }),
+            ),
         ),
         [],
     ),
