@@ -1,18 +1,18 @@
 @if (notification(); as notification) {
-    <div class="flex items-center justify-between rounded-lg bg-bv-surface-2 p-4 text-sm" [class.opacity-50]="notification.isRead">
-    <!-- LEFF: icon + text -->
-    <div>
+    <div class="flex items-center justify-between gap-3 rounded-lg bg-bv-surface-2 p-4 text-sm" [class.opacity-50]="notification.isRead">
+    <!-- LEFT: icon + text. min-w-0 and wrap-anywhere keep a long name without spaces inside the card. -->
+    <div class="min-w-0 flex-1">
         <div class="flex items-center justify-start gap-x-2">
-            <app-icon [name]="iconFor(notification.type)" [size]="20" />
-            <p>{{ notification.message }}</p>
+            <app-icon class="shrink-0" [name]="iconFor(notification.type)" [size]="20" />
+            <p class="min-w-0 wrap-anywhere">{{ notification.message }}</p>
         </div>
         <p>{{ notificationDate() }}</p>
         @if (link(); as link) {
-            <a class="mt-1 inline-block font-medium text-bv-primary underline underline-offset-2" [routerLink]="link.path" (click)="markAsRead()">{{ link.label }}</a>
+            <a class="mt-1 inline-block font-medium text-bv-primary underline underline-offset-2" [routerLink]="link.path" (click)="openLink()">{{ link.label }}</a>
         }
     </div>
     <!-- RIGHT: buttons -->
-    <div class="text-lg">
+    <div class="flex shrink-0 items-center text-lg">
         @if(!notification.isRead){
             <button appButton variant="secondary" size="small" type="button" class="mr-2 p-2" (click)="markAsRead()" aria-label="Mark notification as read">
                 <app-icon name="check" [size]="18" />

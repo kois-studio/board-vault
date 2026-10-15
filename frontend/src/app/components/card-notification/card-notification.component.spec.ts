@@ -15,13 +15,13 @@ describe('CardNotificationComponent', () => {
         data,
     })
 
+    let dataService: { updateNotification: ReturnType<typeof vi.fn>; deleteNotification: ReturnType<typeof vi.fn> }
+
     const render = (value: NotificationType) => {
+        dataService = { updateNotification: vi.fn(), deleteNotification: vi.fn() }
         TestBed.configureTestingModule({
             imports: [CardNotificationComponent],
-            providers: [
-                provideRouter([]),
-                { provide: DataService, useValue: { updateNotification: vi.fn(), deleteNotification: vi.fn() } },
-            ],
+            providers: [provideRouter([]), { provide: DataService, useValue: dataService }],
         })
         const fixture = TestBed.createComponent(CardNotificationComponent)
         fixture.componentRef.setInput('notification', value)
@@ -81,5 +81,42 @@ describe('CardNotificationComponent', () => {
 
         expect(link.textContent?.trim()).toBe('Open the group')
         expect(link.getAttribute('href')).toBe('/groups/7')
+    })
+
+    it('closes the inbox and reads the notification quietly when its link is followed', () => {
+        const fixture = render(notification('user_joined_group', { account: 5, group: 9 }))
+        const opened = vi.fn()
+        fixture.componentInstance.opened.subscribe(opened)
+
+        ;(fixture.nativeElement.querySelector('a') as HTMLAnchorElement).click()
+
+        expect(dataService.updateNotification).toHaveBeenCalledWith(1, { announce: false })
+        expect(opened).toHaveBeenCalledTimes(1)
+    })
+
+    it('asks nothing again when a read notification is opened, but still closes the inbox', () => {
+        const fixture = render({ ...notification('user_joined_group', { account: 5, group: 9 }), isRead: true })
+        const opened = vi.fn()
+        fixture.componentInstance.opened.subscribe(opened)
+
+        ;(fixture.nativeElement.querySelector('a') as HTMLAnchorElement).click()
+
+        expect(dataService.updateNotification).not.toHaveBeenCalled()
+        expect(opened).toHaveBeenCalledTimes(1)
+    })
+
+    it('keeps a long name without spaces inside the card', () => {
+        const fixture = render({
+            ...notification('user_joined_group', { account: 5, group: 9 }),
+            message: `${'⸻'.repeat(20)} joined Pendejos Club.`,
+        })
+        const message = [...fixture.nativeElement.querySelectorAll('p')].find((p: HTMLElement) =>
+            p.textContent?.includes('joined'),
+        ) as HTMLElement
+        const text = message.parentElement?.parentElement as HTMLElement
+
+        expect(message.classList).toContain('wrap-anywhere')
+        expect(message.classList).toContain('min-w-0')
+        expect(text.classList).toContain('min-w-0')
     })
 })

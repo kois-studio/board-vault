@@ -69,7 +69,7 @@ compliance:
       next_action: Keep investigations in issues.
     - id: DOC-007
       status: compliant
-      evidence: 'Architecture, domain, and integration facts live in this repository; private operations live in kois-context by decision, not in the shared standards.'
+      evidence: 'Architecture, domain, and integration facts live in this repository; so do operations (docs/how-to/add-migration.md, docs/how-to/recover-production.md). Only owner material that names real people (the development database refresh) stays in kois-context.'
       priority: high
       next_action: None.
     - id: DOC-008
@@ -338,9 +338,9 @@ compliance:
       next_action: None.
     - id: OPS-009
       status: compliant
-      evidence: 'Private owner runbook (kois-context projects/board-vault/operations.md): failure modes and recovery table, backups before schema changes, secrets rotation, owner and escalation (David); restore and rollback rehearsals in CI.'
+      evidence: 'docs/how-to/recover-production.md: failure modes, recovery, owner and escalation (David); docs/how-to/add-migration.md: backups before schema changes; docs/environments.md: secrets handling; restore and rollback rehearsals in CI.'
       priority: high
-      next_action: Update the runbook after every incident.
+      next_action: Update recover-production.md after every incident.
     - id: API-001
       status: compliant
       evidence: docs/api/openapi.json generated from source; CI fails on drift.
@@ -413,9 +413,9 @@ compliance:
       next_action: None.
     - id: DATA-007
       status: partial
-      evidence: 'A verified .dump before every production schema change (private runbook, section 4); restore rehearsal in CI. Turso point-in-time restore retention on the current plan is not confirmed.'
+      evidence: 'A verified .dump before every production schema change (docs/how-to/add-migration.md); restore rehearsal in CI. Turso point-in-time restore retention on the current plan is not confirmed.'
       priority: high
-      next_action: Confirm the Turso restore retention and record it in the runbook.
+      next_action: Confirm the Turso restore retention and record it in recover-production.md (#138).
     - id: WEB-001
       status: compliant
       evidence: Lighthouse CI on the production build covers performance, accessibility, best practices and SEO (frontend/lighthouserc.json, docs/how-to/audit-rendered-pages.md).

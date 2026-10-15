@@ -26,6 +26,7 @@ import { LOADING_KEYS } from '../../../core/enums/loading-keys-enum'
 import { CustomDatePipe } from '../../../core/pipes/customDate.pipe'
 import { DataService } from '../../../core/services/data.service'
 import { LoadingService } from '../../../core/services/loading.service'
+import { canTakePart } from '../../../core/utils/groupPeople'
 import { sessionDateParts, upcomingState } from '../../../core/utils/sessionTiming'
 
 type RecommendationDecisionLens = 'balanced' | 'fresh' | 'favorite'
@@ -149,7 +150,7 @@ export class RecommendationsPageComponent {
     public readonly attendeeOptions = computed((): Array<AttendeeOption> => {
         const group = this.selectedGroup()
         if (!group) return []
-        const people = this.groupPeople().filter((person) => person.person.status === 'active')
+        const people = this.groupPeople().filter(canTakePart)
         if (people.length === 0) {
             return group.members.map((member) => ({
                 id: member.id,
@@ -206,7 +207,7 @@ export class RecommendationsPageComponent {
         this.api.getGroupPeople(groupId).subscribe({
             next: (response) => {
                 this.groupPeople.set(response.people)
-                const people = response.people.filter((person) => person.person.status === 'active')
+                const people = response.people.filter(canTakePart)
                 const requestedParticipantIds = this.readRequestedParticipantIds(group, requestedAttendeeIds, people)
                 this.selectedAttendeeIds.set(requestedParticipantIds ?? people.map((person) => person.person.id))
             },
@@ -235,12 +236,11 @@ export class RecommendationsPageComponent {
         const group = this.selectedGroup()
         if (!group) return
 
-        const people = typeof this.groupPeople === 'function' ? this.groupPeople() : []
+        // The same people the options show: those who can take part, or the members without group people.
+        const people = (typeof this.groupPeople === 'function' ? this.groupPeople() : []).filter(canTakePart)
 
         this.selectedAttendeeIds.set(
-            people.length > 0
-                ? people.filter((person) => person.person.status === 'active').map((person) => person.person.id)
-                : group.members.map((member) => member.id),
+            people.length > 0 ? people.map((person) => person.person.id) : group.members.map((member) => member.id),
         )
         this.errorMessage.set(null)
     }
