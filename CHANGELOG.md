@@ -44,6 +44,9 @@ operational details.
   Ticket to Ride and more) in our own flat cover art instead of made-up
   ones. The covers under the hero drift past in a slow loop, which stands
   still with reduced motion.
+- Signed in, the app no longer ends every page with the landing page's
+  footer. On phones the tab bar ends the page; on desktop there is one quiet
+  line. The avatar menu links to the landing page and the source code.
 - Inviting someone takes one field: their username or their email. You no
   longer need to know first whether they have an account. A person without
   an account has an "Invite" link on the group page that opens the invite
