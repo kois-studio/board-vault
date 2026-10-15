@@ -18,8 +18,9 @@ tracked tree or staged patch contains environment files, generated runtime
 configuration, build/test artifacts, browser state, database artifacts, or the
 private UI review document.
 
-This checklist does not replace the private operator release and rollback
-procedure.
+Production rollout and rollback are in
+[how-to/add-migration.md](how-to/add-migration.md#production-rollout-david-only)
+and [how-to/recover-production.md](how-to/recover-production.md).
 
 The first public repository baseline is `0.1.0-beta.1`. Use the `Unreleased`
 section in [`CHANGELOG.md`](../CHANGELOG.md) for subsequent work, and create a
