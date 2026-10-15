@@ -40,6 +40,13 @@ operational details.
 
 ### Changed
 
+- Home follows where you are. A new account sees one card to create its
+  first group and a short checklist. With a group, the next game night
+  leads, showing who is going, the shortlist, what you're bringing, and your
+  answer. Your group follows as one card with shortcuts to what to play, its
+  library and its history, or as compact rows sorted by activity when you
+  have several. Creating another group is a small link instead of a large
+  card. On desktop, a card links to your own page in the group.
 - The landing page shows real, well-known games (Catan, Carcassonne, UNO,
   Ticket to Ride and more) in our own flat cover art instead of made-up
   ones. The covers under the hero drift past in a slow loop, which stands

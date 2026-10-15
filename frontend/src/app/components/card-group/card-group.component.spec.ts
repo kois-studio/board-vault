@@ -1,70 +1,40 @@
 import { signal } from '@angular/core'
 import { ComponentFixture, TestBed } from '@angular/core/testing'
-import { ActivatedRoute } from '@angular/router'
-import type { GroupWithMembersAndGames, MeetType } from '../../api/api.types'
+import { provideRouter } from '@angular/router'
+import type { GroupWithMembersAndGames, InvitationWithAccountsData } from '../../api/api.types'
 import { DataService } from '../../core/services/data.service'
 import { CardGroupComponent } from './card-group.component'
 
-describe('CardGroupComponent social entry surface', () => {
+describe('CardGroupComponent (Home, one group)', () => {
     let fixture: ComponentFixture<CardGroupComponent>
-    const meet = (overrides: Partial<MeetType>): MeetType => ({
-        id: 21,
-        groupId: 7,
-        createdBy: 1,
-        meetDate: '2026-09-12T18:00:00.000Z',
-        isConfirmed: true,
-        status: 'scheduled',
-        timezone: 'Europe/Madrid',
-        notes: null,
-        ...overrides,
+    const currentUser = signal<{ id: number } | null>({ id: 1 })
+
+    const member = (id: number, gameIds: Array<number>) => ({
+        id,
+        username: `user${id}`,
+        displayName: `User ${id}`,
+        avatar: { backgroundColor: '#fff', iconName: null, emoji: null, type: 'initials' as const, initials: `U${id}` },
+        joinedAt: '2026-09-01T10:00:00.000Z',
+        games: gameIds.map((gameId) => ({ id: gameId })),
+        reviews: [],
     })
-    const userMeets = signal<Array<MeetType>>([])
 
     const group = {
         id: 7,
         name: 'Friday crew',
         createdBy: 1,
         createdAt: '2026-09-01T10:00:00.000Z',
-        members: [
-            {
-                id: 1,
-                username: 'owner',
-                displayName: 'Group owner',
-                avatar: { backgroundColor: '#fff', iconName: null, emoji: null, type: 'initials' as const, initials: 'GO' },
-                joinedAt: '2026-09-01T10:00:00.000Z',
-                games: [{ id: 11 }],
-                reviews: [],
-            },
-            {
-                id: 2,
-                username: 'friend',
-                displayName: 'Friend',
-                avatar: { backgroundColor: '#000', iconName: null, emoji: null, type: 'initials' as const, initials: 'F' },
-                joinedAt: '2026-09-02T10:00:00.000Z',
-                games: [{ id: 12 }],
-                reviews: [],
-            },
-        ],
+        members: [member(1, [11]), member(2, [11, 12])],
+        placeholders: [],
     } as unknown as GroupWithMembersAndGames
 
-    beforeEach(async () => {
-        // Two days before the planned night, whenever the tests run.
-        vi.useFakeTimers({ toFake: ['Date'] })
-        vi.setSystemTime(new Date('2026-09-10T10:00:00.000Z'))
-        userMeets.set([meet({})])
+    const element = () => fixture.nativeElement as HTMLElement
 
+    beforeEach(async () => {
+        currentUser.set({ id: 1 })
         await TestBed.configureTestingModule({
             imports: [CardGroupComponent],
-            providers: [
-                { provide: ActivatedRoute, useValue: {} },
-                {
-                    provide: DataService,
-                    useValue: {
-                        currentUser: signal(null),
-                        userMeets,
-                    },
-                },
-            ],
+            providers: [provideRouter([]), { provide: DataService, useValue: { currentUser } }],
         }).compileComponents()
 
         fixture = TestBed.createComponent(CardGroupComponent)
@@ -73,56 +43,60 @@ describe('CardGroupComponent social entry surface', () => {
         fixture.detectChanges()
     })
 
-    afterEach(() => vi.useRealTimers())
+    it('opens the group from its name and offers the three shortcuts', () => {
+        expect(element().querySelector('h3 a')?.getAttribute('href')).toBe('/groups/7')
 
-    it('exposes explicit social actions instead of making the whole card one control', () => {
-        const element = fixture.nativeElement as HTMLElement
-
-        expect(element.querySelector('article')).not.toBeNull()
-        expect(element.querySelector('article > button')).toBeNull()
-        expect(element.textContent).toContain('Next session')
-        expect(element.textContent).toContain('Open plan')
-        expect(element.textContent).toContain('Decide what to play')
-        expect(element.textContent).toContain('Plan session')
-
-        const actionLinks = Array.from(element.querySelectorAll('footer a'))
-        expect(actionLinks.map((link) => link.textContent?.trim())).toEqual(['Open workspace', 'Decide what to play', 'Plan session'])
+        const shortcuts = Array.from(element().querySelectorAll('nav a')).map((link) => [
+            link.textContent?.trim(),
+            link.getAttribute('href'),
+        ])
+        expect(shortcuts).toEqual([
+            ['What to play', '/play/recommendations?groupId=7'],
+            ['Library', '/groups/7#library'],
+            ['History', '/play/history?groupId=7'],
+        ])
     })
 
-    it('deduplicates games across group members in the shared summary', () => {
-        const element = fixture.nativeElement as HTMLElement
-
-        expect(element.textContent).toContain('2 shared games')
-        expect(element.textContent).toContain('2 games available')
-    })
-
-    it('shows a game night in progress as happening now, not as the next session', () => {
-        userMeets.set([meet({ id: 22, status: 'active', meetDate: '2026-09-08T17:00:00.000Z' }), meet({})])
-        fixture.detectChanges()
-        const element = fixture.nativeElement as HTMLElement
-
-        expect(element.textContent).toContain('Happening now')
-        expect(element.querySelector('a[href="/sessions/22"]')?.textContent?.trim()).toBe('Open game night')
-        expect(element.textContent).not.toContain('Next session')
-    })
-
-    it('does not offer a planned night whose evening is long over as next', () => {
-        userMeets.set([meet({ meetDate: '2026-09-08T17:00:00.000Z' })])
-        fixture.detectChanges()
-        const element = fixture.nativeElement as HTMLElement
-
-        expect(element.textContent).toContain('Next session')
-        expect(element.textContent).toContain('Nothing planned yet')
-        expect(element.querySelector('a[href="/sessions/21"]')).toBeNull()
+    it('does not repeat the next night, which Home already leads with', () => {
+        expect(element().textContent).not.toContain('Next session')
+        expect(element().querySelector('a[href^="/sessions/"]')).toBeNull()
     })
 
     it('counts people without an account and their games, like the group page', () => {
         fixture.componentRef.setInput('group', {
             ...group,
-            placeholders: [{ id: 5, displayName: 'Nora', avatar: null, gameIds: [12, 13] }],
+            placeholders: [{ id: 5, displayName: 'Nora', avatar: null, gameIds: [12, 13], games: [] }],
         })
         fixture.detectChanges()
 
-        expect((fixture.nativeElement as HTMLElement).textContent).toContain('3 people · 3 shared games')
+        expect(element().textContent).toContain('3 people · 3 games')
+    })
+
+    it('shows the first five faces and how many more there are', () => {
+        fixture.componentRef.setInput('group', { ...group, members: [1, 2, 3, 4, 5, 6, 7].map((id) => member(id, [])) })
+        fixture.detectChanges()
+
+        expect(element().querySelectorAll('app-image-profile')).toHaveLength(5)
+        expect(element().textContent).toContain('+2')
+    })
+
+    it('nudges the owner of a small group to invite, with the invitations still pending', () => {
+        fixture.componentRef.setInput('invitations', [{ id: 1 }] as unknown as Array<InvitationWithAccountsData>)
+        fixture.detectChanges()
+
+        const nudge = element().querySelector('a[href="/groups/7/edit"]')
+        expect(nudge?.textContent).toContain('Invite your people')
+        expect(nudge?.textContent).toContain('1 invitation pending')
+    })
+
+    it('stops nudging once the group has four people, and never nudges a member who cannot invite', () => {
+        fixture.componentRef.setInput('group', { ...group, members: [1, 2, 3, 4].map((id) => member(id, [])) })
+        fixture.detectChanges()
+        expect(element().querySelector('a[href="/groups/7/edit"]')).toBeNull()
+
+        fixture.componentRef.setInput('group', group)
+        currentUser.set({ id: 2 })
+        fixture.detectChanges()
+        expect(element().querySelector('a[href="/groups/7/edit"]')).toBeNull()
     })
 })

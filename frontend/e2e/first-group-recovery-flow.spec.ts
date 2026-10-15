@@ -26,7 +26,7 @@ test.describe('first-group recovery flow', () => {
 
         try {
             await page.goto(`${baseURL}/dashboard`)
-            await page.getByRole('link', { name: 'Create a group' }).first().click()
+            await page.getByRole('link', { name: /Create (a|your first) group|New group/ }).first().click()
             await page.getByLabel('What should your group be called?').fill(groupName)
             const createButton = page.getByRole('button', { name: 'Create group', exact: true })
 

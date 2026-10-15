@@ -2,61 +2,53 @@ import { Component, computed, inject, input } from '@angular/core'
 import { RouterLink } from '@angular/router'
 import type { GroupWithMembersAndGames, InvitationWithAccountsData } from '../../api/api.types'
 import { CountPipe } from '../../core/pipes/count.pipe'
-import { CustomDatePipe } from '../../core/pipes/customDate.pipe'
 import { DataService } from '../../core/services/data.service'
 import { groupGameCount, groupPeopleCount } from '../../core/utils/groupCounts'
-import { upcomingState } from '../../core/utils/sessionTiming'
-import { CardAccountComponent } from '../card-account/card-account.component'
-import { ButtonComponent } from '../ui/button/button.component'
+import { initialsAvatar } from '../../core/utils/initialsAvatar'
+import { ImageProfileComponent } from '../image-profile/image-profile.component'
 import { IconComponent } from '../ui/icon/icon.component'
+
+/** Below this many people a group still feels empty, so its owner is nudged to invite more. */
+export const INVITE_NUDGE_BELOW = 4
+const AVATARS_SHOWN = 5
+
+/**
+ * A group on Home when it is your only one: who is in it, and one tap to what you open most.
+ * Its next night is not repeated here; Home shows it above.
+ */
 @Component({
-    imports: [CountPipe, ButtonComponent, CardAccountComponent, RouterLink, CustomDatePipe, IconComponent],
+    imports: [CountPipe, ImageProfileComponent, IconComponent, RouterLink],
     selector: 'app-card-group',
     templateUrl: 'card-group.component.html',
 })
 export class CardGroupComponent {
     private readonly dataService = inject(DataService)
 
-    // --------------------------------------------------------------------------
-    //        Services signals
-    // --------------------------------------------------------------------------
-    // dataService
-    public readonly currentUser$ = this.dataService.currentUser
-    public readonly userMeets$ = this.dataService.userMeets
-
     readonly group = input.required<GroupWithMembersAndGames>()
     readonly invitations = input.required<undefined | Array<InvitationWithAccountsData>>()
-
-    // --------------------------------------------------------------------------
-    //        Component props
-    // --------------------------------------------------------------------------
-    public readonly lastMeetingComputed = computed(() => {
-        const sortedMeets = this.userMeets$()
-            .filter((meet) => meet.groupId === this.group().id && meet.status === 'completed')
-            .sort((a, b) => new Date(b.meetDate).getTime() - new Date(a.meetDate).getTime())
-
-        return sortedMeets.length >= 1 ? sortedMeets[0] : null
-    })
-
-    /** The group's game night in progress, if one was started. */
-    public readonly liveMeetingComputed = computed(
-        () =>
-            this.userMeets$()
-                .filter((meet) => meet.groupId === this.group().id && upcomingState(meet) === 'live')
-                .sort((a, b) => new Date(b.meetDate).getTime() - new Date(a.meetDate).getTime())[0] ?? null,
-    )
-
-    /** The group's next planned night; a night in progress or past its date is not "next". */
-    public readonly nextMeetingComputed = computed(
-        () =>
-            this.userMeets$()
-                .filter((meet) => meet.groupId === this.group().id && upcomingState(meet) === 'planned')
-                .sort((a, b) => new Date(a.meetDate).getTime() - new Date(b.meetDate).getTime())[0] ?? null,
-    )
 
     /** Members plus people without an account. */
     public readonly peopleCount = computed(() => groupPeopleCount(this.group()))
 
     /** Distinct games owned by anyone in the group, members or people without an account. */
     public readonly sharedGameCount = computed(() => groupGameCount(this.group()))
+
+    /** The first few faces, members before people without an account. */
+    public readonly avatars = computed(() =>
+        [
+            ...this.group().members.map((member) => ({ key: `a${member.id}`, name: member.displayName, avatar: member.avatar })),
+            ...(this.group().placeholders ?? []).map((person) => ({
+                key: `p${person.id}`,
+                name: person.displayName,
+                avatar: person.avatar ?? initialsAvatar(person.displayName),
+            })),
+        ].slice(0, AVATARS_SHOWN),
+    )
+    public readonly hiddenPeople = computed(() => Math.max(0, this.peopleCount() - AVATARS_SHOWN))
+
+    /** Only the owner invites (ADR-0007), and only while the group is still small. */
+    public readonly showInviteNudge = computed(
+        () => this.group().createdBy === this.dataService.currentUser()?.id && this.peopleCount() < INVITE_NUDGE_BELOW,
+    )
+    public readonly pendingInvitations = computed(() => this.invitations()?.length ?? 0)
 }

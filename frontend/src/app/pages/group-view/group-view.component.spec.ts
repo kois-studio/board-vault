@@ -36,7 +36,7 @@ describe('GroupViewComponent switching groups', () => {
         TestBed.configureTestingModule({
             providers: [
                 provideRouter([]),
-                { provide: ActivatedRoute, useValue: { paramMap: params, snapshot: { paramMap: params.value } } },
+                { provide: ActivatedRoute, useValue: { paramMap: params, fragment: of(null), snapshot: { paramMap: params.value } } },
                 { provide: Api, useValue: api },
                 { provide: DataService, useValue: dataService },
             ],
@@ -265,6 +265,7 @@ describe('GroupViewComponent collection worth', () => {
                     provide: ActivatedRoute,
                     useValue: {
                         paramMap: of(convertToParamMap({ groupId: '1' })),
+                        fragment: of(null),
                         snapshot: { paramMap: convertToParamMap({ groupId: '1' }) },
                     },
                 },
@@ -319,6 +320,7 @@ describe('GroupViewComponent collection worth retries', () => {
                     provide: ActivatedRoute,
                     useValue: {
                         paramMap: of(convertToParamMap({ groupId: '1' })),
+                        fragment: of(null),
                         snapshot: { paramMap: convertToParamMap({ groupId: '1' }) },
                     },
                 },
@@ -370,13 +372,13 @@ describe('GroupViewComponent page layout', () => {
         placeholders: [],
     }
 
-    const render = async (currentUserId: number, groupData: unknown = group) => {
+    const render = async (currentUserId: number, groupData: unknown = group, fragment: string | null = null) => {
         const params = new BehaviorSubject(convertToParamMap({ groupId: '1' }))
         await TestBed.configureTestingModule({
             imports: [GroupViewComponent],
             providers: [
                 provideRouter([]),
-                { provide: ActivatedRoute, useValue: { paramMap: params, snapshot: { paramMap: params.value } } },
+                { provide: ActivatedRoute, useValue: { paramMap: params, fragment: of(fragment), snapshot: { paramMap: params.value } } },
                 {
                     provide: Api,
                     useValue: {
@@ -408,6 +410,23 @@ describe('GroupViewComponent page layout', () => {
         fixture.detectChanges()
         return fixture
     }
+
+    it('opens on the section named in the address, as the Library shortcut on Home asks', async () => {
+        const scrolled: Array<string> = []
+        const original = Element.prototype.scrollIntoView
+        Element.prototype.scrollIntoView = function (this: Element) {
+            scrolled.push(this.id)
+        }
+        try {
+            const fixture = await render(7, group, 'library')
+            fixture.detectChanges()
+            await fixture.whenStable()
+
+            expect(scrolled).toEqual(['library'])
+        } finally {
+            Element.prototype.scrollIntoView = original
+        }
+    })
 
     it('lays the sections out in the order they read, with no throwaway member picker', async () => {
         const fixture = await render(7)
