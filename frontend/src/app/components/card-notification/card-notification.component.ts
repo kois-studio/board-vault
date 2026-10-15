@@ -1,4 +1,4 @@
-import { Component, computed, input } from '@angular/core'
+import { Component, computed, input, output } from '@angular/core'
 import { RouterLink } from '@angular/router'
 import type { NotificationType } from '../../api/api.types'
 import { DataService } from '../../core/services/data.service'
@@ -21,6 +21,8 @@ const SESSION_LINK_LABELS: Record<string, string> = {
 })
 export class CardNotificationComponent {
     readonly notification = input.required<null | NotificationType>()
+    /** The link was followed: the inbox closes, even when the link points at the page already open. */
+    readonly opened = output<void>()
 
     constructor(private readonly dataService: DataService) {}
 
@@ -55,6 +57,16 @@ export class CardNotificationComponent {
         }
         return null
     })
+
+    /**
+     * Following the link reads the notification, quietly: the page it opens is the feedback.
+     * Already read, it asks the API nothing.
+     */
+    openLink() {
+        const notification = this.notification()
+        if (notification && !notification.isRead) this.dataService.updateNotification(notification.id, { announce: false })
+        this.opened.emit()
+    }
 
     markAsRead() {
         const notification = this.notification()

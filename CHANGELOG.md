@@ -203,6 +203,16 @@ operational details.
 
 ### Fixed
 
+- Planning a game night, recording a past one, and choosing who is coming
+  for suggestions no longer offer someone who left the group. Their group
+  person stays for history, so the list showed them, and planning failed
+  with "the action could not be completed" once they were invited.
+- A notification with a long name without spaces stays inside the inbox
+  instead of widening it with a side scrollbar; group invitations wrap long
+  group and inviter names too.
+- A notification's link closes the inbox, also when it points at the page
+  already open, and marks it read without a "Notification marked as read"
+  toast; a read notification asks the server nothing.
 - A group's game library lists the games of people without an account too,
   with their names under "Owned by". They already counted in the group's
   totals and suggestions, but were missing from the list.

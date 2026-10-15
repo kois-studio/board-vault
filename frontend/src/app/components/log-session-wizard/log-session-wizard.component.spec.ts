@@ -146,6 +146,19 @@ describe('LogSessionWizardComponent games step', () => {
         expect(component.isStepComplete('who')).toBe(true)
     })
 
+    it('does not list someone who left the group, whose group person stays for history', async () => {
+        const left = {
+            ...linkedPerson(4, 5, 'Gone', [10]),
+            person: { ...linkedPerson(4, 5, 'Gone', [10]).person, standing: 'left' as const },
+        }
+        await setup([linkedPerson(3, 6, 'Bloody', [48]), left])
+
+        component.selectGroup(group)
+        fixture.detectChanges()
+
+        expect(component.attendees().map((attendee) => attendee.user.displayName)).not.toContain('Gone')
+    })
+
     it('offers the games owned by the selected members when the group has no group people', async () => {
         await setup([])
 

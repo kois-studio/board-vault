@@ -28,6 +28,7 @@ import { StarRatingComponent } from '../../components/ui/star-rating/star-rating
 import { CustomDatePipe } from '../../core/pipes/customDate.pipe'
 import { DataService } from '../../core/services/data.service'
 import type { Nullable } from '../../core/types/commons.type'
+import { canTakePart } from '../../core/utils/groupPeople'
 import { formatWinners, nameWithStanding } from '../../core/utils/historyParticipants'
 import { rsvpToast } from '../../core/utils/rsvp'
 import { downloadSessionIcs, googleCalendarUrl } from '../../core/utils/sessionCalendar'
@@ -298,9 +299,7 @@ export class MeetViewComponent {
     /** Everyone who could be invited: the members, or the group people. */
     get invitablePeople(): Array<SessionPerson> {
         if (this.isGroupPersonSession) {
-            return this.groupPeople
-                .filter((person) => person.person.status !== 'archived' && (person.person.standing ?? 'member') === 'member')
-                .map((person) => this.#fromGroupPerson(person))
+            return this.groupPeople.filter(canTakePart).map((person) => this.#fromGroupPerson(person))
         }
         return (this.groupData?.members ?? []).map((member) => this.#fromAccount(member))
     }

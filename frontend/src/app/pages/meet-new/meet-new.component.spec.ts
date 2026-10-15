@@ -131,6 +131,13 @@ describe('MeetNewComponent social handoff', () => {
                 preferences: [],
                 claimable: false,
             },
+            // Left the group: still an active group person, so their history stays, but not invitable.
+            {
+                person: { id: 15, accountId: 3, displayName: 'Left', status: 'active', standing: 'left', avatar: null },
+                ownership: [],
+                preferences: [],
+                claimable: false,
+            },
         ] as unknown as Array<GroupPersonWorkspaceType>
         const { fixture, component, api } = await setup({}, group, people)
 
