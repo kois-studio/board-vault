@@ -14,6 +14,7 @@ import { ContainerWrapperComponent } from '../../../components/ui/container-wrap
 import { IconComponent } from '../../../components/ui/icon/icon.component'
 import { PageHeaderComponent } from '../../../components/ui/page-header/page-header.component'
 import { WishlistToggleComponent } from '../../../components/wishlist-toggle/wishlist-toggle.component'
+import { GameTitlePipe } from '../../../core/pipes/game-title.pipe'
 import { DataService } from '../../../core/services/data.service'
 import { BrowsePageService, DEFAULT_BROWSE_FILTERS } from './browse-page.service'
 
@@ -54,6 +55,7 @@ export function parseBrowseFilters(params: ParamMap): BrowseFilters {
 
 @Component({
     imports: [
+        GameTitlePipe,
         CardGameComponent,
         ContainerWrapperComponent,
         IconComponent,

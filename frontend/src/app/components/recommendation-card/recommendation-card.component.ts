@@ -1,9 +1,9 @@
 import { Component, input } from '@angular/core'
 import { RouterLink } from '@angular/router'
+import { PlayersPipe } from '../../core/pipes/count.pipe'
 import { BadgeComponent } from '../ui/badge/badge.component'
 import { IconComponent } from '../ui/icon/icon.component'
 import { ImageBackgroundComponent } from '../ui/image-background/image-background.component'
-
 /** What the group thinks of a suggestion: Interested / Not for us votes. */
 export type RecommendationGroupSignal = { interestedCount: number; interestedNames: string; notForUsCount: number }
 
@@ -13,7 +13,7 @@ export type RecommendationGroupSignal = { interestedCount: number; interestedNam
  */
 @Component({
     selector: 'app-recommendation-card',
-    imports: [RouterLink, BadgeComponent, IconComponent, ImageBackgroundComponent],
+    imports: [PlayersPipe, RouterLink, BadgeComponent, IconComponent, ImageBackgroundComponent],
     templateUrl: './recommendation-card.component.html',
 })
 export class RecommendationCardComponent {

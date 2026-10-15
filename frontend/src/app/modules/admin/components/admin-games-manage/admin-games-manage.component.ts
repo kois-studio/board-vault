@@ -10,11 +10,11 @@ import { ButtonComponent } from '../../../../components/ui/button/button.compone
 import { IconComponent } from '../../../../components/ui/icon/icon.component'
 import { ImageBackgroundComponent } from '../../../../components/ui/image-background/image-background.component'
 import { SpinnerComponent } from '../../../../components/ui/spinner/spinner.component'
+import { CountPipe, PlayersPipe } from '../../../../core/pipes/count.pipe'
 import { LogService } from '../../../../core/services/log.service'
 import { GAME_LENGTH_OPTIONS } from '../../../../pages/collection-page/browse-page/browse-page.component'
 import { AdminPageHeaderComponent } from '../admin-page-header/admin-page-header.component'
 import { AdminGamesManageService } from './admin-games-manage.service'
-
 /** What each data problem is called in the list, and what to do about it. */
 export const CATALOGUE_ISSUES: Array<{ value: CatalogueIssue; label: string; hint: string }> = [
     { value: 'no-title', label: 'No title', hint: 'The game has no English title, so it cannot be found by name.' },
@@ -31,6 +31,8 @@ export const CATALOGUE_ISSUES: Array<{ value: CatalogueIssue; label: string; hin
 /** The admin catalogue: every game, searchable and filterable by Browse's filters and by data problem. */
 @Component({
     imports: [
+        CountPipe,
+        PlayersPipe,
         AdminPageHeaderComponent,
         ButtonComponent,
         IconComponent,

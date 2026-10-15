@@ -44,7 +44,7 @@
         <section [attr.aria-labelledby]="'group-members-' + group().id">
             <div class="mb-3 flex items-center justify-between gap-3">
                 <h3 [id]="'group-members-' + group().id" class="text-sm font-semibold uppercase tracking-wide text-secondary">People in this group</h3>
-                <span class="text-xs text-secondary">{{ sharedGameCount() }} games available</span>
+                <span class="text-xs text-secondary">{{ sharedGameCount() | count: 'game' }} available</span>
             </div>
             <div class="grid grid-cols-1 gap-2 sm:grid-cols-2">
                 @for (member of group().members; track member.id) {

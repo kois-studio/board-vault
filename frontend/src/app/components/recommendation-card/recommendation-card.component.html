@@ -22,7 +22,7 @@
                 <app-badge [text]="'Fit ' + score()" [attr.aria-label]="'Fit score ' + score() + ' out of 100'" />
             </span>
         </div>
-        <p class="mt-1 text-sm text-bv-text-muted">{{ minutes() }} min · {{ minPlayers() }}–{{ maxPlayers() }} players · {{ historyLabel() }}</p>
+        <p class="mt-1 text-sm text-bv-text-muted">{{ minutes() }} min · {{ { minPlayers: minPlayers(), maxPlayers: maxPlayers() } | players }} · {{ historyLabel() }}</p>
         <ul class="mt-3 space-y-1 text-sm wrap-anywhere">
             @for (reason of reasons(); track reason) {
             <li class="flex gap-2"><app-icon name="check" [size]="16" className="mt-0.5 shrink-0 text-bv-success" aria-hidden="true" /><span>{{ reason }}</span></li>

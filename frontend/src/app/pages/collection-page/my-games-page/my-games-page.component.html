@@ -33,7 +33,7 @@
                 @if (visibleGames().length === userGames$().length) {
                     {{ userGames$().length }} game{{ userGames$().length === 1 ? '' : 's' }}
                 } @else {
-                    {{ visibleGames().length }} of {{ userGames$().length }} games
+                    {{ visibleGames().length }} of {{ userGames$().length | count: 'game' }}
                 }
             </p>
             @if (showToolbar()) {
@@ -72,7 +72,7 @@
             @for (game of visibleGames(); track game.id) {
                 <a [routerLink]="['/games', game.id]" class="block h-full rounded-2xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-bv-primary">
                     <app-card-game
-                        [title]="game.titleTranslations.en"
+                        [title]="game | gameTitle"
                         [imageUrl]="game.imageUrl"
                         [gameAvgDuration]="game.gameAvgDuration"
                         [minPlayers]="game.minPlayers"

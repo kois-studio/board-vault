@@ -52,7 +52,7 @@
                     } @else {
                         <div class="flex flex-wrap gap-2">
                             @for (person of attendeeOptions(); track person.id) {
-                                <button type="button" class="app-chip max-w-full py-1 pl-1" [attr.aria-pressed]="isAttendeeSelected(person.id)" (click)="toggleAttendee(person.id)" [title]="person.name + ' · ' + person.games + ' games'">
+                                <button type="button" class="app-chip max-w-full py-1 pl-1" [attr.aria-pressed]="isAttendeeSelected(person.id)" (click)="toggleAttendee(person.id)" [title]="person.name + ' · ' + (person.games | count: 'game')">
                                     <app-image-profile size="small" [avatar]="person.avatar" aria-hidden="true" />
                                     <span class="min-w-0 truncate">{{ person.name }}</span>
                                 </button>
