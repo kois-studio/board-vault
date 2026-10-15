@@ -282,9 +282,9 @@
                                                             @if (!game.active) {
                                                                 Nobody coming owns it
                                                             } @else if (meet.plannedGames.includes(game.id)) {
-                                                                Shortlisted · {{ game.minPlayers }}–{{ game.maxPlayers }} players
+                                                                Shortlisted · {{ game | players }}
                                                             } @else {
-                                                                {{ game.gameAvgDuration }} min · {{ game.minPlayers }}–{{ game.maxPlayers }} players
+                                                                {{ game.gameAvgDuration }} min · {{ game | players }}
                                                             }
                                                         </span>
                                                     </span>
@@ -295,7 +295,7 @@
                                     </div>
                                     @if (!showAllGamesForPlayed && hiddenPlayableGameCount > 0) {
                                         <button type="button" class="mt-3 text-sm font-semibold text-bv-primary hover:underline" (click)="showAllGamesForPlayed = true">
-                                            Show {{ hiddenPlayableGameCount }} more games nobody coming owns
+                                            Show {{ hiddenPlayableGameCount }} more {{ hiddenPlayableGameCount === 1 ? 'game' : 'games' }} that nobody coming owns
                                         </button>
                                     }
                                 }
@@ -347,7 +347,7 @@
                                         <image-background [src]="game.imageUrl" [alt]="gameTitle(game) + ' cover'" class="h-12 w-12 shrink-0" />
                                         <span class="min-w-0">
                                             <span class="block truncate font-medium">{{ gameTitle(game) }}</span>
-                                            <span class="block text-xs text-bv-text-muted">{{ game.gameAvgDuration }} min · {{ game.minPlayers }}–{{ game.maxPlayers }} players</span>
+                                            <span class="block text-xs text-bv-text-muted">{{ game.gameAvgDuration }} min · {{ game | players }}</span>
                                             @if (voteCount > 0) {
                                                 <span class="block truncate text-xs text-bv-success" [title]="voterNames(game.id)">Wanted by {{ voterNames(game.id) }}</span>
                                             }
@@ -358,7 +358,7 @@
                                             type="button"
                                             class="app-chip shrink-0 px-2.5"
                                             [attr.aria-pressed]="hasMyVote(game.id)"
-                                            [attr.aria-label]="(hasMyVote(game.id) ? 'Take back your vote for ' : 'I’d play ') + gameTitle(game)"
+                                            [attr.aria-label]="(hasMyVote(game.id) ? 'Take back your vote for ' : 'I’d play ') + gameTitle(game) + ', ' + (voteCount | count: 'vote')"
                                             [disabled]="votingGameId() !== null"
                                             (click)="toggleVote(game.id)"
                                         >
@@ -366,8 +366,8 @@
                                             <span class="tabular-nums">{{ voteCount }}</span>
                                         </button>
                                     } @else if (voteCount > 0) {
-                                        <span class="flex shrink-0 items-center gap-1 text-sm text-bv-text-muted" [attr.aria-label]="voteCount + ' votes'">
-                                            <app-icon name="thumbs-up" [size]="16" aria-hidden="true" /> {{ voteCount }}
+                                        <span class="flex shrink-0 items-center gap-1 text-sm text-bv-text-muted">
+                                            <app-icon name="thumbs-up" [size]="16" aria-hidden="true" /> <span aria-hidden="true">{{ voteCount }}</span><span class="sr-only">{{ voteCount | count: 'vote' }}</span>
                                         </span>
                                     }
                                     </div>

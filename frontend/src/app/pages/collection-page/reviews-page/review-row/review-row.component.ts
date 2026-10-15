@@ -4,10 +4,11 @@ import { GameCompleteType } from '../../../../api/api.types'
 import { IconComponent } from '../../../../components/ui/icon/icon.component'
 import { ImageBackgroundComponent } from '../../../../components/ui/image-background/image-background.component'
 import { StarRatingComponent } from '../../../../components/ui/star-rating/star-rating.component'
+import { PlayersPipe } from '../../../../core/pipes/count.pipe'
+import { GameTitlePipe } from '../../../../core/pipes/game-title.pipe'
 import { DataService } from '../../../../core/services/data.service'
-
 @Component({
-    imports: [RouterLink, IconComponent, ImageBackgroundComponent, StarRatingComponent],
+    imports: [GameTitlePipe, PlayersPipe, RouterLink, IconComponent, ImageBackgroundComponent, StarRatingComponent],
     selector: 'app-review-row',
     templateUrl: './review-row.component.html',
 })

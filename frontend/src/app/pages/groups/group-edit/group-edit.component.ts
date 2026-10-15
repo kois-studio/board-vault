@@ -13,13 +13,14 @@ import { ButtonComponent } from '../../../components/ui/button/button.component'
 import { DialogDirective } from '../../../components/ui/dialog/dialog.directive'
 import { IconComponent } from '../../../components/ui/icon/icon.component'
 import { LOADING_KEYS } from '../../../core/enums/loading-keys-enum'
+import { CountPipe } from '../../../core/pipes/count.pipe'
 import { CustomDatePipe } from '../../../core/pipes/customDate.pipe'
 import { DataService } from '../../../core/services/data.service'
 import { LoadingService } from '../../../core/services/loading.service'
 import { groupGameCount, groupPeopleCount } from '../../../core/utils/groupCounts'
-
 @Component({
     imports: [
+        CountPipe,
         ButtonComponent,
         RouterLink,
         ImageProfileComponent,

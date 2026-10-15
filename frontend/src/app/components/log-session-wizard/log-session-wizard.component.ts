@@ -17,6 +17,7 @@ import { IconComponent } from '../../components/ui/icon/icon.component'
 import { PageHeaderComponent } from '../../components/ui/page-header/page-header.component'
 import { SpinnerComponent } from '../../components/ui/spinner/spinner.component'
 import { LOADING_KEYS } from '../../core/enums/loading-keys-enum'
+import { CountPipe, PlayersPipe } from '../../core/pipes/count.pipe'
 import { DataService } from '../../core/services/data.service'
 import { LoadingService } from '../../core/services/loading.service'
 import { canTakePart } from '../../core/utils/groupPeople'
@@ -68,6 +69,8 @@ function todayInputValue(): string {
     selector: 'app-log-session-wizard',
     templateUrl: './log-session-wizard.component.html',
     imports: [
+        CountPipe,
+        PlayersPipe,
         CommonModule,
         ReactiveFormsModule,
         SpinnerComponent,

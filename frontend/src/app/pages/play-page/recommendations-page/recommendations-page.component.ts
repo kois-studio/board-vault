@@ -23,6 +23,7 @@ import { IconComponent } from '../../../components/ui/icon/icon.component'
 import { PageHeaderComponent } from '../../../components/ui/page-header/page-header.component'
 import { SpinnerComponent } from '../../../components/ui/spinner/spinner.component'
 import { LOADING_KEYS } from '../../../core/enums/loading-keys-enum'
+import { CountPipe } from '../../../core/pipes/count.pipe'
 import { CustomDatePipe } from '../../../core/pipes/customDate.pipe'
 import { DataService } from '../../../core/services/data.service'
 import { LoadingService } from '../../../core/services/loading.service'
@@ -52,6 +53,7 @@ const RELOAD_DELAY_MS = 300
 
 @Component({
     imports: [
+        CountPipe,
         RouterLink,
         ButtonComponent,
         ContainerWrapperComponent,
