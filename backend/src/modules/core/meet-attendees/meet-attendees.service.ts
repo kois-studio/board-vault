@@ -37,6 +37,8 @@ export class MeetAttendeesService {
         if (resultSet.rowsAffected === 0) {
             throw new NotFoundException('Meet attendee not found')
         }
+        // Taken off the night: their votes and games to bring go too, as with PATCH /sessions/:id/attendees.
+        await this.databaseService.sessions.forgetWhoIsNotComing(meetId)
 
         return { success: true }
     }

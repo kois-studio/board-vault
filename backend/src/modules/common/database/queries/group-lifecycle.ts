@@ -1,3 +1,5 @@
+import { forgetWhoIsNotComing } from './session-cleanup.js'
+
 import type { Transaction } from '@libsql/client'
 
 /**
@@ -6,7 +8,8 @@ import type { Transaction } from '@libsql/client'
  * Completed sessions keep the account and its group person untouched, so history
  * counts never change. Sessions that have not happened yet drop them, and the
  * sessions they organised that are still scheduled or running pass to the group
- * owner, who can then manage them. Run it after any ownership change.
+ * owner, who can then manage them. Their votes and the games they said they would bring go from
+ * those upcoming sessions too. Run it after any ownership change.
  */
 export async function departGroup(transaction: Transaction, accountId: number, groupId: number): Promise<void> {
     const upcoming = "SELECT id FROM Meet WHERE groupId = ? AND status = 'scheduled'"
@@ -36,6 +39,8 @@ export async function departGroup(transaction: Transaction, accountId: number, g
             `,
             args: [groupId, groupId, accountId],
         },
+        // Last: who is coming has just changed, and the organizer may have too.
+        ...forgetWhoIsNotComing(upcoming, [groupId]),
     ])
 }
 

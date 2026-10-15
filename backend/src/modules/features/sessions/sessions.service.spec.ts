@@ -46,7 +46,7 @@ function createDatabaseMock() {
         deleteMeetGameVotesOffShortlist: vi.fn().mockResolvedValue({ rowsAffected: 0 }),
         getMeetGameBringers: vi.fn().mockResolvedValue([]),
         setMeetGameBringer: vi.fn().mockResolvedValue(true),
-        clearMeetGameBringers: vi.fn().mockResolvedValue({ rowsAffected: 0 }),
+        forgetWhoIsNotComing: vi.fn().mockResolvedValue(undefined),
         accountOwnsGame: vi.fn().mockResolvedValue(true),
         groupPersonOwnsGame: vi.fn().mockResolvedValue(true),
         getMeetComingPersonIds: vi.fn().mockResolvedValue([31]),
@@ -666,6 +666,7 @@ describe('SessionsService', () => {
     describe('who brings what (#115)', () => {
         const asActor = (isGroupOwner: 0 | 1, myRsvpStatus: string | null, createdBy = 1) => {
             const database = createDatabaseMock()
+
             database.getMeetAccessForAccount.mockResolvedValue({
                 rows: [[12, 7, createdBy, '2026-08-16T19:30:00.000Z', 0, 'scheduled', 'Europe/Madrid', null, isGroupOwner, myRsvpStatus]],
             })
@@ -674,6 +675,7 @@ describe('SessionsService', () => {
 
         it('lets someone coming bring a game they own', async () => {
             const { database, service } = asActor(0, 'accepted')
+
             database.getMeetGameBringers.mockResolvedValue([{ gameId: 42, accountId: 2, groupPersonId: null }])
 
             await expect(service.setSessionGameBringer(2, 12, 42, {})).resolves.toEqual({
@@ -686,10 +688,12 @@ describe('SessionsService', () => {
 
         it('refuses a game you do not own, or one that is not on the shortlist', async () => {
             const notOwned = asActor(0, 'accepted')
+
             notOwned.database.accountOwnsGame.mockResolvedValue(false)
             await expect(notOwned.service.setSessionGameBringer(2, 12, 42, {})).rejects.toThrow(BadRequestException)
 
             const notShortlisted = asActor(0, 'accepted')
+
             notShortlisted.database.setMeetGameBringer.mockResolvedValue(false)
             await expect(notShortlisted.service.setSessionGameBringer(2, 12, 42, {})).rejects.toThrow(BadRequestException)
         })
@@ -699,6 +703,7 @@ describe('SessionsService', () => {
                 ForbiddenException,
             )
             const organizer = asActor(0, null, 2)
+
             await organizer.service.setSessionGameBringer(2, 12, 42, { groupPersonId: 31 })
             expect(organizer.database.setMeetGameBringer).toHaveBeenCalledWith(12, 42, { accountId: null, groupPersonId: 31 })
             await expect(organizer.service.setSessionGameBringer(2, 12, 42, { groupPersonId: 32 })).rejects.toThrow(BadRequestException)
@@ -706,10 +711,12 @@ describe('SessionsService', () => {
 
         it('lets only the bringer or the organizer clear it', async () => {
             const someoneElse = asActor(0, 'accepted')
+
             someoneElse.database.getMeetGameBringers.mockResolvedValue([{ gameId: 42, accountId: 3, groupPersonId: null }])
             await expect(someoneElse.service.setSessionGameBringer(2, 12, 42, null)).rejects.toThrow(ForbiddenException)
 
             const bringer = asActor(0, 'accepted')
+
             bringer.database.getMeetGameBringers.mockResolvedValue([{ gameId: 42, accountId: 2, groupPersonId: null }])
             await bringer.service.setSessionGameBringer(2, 12, 42, null)
             expect(bringer.database.setMeetGameBringer).toHaveBeenCalledWith(12, 42, { accountId: null, groupPersonId: null })

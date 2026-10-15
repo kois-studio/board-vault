@@ -55,18 +55,22 @@ export class NotificationQueries {
         })
     }
 
-    /** The accounts a session invites, directly or through a linked group person, with their answer. */
+    /** The accounts a session invites, directly or through a linked group person, with their answer; only those still in the group (ADR-0018). */
     getSessionInvitedAccounts(sessionId: number) {
         return this.database.execute({
             sql: `
                 SELECT ma.accountId, ma.rsvpStatus
                 FROM MeetAttendee ma
+                INNER JOIN Meet m ON m.id = ma.meetId
+                INNER JOIN GroupMembership gm ON gm.groupId = m.groupId AND gm.accountId = ma.accountId
                 INNER JOIN Account a ON a.id = ma.accountId AND a.isDeleted = 0
                 WHERE ma.meetId = ?
                 UNION
                 SELECT gp.accountId, mpa.rsvpStatus
                 FROM MeetPersonAttendee mpa
+                INNER JOIN Meet m ON m.id = mpa.meetId
                 INNER JOIN GroupPerson gp ON gp.id = mpa.groupPersonId
+                INNER JOIN GroupMembership gm ON gm.groupId = m.groupId AND gm.accountId = gp.accountId
                 INNER JOIN Account a ON a.id = gp.accountId AND a.isDeleted = 0
                 WHERE mpa.meetId = ?
             `,

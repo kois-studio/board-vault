@@ -341,6 +341,13 @@ operational details.
 - Game nights keep an honest history: starting or finishing a night before
   its date asks first and moves it to now, and finishing one with no games
   played asks whether to cancel it instead or finish it anyway.
+- Votes and "I'll bring it" belong to people still coming to a night:
+  declining, being taken off the invite list, or leaving the group (and so
+  deleting the account) drops them, so the shortlist is no longer ordered
+  by people who aren't coming and no game shows as brought by someone who
+  won't be there. Before, declining only dropped the games to bring.
+- Game night notifications (started, finished, cancelled) no longer reach
+  someone who left the group while that night was under way.
 - Similar games on a game's page share its tags, the group catalogue search
   finds "love letter" for "Love-Letter", and a proposal title of only spaces
   is refused.
