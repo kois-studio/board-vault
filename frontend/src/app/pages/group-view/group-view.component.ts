@@ -204,6 +204,12 @@ export class GroupViewComponent {
 
     public readonly nextMeetingComputed = computed(() => this.upcomingMeetingsComputed()[0] ?? null)
 
+    /** Any night not finished yet, including one waiting for results: the group is already under way. */
+    public readonly hasOpenSessionComputed = computed(() => {
+        const groupId = this.groupData$()?.id
+        return this.userMeets$().some((meet) => meet.groupId === groupId && upcomingState(meet) !== null)
+    })
+
     public readonly needsFirstGroupSetup = computed(() => {
         const group = this.groupData$()
         if (!group) return false
@@ -212,7 +218,7 @@ export class GroupViewComponent {
             memberCount: group.members.length,
             gameCount: this.totalUniqueGamesComputed().length,
             historyCount: this.groupHistory$().length,
-            hasUpcomingSession: Boolean(this.nextMeetingComputed()),
+            hasUpcomingSession: this.hasOpenSessionComputed(),
             historyLoading: this.isLoading(),
             historyError: this.groupHistoryError(),
         })

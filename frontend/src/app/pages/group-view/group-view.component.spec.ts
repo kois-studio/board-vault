@@ -69,6 +69,20 @@ describe('GroupViewComponent switching groups', () => {
             expect(component.upcomingMeetingsComputed().map((next) => next.id)).toEqual([3, 2])
             expect(component.nextMeetingComputed()?.id).toBe(3)
 
+            // A night waiting for results is not the next one, but the group is under way: no first-group setup.
+            ;(dataService.userMeets as ReturnType<typeof signal<Array<unknown>>>).set([meet(1, 1, '2026-10-08T18:00:00Z')])
+            expect(component.nextMeetingComputed()).toBeNull()
+            expect(component.hasOpenSessionComputed()).toBe(true)
+            ;(dataService.userMeets as ReturnType<typeof signal<Array<unknown>>>).set([meet(5, 1, '2026-10-01T18:00:00Z', 'completed')])
+            expect(component.hasOpenSessionComputed()).toBe(false)
+            ;(dataService.userMeets as ReturnType<typeof signal<Array<unknown>>>).set([
+                meet(1, 1, '2026-10-08T18:00:00Z'),
+                meet(2, 1, '2026-10-18T17:00:00Z'),
+                meet(3, 1, '2026-10-15T18:00:00Z'),
+                meet(4, 4, '2026-10-16T18:00:00Z'),
+                meet(5, 1, '2026-10-01T18:00:00Z', 'completed'),
+            ])
+
             // A night running now goes first, whatever its date.
             ;(dataService.userMeets as ReturnType<typeof signal<Array<unknown>>>).update((meets) => [
                 ...meets,
