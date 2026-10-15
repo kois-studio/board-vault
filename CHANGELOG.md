@@ -203,6 +203,16 @@ operational details.
 
 ### Fixed
 
+- Planning a game night, recording a past one, and choosing who is coming
+  for suggestions no longer offer someone who left the group. Their group
+  person stays for history, so the list showed them, and planning failed
+  with "the action could not be completed" once they were invited.
+- A notification with a long name without spaces stays inside the inbox
+  instead of widening it with a side scrollbar; group invitations wrap long
+  group and inviter names too.
+- A notification's link closes the inbox, also when it points at the page
+  already open, and marks it read without a "Notification marked as read"
+  toast; a read notification asks the server nothing.
 - A group's game library lists the games of people without an account too,
   with their names under "Owned by". They already counted in the group's
   totals and suggestions, but were missing from the list.
@@ -351,6 +361,13 @@ operational details.
 - Game nights keep an honest history: starting or finishing a night before
   its date asks first and moves it to now, and finishing one with no games
   played asks whether to cancel it instead or finish it anyway.
+- Votes and "I'll bring it" belong to people still coming to a night:
+  declining, being taken off the invite list, or leaving the group (and so
+  deleting the account) drops them, so the shortlist is no longer ordered
+  by people who aren't coming and no game shows as brought by someone who
+  won't be there. Before, declining only dropped the games to bring.
+- Game night notifications (started, finished, cancelled) no longer reach
+  someone who left the group while that night was under way.
 - Similar games on a game's page share its tags, the group catalogue search
   finds "love letter" for "Love-Letter", and a proposal title of only spaces
   is refused.

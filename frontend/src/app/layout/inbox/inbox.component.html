@@ -70,7 +70,7 @@
                 } @else {
                 <ul class="grid gap-2">
                     @for (notification of notifications() | sortByDate; track notification.id) {
-                    <li><app-card-notification [notification]="notification" /></li>
+                    <li><app-card-notification [notification]="notification" (opened)="disclosure.close()" /></li>
                     }
                 </ul>
                 }

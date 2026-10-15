@@ -64,7 +64,7 @@ jobs:
                       gh issue comment "$open" --body "$note"
                   else
                       gh issue create --title "Production API is not ready" --label incident --assignee dawichi \
-                          --body "$note"$'\n\n'"Recovery: the owner runbook, Failure and recovery." \
+                          --body "$note"$'\n\n'"Recovery: docs/how-to/recover-production.md." \
                           || gh issue create --title "Production API is not ready" --label incident --body "$note"
                   fi
                   exit 1

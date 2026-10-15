@@ -31,6 +31,32 @@ describe('RecommendationsPageComponent history context', () => {
         expect(component.getDecisionLensLabel('favorite')).toBe('Group favorite')
     })
 
+    it('selects everyone who can come, leaving out people who left the group or were archived', () => {
+        const component = Object.create(RecommendationsPageComponent.prototype) as RecommendationsPageComponent
+        const selectedAttendeeIds = signal<Array<number>>([])
+        const person = (id: number, extra: object = {}) => ({ person: { id, status: 'active', ...extra } })
+
+        Object.assign(component, {
+            selectedAttendeeIds,
+            recommendations: signal(null),
+            recommendationSignals: signal(null),
+            feedbackState: signal({}),
+            errorMessage: signal(null),
+            decisionLens: signal('balanced'),
+            selectedGroup: signal({ members: [{ id: 1 }] }),
+            groupPeople: signal([
+                person(11),
+                person(12, { standing: 'left' }),
+                person(13, { status: 'archived' }),
+                person(14, { standing: 'member' }),
+            ]),
+        })
+
+        component.selectAllAttendees()
+
+        expect(selectedAttendeeIds()).toEqual([11, 14])
+    })
+
     it('keeps suggestions while people change and clears them when nobody is coming', () => {
         const component = Object.create(RecommendationsPageComponent.prototype) as RecommendationsPageComponent
         const selectedAttendeeIds = signal([2])

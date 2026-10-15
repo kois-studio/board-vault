@@ -759,7 +759,8 @@ export class DataService {
         })
     }
 
-    public updateNotification(notificationId: number) {
+    /** Marks a notification read; `announce: false` skips the toast, for a read that comes with another action. */
+    public updateNotification(notificationId: number, { announce = true }: { announce?: boolean } = {}) {
         this.api.updateNotification(notificationId, { isRead: true }).subscribe({
             next: () => {
                 this.userNotifications.update((notifications) =>
@@ -768,7 +769,7 @@ export class DataService {
                     ),
                 )
 
-                this.toastService.success('Notification marked as read')
+                if (announce) this.toastService.success('Notification marked as read')
             },
             error: (error) => {
                 if (error.status === 404) {

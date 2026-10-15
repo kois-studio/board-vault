@@ -34,11 +34,37 @@ All of them use temporary SQLite files. None of them touch Turso.
 
 ## Production rollout (David only)
 
-Contributors never run migrations against shared or production databases.
-David follows the private operations runbook:
+Contributors never run migrations against shared or production databases. For
+every migration, David:
 
-1. back up production and restore the backup into a disposable copy;
-2. apply the migration to the copy and compare integrity, foreign keys, and row
-   counts;
-3. deploy code that works with both the old and new schema, then migrate;
-4. confirm `https://backend.board-vault.com/health/ready` reports `ready`.
+1. **Backs up** production and proves the backup restores. Backups go to
+   `~/Documents/board-vault-backups/`, outside every repository:
+   ```shell
+   umask 077
+   turso db shell board-vault .dump > ~/Documents/board-vault-backups/prod-<date>-before-<NNNN>.sql
+   sqlite3 /tmp/restore-check.db < ~/Documents/board-vault-backups/prod-<date>-before-<NNNN>.sql
+   sqlite3 /tmp/restore-check.db "pragma integrity_check; select max(version) from SchemaMigrations;"
+   rm /tmp/restore-check.db
+   ```
+2. **Rehearses** on a branch copy, then destroys it:
+   ```shell
+   turso db create bv-rehearsal-<NNNN> --from-db board-vault
+   TURSO_DATABASE_URL="$(turso db show bv-rehearsal-<NNNN> --url)" \
+   TURSO_AUTH_TOKEN="$(turso db tokens create bv-rehearsal-<NNNN> --expiration 1d)" \
+   node database/scripts/migrate.mjs
+   turso db destroy bv-rehearsal-<NNNN> --yes
+   ```
+   Before destroying it, compare per-table row counts with production (only
+   `SchemaMigrations` should change) and run `pragma integrity_check` and
+   `pragma foreign_key_check`.
+3. **Migrates and deploys**, with a 1-day token (`--expiration 1d`; Turso does
+   not accept hours). If the new code reads the new schema, migrate first and
+   then deploy. If it works with both schemas, deploy first. Readiness wants
+   the exact version, so `/health/ready` reports `schema: down` between the two
+   steps. That is expected.
+4. Confirms `https://backend.board-vault.com/health/ready` reports `ready`.
+5. Applies the same migration to `board-vault-development`, after backing it
+   up (`dev-<date>-before-<NNNN>.sql`).
+
+A one-off data change in production (no migration) follows steps 1 and 2 the
+same way: back up first, rehearse on a copy, then apply.

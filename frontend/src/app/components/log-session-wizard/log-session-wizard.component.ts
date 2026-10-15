@@ -20,6 +20,7 @@ import { LOADING_KEYS } from '../../core/enums/loading-keys-enum'
 import { CountPipe, PlayersPipe } from '../../core/pipes/count.pipe'
 import { DataService } from '../../core/services/data.service'
 import { LoadingService } from '../../core/services/loading.service'
+import { canTakePart } from '../../core/utils/groupPeople'
 import { ImageProfileComponent } from '../image-profile/image-profile.component'
 import { ToastService } from '../toast/toast.service'
 import { ImageBackgroundComponent } from '../ui/image-background/image-background.component'
@@ -274,7 +275,7 @@ export class LogSessionWizardComponent {
         loader.call(this.api, group.id).subscribe({
             next: (response) => {
                 if (!isCurrentGroup()) return
-                const activePeople = response.people.filter((person) => person.person.status === 'active')
+                const activePeople = response.people.filter(canTakePart)
                 if (activePeople.length === 0) return
 
                 const groupGames = new Map<number, GameCompleteType>()

@@ -1,3 +1,5 @@
+import { forgetWhoIsNotComing } from './session-cleanup.js'
+
 import type { MeetAccountGameQueryOptions } from '../../../../modules/core/meet-account-games/meet-account-games.types.js'
 import type { DatabaseService } from '../database.service.js'
 import type { InStatement } from '@libsql/client'
@@ -334,15 +336,19 @@ export class SessionQueries {
         return result.rowsAffected === 1
     }
 
-    /** Someone who can't make it no longer brings anything to that night. */
-    clearMeetGameBringers(meetId: number, accountId: number | null, groupPersonId: number | null) {
-        return this.database.execute({
-            sql: `
-                UPDATE MeetGame SET broughtByAccountId = NULL, broughtByPersonId = NULL
-                WHERE meetId = ? AND (broughtByAccountId = ? OR broughtByPersonId = ?)
-            `,
-            args: [meetId, accountId ?? -1, groupPersonId ?? -1],
-        })
+    /** Drops the votes and games to bring of anyone no longer coming to the night (declined or uninvited). */
+    async forgetWhoIsNotComing(meetId: number): Promise<void> {
+        const transaction = await this.database.transaction('write')
+
+        try {
+            await transaction.batch(forgetWhoIsNotComing('?', [meetId]))
+            await transaction.commit()
+        } catch (error) {
+            await transaction.rollback()
+            throw error
+        } finally {
+            transaction.close()
+        }
     }
 
     /** Whether the account owns the game: on their shelf, or asserted for their group person in this group. */
