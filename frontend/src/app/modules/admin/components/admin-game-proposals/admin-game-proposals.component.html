@@ -94,7 +94,7 @@
                                     <td class="px-4 py-4">
                                         <div class="text-sm text-bv-text space-y-1">
                                             @if (proposal.minPlayers && proposal.maxPlayers) {
-                                                <p>{{ proposal.minPlayers }}-{{ proposal.maxPlayers }} players</p>
+                                                <p>{{ { minPlayers: proposal.minPlayers, maxPlayers: proposal.maxPlayers } | players }}</p>
                                             }
                                             @if (proposal.gameAvgDuration) {
                                                 <p>{{ proposal.gameAvgDuration }} min</p>

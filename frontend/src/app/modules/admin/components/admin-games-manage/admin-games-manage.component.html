@@ -105,14 +105,14 @@
                             <span class="min-w-0 flex-1">
                                 <span class="block truncate font-medium">{{ game.title || 'Untitled game' }}</span>
                                 <span class="block truncate text-sm text-bv-text-muted sm:hidden">
-                                    {{ game.minPlayers }}–{{ game.maxPlayers }} players · {{ game.gameAvgDuration }} min · {{ game.tags.length }} tags
+                                    {{ game | players }} · {{ game.gameAvgDuration }} min · {{ game.tags.length | count: 'tag' }}
                                 </span>
                             </span>
                             <span class="hidden truncate text-sm text-bv-text-muted sm:block" [attr.aria-label]="'Spanish title: ' + (game.translations.es || 'none')">
                                 {{ game.translations.es || '—' }}
                             </span>
                             <span class="hidden text-sm text-bv-text-muted sm:block">
-                                {{ game.minPlayers }}–{{ game.maxPlayers }} · {{ game.gameAvgDuration }}′<br />
+                                {{ game | players: 'short' }} · {{ game.gameAvgDuration }}′<br />
                                 {{ game.tags.length }} {{ game.tags.length === 1 ? 'tag' : 'tags' }}
                             </span>
                             <span class="flex basis-full flex-wrap gap-1 pl-15 empty:hidden sm:basis-auto sm:pl-0">

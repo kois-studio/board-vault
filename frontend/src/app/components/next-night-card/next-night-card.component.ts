@@ -4,7 +4,9 @@ import { RouterLink } from '@angular/router'
 import { firstValueFrom } from 'rxjs'
 import { Api } from '../../api/api'
 import type { AccountMeetType, GameCompleteType } from '../../api/api.types'
+import { gameTitle } from '../../core/utils/gameTitle'
 import { type NightSummary, summariseNight } from '../../core/utils/nightSummary'
+import { countOf } from '../../core/utils/plural'
 import { relativeDay, sessionDateParts, upcomingState } from '../../core/utils/sessionTiming'
 import { SessionAnswerComponent } from '../session-answer/session-answer.component'
 import { ButtonComponent } from '../ui/button/button.component'
@@ -62,7 +64,7 @@ export class NextNightCardComponent {
             .map(({ gameId }) => this.games().get(gameId))
             .filter((game): game is GameCompleteType => game !== undefined)
             .slice(0, COVERS_SHOWN)
-            .map((game) => ({ id: game.id, title: game.titleTranslations.en || game.title || 'Untitled', imageUrl: game.imageUrl })),
+            .map((game) => ({ id: game.id, title: gameTitle(game), imageUrl: game.imageUrl })),
     )
 
     /** "Azul leads with 3 votes" when one game is ahead, otherwise how many are shortlisted. */
@@ -72,9 +74,9 @@ export class NextNightCardComponent {
         const [first, second] = shortlist
         const leader = first && first.votes > 0 && (!second || second.votes < first.votes) ? this.games().get(first.gameId) : undefined
         if (leader && first) {
-            return `${leader.titleTranslations.en || leader.title || 'A game'} leads with ${first.votes} vote${first.votes === 1 ? '' : 's'}`
+            return `${gameTitle(leader)} leads with ${countOf(first.votes, 'vote')}`
         }
-        return `${shortlist.length} game${shortlist.length === 1 ? '' : 's'} on the shortlist`
+        return `${countOf(shortlist.length, 'game')} on the shortlist`
     })
 
     public hideBrokenImage(event: Event): void {

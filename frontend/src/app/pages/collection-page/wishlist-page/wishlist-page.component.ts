@@ -12,11 +12,12 @@ import { IconComponent } from '../../../components/ui/icon/icon.component'
 import { PageHeaderComponent } from '../../../components/ui/page-header/page-header.component'
 import { WishlistToggleComponent } from '../../../components/wishlist-toggle/wishlist-toggle.component'
 import { LOADING_KEYS } from '../../../core/enums/loading-keys-enum'
+import { GameTitlePipe } from '../../../core/pipes/game-title.pipe'
 import { DataService } from '../../../core/services/data.service'
 import { LoadingService } from '../../../core/services/loading.service'
-
 @Component({
     imports: [
+        GameTitlePipe,
         CardGameComponent,
         ContainerWrapperComponent,
         RouterLink,

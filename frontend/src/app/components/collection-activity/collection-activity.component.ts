@@ -1,12 +1,12 @@
 import { CommonModule } from '@angular/common'
 import { Component, computed, inject } from '@angular/core'
 import { RouterLink } from '@angular/router'
+import { GameTitlePipe } from '../../core/pipes/game-title.pipe'
 import { DataService } from '../../core/services/data.service'
 import { IconComponent } from '../ui/icon/icon.component'
 import { InfoPopoverComponent } from '../ui/info-popover/info-popover.component'
-
 @Component({
-    imports: [CommonModule, RouterLink, IconComponent, InfoPopoverComponent],
+    imports: [GameTitlePipe, CommonModule, RouterLink, IconComponent, InfoPopoverComponent],
     selector: 'app-collection-activity',
     templateUrl: 'collection-activity.component.html',
 })

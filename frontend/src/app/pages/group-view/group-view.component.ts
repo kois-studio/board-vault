@@ -27,13 +27,16 @@ import { ImageBackgroundComponent } from '../../components/ui/image-background/i
 import { InPageLinkDirective } from '../../components/ui/in-page-link/in-page-link.directive'
 import { PageHeaderComponent } from '../../components/ui/page-header/page-header.component'
 import { LOADING_KEYS } from '../../core/enums/loading-keys-enum'
+import { CountPipe, PlayersPipe } from '../../core/pipes/count.pipe'
 import { CustomDatePipe } from '../../core/pipes/customDate.pipe'
+import { GameTitlePipe } from '../../core/pipes/game-title.pipe'
 import { DataService } from '../../core/services/data.service'
 import { LoadingService } from '../../core/services/loading.service'
 import { formatAttendeeSummary } from '../../core/utils/formatAttendeeSummary'
 import { groupGameCount, groupPeopleCount } from '../../core/utils/groupCounts'
 import { formatWinners, historyWinnerNames, mergeHistoryParticipants } from '../../core/utils/historyParticipants'
 import { initialsAvatar } from '../../core/utils/initialsAvatar'
+import { upcomingState } from '../../core/utils/sessionTiming'
 import { GroupViewService } from './group-view.service'
 
 type GroupLibraryContext = {
@@ -58,6 +61,9 @@ export function shouldShowFirstGroupSetup(input: {
 
 @Component({
     imports: [
+        GameTitlePipe,
+        CountPipe,
+        PlayersPipe,
         RouterLink,
         ContainerWrapperComponent,
         CommonModule,
@@ -187,12 +193,26 @@ export class GroupViewComponent {
         const groupId = this.groupData$()?.id
         if (!groupId) return []
 
+        // A night running now comes first, then the planned ones, soonest first. A planned night whose
+        // date has passed is waiting for results (Play › Upcoming), not the next one (#96).
+        const order = { live: 0, planned: 1 } as const
         return this.userMeets$()
-            .filter((meet) => meet.groupId === groupId && (meet.status === 'scheduled' || meet.status === 'active'))
-            .sort((a, b) => new Date(a.meetDate).getTime() - new Date(b.meetDate).getTime())
+            .map((meet) => ({ meet, state: upcomingState(meet) }))
+            .filter(
+                (entry): entry is { meet: (typeof entry)['meet']; state: 'live' | 'planned' } =>
+                    entry.meet.groupId === groupId && (entry.state === 'live' || entry.state === 'planned'),
+            )
+            .sort((a, b) => order[a.state] - order[b.state] || new Date(a.meet.meetDate).getTime() - new Date(b.meet.meetDate).getTime())
+            .map(({ meet }) => meet)
     })
 
     public readonly nextMeetingComputed = computed(() => this.upcomingMeetingsComputed()[0] ?? null)
+
+    /** Any night not finished yet, including one waiting for results: the group is already under way. */
+    public readonly hasOpenSessionComputed = computed(() => {
+        const groupId = this.groupData$()?.id
+        return this.userMeets$().some((meet) => meet.groupId === groupId && upcomingState(meet) !== null)
+    })
 
     public readonly needsFirstGroupSetup = computed(() => {
         const group = this.groupData$()
@@ -202,7 +222,7 @@ export class GroupViewComponent {
             memberCount: group.members.length,
             gameCount: this.totalUniqueGamesComputed().length,
             historyCount: this.groupHistory$().length,
-            hasUpcomingSession: Boolean(this.nextMeetingComputed()),
+            hasUpcomingSession: this.hasOpenSessionComputed(),
             historyLoading: this.isLoading(),
             historyError: this.groupHistoryError(),
         })

@@ -57,7 +57,7 @@
                             <img class="size-12 shrink-0 rounded-lg" [src]="result.imageUrl" alt="" width="48" height="48" />
                             <div class="min-w-0 flex-1">
                                 <p class="truncate text-[0.9375rem] font-bold text-bv-text">{{ result.title }}</p>
-                                <p class="text-[0.8125rem] text-bv-text-muted">{{ result.minPlayers }}–{{ result.maxPlayers }} · {{ result.minutes }} min</p>
+                                <p class="text-[0.8125rem] text-bv-text-muted">{{ result | players: 'short' }} · {{ result.minutes }} min</p>
                             </div>
                             @if (result.owned) {
                             <span class="rounded-full bg-bv-primary-soft px-3 py-1 text-[0.8125rem] font-semibold text-bv-on-primary-soft">On your shelf</span>
@@ -94,7 +94,7 @@
                         <li>
                             <img class="aspect-square w-full rounded-lg" [src]="item.imageUrl" alt="" width="104" height="104" />
                             <p class="mt-1.5 truncate text-[0.8125rem] font-semibold text-bv-text">{{ item.title }}</p>
-                            <p class="text-xs text-bv-text-muted">{{ item.minPlayers }}–{{ item.maxPlayers }} · {{ item.minutes }} min</p>
+                            <p class="text-xs text-bv-text-muted">{{ item | players: 'short' }} · {{ item.minutes }} min</p>
                         </li>
                         }
                     </ul>
@@ -114,7 +114,7 @@
                         <img class="size-12 shrink-0 rounded-lg" [src]="item.game.imageUrl" alt="" width="48" height="48" />
                         <div class="min-w-0 flex-1">
                             <p class="truncate text-[0.9375rem] font-bold text-bv-text">{{ item.game.title }}</p>
-                            <p class="text-[0.8125rem] text-bv-text-muted">Played {{ item.plays }} times</p>
+                            <p class="text-[0.8125rem] text-bv-text-muted">Played {{ item.plays === 1 ? 'once' : item.plays + ' times' }}</p>
                         </div>
                         <review-display class="text-sm" [review]="item.rating" />
                     </li>

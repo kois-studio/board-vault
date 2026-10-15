@@ -21,7 +21,7 @@
                     </li>
                 }
             </ul>
-            <p class="text-sm text-bv-on-primary/90 lg:order-first">{{ peopleCount() }} {{ peopleCount() === 1 ? 'person' : 'people' }} · {{ sharedGameCount() }} game{{ sharedGameCount() === 1 ? '' : 's' }}</p>
+            <p class="text-sm text-bv-on-primary/90 lg:order-first">{{ peopleCount() | count: 'person' : 'people' }} · {{ sharedGameCount() | count: 'game' }}</p>
         </div>
     </header>
 
@@ -33,7 +33,7 @@
                     <span class="block text-sm font-semibold">Invite your people</span>
                     <span class="block text-xs text-secondary">
                         @if (pendingInvitations() > 0) {
-                            {{ pendingInvitations() }} invitation{{ pendingInvitations() === 1 ? '' : 's' }} pending
+                            {{ pendingInvitations() | count: 'invitation' }} pending
                         } @else {
                             Friends without an account can be added by name
                         }

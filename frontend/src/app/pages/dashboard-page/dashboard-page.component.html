@@ -170,7 +170,7 @@
                                             >
                                             <span class="min-w-0 flex-1">
                                                 <span class="block truncate font-bold">{{ group.name }}</span>
-                                                <span class="block text-xs text-secondary">{{ peopleInGroup(group) }} {{ peopleInGroup(group) === 1 ? 'person' : 'people' }} · {{ gamesInGroup(group) }} game{{ gamesInGroup(group) === 1 ? '' : 's' }}</span>
+                                                <span class="block text-xs text-secondary">{{ peopleInGroup(group) | count: 'person' : 'people' }} · {{ gamesInGroup(group) | count: 'game' }}</span>
                                             </span>
                                             @if (activity) {
                                                 <span
@@ -218,7 +218,7 @@
                                                     @if (userGroups$().length > 1) {
                                                         {{ groupName(record.meetData.groupId) }} ·
                                                     }
-                                                    {{ historyDate(record) }} · {{ peopleCount(record) }} {{ peopleCount(record) === 1 ? 'person' : 'people' }}
+                                                    {{ historyDate(record) }} · {{ peopleCount(record) | count: 'person' : 'people' }}
                                                 </span>
                                             </span>
                                         </a>
@@ -255,7 +255,7 @@
                                 <app-image-profile [avatar]="user.avatar" />
                                 <span class="min-w-0 flex-1">
                                     <span class="block truncate font-semibold">{{ greetingName() }}</span>
-                                    <span class="block text-xs text-secondary">{{ ownedGames() }} game{{ ownedGames() === 1 ? '' : 's' }} · {{ nightsPlayed() }} night{{ nightsPlayed() === 1 ? '' : 's' }} played</span>
+                                    <span class="block text-xs text-secondary">{{ ownedGames() | count: 'game' }} · {{ nightsPlayed() | count: 'night' }} played</span>
                                     <span class="mt-1 block text-sm font-semibold text-bv-primary">Your profile in {{ group.name }} ›</span>
                                 </span>
                             </a>

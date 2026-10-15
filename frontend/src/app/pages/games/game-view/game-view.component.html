@@ -24,7 +24,7 @@
         </div>
 
         <div class="min-w-0">
-          <h1 id="game-title" class="text-3xl font-bold tracking-tight md:text-4xl">{{ game.gameData.titleTranslations.en }}</h1>
+          <h1 id="game-title" class="text-3xl font-bold tracking-tight md:text-4xl">{{ game.gameData | gameTitle }}</h1>
           @if (game.gameData.titleTranslations.es && game.gameData.titleTranslations.es !== game.gameData.titleTranslations.en) {
             <p class="mt-1 text-secondary">{{ game.gameData.titleTranslations.es }}</p>
           }
@@ -205,7 +205,7 @@
             @for (similarGame of game.similarGames; track similarGame.id) {
               <a [routerLink]="['/games', similarGame.id]" class="block rounded-lg focus-visible:outline-none motion-safe:transition-transform motion-safe:hover:-translate-y-0.5">
                 <app-card-game
-                  [title]="similarGame.titleTranslations.en"
+                  [title]="similarGame | gameTitle"
                   [imageUrl]="similarGame.imageUrl"
                   [gameAvgDuration]="similarGame.gameAvgDuration"
                   [minPlayers]="similarGame.minPlayers"

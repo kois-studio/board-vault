@@ -11,8 +11,10 @@ import { ButtonComponent } from '../../components/ui/button/button.component'
 import { ContainerWrapperComponent } from '../../components/ui/container-wrapper/container-wrapper.component'
 import { IconComponent } from '../../components/ui/icon/icon.component'
 import { LOADING_KEYS } from '../../core/enums/loading-keys-enum'
+import { CountPipe } from '../../core/pipes/count.pipe'
 import { DataService } from '../../core/services/data.service'
 import { LoadingService } from '../../core/services/loading.service'
+import { gameTitle } from '../../core/utils/gameTitle'
 import { groupGameCount, groupPeopleCount } from '../../core/utils/groupCounts'
 import { mergeHistoryParticipants } from '../../core/utils/historyParticipants'
 import { relativeDay, sessionDateParts, upcomingState } from '../../core/utils/sessionTiming'
@@ -31,6 +33,7 @@ export type GroupActivity = { tone: 'live' | 'next' | 'past' | 'none'; label: st
         CardGroupComponent,
         CardInvitationComponent,
         ContainerWrapperComponent,
+        CountPipe,
         IconComponent,
         ImageProfileComponent,
         NextNightCardComponent,
@@ -87,7 +90,7 @@ export class DashboardPageComponent {
 
     /** "Azul, Wingspan" for the games you said you'd bring; they are on your own shelf. */
     public gamesToBringLabel(meet: AccountMeetType): string {
-        const shelf = new Map(this.dataService.userGames().map((game) => [game.id, game.titleTranslations.en || game.title || 'a game']))
+        const shelf = new Map(this.dataService.userGames().map((game) => [game.id, gameTitle(game)]))
         return meet.gamesToBring.map((gameId) => shelf.get(gameId) ?? 'a game').join(', ')
     }
 
@@ -187,13 +190,13 @@ export class DashboardPageComponent {
     }
 
     public gameTitles(record: HistoryRecordType): string {
-        return record.gamesPlayed.map((game) => game.gameData.titleTranslations.en ?? 'Untitled').join(', ')
+        return record.gamesPlayed.map((game) => gameTitle(game.gameData)).join(', ')
     }
 
     /** The first played game with artwork, for the row's thumbnail. */
     public firstGame(record: HistoryRecordType): { title: string; imageUrl: string } | null {
         const game = record.gamesPlayed[0]?.gameData
-        return game ? { title: game.titleTranslations.en || game.title || 'Untitled', imageUrl: game.imageUrl } : null
+        return game ? { title: gameTitle(game), imageUrl: game.imageUrl } : null
     }
 
     public historyDate(record: HistoryRecordType): string {
