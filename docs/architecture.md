@@ -151,9 +151,12 @@ The app has three sections: Home (groups and their pages), Collection
 history), defined once in `layout/app-sections.ts`. Signed in, the header is
 one bar: the logo (to Home), the sections (desktop), the inbox (pending group
 invitations and notifications, one count), and the avatar menu (Settings,
-theme, My submissions, Administration for admins, Sign out). Collection and
-Play pages add their subsection tabs below it. Below `lg` the sections move
-to a bottom tab bar. Header popovers use the disclosure pattern
+theme, My submissions, Administration for admins, About and source code,
+Sign out). Collection and Play pages add their subsection tabs below it.
+Below `lg` the sections move to a bottom tab bar. The full footer (landing
+sections, sign-in, theme) is for signed-out visitors; signed in, the footer
+is one line on desktop and absent on phones, where the tab bar ends the page.
+Header popovers use the disclosure pattern
 (`core/utils/disclosure.ts`): Escape, a click outside, or a navigation closes
 them.
 
