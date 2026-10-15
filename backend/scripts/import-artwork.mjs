@@ -12,7 +12,7 @@
 //     "2":  { "source": "https://…/2.png", "file": "/tmp/2.jpg" },    use these bytes, record this source
 //     "25": { "source": null } }                                      no artwork for now
 //
-// Production is an owner step: back up first (operations runbook, section 4).
+// Production is an owner step: back up first (docs/how-to/add-migration.md, Production rollout).
 import { readFile } from 'node:fs/promises'
 import { parseArgs } from 'node:util'
 

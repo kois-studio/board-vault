@@ -19,6 +19,19 @@ unreachable database URL, a dummy Clerk key, Redis off), not secrets, so an
 owner-forced preview can boot and answer `/health`; `/health/ready` stays not
 ready there.
 
+**Forcing a production build (David only).** The ignore step also cancels a
+same-commit `vercel redeploy`, so a changed Vercel variable does not reach
+production by itself. To force one build:
+
+1. Save the project's `commandForIgnoringBuildStep` to a file.
+2. Set it to `exit 1` (`PATCH https://api.vercel.com/v9/projects/<name>`, with
+   the token from the Vercel CLI's `auth.json`).
+3. Redeploy.
+4. Restore the saved command as soon as the deployment is *Building*.
+
+Deployment URLs are behind Vercel authentication, so check health through the
+public domains.
+
 Production runs in Europe, close together: the API in Vercel `dub1`
 (Dublin, set in `backend/vercel.json`), both Turso databases in AWS
 `eu-west-1` (Ireland), and Upstash Redis in AWS `eu-central-1` (Frankfurt).
