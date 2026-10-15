@@ -39,4 +39,14 @@ describe('MeetAttendeesService authorization', () => {
 
         await expect(service.deleteMeetAttendee(7, 12, 21)).rejects.toThrow(NotFoundException)
     })
+
+    it('drops the votes and games to bring of someone the creator removes', async () => {
+        const getMeetByIdForCreator = vi.fn().mockResolvedValue({ rows: [[12]] })
+        const deleteMeetAttendee = vi.fn().mockResolvedValue({ rowsAffected: 1 })
+        const forgetWhoIsNotComing = vi.fn().mockResolvedValue(undefined)
+        const service = new MeetAttendeesService(fakeDatabase({ getMeetByIdForCreator, deleteMeetAttendee, forgetWhoIsNotComing }))
+
+        await expect(service.deleteMeetAttendee(7, 12, 21)).resolves.toEqual({ success: true })
+        expect(forgetWhoIsNotComing).toHaveBeenCalledWith(12)
+    })
 })

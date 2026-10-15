@@ -353,6 +353,8 @@ export class SessionsService {
         if (accountApplied === false || personApplied === false) {
             throw new ConflictException('The session changed while attendees were being updated. Reload and try again.')
         }
+        // Whoever is no longer invited no longer votes or brings games.
+        await this.databaseService.sessions.forgetWhoIsNotComing(sessionId)
         return { sessionId, attendeeIds, groupPersonIds: groupPersonIds.length > 0 ? groupPersonIds : undefined }
     }
 
@@ -656,11 +658,9 @@ export class SessionsService {
             throw new NotFoundException('Session invite not found')
         }
 
-        // Someone who can't make it no longer brings anything (#115).
+        // Someone who can't make it no longer votes or brings anything (#114, #115).
         if (body.rsvpStatus === 'declined') {
-            const personId = personAttendee?.rows[0] ? Number(personAttendee.rows[0][1]) : null
-
-            await this.databaseService.sessions.clearMeetGameBringers(sessionId, actorAccountId, personId)
+            await this.databaseService.sessions.forgetWhoIsNotComing(sessionId)
         }
 
         return { sessionId, rsvpStatus: body.rsvpStatus }
