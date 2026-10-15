@@ -43,8 +43,11 @@ already in a running session may stay.
 
 **Leaving a group** (or being removed by the owner) deletes the membership,
 takes the person out of the group's *scheduled* sessions, and passes the
-scheduled and running sessions they organised to the group owner. The owner
-cannot leave or remove themselves.
+scheduled and running sessions they organised to the group owner. Their votes
+and the games they said they would bring go from those scheduled sessions, so
+the shortlist is no longer ordered by them (#137). A running session they stay
+in no longer sends them its notifications, since they are not in the group.
+The owner cannot leave or remove themselves.
 
 **Deleting an account** runs in one transaction:
 
