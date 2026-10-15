@@ -21,9 +21,11 @@ describe('GroupViewComponent switching groups', () => {
             getGroupPeople: vi.fn(() => of({ people: [] })),
             getGroupPersonCatalog: vi.fn(() => of([])),
             getGroupMeetings: vi.fn(() => of([])),
+            updateGroupPersonOwnership: vi.fn(() => of({})),
         }
         const dataService = {
             currentUser: signal({ id: 6 }),
+            refreshUserGroups: vi.fn(),
             userGroups: signal([group(1, 'DuckDevs'), group(4, 'Private group')]),
             userGroupsError: signal(false),
             userMeets: signal([]),
@@ -43,6 +45,16 @@ describe('GroupViewComponent switching groups', () => {
         TestBed.tick()
         return { component, params, collections, api, dataService }
     }
+
+    it('reloads the groups after a placeholder game changes, so the library shows it', async () => {
+        const { component, api, dataService } = setup()
+        const person = { person: { id: 9 } } as Parameters<typeof component.setGroupPersonOwnership>[0]
+
+        await component.setGroupPersonOwnership(person, 42, { target: { value: 'asserted' } } as unknown as Event)
+
+        expect(api.updateGroupPersonOwnership).toHaveBeenCalledWith(1, 9, 42, 'asserted')
+        expect(dataService.refreshUserGroups).toHaveBeenCalled()
+    })
 
     it('shows the group the switcher moved to, without a reload', () => {
         const { component, params, api } = setup()
