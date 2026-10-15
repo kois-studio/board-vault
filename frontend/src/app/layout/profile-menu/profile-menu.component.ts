@@ -8,7 +8,7 @@ import { LoginService } from '../../core/services/login.service'
 import { PendingProposalsService } from '../../core/services/pending-proposals.service'
 import { injectDisclosure } from '../../core/utils/disclosure'
 
-/** The avatar menu: account, settings, theme, submissions, administration, sign out (disclosure pattern). */
+/** The avatar menu: account, settings, theme, submissions, administration, about, sign out (disclosure pattern). */
 @Component({
     imports: [ImageProfileComponent, IconComponent, RouterLink, ThemeSwitchComponent],
     selector: 'app-profile-menu',

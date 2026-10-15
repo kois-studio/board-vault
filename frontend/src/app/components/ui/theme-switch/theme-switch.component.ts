@@ -4,7 +4,7 @@ import { IconComponent } from '../icon/icon.component'
 
 let nextId = 0
 
-/** A compact System · Light · Dark switch (avatar menu, footer). Settings → Appearance has the full version. */
+/** A compact System · Light · Dark switch (avatar menu, signed-out footer). Settings → Appearance has the full version. */
 @Component({
     selector: 'app-theme-switch',
     imports: [IconComponent],
