@@ -11,6 +11,5 @@ import { LoginService } from '../../core/services/login.service'
 })
 export class LayoutFooterComponent {
     public readonly isAuthenticated = inject(LoginService).isAuthenticated
-    public currentLocale = 'en'
     public date = new Date().getFullYear().toString()
 }

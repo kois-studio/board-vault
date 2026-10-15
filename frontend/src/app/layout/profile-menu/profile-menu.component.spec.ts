@@ -62,6 +62,15 @@ describe('ProfileMenuComponent', () => {
         expect(element().querySelector('#profile-menu input[type="radio"][value="system"]')).not.toBeNull()
     })
 
+    it('links to the landing page and the source code, which the footer no longer shows on phones', () => {
+        open()
+
+        expect(element().querySelector('#profile-menu a[href="/"]')?.textContent?.trim()).toBe('About Board Vault')
+        expect(element().querySelector('#profile-menu a[href="https://github.com/kois-studio/board-vault"]')?.getAttribute('rel')).toBe(
+            'noopener',
+        )
+    })
+
     it('closes on Escape and returns focus to the trigger', () => {
         open()
         document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape' }))
