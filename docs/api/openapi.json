@@ -8659,13 +8659,21 @@
             "items": {
               "type": "number"
             }
+          },
+          "games": {
+            "description": "The same games, with their details, for the group library.",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/GameCompleteDto"
+            }
           }
         },
         "required": [
           "id",
           "displayName",
           "avatar",
-          "gameIds"
+          "gameIds",
+          "games"
         ]
       },
       "GroupWithMembersAndGames": {

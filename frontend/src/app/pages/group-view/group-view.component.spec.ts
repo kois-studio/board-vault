@@ -310,7 +310,7 @@ describe('GroupViewComponent page layout', () => {
         placeholders: [],
     }
 
-    const render = async (currentUserId: number) => {
+    const render = async (currentUserId: number, groupData: unknown = group) => {
         const params = new BehaviorSubject(convertToParamMap({ groupId: '1' }))
         await TestBed.configureTestingModule({
             imports: [GroupViewComponent],
@@ -332,7 +332,7 @@ describe('GroupViewComponent page layout', () => {
                     provide: DataService,
                     useValue: {
                         currentUser: signal({ id: currentUserId }),
-                        userGroups: signal([group]),
+                        userGroups: signal([groupData]),
                         userGroupsError: signal(false),
                         userMeets: signal([]),
                         invitationsGroupIndex: signal({}),
@@ -383,5 +383,22 @@ describe('GroupViewComponent page layout', () => {
         expect(component.totalUniqueGamesComputed().map((entry) => entry.id)).toEqual([43])
         component.setPlayerCount(6)
         expect(component.totalUniqueGamesComputed()).toHaveLength(2)
+    })
+
+    it('lists the games of people without an account, with their names', async () => {
+        const fixture = await render(6, {
+            ...group,
+            placeholders: [{ id: 9, displayName: 'Mirian', avatar: null, gameIds: [42, 44], games: [game(42, 2, 4), game(44, 2, 6)] }],
+        })
+        const component = fixture.componentInstance
+
+        expect(component.totalUniqueGamesComputed().map((entry) => [entry.id, entry.quantity])).toEqual([
+            [42, 3],
+            [43, 1],
+            [44, 1],
+        ])
+        expect(component.groupLibraryContextComputed()[42]?.ownerNames).toEqual(['Owner', 'Member', 'Mirian'])
+        fixture.detectChanges()
+        expect((fixture.nativeElement as HTMLElement).textContent).toContain('Owned by Mirian')
     })
 })

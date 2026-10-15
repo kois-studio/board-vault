@@ -65,7 +65,8 @@ export class DashboardService {
         // Load every member, game, and translation once, in set-based queries,
         // instead of once per group, member, and game.
         const memberIds = [...new Set(groups.flatMap(entry => entry.memberships.map(item => item.accountId)))]
-        const [users, ownedByMember, reviewsByMember] = await Promise.all([
+        const groupIds = groups.map(entry => entry.group.id)
+        const [users, ownedByMember, reviewsByMember, placeholderRows, ownershipRows] = await Promise.all([
             this.usersService.getPublicUsersByIds(memberIds),
             Promise.all(memberIds.map(async id => [id, await this.gamesOwnedService.getGamesOwnedByAccountId(id)] as const)).then(
                 entries => new Map(entries),
@@ -73,12 +74,6 @@ export class DashboardService {
             Promise.all(memberIds.map(async id => [id, await this.reviewsService.getGameReviewsByAccountId(id)] as const)).then(
                 entries => new Map(entries),
             ),
-        ])
-        const gameIds = [...ownedByMember.values()].flat().map(owned => owned.gameId)
-        const groupIds = groups.map(entry => entry.group.id)
-        const [games, translations, placeholderRows, ownershipRows] = await Promise.all([
-            this.gamesService.getGamesByIds(gameIds),
-            this.gameTranslationService.getTranslationsByGameIds(gameIds),
             groupIds.length ? this.databaseService.groups.getActivePlaceholdersByGroupIds(groupIds) : { rows: [] },
             groupIds.length ? this.databaseService.groups.getAssertedOwnershipByGroupIds(groupIds) : { rows: [] },
         ])
@@ -89,15 +84,33 @@ export class DashboardService {
 
             gamesByPerson.set(personId, [...(gamesByPerson.get(personId) ?? []), Number(row.gameId)])
         }
-        const placeholders = placeholderRows.rows.map(row => ({
-            groupId: Number(row.groupId),
-            summary: {
-                id: Number(row.id),
-                displayName: String(row.displayName),
-                avatar: parseAvatar(row.avatar),
-                gameIds: gamesByPerson.get(Number(row.id)) ?? [],
-            },
-        }))
+        // Placeholders' games join the members' in the same lookup, so the group's library can show them.
+        const gameIds = [
+            ...new Set([...[...ownedByMember.values()].flat().map(owned => owned.gameId), ...[...gamesByPerson.values()].flat()]),
+        ]
+        const [games, translations] = await Promise.all([
+            this.gamesService.getGamesByIds(gameIds),
+            this.gameTranslationService.getTranslationsByGameIds(gameIds),
+        ])
+        const completeGames = (ids: Array<number>) =>
+            ids
+                .map(id => games.get(id))
+                .filter(game => game !== undefined)
+                .map(game => ({ ...game, titleTranslations: translations.get(game.id) ?? { en: '', es: '' } }))
+        const placeholders = placeholderRows.rows.map(row => {
+            const personGameIds = gamesByPerson.get(Number(row.id)) ?? []
+
+            return {
+                groupId: Number(row.groupId),
+                summary: {
+                    id: Number(row.id),
+                    displayName: String(row.displayName),
+                    avatar: parseAvatar(row.avatar),
+                    gameIds: personGameIds,
+                    games: completeGames(personGameIds),
+                },
+            }
+        })
 
         return groups.map(({ group, memberships: groupMemberships }) => ({
             ...group,
@@ -105,10 +118,7 @@ export class DashboardService {
             members: groupMemberships
                 .filter(membership => users.has(membership.accountId))
                 .map(membership => {
-                    const ownedGames = (ownedByMember.get(membership.accountId) ?? [])
-                        .map(owned => games.get(owned.gameId))
-                        .filter(game => game !== undefined)
-                        .map(game => ({ ...game, titleTranslations: translations.get(game.id) ?? { en: '', es: '' } }))
+                    const ownedGames = completeGames((ownedByMember.get(membership.accountId) ?? []).map(owned => owned.gameId))
                     const userWithGames: UserPublicWithGames = { ...users.get(membership.accountId)!, games: ownedGames }
 
                     return {

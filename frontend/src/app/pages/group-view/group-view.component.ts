@@ -258,8 +258,13 @@ export class GroupViewComponent {
     public readonly groupLibraryContextComputed = computed<Record<number, GroupLibraryContext>>(() => {
         const context: Record<number, GroupLibraryContext> = {}
 
-        for (const member of this.groupData$()?.members ?? []) {
-            for (const game of member.games) {
+        const owners = [
+            ...(this.groupData$()?.members ?? []).map((member) => ({ name: member.displayName || member.username, games: member.games })),
+            ...(this.groupData$()?.placeholders ?? []).map((person) => ({ name: person.displayName, games: person.games })),
+        ]
+
+        for (const owner of owners) {
+            for (const game of owner.games) {
                 const existing = context[game.id] ?? {
                     ownerNames: [],
                     playCount: 0,
@@ -267,7 +272,7 @@ export class GroupViewComponent {
                     lastPlayedTimezone: null,
                 }
 
-                const ownerName = member.displayName || member.username
+                const ownerName = owner.name
                 if (!existing.ownerNames.includes(ownerName)) {
                     existing.ownerNames.push(ownerName)
                 }

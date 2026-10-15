@@ -136,7 +136,15 @@ describe('DashboardService groups overview', () => {
         expect(translations.getTranslationsByGameIds).toHaveBeenCalledTimes(1)
         expect(games.getGameById).not.toHaveBeenCalled()
         expect(groups[0]?.placeholders).toEqual([])
-        expect(groups[1]?.placeholders).toEqual([{ id: 9, displayName: 'Lucía', avatar: null, gameIds: [77] }])
+        expect(groups[1]?.placeholders).toEqual([
+            {
+                id: 9,
+                displayName: 'Lucía',
+                avatar: null,
+                gameIds: [77],
+                games: [{ id: 77, imageUrl: '', titleTranslations: { en: 'Game 77', es: '' } }],
+            },
+        ])
         expect(database.getActivePlaceholdersByGroupIds).toHaveBeenCalledTimes(1)
         expect(translations.getGameTranslations).not.toHaveBeenCalled()
     })

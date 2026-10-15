@@ -103,7 +103,14 @@ export type GroupWithMembersAndGames = GroupType & {
         }
     >
     /** People in the group without an account (group-scoped placeholders). */
-    placeholders: Array<{ id: number; displayName: string; avatar: PublicUserType['avatar'] | null; gameIds: Array<number> }>
+    placeholders: Array<{
+        id: number
+        displayName: string
+        avatar: PublicUserType['avatar'] | null
+        gameIds: Array<number>
+        /** The same games with their details, for the group library. */
+        games: Array<GameCompleteType>
+    }>
 }
 
 /** Where someone stands in a group (ADR-0018): history keeps people who left or deleted their account. */

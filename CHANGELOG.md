@@ -203,6 +203,9 @@ operational details.
 
 ### Fixed
 
+- A group's game library lists the games of people without an account too,
+  with their names under "Owned by". They already counted in the group's
+  totals and suggestions, but were missing from the list.
 - Display names can be as short as you like: Ana, Pau or Leo no longer
   become "Player Ana" at sign-up, and Settings → Profile accepts them.
 - Artwork addresses with a made-up hash no longer return the image: they

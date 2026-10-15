@@ -3,6 +3,7 @@ import { Type } from 'class-transformer'
 import { IsInt, IsNotEmpty, IsString, MaxLength, Min } from 'class-validator'
 
 import { GameReviewDto } from './game-review.type.js'
+import { GameCompleteDto } from './game.type.js'
 import { AvatarDto, UserPublicWithGames } from './user.type.js'
 
 export class CreatedGroupDto {
@@ -88,6 +89,9 @@ export class GroupPlaceholderSummary {
 
     @ApiProperty({ type: [Number], description: 'Games recorded as owned by this person in the group.' })
     gameIds: Array<number>
+
+    @ApiProperty({ type: [GameCompleteDto], description: 'The same games, with their details, for the group library.' })
+    games: Array<GameCompleteDto>
 }
 
 /**
