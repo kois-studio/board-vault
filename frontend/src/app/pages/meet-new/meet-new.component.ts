@@ -15,6 +15,7 @@ import { PageHeaderComponent } from '../../components/ui/page-header/page-header
 import { LOADING_KEYS } from '../../core/enums/loading-keys-enum'
 import { DataService } from '../../core/services/data.service'
 import { LoadingService } from '../../core/services/loading.service'
+import { canTakePart } from '../../core/utils/groupPeople'
 
 /** Someone who can be invited: a member account, or a group person when the group has them. */
 export type PlanPerson = { id: number; name: string; avatar: PublicUserType['avatar']; gameIds: Set<number> }
@@ -122,7 +123,7 @@ export class MeetNewComponent {
             }))
         }
         return this.groupPeople()
-            .filter(({ person }) => person.status === 'active')
+            .filter(canTakePart)
             .map(({ person, ownership }) => {
                 const linked = person.accountId === null ? undefined : group.members.find((member) => member.id === person.accountId)
                 const gameIds = new Set(ownership.filter((entry) => entry.status === 'asserted').map((entry) => entry.gameId))
