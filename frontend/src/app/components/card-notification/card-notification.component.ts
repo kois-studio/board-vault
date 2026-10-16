@@ -49,7 +49,8 @@ export class CardNotificationComponent {
             return { path: ['/sessions', sessionId], label: sessionLabel }
         }
         const groupId = notification.data?.['group']
-        if (notification.type === 'user_joined_group' && typeof groupId === 'number') {
+        const groupTypes = ['user_joined_group', 'group_person_changed']
+        if (groupTypes.includes(notification.type) && typeof groupId === 'number') {
             return { path: ['/groups', groupId], label: 'Open the group' }
         }
         if (notification.type === 'game_proposal_submitted') {
@@ -101,6 +102,7 @@ export class CardNotificationComponent {
                 session_finished: 'calendar-check',
                 session_cancelled: 'circle-x',
                 user_joined_group: 'user-check',
+                group_person_changed: 'pencil',
             }[type] ?? 'info'
         )
     }

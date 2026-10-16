@@ -101,6 +101,15 @@ describe('CardNotificationComponent', () => {
         expect(link.getAttribute('href')).toBe('/groups/7')
     })
 
+    it('links a change to a group person to the group', () => {
+        const link = render(
+            notification('group_person_changed', { account: 3, group: 7, person: 2, game: 40 }),
+        ).nativeElement.querySelector('a') as HTMLAnchorElement
+
+        expect(link.textContent?.trim()).toBe('Open the group')
+        expect(link.getAttribute('href')).toBe('/groups/7')
+    })
+
     it('closes the inbox and reads the notification quietly when its link is followed', () => {
         const fixture = render(notification('user_joined_group', { account: 5, group: 9 }))
         const opened = vi.fn()
