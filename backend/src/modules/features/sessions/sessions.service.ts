@@ -46,8 +46,9 @@ function listChange(before: Array<number>, after: Array<number>) {
     return { added: after.filter(id => !was.has(id)), removed: before.filter(id => !is.has(id)) }
 }
 
-/** The games whose players differ between two participant lists, for games in both. */
+/** The games already played whose players differ now; a game with nobody recorded before has no players. */
 function gamesWithChangedPlayers(
+    playedBefore: Array<number>,
     before: Array<{ gameId: number; participantIds: Array<number> }>,
     after: Array<{ gameId: number; participantIds: Array<number> }>,
 ): Array<number> {
@@ -55,7 +56,7 @@ function gamesWithChangedPlayers(
     const previous = new Map(before.map(game => [game.gameId, key(game.participantIds)]))
 
     return after
-        .filter(game => previous.has(game.gameId) && previous.get(game.gameId) !== key(game.participantIds))
+        .filter(game => playedBefore.includes(game.gameId) && (previous.get(game.gameId) ?? '') !== key(game.participantIds))
         .map(game => game.gameId)
 }
 
@@ -964,8 +965,8 @@ export class SessionsService {
         const played = listChange(playedBefore, playedAfter)
         const changedGameIds = [
             ...new Set([
-                ...gamesWithChangedPlayers(accountsBefore, next.games),
-                ...gamesWithChangedPlayers(peopleBefore, next.personGames),
+                ...gamesWithChangedPlayers(playedBefore, accountsBefore, next.games),
+                ...gamesWithChangedPlayers(playedBefore, peopleBefore, next.personGames),
             ]),
         ]
 

@@ -477,6 +477,30 @@ describe('SessionsService', () => {
         })
     })
 
+    it('records who played a game that had no players recorded, and nothing when nothing changes', async () => {
+        const database = createDatabaseMock()
+
+        database.getMeetAccessForAccount.mockResolvedValue({
+            rows: [[13, 7, 1, '2026-08-21T19:30:00.000Z', 0, 'active', 'Europe/Madrid', null]],
+        })
+        database.getPlayedGameIdsByMeetId.mockResolvedValue([42])
+        database.replaceMeetPlayedGames.mockResolvedValue({ applied: true, playedGameIds: [42], skippedGameIds: [] })
+        const service = new SessionsService(fakeDatabase(database), fakeActivityNotifier())
+
+        await service.updateSessionPlayedGames(1, 13, { playedGameIds: [42], games: [{ gameId: 42, participantIds: [1] }] })
+        expect(database.replaceMeetPlayedGames).toHaveBeenLastCalledWith(
+            13,
+            [{ gameId: 42, participantIds: [1] }],
+            'active',
+            [],
+            expect.objectContaining({ data: { addedGameIds: [], removedGameIds: [], changedGameIds: [42] } }),
+        )
+
+        database.getMeetPlayedGameParticipants.mockResolvedValue([{ gameId: 42, participantIds: [1] }])
+        await service.updateSessionPlayedGames(1, 13, { playedGameIds: [42], games: [{ gameId: 42, participantIds: [1] }] })
+        expect(database.replaceMeetPlayedGames).toHaveBeenLastCalledWith(13, [{ gameId: 42, participantIds: [1] }], 'active', [], undefined)
+    })
+
     it('records mixed account and group-person game participants and reports stale-write conflicts', async () => {
         const database = createDatabaseMock()
 
