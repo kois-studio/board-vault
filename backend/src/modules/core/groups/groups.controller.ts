@@ -1,4 +1,18 @@
-import { Body, Controller, Delete, Get, Param, ParseIntPipe, Post, Put, Req, UseGuards, UsePipes, ValidationPipe } from '@nestjs/common'
+import {
+    Body,
+    Controller,
+    Delete,
+    Get,
+    Param,
+    ParseIntPipe,
+    Post,
+    Put,
+    Query,
+    Req,
+    UseGuards,
+    UsePipes,
+    ValidationPipe,
+} from '@nestjs/common'
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger'
 
 import { AuthGuard } from '../../../common/guards/auth.guard.js'
@@ -11,6 +25,7 @@ import {
     ClerkGroupInvitationSummaryDto,
     CreateClerkGroupInvitationBody,
 } from '../../../common/types/clerk-invitation.type.js'
+import { GroupActivityPageDto, GroupActivityQuery } from '../../../common/types/group-activity.type.js'
 import {
     GroupAcquisitionEntryDto,
     GroupGameInterestBody,
@@ -22,6 +37,7 @@ import { InvitationWithAccountsData } from '../../../common/types/invitation.typ
 import { ClerkIdentityService } from '../../common/auth/clerk-identity.service.js'
 
 import { GroupAcquisitionService } from './group-acquisition.service.js'
+import { GroupActivityService } from './group-activity.service.js'
 import { GroupInsightsService } from './group-insights.service.js'
 import { GroupsService } from './groups.service.js'
 
@@ -36,6 +52,7 @@ export class GroupsController {
         private readonly groupAcquisitionService: GroupAcquisitionService,
         private readonly clerkIdentityService: ClerkIdentityService,
         private readonly groupInsightsService: GroupInsightsService,
+        private readonly groupActivityService: GroupActivityService,
     ) {}
 
     @Get('/')
@@ -120,6 +137,15 @@ export class GroupsController {
         @Req() request: { user: { userId: number } },
     ) {
         return this.clerkIdentityService.revokeGroupInvitation(groupId, request.user.userId, params.invitationId)
+    }
+
+    @UseGuards(UserInGroupGuard)
+    @Get('/:groupId/activity')
+    @ApiOperation({ summary: 'Get the group history: who changed what in the group, newest first (ADR-0020)' })
+    @ApiResponse({ status: 200, type: GroupActivityPageDto })
+    @ApiResponse({ status: 403, description: 'Only current members of the group can read its history.' })
+    getActivity(@Param('groupId', ParseIntPipe) groupId: number, @Query() query: GroupActivityQuery) {
+        return this.groupActivityService.getPage(groupId, query.before, query.limit)
     }
 
     @UseGuards(UserInGroupGuard)

@@ -1575,6 +1575,65 @@
         ]
       }
     },
+    "/groups/{groupId}/activity": {
+      "get": {
+        "operationId": "GroupsController_getActivity",
+        "parameters": [
+          {
+            "name": "groupId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "before",
+            "required": false,
+            "in": "query",
+            "description": "Return entries older than this id (the last id of the previous page).",
+            "schema": {
+              "example": 120,
+              "type": "number"
+            }
+          },
+          {
+            "name": "limit",
+            "required": false,
+            "in": "query",
+            "description": "Entries per page, 1 to 50.",
+            "schema": {
+              "example": 30,
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GroupActivityPageDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Only current members of the group can read its history."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get the group history: who changed what in the group, newest first (ADR-0020)",
+        "tags": [
+          "groups"
+        ]
+      }
+    },
     "/groups/{groupId}/insights": {
       "get": {
         "operationId": "GroupsController_getInsights",
@@ -2320,6 +2379,125 @@
         "summary": "Get legacy meet details by id",
         "tags": [
           "meets"
+        ]
+      }
+    },
+    "/navigation": {
+      "post": {
+        "operationId": "UsageController_navigation",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/NavigationBody"
+              }
+            }
+          }
+        },
+        "responses": {
+          "204": {
+            "description": "Counted, or ignored when the account turned usage statistics off."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Count a page view: the page now shown and the one before, as route templates",
+        "tags": [
+          "usage"
+        ]
+      }
+    },
+    "/settings/privacy": {
+      "get": {
+        "operationId": "UsageController_getPrivacy",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PrivacySettingsDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "The caller's privacy settings",
+        "tags": [
+          "usage"
+        ]
+      },
+      "put": {
+        "operationId": "UsageController_setPrivacy",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PrivacySettingsDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PrivacySettingsDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Change the caller's privacy settings; turning usage statistics off deletes the caller's recent events",
+        "tags": [
+          "usage"
+        ]
+      }
+    },
+    "/admin/usage": {
+      "get": {
+        "operationId": "UsageController_getReport",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UsageReportDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Usage of the last 30 days, funnels and earlier monthly totals (admins only)",
+        "tags": [
+          "usage"
         ]
       }
     },
@@ -5502,17 +5680,19 @@
             "enum": [
               "unchanged",
               "updated",
-              "taken"
+              "taken",
+              "invalid"
             ],
             "example": "updated",
-            "description": "`taken`: another account has this username"
+            "description": "`taken`: another account has this username; `invalid`: not 4–40 letters, numbers, _ or -"
           },
           "email": {
             "type": "string",
             "enum": [
               "unchanged",
               "updated",
-              "taken"
+              "taken",
+              "invalid"
             ],
             "example": "unchanged",
             "description": "Only a verified primary email is copied. `taken`: another account has it"
@@ -6421,6 +6601,216 @@
           "createdAt"
         ]
       },
+      "GroupActivityAccountDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number",
+            "example": 12
+          },
+          "name": {
+            "type": "string",
+            "example": "Ana",
+            "description": "The current name: \"Deleted account\" once the account is deleted (ADR-0018)."
+          },
+          "standing": {
+            "type": "string",
+            "enum": [
+              "member",
+              "left",
+              "deleted"
+            ]
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "standing"
+        ]
+      },
+      "GroupActivityPersonDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number",
+            "example": 7
+          },
+          "name": {
+            "type": "string",
+            "example": "Pedro"
+          },
+          "standing": {
+            "type": "string",
+            "enum": [
+              "member",
+              "left",
+              "deleted"
+            ]
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "standing"
+        ]
+      },
+      "GroupActivityGameDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number",
+            "example": 42
+          },
+          "title": {
+            "type": "string",
+            "example": "Catan",
+            "nullable": true,
+            "description": "Null when the game is no longer in the catalogue."
+          }
+        },
+        "required": [
+          "id",
+          "title"
+        ]
+      },
+      "GroupActivityDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number",
+            "example": 120
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "session_planned",
+              "session_recorded",
+              "session_started",
+              "session_finished",
+              "session_cancelled",
+              "session_invites_changed",
+              "session_shortlist_changed",
+              "session_bringer_changed",
+              "session_played_changed",
+              "session_rsvp",
+              "session_attendance_changed",
+              "session_results_changed",
+              "person_added",
+              "person_updated",
+              "person_archived",
+              "person_restored",
+              "person_claimed",
+              "person_game_set",
+              "person_preference_set",
+              "person_preference_removed",
+              "member_joined",
+              "member_left",
+              "member_removed"
+            ]
+          },
+          "createdAt": {
+            "type": "string",
+            "example": "2026-10-16 18:30:00"
+          },
+          "actor": {
+            "$ref": "#/components/schemas/GroupActivityAccountDto"
+          },
+          "meetId": {
+            "type": "number",
+            "example": 31,
+            "nullable": true
+          },
+          "person": {
+            "nullable": true,
+            "type": "object",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/GroupActivityPersonDto"
+              }
+            ]
+          },
+          "game": {
+            "nullable": true,
+            "type": "object",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/GroupActivityGameDto"
+              }
+            ]
+          },
+          "subject": {
+            "nullable": true,
+            "type": "object",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/GroupActivityAccountDto"
+              }
+            ]
+          },
+          "data": {
+            "type": "object",
+            "additionalProperties": true,
+            "example": {
+              "addedGameIds": [
+                42
+              ],
+              "removedGameIds": []
+            },
+            "description": "The rest of the change, as identifiers and fixed values."
+          },
+          "accounts": {
+            "description": "Accounts named by id in `data`, so the page can show their names.",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/GroupActivityAccountDto"
+            }
+          },
+          "people": {
+            "description": "Group people named by id in `data`.",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/GroupActivityPersonDto"
+            }
+          },
+          "games": {
+            "description": "Games named by id in `data`.",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/GroupActivityGameDto"
+            }
+          }
+        },
+        "required": [
+          "id",
+          "type",
+          "createdAt",
+          "actor",
+          "data",
+          "accounts",
+          "people",
+          "games"
+        ]
+      },
+      "GroupActivityPageDto": {
+        "type": "object",
+        "properties": {
+          "entries": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/GroupActivityDto"
+            }
+          },
+          "hasMore": {
+            "type": "boolean",
+            "example": true,
+            "description": "Whether older entries exist; ask again with `before` set to the last id."
+          }
+        },
+        "required": [
+          "entries",
+          "hasMore"
+        ]
+      },
       "GroupStandingDto": {
         "type": "object",
         "properties": {
@@ -7322,6 +7712,284 @@
           "gameResults",
           "gameVotes",
           "gameBringers"
+        ]
+      },
+      "NavigationBody": {
+        "type": "object",
+        "properties": {
+          "page": {
+            "type": "string",
+            "example": "/groups/:groupId",
+            "description": "The page now shown, as a route template."
+          },
+          "from": {
+            "type": "string",
+            "example": "/play",
+            "description": "The page before it in this visit, as a route template."
+          }
+        },
+        "required": [
+          "page"
+        ]
+      },
+      "PrivacySettingsDto": {
+        "type": "object",
+        "properties": {
+          "usageAnalytics": {
+            "type": "boolean",
+            "example": true,
+            "description": "Whether what this account does counts towards usage statistics (ADR-0021)."
+          }
+        },
+        "required": [
+          "usageAnalytics"
+        ]
+      },
+      "UsageDayDto": {
+        "type": "object",
+        "properties": {
+          "day": {
+            "type": "string",
+            "example": "2026-10-16"
+          },
+          "people": {
+            "type": "number",
+            "example": 4
+          },
+          "events": {
+            "type": "number",
+            "example": 37
+          }
+        },
+        "required": [
+          "day",
+          "people",
+          "events"
+        ]
+      },
+      "UsagePageDto": {
+        "type": "object",
+        "properties": {
+          "page": {
+            "type": "string",
+            "example": "/groups/:groupId"
+          },
+          "views": {
+            "type": "number",
+            "example": 52
+          },
+          "people": {
+            "type": "number",
+            "example": 6
+          }
+        },
+        "required": [
+          "page",
+          "views",
+          "people"
+        ]
+      },
+      "UsagePathDto": {
+        "type": "object",
+        "properties": {
+          "from": {
+            "type": "string",
+            "example": "/play"
+          },
+          "page": {
+            "type": "string",
+            "example": "/play/history"
+          },
+          "count": {
+            "type": "number",
+            "example": 9
+          }
+        },
+        "required": [
+          "from",
+          "page",
+          "count"
+        ]
+      },
+      "UsageViewCountDto": {
+        "type": "object",
+        "properties": {
+          "view": {
+            "type": "string",
+            "example": "/games/:gameId",
+            "nullable": true
+          },
+          "count": {
+            "type": "number",
+            "example": 5
+          }
+        },
+        "required": [
+          "view",
+          "count"
+        ]
+      },
+      "UsageActionDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "example": "review_saved"
+          },
+          "events": {
+            "type": "number",
+            "example": 14
+          },
+          "people": {
+            "type": "number",
+            "example": 5
+          },
+          "views": {
+            "description": "The screens it came from, most first.",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/UsageViewCountDto"
+            }
+          }
+        },
+        "required": [
+          "name",
+          "events",
+          "people",
+          "views"
+        ]
+      },
+      "UsageFunnelStepDto": {
+        "type": "object",
+        "properties": {
+          "label": {
+            "type": "string",
+            "example": "Planned a night"
+          },
+          "people": {
+            "type": "number",
+            "example": 6,
+            "description": "People who reached this step after all the earlier ones, in order."
+          }
+        },
+        "required": [
+          "label",
+          "people"
+        ]
+      },
+      "UsageFunnelDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "example": "Game night"
+          },
+          "steps": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/UsageFunnelStepDto"
+            }
+          }
+        },
+        "required": [
+          "name",
+          "steps"
+        ]
+      },
+      "UsageMonthDto": {
+        "type": "object",
+        "properties": {
+          "month": {
+            "type": "string",
+            "example": "2026-09"
+          },
+          "events": {
+            "type": "number",
+            "example": 812
+          },
+          "pageViews": {
+            "type": "number",
+            "example": 120,
+            "description": "Page views, from the daily counts."
+          }
+        },
+        "required": [
+          "month",
+          "events",
+          "pageViews"
+        ]
+      },
+      "UsageReportDto": {
+        "type": "object",
+        "properties": {
+          "recording": {
+            "type": "boolean",
+            "example": true,
+            "description": "False when the API has no pseudonym secret, so nothing is recorded."
+          },
+          "people": {
+            "type": "number",
+            "example": 6,
+            "description": "People who did anything in the last 30 days."
+          },
+          "events": {
+            "type": "number",
+            "example": 420
+          },
+          "optedOut": {
+            "type": "number",
+            "example": 2,
+            "description": "Accounts that turned usage statistics off."
+          },
+          "days": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/UsageDayDto"
+            }
+          },
+          "pages": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/UsagePageDto"
+            }
+          },
+          "paths": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/UsagePathDto"
+            }
+          },
+          "actions": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/UsageActionDto"
+            }
+          },
+          "funnels": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/UsageFunnelDto"
+            }
+          },
+          "months": {
+            "description": "Earlier months, from the anonymous daily counts.",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/UsageMonthDto"
+            }
+          }
+        },
+        "required": [
+          "recording",
+          "people",
+          "events",
+          "optedOut",
+          "days",
+          "pages",
+          "paths",
+          "actions",
+          "funnels",
+          "months"
         ]
       },
       "TagCategoryWithTagsDto": {

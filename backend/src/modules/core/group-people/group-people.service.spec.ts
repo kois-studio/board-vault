@@ -4,6 +4,7 @@ import { fakeDatabase } from '../../../../test/fake-database.js'
 
 import { GroupPeopleService } from './group-people.service.js'
 
+import type { ActivityNotifier } from '../notifications/activity-notifier.service.js'
 import type { Mock } from 'vitest'
 
 describe('GroupPeopleService participant boundaries', () => {
@@ -27,9 +28,15 @@ describe('GroupPeopleService participant boundaries', () => {
             getLinkedGroupPersonByAccount: vi.fn().mockResolvedValue({ rows: [] }),
             createLinkedGroupPerson: vi.fn().mockResolvedValue({ lastInsertRowid: 22 }),
             ...overrides,
-        }
+        } as Record<string, Mock>
 
-        return { service: new GroupPeopleService(fakeDatabase(databaseService)), databaseService }
+        const activityNotifier = { groupPersonEntryChanged: vi.fn().mockResolvedValue(undefined) }
+
+        return {
+            service: new GroupPeopleService(fakeDatabase(databaseService), activityNotifier as unknown as ActivityNotifier),
+            databaseService,
+            activityNotifier,
+        }
     }
 
     it('marks only email-targeted placeholders as claimable', async () => {
@@ -58,7 +65,7 @@ describe('GroupPeopleService participant boundaries', () => {
         await service.getCatalog(7, 12, '  Love Letter ')
         expect(databaseService.getGroupPersonGameCatalog).toHaveBeenCalledWith('love-letter')
 
-        databaseService.getGroupPersonGameCatalog.mockClear()
+        databaseService.getGroupPersonGameCatalog?.mockClear()
         await expect(service.getCatalog(7, 12, '%%')).resolves.toEqual([])
         expect(databaseService.getGroupPersonGameCatalog).not.toHaveBeenCalled()
     })
@@ -78,6 +85,7 @@ describe('GroupPeopleService participant boundaries', () => {
             keepOwnershipGameIds: [42],
             keepPreferenceGameIds: [42],
             importOwnershipToCollection: false,
+            activity: { groupId: 12, actorAccountId: 7, type: 'person_claimed', groupPersonId: 21 },
         })
     })
 
@@ -123,5 +131,90 @@ describe('GroupPeopleService participant boundaries', () => {
         await service.joinAsNewPerson(7, 12)
 
         expect(databaseService.createLinkedGroupPerson).toHaveBeenCalledWith(12, 7, 'friend', null)
+    })
+
+    describe('games and preferences (ADR-0020)', () => {
+        it('lets any member, not only the owner, say what a group person owns, with a history entry', async () => {
+            const { service, databaseService } = createService({ upsertGroupPersonOwnership: vi.fn().mockResolvedValue([]) })
+
+            await expect(service.updateOwnership(8, 12, 21, { gameId: 42, status: 'rejected' })).resolves.toEqual({ success: true })
+            expect(databaseService.upsertGroupPersonOwnership).toHaveBeenCalledWith(21, 42, 8, 'rejected', {
+                groupId: 12,
+                actorAccountId: 8,
+                type: 'person_game_set',
+                groupPersonId: 21,
+                gameId: 42,
+                data: { status: 'rejected', previousStatus: 'asserted' },
+            })
+        })
+
+        it('tells the member who entered a game when someone else changes it', async () => {
+            const { service, activityNotifier } = createService({ upsertGroupPersonOwnership: vi.fn().mockResolvedValue([]) })
+
+            await service.updateOwnership(8, 12, 21, { gameId: 42, status: 'rejected' })
+
+            expect(activityNotifier.groupPersonEntryChanged).toHaveBeenCalledWith({
+                groupId: 12,
+                actorAccountId: 8,
+                enteredByAccountId: 7,
+                groupPersonId: 21,
+                gameId: 42,
+                change: 'not_owned',
+            })
+        })
+
+        it('writes nothing when the status does not change', async () => {
+            const { service, databaseService, activityNotifier } = createService({ upsertGroupPersonOwnership: vi.fn() })
+
+            await service.updateOwnership(8, 12, 21, { gameId: 42, status: 'asserted' })
+
+            expect(databaseService.upsertGroupPersonOwnership).not.toHaveBeenCalled()
+            expect(activityNotifier.groupPersonEntryChanged).not.toHaveBeenCalled()
+        })
+
+        it('records a new preference with no previous one and notifies nobody', async () => {
+            const { service, databaseService, activityNotifier } = createService({
+                upsertGroupPersonPreference: vi.fn().mockResolvedValue([]),
+            })
+
+            await service.updatePreference(8, 12, 21, { gameId: 43, preference: 'avoid' })
+
+            expect(databaseService.upsertGroupPersonPreference).toHaveBeenCalledWith(21, 43, 8, 'avoid', {
+                groupId: 12,
+                actorAccountId: 8,
+                type: 'person_preference_set',
+                groupPersonId: 21,
+                gameId: 43,
+                data: { preference: 'avoid', previousPreference: null },
+            })
+            expect(activityNotifier.groupPersonEntryChanged).not.toHaveBeenCalled()
+        })
+
+        it('records a removed preference with what it was', async () => {
+            const { service, databaseService } = createService({
+                deleteGroupPersonPreference: vi.fn().mockResolvedValue({ rowsAffected: 1 }),
+            })
+
+            await service.deletePreference(8, 12, 21, 42)
+
+            expect(databaseService.deleteGroupPersonPreference).toHaveBeenCalledWith(21, 12, 42, {
+                groupId: 12,
+                actorAccountId: 8,
+                type: 'person_preference_removed',
+                groupPersonId: 21,
+                gameId: 42,
+                data: { previousPreference: 'favorite' },
+            })
+        })
+
+        it('still refuses someone outside the group', async () => {
+            const { service, databaseService } = createService({
+                getGroupMembershipById: vi.fn().mockResolvedValue({ rows: [] }),
+                upsertGroupPersonOwnership: vi.fn(),
+            })
+
+            await expect(service.updateOwnership(99, 12, 21, { gameId: 42, status: 'rejected' })).rejects.toBeInstanceOf(ForbiddenException)
+            expect(databaseService.upsertGroupPersonOwnership).not.toHaveBeenCalled()
+        })
     })
 })

@@ -21,6 +21,7 @@ import type {
     GameType,
     GameViewType,
     GroupAcquisitionEntryType,
+    GroupActivityPageType,
     GroupCollectionType,
     GroupInsightsType,
     GroupType,
@@ -32,6 +33,7 @@ import type {
     MeetType,
     MeetWithAttendeesAndGamesType,
     NotificationType,
+    PrivacySettingsType,
     RecommendationSignalsType,
     RecommendationsType,
     ScheduledSessionCreatedType,
@@ -47,6 +49,7 @@ import type {
     SessionStatusUpdatedType,
     TagCategoryType,
     TagType,
+    UsageReportType,
     UserProposalStatsType,
     UserStatsType,
     UserType,
@@ -262,6 +265,55 @@ export const groupCollectionSchema: z.ZodMiniType<GroupCollectionType> = z.objec
             pricedGames: z.number(),
         }),
     ),
+})
+
+export const privacySettingsSchema: z.ZodMiniType<PrivacySettingsType> = z.object({ usageAnalytics: z.boolean() })
+
+export const usageReportSchema: z.ZodMiniType<UsageReportType> = z.object({
+    recording: z.boolean(),
+    people: z.number(),
+    events: z.number(),
+    optedOut: z.number(),
+    days: z.array(z.object({ day: z.string(), people: z.number(), events: z.number() })),
+    pages: z.array(z.object({ page: z.string(), views: z.number(), people: z.number() })),
+    paths: z.array(z.object({ from: z.string(), page: z.string(), count: z.number() })),
+    actions: z.array(
+        z.object({
+            name: z.string(),
+            events: z.number(),
+            people: z.number(),
+            views: z.array(z.object({ view: z.nullable(z.string()), count: z.number() })),
+        }),
+    ),
+    funnels: z.array(z.object({ name: z.string(), steps: z.array(z.object({ label: z.string(), people: z.number() })) })),
+    months: z.array(z.object({ month: z.string(), events: z.number(), pageViews: z.number() })),
+})
+
+const groupActivityNameSchema = z.object({
+    id: z.number(),
+    name: z.string(),
+    standing: z.enum(['member', 'left', 'deleted']),
+})
+const groupActivityGameSchema = z.object({ id: z.number(), title: z.nullable(z.string()) })
+
+export const groupActivityPageSchema: z.ZodMiniType<GroupActivityPageType> = z.object({
+    entries: z.array(
+        z.object({
+            id: z.number(),
+            type: z.string(),
+            createdAt: z.string(),
+            actor: groupActivityNameSchema,
+            meetId: z.nullable(z.number()),
+            person: z.nullable(groupActivityNameSchema),
+            game: z.nullable(groupActivityGameSchema),
+            subject: z.nullable(groupActivityNameSchema),
+            data: z.record(z.string(), z.unknown()),
+            accounts: z.array(groupActivityNameSchema),
+            people: z.array(groupActivityNameSchema),
+            games: z.array(groupActivityGameSchema),
+        }),
+    ),
+    hasMore: z.boolean(),
 })
 
 export const groupInsightsSchema: z.ZodMiniType<GroupInsightsType> = z.object({
@@ -722,7 +774,7 @@ export const recommendationSignalsSchema: z.ZodMiniType<RecommendationSignalsTyp
 
 export const successSchema = z.object({ success: z.literal(true) })
 
-const clerkFieldSyncSchema = z.enum(['unchanged', 'updated', 'taken'])
+const clerkFieldSyncSchema = z.enum(['unchanged', 'updated', 'taken', 'invalid'])
 export const clerkSyncResultSchema: z.ZodMiniType<ClerkSyncResultType> = z.object({
     username: clerkFieldSyncSchema,
     email: clerkFieldSyncSchema,

@@ -8,6 +8,7 @@ import { DatabaseModule } from '../../common/database/database.module.js'
 import { GroupMembershipsModule } from '../group-memberships/group-memberships.module.js'
 
 import { GroupAcquisitionService } from './group-acquisition.service.js'
+import { GroupActivityService } from './group-activity.service.js'
 import { GroupInsightsService } from './group-insights.service.js'
 import { GroupsController } from './groups.controller.js'
 import { GroupsService } from './groups.service.js'
@@ -15,7 +16,7 @@ import { GroupsService } from './groups.service.js'
 
 @Module({
     imports: [AuthModule, CacheModule, DatabaseModule, GroupMembershipsModule],
-    providers: [GroupsService, GroupAcquisitionService, GroupInsightsService, GroupOwnerGuard, UserInGroupGuard],
+    providers: [GroupsService, GroupAcquisitionService, GroupActivityService, GroupInsightsService, GroupOwnerGuard, UserInGroupGuard],
     exports: [GroupsService],
     controllers: [GroupsController],
 })

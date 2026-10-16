@@ -65,7 +65,8 @@ async function bootstrap() {
     app.enableCors({
         origin: corsOrigins,
         methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
-        allowedHeaders: ['Authorization', 'Content-Type'],
+        // The view header says which screen a request came from, for usage statistics (ADR-0021).
+        allowedHeaders: ['Authorization', 'Content-Type', 'X-Board-Vault-View'],
         credentials: false,
         maxAge: 86400,
     })

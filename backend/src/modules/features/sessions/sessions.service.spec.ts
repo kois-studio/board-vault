@@ -53,6 +53,9 @@ function createDatabaseMock() {
         replaceMeetPlannedGames: vi.fn().mockResolvedValue(true),
         getMeetPlayedGameParticipants: vi.fn().mockResolvedValue([]),
         replaceMeetPlayedGames: vi.fn().mockResolvedValue({ applied: true, playedGameIds: [42], skippedGameIds: [43] }),
+        getPlayedGameIdsByMeetId: vi.fn().mockResolvedValue([]),
+        getMeetAttendedAccountIds: vi.fn().mockResolvedValue([]),
+        getMeetAttendedPersonIds: vi.fn().mockResolvedValue([]),
     }
 }
 
@@ -125,6 +128,7 @@ describe('SessionsService', () => {
             timezone: body.timezone,
             attendeeIds: body.attendeeIds,
             games: body.games,
+            activity: { groupId: 7, actorAccountId: 1, type: 'session_recorded' },
         })
     })
 
@@ -156,6 +160,7 @@ describe('SessionsService', () => {
             groupPersonIds: [10, 11],
             games: [{ gameId: 84, participantIds: [1] }],
             personGames: [{ gameId: 84, participantIds: [10, 11] }],
+            activity: { groupId: 7, actorAccountId: 1, type: 'session_recorded' },
         })
     })
 
@@ -185,6 +190,7 @@ describe('SessionsService', () => {
             attendeeIds: [],
             groupPersonIds: [10],
             plannedGameIds: [84],
+            activity: { groupId: 7, actorAccountId: 1, type: 'session_planned' },
         })
     })
 
@@ -274,6 +280,7 @@ describe('SessionsService', () => {
             timezone: scheduledBody.timezone,
             attendeeIds: [1, 2, 3],
             plannedGameIds: [],
+            activity: { groupId: 7, actorAccountId: 1, type: 'session_planned' },
         })
         expect(notifier.sessionPlanned).toHaveBeenCalledWith(13, 1)
     })
@@ -298,13 +305,14 @@ describe('SessionsService', () => {
             timezone: 'Europe/Madrid',
             attendeeIds: [1, 3],
             plannedGameIds: [42],
+            activity: { groupId: 7, actorAccountId: 1, type: 'session_planned' },
         })
     })
 
     it('lets an invited member update their RSVP without changing organizer attendance', async () => {
         const database = createDatabaseMock()
 
-        database.getMeetAttendeeForAccount = vi.fn().mockResolvedValue({ rows: [[13, 2, 'pending', 'unknown', null, 'scheduled']] })
+        database.getMeetAttendeeForAccount = vi.fn().mockResolvedValue({ rows: [[13, 2, 'pending', 'unknown', null, 'scheduled', 7]] })
         database.updateMeetAttendeeRsvp = vi.fn().mockResolvedValue({ rowsAffected: 1 })
         const service = new SessionsService(fakeDatabase(database), fakeActivityNotifier())
 
@@ -312,7 +320,14 @@ describe('SessionsService', () => {
             sessionId: 13,
             rsvpStatus: 'accepted',
         })
-        expect(database.updateMeetAttendeeRsvp).toHaveBeenCalledWith(13, 2, 'accepted')
+        expect(database.updateMeetAttendeeRsvp).toHaveBeenCalledWith(13, 2, 'accepted', {
+            groupId: 7,
+            actorAccountId: 2,
+            type: 'session_rsvp',
+            meetId: 13,
+            groupPersonId: undefined,
+            data: { rsvpStatus: 'accepted' },
+        })
     })
 
     it('rejects RSVP changes after a session is closed', async () => {
@@ -335,7 +350,13 @@ describe('SessionsService', () => {
         const service = new SessionsService(fakeDatabase(database), fakeActivityNotifier())
 
         await expect(service.updateSessionAttendance(1, 13, { attendedIds: [1] })).resolves.toEqual({ sessionId: 13, attendedIds: [1] })
-        expect(database.updateMeetAttendance).toHaveBeenCalledWith(13, [1])
+        expect(database.updateMeetAttendance).toHaveBeenCalledWith(13, [1], {
+            groupId: 7,
+            actorAccountId: 1,
+            type: 'session_attendance_changed',
+            meetId: 13,
+            data: { attendedAccountIds: [1], attendedPersonIds: [] },
+        })
     })
 
     it('rejects attendance for members who were not invited', async () => {
@@ -361,7 +382,8 @@ describe('SessionsService', () => {
         const service = new SessionsService(fakeDatabase(database), fakeActivityNotifier())
 
         await expect(service.updateSessionAttendance(1, 13, { attendedIds: [] })).resolves.toEqual({ sessionId: 13, attendedIds: [] })
-        expect(database.updateMeetAttendance).toHaveBeenCalledWith(13, [])
+        // Nobody was marked as there before either: nothing changes, so no history entry.
+        expect(database.updateMeetAttendance).toHaveBeenCalledWith(13, [], undefined)
     })
 
     it('lets the organizer edit the shortlist on an active session', async () => {
@@ -376,7 +398,13 @@ describe('SessionsService', () => {
             sessionId: 13,
             plannedGameIds: [43, 42],
         })
-        expect(database.replaceMeetPlannedGames).toHaveBeenCalledWith(13, [43, 42], 'active')
+        expect(database.replaceMeetPlannedGames).toHaveBeenCalledWith(13, [43, 42], 'active', {
+            groupId: 7,
+            actorAccountId: 1,
+            type: 'session_shortlist_changed',
+            meetId: 13,
+            data: { addedGameIds: [43], removedGameIds: [] },
+        })
     })
 
     it('rejects shortlist games that no group member owns', async () => {
@@ -440,7 +468,37 @@ describe('SessionsService', () => {
             playedGameParticipants: [{ gameId: 42, participantIds: [1, 2] }],
         })
         expect(database.getMeetPlayedGameParticipants).toHaveBeenCalledWith(13)
-        expect(database.replaceMeetPlayedGames).toHaveBeenCalledWith(13, [{ gameId: 42, participantIds: [1, 2] }], 'active')
+        expect(database.replaceMeetPlayedGames).toHaveBeenCalledWith(13, [{ gameId: 42, participantIds: [1, 2] }], 'active', [], {
+            groupId: 7,
+            actorAccountId: 1,
+            type: 'session_played_changed',
+            meetId: 13,
+            data: { addedGameIds: [42], removedGameIds: [], changedGameIds: [] },
+        })
+    })
+
+    it('records who played a game that had no players recorded, and nothing when nothing changes', async () => {
+        const database = createDatabaseMock()
+
+        database.getMeetAccessForAccount.mockResolvedValue({
+            rows: [[13, 7, 1, '2026-08-21T19:30:00.000Z', 0, 'active', 'Europe/Madrid', null]],
+        })
+        database.getPlayedGameIdsByMeetId.mockResolvedValue([42])
+        database.replaceMeetPlayedGames.mockResolvedValue({ applied: true, playedGameIds: [42], skippedGameIds: [] })
+        const service = new SessionsService(fakeDatabase(database), fakeActivityNotifier())
+
+        await service.updateSessionPlayedGames(1, 13, { playedGameIds: [42], games: [{ gameId: 42, participantIds: [1] }] })
+        expect(database.replaceMeetPlayedGames).toHaveBeenLastCalledWith(
+            13,
+            [{ gameId: 42, participantIds: [1] }],
+            'active',
+            [],
+            expect.objectContaining({ data: { addedGameIds: [], removedGameIds: [], changedGameIds: [42] } }),
+        )
+
+        database.getMeetPlayedGameParticipants.mockResolvedValue([{ gameId: 42, participantIds: [1] }])
+        await service.updateSessionPlayedGames(1, 13, { playedGameIds: [42], games: [{ gameId: 42, participantIds: [1] }] })
+        expect(database.replaceMeetPlayedGames).toHaveBeenLastCalledWith(13, [{ gameId: 42, participantIds: [1] }], 'active', [], undefined)
     })
 
     it('records mixed account and group-person game participants and reports stale-write conflicts', async () => {
@@ -466,9 +524,16 @@ describe('SessionsService', () => {
                 games: [{ gameId: 84, participantIds: [1], participantPersonIds: [10] }],
             }),
         ).rejects.toThrow('The session changed while played games were being updated')
-        expect(database.replaceMeetPlayedGames).toHaveBeenCalledWith(13, [{ gameId: 84, participantIds: [1] }], 'active', [
-            { gameId: 84, participantIds: [10] },
-        ])
+        expect(database.replaceMeetPlayedGames).toHaveBeenCalledWith(
+            13,
+            [{ gameId: 84, participantIds: [1] }],
+            'active',
+            [{ gameId: 84, participantIds: [10] }],
+            expect.objectContaining({
+                type: 'session_played_changed',
+                data: { addedGameIds: [84], removedGameIds: [], changedGameIds: [] },
+            }),
+        )
     })
 
     it('validates per-game participants against the session attendees', async () => {
@@ -545,7 +610,12 @@ describe('SessionsService', () => {
             status: 'active',
             sessionDate: '2026-08-16T19:30:00.000Z',
         })
-        expect(database.updateMeetStatus).toHaveBeenCalledWith(12, 'scheduled', 'active', undefined)
+        expect(database.updateMeetStatus).toHaveBeenCalledWith(12, 'scheduled', 'active', undefined, {
+            groupId: 7,
+            actorAccountId: 1,
+            type: 'session_started',
+            meetId: 12,
+        })
         expect(notifier.sessionChanged).toHaveBeenCalledWith(12, 1, 'active')
     })
 
@@ -559,7 +629,12 @@ describe('SessionsService', () => {
             status: 'active',
             sessionDate: '2026-08-10T18:00:00.000Z',
         })
-        expect(database.updateMeetStatus).toHaveBeenCalledWith(12, 'scheduled', 'active', '2026-08-10T18:00:00.000Z')
+        expect(database.updateMeetStatus).toHaveBeenCalledWith(12, 'scheduled', 'active', '2026-08-10T18:00:00.000Z', {
+            groupId: 7,
+            actorAccountId: 1,
+            type: 'session_started',
+            meetId: 12,
+        })
         vi.useRealTimers()
     })
 
@@ -569,7 +644,12 @@ describe('SessionsService', () => {
         const service = new SessionsService(fakeDatabase(database), fakeActivityNotifier())
 
         await service.updateSessionStatus(1, 12, { status: 'cancelled' })
-        expect(database.updateMeetStatus).toHaveBeenCalledWith(12, 'scheduled', 'cancelled', undefined)
+        expect(database.updateMeetStatus).toHaveBeenCalledWith(12, 'scheduled', 'cancelled', undefined, {
+            groupId: 7,
+            actorAccountId: 1,
+            type: 'session_cancelled',
+            meetId: 12,
+        })
         vi.useRealTimers()
     })
 
@@ -631,7 +711,13 @@ describe('SessionsService', () => {
                 plannedGameIds: [42, 43],
                 gameVotes: [{ gameId: 43, accountIds: [2] }],
             })
-            expect(database.addMeetPlannedGame).toHaveBeenCalledWith(12, 43)
+            expect(database.addMeetPlannedGame).toHaveBeenCalledWith(12, 43, {
+                groupId: 7,
+                actorAccountId: 2,
+                type: 'session_shortlist_changed',
+                meetId: 12,
+                data: { addedGameIds: [43], removedGameIds: [] },
+            })
             expect(database.addMeetGameVote).toHaveBeenCalledWith(12, 43, 2)
         })
 
@@ -683,7 +769,17 @@ describe('SessionsService', () => {
                 gameBringers: [{ gameId: 42, accountId: 2, groupPersonId: null }],
             })
             expect(database.accountOwnsGame).toHaveBeenCalledWith(2, 42, 7)
-            expect(database.setMeetGameBringer).toHaveBeenCalledWith(12, 42, { accountId: 2, groupPersonId: null })
+            expect(database.setMeetGameBringer).toHaveBeenCalledWith(
+                12,
+                42,
+                { accountId: 2, groupPersonId: null },
+                expect.objectContaining({
+                    type: 'session_bringer_changed',
+                    meetId: 12,
+                    gameId: 42,
+                    data: { accountId: 2, groupPersonId: null },
+                }),
+            )
         })
 
         it('refuses a game you do not own, or one that is not on the shortlist', async () => {
@@ -705,7 +801,17 @@ describe('SessionsService', () => {
             const organizer = asActor(0, null, 2)
 
             await organizer.service.setSessionGameBringer(2, 12, 42, { groupPersonId: 31 })
-            expect(organizer.database.setMeetGameBringer).toHaveBeenCalledWith(12, 42, { accountId: null, groupPersonId: 31 })
+            expect(organizer.database.setMeetGameBringer).toHaveBeenCalledWith(
+                12,
+                42,
+                { accountId: null, groupPersonId: 31 },
+                expect.objectContaining({
+                    type: 'session_bringer_changed',
+                    meetId: 12,
+                    gameId: 42,
+                    data: { accountId: null, groupPersonId: 31 },
+                }),
+            )
             await expect(organizer.service.setSessionGameBringer(2, 12, 42, { groupPersonId: 32 })).rejects.toThrow(BadRequestException)
         })
 
@@ -719,7 +825,17 @@ describe('SessionsService', () => {
 
             bringer.database.getMeetGameBringers.mockResolvedValue([{ gameId: 42, accountId: 2, groupPersonId: null }])
             await bringer.service.setSessionGameBringer(2, 12, 42, null)
-            expect(bringer.database.setMeetGameBringer).toHaveBeenCalledWith(12, 42, { accountId: null, groupPersonId: null })
+            expect(bringer.database.setMeetGameBringer).toHaveBeenCalledWith(
+                12,
+                42,
+                { accountId: null, groupPersonId: null },
+                expect.objectContaining({
+                    type: 'session_bringer_changed',
+                    meetId: 12,
+                    gameId: 42,
+                    data: { accountId: null, groupPersonId: null },
+                }),
+            )
         })
     })
 
@@ -788,7 +904,13 @@ describe('SessionsService', () => {
             sessionId: 12,
             attendeeIds: [1, 3],
         })
-        expect(database.replaceMeetAttendees).toHaveBeenCalledWith(12, [1, 3], 'scheduled')
+        expect(database.replaceMeetAttendees).toHaveBeenCalledWith(12, [1, 3], 'scheduled', {
+            groupId: 7,
+            actorAccountId: 1,
+            type: 'session_invites_changed',
+            meetId: 12,
+            data: { addedAccountIds: [3], removedAccountIds: [2], addedPersonIds: [], removedPersonIds: [] },
+        })
     })
 
     it('rejects attendee replacement when a target is outside the group', async () => {
@@ -878,7 +1000,15 @@ describe('SessionsService', () => {
 
             await service.updateGameResults(2, 12, 42, { results: [{ groupPersonId: 10, isWinner: false }] })
 
-            expect(database.replaceGameResults).toHaveBeenCalledWith(12, 42, [])
+            expect(database.replaceGameResults).toHaveBeenCalledWith(
+                12,
+                42,
+                [],
+                expect.objectContaining({
+                    type: 'session_results_changed',
+                    data: { winnerAccountIds: [], winnerPersonIds: [], scored: false },
+                }),
+            )
         })
 
         it('records winners for sessions kept with accounts', async () => {
@@ -886,9 +1016,19 @@ describe('SessionsService', () => {
 
             await service.updateGameResults(2, 12, 42, { results: [{ accountId: 2, isWinner: true }] })
 
-            expect(database.replaceGameResults).toHaveBeenCalledWith(12, 42, [
-                { accountId: 2, groupPersonId: null, isWinner: true, score: null },
-            ])
+            expect(database.replaceGameResults).toHaveBeenCalledWith(
+                12,
+                42,
+                [{ accountId: 2, groupPersonId: null, isWinner: true, score: null }],
+                {
+                    groupId: 7,
+                    actorAccountId: 2,
+                    type: 'session_results_changed',
+                    meetId: 12,
+                    gameId: 42,
+                    data: { winnerAccountIds: [2], winnerPersonIds: [], scored: false },
+                },
+            )
         })
 
         it('hides the session from non-members', async () => {

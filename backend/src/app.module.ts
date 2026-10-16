@@ -27,6 +27,7 @@ import { NotificationsModule } from './modules/core/notifications/notifications.
 import { ReviewsModule } from './modules/core/reviews/reviews.module.js'
 import { TagCategoryModule } from './modules/core/tag-category/tag-category.module.js'
 import { TagsModule } from './modules/core/tags/tags.module.js'
+import { UsageModule } from './modules/core/usage/usage.module.js'
 import { UsersModule } from './modules/core/users/users.module.js'
 import { WishlistModule } from './modules/core/wishlist/wishlist.module.js'
 // Features
@@ -64,6 +65,7 @@ import { SessionsModule } from './modules/features/sessions/sessions.module.js'
         ReviewsModule,
         TagCategoryModule,
         TagsModule,
+        UsageModule,
         UsersModule,
         WishlistModule,
         // Features

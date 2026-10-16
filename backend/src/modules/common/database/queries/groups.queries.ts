@@ -2,9 +2,11 @@ import { BadRequestException, NotFoundException } from '@nestjs/common'
 
 import { containsPattern, LIKE_ESCAPE } from '../like-pattern.js'
 
+import { activityStatements, recordInTransaction } from './group-activity.queries.js'
 import { deleteGroupRows, departGroup } from './group-lifecycle.js'
 
 import type { ClerkGroupInvitationMetadata } from '../../../../common/types/clerk-invitation.type.js'
+import type { GroupActivityEntry } from '../../../../common/types/group-activity.type.js'
 import type { GroupGameInterestBody } from '../../../../common/types/group-game-interest.type.js'
 import type { CreateGroupMembershipBody } from '../../../../common/types/group-membership.type.js'
 import type {
@@ -21,7 +23,7 @@ import type { DatabaseService } from '../database.service.js'
  * (ADR-0018): `deleted` when their account is deleted, `left` when they were archived or
  * their account is no longer a member (the owner always is), otherwise `member`.
  */
-const PERSON_STANDING = `
+export const PERSON_STANDING = `
     CASE
         WHEN gp.accountId IS NOT NULL AND EXISTS (SELECT 1 FROM Account a WHERE a.id = gp.accountId AND a.isDeleted = 1) THEN 'deleted'
         WHEN gp.status = 'archived' THEN 'left'
@@ -54,6 +56,13 @@ export class GroupQueries {
                 sql: 'INSERT OR IGNORE INTO GroupMembership (accountId, groupId) VALUES (?, ?)',
                 args: [accountId, metadata.groupId],
             })
+            // Only a new membership is a join worth a history entry (ADR-0020).
+            for (const statement of activityStatements(
+                { groupId: metadata.groupId, actorAccountId: accountId, type: 'member_joined' },
+                { onlyIfChanged: true },
+            )) {
+                await transaction.execute(statement)
+            }
 
             if (metadata.groupPersonId === undefined) {
                 await transaction.execute({
@@ -385,14 +394,33 @@ export class GroupQueries {
         })
     }
 
+    /** Creates a person without an account, with its `person_added` history entry. */
     async createGroupPerson(groupId: number, createdByAccountId: number, body: CreateGroupPersonBody) {
-        return this.database.execute({
-            sql: `
-                INSERT INTO GroupPerson (groupId, kind, status, displayName, avatar, createdByAccountId)
-                VALUES (?, 'placeholder', 'active', ?, ?, ?)
-            `,
-            args: [groupId, body.displayName, body.avatar ? JSON.stringify(body.avatar) : null, createdByAccountId],
-        })
+        const transaction = await this.database.transaction('write')
+
+        try {
+            const result = await transaction.execute({
+                sql: `
+                    INSERT INTO GroupPerson (groupId, kind, status, displayName, avatar, createdByAccountId)
+                    VALUES (?, 'placeholder', 'active', ?, ?, ?)
+                `,
+                args: [groupId, body.displayName, body.avatar ? JSON.stringify(body.avatar) : null, createdByAccountId],
+            })
+
+            await recordInTransaction(transaction, {
+                groupId,
+                actorAccountId: createdByAccountId,
+                type: 'person_added',
+                groupPersonId: Number(result.lastInsertRowid),
+            })
+            await transaction.commit()
+            return result
+        } catch (error) {
+            await transaction.rollback()
+            throw error
+        } finally {
+            transaction.close()
+        }
     }
 
     createLinkedGroupPerson(groupId: number, accountId: number, displayName: string, avatar: string | null) {
@@ -414,7 +442,7 @@ export class GroupQueries {
         })
     }
 
-    updateGroupPerson(groupPersonId: number, groupId: number, body: UpdateGroupPersonBody) {
+    async updateGroupPerson(groupPersonId: number, groupId: number, body: UpdateGroupPersonBody, activity?: GroupActivityEntry) {
         const fields: Array<string> = []
         const args: Array<string | number | null> = []
 
@@ -438,10 +466,12 @@ export class GroupQueries {
         fields.push('updatedAt = CURRENT_TIMESTAMP')
         args.push(groupPersonId, groupId)
 
-        return this.database.execute({
-            sql: `UPDATE GroupPerson SET ${fields.join(', ')} WHERE id = ? AND groupId = ?`,
-            args,
-        })
+        const [result] = await this.database.batch([
+            { sql: `UPDATE GroupPerson SET ${fields.join(', ')} WHERE id = ? AND groupId = ?`, args },
+            ...activityStatements(activity, { onlyIfChanged: true }),
+        ])
+
+        return { rowsAffected: result?.rowsAffected ?? 0 }
     }
 
     setGroupPersonClaimEmail(groupPersonId: number, groupId: number, claimEmail: string) {
@@ -471,6 +501,7 @@ export class GroupQueries {
         keepOwnershipGameIds: Array<number>
         keepPreferenceGameIds: Array<number>
         importOwnershipToCollection: boolean
+        activity?: GroupActivityEntry
     }): Promise<{ claimed: boolean; alreadyClaimed: boolean }> {
         const transaction = await this.database.transaction('write')
 
@@ -556,6 +587,7 @@ export class GroupQueries {
                 )
             }
 
+            await recordInTransaction(transaction, input.activity)
             await transaction.commit()
             return { claimed: true, alreadyClaimed: false }
         } catch (error) {
@@ -596,9 +628,11 @@ export class GroupQueries {
         gameId: number,
         enteredByAccountId: number,
         status: GroupPersonGameOwnershipDto['status'],
+        activity?: GroupActivityEntry,
     ) {
-        return this.database.execute({
-            sql: `
+        return this.database.batch([
+            {
+                sql: `
                 INSERT INTO GroupPersonGameOwnership
                     (groupPersonId, gameId, status, source, enteredByAccountId, updatedAt)
                 VALUES (?, ?, ?, 'placeholder_setup', ?, CURRENT_TIMESTAMP)
@@ -608,8 +642,10 @@ export class GroupQueries {
                     enteredByAccountId = excluded.enteredByAccountId,
                     updatedAt = CURRENT_TIMESTAMP
             `,
-            args: [groupPersonId, gameId, status, enteredByAccountId],
-        })
+                args: [groupPersonId, gameId, status, enteredByAccountId],
+            },
+            ...activityStatements(activity),
+        ])
     }
 
     getGroupPersonPreferences(groupPersonId: number, groupId: number) {
@@ -630,9 +666,11 @@ export class GroupQueries {
         gameId: number,
         enteredByAccountId: number,
         preference: GroupPersonGamePreferenceDto['preference'],
+        activity?: GroupActivityEntry,
     ) {
-        return this.database.execute({
-            sql: `
+        return this.database.batch([
+            {
+                sql: `
                 INSERT INTO GroupPersonGamePreference
                     (groupPersonId, gameId, preference, source, enteredByAccountId, updatedAt)
                 VALUES (?, ?, ?, 'placeholder_setup', ?, CURRENT_TIMESTAMP)
@@ -642,20 +680,27 @@ export class GroupQueries {
                     enteredByAccountId = excluded.enteredByAccountId,
                     updatedAt = CURRENT_TIMESTAMP
             `,
-            args: [groupPersonId, gameId, preference, enteredByAccountId],
-        })
+                args: [groupPersonId, gameId, preference, enteredByAccountId],
+            },
+            ...activityStatements(activity),
+        ])
     }
 
-    deleteGroupPersonPreference(groupPersonId: number, groupId: number, gameId: number) {
-        return this.database.execute({
-            sql: `
-                DELETE FROM GroupPersonGamePreference
-                WHERE groupPersonId = ?
-                  AND gameId = ?
-                  AND EXISTS (SELECT 1 FROM GroupPerson WHERE id = ? AND groupId = ?)
-            `,
-            args: [groupPersonId, gameId, groupPersonId, groupId],
-        })
+    async deleteGroupPersonPreference(groupPersonId: number, groupId: number, gameId: number, activity?: GroupActivityEntry) {
+        const [result] = await this.database.batch([
+            {
+                sql: `
+                    DELETE FROM GroupPersonGamePreference
+                    WHERE groupPersonId = ?
+                      AND gameId = ?
+                      AND EXISTS (SELECT 1 FROM GroupPerson WHERE id = ? AND groupId = ?)
+                `,
+                args: [groupPersonId, gameId, groupPersonId, groupId],
+            },
+            ...activityStatements(activity, { onlyIfChanged: true }),
+        ])
+
+        return { rowsAffected: result?.rowsAffected ?? 0 }
     }
 
     /**
@@ -999,11 +1044,18 @@ export class GroupQueries {
     }
 
     /** Leaving or being removed: the membership goes, history stays (ADR-0018). */
-    async leaveGroup(accountId: number, groupId: number) {
+    async leaveGroup(accountId: number, groupId: number, activity?: GroupActivityEntry) {
         const transaction = await this.database.transaction('write')
 
         try {
+            const membership = await transaction.execute({
+                sql: 'SELECT 1 FROM GroupMembership WHERE accountId = ? AND groupId = ?',
+                args: [accountId, groupId],
+            })
+
             await departGroup(transaction, accountId, groupId)
+            // Someone who was not a member did not leave: no history entry.
+            if (membership.rows.length > 0) await recordInTransaction(transaction, activity)
             await transaction.commit()
         } catch (error) {
             await transaction.rollback()

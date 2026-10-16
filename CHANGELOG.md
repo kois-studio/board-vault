@@ -13,6 +13,21 @@ operational details.
 
 ### Added
 
+- Usage statistics of our own, with no third party and nothing stored in the
+  browser: which pages are opened and from where, which features are used,
+  and two funnels (getting started, game night). Events carry a code instead
+  of the account and are deleted after 30 days; only anonymous daily totals
+  stay. Settings → Privacy turns it off, which also deletes what was kept.
+  Admins see it in Administration → Usage.
+- Every group has a history, "What changed" at the end of its page: who
+  planned, started, finished or cancelled a night, changed who is invited,
+  the shortlist, who brings what, the games played or the results, who
+  answered, who added or changed a group person and their games, and who
+  joined, left or was removed. Nothing in it can be edited; a mistake is
+  fixed by changing it back, and both changes stay. Only members see it.
+- Any member can now edit a group person's games and preferences, not only
+  the owner. Whoever entered a game or preference hears when someone else
+  changes it.
 - A game night is where the group decides what to play. Its games on offer
   are those of the people coming (invited and not declined), and it shows
   the best suggestions for them, which change as people answer. Anyone
@@ -346,6 +361,16 @@ operational details.
   same rating again no longer repeats it in Recent Activity. Title searches
   read `%` and `_` as plain characters, so `__` or `%%` no longer list the
   whole catalogue.
+- One notification the API can't read no longer empties the whole inbox:
+  it is left out and the rest show. Game proposal notifications (to
+  admins and proposers) are read again; they never matched the check, so
+  an admin's inbox came back empty. Older notification types still show.
+- A username changed in Clerk that Board Vault doesn't accept (shorter
+  than 4 characters, longer than 40, or with characters other than
+  letters, numbers, `_` and `-`) is no longer copied to the account, which
+  would then fail to load and lock the person out. Settings → Account says
+  so. Two copies racing for the same name answer "taken" instead of an
+  error.
 - Public pages no longer wait for Clerk: it loads after the first page has
   painted, and `/login` and `/register` render without it. With a Clerk key,
   as in production, Lighthouse performance goes from about 76 to 94–96, and

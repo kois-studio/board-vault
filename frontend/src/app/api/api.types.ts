@@ -117,7 +117,7 @@ export type GroupWithMembersAndGames = GroupType & {
 export type GroupStanding = 'member' | 'left' | 'deleted'
 
 /** What `POST /auth/sync-from-clerk` did with each field: already equal, copied, or held by another account. */
-export type ClerkFieldSync = 'unchanged' | 'updated' | 'taken'
+export type ClerkFieldSync = 'unchanged' | 'updated' | 'taken' | 'invalid'
 export type ClerkSyncResultType = { username: ClerkFieldSync; email: ClerkFieldSync }
 
 export type GroupPersonType = {
@@ -180,6 +180,48 @@ export type GroupInsightsType = {
     mostPlayed: Array<{ gameData: GameCompleteType; sessions: number; lastPlayedAt: string }>
     neverPlayed: Array<GameCompleteType>
     neverPlayedCount: number
+}
+
+/** Usage statistics of the last 30 days for admins (ADR-0021). */
+export type UsageReportType = {
+    recording: boolean
+    people: number
+    events: number
+    optedOut: number
+    days: Array<{ day: string; people: number; events: number }>
+    pages: Array<{ page: string; views: number; people: number }>
+    paths: Array<{ from: string; page: string; count: number }>
+    actions: Array<{ name: string; events: number; people: number; views: Array<{ view: string | null; count: number }> }>
+    funnels: Array<{ name: string; steps: Array<{ label: string; people: number }> }>
+    months: Array<{ month: string; events: number; pageViews: number }>
+}
+
+export type PrivacySettingsType = { usageAnalytics: boolean }
+
+/** Where someone named in the group history stands now (ADR-0018). */
+export type GroupActivityStanding = 'member' | 'left' | 'deleted'
+
+export type GroupActivityNameType = { id: number; name: string; standing: GroupActivityStanding }
+
+/** One entry of a group's history (ADR-0020): who changed what. Names are the current ones. */
+export type GroupActivityType = {
+    id: number
+    type: string
+    createdAt: string
+    actor: GroupActivityNameType
+    meetId: number | null
+    person: GroupActivityNameType | null
+    game: { id: number; title: string | null } | null
+    subject: GroupActivityNameType | null
+    data: Record<string, unknown>
+    accounts: Array<GroupActivityNameType>
+    people: Array<GroupActivityNameType>
+    games: Array<{ id: number; title: string | null }>
+}
+
+export type GroupActivityPageType = {
+    entries: Array<GroupActivityType>
+    hasMore: boolean
 }
 
 /** One person's games in a group and their approximate worth at retail price, in whole euros. */
