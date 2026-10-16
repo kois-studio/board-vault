@@ -1,5 +1,18 @@
 import { effect, Injectable, inject, signal } from '@angular/core'
-import { catchError, concatMap, finalize, firstValueFrom, forkJoin, type Observable, of, Subject, takeUntil, tap, throwError } from 'rxjs'
+import {
+    catchError,
+    concatMap,
+    finalize,
+    firstValueFrom,
+    forkJoin,
+    map,
+    type Observable,
+    of,
+    Subject,
+    takeUntil,
+    tap,
+    throwError,
+} from 'rxjs'
 import { Api } from '../../api/api'
 import type {
     AccountMeetType,
@@ -258,20 +271,66 @@ export class DataService {
         const now = Date.now()
         if (!currentUser || (!force && now - this.lastQuietRefresh < 60_000)) return
         this.lastQuietRefresh = now
-        const quietly = <T>(read: Observable<T>, apply: (value: T) => void) =>
-            read.pipe(takeUntil(this.userChanged)).subscribe({ next: apply, error: () => undefined })
-        quietly(this.api.getUserNotifications(currentUser.id), (notifications) => {
-            this.userNotifications.set(notifications)
-            this.userNotificationsError.set(false)
-        })
-        quietly(this.api.getUserInvitations(currentUser.id), (invitations) => {
-            this.userInvitations.set(invitations)
-            this.userInvitationsError.set(false)
-        })
-        quietly(this.api.getUserMeets(currentUser.id), (meets) => {
+        this.refreshInbox()
+        this.quietly(this.api.getUserMeets(currentUser.id), (meets) => {
             this.userMeets.set(meets)
             this.userMeetsError.set(false)
         })
+    }
+
+    /**
+     * Reloads the inbox (notifications and invitations) quietly, with no limit: opening the inbox and
+     * its periodic check call it. What is shown stays if a read fails.
+     */
+    public refreshInbox(): void {
+        const currentUser = this.currentUser()
+        if (!currentUser) return
+        // A newer look, or a change made meanwhile (read, delete), wins over an answer still on its way.
+        this.stopInboxRefresh()
+        const stop = this.inboxRefreshStopped
+        const known = new Set([
+            ...this.userNotifications().map((item) => `n${item.id}`),
+            ...this.userInvitations().map((item) => `i${item.id}`),
+        ])
+        const arrived = (keys: Array<string>) => {
+            const fresh = keys.filter((key) => !known.has(key)).length
+            if (fresh > 0) this.inboxArrivals.update((count) => count + 1)
+        }
+        this.quietly(
+            this.api.getUserNotifications(currentUser.id),
+            (notifications) => {
+                this.userNotifications.set(notifications)
+                this.userNotificationsError.set(false)
+                arrived(notifications.filter((item) => !item.isRead).map((item) => `n${item.id}`))
+            },
+            stop,
+        )
+        this.quietly(
+            this.api.getUserInvitations(currentUser.id),
+            (invitations) => {
+                this.userInvitations.set(invitations)
+                this.userInvitationsError.set(false)
+                arrived(invitations.map((item) => `i${item.id}`))
+            },
+            stop,
+        )
+    }
+
+    /**
+     * Goes up each time a look at the inbox (`refreshInbox`) brings something it did not have: the inbox
+     * tells screen readers. Loading the inbox the first time never counts.
+     */
+    public readonly inboxArrivals = signal(0)
+    private inboxRefreshStopped = new Subject<void>()
+
+    private stopInboxRefresh(): void {
+        this.inboxRefreshStopped.next()
+        this.inboxRefreshStopped = new Subject<void>()
+    }
+
+    /** A read whose failure keeps what is shown; it stops when the user changes, or when `stop` emits. */
+    private quietly<T>(read: Observable<T>, apply: (value: T) => void, stop?: Observable<void>): void {
+        read.pipe(takeUntil(this.userChanged), takeUntil(stop ?? this.userChanged)).subscribe({ next: apply, error: () => undefined })
     }
 
     private _getUserReviews(accountId: number) {
@@ -741,6 +800,7 @@ export class DataService {
     // #region notifications
 
     public deleteNotification(notificationId: number) {
+        this.stopInboxRefresh()
         // 1.
         this.api.deleteNotification(notificationId).subscribe({
             next: () => {
@@ -761,6 +821,7 @@ export class DataService {
 
     /** Marks a notification read; `announce: false` skips the toast, for a read that comes with another action. */
     public updateNotification(notificationId: number, { announce = true }: { announce?: boolean } = {}) {
+        this.stopInboxRefresh()
         this.api.updateNotification(notificationId, { isRead: true }).subscribe({
             next: () => {
                 this.userNotifications.update((notifications) =>
@@ -783,19 +844,29 @@ export class DataService {
     public markAllNotificationsRead() {
         const unread = this.userNotifications().filter((notification) => !notification.isRead)
         if (unread.length === 0) return
+        this.stopInboxRefresh()
 
-        forkJoin(unread.map((notification) => this.api.updateNotification(notification.id, { isRead: true }))).subscribe({
-            next: () => {
-                const ids = new Set(unread.map((notification) => notification.id))
-                this.userNotifications.update((notifications) =>
-                    notifications.map((notification) => (ids.has(notification.id) ? { ...notification, isRead: true } : notification)),
+        // Each one on its own: one that fails, or was deleted elsewhere (404), doesn't undo the others.
+        const outcomes = unread.map((notification) =>
+            this.api.updateNotification(notification.id, { isRead: true }).pipe(
+                map(() => 'read' as const),
+                catchError((error: { status?: number }) => of(error?.status === 404 ? ('gone' as const) : ('failed' as const))),
+            ),
+        )
+        forkJoin(outcomes).subscribe((results) => {
+            const read = new Set(unread.filter((_, index) => results[index] === 'read').map((notification) => notification.id))
+            const gone = new Set(unread.filter((_, index) => results[index] === 'gone').map((notification) => notification.id))
+            const failed = results.filter((result) => result === 'failed').length
+            this.userNotifications.update((notifications) =>
+                notifications
+                    .filter((notification) => !gone.has(notification.id))
+                    .map((notification) => (read.has(notification.id) ? { ...notification, isRead: true } : notification)),
+            )
+            if (failed === 0) this.toastService.success('All notifications marked as read')
+            else
+                this.toastService.error(
+                    failed === 1 ? '1 notification could not be marked as read' : `${failed} notifications could not be marked as read`,
                 )
-                this.toastService.success('All notifications marked as read')
-            },
-            error: () => {
-                this.toastService.error('Some notifications could not be marked as read')
-                this.retryUserNotifications()
-            },
         })
     }
 

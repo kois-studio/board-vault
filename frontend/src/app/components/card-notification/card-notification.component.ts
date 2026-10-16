@@ -53,7 +53,14 @@ export class CardNotificationComponent {
             return { path: ['/groups', groupId], label: 'Open the group' }
         }
         if (notification.type === 'game_proposal_submitted') {
-            return { path: ['/admin', 'proposals'], label: 'Review proposals' }
+            // Straight to the proposal; older notifications without its id open the list.
+            const proposalId = notification.data?.['proposalId']
+            return typeof proposalId === 'number'
+                ? { path: ['/admin', 'proposals', proposalId], label: 'Review the proposal' }
+                : { path: ['/admin', 'proposals'], label: 'Review proposals' }
+        }
+        if (notification.type === 'game_proposal_rejected') {
+            return { path: ['/submissions'], label: 'See your proposals' }
         }
         return null
     })

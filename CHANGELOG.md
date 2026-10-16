@@ -368,6 +368,17 @@ operational details.
 - A failed group creation or invitation shows one message, next to the form,
   instead of the same error again as a toast. Inviting an unknown username or
   an email with a pending invitation says so.
+- The inbox looks for new notifications and invitations every minute while
+  the page is in view, and always when you open it; before, a new one only
+  appeared after opening it more than a minute after the last look, or
+  coming back to the tab. Screen readers hear when something new arrives.
+- "Mark all read" marks the ones it can when one fails, drops one deleted
+  elsewhere, and says how many failed, instead of marking none.
+- A new game proposal's notification opens that proposal for admins, and a
+  rejected one opens "My proposals", where the reason is.
+- Inbox cards are easier to read and use: read ones keep their contrast
+  (they faded before), unread ones say so to screen readers, and the
+  buttons say which notification they act on.
 - Game nights keep an honest history: starting or finishing a night before
   its date asks first and moves it to now, and finishing one with no games
   played asks whether to cancel it instead or finish it anyway.

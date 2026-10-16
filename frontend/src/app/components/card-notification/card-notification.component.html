@@ -1,25 +1,37 @@
 @if (notification(); as notification) {
-    <div class="flex items-center justify-between gap-3 rounded-lg bg-bv-surface-2 p-4 text-sm" [class.opacity-50]="notification.isRead">
+    <!-- Read cards step back with the page background and muted text, which keep their contrast; fading the whole card did not. -->
+    <div
+        class="flex items-center justify-between gap-3 rounded-lg border p-4 text-sm"
+        [class.bg-bv-surface-2]="!notification.isRead"
+        [class.border-transparent]="!notification.isRead"
+        [class.border-bv-border]="notification.isRead"
+        [class.text-bv-text-muted]="notification.isRead"
+    >
     <!-- LEFT: icon + text. min-w-0 and wrap-anywhere keep a long name without spaces inside the card. -->
     <div class="min-w-0 flex-1">
         <div class="flex items-center justify-start gap-x-2">
-            <app-icon class="shrink-0" [name]="iconFor(notification.type)" [size]="20" />
-            <p class="min-w-0 wrap-anywhere">{{ notification.message }}</p>
+            <app-icon class="shrink-0" [name]="iconFor(notification.type)" [size]="20" aria-hidden="true" />
+            <p class="min-w-0 wrap-anywhere" [class.font-medium]="!notification.isRead">
+                @if (!notification.isRead) {
+                    <span class="sr-only">Unread: </span>
+                }
+                {{ notification.message }}
+            </p>
         </div>
-        <p>{{ notificationDate() }}</p>
+        <p><time [attr.datetime]="notification.createdAt">{{ notificationDate() }}</time></p>
         @if (link(); as link) {
             <a class="mt-1 inline-block font-medium text-bv-primary underline underline-offset-2" [routerLink]="link.path" (click)="openLink()">{{ link.label }}</a>
         }
     </div>
-    <!-- RIGHT: buttons -->
+    <!-- RIGHT: buttons, named after the notification they act on. -->
     <div class="flex shrink-0 items-center text-lg">
         @if(!notification.isRead){
-            <button appButton variant="secondary" size="small" type="button" class="mr-2 p-2" (click)="markAsRead()" aria-label="Mark notification as read">
-                <app-icon name="check" [size]="18" />
+            <button appButton variant="secondary" size="small" type="button" class="mr-2 p-2" (click)="markAsRead()" [attr.aria-label]="'Mark as read: ' + notification.message">
+                <app-icon name="check" [size]="18" aria-hidden="true" />
             </button>
         }
-        <button appButton variant="secondary" size="small" type="button" class="p-2" (click)="deleteNotification()" aria-label="Delete notification">
-            <app-icon name="trash" [size]="18" />
+        <button appButton variant="secondary" size="small" type="button" class="p-2" (click)="deleteNotification()" [attr.aria-label]="'Delete notification: ' + notification.message">
+            <app-icon name="trash" [size]="18" aria-hidden="true" />
         </button>
     </div>
 </div>
