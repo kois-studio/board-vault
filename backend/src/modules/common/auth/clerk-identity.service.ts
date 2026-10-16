@@ -1,5 +1,5 @@
 import { createClerkClient, type User as ClerkUser } from '@clerk/backend'
-import { ConflictException, ForbiddenException, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common'
+import { ConflictException, ForbiddenException, Injectable, NotFoundException, Optional, UnauthorizedException } from '@nestjs/common'
 import { ConfigService } from '@nestjs/config'
 
 import { API_ERROR_CODES, BoardVaultHttpException } from '../../../common/http/api-error.js'
@@ -12,6 +12,7 @@ import {
     type ClerkGroupInvitationMetadata,
 } from '../../../common/types/clerk-invitation.type.js'
 import { ActivityNotifier } from '../../core/notifications/activity-notifier.service.js'
+import { UsageService } from '../../core/usage/usage.service.js'
 import { UsersService } from '../../core/users/users.service.js'
 import { DatabaseService } from '../database/database.service.js'
 
@@ -25,6 +26,7 @@ export class ClerkIdentityService {
         private readonly usersService: UsersService,
         private readonly databaseService: DatabaseService,
         private readonly activityNotifier: ActivityNotifier,
+        @Optional() private readonly usageService?: UsageService,
     ) {}
 
     async createGroupInvitation(
@@ -252,9 +254,11 @@ export class ClerkIdentityService {
 
         const provisionedAccount = await this.provisionAccount(clerkUserId, clerkUser, primaryEmail)
 
+        await this.usageService?.record(provisionedAccount.id, 'account_created')
         if (groupInvitation) {
             await this.databaseService.groups.joinGroupFromClerkInvitation(provisionedAccount.id, groupInvitation)
             await this.activityNotifier.memberJoined(groupInvitation.groupId, provisionedAccount.id)
+            await this.usageService?.record(provisionedAccount.id, 'group_joined')
         }
 
         return provisionedAccount

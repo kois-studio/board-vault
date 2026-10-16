@@ -9,6 +9,7 @@ import { InvitationQueries } from '../src/modules/common/database/queries/invita
 import { NotificationQueries } from '../src/modules/common/database/queries/notifications.queries.js'
 import { RecommendationQueries } from '../src/modules/common/database/queries/recommendations.queries.js'
 import { SessionQueries } from '../src/modules/common/database/queries/sessions.queries.js'
+import { UsageQueries } from '../src/modules/common/database/queries/usage.queries.js'
 
 const DOMAINS = {
     accounts: AccountQueries,
@@ -21,6 +22,7 @@ const DOMAINS = {
     notifications: NotificationQueries,
     recommendations: RecommendationQueries,
     sessions: SessionQueries,
+    usage: UsageQueries,
 }
 
 /**

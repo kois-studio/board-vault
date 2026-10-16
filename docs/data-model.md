@@ -10,7 +10,7 @@ The database is SQLite through libSQL: a local file in development, Turso in
 production. The schema is
 [`database/schema/schema.sql`](../database/schema/schema.sql) (the 0001–0005
 baseline) plus the numbered files in
-[`database/migrations/`](../database/migrations/). Current version: **0022**.
+[`database/migrations/`](../database/migrations/). Current version: **0023**.
 All SQL lives in the per-domain query classes in
 [`database/queries/`](../backend/src/modules/common/database/queries/).
 
@@ -61,6 +61,9 @@ sessions they created, and more.
 | `WishlistedGame` | Private wishlist with priority. | `Account`, `Game` (cascade) |
 | `GameReview` | A user's rating and review. | `Account`, `Game` (cascade) |
 | `CollectionActivity` | Last 32 shelf, wishlist, and review actions per account. | `Account`, `Game` (cascade) |
+| `UsageEvent` | Usage analytics (ADR-0021): `name` from a fixed list, `pseudonym` (HMAC of the account id with `USAGE_PSEUDONYM_SECRET`), `view` and `fromView` (route templates). No account id, ids, free text or IP. Deleted after 30 days by the daily job; deleted for an account when it opts out or is deleted. | — (no foreign keys: it holds no account id) |
+| `UsageDaily` | Anonymous daily counts per event name and screen (`events`, distinct `people`), made from finished days of `UsageEvent` and kept. | — |
+| `UsageOptOut` | Accounts that turned usage statistics off in Settings → Privacy. | `Account` (cascade) |
 | `GroupActivity` | The group history (ADR-0020): one row per change that affects others in a group. `actorAccountId`, `type`, references (`meetId`, `groupPersonId`, `gameId`, `subjectAccountId`) and `data`, a JSON of ids and fixed values. Written in the same transaction as the change; names are looked up when read (`GET /groups/:groupId/activity`, members only). | `UserGroup`, actor `Account` (cascade); the references have no foreign keys |
 | `UserGroup` | A group. | creator `Account` (cascade) |
 | `GroupMembership` | Account membership in a group. | `UserGroup`, `Account` (cascade) |

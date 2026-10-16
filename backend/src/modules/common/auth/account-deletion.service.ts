@@ -1,5 +1,6 @@
-import { Injectable, Logger } from '@nestjs/common'
+import { Injectable, Logger, Optional } from '@nestjs/common'
 
+import { UsageService } from '../../core/usage/usage.service.js'
 import { CacheService } from '../cache/cache.service.js'
 import { DatabaseService } from '../database/database.service.js'
 
@@ -19,6 +20,7 @@ export class AccountDeletionService {
         private readonly databaseService: DatabaseService,
         private readonly cacheService: CacheService,
         private readonly clerkIdentityService: ClerkIdentityService,
+        @Optional() private readonly usageService?: UsageService,
     ) {}
 
     /** The signed-in person deletes their own account. */
@@ -65,6 +67,8 @@ export class AccountDeletionService {
 
     private async deleteAccountData(accountId: number): Promise<void> {
         await this.databaseService.accountDeletion.deleteAccount(accountId)
+        // Its usage events go too (ADR-0021); the anonymous daily counts no longer belong to anyone.
+        await this.usageService?.forgetAccount(accountId)
         // Reviews, collections, and group views of many people change at once; clearing the cache is always safe.
         // Rate limits are not cache: they stay, or every deletion would reset everyone's limits.
         const cleared = await this.cacheService.deleteCachedData()

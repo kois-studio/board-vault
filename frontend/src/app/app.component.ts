@@ -6,6 +6,7 @@ import { filter } from 'rxjs'
 import { ToastComponent } from './components/toast/toast.component'
 import { InPageLinkDirective } from './components/ui/in-page-link/in-page-link.directive'
 import { ThemeService } from './core/services/theme.service'
+import { UsageService } from './core/services/usage.service'
 
 @Component({
     selector: 'app-root',
@@ -22,6 +23,7 @@ export class AppComponent {
     constructor() {
         // Created at startup so a System theme follows OS changes on every page.
         inject(ThemeService)
+        inject(UsageService).start(this.destroyRef)
         this.updateDocumentMetadata(this.router.url)
 
         this.router.events
