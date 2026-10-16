@@ -59,6 +59,14 @@ export class PrivacySettingsDto {
     usageAnalytics: boolean
 }
 
+export class PrivacySettingsStateDto extends PrivacySettingsDto {
+    @ApiProperty({
+        example: false,
+        description: 'Whether the account has answered the notice about usage statistics; until then the app shows it once (#158).',
+    })
+    noticeAnswered: boolean
+}
+
 export class UsageDayDto {
     @ApiProperty({ example: '2026-10-16' })
     day: string

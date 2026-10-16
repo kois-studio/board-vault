@@ -107,6 +107,7 @@ import type {
     MeetType,
     MeetWithAttendeesAndGamesType,
     NotificationType,
+    PrivacySettingsStateType,
     PrivacySettingsType,
     PublicUserType,
     RecommendationSignalsType,
@@ -588,13 +589,13 @@ export class Api {
 
     getPrivacySettings() {
         return this.http
-            .get<PrivacySettingsType>(`${this.url}/settings/privacy`)
+            .get<PrivacySettingsStateType>(`${this.url}/settings/privacy`)
             .pipe(map((response) => privacySettingsSchema.parse(response)))
     }
 
     updatePrivacySettings(settings: PrivacySettingsType) {
         return this.http
-            .put<PrivacySettingsType>(`${this.url}/settings/privacy`, settings)
+            .put<PrivacySettingsStateType>(`${this.url}/settings/privacy`, settings)
             .pipe(map((response) => privacySettingsSchema.parse(response)))
     }
 

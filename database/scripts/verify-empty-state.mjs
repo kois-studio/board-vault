@@ -74,9 +74,10 @@ try {
             SELECT CASE WHEN EXISTS (SELECT 1 FROM sqlite_master WHERE type = 'table' AND name = 'UsageEvent')
                 AND EXISTS (SELECT 1 FROM sqlite_master WHERE type = 'table' AND name = 'UsageDaily')
                 AND EXISTS (SELECT 1 FROM sqlite_master WHERE type = 'table' AND name = 'UsageOptOut')
+                AND EXISTS (SELECT 1 FROM sqlite_master WHERE type = 'table' AND name = 'UsageNotice')
                 THEN 'usage-analytics: ok' ELSE 'usage-analytics: missing' END;
-            SELECT CASE WHEN (SELECT COUNT(*) FROM SchemaMigrations) = 23
-                AND (SELECT MAX(version) FROM SchemaMigrations) = '0023'
+            SELECT CASE WHEN (SELECT COUNT(*) FROM SchemaMigrations) = 24
+                AND (SELECT MAX(version) FROM SchemaMigrations) = '0024'
                 THEN 'migration-state: ok' ELSE 'migration-state: invalid' END;
             SELECT CASE WHEN EXISTS (SELECT 1 FROM pragma_table_info('GroupPerson') WHERE name = 'claimEmail')
                 THEN 'group-person-claim-email: ok' ELSE 'group-person-claim-email: missing' END;

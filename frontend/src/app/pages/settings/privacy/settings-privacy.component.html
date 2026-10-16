@@ -10,23 +10,7 @@
             </p>
         </div>
         @if (usageAnalytics() !== null) {
-            <button
-                type="button"
-                role="switch"
-                class="relative mt-1 inline-flex h-7 w-12 shrink-0 cursor-pointer items-center rounded-full transition-colors focus-visible:ring-2 focus-visible:ring-bv-primary focus-visible:ring-offset-2 disabled:opacity-60 motion-reduce:transition-none"
-                [class.bg-bv-primary]="usageAnalytics()"
-                [class.bg-bv-border]="!usageAnalytics()"
-                [attr.aria-checked]="usageAnalytics()"
-                aria-labelledby="usage-heading"
-                [disabled]="saving()"
-                (click)="toggle()"
-            >
-                <span
-                    class="inline-block size-5 rounded-full bg-white shadow transition-transform motion-reduce:transition-none"
-                    [class.translate-x-6]="usageAnalytics()"
-                    [class.translate-x-1]="!usageAnalytics()"
-                ></span>
-            </button>
+            <app-switch class="mt-1" [checked]="usageAnalytics() === true" labelledBy="usage-heading" [disabled]="saving()" (toggled)="toggle()" />
         }
     </div>
 

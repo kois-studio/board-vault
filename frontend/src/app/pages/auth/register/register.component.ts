@@ -1,15 +1,19 @@
 import { Component, inject, signal } from '@angular/core'
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms'
 import { Router, RouterLink } from '@angular/router'
+import { firstValueFrom } from 'rxjs'
+import { Api } from '../../../api/api'
 import { ButtonComponent } from '../../../components/ui/button/button.component'
 import { IconComponent } from '../../../components/ui/icon/icon.component'
+import { SwitchComponent } from '../../../components/ui/switch/switch.component'
 import { ClerkService } from '../../../core/services/clerk.service'
 
 @Component({
     templateUrl: 'register.component.html',
-    imports: [ButtonComponent, RouterLink, ReactiveFormsModule, IconComponent],
+    imports: [ButtonComponent, RouterLink, ReactiveFormsModule, IconComponent, SwitchComponent],
 })
 export class RegisterComponent {
+    private readonly api = inject(Api)
     private readonly clerkService = inject(ClerkService)
     private readonly router = inject(Router)
 
@@ -32,6 +36,8 @@ export class RegisterComponent {
         confirmPassword: new FormControl('', { nonNullable: true, validators: [Validators.required] }),
     })
     public readonly isInvitationSubmitting = signal(false)
+    /** The usage statistics switch on the sign-up form (#158): on unless they turn it off. */
+    public readonly usageAnalytics = signal(true)
 
     public openClerkSignUp(): void {
         this.clerkService.openSignUp()
@@ -57,11 +63,21 @@ export class RegisterComponent {
                 this.isInvitationSignIn() ? '' : this.invitationForm.controls.username.value,
                 this.isInvitationSignIn() ? '' : this.invitationForm.controls.password.value,
             )
+            if (!this.isInvitationSignIn()) await this.saveUsageChoice()
             await this.router.navigateByUrl('/dashboard')
         } catch (error) {
             this.invitationError.set(this.getInvitationErrorMessage(error))
         } finally {
             this.isInvitationSubmitting.set(false)
+        }
+    }
+
+    /** The account exists now, so its answer is saved. If that fails, the app asks again inside. */
+    private async saveUsageChoice(): Promise<void> {
+        try {
+            await firstValueFrom(this.api.updatePrivacySettings({ usageAnalytics: this.usageAnalytics() }))
+        } catch {
+            // The notice in the app asks again.
         }
     }
 

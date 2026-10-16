@@ -1,6 +1,8 @@
 import { signal } from '@angular/core'
 import { TestBed } from '@angular/core/testing'
 import { Router } from '@angular/router'
+import { of } from 'rxjs'
+import { Api } from '../../../api/api'
 import { ClerkService } from '../../../core/services/clerk.service'
 import { RegisterComponent } from './register.component'
 
@@ -16,12 +18,14 @@ describe('RegisterComponent invitation onboarding', () => {
             completeInvitationSignUp: vi.fn().mockName('completeInvitationSignUp').mockResolvedValue(undefined),
         }
         const router = { navigateByUrl: vi.fn().mockName('navigateByUrl').mockResolvedValue(true) }
+        const api = { updatePrivacySettings: vi.fn((body: { usageAnalytics: boolean }) => of({ ...body, noticeAnswered: true })) }
 
         TestBed.configureTestingModule({
             imports: [RegisterComponent],
             providers: [
                 { provide: ClerkService, useValue: clerkService },
                 { provide: Router, useValue: router },
+                { provide: Api, useValue: api },
             ],
         })
 
@@ -29,6 +33,7 @@ describe('RegisterComponent invitation onboarding', () => {
             fixture: TestBed.createComponent(RegisterComponent),
             clerkService,
             router,
+            api,
         }
     }
 
@@ -40,6 +45,29 @@ describe('RegisterComponent invitation onboarding', () => {
 
         expect(clerkService.completeInvitationSignUp).toHaveBeenCalledWith('', '')
         expect(router.navigateByUrl).toHaveBeenCalledWith('/dashboard')
+    })
+
+    it('saves the usage statistics choice made on the sign-up form, once the account exists (#158)', async () => {
+        const { fixture, api } = createComponent(false)
+        const component = fixture.componentInstance
+        fixture.detectChanges()
+
+        const toggle = (fixture.nativeElement as HTMLElement).querySelector<HTMLButtonElement>('[role="switch"]')
+        expect(toggle?.getAttribute('aria-checked')).toBe('true')
+        toggle?.click()
+
+        component.invitationForm.setValue({ username: 'new-invitee', password: 'a'.repeat(15), confirmPassword: 'a'.repeat(15) })
+        await component.completeInvitationSignUp()
+
+        expect(api.updatePrivacySettings).toHaveBeenCalledWith({ usageAnalytics: false })
+    })
+
+    it('leaves an existing account to the notice in the app', async () => {
+        const { fixture, api } = createComponent(true)
+
+        await fixture.componentInstance.completeInvitationSignUp()
+
+        expect(api.updatePrivacySettings).not.toHaveBeenCalled()
     })
 
     it('requires the new invitee credentials before completing registration', async () => {

@@ -198,6 +198,9 @@ export type UsageReportType = {
 
 export type PrivacySettingsType = { usageAnalytics: boolean }
 
+/** The privacy settings as the API answers them: also whether the usage notice has been answered (#158). */
+export type PrivacySettingsStateType = PrivacySettingsType & { noticeAnswered: boolean }
+
 /** Where someone named in the group history stands now (ADR-0018). */
 export type GroupActivityStanding = 'member' | 'left' | 'deleted'
 
