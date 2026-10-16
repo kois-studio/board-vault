@@ -346,6 +346,16 @@ operational details.
   same rating again no longer repeats it in Recent Activity. Title searches
   read `%` and `_` as plain characters, so `__` or `%%` no longer list the
   whole catalogue.
+- One notification the API can't read no longer empties the whole inbox:
+  it is left out and the rest show. Game proposal notifications (to
+  admins and proposers) are read again; they never matched the check, so
+  an admin's inbox came back empty. Older notification types still show.
+- A username changed in Clerk that Board Vault doesn't accept (shorter
+  than 4 characters, longer than 40, or with characters other than
+  letters, numbers, `_` and `-`) is no longer copied to the account, which
+  would then fail to load and lock the person out. Settings → Account says
+  so. Two copies racing for the same name answer "taken" instead of an
+  error.
 - Public pages no longer wait for Clerk: it loads after the first page has
   painted, and `/login` and `/register` render without it. With a Clerk key,
   as in production, Lighthouse performance goes from about 76 to 94–96, and

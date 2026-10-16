@@ -117,7 +117,7 @@ export type GroupWithMembersAndGames = GroupType & {
 export type GroupStanding = 'member' | 'left' | 'deleted'
 
 /** What `POST /auth/sync-from-clerk` did with each field: already equal, copied, or held by another account. */
-export type ClerkFieldSync = 'unchanged' | 'updated' | 'taken'
+export type ClerkFieldSync = 'unchanged' | 'updated' | 'taken' | 'invalid'
 export type ClerkSyncResultType = { username: ClerkFieldSync; email: ClerkFieldSync }
 
 export type GroupPersonType = {

@@ -15,6 +15,11 @@
                 <span class="font-mono">{{ username() }}</span> is already taken in Board Vault, so your groups still see you as
                 <span class="font-mono">{{ accountUsername() }}</span>. Choose another username in Manage sign-in.
             </p>
+        } @else if (usernameSync() === 'invalid') {
+            <p class="pb-3 text-sm text-bv-warning" role="status" data-testid="account-username-behind">
+                Board Vault usernames use 4 to 40 letters, numbers, _ or -, so your groups still see you as
+                <span class="font-mono">{{ accountUsername() }}</span>. Choose another username in Manage sign-in.
+            </p>
         } @else if (usernameSync() === 'failed') {
             <p class="pb-3 text-sm text-bv-warning" role="status" data-testid="account-username-behind">
                 Your groups still see you as <span class="font-mono">{{ accountUsername() }}</span>: the new username could not be saved yet.

@@ -47,3 +47,56 @@ describe('NotificationsService ownership', () => {
         expect(deleteNotificationById).toHaveBeenCalledWith(1, 7)
     })
 })
+
+describe('NotificationsService reading an inbox', () => {
+    const row = (id: number, type: string, data: string, message = `Notification ${id}`) => [
+        id,
+        7,
+        type,
+        message,
+        data,
+        '2026-10-15 18:19:05',
+        0,
+    ]
+    const inbox = async (rows: Array<Array<unknown>>) => {
+        const service = new NotificationsService(fakeDatabase({ getNotificationsByAccountId: vi.fn().mockResolvedValue({ rows }) }))
+        const warn = vi.spyOn((service as unknown as { LOGGER: { warn: () => void } }).LOGGER, 'warn').mockImplementation(() => undefined)
+
+        return { notifications: await service.getNotificationsByAccountId(7), warn }
+    }
+
+    it('reads the game proposal notifications the API writes for admins and proposers', async () => {
+        const { notifications, warn } = await inbox([
+            row(1, 'game_proposal_submitted', '{"gameTitle":"Azul","proposalId":4,"submittedBy":9}'),
+            row(2, 'game_proposal_approved', '{"gameTitle":"Azul","proposalId":4,"createdGameId":88}'),
+            row(3, 'game_proposal_rejected', '{"gameTitle":"Azul","proposalId":4,"reviewNotes":"Not a board game"}'),
+            row(4, 'game_proposal_duplicate', '{"gameTitle":"Azul","proposalId":4,"duplicateOfGameId":40,"duplicateOfTitle":"Azul"}'),
+            row(5, 'user_joined_group', '{"account":8,"group":12}'),
+        ])
+
+        expect(notifications.map(notification => notification.id)).toEqual([1, 2, 3, 4, 5])
+        // The data is kept whole, so the app can link where the notification points.
+        expect(notifications[0]?.data).toEqual({ gameTitle: 'Azul', proposalId: 4, submittedBy: 9 })
+        expect(notifications[1]?.data).toEqual({ gameTitle: 'Azul', proposalId: 4, createdGameId: 88 })
+        expect(warn).not.toHaveBeenCalled()
+    })
+
+    it('keeps older types the app still shows', async () => {
+        const { notifications } = await inbox([row(1, 'member_left', '{"account":8,"group":12}')])
+
+        expect(notifications.map(notification => notification.type)).toEqual(['member_left'])
+    })
+
+    it('leaves out only the notifications it cannot read, instead of emptying the inbox', async () => {
+        const { notifications, warn } = await inbox([
+            row(1, 'user_joined_group', '{"account":8,"group":12}'),
+            row(2, 'meeting_scheduled', '{"account":8}'),
+            row(3, 'user_joined_group', 'not json'),
+            row(4, 'user_joined_group', '{"account":8,"group":12}', ''),
+            row(5, 'session_finished', '{"account":8,"group":12,"meeting":21}'),
+        ])
+
+        expect(notifications.map(notification => notification.id)).toEqual([1, 5])
+        expect(warn).toHaveBeenCalledWith('Left out notifications that could not be read; the others are returned')
+    })
+})

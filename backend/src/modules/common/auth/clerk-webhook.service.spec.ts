@@ -7,9 +7,9 @@ import type { AccountDeletionService } from './account-deletion.service.js'
 import type { WebhookEvent } from '@clerk/backend/webhooks'
 import type { Mock } from 'vitest'
 
-const account = { id: 7, email: 'old@example.com', username: 'ana', isDeleted: 0 }
+const account = { id: 7, email: 'old@example.com', username: 'anabel', isDeleted: 0 }
 
-function userUpdated(email: string, status = 'verified', username = 'ana'): WebhookEvent {
+function userUpdated(email: string, status = 'verified', username = 'anabel'): WebhookEvent {
     return {
         type: 'user.updated',
         object: 'event',
@@ -119,9 +119,9 @@ describe('ClerkWebhookService', () => {
             getUserByUsername: vi.fn().mockResolvedValue({ rows: [account] }),
         })
 
-        await service.handle(userUpdated('old@example.com', 'verified', 'Ana'))
+        await service.handle(userUpdated('old@example.com', 'verified', 'Anabel'))
 
-        expect(queries.updateUsername).toHaveBeenCalledWith(7, 'Ana')
+        expect(queries.updateUsername).toHaveBeenCalledWith(7, 'Anabel')
     })
 
     it('ignores users with no linked account', async () => {
@@ -166,10 +166,31 @@ describe('ClerkAccountSyncService results', () => {
 
     it('reports what it copied, and what another account already has', async () => {
         await expect(create().apply(profile('ana_plays'))).resolves.toEqual({ username: 'updated', email: 'unchanged' })
-        await expect(create().apply(profile('ana'))).resolves.toEqual({ username: 'unchanged', email: 'unchanged' })
+        await expect(create().apply(profile('anabel'))).resolves.toEqual({ username: 'unchanged', email: 'unchanged' })
         await expect(
             create({ getUserByUsername: vi.fn().mockResolvedValue({ rows: [{ id: 9 }] }) }).apply(profile('ana_plays')),
         ).resolves.toEqual({ username: 'taken', email: 'unchanged' })
+    })
+
+    it('does not copy a username Board Vault would not accept, so the account stays readable', async () => {
+        for (const username of ['ana', 'ana plays', 'ana.plays', 'x'.repeat(41)]) {
+            const updateUsername = vi.fn()
+
+            await expect(create({ updateUsername }).apply(profile(username))).resolves.toEqual({ username: 'invalid', email: 'unchanged' })
+            expect(updateUsername).not.toHaveBeenCalled()
+        }
+        await expect(create().apply(profile('ana-plays_2'))).resolves.toEqual({ username: 'updated', email: 'unchanged' })
+    })
+
+    it('answers taken, not an error, when another account takes the username at the same moment', async () => {
+        const updateUsername = vi
+            .fn()
+            .mockRejectedValue(Object.assign(new Error('UNIQUE constraint failed: Account.username'), { code: 'SQLITE_CONSTRAINT' }))
+
+        await expect(create({ updateUsername }).apply(profile('ana_plays'))).resolves.toEqual({ username: 'taken', email: 'unchanged' })
+        await expect(
+            create({ updateUsername: vi.fn().mockRejectedValue(new Error('database unavailable')) }).apply(profile('ana_plays')),
+        ).rejects.toThrow('database unavailable')
     })
 
     it('answers null for a deleted or unknown account', async () => {

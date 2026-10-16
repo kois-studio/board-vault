@@ -722,7 +722,7 @@ export const recommendationSignalsSchema: z.ZodMiniType<RecommendationSignalsTyp
 
 export const successSchema = z.object({ success: z.literal(true) })
 
-const clerkFieldSyncSchema = z.enum(['unchanged', 'updated', 'taken'])
+const clerkFieldSyncSchema = z.enum(['unchanged', 'updated', 'taken', 'invalid'])
 export const clerkSyncResultSchema: z.ZodMiniType<ClerkSyncResultType> = z.object({
     username: clerkFieldSyncSchema,
     email: clerkFieldSyncSchema,

@@ -35,14 +35,21 @@ export class SessionStatusDto {
     clerkUserId: string
 }
 
-/** What happened to one field copied from Clerk: already equal, copied, or held by another account. */
-export type ClerkFieldSync = 'unchanged' | 'updated' | 'taken'
+/**
+ * What happened to one field copied from Clerk: already equal, copied, held by another account, or
+ * (usernames only) not a username Board Vault accepts.
+ */
+export type ClerkFieldSync = 'unchanged' | 'updated' | 'taken' | 'invalid'
 
-const CLERK_FIELD_SYNC: Array<ClerkFieldSync> = ['unchanged', 'updated', 'taken']
+const CLERK_FIELD_SYNC: Array<ClerkFieldSync> = ['unchanged', 'updated', 'taken', 'invalid']
 
 /** The result of copying the signed-in Clerk user's username and primary email to the account. */
 export class ClerkSyncResultDto {
-    @ApiProperty({ enum: CLERK_FIELD_SYNC, example: 'updated', description: '`taken`: another account has this username' })
+    @ApiProperty({
+        enum: CLERK_FIELD_SYNC,
+        example: 'updated',
+        description: '`taken`: another account has this username; `invalid`: not 4–40 letters, numbers, _ or -',
+    })
     username: ClerkFieldSync
 
     @ApiProperty({

@@ -5502,17 +5502,19 @@
             "enum": [
               "unchanged",
               "updated",
-              "taken"
+              "taken",
+              "invalid"
             ],
             "example": "updated",
-            "description": "`taken`: another account has this username"
+            "description": "`taken`: another account has this username; `invalid`: not 4–40 letters, numbers, _ or -"
           },
           "email": {
             "type": "string",
             "enum": [
               "unchanged",
               "updated",
-              "taken"
+              "taken",
+              "invalid"
             ],
             "example": "unchanged",
             "description": "Only a verified primary email is copied. `taken`: another account has it"
