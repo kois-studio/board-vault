@@ -3,6 +3,7 @@ import { CreateGroupRequestBody } from '../../../common/types/group.type.js'
 import { ClerkIdentityService } from '../../common/auth/clerk-identity.service.js'
 
 import { GroupAcquisitionService } from './group-acquisition.service.js'
+import { GroupActivityService } from './group-activity.service.js'
 import { GroupInsightsService } from './group-insights.service.js'
 import { GroupsController } from './groups.controller.js'
 import { GroupsService } from './groups.service.js'
@@ -17,6 +18,7 @@ describe('GroupsController actor and listing boundaries', () => {
             {} as GroupAcquisitionService,
             {} as ClerkIdentityService,
             {} as GroupInsightsService,
+            {} as GroupActivityService,
         )
 
         await controller.getGroups(request)
@@ -31,6 +33,7 @@ describe('GroupsController actor and listing boundaries', () => {
             {} as GroupAcquisitionService,
             {} as ClerkIdentityService,
             {} as GroupInsightsService,
+            {} as GroupActivityService,
         )
         const body = { name: 'Test group', createdBy: 999 } as unknown as CreateGroupRequestBody
 
@@ -50,6 +53,7 @@ describe('GroupsController actor and listing boundaries', () => {
             {} as GroupAcquisitionService,
             { createGroupInvitation } as never,
             {} as GroupInsightsService,
+            {} as GroupActivityService,
         )
 
         await controller.createClerkInvitation(12, request, { emailAddress: 'friend@example.com' })
@@ -64,6 +68,7 @@ describe('GroupsController actor and listing boundaries', () => {
             {} as GroupAcquisitionService,
             { getGroupInvitations } as never,
             {} as GroupInsightsService,
+            {} as GroupActivityService,
         )
 
         await controller.getClerkInvitations(12, request)
@@ -78,6 +83,7 @@ describe('GroupsController actor and listing boundaries', () => {
             {} as GroupAcquisitionService,
             { revokeGroupInvitation } as never,
             {} as GroupInsightsService,
+            {} as GroupActivityService,
         )
 
         await controller.revokeClerkInvitation(12, { groupId: 12, invitationId: 'inv_123' }, request)
@@ -92,6 +98,7 @@ describe('GroupsController actor and listing boundaries', () => {
             { updateDecision } as unknown as GroupAcquisitionService,
             {} as ClerkIdentityService,
             {} as GroupInsightsService,
+            {} as GroupActivityService,
         )
         const body = { status: 'planned' } as UpdateGroupAcquisitionDecisionBody
 

@@ -45,7 +45,7 @@ export async function departGroup(transaction: Transaction, accountId: number, g
 }
 
 /**
- * Deletes a group and everything in it, inside the caller's transaction, and answers how many groups went (0 or 1). Session
+ * Deletes a group and everything in it, its history included, inside the caller's transaction, and answers how many groups went (0 or 1). Session
  * rows go first: they hold the group's people with RESTRICT, so with foreign keys
  * on, deleting the group alone fails as soon as it has history.
  */
@@ -58,7 +58,10 @@ export async function deleteGroupRows(transaction: Transaction, groupId: number)
         { sql: `DELETE FROM MeetPersonAttendee WHERE meetId IN (${meets})`, args: [groupId] },
         { sql: 'DELETE FROM Meet WHERE groupId = ?', args: [groupId] },
         { sql: 'DELETE FROM UserGroup WHERE id = ?', args: [groupId] },
+        // Its history goes with it (ADR-0020): the cascade already did, unless foreign keys are off.
+        // The append-only trigger allows this only once the group is gone, so it stays last.
+        { sql: 'DELETE FROM GroupActivity WHERE groupId = ?', args: [groupId] },
     ])
 
-    return results.at(-1)?.rowsAffected ?? 0
+    return results.at(-2)?.rowsAffected ?? 0
 }

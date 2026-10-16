@@ -10,7 +10,7 @@ The database is SQLite through libSQL: a local file in development, Turso in
 production. The schema is
 [`database/schema/schema.sql`](../database/schema/schema.sql) (the 0001–0005
 baseline) plus the numbered files in
-[`database/migrations/`](../database/migrations/). Current version: **0019**.
+[`database/migrations/`](../database/migrations/). Current version: **0022**.
 All SQL lives in the per-domain query classes in
 [`database/queries/`](../backend/src/modules/common/database/queries/).
 
@@ -38,6 +38,14 @@ sessions they created, and more.
   group-person reads derive it from the account and the membership (ADR-0018).
   Leaving a group deletes only the membership and the person's place in
   scheduled sessions; completed sessions never change.
+- **`GroupActivity` is append-only** ([ADR-0020](adr/0020-group-history.md)).
+  Two triggers refuse any `UPDATE`, and any `DELETE` while its group exists;
+  deleting the group removes its history (cascade, plus an explicit delete in
+  `group-lifecycle.ts` after the group row). Its references to sessions,
+  people, games and accounts have no foreign keys on purpose, and it never
+  holds names or free text, so account deletion needs no extra step.
+  [`group-activity-invariants.spec.ts`](../backend/src/modules/common/database/group-activity-invariants.spec.ts)
+  fails if application code updates or deletes it anywhere else.
 
 ## Tables
 
@@ -53,12 +61,13 @@ sessions they created, and more.
 | `WishlistedGame` | Private wishlist with priority. | `Account`, `Game` (cascade) |
 | `GameReview` | A user's rating and review. | `Account`, `Game` (cascade) |
 | `CollectionActivity` | Last 32 shelf, wishlist, and review actions per account. | `Account`, `Game` (cascade) |
+| `GroupActivity` | The group history (ADR-0020): one row per change that affects others in a group. `actorAccountId`, `type`, references (`meetId`, `groupPersonId`, `gameId`, `subjectAccountId`) and `data`, a JSON of ids and fixed values. Written in the same transaction as the change; names are looked up when read (`GET /groups/:groupId/activity`, members only). | `UserGroup`, actor `Account` (cascade); the references have no foreign keys |
 | `UserGroup` | A group. | creator `Account` (cascade) |
 | `GroupMembership` | Account membership in a group. | `UserGroup`, `Account` (cascade) |
 | `Invitation` | Invitation of an existing account to a group, optionally to claim a group person; has an expiry. | `UserGroup`, both `Account`s (cascade); `GroupPerson` (set null) |
-| `Notification` | In-app notification. `type` says what happened: game proposals (`game_proposal_*`, from admin review), game nights (`meeting_scheduled`, `session_started`, `session_finished`, `session_cancelled`; `data` has `account`, `meeting`, `group`) and someone joining (`user_joined_group`; `data` has `account`, `group`). `ActivityNotifier` writes the game-night and joining ones after the change is saved, to everyone concerned except the person who acted; a failure is logged and never fails the change. | `Account` (cascade) |
+| `Notification` | In-app notification. `type` says what happened: game proposals (`game_proposal_*`, from admin review), game nights (`meeting_scheduled`, `session_started`, `session_finished`, `session_cancelled`; `data` has `account`, `meeting`, `group`) someone joining (`user_joined_group`; `data` has `account`, `group`), and someone changing a group person's game or preference that another member entered (`group_person_changed`, sent to that member; `data` has `account`, `group`, `person`, `game`). `ActivityNotifier` writes the game-night, joining and group-person ones after the change is saved, to everyone concerned except the person who acted; a failure is logged and never fails the change. | `Account` (cascade) |
 | `GroupPerson` | A group-scoped participant, optionally linked to an account; carries the claim email and expiry. | `UserGroup`, creator `Account` (cascade); linked `Account` (set null) |
-| `GroupPersonGameOwnership`, `GroupPersonGamePreference` | Games a group person owns or likes, entered by a member. | `GroupPerson`, `Game`, entering `Account` (cascade); confirming `Account` (set null) |
+| `GroupPersonGameOwnership`, `GroupPersonGamePreference` | Games a group person owns or likes, entered by any member (ADR-0020); `enteredByAccountId` is whoever set it last, and the group history keeps every earlier change. | `GroupPerson`, `Game`, entering `Account` (cascade); confirming `Account` (set null) |
 | `GroupGameInterest` | A member's interest in a game for the group. | `UserGroup`, `Account`, `Game` (cascade) |
 | `GroupAcquisitionDecision` | The group's acquisition decision for a game: `open`, `planned`, or `not_now`, with an optional note. | `UserGroup`, `Game`, deciding `Account` (cascade) |
 | `Meet` | A session (named `Meet` for historical reasons): date, status, timezone, notes. | `UserGroup`, creator `Account` (cascade) |

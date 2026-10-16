@@ -27,6 +27,7 @@ import {
     gamesSchema,
     gameViewSchema,
     groupAcquisitionBoardSchema,
+    groupActivityPageSchema,
     groupCollectionSchema,
     groupInsightsSchema,
     groupInvitationsSchema,
@@ -92,6 +93,7 @@ import type {
     GameType,
     GameViewType,
     GroupAcquisitionEntryType,
+    GroupActivityPageType,
     GroupCollectionType,
     GroupInsightsType,
     GroupPersonType,
@@ -573,6 +575,16 @@ export class Api {
         return this.http
             .get<GroupCollectionType>(`${this.url}/groups/${groupId}/collection`)
             .pipe(map((response) => groupCollectionSchema.parse(response)))
+    }
+
+    /** A page of the group's history, newest first; pass the last id seen as `before` for older entries. */
+    getGroupActivity(groupId: number, options: { before?: number; limit?: number } = {}) {
+        const params: Record<string, number> = {}
+        if (options.before !== undefined) params['before'] = options.before
+        if (options.limit !== undefined) params['limit'] = options.limit
+        return this.http
+            .get<GroupActivityPageType>(`${this.url}/groups/${groupId}/activity`, { params })
+            .pipe(map((response) => groupActivityPageSchema.parse(response)))
     }
 
     getGroupInsights(groupId: number) {

@@ -1575,6 +1575,65 @@
         ]
       }
     },
+    "/groups/{groupId}/activity": {
+      "get": {
+        "operationId": "GroupsController_getActivity",
+        "parameters": [
+          {
+            "name": "groupId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "before",
+            "required": false,
+            "in": "query",
+            "description": "Return entries older than this id (the last id of the previous page).",
+            "schema": {
+              "example": 120,
+              "type": "number"
+            }
+          },
+          {
+            "name": "limit",
+            "required": false,
+            "in": "query",
+            "description": "Entries per page, 1 to 50.",
+            "schema": {
+              "example": 30,
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GroupActivityPageDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Only current members of the group can read its history."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get the group history: who changed what in the group, newest first (ADR-0020)",
+        "tags": [
+          "groups"
+        ]
+      }
+    },
     "/groups/{groupId}/insights": {
       "get": {
         "operationId": "GroupsController_getInsights",
@@ -6419,6 +6478,216 @@
           "emailAddress",
           "status",
           "createdAt"
+        ]
+      },
+      "GroupActivityAccountDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number",
+            "example": 12
+          },
+          "name": {
+            "type": "string",
+            "example": "Ana",
+            "description": "The current name: \"Deleted account\" once the account is deleted (ADR-0018)."
+          },
+          "standing": {
+            "type": "string",
+            "enum": [
+              "member",
+              "left",
+              "deleted"
+            ]
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "standing"
+        ]
+      },
+      "GroupActivityPersonDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number",
+            "example": 7
+          },
+          "name": {
+            "type": "string",
+            "example": "Pedro"
+          },
+          "standing": {
+            "type": "string",
+            "enum": [
+              "member",
+              "left",
+              "deleted"
+            ]
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "standing"
+        ]
+      },
+      "GroupActivityGameDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number",
+            "example": 42
+          },
+          "title": {
+            "type": "string",
+            "example": "Catan",
+            "nullable": true,
+            "description": "Null when the game is no longer in the catalogue."
+          }
+        },
+        "required": [
+          "id",
+          "title"
+        ]
+      },
+      "GroupActivityDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number",
+            "example": 120
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "session_planned",
+              "session_recorded",
+              "session_started",
+              "session_finished",
+              "session_cancelled",
+              "session_invites_changed",
+              "session_shortlist_changed",
+              "session_bringer_changed",
+              "session_played_changed",
+              "session_rsvp",
+              "session_attendance_changed",
+              "session_results_changed",
+              "person_added",
+              "person_updated",
+              "person_archived",
+              "person_restored",
+              "person_claimed",
+              "person_game_set",
+              "person_preference_set",
+              "person_preference_removed",
+              "member_joined",
+              "member_left",
+              "member_removed"
+            ]
+          },
+          "createdAt": {
+            "type": "string",
+            "example": "2026-10-16 18:30:00"
+          },
+          "actor": {
+            "$ref": "#/components/schemas/GroupActivityAccountDto"
+          },
+          "meetId": {
+            "type": "number",
+            "example": 31,
+            "nullable": true
+          },
+          "person": {
+            "nullable": true,
+            "type": "object",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/GroupActivityPersonDto"
+              }
+            ]
+          },
+          "game": {
+            "nullable": true,
+            "type": "object",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/GroupActivityGameDto"
+              }
+            ]
+          },
+          "subject": {
+            "nullable": true,
+            "type": "object",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/GroupActivityAccountDto"
+              }
+            ]
+          },
+          "data": {
+            "type": "object",
+            "additionalProperties": true,
+            "example": {
+              "addedGameIds": [
+                42
+              ],
+              "removedGameIds": []
+            },
+            "description": "The rest of the change, as identifiers and fixed values."
+          },
+          "accounts": {
+            "description": "Accounts named by id in `data`, so the page can show their names.",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/GroupActivityAccountDto"
+            }
+          },
+          "people": {
+            "description": "Group people named by id in `data`.",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/GroupActivityPersonDto"
+            }
+          },
+          "games": {
+            "description": "Games named by id in `data`.",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/GroupActivityGameDto"
+            }
+          }
+        },
+        "required": [
+          "id",
+          "type",
+          "createdAt",
+          "actor",
+          "data",
+          "accounts",
+          "people",
+          "games"
+        ]
+      },
+      "GroupActivityPageDto": {
+        "type": "object",
+        "properties": {
+          "entries": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/GroupActivityDto"
+            }
+          },
+          "hasMore": {
+            "type": "boolean",
+            "example": true,
+            "description": "Whether older entries exist; ask again with `before` set to the last id."
+          }
+        },
+        "required": [
+          "entries",
+          "hasMore"
         ]
       },
       "GroupStandingDto": {

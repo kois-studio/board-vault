@@ -28,7 +28,7 @@ export function formatSessionDate(storedDate: string, timezone: string): string 
 
 /**
  * In-app notifications for what happens in a group: a game night planned, started, finished or
- * cancelled, and someone joining. Sent after the change is saved; a failure is logged and never
+ * cancelled, someone joining, and someone changing what another member entered for a group person. Sent after the change is saved; a failure is logged and never
  * fails the request that caused it. The person who acted is never notified.
  */
 @Injectable()
@@ -95,6 +95,49 @@ export class ActivityNotifier {
                 `${name} joined ${groupName}.`,
                 { account: accountId, group: groupId },
             )
+        })
+    }
+
+    /**
+     * Someone changed a game or a preference that another member entered for a group person
+     * (ADR-0020): that member hears it, if they are still in the group. Everyone else sees it in the
+     * group history.
+     */
+    async groupPersonEntryChanged(change: {
+        groupId: number
+        actorAccountId: number
+        enteredByAccountId: number
+        groupPersonId: number
+        gameId: number
+        change: 'owned' | 'not_owned' | 'unsure' | 'preference' | 'preference_removed'
+    }): Promise<void> {
+        if (change.enteredByAccountId === change.actorAccountId) return
+        await this.guard('group_person_changed', async () => {
+            const rows = (await this.databaseService.notifications.getGroupNotificationContext(change.groupId)).rows
+            const groupName = rows[0] ? String(rows[0][0]) : null
+
+            if (!groupName || !rows.some(row => Number(row[1]) === change.enteredByAccountId)) return
+            const [personRow] = (await this.databaseService.groups.getGroupPersonById(change.groupPersonId, change.groupId)).rows
+            const [gameRow] = (await this.databaseService.groupActivity.getGameTitles([change.gameId])).rows
+
+            if (!personRow) return
+            const actor = await this.accountName(change.actorAccountId)
+            const person = String(personRow[5])
+            const game = gameRow?.[1] ? String(gameRow[1]) : 'a game'
+            const message = {
+                owned: `${actor} said ${person} has ${game}, in ${groupName}.`,
+                not_owned: `${actor} removed ${game} from ${person}'s games in ${groupName}.`,
+                unsure: `${actor} marked ${game} as unsure for ${person}, in ${groupName}.`,
+                preference: `${actor} changed how much ${person} likes ${game}, in ${groupName}.`,
+                preference_removed: `${actor} removed what ${person} thinks of ${game}, in ${groupName}.`,
+            }[change.change]
+
+            await this.send([change.enteredByAccountId], change.actorAccountId, NotificationTypeEnum.GROUP_PERSON_CHANGED, message, {
+                account: change.actorAccountId,
+                group: change.groupId,
+                person: change.groupPersonId,
+                game: change.gameId,
+            })
         })
     }
 
