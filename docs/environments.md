@@ -77,7 +77,7 @@ checks them at startup.
 | `UPSTASH_REDIS_REST_URL` | When Redis is on | Upstash REST endpoint. |
 | `UPSTASH_REDIS_REST_TOKEN` | When Redis is on | Upstash REST token. |
 | `USAGE_PSEUDONYM_SECRET` | Production | Long random value (`openssl rand -hex 32`) that turns account ids into usage pseudonyms ([ADR-0021](adr/0021-own-usage-analytics.md)). Unset, nothing is recorded. Changing it starts every pseudonym afresh. |
-| `CRON_SECRET` | Production | Long random value. Vercel Cron sends it as `Authorization: Bearer …` to `GET /internal/daily-maintenance` (`backend/vercel.json`, daily at 03:30 UTC), which rolls up and expires usage events. Unset, the route answers `404`. |
+| `CRON_SECRET` | Production | Long random value. Vercel Cron sends it as `Authorization: Bearer …` to `GET /internal/daily-maintenance` (`backend/vercel.json`, daily at 03:30 UTC), which rolls up and expires usage events and clears expired group person claim emails. Unset, the route answers `404`. |
 | `CORS_ORIGINS` | No | Extra comma-separated browser origins. Local defaults already allow ports 4200 and 4300. |
 
 Vercel also sets `VERCEL` and `VERCEL_ENV`. The API uses them to trust the
@@ -122,7 +122,9 @@ Only public values may go there. The API base URL is fixed per build in
 - **Daily maintenance:** Vercel Cron calls `GET /internal/daily-maintenance`
   once a day (03:30 UTC) with `CRON_SECRET`. It writes one
   `usage.daily_maintenance` log line with how many daily counts it made and
-  how many raw usage events it deleted. A missed day is caught up on the next
+  how many raw usage events it deleted, and one
+  `group_person.expired_claims_cleared` line with how many expired claim
+  emails it cleared. A missed day is caught up on the next
   run. To run it by hand:
   `curl -H "Authorization: Bearer $CRON_SECRET" https://backend.board-vault.com/internal/daily-maintenance`.
 - **Usage:** Administration → Usage in the app (ADR-0021).
