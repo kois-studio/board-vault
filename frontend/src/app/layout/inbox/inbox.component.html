@@ -1,11 +1,12 @@
 <div class="sm:relative">
+    <span class="sr-only" role="status" aria-live="polite">{{ announcement() }}</span>
     <button
         #trigger
         type="button"
         class="relative flex h-11 w-11 cursor-pointer items-center justify-center rounded-full text-bv-text-muted hover:bg-bv-surface-2 hover:text-bv-text focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-bv-primary"
         [attr.aria-label]="triggerLabel()"
         [attr.aria-expanded]="disclosure.isOpen()"
-        aria-controls="inbox-panel"
+        [attr.aria-controls]="disclosure.isOpen() ? 'inbox-panel' : null"
         (click)="toggle()"
     >
         <app-icon name="bell" [size]="22" />
@@ -66,7 +67,7 @@
                     <button appButton variant="secondary" size="small" type="button" class="mt-2" (click)="retryNotifications()">Retry</button>
                 </div>
                 } @else if (notifications().length === 0) {
-                <p class="text-sm text-bv-text-muted">You're all caught up.</p>
+                <p class="text-sm text-bv-text-muted">You’re all caught up.</p>
                 } @else {
                 <ul class="grid gap-2">
                     @for (notification of notifications() | sortByDate; track notification.id) {

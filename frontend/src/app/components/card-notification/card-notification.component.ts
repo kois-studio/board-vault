@@ -49,11 +49,19 @@ export class CardNotificationComponent {
             return { path: ['/sessions', sessionId], label: sessionLabel }
         }
         const groupId = notification.data?.['group']
-        if (notification.type === 'user_joined_group' && typeof groupId === 'number') {
+        const groupTypes = ['user_joined_group', 'group_person_changed']
+        if (groupTypes.includes(notification.type) && typeof groupId === 'number') {
             return { path: ['/groups', groupId], label: 'Open the group' }
         }
         if (notification.type === 'game_proposal_submitted') {
-            return { path: ['/admin', 'proposals'], label: 'Review proposals' }
+            // Straight to the proposal; older notifications without its id open the list.
+            const proposalId = notification.data?.['proposalId']
+            return typeof proposalId === 'number'
+                ? { path: ['/admin', 'proposals', proposalId], label: 'Review the proposal' }
+                : { path: ['/admin', 'proposals'], label: 'Review proposals' }
+        }
+        if (notification.type === 'game_proposal_rejected') {
+            return { path: ['/submissions'], label: 'See your proposals' }
         }
         return null
     })
@@ -94,6 +102,7 @@ export class CardNotificationComponent {
                 session_finished: 'calendar-check',
                 session_cancelled: 'circle-x',
                 user_joined_group: 'user-check',
+                group_person_changed: 'pencil',
             }[type] ?? 'info'
         )
     }

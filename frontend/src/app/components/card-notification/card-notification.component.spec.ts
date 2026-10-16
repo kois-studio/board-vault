@@ -45,10 +45,28 @@ describe('CardNotificationComponent', () => {
         expect(link.getAttribute('href')).toBe('/games/40')
     })
 
-    it('sends admins to the proposals to review', () => {
+    it('sends admins straight to the proposal to review', () => {
         const fixture = render(notification('game_proposal_submitted', { proposalId: 4 }))
+        const link = fixture.nativeElement.querySelector('a') as HTMLAnchorElement
 
-        expect((fixture.nativeElement.querySelector('a') as HTMLAnchorElement).getAttribute('href')).toBe('/admin/proposals')
+        expect(link.getAttribute('href')).toBe('/admin/proposals/4')
+        expect(link.textContent?.trim()).toBe('Review the proposal')
+        TestBed.resetTestingModule()
+        // An older notification without the proposal id opens the list.
+        expect(
+            (render(notification('game_proposal_submitted', {})).nativeElement.querySelector('a') as HTMLAnchorElement).getAttribute(
+                'href',
+            ),
+        ).toBe('/admin/proposals')
+    })
+
+    it('sends a rejected proposal to the proposer’s own proposals, where the reason is', () => {
+        const link = render(notification('game_proposal_rejected', { proposalId: 4, reviewNotes: 'No' })).nativeElement.querySelector(
+            'a',
+        ) as HTMLAnchorElement
+
+        expect(link.getAttribute('href')).toBe('/submissions')
+        expect(link.textContent?.trim()).toBe('See your proposals')
     })
 
     it('has no link for an approval without a game, or for other notifications', () => {
@@ -78,6 +96,15 @@ describe('CardNotificationComponent', () => {
         const link = render(notification('user_joined_group', { account: 3, group: 7 })).nativeElement.querySelector(
             'a',
         ) as HTMLAnchorElement
+
+        expect(link.textContent?.trim()).toBe('Open the group')
+        expect(link.getAttribute('href')).toBe('/groups/7')
+    })
+
+    it('links a change to a group person to the group', () => {
+        const link = render(
+            notification('group_person_changed', { account: 3, group: 7, person: 2, game: 40 }),
+        ).nativeElement.querySelector('a') as HTMLAnchorElement
 
         expect(link.textContent?.trim()).toBe('Open the group')
         expect(link.getAttribute('href')).toBe('/groups/7')
