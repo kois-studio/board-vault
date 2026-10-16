@@ -31,10 +31,10 @@ export class SettingsAccountComponent {
     /** The username Board Vault has; groups invite and see you by it. */
     public readonly accountUsername = computed(() => this.dataService.currentUser()?.username ?? null)
     /**
-     * Copying a username changed in Clerk: `taken` when another account has it, `failed` when it
-     * could not be copied now. Idle otherwise, including while the copy runs.
+     * Copying a username changed in Clerk: `taken` when another account has it, `invalid` when Board
+     * Vault does not accept it, `failed` when it could not be copied now. Idle otherwise, including while the copy runs.
      */
-    public readonly usernameSync = signal<'idle' | 'taken' | 'failed'>('idle')
+    public readonly usernameSync = signal<'idle' | 'taken' | 'invalid' | 'failed'>('idle')
     private usernameSyncFor: string | null = null
 
     constructor() {
@@ -61,7 +61,7 @@ export class SettingsAccountComponent {
         const result = await this.dataService.syncFromClerk()
         // Clerk changed again meanwhile: that change runs its own sync.
         if (this.usernameSyncFor !== wanted || this.accountUsername() === wanted) return
-        this.usernameSync.set(result?.username === 'taken' ? 'taken' : 'failed')
+        this.usernameSync.set(result?.username === 'taken' || result?.username === 'invalid' ? result.username : 'failed')
     }
 
     public readonly isConfirmingDeletion = signal(false)

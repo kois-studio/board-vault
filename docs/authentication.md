@@ -80,7 +80,9 @@ Clerk's panel reports a new username, Settings → Account calls
 `POST /auth/sync-from-clerk`: the API reads the signed-in user from Clerk with
 its secret key (nothing comes from the request) and applies the same sync as
 the webhook, answering `updated`, `unchanged`, or `taken` for the username and
-the email. The page then says plainly when the username is taken. The webhook
+the email, and `invalid` for a username Board Vault does not accept (4 to 40
+letters, numbers, `_` or `-`, the rule it uses when it creates one). The page
+then says plainly when the username is taken or not accepted. The webhook
 still covers changes made outside the app. A local API never receives
 webhooks; see [Run with Clerk](how-to/run-with-clerk.md#webhooks-dont-reach-your-machine).
 

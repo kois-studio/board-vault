@@ -103,6 +103,19 @@ describe('SettingsAccountComponent', () => {
             expect(text('account-username-behind')).toContain('still see you as organizer')
         })
 
+        it('says when Board Vault does not accept the username, and what it accepts', async () => {
+            dataService.syncFromClerk.mockResolvedValue({ username: 'invalid', email: 'unchanged' })
+
+            clerkService.username.set('ana')
+            fixture.detectChanges()
+            await settle()
+
+            expect(dataService.currentUser()?.username).toBe('organizer')
+            expect(text('account-username-behind')).toContain('4 to 40 letters, numbers, _ or -')
+            expect(text('account-username-behind')).toContain('still see you as organizer')
+            expect(text('account-username-behind')).not.toContain('could not be saved yet')
+        })
+
         it('says when the copy failed, and asks to reload', async () => {
             dataService.syncFromClerk.mockResolvedValue(null)
 

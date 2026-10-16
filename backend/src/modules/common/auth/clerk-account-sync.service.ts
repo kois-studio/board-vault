@@ -4,6 +4,9 @@ import { DatabaseService } from '../database/database.service.js'
 
 import type { ClerkFieldSync, ClerkSyncResultDto } from '../../../common/types/auth.type.js'
 
+/** The usernames Board Vault gives and accepts: 4 to 40 letters, numbers, _ or - (see ClerkIdentityService.buildUsername). */
+export const USERNAME_RULE = /^[A-Za-z0-9_-]{4,40}$/
+
 /** What Board Vault copies from a Clerk user: the username and the primary email (ADR-0017). */
 export type ClerkProfile = {
     clerkUserId: string
@@ -58,6 +61,12 @@ export class ClerkAccountSyncService {
 
         if (!username || username === account.username) return 'unchanged'
 
+        // Clerk may allow names Board Vault does not: an account must stay readable by its own rules.
+        if (!USERNAME_RULE.test(username)) {
+            this.logger.warn('A Clerk username change was not synced: it does not meet the Board Vault username rules')
+            return 'invalid'
+        }
+
         const owner = (await this.databaseService.accounts.getUserByUsername(username)).rows[0]
 
         if (owner && Number(owner.id) !== account.id) {
@@ -65,7 +74,14 @@ export class ClerkAccountSyncService {
             return 'taken'
         }
 
-        await this.databaseService.accounts.updateUsername(account.id, username)
+        try {
+            await this.databaseService.accounts.updateUsername(account.id, username)
+        } catch (error) {
+            // The webhook and POST /auth/sync-from-clerk can race for the same name.
+            if (!isUniqueViolation(error)) throw error
+            this.logger.warn('A Clerk username change was not synced: another account took the username meanwhile')
+            return 'taken'
+        }
         this.logger.log('Synced a username change from Clerk')
         return 'updated'
     }
@@ -81,3 +97,9 @@ export class ClerkAccountSyncService {
 }
 
 type LinkedAccount = { id: number; email: string; username: string }
+
+function isUniqueViolation(error: unknown): boolean {
+    const { code, message } = (error ?? {}) as { code?: unknown; message?: unknown }
+
+    return String(code ?? '').startsWith('SQLITE_CONSTRAINT') || String(message ?? '').includes('UNIQUE constraint failed')
+}

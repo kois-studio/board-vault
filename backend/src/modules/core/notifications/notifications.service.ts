@@ -1,11 +1,18 @@
 import { ResultSet } from '@libsql/client'
 import { ConflictException, Injectable, Logger, NotFoundException } from '@nestjs/common'
 
-import { notificationsSchema } from '../../../common/schemas/index.js'
+import { notificationSchema } from '../../../common/schemas/index.js'
 import { CreateNotificationBody, NotificationDto, UpdateNotificationRequestBody } from '../../../common/types/notification.type.js'
 import { DatabaseService } from '../../common/database/database.service.js'
 
-import { NotificationDataMap, NotificationTypeEnum } from './notifications-enum.type.js'
+/** The stored JSON, or null when it is not valid JSON (the row is then left out). */
+function parseData(value: unknown): unknown {
+    try {
+        return JSON.parse(String(value))
+    } catch {
+        return null
+    }
+}
 
 @Injectable()
 export class NotificationsService {
@@ -13,29 +20,32 @@ export class NotificationsService {
 
     constructor(private readonly databaseService: DatabaseService) {}
 
+    /**
+     * Reads each row on its own: a row that can't be read (unknown data shape, broken JSON) is left out
+     * and the rest still show, instead of the whole inbox coming back empty.
+     */
     private _parseResultSet(resultSet: ResultSet): Array<NotificationDto> {
-        const notifications = resultSet.rows.map(row => ({
-            id: Number(row[0]),
-            accountId: Number(row[1]),
-            type: String(row[2]),
-            message: String(row[3]),
-            data: JSON.parse(String(row[4])) as NotificationDataMap[NotificationTypeEnum],
-            createdAt: String(row[5]),
-            isRead: Boolean(row[6]),
-        }))
+        const notifications: Array<NotificationDto> = []
+        let skipped = 0
 
-        return this._validateSchema(notifications)
-    }
+        for (const row of resultSet.rows) {
+            const result = notificationSchema.safeParse({
+                id: Number(row[0]),
+                accountId: Number(row[1]),
+                type: String(row[2]),
+                message: String(row[3]),
+                data: parseData(row[4]),
+                createdAt: String(row[5]),
+                isRead: Boolean(row[6]),
+            })
 
-    private _validateSchema(notifications: Array<NotificationDto>): Array<NotificationDto> {
-        const result = notificationsSchema.safeParse(notifications)
-
-        if (!result.success) {
-            this.LOGGER.error('Failed to parse Notifications from database')
-            return []
+            if (result.success) notifications.push(result.data as NotificationDto)
+            else skipped++
         }
 
-        return result.data
+        if (skipped > 0) this.LOGGER.warn('Left out notifications that could not be read; the others are returned')
+
+        return notifications
     }
 
     async getNotifications(): Promise<Array<NotificationDto>> {
