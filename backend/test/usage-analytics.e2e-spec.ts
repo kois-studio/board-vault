@@ -73,8 +73,6 @@ describe('usage analytics (e2e)', () => {
     const as = (clerkUserId: string) => ({ Authorization: `Bearer ${sessionFor(clerkUserId)}` })
     const http = () => request(app.getHttpServer())
     const events = () => sql("SELECT name, pseudonym, COALESCE(view, '-'), COALESCE(fromView, '-') FROM UsageEvent ORDER BY id;")
-    // Recording happens after the response; give it a moment.
-    const settle = () => new Promise(done => setTimeout(done, 100))
 
     it('counts a page view under a pseudonym, never the account id', async () => {
         await http().post('/navigation').set(as('user_bea')).send({ page: '/play/history', from: '/play' }).expect(204)
@@ -92,7 +90,6 @@ describe('usage analytics (e2e)', () => {
     it('counts a successful action with the screen it came from, and ignores a bad screen', async () => {
         await http().post('/collection/users/2/games/1').set(as('user_bea')).set('X-Board-Vault-View', '/games/:gameId').expect(201)
         await http().post('/collection/users/2/reviews/1').set(as('user_bea')).set('X-Board-Vault-View', '/games/1').send({ review: 8 })
-        await settle()
 
         expect(events().split('\n').slice(1)).toEqual([`game_added|${pseudonym(2)}|/games/:gameId|-`, `review_saved|${pseudonym(2)}|-|-`])
     })
@@ -101,7 +98,6 @@ describe('usage analytics (e2e)', () => {
         const before = events()
 
         await http().post('/collection/users/3/games/1').set(as('user_bea')).expect(403)
-        await settle()
         expect(events()).toBe(before)
     })
 

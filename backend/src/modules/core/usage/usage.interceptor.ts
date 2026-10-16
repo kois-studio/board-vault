@@ -1,5 +1,5 @@
 import { CallHandler, ExecutionContext, Injectable, NestInterceptor } from '@nestjs/common'
-import { tap } from 'rxjs'
+import { mergeMap } from 'rxjs'
 
 import { isView, type UsageEventName } from '../../../common/types/usage.type.js'
 
@@ -49,7 +49,7 @@ export function routeTemplate(path: string | undefined): string {
 }
 
 /**
- * Counts successful actions for usage analytics (ADR-0021), after the response is ready. The screen
+ * Counts successful actions for usage analytics (ADR-0021), once the handler has succeeded. The screen
  * they came from is the `X-Board-Vault-View` header, kept only when it is a route template.
  */
 @Injectable()
@@ -63,14 +63,17 @@ export class UsageInterceptor implements NestInterceptor {
 
         if (!action) return next.handle()
 
+        // Waited for, not fired and forgotten: on Vercel, work left after the response can be frozen and lost.
+        // `record` never throws, so a failure to count never fails the request.
         return next.handle().pipe(
-            tap(response => {
+            mergeMap(async response => {
                 const accountId = request.user?.userId
                 const name = typeof action === 'function' ? action(request, response) : action
                 const header = request.headers['x-board-vault-view']
                 const view = typeof header === 'string' && isView(header) ? header : null
 
-                if (accountId && name) void this.usageService.record(accountId, name, view)
+                if (accountId && name) await this.usageService.record(accountId, name, view)
+                return response
             }),
         )
     }
