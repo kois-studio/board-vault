@@ -181,6 +181,7 @@
                     <a appInPageLink="library" class="rounded-xl px-3 py-2 text-sm font-medium text-bv-text-muted transition hover:bg-bv-surface-2">Library</a>
                     <a appInPageLink="acquire" class="rounded-xl px-3 py-2 text-sm font-medium text-bv-text-muted transition hover:bg-bv-surface-2">Games to buy</a>
                     <a appInPageLink="people" class="rounded-xl px-3 py-2 text-sm font-medium text-bv-text-muted transition hover:bg-bv-surface-2">People</a>
+                    <a appInPageLink="changes" class="rounded-xl px-3 py-2 text-sm font-medium text-bv-text-muted transition hover:bg-bv-surface-2">What changed</a>
                 </div>
             </nav>
 
@@ -587,7 +588,8 @@
                                 } @else {
                                     <p class="mt-3 text-sm text-secondary">No games recorded yet.</p>
                                 }
-                                @if (groupPersonAvailableGamesComputed().length > 0 && isGroupOwnerComputed()) {
+                                <!-- Any member may edit a person's games and preferences: the group history shows who did (ADR-0020). -->
+                                @if (groupPersonAvailableGamesComputed().length > 0) {
                                     <button type="button" class="mt-3 text-sm font-semibold text-bv-primary hover:underline" [attr.aria-expanded]="editingGroupPersonId() === person.person.id" (click)="toggleGroupPersonEditor(person.person.id)">
                                         {{ editingGroupPersonId() === person.person.id ? 'Done' : 'Edit games and preferences' }}
                                     </button>
@@ -648,6 +650,14 @@
                         <button type="button" class="text-sm font-medium text-bv-danger underline-offset-2 hover:underline" (click)="onClickLeaveGroup()">Leave this group</button>
                     </div>
                 }
+            </section>
+
+            <section id="changes" class="scroll-mt-24" aria-labelledby="changes-heading">
+                <div class="mb-4">
+                    <h2 id="changes-heading" class="mt-1 text-2xl font-bold">What changed</h2>
+                    <p class="mt-1 max-w-2xl text-secondary">Who changed what in this group, newest first. Nothing here can be edited: a mistake is fixed by changing it back, and both changes stay.</p>
+                </div>
+                <app-group-activity-feed [groupId]="group.id" />
             </section>
         </div>
         }

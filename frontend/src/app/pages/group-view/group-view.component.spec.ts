@@ -17,6 +17,7 @@ describe('GroupViewComponent switching groups', () => {
         const api = {
             getGroupCollection: vi.fn((groupId: number) => collections[groupId]),
             getGroupInsights: vi.fn(() => of(null)),
+            getGroupActivity: vi.fn(() => of({ entries: [], hasMore: false })),
             getGroupAcquisitionBoard: vi.fn(() => of([])),
             getGroupPeople: vi.fn(() => of({ people: [] })),
             getGroupPersonCatalog: vi.fn(() => of([])),
@@ -245,6 +246,7 @@ describe('GroupViewComponent collection worth', () => {
         const api = {
             getGroupCollection: vi.fn(() => collection),
             getGroupInsights: vi.fn(() => of(null)),
+            getGroupActivity: vi.fn(() => of({ entries: [], hasMore: false })),
             getGroupAcquisitionBoard: vi.fn(() => of([])),
             getGroupPeople: vi.fn(() => of({ people: [] })),
             getGroupPersonCatalog: vi.fn(() => of([])),
@@ -308,6 +310,7 @@ describe('GroupViewComponent collection worth retries', () => {
         const api = {
             getGroupCollection: vi.fn<(groupId: number) => Observable<unknown>>(() => first),
             getGroupInsights: vi.fn(() => of(null)),
+            getGroupActivity: vi.fn(() => of({ entries: [], hasMore: false })),
             getGroupAcquisitionBoard: vi.fn(() => of([])),
             getGroupPeople: vi.fn(() => of({ people: [] })),
             getGroupPersonCatalog: vi.fn(() => of([])),
@@ -384,6 +387,7 @@ describe('GroupViewComponent page layout', () => {
                     useValue: {
                         getGroupCollection: vi.fn(() => of(null)),
                         getGroupInsights: vi.fn(() => of(null)),
+                        getGroupActivity: vi.fn(() => of({ entries: [], hasMore: false })),
                         getGroupAcquisitionBoard: vi.fn(() => of([])),
                         getGroupPeople: vi.fn(() => of({ people: [] })),
                         getGroupPersonCatalog: vi.fn(() => of([])),
@@ -428,12 +432,25 @@ describe('GroupViewComponent page layout', () => {
         }
     })
 
+    it("lets a member who is not the owner change a group person's games (ADR-0020)", async () => {
+        const fixture = await render(7)
+        const component = fixture.componentInstance
+        const api = TestBed.inject(Api) as unknown as Record<string, ReturnType<typeof vi.fn>>
+        api['updateGroupPersonOwnership'] = vi.fn(() => of({ success: true }))
+        const person = { person: { id: 3 }, ownership: [], preferences: [] } as never
+        const event = { target: { value: 'rejected' } } as unknown as Event
+
+        await component.setGroupPersonOwnership(person, 42, event)
+
+        expect(api['updateGroupPersonOwnership']).toHaveBeenCalledWith(1, 3, 42, 'rejected')
+    })
+
     it('lays the sections out in the order they read, with no throwaway member picker', async () => {
         const fixture = await render(7)
         const element = fixture.nativeElement as HTMLElement
         const ids = [...element.querySelectorAll('section[id]')].map((section) => section.id)
 
-        expect(ids).toEqual(['overview', 'history', 'library', 'acquire', 'people'])
+        expect(ids).toEqual(['overview', 'history', 'library', 'acquire', 'people', 'changes'])
         expect(element.textContent).not.toContain('Who is playing?')
         // Tab order follows what is shown: nothing is moved around with CSS order.
         expect([...element.querySelectorAll('[class]')].some((node) => [...node.classList].some((name) => /^order-/.test(name)))).toBe(

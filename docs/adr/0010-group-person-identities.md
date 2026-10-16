@@ -3,7 +3,7 @@
 - **Status:** Accepted
 - **Date:** 2026-09-26
 - **Supersedes:** None
-- **Superseded by:** None
+- **Superseded by:** [ADR-0020](0020-group-history.md), in part: any member may now set a group person's games and preferences
 
 ## Context
 

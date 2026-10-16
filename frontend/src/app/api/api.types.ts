@@ -182,6 +182,32 @@ export type GroupInsightsType = {
     neverPlayedCount: number
 }
 
+/** Where someone named in the group history stands now (ADR-0018). */
+export type GroupActivityStanding = 'member' | 'left' | 'deleted'
+
+export type GroupActivityNameType = { id: number; name: string; standing: GroupActivityStanding }
+
+/** One entry of a group's history (ADR-0020): who changed what. Names are the current ones. */
+export type GroupActivityType = {
+    id: number
+    type: string
+    createdAt: string
+    actor: GroupActivityNameType
+    meetId: number | null
+    person: GroupActivityNameType | null
+    game: { id: number; title: string | null } | null
+    subject: GroupActivityNameType | null
+    data: Record<string, unknown>
+    accounts: Array<GroupActivityNameType>
+    people: Array<GroupActivityNameType>
+    games: Array<{ id: number; title: string | null }>
+}
+
+export type GroupActivityPageType = {
+    entries: Array<GroupActivityType>
+    hasMore: boolean
+}
+
 /** One person's games in a group and their approximate worth at retail price, in whole euros. */
 export type GroupCollectionPersonType = {
     accountId: number | null

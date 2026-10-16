@@ -179,7 +179,7 @@ export class DashboardService {
         }
 
         // Step 2: Leave: upcoming sessions drop them, history keeps them (ADR-0018)
-        await this.databaseService.groups.leaveGroup(userId, groupId)
+        await this.databaseService.groups.leaveGroup(userId, groupId, { groupId, actorAccountId: userId, type: 'member_left' })
 
         return { success: true }
     }
@@ -198,7 +198,12 @@ export class DashboardService {
         }
 
         // Step 2: Same as leaving: upcoming sessions drop them, history keeps them (ADR-0018)
-        await this.databaseService.groups.leaveGroup(memberId, groupId)
+        await this.databaseService.groups.leaveGroup(memberId, groupId, {
+            groupId,
+            actorAccountId: userId,
+            type: 'member_removed',
+            subjectAccountId: memberId,
+        })
 
         return { success: true }
     }

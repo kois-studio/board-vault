@@ -47,7 +47,7 @@ describe('GroupMembershipsService leaving through DELETE /memberships', () => {
         const { service, leaveGroup } = createService()
 
         await expect(service.deleteGroupMembershipById(7, 12)).resolves.toEqual({ success: true })
-        expect(leaveGroup).toHaveBeenCalledWith(7, 12)
+        expect(leaveGroup).toHaveBeenCalledWith(7, 12, { groupId: 12, actorAccountId: 7, type: 'member_left' })
     })
 
     it('does not let the owner leave their own group', async () => {

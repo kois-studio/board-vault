@@ -21,6 +21,7 @@ import type {
     GameType,
     GameViewType,
     GroupAcquisitionEntryType,
+    GroupActivityPageType,
     GroupCollectionType,
     GroupInsightsType,
     GroupType,
@@ -262,6 +263,33 @@ export const groupCollectionSchema: z.ZodMiniType<GroupCollectionType> = z.objec
             pricedGames: z.number(),
         }),
     ),
+})
+
+const groupActivityNameSchema = z.object({
+    id: z.number(),
+    name: z.string(),
+    standing: z.enum(['member', 'left', 'deleted']),
+})
+const groupActivityGameSchema = z.object({ id: z.number(), title: z.nullable(z.string()) })
+
+export const groupActivityPageSchema: z.ZodMiniType<GroupActivityPageType> = z.object({
+    entries: z.array(
+        z.object({
+            id: z.number(),
+            type: z.string(),
+            createdAt: z.string(),
+            actor: groupActivityNameSchema,
+            meetId: z.nullable(z.number()),
+            person: z.nullable(groupActivityNameSchema),
+            game: z.nullable(groupActivityGameSchema),
+            subject: z.nullable(groupActivityNameSchema),
+            data: z.record(z.string(), z.unknown()),
+            accounts: z.array(groupActivityNameSchema),
+            people: z.array(groupActivityNameSchema),
+            games: z.array(groupActivityGameSchema),
+        }),
+    ),
+    hasMore: z.boolean(),
 })
 
 export const groupInsightsSchema: z.ZodMiniType<GroupInsightsType> = z.object({

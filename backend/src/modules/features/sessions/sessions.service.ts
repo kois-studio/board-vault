@@ -5,6 +5,7 @@ import { parseStoredDate, toIsoDate } from '../../../common/utils/stored-date.js
 import { DatabaseService } from '../../common/database/database.service.js'
 import { ActivityNotifier } from '../../core/notifications/activity-notifier.service.js'
 
+import type { GroupActivityEntry, GroupActivityType } from '../../../common/types/group-activity.type.js'
 import type { MeetWithAttendeesAndGames } from '../../../common/types/meet.type.js'
 import type {
     CreatePlaySessionBody,
@@ -30,6 +31,33 @@ import type {
     UpdateGameResultsBody,
     GameResultsUpdatedDto,
 } from '../../../common/types/session.type.js'
+
+const STATUS_ACTIVITY: Record<'active' | 'completed' | 'cancelled', GroupActivityType> = {
+    active: 'session_started',
+    completed: 'session_finished',
+    cancelled: 'session_cancelled',
+}
+
+/** What joined and what left a list, in the order given. */
+function listChange(before: Array<number>, after: Array<number>) {
+    const was = new Set(before)
+    const is = new Set(after)
+
+    return { added: after.filter(id => !was.has(id)), removed: before.filter(id => !is.has(id)) }
+}
+
+/** The games whose players differ between two participant lists, for games in both. */
+function gamesWithChangedPlayers(
+    before: Array<{ gameId: number; participantIds: Array<number> }>,
+    after: Array<{ gameId: number; participantIds: Array<number> }>,
+): Array<number> {
+    const key = (ids: Array<number>) => [...ids].sort((a, b) => a - b).join(',')
+    const previous = new Map(before.map(game => [game.gameId, key(game.participantIds)]))
+
+    return after
+        .filter(game => previous.has(game.gameId) && previous.get(game.gameId) !== key(game.participantIds))
+        .map(game => game.gameId)
+}
 
 @Injectable()
 export class SessionsService {
@@ -150,6 +178,7 @@ export class SessionsService {
             groupPersonIds: usesGroupPeople ? groupPersonIds : undefined,
             games,
             personGames: usesGroupPeople ? personGames : undefined,
+            activity: { groupId: body.groupId, actorAccountId, type: 'session_recorded' },
         })
 
         return {
@@ -218,6 +247,7 @@ export class SessionsService {
             attendeeIds: selectedAccountIds,
             groupPersonIds: usesGroupPeople ? groupPersonIds : undefined,
             plannedGameIds,
+            activity: { groupId: body.groupId, actorAccountId, type: 'session_planned' },
         })
 
         const sessionId = Number(result.lastInsertRowid)
@@ -272,7 +302,12 @@ export class SessionsService {
         const now = new Date()
         const movedDate = body.status !== 'cancelled' && parseStoredDate(sessionDate) > now.getTime() ? now.toISOString() : undefined
 
-        const result = await this.databaseService.sessions.updateMeetStatus(sessionId, currentStatus, body.status, movedDate)
+        const result = await this.databaseService.sessions.updateMeetStatus(sessionId, currentStatus, body.status, movedDate, {
+            groupId: Number(sessionRow[1]),
+            actorAccountId,
+            type: STATUS_ACTIVITY[body.status],
+            meetId: sessionId,
+        })
 
         if (result.rowsAffected !== 1) {
             throw new NotFoundException(`Session with id ${sessionId} not found`)
@@ -341,14 +376,38 @@ export class SessionsService {
             throw new BadRequestException('A member who played a recorded game cannot be removed from the session attendees')
         }
 
-        const accountApplied =
-            existingAccountIds.length > 0 || (existingPersonIds.length === 0 && attendeeIds.length > 0)
-                ? await this.databaseService.sessions.replaceMeetAttendees(sessionId, attendeeIds, status)
-                : true
-        const personApplied =
-            existingPersonIds.length > 0 || groupPersonIds.length > 0
-                ? await this.databaseService.sessions.replaceMeetPersonAttendees(sessionId, groupPersonIds, status)
-                : true
+        const replacesAccounts = existingAccountIds.length > 0 || (existingPersonIds.length === 0 && attendeeIds.length > 0)
+        const replacesPeople = existingPersonIds.length > 0 || groupPersonIds.length > 0
+        const accounts = listChange(existingAccountIds, replacesAccounts ? attendeeIds : existingAccountIds)
+        const invitedPeople = listChange(existingPersonIds, replacesPeople ? groupPersonIds : existingPersonIds)
+        const changed = [accounts.added, accounts.removed, invitedPeople.added, invitedPeople.removed].some(ids => ids.length > 0)
+        // One entry for the whole change, written with the last of its two steps (ADR-0020).
+        const activity: GroupActivityEntry | undefined = changed
+            ? {
+                  groupId,
+                  actorAccountId,
+                  type: 'session_invites_changed',
+                  meetId: sessionId,
+                  data: {
+                      addedAccountIds: accounts.added,
+                      removedAccountIds: accounts.removed,
+                      addedPersonIds: invitedPeople.added,
+                      removedPersonIds: invitedPeople.removed,
+                  },
+              }
+            : undefined
+
+        const accountApplied = replacesAccounts
+            ? await this.databaseService.sessions.replaceMeetAttendees(
+                  sessionId,
+                  attendeeIds,
+                  status,
+                  replacesPeople ? undefined : activity,
+              )
+            : true
+        const personApplied = replacesPeople
+            ? await this.databaseService.sessions.replaceMeetPersonAttendees(sessionId, groupPersonIds, status, activity)
+            : true
 
         if (accountApplied === false || personApplied === false) {
             throw new ConflictException('The session changed while attendees were being updated. Reload and try again.')
@@ -389,7 +448,21 @@ export class SessionsService {
             throw new BadRequestException('Every planned game must be owned by at least one group member')
         }
 
-        const applied = await this.databaseService.sessions.replaceMeetPlannedGames(sessionId, plannedGameIds, status)
+        const shortlist = listChange(await this.databaseService.sessions.getMeetPlannedGameIds(sessionId), plannedGameIds)
+        const applied = await this.databaseService.sessions.replaceMeetPlannedGames(
+            sessionId,
+            plannedGameIds,
+            status,
+            shortlist.added.length > 0 || shortlist.removed.length > 0
+                ? {
+                      groupId,
+                      actorAccountId,
+                      type: 'session_shortlist_changed',
+                      meetId: sessionId,
+                      data: { addedGameIds: shortlist.added, removedGameIds: shortlist.removed },
+                  }
+                : undefined,
+        )
 
         if (applied === false) {
             throw new ConflictException('The session changed while the shortlist was being updated. Reload and try again.')
@@ -426,7 +499,13 @@ export class SessionsService {
             throw new BadRequestException('Every planned game must be owned by at least one group member')
         }
 
-        await this.databaseService.sessions.addMeetPlannedGame(sessionId, gameId)
+        await this.databaseService.sessions.addMeetPlannedGame(sessionId, gameId, {
+            groupId,
+            actorAccountId,
+            type: 'session_shortlist_changed',
+            meetId: sessionId,
+            data: { addedGameIds: [gameId], removedGameIds: [] },
+        })
         await this.databaseService.sessions.addMeetGameVote(sessionId, gameId, actorAccountId)
 
         return {
@@ -492,6 +571,14 @@ export class SessionsService {
         }
 
         const sessions = this.databaseService.sessions
+        const activity = (bringer: { accountId: number | null; groupPersonId: number | null }): GroupActivityEntry => ({
+            groupId: Number(sessionRow[1]),
+            actorAccountId,
+            type: 'session_bringer_changed',
+            meetId: sessionId,
+            gameId,
+            data: bringer,
+        })
 
         if (body === null) {
             const current = (await sessions.getMeetGameBringers(sessionId)).find(bringer => bringer.gameId === gameId)
@@ -499,7 +586,10 @@ export class SessionsService {
             if (current && current.accountId !== actorAccountId && !isOrganizer) {
                 throw new ForbiddenException('Only the person bringing a game, or the organizer, can change it')
             }
-            await sessions.setMeetGameBringer(sessionId, gameId, { accountId: null, groupPersonId: null })
+            const nobody = { accountId: null, groupPersonId: null }
+
+            // Clearing a game nobody brings changes nothing worth a history entry.
+            await sessions.setMeetGameBringer(sessionId, gameId, nobody, current ? activity(nobody) : undefined)
         } else if (body.groupPersonId !== undefined) {
             if (!isOrganizer) {
                 throw new ForbiddenException('Only the organizer or the group owner can name who brings a game')
@@ -509,14 +599,18 @@ export class SessionsService {
             if (!comingPersonIds.includes(body.groupPersonId) || !(await sessions.groupPersonOwnsGame(body.groupPersonId, gameId))) {
                 throw new BadRequestException('The person bringing a game must own it and be coming')
             }
-            if (!(await sessions.setMeetGameBringer(sessionId, gameId, { accountId: null, groupPersonId: body.groupPersonId }))) {
+            const bringer = { accountId: null, groupPersonId: body.groupPersonId }
+
+            if (!(await sessions.setMeetGameBringer(sessionId, gameId, bringer, activity(bringer)))) {
                 throw new BadRequestException('Only shortlisted games can be brought')
             }
         } else {
             if (!(await sessions.accountOwnsGame(actorAccountId, gameId, Number(sessionRow[1])))) {
                 throw new BadRequestException('You can only bring a game you own')
             }
-            if (!(await sessions.setMeetGameBringer(sessionId, gameId, { accountId: actorAccountId, groupPersonId: null }))) {
+            const bringer = { accountId: actorAccountId, groupPersonId: null }
+
+            if (!(await sessions.setMeetGameBringer(sessionId, gameId, bringer, activity(bringer)))) {
                 throw new BadRequestException('Only shortlisted games can be brought')
             }
         }
@@ -600,12 +694,20 @@ export class SessionsService {
             }
         }
 
-        const result =
-            personIds.length > 0 && attendees.size === 0
-                ? await this.databaseService.sessions.replaceMeetPlayedPersonGames(sessionId, personGames, status)
-                : personIds.length > 0
-                  ? await this.databaseService.sessions.replaceMeetPlayedGames(sessionId, games, status, personGames)
-                  : await this.databaseService.sessions.replaceMeetPlayedGames(sessionId, games, status)
+        const onlyPeople = personIds.length > 0 && attendees.size === 0
+        const activity = await this.playedGamesActivity(groupId, actorAccountId, sessionId, {
+            games: onlyPeople ? [] : games,
+            personGames: personIds.length > 0 ? personGames : [],
+        })
+        const result = onlyPeople
+            ? await this.databaseService.sessions.replaceMeetPlayedPersonGames(sessionId, personGames, status, activity)
+            : await this.databaseService.sessions.replaceMeetPlayedGames(
+                  sessionId,
+                  games,
+                  status,
+                  personIds.length > 0 ? personGames : [],
+                  activity,
+              )
 
         if (result.applied === false) {
             throw new ConflictException('The session changed while played games were being updated. Reload and try again.')
@@ -645,14 +747,24 @@ export class SessionsService {
             throw new BadRequestException(`Cannot RSVP to a ${status} session`)
         }
 
+        const invite = attendee.rows[0] ?? personAttendee?.rows[0]
+        const groupPersonId = attendee.rows.length > 0 ? undefined : Number(personAttendee?.rows[0]?.[1])
+        // Answering the same again is not news.
+        const activity: GroupActivityEntry | undefined =
+            String(invite?.[2]) === body.rsvpStatus
+                ? undefined
+                : {
+                      groupId: Number(invite?.[6]),
+                      actorAccountId,
+                      type: 'session_rsvp',
+                      meetId: sessionId,
+                      groupPersonId,
+                      data: { rsvpStatus: body.rsvpStatus },
+                  }
         const result =
-            attendee.rows.length > 0
-                ? await this.databaseService.sessions.updateMeetAttendeeRsvp(sessionId, actorAccountId, body.rsvpStatus)
-                : await this.databaseService.sessions.updateMeetPersonAttendeeRsvp(
-                      sessionId,
-                      Number(personAttendee?.rows[0]?.[1]),
-                      body.rsvpStatus,
-                  )
+            groupPersonId === undefined
+                ? await this.databaseService.sessions.updateMeetAttendeeRsvp(sessionId, actorAccountId, body.rsvpStatus, activity)
+                : await this.databaseService.sessions.updateMeetPersonAttendeeRsvp(sessionId, groupPersonId, body.rsvpStatus, activity)
 
         if (result.rowsAffected !== 1) {
             throw new NotFoundException('Session invite not found')
@@ -698,11 +810,30 @@ export class SessionsService {
             throw new BadRequestException('Attendance can only be recorded for invited group people')
         }
 
+        const sameIds = (a: Array<number>, b: Array<number>) => listChange(a, b).added.length === 0 && listChange(a, b).removed.length === 0
+        const unchanged =
+            (invitedIds.size === 0 || sameIds(await this.databaseService.sessions.getMeetAttendedAccountIds(sessionId), attendedIds)) &&
+            (invitedPersonIds.size === 0 ||
+                sameIds(await this.databaseService.sessions.getMeetAttendedPersonIds(sessionId), attendedPersonIds))
+        const activity: GroupActivityEntry | undefined = unchanged
+            ? undefined
+            : {
+                  groupId: Number(sessionRow[1]),
+                  actorAccountId,
+                  type: 'session_attendance_changed',
+                  meetId: sessionId,
+                  data: { attendedAccountIds: attendedIds, attendedPersonIds },
+              }
+
         if (invitedIds.size > 0) {
-            await this.databaseService.sessions.updateMeetAttendance(sessionId, attendedIds)
+            await this.databaseService.sessions.updateMeetAttendance(
+                sessionId,
+                attendedIds,
+                invitedPersonIds.size > 0 ? undefined : activity,
+            )
         }
         if (invitedPersonIds.size > 0) {
-            await this.databaseService.sessions.updateMeetPersonAttendance(sessionId, attendedPersonIds)
+            await this.databaseService.sessions.updateMeetPersonAttendance(sessionId, attendedPersonIds, activity)
         }
         // Whoever played a game was there, whatever the list said.
         await this.databaseService.sessions.markPlayersAttended(sessionId)
@@ -769,7 +900,18 @@ export class SessionsService {
             })
         }
 
-        await this.databaseService.sessions.replaceGameResults(sessionId, gameId, results)
+        await this.databaseService.sessions.replaceGameResults(sessionId, gameId, results, {
+            groupId: Number(session.rows[0]?.[1]),
+            actorAccountId,
+            type: 'session_results_changed',
+            meetId: sessionId,
+            gameId,
+            data: {
+                winnerAccountIds: results.filter(row => row.isWinner && row.accountId !== null).map(row => row.accountId as number),
+                winnerPersonIds: results.filter(row => row.isWinner && row.groupPersonId !== null).map(row => row.groupPersonId as number),
+                scored: results.some(row => row.score !== null),
+            },
+        })
 
         return { sessionId, gameId, results }
     }
@@ -797,6 +939,44 @@ export class SessionsService {
         }
 
         return sessionRow
+    }
+
+    /**
+     * The history entry for a change to the games played (ADR-0020): which games joined or left the
+     * list, and which kept their place with different players. Undefined when nothing changes.
+     */
+    private async playedGamesActivity(
+        groupId: number,
+        actorAccountId: number,
+        sessionId: number,
+        next: {
+            games: Array<{ gameId: number; participantIds: Array<number> }>
+            personGames: Array<{ gameId: number; participantIds: Array<number> }>
+        },
+    ): Promise<GroupActivityEntry | undefined> {
+        const sessions = this.databaseService.sessions
+        const [playedBefore, accountsBefore, peopleBefore] = await Promise.all([
+            sessions.getPlayedGameIdsByMeetId(sessionId),
+            sessions.getMeetPlayedGameParticipants(sessionId),
+            this.getMeetPlayedGameParticipants(sessionId),
+        ])
+        const playedAfter = [...new Set([...next.games, ...next.personGames].map(game => game.gameId))]
+        const played = listChange(playedBefore, playedAfter)
+        const changedGameIds = [
+            ...new Set([
+                ...gamesWithChangedPlayers(accountsBefore, next.games),
+                ...gamesWithChangedPlayers(peopleBefore, next.personGames),
+            ]),
+        ]
+
+        if (played.added.length === 0 && played.removed.length === 0 && changedGameIds.length === 0) return undefined
+        return {
+            groupId,
+            actorAccountId,
+            type: 'session_played_changed',
+            meetId: sessionId,
+            data: { addedGameIds: played.added, removedGameIds: played.removed, changedGameIds },
+        }
     }
 
     private async getMeetPersonIds(sessionId: number): Promise<Array<number>> {

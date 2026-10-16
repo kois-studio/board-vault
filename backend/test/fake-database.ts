@@ -3,6 +3,7 @@ import { AccountDeletionQueries } from '../src/modules/common/database/queries/a
 import { AccountQueries } from '../src/modules/common/database/queries/accounts.queries.js'
 import { CollectionQueries } from '../src/modules/common/database/queries/collection.queries.js'
 import { GameQueries } from '../src/modules/common/database/queries/games.queries.js'
+import { GroupActivityQueries } from '../src/modules/common/database/queries/group-activity.queries.js'
 import { GroupQueries } from '../src/modules/common/database/queries/groups.queries.js'
 import { InvitationQueries } from '../src/modules/common/database/queries/invitations.queries.js'
 import { NotificationQueries } from '../src/modules/common/database/queries/notifications.queries.js'
@@ -14,6 +15,7 @@ const DOMAINS = {
     accountDeletion: AccountDeletionQueries,
     collection: CollectionQueries,
     games: GameQueries,
+    groupActivity: GroupActivityQueries,
     groups: GroupQueries,
     invitations: InvitationQueries,
     notifications: NotificationQueries,

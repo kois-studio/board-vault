@@ -1,5 +1,7 @@
+import { activityStatements, recordInTransaction } from './group-activity.queries.js'
 import { forgetWhoIsNotComing } from './session-cleanup.js'
 
+import type { GroupActivityEntry } from '../../../../common/types/group-activity.type.js'
 import type { MeetAccountGameQueryOptions } from '../../../../modules/core/meet-account-games/meet-account-games.types.js'
 import type { DatabaseService } from '../database.service.js'
 import type { InStatement } from '@libsql/client'
@@ -14,6 +16,8 @@ type CompletedSessionInput = {
     groupPersonIds?: Array<number>
     games: Array<{ gameId: number; participantIds: Array<number> }>
     personGames?: Array<{ gameId: number; participantIds: Array<number> }>
+    /** The history entry, written with the session; its `meetId` is filled in. */
+    activity?: GroupActivityEntry
 }
 
 type ScheduledSessionInput = {
@@ -25,6 +29,8 @@ type ScheduledSessionInput = {
     attendeeIds: Array<number>
     groupPersonIds?: Array<number>
     plannedGameIds: Array<number>
+    /** The history entry, written with the session; its `meetId` is filled in. */
+    activity?: GroupActivityEntry
 }
 
 /** A result only stays while its person is still recorded as playing that game. */
@@ -226,6 +232,7 @@ export class SessionQueries {
         expectedStatus: 'scheduled' | 'active' | 'completed' | 'cancelled',
         status: 'scheduled' | 'active' | 'completed' | 'cancelled',
         meetDate?: string,
+        activity?: GroupActivityEntry,
     ) {
         const transaction = await this.database.transaction('write')
 
@@ -249,6 +256,7 @@ export class SessionQueries {
                     args: [meetId],
                 })
             }
+            if (result.rowsAffected === 1) await recordInTransaction(transaction, activity)
 
             await transaction.commit()
             return result
@@ -260,7 +268,12 @@ export class SessionQueries {
         }
     }
 
-    async replaceMeetPlannedGames(meetId: number, gameIds: Array<number>, expectedStatus: 'scheduled' | 'active'): Promise<boolean> {
+    async replaceMeetPlannedGames(
+        meetId: number,
+        gameIds: Array<number>,
+        expectedStatus: 'scheduled' | 'active',
+        activity?: GroupActivityEntry,
+    ): Promise<boolean> {
         const transaction = await this.database.transaction('write')
 
         try {
@@ -289,6 +302,7 @@ export class SessionQueries {
                     })),
                 )
             }
+            await recordInTransaction(transaction, activity)
             await transaction.commit()
             return true
         } catch (error) {
@@ -327,13 +341,21 @@ export class SessionQueries {
     }
 
     /** Sets or clears who brings one shortlisted game; false when the game is not on the shortlist. */
-    async setMeetGameBringer(meetId: number, gameId: number, bringer: { accountId: number | null; groupPersonId: number | null }) {
-        const result = await this.database.execute({
-            sql: "UPDATE MeetGame SET broughtByAccountId = ?, broughtByPersonId = ? WHERE meetId = ? AND gameId = ? AND gameStatus = 'planned'",
-            args: [bringer.accountId, bringer.groupPersonId, meetId, gameId],
-        })
+    async setMeetGameBringer(
+        meetId: number,
+        gameId: number,
+        bringer: { accountId: number | null; groupPersonId: number | null },
+        activity?: GroupActivityEntry,
+    ) {
+        const [result] = await this.database.batch([
+            {
+                sql: "UPDATE MeetGame SET broughtByAccountId = ?, broughtByPersonId = ? WHERE meetId = ? AND gameId = ? AND gameStatus = 'planned'",
+                args: [bringer.accountId, bringer.groupPersonId, meetId, gameId],
+            },
+            ...activityStatements(activity, { onlyIfChanged: true }),
+        ])
 
-        return result.rowsAffected === 1
+        return result?.rowsAffected === 1
     }
 
     /** Drops the votes and games to bring of anyone no longer coming to the night (declined or uninvited). */
@@ -418,12 +440,12 @@ export class SessionQueries {
         return result.rows.map(row => Number(row[0]))
     }
 
-    /** Adds one game to the shortlist; a game already on the night (planned or played) stays as it is. */
-    addMeetPlannedGame(meetId: number, gameId: number) {
-        return this.database.execute({
-            sql: "INSERT OR IGNORE INTO MeetGame (meetId, gameId, gameStatus) VALUES (?, ?, 'planned')",
-            args: [meetId, gameId],
-        })
+    /** Adds one game to the shortlist; a game already on the night (planned or played) stays as it is, with no history entry. */
+    addMeetPlannedGame(meetId: number, gameId: number, activity?: GroupActivityEntry) {
+        return this.database.batch([
+            { sql: "INSERT OR IGNORE INTO MeetGame (meetId, gameId, gameStatus) VALUES (?, ?, 'planned')", args: [meetId, gameId] },
+            ...activityStatements(activity, { onlyIfChanged: true }),
+        ])
     }
 
     addMeetGameVote(meetId: number, gameId: number, accountId: number) {
@@ -453,6 +475,7 @@ export class SessionQueries {
         games: Array<{ gameId: number; participantIds: Array<number> }>,
         expectedStatus: 'scheduled' | 'active',
         personGames: Array<{ gameId: number; participantIds: Array<number> }> = [],
+        activity?: GroupActivityEntry,
     ): Promise<{
         applied: boolean
         playedGameIds: Array<number>
@@ -542,6 +565,7 @@ export class SessionQueries {
                 args: [meetId],
             })
 
+            await recordInTransaction(transaction, activity)
             await transaction.commit()
 
             const participantMap = new Map<number, Array<number>>()
@@ -572,6 +596,7 @@ export class SessionQueries {
         meetId: number,
         games: Array<{ gameId: number; participantIds: Array<number> }>,
         expectedStatus: 'scheduled' | 'active',
+        activity?: GroupActivityEntry,
     ): Promise<{
         applied: boolean
         playedGameIds: Array<number>
@@ -642,6 +667,7 @@ export class SessionQueries {
                 args: [meetId],
             })
 
+            await recordInTransaction(transaction, activity)
             await transaction.commit()
 
             const participantMap = new Map<number, Array<number>>()
@@ -826,7 +852,7 @@ export class SessionQueries {
     getMeetAttendeeForAccount(meetId: number, accountId: number) {
         return this.database.execute({
             sql: `
-                SELECT ma.meetId, ma.accountId, ma.rsvpStatus, ma.attendanceStatus, ma.respondedAt, m.status
+                SELECT ma.meetId, ma.accountId, ma.rsvpStatus, ma.attendanceStatus, ma.respondedAt, m.status, m.groupId
                 FROM MeetAttendee ma
                 INNER JOIN Meet m ON m.id = ma.meetId
                 WHERE ma.meetId = ? AND ma.accountId = ?
@@ -835,15 +861,20 @@ export class SessionQueries {
         })
     }
 
-    updateMeetAttendeeRsvp(meetId: number, accountId: number, rsvpStatus: 'accepted' | 'declined') {
-        return this.database.execute({
-            sql: `
-                UPDATE MeetAttendee
-                SET rsvpStatus = ?, respondedAt = CURRENT_TIMESTAMP
-                WHERE meetId = ? AND accountId = ?
-            `,
-            args: [rsvpStatus, meetId, accountId],
-        })
+    async updateMeetAttendeeRsvp(meetId: number, accountId: number, rsvpStatus: 'accepted' | 'declined', activity?: GroupActivityEntry) {
+        const [result] = await this.database.batch([
+            {
+                sql: `
+                    UPDATE MeetAttendee
+                    SET rsvpStatus = ?, respondedAt = CURRENT_TIMESTAMP
+                    WHERE meetId = ? AND accountId = ?
+                `,
+                args: [rsvpStatus, meetId, accountId],
+            },
+            ...activityStatements(activity, { onlyIfChanged: true }),
+        ])
+
+        return { rowsAffected: result?.rowsAffected ?? 0 }
     }
 
     async getMeetAttendeeIds(meetId: number): Promise<Array<number>> {
@@ -900,7 +931,7 @@ export class SessionQueries {
     getMeetPersonAttendeeForAccount(meetId: number, accountId: number) {
         return this.database.execute({
             sql: `
-                SELECT mpa.meetId, mpa.groupPersonId, mpa.rsvpStatus, mpa.attendanceStatus, mpa.respondedAt, m.status
+                SELECT mpa.meetId, mpa.groupPersonId, mpa.rsvpStatus, mpa.attendanceStatus, mpa.respondedAt, m.status, m.groupId
                 FROM MeetPersonAttendee mpa
                 INNER JOIN Meet m ON m.id = mpa.meetId
                 INNER JOIN GroupPerson gp ON gp.id = mpa.groupPersonId
@@ -910,15 +941,25 @@ export class SessionQueries {
         })
     }
 
-    updateMeetPersonAttendeeRsvp(meetId: number, groupPersonId: number, rsvpStatus: 'accepted' | 'declined') {
-        return this.database.execute({
-            sql: `
-                UPDATE MeetPersonAttendee
-                SET rsvpStatus = ?, respondedAt = CURRENT_TIMESTAMP
-                WHERE meetId = ? AND groupPersonId = ?
-            `,
-            args: [rsvpStatus, meetId, groupPersonId],
-        })
+    async updateMeetPersonAttendeeRsvp(
+        meetId: number,
+        groupPersonId: number,
+        rsvpStatus: 'accepted' | 'declined',
+        activity?: GroupActivityEntry,
+    ) {
+        const [result] = await this.database.batch([
+            {
+                sql: `
+                    UPDATE MeetPersonAttendee
+                    SET rsvpStatus = ?, respondedAt = CURRENT_TIMESTAMP
+                    WHERE meetId = ? AND groupPersonId = ?
+                `,
+                args: [rsvpStatus, meetId, groupPersonId],
+            },
+            ...activityStatements(activity, { onlyIfChanged: true }),
+        ])
+
+        return { rowsAffected: result?.rowsAffected ?? 0 }
     }
 
     async getMeetAttendedAccountIds(meetId: number): Promise<Array<number>> {
@@ -975,7 +1016,7 @@ export class SessionQueries {
         return resultSet.rows.map(row => Number(row[0]))
     }
 
-    async updateMeetAttendance(meetId: number, attendedIds: Array<number>): Promise<void> {
+    async updateMeetAttendance(meetId: number, attendedIds: Array<number>, activity?: GroupActivityEntry): Promise<void> {
         const transaction = await this.database.transaction('write')
 
         try {
@@ -992,6 +1033,7 @@ export class SessionQueries {
                 `,
                 args: [...attendedIds, meetId],
             })
+            await recordInTransaction(transaction, activity)
             await transaction.commit()
         } catch (error) {
             await transaction.rollback()
@@ -1001,7 +1043,7 @@ export class SessionQueries {
         }
     }
 
-    async updateMeetPersonAttendance(meetId: number, attendedIds: Array<number>): Promise<void> {
+    async updateMeetPersonAttendance(meetId: number, attendedIds: Array<number>, activity?: GroupActivityEntry): Promise<void> {
         const transaction = await this.database.transaction('write')
 
         try {
@@ -1018,6 +1060,7 @@ export class SessionQueries {
                 `,
                 args: [...attendedIds, meetId],
             })
+            await recordInTransaction(transaction, activity)
             await transaction.commit()
         } catch (error) {
             await transaction.rollback()
@@ -1093,7 +1136,7 @@ export class SessionQueries {
                 }
             }
 
-            await transaction.batch(statements)
+            await transaction.batch([...statements, ...activityStatements(input.activity && { ...input.activity, meetId })])
             await transaction.commit()
 
             return { lastInsertRowid: meetId }
@@ -1145,7 +1188,7 @@ export class SessionQueries {
                 })
             }
 
-            await transaction.batch(statements)
+            await transaction.batch([...statements, ...activityStatements(input.activity && { ...input.activity, meetId })])
             await transaction.commit()
 
             return { lastInsertRowid: meetId }
@@ -1184,7 +1227,12 @@ export class SessionQueries {
         })
     }
 
-    async replaceMeetAttendees(meetId: number, accountIds: Array<number>, expectedStatus: 'scheduled' | 'active'): Promise<boolean> {
+    async replaceMeetAttendees(
+        meetId: number,
+        accountIds: Array<number>,
+        expectedStatus: 'scheduled' | 'active',
+        activity?: GroupActivityEntry,
+    ): Promise<boolean> {
         const transaction = await this.database.transaction('write')
 
         try {
@@ -1214,6 +1262,7 @@ export class SessionQueries {
                     args: [meetId, accountId],
                 })),
             )
+            await recordInTransaction(transaction, activity)
             await transaction.commit()
             return true
         } catch (error) {
@@ -1228,6 +1277,7 @@ export class SessionQueries {
         meetId: number,
         groupPersonIds: Array<number>,
         expectedStatus: 'scheduled' | 'active',
+        activity?: GroupActivityEntry,
     ): Promise<boolean> {
         const transaction = await this.database.transaction('write')
 
@@ -1258,6 +1308,7 @@ export class SessionQueries {
                     args: [meetId, groupPersonId],
                 })),
             )
+            await recordInTransaction(transaction, activity)
             await transaction.commit()
             return true
         } catch (error) {
@@ -1408,13 +1459,14 @@ export class SessionQueries {
     }
 
     /** Replaces the results of one game in one transaction; an empty list clears them. */
-    async replaceGameResults(meetId: number, gameId: number, results: Array<GameResultRow>): Promise<void> {
+    async replaceGameResults(meetId: number, gameId: number, results: Array<GameResultRow>, activity?: GroupActivityEntry): Promise<void> {
         const statements: Array<InStatement> = [
             { sql: 'DELETE FROM MeetGameResult WHERE meetId = ? AND gameId = ?', args: [meetId, gameId] },
             ...results.map(result => ({
                 sql: 'INSERT INTO MeetGameResult (meetId, gameId, accountId, groupPersonId, isWinner, score) VALUES (?, ?, ?, ?, ?, ?)',
                 args: [meetId, gameId, result.accountId, result.groupPersonId, result.isWinner ? 1 : 0, result.score],
             })),
+            ...activityStatements(activity),
         ]
 
         const transaction = await this.database.transaction('write')

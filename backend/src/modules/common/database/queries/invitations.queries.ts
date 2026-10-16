@@ -2,6 +2,8 @@ import { ForbiddenException, NotFoundException } from '@nestjs/common'
 
 import { ACCOUNT_COLUMNS } from '../database.constants.js'
 
+import { activityStatements } from './group-activity.queries.js'
+
 import type { CreateInvitationBody, CreateInvitationByUsernameBody } from '../../../../common/types/invitation.type.js'
 import type { DatabaseService } from '../database.service.js'
 
@@ -179,6 +181,13 @@ export class InvitationQueries {
                 sql: 'INSERT OR IGNORE INTO GroupMembership (accountId, groupId) VALUES (?, ?)',
                 args: [accountId, groupId],
             })
+            // Only a new membership is a join worth a history entry (ADR-0020).
+            for (const statement of activityStatements(
+                { groupId, actorAccountId: accountId, type: 'member_joined' },
+                { onlyIfChanged: true },
+            )) {
+                await transaction.execute(statement)
+            }
 
             if (invitation.rows[0]?.[1] === null || invitation.rows[0]?.[1] === undefined) {
                 await transaction.execute({

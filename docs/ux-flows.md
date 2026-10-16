@@ -21,8 +21,21 @@ The session list (`GET /play/users/:userId/meets`) carries the caller's own
 
 People hear about a game night in their inbox: when it is planned (everyone
 invited), started or finished (everyone who did not decline), or cancelled
-(everyone invited). Members hear when someone joins their group. The person
-who acted is never notified. Each notification links to the night or group.
+(everyone invited). Members hear when someone joins their group, and when
+someone changes a game or preference they entered for a group person. The
+person who acted is never notified. Each notification links to the night or
+group.
+
+Every group page ends with **What changed**, the group history
+([ADR-0020](adr/0020-group-history.md)): who planned, started or cancelled a
+night, changed its invitations, shortlist, bringers, games played or results,
+answered it, added or changed a group person and their games, joined, left or
+was removed. Newest first, ten at a time with "Show older changes", each with
+a link to its night when it has one. Entries can't be edited: a mistake is
+fixed by changing it back, and both changes stay. People show under their
+current name, "Name (left)" or "Deleted account". Any member can edit a group
+person's games and preferences; creating, renaming and archiving people stays
+with the owner.
 
 A scheduled night is where the group decides what to play. Its games on
 offer are the games of the people coming: invited and not declined.
