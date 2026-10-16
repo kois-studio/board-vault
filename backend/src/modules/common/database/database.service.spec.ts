@@ -842,6 +842,7 @@ describe('DatabaseService logging', () => {
                 .mockResolvedValueOnce({ rows: [[42, null]] })
                 .mockResolvedValueOnce({ rowsAffected: 1 })
                 .mockResolvedValueOnce({ rowsAffected: 1 })
+                .mockResolvedValueOnce({ rowsAffected: 1 })
                 .mockResolvedValueOnce({ rowsAffected: 1 }),
             commit: vi.fn().mockResolvedValue(undefined),
             rollback: vi.fn().mockResolvedValue(undefined),
@@ -861,11 +862,17 @@ describe('DatabaseService logging', () => {
             sql: 'INSERT OR IGNORE INTO GroupMembership (accountId, groupId) VALUES (?, ?)',
             args: [7, 12],
         })
+        // A new membership is a join in the group history (ADR-0020), only if the insert added a row.
         expect(transaction.execute).toHaveBeenNthCalledWith(3, {
+            sql: expect.stringContaining('INSERT INTO GroupActivity'),
+            args: [12, 7, 'member_joined', null, null, null, null, '{}'],
+        })
+        expect(transaction.execute.mock.calls[2]?.[0].sql).toContain('WHERE changes() > 0')
+        expect(transaction.execute).toHaveBeenNthCalledWith(4, {
             sql: expect.stringContaining('INSERT INTO GroupPerson'),
             args: [12, 12, 7, 12, 7],
         })
-        expect(transaction.execute).toHaveBeenNthCalledWith(4, {
+        expect(transaction.execute).toHaveBeenNthCalledWith(5, {
             sql: expect.stringContaining('DELETE FROM Invitation'),
             args: [42, 12, 7],
         })
@@ -1064,6 +1071,7 @@ describe('DatabaseService logging', () => {
                 .fn()
                 .mockResolvedValueOnce({ rows: [[12]] })
                 .mockResolvedValueOnce({ rowsAffected: 1 })
+                .mockResolvedValueOnce({ rowsAffected: 1 })
                 .mockResolvedValueOnce({ rowsAffected: 1 }),
             commit: vi.fn().mockResolvedValue(undefined),
             rollback: vi.fn().mockResolvedValue(undefined),
@@ -1085,6 +1093,10 @@ describe('DatabaseService logging', () => {
             args: [9, 12],
         })
         expect(transaction.execute).toHaveBeenNthCalledWith(3, {
+            sql: expect.stringContaining('INSERT INTO GroupActivity'),
+            args: [12, 9, 'member_joined', null, null, null, null, '{}'],
+        })
+        expect(transaction.execute).toHaveBeenNthCalledWith(4, {
             sql: expect.stringContaining('INSERT INTO GroupPerson'),
             args: [12, 12, 9, 12, 9],
         })

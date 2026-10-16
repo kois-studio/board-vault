@@ -2,8 +2,10 @@ import { ForbiddenException, Injectable, NotFoundException } from '@nestjs/commo
 
 import { DatabaseService } from '../../common/database/database.service.js'
 import { normalizeTitle } from '../game-translation/normalize-title.js'
+import { ActivityNotifier } from '../notifications/activity-notifier.service.js'
 
 import type { GameCompleteDto } from '../../../common/types/game.type.js'
+import type { GroupActivityType } from '../../../common/types/group-activity.type.js'
 import type {
     CreateGroupPersonBody,
     GroupPersonDto,
@@ -20,7 +22,10 @@ import type { ResultSet } from '@libsql/client'
 
 @Injectable()
 export class GroupPeopleService {
-    constructor(private readonly databaseService: DatabaseService) {}
+    constructor(
+        private readonly databaseService: DatabaseService,
+        private readonly activityNotifier: ActivityNotifier,
+    ) {}
 
     async getWorkspace(actorAccountId: number, groupId: number, includeArchived = false): Promise<Array<GroupPersonWorkspaceDto>> {
         await this.assertGroupMember(actorAccountId, groupId)
@@ -78,8 +83,29 @@ export class GroupPeopleService {
 
     async update(actorAccountId: number, groupId: number, personId: number, body: UpdateGroupPersonBody): Promise<GroupPersonDto> {
         await this.assertGroupOwner(actorAccountId, groupId)
-        await this.getPersonOrThrow(personId, groupId)
-        const result = await this.databaseService.groups.updateGroupPerson(personId, groupId, body)
+        const before = await this.getPersonOrThrow(personId, groupId)
+        const type: GroupActivityType =
+            body.status !== undefined && body.status !== before.status
+                ? body.status === 'archived'
+                    ? 'person_archived'
+                    : 'person_restored'
+                : 'person_updated'
+        const renamed = body.displayName !== undefined && body.displayName !== before.displayName
+        const result = await this.databaseService.groups.updateGroupPerson(
+            personId,
+            groupId,
+            body,
+            // Names are never copied into the history (ADR-0020): it says what changed, and shows the current name.
+            type !== 'person_updated' || renamed || body.avatar !== undefined
+                ? {
+                      groupId,
+                      actorAccountId,
+                      type,
+                      groupPersonId: personId,
+                      data: type === 'person_updated' ? { renamed, avatarChanged: body.avatar !== undefined } : {},
+                  }
+                : undefined,
+        )
 
         if (result.rowsAffected !== 1) {
             throw new NotFoundException('Group person not found')
@@ -100,10 +126,33 @@ export class GroupPeopleService {
         personId: number,
         body: UpdateGroupPersonOwnershipBody,
     ): Promise<{ success: true }> {
-        await this.assertGroupOwner(actorAccountId, groupId)
+        // Any member may say what a group person owns: the history shows who did, and anyone can undo it (ADR-0020).
+        await this.assertGroupMember(actorAccountId, groupId)
         await this.getPersonOrThrow(personId, groupId)
         await this.assertGameExists(body.gameId)
-        await this.databaseService.groups.upsertGroupPersonOwnership(personId, body.gameId, actorAccountId, body.status)
+        const previous = (await this.getOwnershipRows(personId, groupId)).find(
+            row => row.gameId === body.gameId && row.source !== 'account_collection',
+        )
+
+        if (previous?.status === body.status) return { success: true }
+        await this.databaseService.groups.upsertGroupPersonOwnership(personId, body.gameId, actorAccountId, body.status, {
+            groupId,
+            actorAccountId,
+            type: 'person_game_set',
+            groupPersonId: personId,
+            gameId: body.gameId,
+            data: { status: body.status, previousStatus: previous?.status ?? null },
+        })
+        if (previous) {
+            await this.activityNotifier.groupPersonEntryChanged({
+                groupId,
+                actorAccountId,
+                enteredByAccountId: previous.enteredByAccountId,
+                groupPersonId: personId,
+                gameId: body.gameId,
+                change: body.status === 'asserted' ? 'owned' : body.status === 'rejected' ? 'not_owned' : 'unsure',
+            })
+        }
         return { success: true }
     }
 
@@ -119,20 +168,58 @@ export class GroupPeopleService {
         personId: number,
         body: UpdateGroupPersonPreferenceBody,
     ): Promise<{ success: true }> {
-        await this.assertGroupOwner(actorAccountId, groupId)
+        await this.assertGroupMember(actorAccountId, groupId)
         await this.getPersonOrThrow(personId, groupId)
         await this.assertGameExists(body.gameId)
-        await this.databaseService.groups.upsertGroupPersonPreference(personId, body.gameId, actorAccountId, body.preference)
+        const previous = (await this.getPreferenceRows(personId, groupId)).find(row => row.gameId === body.gameId)
+
+        if (previous?.preference === body.preference) return { success: true }
+        await this.databaseService.groups.upsertGroupPersonPreference(personId, body.gameId, actorAccountId, body.preference, {
+            groupId,
+            actorAccountId,
+            type: 'person_preference_set',
+            groupPersonId: personId,
+            gameId: body.gameId,
+            data: { preference: body.preference, previousPreference: previous?.preference ?? null },
+        })
+        if (previous) {
+            await this.activityNotifier.groupPersonEntryChanged({
+                groupId,
+                actorAccountId,
+                enteredByAccountId: previous.enteredByAccountId,
+                groupPersonId: personId,
+                gameId: body.gameId,
+                change: 'preference',
+            })
+        }
         return { success: true }
     }
 
     async deletePreference(actorAccountId: number, groupId: number, personId: number, gameId: number): Promise<{ success: true }> {
-        await this.assertGroupOwner(actorAccountId, groupId)
+        await this.assertGroupMember(actorAccountId, groupId)
         await this.getPersonOrThrow(personId, groupId)
-        const result = await this.databaseService.groups.deleteGroupPersonPreference(personId, groupId, gameId)
+        const previous = (await this.getPreferenceRows(personId, groupId)).find(row => row.gameId === gameId)
+        const result = await this.databaseService.groups.deleteGroupPersonPreference(personId, groupId, gameId, {
+            groupId,
+            actorAccountId,
+            type: 'person_preference_removed',
+            groupPersonId: personId,
+            gameId,
+            data: { previousPreference: previous?.preference ?? null },
+        })
 
         if (result.rowsAffected !== 1) {
             throw new NotFoundException('Group person preference not found')
+        }
+        if (previous) {
+            await this.activityNotifier.groupPersonEntryChanged({
+                groupId,
+                actorAccountId,
+                enteredByAccountId: previous.enteredByAccountId,
+                groupPersonId: personId,
+                gameId,
+                change: 'preference_removed',
+            })
         }
 
         return { success: true }
@@ -158,6 +245,7 @@ export class GroupPeopleService {
             keepOwnershipGameIds,
             keepPreferenceGameIds,
             importOwnershipToCollection: body.importOwnershipToCollection === true,
+            activity: { groupId, actorAccountId, type: 'person_claimed', groupPersonId: personId },
         })
 
         if (result.alreadyClaimed) return { success: true, alreadyClaimed: true }

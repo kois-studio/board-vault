@@ -27,6 +27,7 @@ import {
     gamesSchema,
     gameViewSchema,
     groupAcquisitionBoardSchema,
+    groupActivityPageSchema,
     groupCollectionSchema,
     groupInsightsSchema,
     groupInvitationsSchema,
@@ -35,6 +36,7 @@ import {
     meetDetailsSchema,
     meetSchema,
     mergeTagResultSchema,
+    privacySettingsSchema,
     publicUserSchema,
     recommendationSignalsSchema,
     recommendationsSchema,
@@ -52,6 +54,7 @@ import {
     successSchema,
     tagCategorySchema,
     tagSchema,
+    usageReportSchema,
     userCollectionActivitySchema,
     userGamesSchema,
     userGroupsSchema,
@@ -92,6 +95,7 @@ import type {
     GameType,
     GameViewType,
     GroupAcquisitionEntryType,
+    GroupActivityPageType,
     GroupCollectionType,
     GroupInsightsType,
     GroupPersonType,
@@ -103,6 +107,7 @@ import type {
     MeetType,
     MeetWithAttendeesAndGamesType,
     NotificationType,
+    PrivacySettingsType,
     PublicUserType,
     RecommendationSignalsType,
     RecommendationsType,
@@ -129,6 +134,7 @@ import type {
     UpdateSessionRsvpRequest,
     UpdateSessionShortlistRequest,
     UpdateSessionStatusRequest,
+    UsageReportType,
     UserProposalStatsType,
     UserStatsType,
     UserType,
@@ -573,6 +579,37 @@ export class Api {
         return this.http
             .get<GroupCollectionType>(`${this.url}/groups/${groupId}/collection`)
             .pipe(map((response) => groupCollectionSchema.parse(response)))
+    }
+
+    /** Counts a page view for usage statistics (ADR-0021): route templates only, never addresses. */
+    recordNavigation(page: string, from?: string) {
+        return this.http.post<void>(`${this.url}/navigation`, from ? { page, from } : { page })
+    }
+
+    getPrivacySettings() {
+        return this.http
+            .get<PrivacySettingsType>(`${this.url}/settings/privacy`)
+            .pipe(map((response) => privacySettingsSchema.parse(response)))
+    }
+
+    updatePrivacySettings(settings: PrivacySettingsType) {
+        return this.http
+            .put<PrivacySettingsType>(`${this.url}/settings/privacy`, settings)
+            .pipe(map((response) => privacySettingsSchema.parse(response)))
+    }
+
+    getAdminUsage() {
+        return this.http.get<UsageReportType>(`${this.url}/admin/usage`).pipe(map((response) => usageReportSchema.parse(response)))
+    }
+
+    /** A page of the group's history, newest first; pass the last id seen as `before` for older entries. */
+    getGroupActivity(groupId: number, options: { before?: number; limit?: number } = {}) {
+        const params: Record<string, number> = {}
+        if (options.before !== undefined) params['before'] = options.before
+        if (options.limit !== undefined) params['limit'] = options.limit
+        return this.http
+            .get<GroupActivityPageType>(`${this.url}/groups/${groupId}/activity`, { params })
+            .pipe(map((response) => groupActivityPageSchema.parse(response)))
     }
 
     getGroupInsights(groupId: number) {

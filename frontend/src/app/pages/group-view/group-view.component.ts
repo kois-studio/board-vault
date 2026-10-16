@@ -16,6 +16,7 @@ import type {
     HistoryRecordType,
     PublicUserType,
 } from '../../api/api.types'
+import { GroupActivityFeedComponent } from '../../components/group-activity-feed/group-activity-feed.component'
 import { ImageProfileComponent } from '../../components/image-profile/image-profile.component'
 import { SkeletonHistoryComponent } from '../../components/skeletons/skeleton-history/skeleton-history.component'
 import { ToastService } from '../../components/toast/toast.service'
@@ -62,6 +63,7 @@ export function shouldShowFirstGroupSetup(input: {
 @Component({
     imports: [
         GameTitlePipe,
+        GroupActivityFeedComponent,
         CountPipe,
         PlayersPipe,
         RouterLink,
@@ -516,7 +518,7 @@ export class GroupViewComponent {
         const source = person.ownership.find((ownership) => ownership.gameId === gameId)?.source
         if (source === 'account_collection') return 'synced from linked collection'
         if (source === 'claimed_import') return 'accepted during claim'
-        if (source === 'placeholder_setup') return 'entered by organizer'
+        if (source === 'placeholder_setup') return 'entered by a member'
         return null
     }
 
@@ -555,7 +557,7 @@ export class GroupViewComponent {
 
     public async setGroupPersonOwnership(person: GroupPersonWorkspaceType, gameId: number, event: Event): Promise<void> {
         const groupId = this.groupData$()?.id
-        if (!groupId || !this.isGroupOwnerComputed() || this.groupPersonMutationId()) return
+        if (!groupId || this.groupPersonMutationId()) return
 
         const status = (event.target as HTMLSelectElement).value
         if (!['asserted', 'rejected', 'disputed'].includes(status)) return
@@ -582,13 +584,13 @@ export class GroupViewComponent {
         const source = person.preferences.find((preference) => preference.gameId === gameId)?.source
         if (source === 'account_profile') return 'synced from account profile'
         if (source === 'claimed_import') return 'accepted during claim'
-        if (source === 'placeholder_setup') return 'entered by organizer'
+        if (source === 'placeholder_setup') return 'entered by a member'
         return null
     }
 
     public async setGroupPersonPreference(person: GroupPersonWorkspaceType, gameId: number, event: Event): Promise<void> {
         const groupId = this.groupData$()?.id
-        if (!groupId || !this.isGroupOwnerComputed() || this.groupPersonMutationId()) return
+        if (!groupId || this.groupPersonMutationId()) return
 
         const preference = (event.target as HTMLSelectElement).value
         if (!['', 'favorite', 'like', 'neutral', 'avoid'].includes(preference)) return

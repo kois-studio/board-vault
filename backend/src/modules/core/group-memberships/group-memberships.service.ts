@@ -129,7 +129,7 @@ export class GroupMembershipsService {
             throw new BadRequestException('Owner cannot leave group')
         }
 
-        await this.databaseService.groups.leaveGroup(accountId, groupId)
+        await this.databaseService.groups.leaveGroup(accountId, groupId, { groupId, actorAccountId: accountId, type: 'member_left' })
 
         return { success: true }
     }

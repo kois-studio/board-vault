@@ -3,22 +3,26 @@ import { AccountDeletionQueries } from '../src/modules/common/database/queries/a
 import { AccountQueries } from '../src/modules/common/database/queries/accounts.queries.js'
 import { CollectionQueries } from '../src/modules/common/database/queries/collection.queries.js'
 import { GameQueries } from '../src/modules/common/database/queries/games.queries.js'
+import { GroupActivityQueries } from '../src/modules/common/database/queries/group-activity.queries.js'
 import { GroupQueries } from '../src/modules/common/database/queries/groups.queries.js'
 import { InvitationQueries } from '../src/modules/common/database/queries/invitations.queries.js'
 import { NotificationQueries } from '../src/modules/common/database/queries/notifications.queries.js'
 import { RecommendationQueries } from '../src/modules/common/database/queries/recommendations.queries.js'
 import { SessionQueries } from '../src/modules/common/database/queries/sessions.queries.js'
+import { UsageQueries } from '../src/modules/common/database/queries/usage.queries.js'
 
 const DOMAINS = {
     accounts: AccountQueries,
     accountDeletion: AccountDeletionQueries,
     collection: CollectionQueries,
     games: GameQueries,
+    groupActivity: GroupActivityQueries,
     groups: GroupQueries,
     invitations: InvitationQueries,
     notifications: NotificationQueries,
     recommendations: RecommendationQueries,
     sessions: SessionQueries,
+    usage: UsageQueries,
 }
 
 /**

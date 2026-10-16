@@ -1,0 +1,47 @@
+<h2 class="pb-2 text-2xl font-bold tracking-wide">Privacy</h2>
+<p class="pb-8 text-bv-text-muted">What Board Vault keeps about how you use it, and your choice about it.</p>
+
+<section class="max-w-2xl rounded-xl border border-bv-border bg-bv-surface p-5" aria-labelledby="usage-heading">
+    <div class="flex items-start justify-between gap-4">
+        <div class="min-w-0">
+            <h3 id="usage-heading" class="font-semibold">Help improve Board Vault</h3>
+            <p class="mt-1 text-sm text-bv-text-muted">
+                Count which pages you open and which features you use, so we can see what works and what gets left half done.
+            </p>
+        </div>
+        @if (usageAnalytics() !== null) {
+            <button
+                type="button"
+                role="switch"
+                class="relative mt-1 inline-flex h-7 w-12 shrink-0 cursor-pointer items-center rounded-full transition-colors focus-visible:ring-2 focus-visible:ring-bv-primary focus-visible:ring-offset-2 disabled:opacity-60 motion-reduce:transition-none"
+                [class.bg-bv-primary]="usageAnalytics()"
+                [class.bg-bv-border]="!usageAnalytics()"
+                [attr.aria-checked]="usageAnalytics()"
+                aria-labelledby="usage-heading"
+                [disabled]="saving()"
+                (click)="toggle()"
+            >
+                <span
+                    class="inline-block size-5 rounded-full bg-white shadow transition-transform motion-reduce:transition-none"
+                    [class.translate-x-6]="usageAnalytics()"
+                    [class.translate-x-1]="!usageAnalytics()"
+                ></span>
+            </button>
+        }
+    </div>
+
+    @if (failed()) {
+        <div class="mt-4 rounded-lg border border-bv-warning/30 bg-bv-warning/10 p-3 text-sm" role="alert">
+            Your choice could not be loaded.
+            <button type="button" class="ml-1 font-medium underline" (click)="load()">Retry</button>
+        </div>
+    }
+
+    <ul class="mt-4 list-disc space-y-1 pl-5 text-sm text-bv-text-muted">
+        <li>Only the name of the page or action, never what you write, your groups or your games.</li>
+        <li>Under a code instead of your name or email. It stays in Board Vault's own database; no other company sees it.</li>
+        <li>Deleted after 30 days. What is left are totals per day that belong to nobody.</li>
+        <li>Nothing is stored in your browser, so there are no tracking cookies.</li>
+        <li>Turning it off stops it at once and deletes what was kept about you.</li>
+    </ul>
+</section>

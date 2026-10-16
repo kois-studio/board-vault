@@ -21,8 +21,30 @@ The session list (`GET /play/users/:userId/meets`) carries the caller's own
 
 People hear about a game night in their inbox: when it is planned (everyone
 invited), started or finished (everyone who did not decline), or cancelled
-(everyone invited). Members hear when someone joins their group. The person
-who acted is never notified. Each notification links to the night or group.
+(everyone invited). Members hear when someone joins their group, and when
+someone changes a game or preference they entered for a group person. The
+person who acted is never notified. Each notification links to the night or
+group.
+
+Settings → **Privacy** has one switch, "Help improve Board Vault", on by
+default: usage statistics of our own ([ADR-0021](adr/0021-own-usage-analytics.md)).
+While signed in, each page shown is counted with the page before it, and
+actions (adding a game, rating, planning or finishing a night, …) with the
+screen they came from. Nothing is stored in the browser. Turning it off stops
+counting at once and deletes the account's recent events. Admins read the
+results in Administration → **Usage**: people and events per day, pages and
+ways in, actions and where they come from, two funnels, and monthly totals.
+
+Every group page ends with **What changed**, the group history
+([ADR-0020](adr/0020-group-history.md)): who planned, started or cancelled a
+night, changed its invitations, shortlist, bringers, games played or results,
+answered it, added or changed a group person and their games, joined, left or
+was removed. Newest first, ten at a time with "Show older changes", each with
+a link to its night when it has one. Entries can't be edited: a mistake is
+fixed by changing it back, and both changes stay. People show under their
+current name, "Name (left)" or "Deleted account". Any member can edit a group
+person's games and preferences; creating, renaming and archiving people stays
+with the owner.
 
 A scheduled night is where the group decides what to play. Its games on
 offer are the games of the people coming: invited and not declined.

@@ -5,6 +5,7 @@ export enum NotificationTypeEnum {
     SESSION_CANCELLED = 'session_cancelled',
     GAMES_ADDED = 'games_added',
     USER_JOINED_GROUP = 'user_joined_group',
+    GROUP_PERSON_CHANGED = 'group_person_changed',
     GAME_PROPOSAL_APPROVED = 'game_proposal_approved',
     GAME_PROPOSAL_REJECTED = 'game_proposal_rejected',
     GAME_PROPOSAL_SUBMITTED = 'game_proposal_submitted',
@@ -38,6 +39,13 @@ export type NotificationDataMap = {
     [NotificationTypeEnum.USER_JOINED_GROUP]: {
         account: number
         group: number
+    }
+    // {account} changed a game or preference you entered for {person} in {group} (ADR-0020)
+    [NotificationTypeEnum.GROUP_PERSON_CHANGED]: {
+        account: number
+        group: number
+        person: number
+        game: number
     }
     // Your game proposal "{gameTitle}" was approved
     [NotificationTypeEnum.GAME_PROPOSAL_APPROVED]: {

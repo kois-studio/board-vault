@@ -1,0 +1,170 @@
+<div class="space-y-8">
+    <app-admin-page-header
+        title="Usage"
+        description="How Board Vault is used, from our own statistics: the last 30 days in detail, then monthly totals. Everyone is a code, never a name (ADR-0021)."
+    />
+
+    @if (loading() && !report()) {
+        <div class="flex justify-center py-8"><app-spinner size="medium" /></div>
+    } @else if (failed()) {
+        <div class="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-bv-danger/30 bg-bv-danger/10 p-4 text-sm text-bv-danger" role="alert">
+            <span>Usage could not be loaded.</span>
+            <button type="button" class="font-medium underline" (click)="load()">Retry</button>
+        </div>
+    } @else if (report(); as report) {
+        @if (!report.recording) {
+            <p class="rounded-xl border border-bv-warning/30 bg-bv-warning/10 p-4 text-sm" role="status">
+                Nothing is being recorded: the API has no <code>USAGE_PSEUDONYM_SECRET</code>.
+            </p>
+        }
+
+        <section aria-labelledby="usage-totals" class="grid gap-4 sm:grid-cols-3">
+            <h3 id="usage-totals" class="sr-only">Last 30 days</h3>
+            <div class="rounded-lg border border-bv-border bg-bv-surface p-5">
+                <p class="text-sm text-bv-text-muted">People, last 30 days</p>
+                <p class="mt-1 text-3xl font-bold tabular-nums">{{ report.people }}</p>
+            </div>
+            <div class="rounded-lg border border-bv-border bg-bv-surface p-5">
+                <p class="text-sm text-bv-text-muted">Pages and actions counted</p>
+                <p class="mt-1 text-3xl font-bold tabular-nums">{{ report.events }}</p>
+            </div>
+            <div class="rounded-lg border border-bv-border bg-bv-surface p-5">
+                <p class="text-sm text-bv-text-muted">Accounts that turned it off</p>
+                <p class="mt-1 text-3xl font-bold tabular-nums">{{ report.optedOut }}</p>
+            </div>
+        </section>
+
+        <section aria-labelledby="usage-funnels" class="space-y-3">
+            <h3 id="usage-funnels" class="text-lg font-semibold">Funnels</h3>
+            <p class="text-sm text-bv-text-muted">People who reached each step after all the steps before it, in the last 30 days.</p>
+            <div class="grid gap-4 lg:grid-cols-2">
+                @for (funnel of report.funnels; track funnel.name) {
+                    <div class="rounded-lg border border-bv-border bg-bv-surface p-5">
+                        <p class="font-semibold">{{ funnel.name }}</p>
+                        <ol class="mt-3 space-y-2">
+                            @for (step of funnel.steps; track step.label; let first = $first) {
+                                <li class="text-sm">
+                                    <div class="flex items-baseline justify-between gap-3">
+                                        <span>{{ step.label }}</span>
+                                        <span class="tabular-nums">
+                                            <span class="font-semibold">{{ step.people }}</span>
+                                            @if (!first) {
+                                                <span class="text-bv-text-muted"> · {{ share(step.people, funnel.steps[0]?.people ?? 0) }}</span>
+                                            }
+                                        </span>
+                                    </div>
+                                    <div class="mt-1 h-1.5 rounded-full bg-bv-surface-2" aria-hidden="true">
+                                        <div class="h-1.5 rounded-full bg-bv-primary" [style.width.%]="(funnel.steps[0]?.people ?? 0) > 0 ? (step.people / (funnel.steps[0]?.people ?? 1)) * 100 : 0"></div>
+                                    </div>
+                                </li>
+                            }
+                        </ol>
+                    </div>
+                }
+            </div>
+        </section>
+
+        <div class="grid gap-8 lg:grid-cols-2">
+            <section aria-labelledby="usage-pages" class="space-y-3">
+                <h3 id="usage-pages" class="text-lg font-semibold">Most visited pages</h3>
+                @if (report.pages.length === 0) {
+                    <p class="text-sm text-bv-text-muted">No page views yet.</p>
+                } @else {
+                    <table class="w-full text-sm">
+                        <thead class="text-left text-bv-text-muted">
+                            <tr><th class="py-1 font-medium">Page</th><th class="py-1 text-right font-medium">Views</th><th class="py-1 text-right font-medium">People</th></tr>
+                        </thead>
+                        <tbody class="divide-y divide-bv-border">
+                            @for (page of report.pages; track page.page) {
+                                <tr><td class="py-1.5 font-mono text-xs wrap-anywhere">{{ page.page }}</td><td class="py-1.5 text-right tabular-nums">{{ page.views }}</td><td class="py-1.5 text-right tabular-nums">{{ page.people }}</td></tr>
+                            }
+                        </tbody>
+                    </table>
+                }
+            </section>
+
+            <section aria-labelledby="usage-paths" class="space-y-3">
+                <h3 id="usage-paths" class="text-lg font-semibold">Ways in</h3>
+                @if (report.paths.length === 0) {
+                    <p class="text-sm text-bv-text-muted">No page reached from another yet.</p>
+                } @else {
+                    <table class="w-full text-sm">
+                        <thead class="text-left text-bv-text-muted">
+                            <tr><th class="py-1 font-medium">From</th><th class="py-1 font-medium">To</th><th class="py-1 text-right font-medium">Times</th></tr>
+                        </thead>
+                        <tbody class="divide-y divide-bv-border">
+                            @for (path of report.paths; track path.from + path.page) {
+                                <tr><td class="py-1.5 font-mono text-xs wrap-anywhere">{{ path.from }}</td><td class="py-1.5 font-mono text-xs wrap-anywhere">{{ path.page }}</td><td class="py-1.5 text-right tabular-nums">{{ path.count }}</td></tr>
+                            }
+                        </tbody>
+                    </table>
+                }
+            </section>
+        </div>
+
+        <section aria-labelledby="usage-actions" class="space-y-3">
+            <h3 id="usage-actions" class="text-lg font-semibold">Actions</h3>
+            @if (report.actions.length === 0) {
+                <p class="text-sm text-bv-text-muted">No actions yet.</p>
+            } @else {
+                <table class="w-full text-sm">
+                    <thead class="text-left text-bv-text-muted">
+                        <tr><th class="py-1 font-medium">Action</th><th class="py-1 text-right font-medium">Times</th><th class="py-1 text-right font-medium">People</th><th class="py-1 pl-4 font-medium">Mostly from</th></tr>
+                    </thead>
+                    <tbody class="divide-y divide-bv-border">
+                        @for (action of report.actions; track action.name) {
+                            <tr>
+                                <td class="py-1.5">{{ actionLabel(action.name) }}</td>
+                                <td class="py-1.5 text-right tabular-nums">{{ action.events }}</td>
+                                <td class="py-1.5 text-right tabular-nums">{{ action.people }}</td>
+                                <td class="py-1.5 pl-4 font-mono text-xs text-bv-text-muted wrap-anywhere">
+                                    @for (view of action.views; track view.view; let last = $last) {
+                                        {{ view.view ?? 'unknown' }} ({{ view.count }}){{ last ? '' : ', ' }}
+                                    }
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            }
+        </section>
+
+        <div class="grid gap-8 lg:grid-cols-2">
+            <section aria-labelledby="usage-days" class="space-y-3">
+                <h3 id="usage-days" class="text-lg font-semibold">By day</h3>
+                @if (report.days.length === 0) {
+                    <p class="text-sm text-bv-text-muted">Nothing counted in the last 30 days.</p>
+                } @else {
+                    <table class="w-full text-sm">
+                        <thead class="text-left text-bv-text-muted">
+                            <tr><th class="py-1 font-medium">Day</th><th class="py-1 text-right font-medium">People</th><th class="py-1 text-right font-medium">Counted</th></tr>
+                        </thead>
+                        <tbody class="divide-y divide-bv-border">
+                            @for (day of report.days; track day.day) {
+                                <tr><td class="py-1.5 tabular-nums">{{ day.day }}</td><td class="py-1.5 text-right tabular-nums">{{ day.people }}</td><td class="py-1.5 text-right tabular-nums">{{ day.events }}</td></tr>
+                            }
+                        </tbody>
+                    </table>
+                }
+            </section>
+
+            <section aria-labelledby="usage-months" class="space-y-3">
+                <h3 id="usage-months" class="text-lg font-semibold">Earlier months</h3>
+                @if (report.months.length === 0) {
+                    <p class="text-sm text-bv-text-muted">Totals appear here as days are rolled up.</p>
+                } @else {
+                    <table class="w-full text-sm">
+                        <thead class="text-left text-bv-text-muted">
+                            <tr><th class="py-1 font-medium">Month</th><th class="py-1 text-right font-medium">Page views</th><th class="py-1 text-right font-medium">Counted</th></tr>
+                        </thead>
+                        <tbody class="divide-y divide-bv-border">
+                            @for (month of report.months; track month.month) {
+                                <tr><td class="py-1.5 tabular-nums">{{ month.month }}</td><td class="py-1.5 text-right tabular-nums">{{ month.pageViews }}</td><td class="py-1.5 text-right tabular-nums">{{ month.events }}</td></tr>
+                            }
+                        </tbody>
+                    </table>
+                }
+            </section>
+        </div>
+    }
+</div>

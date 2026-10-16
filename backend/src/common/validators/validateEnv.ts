@@ -42,6 +42,16 @@ export function validateEnv(): void {
             err.push('Example value: "https://board-vault.com/register"\n')
         }
 
+        if (!process.env.USAGE_PSEUDONYM_SECRET?.trim()) {
+            err.push('Missing in production environment: USAGE_PSEUDONYM_SECRET')
+            err.push('A long random value (openssl rand -hex 32). It turns account ids into usage pseudonyms (ADR-0021).\n')
+        }
+
+        if (!process.env.CRON_SECRET?.trim()) {
+            err.push('Missing in production environment: CRON_SECRET')
+            err.push('A long random value. Vercel Cron sends it to GET /internal/daily-maintenance.\n')
+        }
+
         if (process.env.BOARD_VAULT_SELF_REGISTRATION_ENABLED?.trim().toLowerCase() === 'true') {
             logger.warn('Public self-registration is enabled in production. Confirm this is intentional before launch.')
         }

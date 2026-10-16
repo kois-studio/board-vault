@@ -10,6 +10,7 @@ export const SETTINGS_SECTIONS: SidebarGroup = {
         { label: 'Profile', icon: 'user-circle', link: '/settings/profile' },
         { label: 'Appearance', icon: 'palette', link: '/settings/appearance' },
         { label: 'Account', icon: 'lock', link: '/settings/account' },
+        { label: 'Privacy', icon: 'shield-lock', link: '/settings/privacy' },
     ],
 }
 
@@ -42,6 +43,7 @@ export class SettingsPageComponent {
                     },
                     { label: 'Games', icon: 'gamepad', link: '/admin/manage-games' },
                     { label: 'Tags', icon: 'tag', link: '/admin/manage-tags' },
+                    { label: 'Usage', icon: 'graph-up', link: '/admin/usage' },
                 ],
             },
         ]

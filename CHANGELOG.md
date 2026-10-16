@@ -13,6 +13,21 @@ operational details.
 
 ### Added
 
+- Usage statistics of our own, with no third party and nothing stored in the
+  browser: which pages are opened and from where, which features are used,
+  and two funnels (getting started, game night). Events carry a code instead
+  of the account and are deleted after 30 days; only anonymous daily totals
+  stay. Settings → Privacy turns it off, which also deletes what was kept.
+  Admins see it in Administration → Usage.
+- Every group has a history, "What changed" at the end of its page: who
+  planned, started, finished or cancelled a night, changed who is invited,
+  the shortlist, who brings what, the games played or the results, who
+  answered, who added or changed a group person and their games, and who
+  joined, left or was removed. Nothing in it can be edited; a mistake is
+  fixed by changing it back, and both changes stay. Only members see it.
+- Any member can now edit a group person's games and preferences, not only
+  the owner. Whoever entered a game or preference hears when someone else
+  changes it.
 - A game night is where the group decides what to play. Its games on offer
   are those of the people coming (invited and not declined), and it shows
   the best suggestions for them, which change as people answer. Anyone

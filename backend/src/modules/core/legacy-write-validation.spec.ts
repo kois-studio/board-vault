@@ -11,6 +11,7 @@ import { ClerkIdentityService } from '../common/auth/clerk-identity.service.js'
 import { GroupMembershipsController } from './group-memberships/group-memberships.controller.js'
 import { GroupMembershipsService } from './group-memberships/group-memberships.service.js'
 import { GroupAcquisitionService } from './groups/group-acquisition.service.js'
+import { GroupActivityService } from './groups/group-activity.service.js'
 import { GroupInsightsService } from './groups/group-insights.service.js'
 import { GroupsController } from './groups/groups.controller.js'
 import { GroupsService } from './groups/groups.service.js'
@@ -33,6 +34,7 @@ describe('Legacy write DTO validation', () => {
                 { provide: GroupsService, useValue: { createGroup } },
                 { provide: GroupAcquisitionService, useValue: {} },
                 { provide: GroupInsightsService, useValue: {} },
+                { provide: GroupActivityService, useValue: {} },
                 { provide: ClerkIdentityService, useValue: {} },
                 { provide: InvitationsService, useValue: { createInvitation } },
                 { provide: NotificationsService, useValue: { createNotification } },
