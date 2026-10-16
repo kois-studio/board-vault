@@ -2382,6 +2382,125 @@
         ]
       }
     },
+    "/navigation": {
+      "post": {
+        "operationId": "UsageController_navigation",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/NavigationBody"
+              }
+            }
+          }
+        },
+        "responses": {
+          "204": {
+            "description": "Counted, or ignored when the account turned usage statistics off."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Count a page view: the page now shown and the one before, as route templates",
+        "tags": [
+          "usage"
+        ]
+      }
+    },
+    "/settings/privacy": {
+      "get": {
+        "operationId": "UsageController_getPrivacy",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PrivacySettingsDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "The caller's privacy settings",
+        "tags": [
+          "usage"
+        ]
+      },
+      "put": {
+        "operationId": "UsageController_setPrivacy",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PrivacySettingsDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PrivacySettingsDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Change the caller's privacy settings; turning usage statistics off deletes the caller's recent events",
+        "tags": [
+          "usage"
+        ]
+      }
+    },
+    "/admin/usage": {
+      "get": {
+        "operationId": "UsageController_getReport",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UsageReportDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Usage of the last 30 days, funnels and earlier monthly totals (admins only)",
+        "tags": [
+          "usage"
+        ]
+      }
+    },
     "/admin/tag-categories": {
       "get": {
         "deprecated": false,
@@ -7591,6 +7710,284 @@
           "gameResults",
           "gameVotes",
           "gameBringers"
+        ]
+      },
+      "NavigationBody": {
+        "type": "object",
+        "properties": {
+          "page": {
+            "type": "string",
+            "example": "/groups/:groupId",
+            "description": "The page now shown, as a route template."
+          },
+          "from": {
+            "type": "string",
+            "example": "/play",
+            "description": "The page before it in this visit, as a route template."
+          }
+        },
+        "required": [
+          "page"
+        ]
+      },
+      "PrivacySettingsDto": {
+        "type": "object",
+        "properties": {
+          "usageAnalytics": {
+            "type": "boolean",
+            "example": true,
+            "description": "Whether what this account does counts towards usage statistics (ADR-0021)."
+          }
+        },
+        "required": [
+          "usageAnalytics"
+        ]
+      },
+      "UsageDayDto": {
+        "type": "object",
+        "properties": {
+          "day": {
+            "type": "string",
+            "example": "2026-10-16"
+          },
+          "people": {
+            "type": "number",
+            "example": 4
+          },
+          "events": {
+            "type": "number",
+            "example": 37
+          }
+        },
+        "required": [
+          "day",
+          "people",
+          "events"
+        ]
+      },
+      "UsagePageDto": {
+        "type": "object",
+        "properties": {
+          "page": {
+            "type": "string",
+            "example": "/groups/:groupId"
+          },
+          "views": {
+            "type": "number",
+            "example": 52
+          },
+          "people": {
+            "type": "number",
+            "example": 6
+          }
+        },
+        "required": [
+          "page",
+          "views",
+          "people"
+        ]
+      },
+      "UsagePathDto": {
+        "type": "object",
+        "properties": {
+          "from": {
+            "type": "string",
+            "example": "/play"
+          },
+          "page": {
+            "type": "string",
+            "example": "/play/history"
+          },
+          "count": {
+            "type": "number",
+            "example": 9
+          }
+        },
+        "required": [
+          "from",
+          "page",
+          "count"
+        ]
+      },
+      "UsageViewCountDto": {
+        "type": "object",
+        "properties": {
+          "view": {
+            "type": "string",
+            "example": "/games/:gameId",
+            "nullable": true
+          },
+          "count": {
+            "type": "number",
+            "example": 5
+          }
+        },
+        "required": [
+          "view",
+          "count"
+        ]
+      },
+      "UsageActionDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "example": "review_saved"
+          },
+          "events": {
+            "type": "number",
+            "example": 14
+          },
+          "people": {
+            "type": "number",
+            "example": 5
+          },
+          "views": {
+            "description": "The screens it came from, most first.",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/UsageViewCountDto"
+            }
+          }
+        },
+        "required": [
+          "name",
+          "events",
+          "people",
+          "views"
+        ]
+      },
+      "UsageFunnelStepDto": {
+        "type": "object",
+        "properties": {
+          "label": {
+            "type": "string",
+            "example": "Planned a night"
+          },
+          "people": {
+            "type": "number",
+            "example": 6,
+            "description": "People who reached this step after all the earlier ones, in order."
+          }
+        },
+        "required": [
+          "label",
+          "people"
+        ]
+      },
+      "UsageFunnelDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "example": "Game night"
+          },
+          "steps": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/UsageFunnelStepDto"
+            }
+          }
+        },
+        "required": [
+          "name",
+          "steps"
+        ]
+      },
+      "UsageMonthDto": {
+        "type": "object",
+        "properties": {
+          "month": {
+            "type": "string",
+            "example": "2026-09"
+          },
+          "events": {
+            "type": "number",
+            "example": 812
+          },
+          "pageViews": {
+            "type": "number",
+            "example": 120,
+            "description": "Page views, from the daily counts."
+          }
+        },
+        "required": [
+          "month",
+          "events",
+          "pageViews"
+        ]
+      },
+      "UsageReportDto": {
+        "type": "object",
+        "properties": {
+          "recording": {
+            "type": "boolean",
+            "example": true,
+            "description": "False when the API has no pseudonym secret, so nothing is recorded."
+          },
+          "people": {
+            "type": "number",
+            "example": 6,
+            "description": "People who did anything in the last 30 days."
+          },
+          "events": {
+            "type": "number",
+            "example": 420
+          },
+          "optedOut": {
+            "type": "number",
+            "example": 2,
+            "description": "Accounts that turned usage statistics off."
+          },
+          "days": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/UsageDayDto"
+            }
+          },
+          "pages": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/UsagePageDto"
+            }
+          },
+          "paths": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/UsagePathDto"
+            }
+          },
+          "actions": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/UsageActionDto"
+            }
+          },
+          "funnels": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/UsageFunnelDto"
+            }
+          },
+          "months": {
+            "description": "Earlier months, from the anonymous daily counts.",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/UsageMonthDto"
+            }
+          }
+        },
+        "required": [
+          "recording",
+          "people",
+          "events",
+          "optedOut",
+          "days",
+          "pages",
+          "paths",
+          "actions",
+          "funnels",
+          "months"
         ]
       },
       "TagCategoryWithTagsDto": {

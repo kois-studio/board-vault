@@ -177,6 +177,12 @@ export const routes: Routes = [
                             import('./pages/settings/account/settings-account.component').then((m) => m.SettingsAccountComponent),
                         canActivate: [AuthOnlyGuard],
                     },
+                    {
+                        path: 'privacy',
+                        loadComponent: () =>
+                            import('./pages/settings/privacy/settings-privacy.component').then((m) => m.SettingsPrivacyComponent),
+                        canActivate: [AuthOnlyGuard],
+                    },
                     // Security became Account (ADR-0017).
                     { path: 'security', redirectTo: 'account', pathMatch: 'full' },
                 ],

@@ -26,6 +26,15 @@ someone changes a game or preference they entered for a group person. The
 person who acted is never notified. Each notification links to the night or
 group.
 
+Settings → **Privacy** has one switch, "Help improve Board Vault", on by
+default: usage statistics of our own ([ADR-0021](adr/0021-own-usage-analytics.md)).
+While signed in, each page shown is counted with the page before it, and
+actions (adding a game, rating, planning or finishing a night, …) with the
+screen they came from. Nothing is stored in the browser. Turning it off stops
+counting at once and deletes the account's recent events. Admins read the
+results in Administration → **Usage**: people and events per day, pages and
+ways in, actions and where they come from, two funnels, and monthly totals.
+
 Every group page ends with **What changed**, the group history
 ([ADR-0020](adr/0020-group-history.md)): who planned, started or cancelled a
 night, changed its invitations, shortlist, bringers, games played or results,

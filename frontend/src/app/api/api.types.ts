@@ -182,6 +182,22 @@ export type GroupInsightsType = {
     neverPlayedCount: number
 }
 
+/** Usage statistics of the last 30 days for admins (ADR-0021). */
+export type UsageReportType = {
+    recording: boolean
+    people: number
+    events: number
+    optedOut: number
+    days: Array<{ day: string; people: number; events: number }>
+    pages: Array<{ page: string; views: number; people: number }>
+    paths: Array<{ from: string; page: string; count: number }>
+    actions: Array<{ name: string; events: number; people: number; views: Array<{ view: string | null; count: number }> }>
+    funnels: Array<{ name: string; steps: Array<{ label: string; people: number }> }>
+    months: Array<{ month: string; events: number; pageViews: number }>
+}
+
+export type PrivacySettingsType = { usageAnalytics: boolean }
+
 /** Where someone named in the group history stands now (ADR-0018). */
 export type GroupActivityStanding = 'member' | 'left' | 'deleted'
 

@@ -71,8 +71,12 @@ try {
                 AND EXISTS (SELECT 1 FROM sqlite_master WHERE type = 'trigger' AND name = 'group_activity_no_update')
                 AND EXISTS (SELECT 1 FROM sqlite_master WHERE type = 'trigger' AND name = 'group_activity_no_delete')
                 THEN 'group-activity: ok' ELSE 'group-activity: missing' END;
-            SELECT CASE WHEN (SELECT COUNT(*) FROM SchemaMigrations) = 22
-                AND (SELECT MAX(version) FROM SchemaMigrations) = '0022'
+            SELECT CASE WHEN EXISTS (SELECT 1 FROM sqlite_master WHERE type = 'table' AND name = 'UsageEvent')
+                AND EXISTS (SELECT 1 FROM sqlite_master WHERE type = 'table' AND name = 'UsageDaily')
+                AND EXISTS (SELECT 1 FROM sqlite_master WHERE type = 'table' AND name = 'UsageOptOut')
+                THEN 'usage-analytics: ok' ELSE 'usage-analytics: missing' END;
+            SELECT CASE WHEN (SELECT COUNT(*) FROM SchemaMigrations) = 23
+                AND (SELECT MAX(version) FROM SchemaMigrations) = '0023'
                 THEN 'migration-state: ok' ELSE 'migration-state: invalid' END;
             SELECT CASE WHEN EXISTS (SELECT 1 FROM pragma_table_info('GroupPerson') WHERE name = 'claimEmail')
                 THEN 'group-person-claim-email: ok' ELSE 'group-person-claim-email: missing' END;
@@ -100,7 +104,7 @@ try {
                 THEN 'game-retail-price: ok' ELSE 'game-retail-price: missing' END;
         `,
     )
-    if (structure.code !== 0 || !structure.stdout.includes('group-interest: ok') || !structure.stdout.includes('group-decision: ok') || !structure.stdout.includes('group-person: ok') || !structure.stdout.includes('group-person-ownership: ok') || !structure.stdout.includes('group-person-preference: ok') || !structure.stdout.includes('meet-notes: ok') || !structure.stdout.includes('migration-state: ok') || !structure.stdout.includes('meet-person-attendee: ok') || !structure.stdout.includes('meet-person-game: ok') || !structure.stdout.includes('participant-feedback: ok') || !structure.stdout.includes('group-person-claim-email: ok') || !structure.stdout.includes('group-person-claim-expiry: ok') || !structure.stdout.includes('invitation-expiry: ok') || !structure.stdout.includes('invitation-group-person: ok') || !structure.stdout.includes('legacy-credentials-dropped: ok') || !structure.stdout.includes('game-results: ok') || !structure.stdout.includes('proposal-add-to: ok') || !structure.stdout.includes('game-artwork: ok') || !structure.stdout.includes('game-retail-price: ok') || !structure.stdout.includes('meet-game-vote: ok') || !structure.stdout.includes('meet-game-bringer: ok') || !structure.stdout.includes('group-activity: ok')) {
+    if (structure.code !== 0 || !structure.stdout.includes('group-interest: ok') || !structure.stdout.includes('group-decision: ok') || !structure.stdout.includes('group-person: ok') || !structure.stdout.includes('group-person-ownership: ok') || !structure.stdout.includes('group-person-preference: ok') || !structure.stdout.includes('meet-notes: ok') || !structure.stdout.includes('migration-state: ok') || !structure.stdout.includes('meet-person-attendee: ok') || !structure.stdout.includes('meet-person-game: ok') || !structure.stdout.includes('participant-feedback: ok') || !structure.stdout.includes('group-person-claim-email: ok') || !structure.stdout.includes('group-person-claim-expiry: ok') || !structure.stdout.includes('invitation-expiry: ok') || !structure.stdout.includes('invitation-group-person: ok') || !structure.stdout.includes('legacy-credentials-dropped: ok') || !structure.stdout.includes('game-results: ok') || !structure.stdout.includes('proposal-add-to: ok') || !structure.stdout.includes('game-artwork: ok') || !structure.stdout.includes('game-retail-price: ok') || !structure.stdout.includes('meet-game-vote: ok') || !structure.stdout.includes('meet-game-bringer: ok') || !structure.stdout.includes('group-activity: ok') || !structure.stdout.includes('usage-analytics: ok')) {
         throw new Error(`Migrated schema assertions failed.\n${structure.stdout}\n${structure.stderr}`)
     }
 

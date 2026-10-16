@@ -13,6 +13,12 @@ operational details.
 
 ### Added
 
+- Usage statistics of our own, with no third party and nothing stored in the
+  browser: which pages are opened and from where, which features are used,
+  and two funnels (getting started, game night). Events carry a code instead
+  of the account and are deleted after 30 days; only anonymous daily totals
+  stay. Settings → Privacy turns it off, which also deletes what was kept.
+  Admins see it in Administration → Usage.
 - Every group has a history, "What changed" at the end of its page: who
   planned, started, finished or cancelled a night, changed who is invited,
   the shortlist, who brings what, the games played or the results, who
