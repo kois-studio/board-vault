@@ -8,9 +8,6 @@
 <app-auth-handoff />
 } @else {
 <main id="main-content" tabindex="-1" class="outline-none">
-    @if (isAuthenticated()) {
-    <app-usage-notice />
-    }
     <router-outlet />
 </main>
 }

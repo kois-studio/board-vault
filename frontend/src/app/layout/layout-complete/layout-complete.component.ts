@@ -6,7 +6,6 @@ import { LayoutBottomTabsComponent } from '../bottom-tabs/bottom-tabs.component'
 import { LayoutFooterComponent } from '../footer/footer.component'
 import { LayoutHeaderComponent } from '../header/header.component'
 import { LayoutSectionTabsComponent } from '../section-tabs/section-tabs.component'
-import { UsageNoticeComponent } from '../usage-notice/usage-notice.component'
 
 /**
  * General layout with header and footer
@@ -19,7 +18,6 @@ import { UsageNoticeComponent } from '../usage-notice/usage-notice.component'
         LayoutSectionTabsComponent,
         LayoutBottomTabsComponent,
         AuthHandoffComponent,
-        UsageNoticeComponent,
     ],
     selector: 'app-layout-complete',
     templateUrl: 'layout-complete.component.html',

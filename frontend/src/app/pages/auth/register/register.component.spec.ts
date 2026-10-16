@@ -18,7 +18,7 @@ describe('RegisterComponent invitation onboarding', () => {
             completeInvitationSignUp: vi.fn().mockName('completeInvitationSignUp').mockResolvedValue(undefined),
         }
         const router = { navigateByUrl: vi.fn().mockName('navigateByUrl').mockResolvedValue(true) }
-        const api = { updatePrivacySettings: vi.fn((body: { usageAnalytics: boolean }) => of({ ...body, noticeAnswered: true })) }
+        const api = { updatePrivacySettings: vi.fn((body: { usageAnalytics: boolean }) => of(body)) }
 
         TestBed.configureTestingModule({
             imports: [RegisterComponent],
@@ -62,7 +62,7 @@ describe('RegisterComponent invitation onboarding', () => {
         expect(api.updatePrivacySettings).toHaveBeenCalledWith({ usageAnalytics: false })
     })
 
-    it('leaves an existing account to the notice in the app', async () => {
+    it('does not ask an existing account again', async () => {
         const { fixture, api } = createComponent(true)
 
         await fixture.componentInstance.completeInvitationSignUp()

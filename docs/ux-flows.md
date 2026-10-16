@@ -28,11 +28,9 @@ group.
 
 Settings → **Privacy** has one switch, "Help improve Board Vault", on by
 default: usage statistics of our own ([ADR-0021](adr/0021-own-usage-analytics.md)).
-Everyone is told once: the invitation sign-up form has the same switch, and
-until an account answers, a "Lend us a hand?" card above every signed-in page
-explains it with the switch and "Got it". Flipping the switch or "Got it"
-answers it for good; turning it off gets "No problem, thanks for playing
-anyway!".
+The invitation sign-up form has the same switch, already on, with a short
+"Lend us a hand?" explanation; the choice is saved once the account exists.
+The app shows no banner about it.
 While signed in, each page shown is counted with the page before it, and
 actions (adding a game, rating, planning or finishing a night, …) with the
 screen they came from. Nothing is stored in the browser. Turning it off stops

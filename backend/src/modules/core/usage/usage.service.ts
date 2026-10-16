@@ -7,7 +7,7 @@ import { DatabaseService } from '../../common/database/database.service.js'
 
 import { buildUsageReport } from './usage-report.js'
 
-import type { PrivacySettingsStateDto, UsageEventName, UsageReportDto } from '../../../common/types/usage.type.js'
+import type { UsageEventName, UsageReportDto } from '../../../common/types/usage.type.js'
 
 /**
  * Usage analytics of our own (ADR-0021). Events carry a pseudonym, an HMAC of the account id with
@@ -42,11 +42,8 @@ export class UsageService {
         }
     }
 
-    /** Whether usage statistics are on for the account, and whether it has answered the notice (#158). */
-    async getChoice(accountId: number): Promise<PrivacySettingsStateDto> {
-        const { optedOut, noticeAnswered } = await this.databaseService.usage.getChoice(accountId)
-
-        return { usageAnalytics: !optedOut, noticeAnswered }
+    async isEnabledFor(accountId: number): Promise<boolean> {
+        return !(await this.databaseService.usage.isOptedOut(accountId))
     }
 
     /** Turning it off also deletes the account's raw events, whether or not there is a secret now. */

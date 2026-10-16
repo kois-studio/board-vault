@@ -77,21 +77,21 @@ off records the account in `UsageOptOut`, stops recording at once and deletes
 that account's raw events. Deleting an account does the same. Aggregates
 already made stay, because they no longer belong to anyone.
 
-Everyone is told once, with the switch right there (#158, added 2026-10-16).
-The invitation sign-up form has the switch, and a card in the app asks every
-account that hasn't answered yet, existing ones included ("Lend us a hand?").
-Flipping the switch, closing the card or changing the setting in Settings
-answers it; `UsageNotice` keeps who answered so it is asked only once. Events
-recorded before the answer are deleted if the answer is off. This is how
-GDPR Articles 13 and 21(4) want it: told when the data is collected, with the
-right to object shown clearly and on its own.
+New accounts are told when they sign up, with the switch right there (#158,
+added 2026-10-16): the invitation sign-up form has it, already on, with a
+short explanation and a pointer to Settings. That is the moment GDPR Articles
+13 and 21(4) ask for: told when the data is collected, with the right to
+object shown clearly and on its own. A card asking every signed-in account
+was tried and removed the next day: an extra banner on Home costs more than
+it tells people who can already find the switch in Settings.
+When registration opens to everyone (#157), that sign-up needs the same
+switch.
 
-The notice is not consent, and is not worded as consent: the legal basis
+The sign-up switch is not consent, and is not worded as consent: the legal basis
 stays legitimate interest. A switch that starts on is fine as an opt-out; as
 consent it would be invalid (CJEU, Planet49). The tone is a small indie team
-asking for a hand, and saying no gets the same single tap and a warm "thanks
-for playing anyway", never a guilt trip (the EDPB counts emotional steering
-as a deceptive design pattern). We rejected an opt-in: at our size almost
+asking for a hand, and saying no is the same single tap, never a guilt trip
+(the EDPB counts emotional steering as a deceptive design pattern). We rejected an opt-in: at our size almost
 nobody turns one on (Firefox saw about 2%), and the funnels would be empty.
 
 ### Legal basis

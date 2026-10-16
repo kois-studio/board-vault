@@ -19,42 +19,29 @@ export class UsageQueries {
         })
     }
 
-    /** Whether the account turned usage statistics off, and whether it has answered the notice (#158). */
-    async getChoice(accountId: number): Promise<{ optedOut: boolean; noticeAnswered: boolean }> {
-        const result = await this.database.execute({
-            sql: `
-                SELECT EXISTS (SELECT 1 FROM UsageOptOut WHERE accountId = ?),
-                       EXISTS (SELECT 1 FROM UsageNotice WHERE accountId = ?)
-            `,
-            args: [accountId, accountId],
-        })
-        const [row] = result.rows
+    async isOptedOut(accountId: number): Promise<boolean> {
+        const result = await this.database.execute({ sql: 'SELECT 1 FROM UsageOptOut WHERE accountId = ?', args: [accountId] })
 
-        return { optedOut: Number(row?.[0]) === 1, noticeAnswered: Number(row?.[1]) === 1 }
+        return result.rows.length > 0
     }
 
-    /**
-     * Off: recorded in UsageOptOut, and the account's raw events go. On: the opt-out goes. Either
-     * way the account has now answered the notice, so it isn't shown again.
-     */
+    /** Off: recorded in UsageOptOut, and the account's raw events go. On: the opt-out goes. */
     setOptedOut(accountId: number, pseudonym: string, optedOut: boolean) {
-        return this.database.batch([
-            ...(optedOut
+        return this.database.batch(
+            optedOut
                 ? [
                       { sql: 'INSERT OR IGNORE INTO UsageOptOut (accountId) VALUES (?)', args: [accountId] },
                       { sql: 'DELETE FROM UsageEvent WHERE pseudonym = ?', args: [pseudonym] },
                   ]
-                : [{ sql: 'DELETE FROM UsageOptOut WHERE accountId = ?', args: [accountId] }]),
-            { sql: 'INSERT OR IGNORE INTO UsageNotice (accountId) VALUES (?)', args: [accountId] },
-        ])
+                : [{ sql: 'DELETE FROM UsageOptOut WHERE accountId = ?', args: [accountId] }],
+        )
     }
 
-    /** Account deletion: the account's raw events, its opt-out and its answer go. Anonymous counts stay. */
+    /** Account deletion: the account's raw events and its opt-out go. Anonymous counts stay. */
     forgetAccount(accountId: number, pseudonym: string) {
         return this.database.batch([
             { sql: 'DELETE FROM UsageEvent WHERE pseudonym = ?', args: [pseudonym] },
             { sql: 'DELETE FROM UsageOptOut WHERE accountId = ?', args: [accountId] },
-            { sql: 'DELETE FROM UsageNotice WHERE accountId = ?', args: [accountId] },
         ])
     }
 

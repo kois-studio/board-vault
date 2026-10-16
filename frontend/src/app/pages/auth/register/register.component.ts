@@ -72,12 +72,12 @@ export class RegisterComponent {
         }
     }
 
-    /** The account exists now, so its answer is saved. If that fails, the app asks again inside. */
+    /** The account exists now, so its choice is saved. If that fails, it stays on; Settings → Privacy can change it. */
     private async saveUsageChoice(): Promise<void> {
         try {
             await firstValueFrom(this.api.updatePrivacySettings({ usageAnalytics: this.usageAnalytics() }))
         } catch {
-            // The notice in the app asks again.
+            // Left on; Settings → Privacy can change it.
         }
     }
 
