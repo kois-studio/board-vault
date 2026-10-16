@@ -4,7 +4,7 @@ import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagg
 import { AdminGuard } from '../../../common/guards/admin.guard.js'
 import { AuthGuard } from '../../../common/guards/auth.guard.js'
 import { RateLimit, RateLimitGuard } from '../../../common/guards/rate-limit.guard.js'
-import { NavigationBody, PrivacySettingsDto, UsageReportDto } from '../../../common/types/usage.type.js'
+import { NavigationBody, PrivacySettingsDto, PrivacySettingsStateDto, UsageReportDto } from '../../../common/types/usage.type.js'
 
 import { UsageService } from './usage.service.js'
 
@@ -28,18 +28,21 @@ export class UsageController {
     }
 
     @Get('/settings/privacy')
-    @ApiOperation({ summary: "The caller's privacy settings" })
-    @ApiResponse({ status: 200, type: PrivacySettingsDto })
-    async getPrivacy(@Req() request: { user: { userId: number } }): Promise<PrivacySettingsDto> {
-        return { usageAnalytics: await this.usageService.isEnabledFor(request.user.userId) }
+    @ApiOperation({ summary: "The caller's privacy settings, and whether the caller has answered the usage notice" })
+    @ApiResponse({ status: 200, type: PrivacySettingsStateDto })
+    getPrivacy(@Req() request: { user: { userId: number } }): Promise<PrivacySettingsStateDto> {
+        return this.usageService.getChoice(request.user.userId)
     }
 
     @Put('/settings/privacy')
-    @ApiOperation({ summary: "Change the caller's privacy settings; turning usage statistics off deletes the caller's recent events" })
-    @ApiResponse({ status: 200, type: PrivacySettingsDto })
-    async setPrivacy(@Req() request: { user: { userId: number } }, @Body() body: PrivacySettingsDto): Promise<PrivacySettingsDto> {
+    @ApiOperation({
+        summary:
+            "Change the caller's privacy settings; turning usage statistics off deletes the caller's recent events. Answers the usage notice.",
+    })
+    @ApiResponse({ status: 200, type: PrivacySettingsStateDto })
+    async setPrivacy(@Req() request: { user: { userId: number } }, @Body() body: PrivacySettingsDto): Promise<PrivacySettingsStateDto> {
         await this.usageService.setEnabledFor(request.user.userId, body.usageAnalytics)
-        return { usageAnalytics: body.usageAnalytics }
+        return { usageAnalytics: body.usageAnalytics, noticeAnswered: true }
     }
 
     @Get('/admin/usage')

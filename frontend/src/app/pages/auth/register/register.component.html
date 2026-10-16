@@ -42,6 +42,16 @@
                                     <p class="mt-1 text-xs text-bv-danger">Passwords must match.</p>
                                 }
                             </div>
+                            <div class="rounded-2xl border border-bv-primary/30 bg-bv-primary-soft p-4">
+                                <div class="flex items-center justify-between gap-4">
+                                    <span id="invitation-usage" class="font-medium text-bv-text">Help improve Board Vault</span>
+                                    <app-switch [checked]="usageAnalytics()" labelledBy="invitation-usage" (toggled)="usageAnalytics.set($event)" />
+                                </div>
+                                <p class="mt-2 text-sm leading-6 text-bv-text-muted">
+                                    Lend us a hand? 🎲 We're a tiny indie team. Leaving this on lets us count which pages get opened, under a pseudonym and in our own
+                                    database, so we know what to fix next. No cookies, nothing shared. Change it anytime in Settings → Privacy.
+                                </p>
+                            </div>
                             <div id="clerk-captcha" aria-live="polite"></div>
                             <button appButton type="submit" class="w-full" [disabled]="isInvitationSubmitting()">
                                 {{ isInvitationSubmitting() ? 'Joining…' : 'Join the group' }}

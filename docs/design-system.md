@@ -211,6 +211,10 @@ not the only label for an action.
 - **Rating a game:** `<app-star-rating [value]="review" [label]="title"
   (rated)="save($event)" />` is five stars on the 0–10 review scale (each
   star is 2). Reviews and the after-the-night ratings on a session use it.
+- **On/off settings:** `<app-switch [checked]="on" labelledBy="id-of-its-label"
+  (toggled)="save($event)" />` is a `role="switch"` button. Its name is the
+  text next to it, so give that text an id. It only asks: `toggled` emits the
+  new value and the parent saves it and updates `checked`.
 - **Toggle chips:** `<button type="button" class="app-chip"
   [attr.aria-pressed]="isChosen">` for filters and choices (group, people,
   durations, players). The chosen chip takes the primary fill. Wrap a set in

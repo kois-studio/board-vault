@@ -2393,7 +2393,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/PrivacySettingsDto"
+                  "$ref": "#/components/schemas/PrivacySettingsStateDto"
                 }
               }
             }
@@ -2404,7 +2404,7 @@
             "bearer": []
           }
         ],
-        "summary": "The caller's privacy settings",
+        "summary": "The caller's privacy settings, and whether the caller has answered the usage notice",
         "tags": [
           "usage"
         ]
@@ -2428,7 +2428,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/PrivacySettingsDto"
+                  "$ref": "#/components/schemas/PrivacySettingsStateDto"
                 }
               }
             }
@@ -2439,7 +2439,7 @@
             "bearer": []
           }
         ],
-        "summary": "Change the caller's privacy settings; turning usage statistics off deletes the caller's recent events",
+        "summary": "Change the caller's privacy settings; turning usage statistics off deletes the caller's recent events. Answers the usage notice.",
         "tags": [
           "usage"
         ]
@@ -7679,6 +7679,25 @@
         },
         "required": [
           "page"
+        ]
+      },
+      "PrivacySettingsStateDto": {
+        "type": "object",
+        "properties": {
+          "usageAnalytics": {
+            "type": "boolean",
+            "example": true,
+            "description": "Whether what this account does counts towards usage statistics (ADR-0021)."
+          },
+          "noticeAnswered": {
+            "type": "boolean",
+            "example": false,
+            "description": "Whether the account has answered the notice about usage statistics; until then the app shows it once (#158)."
+          }
+        },
+        "required": [
+          "usageAnalytics",
+          "noticeAnswered"
         ]
       },
       "PrivacySettingsDto": {

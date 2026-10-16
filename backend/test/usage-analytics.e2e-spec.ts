@@ -103,17 +103,42 @@ describe('usage analytics (e2e)', () => {
 
     it('stops counting and forgets recent events when someone turns it off', async () => {
         await http().post('/navigation').set(as('user_cai')).send({ page: '/play' }).expect(204)
-        expect((await http().get('/settings/privacy').set(as('user_cai')).expect(200)).body).toEqual({ usageAnalytics: true })
+        expect((await http().get('/settings/privacy').set(as('user_cai')).expect(200)).body).toEqual({
+            usageAnalytics: true,
+            noticeAnswered: false,
+        })
 
-        await http().put('/settings/privacy').set(as('user_cai')).send({ usageAnalytics: false }).expect(200)
+        expect((await http().put('/settings/privacy').set(as('user_cai')).send({ usageAnalytics: false }).expect(200)).body).toEqual({
+            usageAnalytics: false,
+            noticeAnswered: true,
+        })
         await http().post('/navigation').set(as('user_cai')).send({ page: '/collection' }).expect(204)
 
         expect(sql(`SELECT COUNT(*) FROM UsageEvent WHERE pseudonym = '${pseudonym(3)}';`)).toBe('0')
-        expect((await http().get('/settings/privacy').set(as('user_cai')).expect(200)).body).toEqual({ usageAnalytics: false })
+        expect((await http().get('/settings/privacy').set(as('user_cai')).expect(200)).body).toEqual({
+            usageAnalytics: false,
+            noticeAnswered: true,
+        })
 
         await http().put('/settings/privacy').set(as('user_cai')).send({ usageAnalytics: true }).expect(200)
         await http().post('/navigation').set(as('user_cai')).send({ page: '/collection' }).expect(204)
         expect(sql(`SELECT COUNT(*) FROM UsageEvent WHERE pseudonym = '${pseudonym(3)}';`)).toBe('1')
+    })
+
+    it('asks once: whichever way someone answers the notice, it stays answered (#158)', async () => {
+        await http().post('/navigation').set(as('user_bea')).send({ page: '/dashboard' }).expect(204)
+        expect((await http().get('/settings/privacy').set(as('user_bea')).expect(200)).body.noticeAnswered).toBe(false)
+
+        // Leaving it on answers it too, and keeps what was counted.
+        await http().put('/settings/privacy').set(as('user_bea')).send({ usageAnalytics: true }).expect(200)
+
+        expect((await http().get('/settings/privacy').set(as('user_bea')).expect(200)).body).toEqual({
+            usageAnalytics: true,
+            noticeAnswered: true,
+        })
+        expect(Number(sql(`SELECT COUNT(*) FROM UsageEvent WHERE pseudonym = '${pseudonym(2)}';`))).toBeGreaterThan(0)
+        await http().put('/settings/privacy').set(as('user_ada')).send({ usageAnalytics: true }).expect(200)
+        expect(sql('SELECT COUNT(*) FROM UsageNotice;')).toBe('3')
     })
 
     it('shows admins the report, with pages, ways in and funnels', async () => {
@@ -183,6 +208,7 @@ describe('usage analytics (e2e)', () => {
         await http().delete('/auth/account').set(as('user_bea')).expect(204)
 
         expect(sql(`SELECT COUNT(*) FROM UsageEvent WHERE pseudonym = '${pseudonym(2)}';`)).toBe('0')
+        expect(sql('SELECT COUNT(*) FROM UsageNotice WHERE accountId = 2;')).toBe('0')
         expect(sql('SELECT SUM(events) FROM UsageDaily;')).toBe('3')
     })
 })

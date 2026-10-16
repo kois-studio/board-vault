@@ -77,6 +77,23 @@ off records the account in `UsageOptOut`, stops recording at once and deletes
 that account's raw events. Deleting an account does the same. Aggregates
 already made stay, because they no longer belong to anyone.
 
+Everyone is told once, with the switch right there (#158, added 2026-10-16).
+The invitation sign-up form has the switch, and a card in the app asks every
+account that hasn't answered yet, existing ones included ("Lend us a hand?").
+Flipping the switch, closing the card or changing the setting in Settings
+answers it; `UsageNotice` keeps who answered so it is asked only once. Events
+recorded before the answer are deleted if the answer is off. This is how
+GDPR Articles 13 and 21(4) want it: told when the data is collected, with the
+right to object shown clearly and on its own.
+
+The notice is not consent, and is not worded as consent: the legal basis
+stays legitimate interest. A switch that starts on is fine as an opt-out; as
+consent it would be invalid (CJEU, Planet49). The tone is a small indie team
+asking for a hand, and saying no gets the same single tap and a warm "thanks
+for playing anyway", never a guilt trip (the EDPB counts emotional steering
+as a deceptive design pattern). We rejected an opt-in: at our size almost
+nobody turns one on (Firefox saw about 2%), and the funnels would be empty.
+
 ### Legal basis
 
 Legitimate interest: knowing which features are used and where flows break,
@@ -87,7 +104,8 @@ to improve the product for the same people. The balance:
 - it never leaves our own database and is read only by admins, as aggregates
   and funnels;
 - there is no profiling and no tracking across sites;
-- it is explained on the privacy page, with an opt-out one click away.
+- it is explained when someone joins and in Settings, with an opt-out one
+  click away.
 
 The EDPB's guidelines 2/2023 read ePrivacy broadly. Even so, this setup
 stores nothing on the device, and it meets the conditions several regulators

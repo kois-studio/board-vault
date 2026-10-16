@@ -33,7 +33,7 @@ import type {
     MeetType,
     MeetWithAttendeesAndGamesType,
     NotificationType,
-    PrivacySettingsType,
+    PrivacySettingsStateType,
     RecommendationSignalsType,
     RecommendationsType,
     ScheduledSessionCreatedType,
@@ -267,7 +267,10 @@ export const groupCollectionSchema: z.ZodMiniType<GroupCollectionType> = z.objec
     ),
 })
 
-export const privacySettingsSchema: z.ZodMiniType<PrivacySettingsType> = z.object({ usageAnalytics: z.boolean() })
+export const privacySettingsSchema: z.ZodMiniType<PrivacySettingsStateType> = z.object({
+    usageAnalytics: z.boolean(),
+    noticeAnswered: z.boolean(),
+})
 
 export const usageReportSchema: z.ZodMiniType<UsageReportType> = z.object({
     recording: z.boolean(),
