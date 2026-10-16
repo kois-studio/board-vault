@@ -1,7 +1,10 @@
 import { timingSafeEqual } from 'node:crypto'
 
-import { Controller, Get, Headers, NotFoundException, UnauthorizedException } from '@nestjs/common'
+import { Controller, Get, Headers, Logger, NotFoundException, UnauthorizedException } from '@nestjs/common'
 import { ApiExcludeController } from '@nestjs/swagger'
+
+import { structuredLog } from '../../../common/logging/structured-log.js'
+import { DatabaseService } from '../../common/database/database.service.js'
 
 import { UsageService } from './usage.service.js'
 
@@ -14,12 +17,18 @@ function sameSecret(given: string, expected: string): boolean {
 
 /**
  * The daily job, called by Vercel Cron (`backend/vercel.json`) with `Authorization: Bearer
- * $CRON_SECRET`. Without `CRON_SECRET` the route does not exist.
+ * $CRON_SECRET`. Without `CRON_SECRET` the route does not exist. It rolls up usage events and
+ * forgets the emails of expired group person claims.
  */
 @ApiExcludeController()
 @Controller('internal')
 export class MaintenanceController {
-    constructor(private readonly usageService: UsageService) {}
+    private readonly LOGGER = new Logger(MaintenanceController.name)
+
+    constructor(
+        private readonly usageService: UsageService,
+        private readonly databaseService: DatabaseService,
+    ) {}
 
     @Get('/daily-maintenance')
     async daily(@Headers('authorization') authorization: string | undefined) {
@@ -28,6 +37,10 @@ export class MaintenanceController {
         if (!secret) throw new NotFoundException()
         if (!sameSecret(authorization ?? '', `Bearer ${secret}`)) throw new UnauthorizedException()
 
-        return { usage: await this.usageService.runDailyMaintenance() }
+        const usage = await this.usageService.runDailyMaintenance()
+        const expiredClaims = (await this.databaseService.groups.clearExpiredClaimEmails()).rowsAffected
+
+        this.LOGGER.log(structuredLog('group_person.expired_claims_cleared', { expiredClaims }))
+        return { usage, expiredClaims }
     }
 }

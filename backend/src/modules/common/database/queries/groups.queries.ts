@@ -481,6 +481,22 @@ export class GroupQueries {
         })
     }
 
+    /**
+     * Forgets the email of every claim that can no longer be used (#154). An expired claim can't be
+     * claimed, so the email of someone without an account is kept no longer than the claim lasts.
+     */
+    clearExpiredClaimEmails() {
+        return this.database.execute({
+            sql: `
+                UPDATE GroupPerson
+                SET claimEmail = NULL, claimExpiresAt = NULL, updatedAt = CURRENT_TIMESTAMP
+                WHERE (claimEmail IS NOT NULL OR claimExpiresAt IS NOT NULL)
+                  AND (claimExpiresAt IS NULL OR claimExpiresAt <= CURRENT_TIMESTAMP)
+            `,
+            args: [],
+        })
+    }
+
     clearGroupPersonClaimEmail(groupPersonId: number, groupId: number, claimEmail?: string) {
         return this.database.execute({
             sql: `

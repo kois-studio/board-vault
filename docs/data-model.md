@@ -87,7 +87,9 @@ sessions they created, and more.
 - Private account data never appears in group-member projections
   ([ADR-0006](adr/0006-user-response-privacy.md)).
 - Group reads are membership-scoped. Group-person claims are bound to the
-  invited email and group on the server.
+  invited email and group on the server. A claim lasts 30 days; the daily
+  maintenance job clears the email and expiry of any claim past it, so the
+  email of someone without an account is kept no longer than the claim.
 - Read `Account` rows through the explicit `ACCOUNT_COLUMNS` list in
   `database.constants.ts` and by column name, never `SELECT *` or by position; its
   column order changed when 0015 dropped columns. Prefer the same for new
