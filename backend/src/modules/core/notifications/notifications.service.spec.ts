@@ -65,16 +65,17 @@ describe('NotificationsService reading an inbox', () => {
         return { notifications: await service.getNotificationsByAccountId(7), warn }
     }
 
-    it('reads the game proposal notifications the API writes for admins and proposers', async () => {
+    it('reads the game proposal and group person notifications the API writes', async () => {
         const { notifications, warn } = await inbox([
             row(1, 'game_proposal_submitted', '{"gameTitle":"Azul","proposalId":4,"submittedBy":9}'),
             row(2, 'game_proposal_approved', '{"gameTitle":"Azul","proposalId":4,"createdGameId":88}'),
             row(3, 'game_proposal_rejected', '{"gameTitle":"Azul","proposalId":4,"reviewNotes":"Not a board game"}'),
             row(4, 'game_proposal_duplicate', '{"gameTitle":"Azul","proposalId":4,"duplicateOfGameId":40,"duplicateOfTitle":"Azul"}'),
             row(5, 'user_joined_group', '{"account":8,"group":12}'),
+            row(6, 'group_person_changed', '{"account":8,"group":12,"person":3,"game":40}'),
         ])
 
-        expect(notifications.map(notification => notification.id)).toEqual([1, 2, 3, 4, 5])
+        expect(notifications.map(notification => notification.id)).toEqual([1, 2, 3, 4, 5, 6])
         // The data is kept whole, so the app can link where the notification points.
         expect(notifications[0]?.data).toEqual({ gameTitle: 'Azul', proposalId: 4, submittedBy: 9 })
         expect(notifications[1]?.data).toEqual({ gameTitle: 'Azul', proposalId: 4, createdGameId: 88 })

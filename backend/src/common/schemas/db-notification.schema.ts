@@ -19,6 +19,8 @@ const DATA_BY_TYPE: Record<NotificationTypeEnum, z.ZodType> = {
     [NotificationTypeEnum.GAMES_ADDED]: z.object({ account: id, group: id, games: z.array(id) }),
     // {account} joined {group}
     [NotificationTypeEnum.USER_JOINED_GROUP]: z.object({ account: id, group: id }),
+    // {account} changed a game or preference you entered for {person} in {group} (ADR-0020)
+    [NotificationTypeEnum.GROUP_PERSON_CHANGED]: z.object({ account: id, group: id, person: id, game: id }),
     [NotificationTypeEnum.GAME_PROPOSAL_APPROVED]: proposalData.extend({ createdGameId: id.optional() }),
     [NotificationTypeEnum.GAME_PROPOSAL_SUBMITTED]: proposalData.extend({ submittedBy: id }),
     [NotificationTypeEnum.GAME_PROPOSAL_REJECTED]: proposalData.extend({ reviewNotes: z.string() }),
