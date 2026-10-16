@@ -62,7 +62,7 @@ export async function deleteGroupRows(transaction: Transaction, groupId: number)
         { sql: 'DELETE FROM Meet WHERE groupId = ?', args: [groupId] },
         // Everyone's notifications about the group lead nowhere once it is gone.
         forgetGroupNotifications(groupId, null),
-        // Last: its row count tells the caller whether the group went.
+        // Its row count tells the caller whether the group went (read as the second to last result).
         { sql: 'DELETE FROM UserGroup WHERE id = ?', args: [groupId] },
         // Its history goes with it (ADR-0020): the cascade already did, unless foreign keys are off.
         // The append-only trigger allows this only once the group is gone, so it stays last.
