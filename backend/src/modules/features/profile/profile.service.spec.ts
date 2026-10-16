@@ -86,4 +86,29 @@ describe('ProfileService invitation acceptance', () => {
         await expect(service.acceptInvitation(8, 1)).rejects.toThrow('This invitation has expired')
         expect(databaseService.acceptInvitationAtomically).not.toHaveBeenCalled()
     })
+
+    it('tells the group someone joined only when the invitation adds them', async () => {
+        const accept = async (joined: boolean) => {
+            const invitationsService = {
+                getInvitationById: vi.fn().mockResolvedValue({ id: 1, groupId: 12, fromAccountId: 7, toAccountId: 8 }),
+                isExpired: vi.fn().mockReturnValue(false),
+            }
+            const notifier = fakeActivityNotifier()
+            const service = new ProfileService(
+                {} as UsersService,
+                {} as NotificationsService,
+                {} as GroupsService,
+                invitationsService as unknown as InvitationsService,
+                fakeDatabase({ acceptInvitationAtomically: vi.fn().mockResolvedValue({ success: true, joined }) }),
+                {} as GameProposalService,
+                notifier,
+            )
+
+            await expect(service.acceptInvitation(8, 1)).resolves.toEqual({ success: true })
+            return notifier.memberJoined
+        }
+
+        expect(await accept(true)).toHaveBeenCalledWith(12, 8)
+        expect(await accept(false)).not.toHaveBeenCalled()
+    })
 })

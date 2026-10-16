@@ -47,6 +47,9 @@ scheduled and running sessions they organised to the group owner. Their votes
 and the games they said they would bring go from those scheduled sessions, so
 the shortlist is no longer ordered by them (#137). A running session they stay
 in no longer sends them its notifications, since they are not in the group.
+Their notifications about the group (its game nights, someone joining) go
+too: their links lead to pages they can no longer open. Deleting a group
+removes everyone's notifications about it.
 The owner cannot leave or remove themselves.
 
 **Deleting an account** runs in one transaction:
@@ -60,6 +63,9 @@ The owner cannot leave or remove themselves.
 4. Private data is deleted: shelf, wishlist, reviews, collection activity,
    notifications, group game interest, invitations sent or received, and
    game proposals still pending. Approved games stay in the catalogue.
+   What others were told about them ("Ana joined Fridays.") says "Deleted
+   account" instead of their name. The text is stored as written, so only
+   messages that start with the name they had when deleting are renamed.
    Group data they entered for others (acquisition decisions, recommendation
    feedback) stays, unattributed.
 5. The `Account` row stays, so references hold, but keeps nothing personal:

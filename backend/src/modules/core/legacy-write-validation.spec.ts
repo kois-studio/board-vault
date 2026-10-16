@@ -24,7 +24,6 @@ describe('Legacy write DTO validation', () => {
     let app: INestApplication
     const createGroup = vi.fn().mockResolvedValue({ success: true })
     const createInvitation = vi.fn().mockResolvedValue({ success: true })
-    const createNotification = vi.fn().mockResolvedValue({ success: true })
     const createGroupMembershipFromInvitation = vi.fn().mockResolvedValue({ success: true })
 
     beforeEach(async () => {
@@ -37,7 +36,7 @@ describe('Legacy write DTO validation', () => {
                 { provide: GroupActivityService, useValue: {} },
                 { provide: ClerkIdentityService, useValue: {} },
                 { provide: InvitationsService, useValue: { createInvitation } },
-                { provide: NotificationsService, useValue: { createNotification } },
+                { provide: NotificationsService, useValue: {} },
                 { provide: GroupMembershipsService, useValue: { createGroupMembershipFromInvitation } },
             ],
         })
@@ -86,13 +85,11 @@ describe('Legacy write DTO validation', () => {
         expect(createInvitation).not.toHaveBeenCalled()
     })
 
-    it('rejects unexpected notification fields before persistence', async () => {
+    it('has no route to create notifications', async () => {
         await request(app.getHttpServer())
             .post('/notifications')
             .send({ type: 'test', message: 'message', data: {}, accountId: 999 })
-            .expect(400)
-
-        expect(createNotification).not.toHaveBeenCalled()
+            .expect(404)
     })
 
     it('rejects malformed membership references before persistence', async () => {

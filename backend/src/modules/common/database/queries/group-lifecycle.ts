@@ -1,3 +1,4 @@
+import { forgetGroupNotifications } from './notification-cleanup.js'
 import { forgetWhoIsNotComing } from './session-cleanup.js'
 
 import type { Transaction } from '@libsql/client'
@@ -9,7 +10,8 @@ import type { Transaction } from '@libsql/client'
  * counts never change. Sessions that have not happened yet drop them, and the
  * sessions they organised that are still scheduled or running pass to the group
  * owner, who can then manage them. Their votes and the games they said they would bring go from
- * those upcoming sessions too. Run it after any ownership change.
+ * those upcoming sessions too, and so do their notifications about the group, which would only
+ * lead to pages they can no longer open. Run it after any ownership change.
  */
 export async function departGroup(transaction: Transaction, accountId: number, groupId: number): Promise<void> {
     const upcoming = "SELECT id FROM Meet WHERE groupId = ? AND status = 'scheduled'"
@@ -39,6 +41,7 @@ export async function departGroup(transaction: Transaction, accountId: number, g
             `,
             args: [groupId, groupId, accountId],
         },
+        forgetGroupNotifications(groupId, accountId),
         // Last: who is coming has just changed, and the organizer may have too.
         ...forgetWhoIsNotComing(upcoming, [groupId]),
     ])
@@ -57,6 +60,9 @@ export async function deleteGroupRows(transaction: Transaction, groupId: number)
         { sql: `DELETE FROM MeetPersonGame WHERE meetId IN (${meets})`, args: [groupId] },
         { sql: `DELETE FROM MeetPersonAttendee WHERE meetId IN (${meets})`, args: [groupId] },
         { sql: 'DELETE FROM Meet WHERE groupId = ?', args: [groupId] },
+        // Everyone's notifications about the group lead nowhere once it is gone.
+        forgetGroupNotifications(groupId, null),
+        // Its row count tells the caller whether the group went (read as the second to last result).
         { sql: 'DELETE FROM UserGroup WHERE id = ?', args: [groupId] },
         // Its history goes with it (ADR-0020): the cascade already did, unless foreign keys are off.
         // The append-only trigger allows this only once the group is gone, so it stays last.

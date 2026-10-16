@@ -1,4 +1,5 @@
 import { deleteGroupRows, departGroup } from './group-lifecycle.js'
+import { renameActorInNotifications } from './notification-cleanup.js'
 
 import type { DatabaseService } from '../database.service.js'
 
@@ -25,8 +26,13 @@ export class AccountDeletionQueries {
         const transaction = await this.database.transaction('write')
 
         try {
-            const account = await transaction.execute({ sql: 'SELECT email FROM Account WHERE id = ?', args: [accountId] })
+            const account = await transaction.execute({
+                // The name as ActivityNotifier wrote it into other people's notifications.
+                sql: "SELECT email, COALESCE(NULLIF(TRIM(displayName), ''), username) AS name FROM Account WHERE id = ?",
+                args: [accountId],
+            })
             const email = account.rows[0]?.email
+            const name = String(account.rows[0]?.name ?? '')
 
             if (email === undefined) {
                 await transaction.commit()
@@ -97,6 +103,8 @@ export class AccountDeletionQueries {
                 { sql: 'DELETE FROM GameReview WHERE accountId = ?', args: [accountId] },
                 { sql: 'DELETE FROM CollectionActivity WHERE accountId = ?', args: [accountId] },
                 { sql: 'DELETE FROM Notification WHERE accountId = ?', args: [accountId] },
+                // What others were told about them ("Ana joined Fridays.") no longer names them.
+                ...(name ? [renameActorInNotifications(accountId, name, DELETED_ACCOUNT_NAME)] : []),
                 { sql: 'DELETE FROM GroupGameInterest WHERE accountId = ?', args: [accountId] },
                 { sql: 'DELETE FROM Invitation WHERE fromAccountId = ? OR toAccountId = ?', args: [accountId, accountId] },
                 { sql: "DELETE FROM GameProposal WHERE submittedBy = ? AND status = 'pending'", args: [accountId] },
