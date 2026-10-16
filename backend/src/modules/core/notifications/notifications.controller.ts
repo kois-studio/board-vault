@@ -1,8 +1,8 @@
-import { Body, Controller, Delete, Get, Param, ParseIntPipe, Post, Put, Req, UseGuards, UsePipes, ValidationPipe } from '@nestjs/common'
+import { Body, Controller, Delete, Get, Param, ParseIntPipe, Put, Req, UseGuards, UsePipes, ValidationPipe } from '@nestjs/common'
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger'
 
 import { AuthGuard } from '../../../common/guards/auth.guard.js'
-import { CreateNotificationRequestBody, NotificationDto, UpdateNotificationRequestBody } from '../../../common/types/notification.type.js'
+import { NotificationDto, UpdateNotificationRequestBody } from '../../../common/types/notification.type.js'
 
 import { NotificationsService } from './notifications.service.js'
 
@@ -10,6 +10,7 @@ import { NotificationsService } from './notifications.service.js'
 @UsePipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true, transform: true }))
 @ApiTags('notifications')
 @ApiBearerAuth()
+// Notifications are written by the API itself (ActivityNotifier, proposals); nobody creates their own.
 @Controller('notifications')
 export class NotificationsController {
     constructor(private readonly notificationsService: NotificationsService) {}
@@ -19,13 +20,6 @@ export class NotificationsController {
     @ApiResponse({ status: 200, type: [NotificationDto], description: 'List of all notifications' })
     async getNotifications(@Req() request: { user: { userId: number } }) {
         return this.notificationsService.getNotificationsByAccountId(request.user.userId)
-    }
-
-    @Post('/')
-    @ApiOperation({ summary: 'Create a new notification', deprecated: true })
-    @ApiResponse({ status: 201, description: 'The notification has been succesfully created' })
-    async createNotification(@Req() request: { user: { userId: number } }, @Body() notificationDto: CreateNotificationRequestBody) {
-        return this.notificationsService.createNotification({ ...notificationDto, accountId: request.user.userId })
     }
 
     @Get('/:notificationId')

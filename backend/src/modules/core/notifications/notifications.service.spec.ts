@@ -28,7 +28,8 @@ describe('NotificationsService ownership', () => {
                 type: 'meeting_scheduled',
                 message: 'message',
                 data: { account: 8, group: 12, meeting: 21 },
-                createdAt: '2026-08-14 00:00:00',
+                // Stored without a zone (UTC); answered as ISO so browsers don't read it as local time.
+                createdAt: '2026-08-14T00:00:00.000Z',
                 isRead: false,
             },
         ])

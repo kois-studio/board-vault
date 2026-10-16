@@ -19,15 +19,29 @@ describe('GroupMembershipsService join policy', () => {
     })
 
     it('creates membership and consumes the pending invitation', async () => {
-        const acceptInvitationAtomically = vi.fn().mockResolvedValue({ success: true })
+        const acceptInvitationAtomically = vi.fn().mockResolvedValue({ success: true, joined: true })
         const databaseService = fakeDatabase({
             getInvitationByGroupAndRecipient: vi.fn().mockResolvedValue({ rows: [[42]] }),
             acceptInvitationAtomically,
         })
-        const service = new GroupMembershipsService(databaseService, fakeActivityNotifier())
+        const notifier = fakeActivityNotifier()
+        const service = new GroupMembershipsService(databaseService, notifier)
 
         await expect(service.createGroupMembershipFromInvitation(7, 12)).resolves.toEqual({ success: true })
         expect(acceptInvitationAtomically).toHaveBeenCalledWith(42, 7, 12)
+        expect(notifier.memberJoined).toHaveBeenCalledWith(12, 7)
+    })
+
+    it('tells nobody that someone joined who was already in the group', async () => {
+        const databaseService = fakeDatabase({
+            getInvitationByGroupAndRecipient: vi.fn().mockResolvedValue({ rows: [[42]] }),
+            acceptInvitationAtomically: vi.fn().mockResolvedValue({ success: true, joined: false }),
+        })
+        const notifier = fakeActivityNotifier()
+        const service = new GroupMembershipsService(databaseService, notifier)
+
+        await expect(service.createGroupMembershipFromInvitation(7, 12)).resolves.toEqual({ success: true })
+        expect(notifier.memberJoined).not.toHaveBeenCalled()
     })
 })
 

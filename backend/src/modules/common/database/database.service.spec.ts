@@ -853,7 +853,7 @@ describe('DatabaseService logging', () => {
             transaction: vi.fn().mockResolvedValue(transaction),
         }
 
-        await expect(service.invitations.acceptInvitationAtomically(42, 7, 12)).resolves.toEqual({ success: true })
+        await expect(service.invitations.acceptInvitationAtomically(42, 7, 12)).resolves.toEqual({ success: true, joined: true })
         expect(transaction.execute).toHaveBeenNthCalledWith(1, {
             sql: expect.stringContaining('SELECT id'),
             args: [42, 12, 7],

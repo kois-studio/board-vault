@@ -157,7 +157,12 @@ export class InvitationQueries {
         return result
     }
 
-    async acceptInvitationAtomically(invitationId: number, accountId: number, groupId: number): Promise<{ success: true }> {
+    /** Accepts an invitation; `joined` is false when the account was already a member (the invitation is still used up). */
+    async acceptInvitationAtomically(
+        invitationId: number,
+        accountId: number,
+        groupId: number,
+    ): Promise<{ success: true; joined: boolean }> {
         const transaction = await this.database.transaction('write')
 
         try {
@@ -177,7 +182,7 @@ export class InvitationQueries {
                 throw new ForbiddenException('A pending invitation is required to join this group')
             }
 
-            await transaction.execute({
+            const membership = await transaction.execute({
                 sql: 'INSERT OR IGNORE INTO GroupMembership (accountId, groupId) VALUES (?, ?)',
                 args: [accountId, groupId],
             })
@@ -222,7 +227,7 @@ export class InvitationQueries {
             }
 
             await transaction.commit()
-            return { success: true }
+            return { success: true, joined: membership.rowsAffected === 1 }
         } catch (error) {
             await transaction.rollback()
             throw error
