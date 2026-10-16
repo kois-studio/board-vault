@@ -4,7 +4,6 @@ import { validate } from 'class-validator'
 import { CacheKeyParam } from './cache.type.js'
 import { CreateGameProposalBody } from './game-proposal.type.js'
 import { LegacyCreateGroupParams } from './group.type.js'
-import { CreateNotificationRequestBody } from './notification.type.js'
 import { CreatePlaySessionBody, UpdateSessionShortlistBody } from './session.type.js'
 import { UserUpdateGamesBody } from './user.type.js'
 
@@ -21,18 +20,12 @@ describe('request boundary limits', () => {
         expect(proposalErrors.map(error => error.property)).toContain('title')
     })
 
-    it('bounds notification text and bulk collection updates', async () => {
-        const notificationErrors = await validationErrors(CreateNotificationRequestBody, {
-            type: 'a'.repeat(101),
-            message: 'a'.repeat(1001),
-            data: {},
-        })
+    it('bounds bulk collection updates', async () => {
         const collectionErrors = await validationErrors(UserUpdateGamesBody, {
             gamesToAdd: Array.from({ length: 1001 }, (_, index) => index + 1),
             gamesToRemove: [],
         })
 
-        expect(notificationErrors.map(error => error.property)).toEqual(expect.arrayContaining(['type', 'message']))
         expect(collectionErrors.map(error => error.property)).toContain('gamesToAdd')
     })
 

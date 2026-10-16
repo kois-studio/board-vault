@@ -13,14 +13,8 @@ describe('NotificationsController actor identity', () => {
         expect(getNotificationsByAccountId).toHaveBeenCalledWith(7)
     })
 
-    it('derives the notification recipient from the authenticated account', async () => {
-        const createNotification = vi.fn().mockResolvedValue({ success: true })
-        const controller = new NotificationsController({ createNotification } as unknown as NotificationsService)
-        const body = { accountId: 999, type: 'test', message: 'message', data: {} } as never
-
-        await controller.createNotification(request, body)
-
-        expect(createNotification).toHaveBeenCalledWith({ accountId: 7, type: 'test', message: 'message', data: {} })
+    it('has no way for a person to create notifications: only the API writes them', () => {
+        expect('createNotification' in NotificationsController.prototype).toBe(false)
     })
 
     it('passes the authenticated account to notification reads and mutations', async () => {

@@ -1,8 +1,9 @@
 import { ResultSet } from '@libsql/client'
-import { ConflictException, Injectable, Logger, NotFoundException } from '@nestjs/common'
+import { Injectable, Logger, NotFoundException } from '@nestjs/common'
 
 import { notificationSchema } from '../../../common/schemas/index.js'
-import { CreateNotificationBody, NotificationDto, UpdateNotificationRequestBody } from '../../../common/types/notification.type.js'
+import { NotificationDto, UpdateNotificationRequestBody } from '../../../common/types/notification.type.js'
+import { toIsoDate } from '../../../common/utils/index.js'
 import { DatabaseService } from '../../common/database/database.service.js'
 
 /** The stored JSON, or null when it is not valid JSON (the row is then left out). */
@@ -35,7 +36,8 @@ export class NotificationsService {
                 type: String(row[2]),
                 message: String(row[3]),
                 data: parseData(row[4]),
-                createdAt: String(row[5]),
+                // Stored by CURRENT_TIMESTAMP, UTC without a zone: answered as ISO so browsers don't read it as local time.
+                createdAt: toIsoDate(String(row[5])),
                 isRead: Boolean(row[6]),
             })
 
@@ -46,13 +48,6 @@ export class NotificationsService {
         if (skipped > 0) this.LOGGER.warn('Left out notifications that could not be read; the others are returned')
 
         return notifications
-    }
-
-    async getNotifications(): Promise<Array<NotificationDto>> {
-        this.LOGGER.log('Getting all notifications')
-        const resultSet = await this.databaseService.notifications.getNotifications()
-
-        return this._parseResultSet(resultSet)
     }
 
     async getNotificationById(id: number, accountId: number): Promise<NotificationDto> {
@@ -73,18 +68,6 @@ export class NotificationsService {
         const resultSet = await this.databaseService.notifications.getNotificationsByAccountId(accountId)
 
         return this._parseResultSet(resultSet)
-    }
-
-    async createNotification(notificationDto: CreateNotificationBody) {
-        this.LOGGER.log('Creating notification')
-        try {
-            await this.databaseService.notifications.createNotification(notificationDto)
-
-            return { success: true }
-        } catch {
-            this.LOGGER.error('Failed to create notification')
-            throw new ConflictException('Notification title already in use')
-        }
     }
 
     async updateNotification(

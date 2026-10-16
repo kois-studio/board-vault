@@ -104,11 +104,12 @@ export class GroupMembershipsService {
             throw new ForbiddenException('A pending invitation is required to join this group')
         }
 
-        const result = await this.databaseService.invitations.acceptInvitationAtomically(Number(row[0]), accountId, groupId)
+        const { joined } = await this.databaseService.invitations.acceptInvitationAtomically(Number(row[0]), accountId, groupId)
 
-        await this.activityNotifier.memberJoined(groupId, accountId)
+        // Someone who was already in the group is not news to it.
+        if (joined) await this.activityNotifier.memberJoined(groupId, accountId)
 
-        return result
+        return { success: true as const }
     }
 
     /**

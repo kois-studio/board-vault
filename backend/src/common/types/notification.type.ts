@@ -45,11 +45,6 @@ export class NotificationDto {
 export class CreateNotificationBody extends OmitType(NotificationDto, ['id', 'createdAt', 'isRead']) {}
 
 /**
- * POST requests from authenticated users; the recipient is derived from the JWT.
- */
-export class CreateNotificationRequestBody extends OmitType(CreateNotificationBody, ['accountId']) {}
-
-/**
  * PUT requests --> editable fields
  */
 export class UpdateNotificationBody extends PartialType(PickType(NotificationDto, ['accountId', 'type', 'message', 'isRead'])) {}

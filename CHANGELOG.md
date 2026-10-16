@@ -371,6 +371,20 @@ operational details.
   would then fail to load and lock the person out. Settings → Account says
   so. Two copies racing for the same name answer "taken" instead of an
   error.
+- A notification's time comes as UTC with its zone, so "x hours ago" is
+  right: a new notification said "2 hours ago" in Spain, and stayed
+  "Just now" for hours in the Americas.
+- Nobody can create their own notifications anymore: the old
+  `POST /notifications` accepted any type and text (even one copying the
+  app's) and could break that person's inbox. Only the API writes them.
+- An inbox answers the latest 100 notifications, newest first, and
+  notifications written at the same time keep their order.
+- Leaving a group removes your notifications about it, whose links led to
+  pages you could no longer open; deleting a group removes everyone's.
+  What others were told about someone who deleted their account ("Ana
+  joined Fridays.") says "Deleted account" instead of their name.
+- "Someone joined" is sent once: accepting a second invitation to a group
+  you are already in no longer tells the whole group again.
 - Public pages no longer wait for Clerk: it loads after the first page has
   painted, and `/login` and `/register` render without it. With a Clerk key,
   as in production, Lighthouse performance goes from about 76 to 94–96, and

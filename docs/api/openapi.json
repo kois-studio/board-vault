@@ -378,35 +378,6 @@
         "tags": [
           "notifications"
         ]
-      },
-      "post": {
-        "deprecated": true,
-        "operationId": "NotificationsController_createNotification",
-        "parameters": [],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/CreateNotificationRequestBody"
-              }
-            }
-          }
-        },
-        "responses": {
-          "201": {
-            "description": "The notification has been succesfully created"
-          }
-        },
-        "security": [
-          {
-            "bearer": []
-          }
-        ],
-        "summary": "Create a new notification",
-        "tags": [
-          "notifications"
-        ]
       }
     },
     "/notifications/{notificationId}": {
@@ -5895,28 +5866,6 @@
           "data",
           "createdAt",
           "isRead"
-        ]
-      },
-      "CreateNotificationRequestBody": {
-        "type": "object",
-        "properties": {
-          "type": {
-            "type": "string",
-            "example": "expelled"
-          },
-          "message": {
-            "type": "string",
-            "example": "message"
-          },
-          "data": {
-            "type": "object",
-            "example": "{}"
-          }
-        },
-        "required": [
-          "type",
-          "message",
-          "data"
         ]
       },
       "UpdateNotificationRequestBody": {

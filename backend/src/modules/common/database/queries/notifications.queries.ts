@@ -3,13 +3,12 @@ import { BadRequestException } from '@nestjs/common'
 import type { CreateNotificationBody, UpdateNotificationBody } from '../../../../common/types/notification.type.js'
 import type { DatabaseService } from '../database.service.js'
 
+/** An inbox shows the latest notifications; older ones stay stored but are not sent. */
+export const INBOX_LIMIT = 100
+
 /** Notifications. */
 export class NotificationQueries {
     constructor(private readonly database: DatabaseService) {}
-
-    getNotifications() {
-        return this.database.execute('SELECT * FROM Notification')
-    }
 
     getNotificationById(id: number, accountId: number) {
         return this.database.execute({
@@ -18,14 +17,17 @@ export class NotificationQueries {
         })
     }
 
+    /** The newest notifications of an account first; rows written together keep the order they were written in. */
     getNotificationsByAccountId(accountId: number) {
         return this.database.execute({
             sql: `
                 SELECT n.id, n.accountId, n.type, n.message, n.data, n.createdAt, n.isRead
                 FROM Notification n
                 WHERE n.accountId = ?
+                ORDER BY n.createdAt DESC, n.id DESC
+                LIMIT ?
             `,
-            args: [accountId],
+            args: [accountId, INBOX_LIMIT],
         })
     }
 
@@ -97,16 +99,6 @@ export class NotificationQueries {
         return this.database.execute({
             sql: "SELECT COALESCE(NULLIF(TRIM(displayName), ''), username) FROM Account WHERE id = ?",
             args: [accountId],
-        })
-    }
-
-    createNotification(notificationDto: CreateNotificationBody) {
-        // Serialize data to JSON string for storage
-        const dataJson = JSON.stringify(notificationDto.data || {})
-
-        return this.database.execute({
-            sql: 'INSERT INTO Notification (accountId, type, message, data) VALUES (?, ?, ?, ?)',
-            args: [notificationDto.accountId, notificationDto.type, notificationDto.message, dataJson],
         })
     }
 

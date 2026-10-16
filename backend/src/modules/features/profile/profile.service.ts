@@ -74,8 +74,9 @@ export class ProfileService {
         }
 
         // Membership creation and invitation consumption must commit together.
-        await this.databaseService.invitations.acceptInvitationAtomically(invitationId, userId, invitationData.groupId)
-        await this.activityNotifier.memberJoined(invitationData.groupId, userId)
+        const { joined } = await this.databaseService.invitations.acceptInvitationAtomically(invitationId, userId, invitationData.groupId)
+        // Someone who was already in the group is not news to it.
+        if (joined) await this.activityNotifier.memberJoined(invitationData.groupId, userId)
 
         return { success: true }
     }
