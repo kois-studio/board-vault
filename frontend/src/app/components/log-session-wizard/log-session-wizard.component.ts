@@ -110,6 +110,12 @@ export class LogSessionWizardComponent {
     readonly loadingRecording = signal(Boolean(this.editingId))
     readonly catalogLoading = signal(false)
     readonly catalogError = signal(false)
+    /** Catalogue games matching the search, for games nobody here owns (borrowed, just bought). */
+    readonly catalogResults = signal<GameCompleteType[]>([])
+    readonly otherGames = computed(() => {
+        const offered = new Set(this.games().map((selection) => selection.game.id))
+        return this.catalogResults().filter((game) => !offered.has(game.id))
+    })
     readonly extras = signal<GameCompleteType[]>([])
     readonly additionalPlays = signal<PlayChoice[]>([])
     readonly primaryResults = signal<Record<number, PlayChoice['results']>>({})
@@ -249,6 +255,18 @@ export class LogSessionWizardComponent {
     constructor() {
         this.sessionDate.valueChanges.pipe(takeUntilDestroyed()).subscribe((value) => this.dateChoice.set(value ?? ''))
         if (this.editingId) void this.loadRecording()
+
+        // Typing in the one search box also looks beyond the games of the people who came.
+        effect((onCleanup) => {
+            const query = this.gameQuery().trim()
+            const group = this.selectedGroup()
+            if (!group || query.length < 2 || this.currentStep() !== 'games') {
+                untracked(() => this.catalogResults.set([]))
+                return
+            }
+            const timer = setTimeout(() => void this.searchCatalog(), 300)
+            onCleanup(() => clearTimeout(timer))
+        })
         // With a single group there is nothing to choose.
         effect(() => {
             const groups = this.userGroups()
@@ -656,28 +674,40 @@ export class LogSessionWizardComponent {
     }
 
     public setDay(offset: number): void {
-        const date = new Date()
-        date.setDate(date.getDate() + offset)
-        this.sessionDate.setValue(
-            `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`,
-        )
+        this.sessionDate.setValue(this.dayValue(offset))
     }
 
     public async searchCatalog(): Promise<void> {
         const group = this.selectedGroup()
-        if (!group) return
-        const query = this.gameQuery()
+        const query = this.gameQuery().trim()
+        if (!group || !query) return
         this.catalogLoading.set(true)
         this.catalogError.set(false)
         try {
             const games = await firstValueFrom(this.api.getGroupPersonCatalog(group.id, query))
-            if (this.selectedGroup()?.id === group.id && this.gameQuery() === query)
-                this.extras.update((previous) => [...new Map([...previous, ...games].map((game) => [game.id, game])).values()])
+            if (this.selectedGroup()?.id === group.id && this.gameQuery().trim() === query) this.catalogResults.set(games)
         } catch {
             this.catalogError.set(true)
         } finally {
             this.catalogLoading.set(false)
         }
+    }
+
+    /** Adds a catalogue game nobody here owns, already ticked; recording a play never adds ownership. */
+    public addCatalogGame(game: GameCompleteType): void {
+        this.extras.update((previous) => (previous.some((item) => item.id === game.id) ? previous : [...previous, game]))
+        this.games.update((games) =>
+            games.some((selection) => selection.game.id === game.id)
+                ? games.map((selection) => (selection.game.id === game.id ? { ...selection, selected: true } : selection))
+                : [...games, { game, selected: true }],
+        )
+    }
+
+    /** "2026-10-16" for yesterday (offset -1), in the browser's own day. */
+    public dayValue(offset: number): string {
+        const date = new Date()
+        date.setDate(date.getDate() + offset)
+        return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`
     }
 
     public repeatGame(gameId: number): void {
@@ -868,7 +898,9 @@ export class LogSessionWizardComponent {
     //        UTILITY METHODS
     // --------------------------------------------------------------------------
     public getStepInfo(): StepInfo {
-        return this.steps.find((step) => step.key === this.currentStep()) ?? this.steps[0]
+        const step = this.steps.find((step) => step.key === this.currentStep()) ?? this.steps[0]
+        // A night starting now has no day to pick, and the people are the ones here.
+        return this.isLive && step.key === 'who' ? { ...step, label: 'Who is here', description: 'Pick the group and who is here.' } : step
     }
 
     public getStepIndex(step: SessionStep): number {
@@ -902,8 +934,14 @@ export class LogSessionWizardComponent {
         const game = this.games().find((selection) => selection.game.id === gameId)?.game
         return game ? this.getGameTitle(game) : 'Game'
     }
+    /** Account ids sit negated beside group-person ids in this form (see restoreRecording), so look them up the same way. */
     public namesForPlay(play: CreatePlaySessionRequest['games'][number]): string {
-        return [...(play.participantIds ?? []), ...(play.participantPersonIds ?? [])].map((id) => this.playerName(id)).join(', ')
+        const accounts = (play.participantIds ?? []).map((id) => (this.usesGroupPeople() ? -id : id))
+        return [...(play.participantPersonIds ?? []), ...accounts].map((id) => this.playerName(id)).join(', ')
+    }
+
+    public playImage(gameId: number): string {
+        return this.games().find((selection) => selection.game.id === gameId)?.game.imageUrl ?? ''
     }
 
     public getPlayerNames(gameId: number): string {

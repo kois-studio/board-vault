@@ -340,9 +340,13 @@ describe('LogSessionWizardComponent games step', () => {
         component.gameQuery.set('Borrowed')
         await component.searchCatalog()
         fixture.detectChanges()
-        expect(component.visibleGames().map((selection) => selection.game.id)).toEqual([99])
-        component.toggleGame(99)
+        // Found beyond ownership, offered apart from the attendees' games until it is added.
+        expect(component.otherGames().map((item) => item.id)).toEqual([99])
+        expect(component.visibleGames()).toEqual([])
+        component.addCatalogGame(borrowed)
         fixture.detectChanges()
+        expect(component.getSelectedGames().map((selection) => selection.game.id)).toEqual([99])
+        expect(component.otherGames()).toEqual([])
         component.repeatGame(99)
         const extra = component.playsFor(99)[0]
         if (!extra) throw new Error('The second play was not added')
