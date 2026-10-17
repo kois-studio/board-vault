@@ -1,6 +1,6 @@
-<app-page-header [titleText]="editingId ? 'Correct this session' : isLive ? 'Start playing now' : 'Record a session'" [showActionButton]="false">
+<app-page-header [titleText]="editingId ? 'Correct this session' : isLive() ? 'Start playing now' : 'Record a session'" [showActionButton]="false">
     @if (editingId) { Update the day, people, games and individual plays. Your correction will appear in the group’s history. }
-    @else if (isLive) { Choose who is here. You can add people and games as they arrive. }
+    @else if (isLive()) { Choose who is here. You can add people and games as they arrive. }
     @else { Add a game night that already happened. Planning one instead? <a class="font-medium text-bv-primary underline underline-offset-2" routerLink="/play/upcoming-sessions" [queryParams]="{ plan: 1 }">Plan a game night</a>. }
 </app-page-header>
 
@@ -9,7 +9,7 @@
         @if (loadingRecording()) { <p class="mb-4" role="status">Loading the recording…</p> }
         @if (recordingError()) { <div class="mb-4 rounded-lg border border-bv-danger/30 p-4" role="alert"><p>{{ recordingError() }}</p>@if (editingId) { <button appButton variant="secondary" class="mt-2" (click)="loadRecording()">Reload recording</button> }</div> }
         <!-- Progress -->
-        <nav aria-label="Progress" class="mb-6" [hidden]="isLive">
+        <nav aria-label="Progress" class="mb-6" [hidden]="isLive()">
             <ol class="grid grid-cols-3 gap-2">
                 @for (step of steps; track step.key) {
                     @let index = getStepIndex(step.key);
@@ -85,7 +85,7 @@
                                     }
                                 </div>
                             </fieldset>
-                            <div [hidden]="isLive">
+                            <div [hidden]="isLive()">
                                 <label for="session-date" class="mb-2 block text-sm font-semibold">Day</label>
                                 <input id="session-date" type="date" class="app-input sm:w-48" [max]="today" [formControl]="sessionDate" [class.border-bv-danger]="sessionDate.invalid" [attr.aria-invalid]="sessionDate.invalid" aria-describedby="session-date-error" />
                                 <div class="mt-2 flex gap-2">
@@ -102,7 +102,21 @@
                             </div>
                         </div>
 
-                        @if (!isLive && sameDaySessions().length > 0) {
+                        @if (liveSession(); as live) {
+                            @if (isLive()) {
+                                <aside class="flex flex-wrap items-center gap-3 rounded-lg border border-bv-success/30 bg-bv-success/10 p-3" aria-label="A night is already on">
+                                    <p class="min-w-0 flex-1 text-sm font-medium">{{ selectedGroup()?.name }} already has a night under way.</p>
+                                    <a appButton size="small" [routerLink]="['/sessions', live.id]">Open it</a>
+                                </aside>
+                            }
+                        } @else if (!isLive() && !editingId && selectedGroup()) {
+                            <p class="text-sm text-bv-text-muted">
+                                Playing right now?
+                                <button type="button" class="font-semibold text-bv-primary hover:underline" (click)="switchToLive()">Start the night live</button>
+                                and add games as you go.
+                            </p>
+                        }
+                        @if (!isLive() && sameDaySessions().length > 0) {
                             <aside class="flex gap-3 rounded-lg border border-bv-warning/30 bg-bv-warning/10 p-3" aria-label="Sessions already on this day">
                                 <app-icon name="info" [size]="18" className="mt-0.5 shrink-0 text-bv-warning" aria-hidden="true" />
                                 <div class="min-w-0">
@@ -312,7 +326,7 @@
                 }
 
                 <button appButton [disabled]="!canProceedToNextStep() || isLoading()" [loading]="isLoading()" (click)="nextStep()">
-                    {{ isLive ? 'Start game night' : currentStep() === 'save' ? editingId ? 'Save correction' : 'Save session' : 'Next' }}
+                    {{ isLive() ? 'Start game night' : currentStep() === 'save' ? editingId ? 'Save correction' : 'Save session' : 'Next' }}
                 </button>
             </div>
         </div>

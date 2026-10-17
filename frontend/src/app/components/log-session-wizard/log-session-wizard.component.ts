@@ -104,7 +104,7 @@ export class LogSessionWizardComponent {
     private readonly toastService = inject(ToastService)
     private readonly route = inject(ActivatedRoute)
     readonly editingId = Number(this.route.snapshot.queryParamMap.get('sessionId')) || null
-    readonly isLive = this.route.snapshot.queryParamMap.get('mode') === 'live' && !this.editingId
+    readonly isLive = signal(this.route.snapshot.queryParamMap.get('mode') === 'live' && !this.editingId)
     readonly requestedGroupId = Number(this.route.snapshot.queryParamMap.get('groupId')) || null
     readonly recordingError = signal('')
     readonly loadingRecording = signal(Boolean(this.editingId))
@@ -137,6 +137,13 @@ export class LogSessionWizardComponent {
         )
     })
     readonly dateChoice = signal(todayInputValue())
+    /** A night already under way in the chosen group: open it rather than starting a second one. */
+    readonly liveSession = computed(() => {
+        const group = this.selectedGroup()
+        return (
+            (this.dataService.userMeets?.() ?? []).find((session) => session.groupId === group?.id && session.status === 'active') ?? null
+        )
+    })
 
     public currentUser = this.dataService.currentUser
     public userGroups = this.dataService.userGroups
@@ -499,12 +506,13 @@ export class LogSessionWizardComponent {
     //        STEP NAVIGATION
     // --------------------------------------------------------------------------
     public canProceedToNextStep(): boolean {
+        if (this.isLive() && this.liveSession()) return false
         return !this.loadingRecording() && (!this.editingId || this.recordingRestored) && this.isStepValid(this.currentStep())
     }
 
     public nextStep(): void {
         if (!this.canProceedToNextStep()) return
-        if (this.isLive) {
+        if (this.isLive()) {
             void this.submitLive()
             return
         }
@@ -701,6 +709,17 @@ export class LogSessionWizardComponent {
                 ? games.map((selection) => (selection.game.id === game.id ? { ...selection, selected: true } : selection))
                 : [...games, { game, selected: true }],
         )
+    }
+
+    /** Switches this form to starting a night now, keeping the group and people already chosen. */
+    public switchToLive(): void {
+        this.isLive.set(true)
+        void this.router.navigate([], {
+            relativeTo: this.route,
+            queryParams: { mode: 'live' },
+            queryParamsHandling: 'merge',
+            replaceUrl: true,
+        })
     }
 
     /** "2026-10-16" for yesterday (offset -1), in the browser's own day. */
@@ -900,7 +919,9 @@ export class LogSessionWizardComponent {
     public getStepInfo(): StepInfo {
         const step = this.steps.find((step) => step.key === this.currentStep()) ?? this.steps[0]
         // A night starting now has no day to pick, and the people are the ones here.
-        return this.isLive && step.key === 'who' ? { ...step, label: 'Who is here', description: 'Pick the group and who is here.' } : step
+        return this.isLive() && step.key === 'who'
+            ? { ...step, label: 'Who is here', description: 'Pick the group and who is here.' }
+            : step
     }
 
     public getStepIndex(step: SessionStep): number {
