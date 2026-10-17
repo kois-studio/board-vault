@@ -127,7 +127,9 @@ export class RecordingQueries {
                 await transaction.rollback()
                 return false
             }
-            const status = String((await transaction.execute({ sql: 'SELECT status FROM Meet WHERE id = ?', args: [meetId] })).rows[0]?.status)
+            const status = String(
+                (await transaction.execute({ sql: 'SELECT status FROM Meet WHERE id = ?', args: [meetId] })).rows[0]?.status,
+            )
             const notIn = (column: string, ids: number[]) => (ids.length ? `AND ${column} NOT IN (${ids.map(() => '?').join(',')})` : '')
             const keptGameIds = [...new Set(body.games.map(play => play.gameId))]
 
