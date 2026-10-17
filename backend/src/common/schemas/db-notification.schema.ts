@@ -15,10 +15,12 @@ const DATA_BY_TYPE: Record<NotificationTypeEnum, z.ZodType> = {
     [NotificationTypeEnum.SESSION_STARTED]: sessionData,
     [NotificationTypeEnum.SESSION_FINISHED]: sessionData,
     [NotificationTypeEnum.SESSION_CANCELLED]: sessionData,
-    // {account} from {group} added {games[]}
-    [NotificationTypeEnum.GAMES_ADDED]: z.object({ account: id, group: id, games: z.array(id) }),
+    // {account} added {added[]} to and removed {removed[]} from their shelf; {group} is one you share
+    [NotificationTypeEnum.SHELF_CHANGED]: z.object({ account: id, group: id, added: z.array(id), removed: z.array(id) }),
     // {account} joined {group}
     [NotificationTypeEnum.USER_JOINED_GROUP]: z.object({ account: id, group: id }),
+    // {member} left {group}, or {account} removed them
+    [NotificationTypeEnum.USER_LEFT_GROUP]: z.object({ account: id, group: id, member: id }),
     // {account} changed a game or preference you entered for {person} in {group} (ADR-0020)
     [NotificationTypeEnum.GROUP_PERSON_CHANGED]: z.object({ account: id, group: id, person: id, game: id }),
     [NotificationTypeEnum.GAME_PROPOSAL_APPROVED]: proposalData.extend({ createdGameId: id.optional() }),

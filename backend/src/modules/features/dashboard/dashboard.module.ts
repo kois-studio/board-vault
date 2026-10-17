@@ -11,6 +11,7 @@ import { GroupMembershipsModule } from '../../core/group-memberships/group-membe
 import { GroupsModule } from '../../core/groups/groups.module.js'
 import { MeetAccountGamesModule } from '../../core/meet-account-games/meet-account-games.module.js'
 import { MeetsModule } from '../../core/meets/meets.module.js'
+import { NotificationsModule } from '../../core/notifications/notifications.module.js'
 import { UsersModule } from '../../core/users/users.module.js'
 
 import { DashboardController } from './dashboard.controller.js'
@@ -30,6 +31,7 @@ import { DashboardService } from './dashboard.service.js'
         MeetAccountGamesModule,
         GameTranslationModule,
         GameProposalModule,
+        NotificationsModule,
     ],
     providers: [DashboardService],
     exports: [DashboardService],

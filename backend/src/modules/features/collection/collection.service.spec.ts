@@ -1,8 +1,11 @@
 import { ConflictException } from '@nestjs/common'
 
+import { fakeActivityNotifier } from '../../../../test/fake-activity-notifier.js'
 import { fakeDatabase } from '../../../../test/fake-database.js'
 
 import { CollectionService } from './collection.service.js'
+
+let notifier = fakeActivityNotifier()
 
 function createService(database: unknown, collectionActivity = { invalidateForAccount: vi.fn().mockResolvedValue(undefined) }) {
     return new CollectionService(
@@ -16,10 +19,15 @@ function createService(database: unknown, collectionActivity = { invalidateForAc
         {} as never,
         collectionActivity as never,
         fakeDatabase(database as object),
+        notifier,
     )
 }
 
 describe('CollectionService', () => {
+    beforeEach(() => {
+        notifier = fakeActivityNotifier()
+    })
+
     it('invalidates activity memory after atomic collection activation', async () => {
         const addGameToCollection = vi.fn().mockResolvedValue({ success: true, wishlistRemoved: true })
         const invalidateForAccount = vi.fn().mockResolvedValue(undefined)
@@ -29,6 +37,7 @@ describe('CollectionService', () => {
 
         expect(addGameToCollection).toHaveBeenCalledWith(1, 42)
         expect(invalidateForAccount).toHaveBeenCalledWith(1)
+        expect(notifier.shelfChanged).toHaveBeenCalledWith(1, { added: [42] })
     })
 
     it('turns a duplicate atomic activation into the existing conflict contract', async () => {
@@ -39,6 +48,8 @@ describe('CollectionService', () => {
         await expect(service.addGameToUserCollection(1, 42)).rejects.toBeInstanceOf(ConflictException)
 
         expect(invalidateForAccount).not.toHaveBeenCalled()
+        // Nothing changed, so nobody hears about it.
+        expect(notifier.shelfChanged).not.toHaveBeenCalled()
     })
 
     it('invalidates activity memory after atomic collection removal', async () => {
@@ -50,6 +61,7 @@ describe('CollectionService', () => {
 
         expect(removeGameFromCollection).toHaveBeenCalledWith(1, 42)
         expect(invalidateForAccount).toHaveBeenCalledWith(1)
+        expect(notifier.shelfChanged).toHaveBeenCalledWith(1, { removed: [42] })
     })
 
     it('returns refreshed ownership after an atomic metadata update', async () => {
@@ -67,6 +79,7 @@ describe('CollectionService', () => {
             {} as never,
             { invalidateForAccount } as never,
             fakeDatabase({ updateGameOwnershipAndLogActivity }),
+            notifier,
         )
 
         await expect(service.updateGameOwnership(1, 42, { purchaseNotes: 'Gift' })).resolves.toEqual({ accountId: 1, gameId: 42 })

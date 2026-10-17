@@ -101,6 +101,30 @@ describe('CardNotificationComponent', () => {
         expect(link.getAttribute('href')).toBe('/groups/7')
     })
 
+    it('links someone leaving to the group', () => {
+        const link = render(notification('user_left_group', { account: 2, group: 7, member: 3 })).nativeElement.querySelector(
+            'a',
+        ) as HTMLAnchorElement
+
+        expect(link.textContent?.trim()).toBe('Open the group')
+        expect(link.getAttribute('href')).toBe('/groups/7')
+    })
+
+    it('links a shelf change to that person’s games in the shared group', () => {
+        const fixture = render(notification('shelf_changed', { account: 3, group: 7, added: [40], removed: [] }))
+        const link = fixture.nativeElement.querySelector('a') as HTMLAnchorElement
+
+        expect(link.textContent?.trim()).toBe('See their games')
+        expect(link.getAttribute('href')).toBe('/groups/7/members/3')
+        expect(fixture.componentInstance.iconFor('shelf_changed')).toBe('library')
+    })
+
+    it('offers no link for a shelf change whose data lacks the group', () => {
+        const fixture = render(notification('shelf_changed', { account: 3, added: [40], removed: [] }))
+
+        expect(fixture.nativeElement.querySelector('a')).toBeNull()
+    })
+
     it('links a change to a group person to the group', () => {
         const link = render(
             notification('group_person_changed', { account: 3, group: 7, person: 2, game: 40 }),

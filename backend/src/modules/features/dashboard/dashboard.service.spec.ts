@@ -1,3 +1,4 @@
+import { fakeActivityNotifier } from '../../../../test/fake-activity-notifier.js'
 import { fakeDatabase } from '../../../../test/fake-database.js'
 
 import { DashboardService } from './dashboard.service.js'
@@ -54,6 +55,7 @@ describe('DashboardService group history', () => {
             meetAccountGames as never,
             {} as never,
             {} as never,
+            {} as never,
         )
 
         await expect(service.getGroupMeetings(1, 7)).resolves.toHaveLength(1)
@@ -69,6 +71,7 @@ describe('DashboardService group creation', () => {
         const service = new DashboardService(
             {} as never,
             fakeDatabase(database),
+            {} as never,
             {} as never,
             {} as never,
             {} as never,
@@ -125,6 +128,7 @@ describe('DashboardService groups overview', () => {
             {} as never,
             {} as never,
             {} as never,
+            {} as never,
         )
 
         const groups = await service.getGroupsOfUser(1)
@@ -147,5 +151,62 @@ describe('DashboardService groups overview', () => {
         ])
         expect(database.getActivePlaceholdersByGroupIds).toHaveBeenCalledTimes(1)
         expect(translations.getGameTranslations).not.toHaveBeenCalled()
+    })
+})
+
+describe('DashboardService leaving and removing', () => {
+    const createService = (left = true) => {
+        const notifier = fakeActivityNotifier()
+        const leaveGroup = vi.fn().mockResolvedValue({ left })
+        const groups = { getGroupById: vi.fn().mockResolvedValue({ id: 12, name: 'Fridays', createdBy: 1 }) }
+        const service = new DashboardService(
+            {} as never,
+            fakeDatabase({ leaveGroup }),
+            groups as never,
+            {} as never,
+            {} as never,
+            {} as never,
+            {} as never,
+            {} as never,
+            {} as never,
+            {} as never,
+            {} as never,
+            {} as never,
+            notifier,
+        )
+
+        return { service, notifier, leaveGroup }
+    }
+
+    it('tells the group when someone leaves it', async () => {
+        const { service, notifier } = createService()
+
+        await expect(service.leaveGroup(7, 12)).resolves.toEqual({ success: true })
+        expect(notifier.memberLeft).toHaveBeenCalledWith(12, 7, 7)
+    })
+
+    it('tells the group who removed whom', async () => {
+        const { service, notifier, leaveGroup } = createService()
+
+        await service.removeMemberFromGroup(1, 12, 7)
+        expect(leaveGroup).toHaveBeenCalledWith(7, 12, expect.objectContaining({ type: 'member_removed', actorAccountId: 1 }))
+        expect(notifier.memberLeft).toHaveBeenCalledWith(12, 7, 1)
+    })
+
+    it('tells nobody when the person was not in the group', async () => {
+        const { service, notifier } = createService(false)
+
+        await service.leaveGroup(7, 12)
+        await service.removeMemberFromGroup(1, 12, 7)
+        expect(notifier.memberLeft).not.toHaveBeenCalled()
+    })
+
+    it('tells nobody when the owner tries to leave or to remove themselves', async () => {
+        const { service, notifier, leaveGroup } = createService()
+
+        await expect(service.leaveGroup(1, 12)).rejects.toThrow('Owner cannot leave group')
+        await expect(service.removeMemberFromGroup(1, 12, 1)).rejects.toThrow('Owner cannot leave group')
+        expect(leaveGroup).not.toHaveBeenCalled()
+        expect(notifier.memberLeft).not.toHaveBeenCalled()
     })
 })

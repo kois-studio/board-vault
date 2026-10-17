@@ -288,10 +288,9 @@ export class DataService {
         // A newer look, or a change made meanwhile (read, delete), wins over an answer still on its way.
         this.stopInboxRefresh()
         const stop = this.inboxRefreshStopped
-        const known = new Set([
-            ...this.userNotifications().map((item) => `n${item.id}`),
-            ...this.userInvitations().map((item) => `i${item.id}`),
-        ])
+        // A notification kept up to date (a shelf that changed again) moves to a new date: that is news too.
+        const notificationKey = (item: NotificationType) => `n${item.id}@${item.createdAt}`
+        const known = new Set([...this.userNotifications().map(notificationKey), ...this.userInvitations().map((item) => `i${item.id}`)])
         const arrived = (keys: Array<string>) => {
             const fresh = keys.filter((key) => !known.has(key)).length
             if (fresh > 0) this.inboxArrivals.update((count) => count + 1)
@@ -301,7 +300,7 @@ export class DataService {
             (notifications) => {
                 this.userNotifications.set(notifications)
                 this.userNotificationsError.set(false)
-                arrived(notifications.filter((item) => !item.isRead).map((item) => `n${item.id}`))
+                arrived(notifications.filter((item) => !item.isRead).map(notificationKey))
             },
             stop,
         )
