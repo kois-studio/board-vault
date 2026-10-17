@@ -29,15 +29,19 @@ function setup() {
 }
 
 describe('personal Home preferences', () => {
-    it('keeps pin order, supports keyboard-friendly moves, and restores preferences after a failed save', async () => {
+    it('pins in the order chosen, unpins, and restores preferences after a failed save', async () => {
         const { home, api, toast } = setup()
-        await home.update({ pinnedGroupIds: [10, 20] })
-        home.movePin(20, -1)
+        home.togglePin(10)
         await Promise.resolve()
-        expect(home.preferences().pinnedGroupIds).toEqual([20, 10])
+        home.togglePin(20)
+        await Promise.resolve()
+        expect(home.preferences().pinnedGroupIds).toEqual([10, 20])
+        home.togglePin(10)
+        await Promise.resolve()
+        expect(home.preferences().pinnedGroupIds).toEqual([20])
         api.saveHomePreferences.mockReturnValueOnce(throwError(() => new Error('offline')))
-        await home.update({ groupOrder: 'name' })
-        expect(home.preferences().groupOrder).toBe('recent')
+        await home.update({ pinnedGroupIds: [] })
+        expect(home.preferences().pinnedGroupIds).toEqual([20])
         expect(toast.error).toHaveBeenCalled()
     })
 
