@@ -1,12 +1,15 @@
 import { activityStatements, recordInTransaction } from './group-activity.queries.js'
 import { forgetWhoIsNotComing } from './session-cleanup.js'
+import { writePlays } from './session-recording.queries.js'
 
 import type { GroupActivityEntry } from '../../../../common/types/group-activity.type.js'
+import type { PlaySessionGameBody } from '../../../../common/types/session.type.js'
 import type { MeetAccountGameQueryOptions } from '../../../../modules/core/meet-account-games/meet-account-games.types.js'
 import type { DatabaseService } from '../database.service.js'
 import type { InStatement } from '@libsql/client'
 
 type CompletedSessionInput = {
+    plays?: PlaySessionGameBody[]
     groupId: number
     createdBy: number
     sessionDate: string
@@ -21,6 +24,7 @@ type CompletedSessionInput = {
 }
 
 type ScheduledSessionInput = {
+    status?: 'scheduled' | 'active'
     groupId: number
     createdBy: number
     sessionDate: string
@@ -110,7 +114,7 @@ export class SessionQueries {
                 args: meetIds,
             }),
             this.database.execute({
-                sql: `SELECT meetId, gameId FROM MeetGame WHERE meetId IN (${ids}) AND gameStatus = 'played' ORDER BY meetId, playOrder ASC, gameId ASC`,
+                sql: `SELECT meetId, gameId, (SELECT COUNT(*) FROM MeetPlay mp WHERE mp.meetId = MeetGame.meetId AND mp.gameId = MeetGame.gameId) AS plays FROM MeetGame WHERE meetId IN (${ids}) AND gameStatus = 'played' ORDER BY meetId, playOrder ASC, gameId ASC`,
                 args: meetIds,
             }),
             this.database.execute({
@@ -137,6 +141,7 @@ export class SessionQueries {
             attendedAccountIds: group(attendedAccounts.rows, row => Number(row.accountId)),
             attendedPersonIds: group(attendedPeople.rows, row => Number(row.groupPersonId)),
             playedGameIds: group(playedGames.rows, row => Number(row.gameId)),
+            playCounts: group(playedGames.rows, row => ({ gameId: Number(row.gameId), count: Number(row.plays) || 1 })),
             personPlays: group(personPlays.rows, row => ({ gameId: Number(row.gameId), personId: Number(row.groupPersonId) })),
             accountPlays: group(accountPlays.rows, row => ({ gameId: Number(row.gameId), accountId: Number(row.accountId) })),
             winners: group(winners.rows, row => ({
@@ -486,7 +491,7 @@ export class SessionQueries {
 
         try {
             const statusGuard = await transaction.execute({
-                sql: 'UPDATE Meet SET updatedAt = CURRENT_TIMESTAMP WHERE id = ? AND status = ?',
+                sql: 'UPDATE Meet SET updatedAt = CURRENT_TIMESTAMP WHERE id = ? AND status = ? AND NOT EXISTS (SELECT 1 FROM MeetPlay WHERE meetId = Meet.id GROUP BY gameId HAVING COUNT(*) > 1)',
                 args: [meetId, expectedStatus],
             })
 
@@ -494,6 +499,8 @@ export class SessionQueries {
                 await transaction.commit()
                 return { applied: false, playedGameIds: [], skippedGameIds: [], playedGameParticipants: [] }
             }
+
+            await transaction.execute({ sql: 'DELETE FROM MeetPlay WHERE meetId = ?', args: [meetId] })
 
             const gameIds = games.map(game => game.gameId)
             const placeholders = gameIds.map(() => '?').join(', ')
@@ -607,7 +614,7 @@ export class SessionQueries {
 
         try {
             const statusGuard = await transaction.execute({
-                sql: 'UPDATE Meet SET updatedAt = CURRENT_TIMESTAMP WHERE id = ? AND status = ?',
+                sql: 'UPDATE Meet SET updatedAt = CURRENT_TIMESTAMP WHERE id = ? AND status = ? AND NOT EXISTS (SELECT 1 FROM MeetPlay WHERE meetId = Meet.id GROUP BY gameId HAVING COUNT(*) > 1)',
                 args: [meetId, expectedStatus],
             })
 
@@ -615,6 +622,8 @@ export class SessionQueries {
                 await transaction.commit()
                 return { applied: false, playedGameIds: [], skippedGameIds: [], playedGameParticipants: [] }
             }
+
+            await transaction.execute({ sql: 'DELETE FROM MeetPlay WHERE meetId = ?', args: [meetId] })
 
             const gameIds = games.map(game => game.gameId)
             const placeholders = gameIds.map(() => '?').join(', ')
@@ -1137,6 +1146,7 @@ export class SessionQueries {
             }
 
             await transaction.batch([...statements, ...activityStatements(input.activity && { ...input.activity, meetId })])
+            if (input.plays) await writePlays(transaction, meetId, input.plays)
             await transaction.commit()
 
             return { lastInsertRowid: meetId }
@@ -1155,15 +1165,15 @@ export class SessionQueries {
             const meetResult = await transaction.execute({
                 sql: `
                     INSERT INTO Meet (groupId, createdBy, meetDate, isConfirmed, status, timezone, notes, updatedAt)
-                    VALUES (?, ?, ?, FALSE, 'scheduled', ?, ?, CURRENT_TIMESTAMP)
+                    VALUES (?, ?, ?, FALSE, ?, ?, ?, CURRENT_TIMESTAMP)
                 `,
-                args: [input.groupId, input.createdBy, input.sessionDate, input.timezone, input.notes ?? null],
+                args: [input.groupId, input.createdBy, input.sessionDate, input.status ?? 'scheduled', input.timezone, input.notes ?? null],
             })
             const meetId = Number(meetResult.lastInsertRowid)
             const statements: Array<InStatement> = input.attendeeIds.map(accountId => ({
                 sql: `
                     INSERT INTO MeetAttendee (meetId, accountId, rsvpStatus, attendanceStatus)
-                    VALUES (?, ?, 'pending', 'unknown')
+                    VALUES (?, ?, ${input.status === 'active' ? "'accepted', 'attended'" : "'pending', 'unknown'"})
                 `,
                 args: [meetId, accountId],
             }))
@@ -1172,7 +1182,7 @@ export class SessionQueries {
                 statements.push({
                     sql: `
                         INSERT INTO MeetPersonAttendee (meetId, groupPersonId, rsvpStatus, attendanceStatus)
-                        VALUES (?, ?, 'pending', 'unknown')
+                        VALUES (?, ?, ${input.status === 'active' ? "'accepted', 'attended'" : "'pending', 'unknown'"})
                     `,
                     args: [meetId, groupPersonId],
                 })
@@ -1466,6 +1476,22 @@ export class SessionQueries {
                 sql: 'INSERT INTO MeetGameResult (meetId, gameId, accountId, groupPersonId, isWinner, score) VALUES (?, ?, ?, ?, ?, ?)',
                 args: [meetId, gameId, result.accountId, result.groupPersonId, result.isWinner ? 1 : 0, result.score],
             })),
+            {
+                sql: `UPDATE MeetPlay SET details = json_set(details, '$.results', json(?)) WHERE meetId = ? AND gameId = ? AND (SELECT COUNT(*) FROM MeetPlay WHERE meetId = ? AND gameId = ?) = 1`,
+                args: [
+                    JSON.stringify(
+                        results.map(row => ({
+                            ...(row.accountId === null ? { groupPersonId: row.groupPersonId } : { accountId: row.accountId }),
+                            isWinner: row.isWinner,
+                            score: row.score,
+                        })),
+                    ),
+                    meetId,
+                    gameId,
+                    meetId,
+                    gameId,
+                ],
+            },
             ...activityStatements(activity),
         ]
 

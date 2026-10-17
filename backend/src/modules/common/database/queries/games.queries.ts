@@ -53,6 +53,13 @@ const CATALOGUE_ORDER: Record<BrowseSort, string> = {
 export class GameQueries {
     constructor(private readonly database: DatabaseService) {}
 
+    async getExistingGameIds(ids: number[]): Promise<number[]> {
+        if (!ids.length) return []
+        const result = await this.database.execute({ sql: `SELECT id FROM Game WHERE id IN (${ids.map(() => '?').join(',')})`, args: ids })
+
+        return result.rows.map(row => Number(row.id))
+    }
+
     async approveGameProposalAtomically(input: {
         proposalId: number
         reviewerId: number

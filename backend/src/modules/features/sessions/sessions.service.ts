@@ -5,12 +5,15 @@ import { parseStoredDate, toIsoDate } from '../../../common/utils/stored-date.js
 import { DatabaseService } from '../../common/database/database.service.js'
 import { ActivityNotifier } from '../../core/notifications/activity-notifier.service.js'
 
+import { mergeGames, validateRecordingGames } from './session-recording.service.js'
+
 import type { GroupActivityEntry, GroupActivityType } from '../../../common/types/group-activity.type.js'
 import type { MeetWithAttendeesAndGames } from '../../../common/types/meet.type.js'
 import type {
     CreatePlaySessionBody,
     CreateScheduledSessionBody,
     ScheduledSessionCreatedDto,
+    LiveSessionCreatedDto,
     SessionAttendeesUpdatedDto,
     SessionShortlistUpdatedDto,
     SessionGameProposedDto,
@@ -125,11 +128,6 @@ export class SessionsService {
             gameId: game.gameId,
             participantIds: [...new Set(game.participantPersonIds ?? [])],
         }))
-        const gameIds = games.map(game => game.gameId)
-
-        if (new Set(gameIds).size !== gameIds.length) {
-            throw new BadRequestException('Each game may only appear once in a session')
-        }
 
         if (usesGroupPeople && !usesAccounts && personGames.some(game => game.participantIds.length === 0)) {
             throw new BadRequestException('Every played game must have at least one participant')
@@ -142,20 +140,7 @@ export class SessionsService {
             throw new BadRequestException('Every played game must have at least one participant')
         }
 
-        const availableGameIds = new Set<number>()
-
-        if (usesAccounts) {
-            for (const gameId of await this.databaseService.groups.getGroupAvailableGameIds(body.groupId)) availableGameIds.add(gameId)
-        }
-        if (usesGroupPeople) {
-            for (const gameId of await this.getGroupAvailableGameIdsForPeople(body.groupId, groupPersonIds)) {
-                availableGameIds.add(gameId)
-            }
-        }
-
-        if (gameIds.some(gameId => !availableGameIds.has(gameId))) {
-            throw new BadRequestException('Every game must be owned by at least one group member')
-        }
+        await validateRecordingGames(this.databaseService, body)
 
         const selectedAccountIds = new Set(attendeeIds)
         const selectedPersonIds = new Set(groupPersonIds)
@@ -177,8 +162,9 @@ export class SessionsService {
             notes: body.notes,
             attendeeIds,
             groupPersonIds: usesGroupPeople ? groupPersonIds : undefined,
-            games,
-            personGames: usesGroupPeople ? personGames : undefined,
+            games: mergeGames(games),
+            personGames: usesGroupPeople ? mergeGames(personGames) : undefined,
+            plays: body.games,
             activity: { groupId: body.groupId, actorAccountId, type: 'session_recorded' },
         })
 
@@ -188,7 +174,11 @@ export class SessionsService {
         }
     }
 
-    async createScheduledSession(actorAccountId: number, body: CreateScheduledSessionBody): Promise<ScheduledSessionCreatedDto> {
+    async createScheduledSession(
+        actorAccountId: number,
+        body: CreateScheduledSessionBody,
+        live = false,
+    ): Promise<ScheduledSessionCreatedDto | LiveSessionCreatedDto> {
         const group = await this.databaseService.groups.getGroupById(body.groupId)
 
         if (group.rows.length === 0) {
@@ -242,22 +232,24 @@ export class SessionsService {
         const result = await this.databaseService.sessions.createScheduledSession({
             groupId: body.groupId,
             createdBy: actorAccountId,
-            sessionDate: body.sessionDate,
+            sessionDate: live ? new Date().toISOString() : body.sessionDate,
+            ...(live ? { status: 'active' as const } : {}),
             timezone: body.timezone,
             notes: body.notes,
             attendeeIds: selectedAccountIds,
             groupPersonIds: usesGroupPeople ? groupPersonIds : undefined,
             plannedGameIds,
-            activity: { groupId: body.groupId, actorAccountId, type: 'session_planned' },
+            activity: { groupId: body.groupId, actorAccountId, type: live ? 'session_started' : 'session_planned' },
         })
 
         const sessionId = Number(result.lastInsertRowid)
 
-        await this.activityNotifier.sessionPlanned(sessionId, actorAccountId)
+        if (live) await this.activityNotifier.sessionChanged(sessionId, actorAccountId, 'active')
+        else await this.activityNotifier.sessionPlanned(sessionId, actorAccountId)
 
         return {
             sessionId,
-            status: 'scheduled',
+            status: live ? 'active' : 'scheduled',
         }
     }
 
@@ -637,6 +629,13 @@ export class SessionsService {
             throw new BadRequestException(`Cannot edit played games on a ${status} session`)
         }
 
+        const detailed =
+            typeof this.databaseService.recordings?.getRecordedPlays === 'function'
+                ? await this.databaseService.recordings.getRecordedPlays(sessionId)
+                : []
+
+        if (new Set(detailed.map(play => play.gameId)).size !== detailed.length)
+            throw new ConflictException('Use Edit games and players to keep each play separate.')
         const groupId = Number(sessionRow[1])
         const personIds = await this.getMeetPersonIds(sessionId)
         const accountIds = await this.databaseService.sessions.getMeetAttendeeIds(sessionId)
@@ -858,6 +857,13 @@ export class SessionsService {
             throw new NotFoundException(`Session with id ${sessionId} not found`)
         }
 
+        const detailed =
+            typeof this.databaseService.recordings?.getRecordedPlays === 'function'
+                ? await this.databaseService.recordings.getRecordedPlays(sessionId)
+                : []
+
+        if (detailed.filter(play => play.gameId === gameId).length > 1)
+            throw new ConflictException('Choose the individual play before recording its results.')
         const participants = await this.databaseService.sessions.getPlayedGameParticipantIds(sessionId, gameId)
 
         if (!participants.played) {

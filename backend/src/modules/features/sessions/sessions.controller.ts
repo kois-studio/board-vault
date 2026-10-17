@@ -18,6 +18,10 @@ import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagg
 import { AuthGuard } from '../../../common/guards/auth.guard.js'
 import { MeetWithAttendeesAndGames } from '../../../common/types/meet.type.js'
 import {
+    CorrectSessionBody,
+    UpdatePlayResultsBody,
+    SessionRecordingDto,
+    LiveSessionCreatedDto,
     CreatePlaySessionBody,
     CreateScheduledSessionBody,
     ScheduledSessionCreatedDto,
@@ -42,6 +46,7 @@ import {
     GameResultsUpdatedDto,
 } from '../../../common/types/session.type.js'
 
+import { SessionRecordingService } from './session-recording.service.js'
 import { SessionsService } from './sessions.service.js'
 
 @UseGuards(AuthGuard)
@@ -50,7 +55,44 @@ import { SessionsService } from './sessions.service.js'
 @ApiBearerAuth()
 @Controller('sessions')
 export class SessionsController {
-    constructor(private readonly sessionsService: SessionsService) {}
+    constructor(
+        private readonly sessionsService: SessionsService,
+        private readonly recordings: SessionRecordingService,
+    ) {}
+
+    @Get(':sessionId/recording')
+    @ApiResponse({ status: 200, type: SessionRecordingDto })
+    getRecording(@Req() request: { user: { userId: number } }, @Param('sessionId', ParseIntPipe) sessionId: number) {
+        return this.recordings.get(request.user.userId, sessionId)
+    }
+
+    @Put(':sessionId/recording')
+    @ApiResponse({ status: 200, type: SessionRecordingDto })
+    @ApiResponse({ status: 409, description: 'The recording changed; reload before correcting it.' })
+    correctRecording(
+        @Req() request: { user: { userId: number } },
+        @Param('sessionId', ParseIntPipe) sessionId: number,
+        @Body() body: CorrectSessionBody,
+    ) {
+        return this.recordings.correct(request.user.userId, sessionId, body)
+    }
+
+    @Put(':sessionId/plays/:position/results')
+    @ApiResponse({ status: 200, type: SessionRecordingDto })
+    resultsForPlay(
+        @Req() request: { user: { userId: number } },
+        @Param('sessionId', ParseIntPipe) sessionId: number,
+        @Param('position', ParseIntPipe) position: number,
+        @Body() body: UpdatePlayResultsBody,
+    ) {
+        return this.recordings.results(request.user.userId, sessionId, position, body)
+    }
+
+    @Post('live')
+    @ApiResponse({ status: 201, type: LiveSessionCreatedDto })
+    startLive(@Req() request: { user: { userId: number } }, @Body() body: CreateScheduledSessionBody) {
+        return this.sessionsService.createScheduledSession(request.user.userId, body, true)
+    }
 
     @Get(':sessionId')
     @ApiOperation({ summary: 'Get a session with attendees and planned/played games' })

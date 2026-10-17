@@ -27,6 +27,7 @@ export type HistoryEntryView = {
         link: Array<string | number> | null
         /** "Ana won", or empty when no winner was recorded. */
         winners: string
+        playCount?: number
         /** "Ana and Leo", or null when players were not recorded. */
         playedBy: string | null
         /** Every attendee played: the card says so, and keeps the names for the tooltip and screen readers. */

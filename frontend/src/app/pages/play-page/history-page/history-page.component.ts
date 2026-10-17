@@ -103,7 +103,7 @@ export class HistoryPageComponent {
             for (const attendee of this.getAttendees(record)) people.add(attendee.key)
             for (const game of record.gamesPlayed) {
                 for (const player of this.getPlayers(game)) people.add(player.key)
-                gamesPlayed += 1
+                gamesPlayed += game.playCount ?? 1
                 const current = gameCounts.get(game.gameData.id)
                 gameCounts.set(game.gameData.id, {
                     title: game.gameData.titleTranslations.en || game.gameData.title || 'Untitled game',
@@ -158,7 +158,8 @@ export class HistoryPageComponent {
                     initials: this.getGameInitials(title),
                     imageUrl: gamePlayed.gameData.imageUrl || null,
                     link: ['/games', gamePlayed.gameData.id],
-                    winners: this.getWinners(gamePlayed),
+                    winners: (gamePlayed.playCount ?? 1) > 1 ? '' : this.getWinners(gamePlayed),
+                    playCount: gamePlayed.playCount,
                     playedBy: players.length === 0 ? null : this.getPlayedBySummary(players),
                     everyonePlayed: this.playedEveryone(players, attendees),
                 }

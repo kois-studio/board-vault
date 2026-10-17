@@ -10,7 +10,7 @@ The database is SQLite through libSQL: a local file in development, Turso in
 production. The schema is
 [`database/schema/schema.sql`](../database/schema/schema.sql) (the 0001–0005
 baseline) plus the numbered files in
-[`database/migrations/`](../database/migrations/). Current version: **0024**.
+[`database/migrations/`](../database/migrations/). Current version: **0025**.
 All SQL lives in the per-domain query classes in
 [`database/queries/`](../backend/src/modules/common/database/queries/).
 
@@ -74,7 +74,9 @@ sessions they created, and more.
 | `GroupPersonGameOwnership`, `GroupPersonGamePreference` | Games a group person owns or likes, entered by any member (ADR-0020); `enteredByAccountId` is whoever set it last, and the group history keeps every earlier change. | `GroupPerson`, `Game`, entering `Account` (cascade); confirming `Account` (set null) |
 | `GroupGameInterest` | A member's interest in a game for the group. | `UserGroup`, `Account`, `Game` (cascade) |
 | `GroupAcquisitionDecision` | The group's acquisition decision for a game: `open`, `planned`, or `not_now`, with an optional note. | `UserGroup`, `Game`, deciding `Account` (cascade) |
-| `Meet` | A session (named `Meet` for historical reasons): date, status, timezone, notes. | `UserGroup`, creator `Account` (cascade) |
+| `AccountHomePreference` | Per-account pins, pin order, group sort and dismissed rating reminders as validated JSON; removed on account deletion. | `Account` (cascade) |
+| `MeetPlay` | Individual plays by session and position, with catalogue game id and JSON containing validated participant ids and optional winners/scores; no names or free text. Existing session relations hold compatibility projections. Legacy sessions derive one play per game. See ADR-0022. | `Meet`, `Game` (cascade) |
+| `Meet` | A session (named `Meet` for historical reasons): date, status, timezone, notes, and a recording revision incremented by triggers on relevant changes. | `UserGroup`, creator `Account` (cascade) |
 | `MeetAttendee`, `MeetPersonAttendee` | Account and group-person attendance, RSVP. | `Meet` (cascade); `Account` (cascade) / `GroupPerson` (restrict) |
 | `MeetGame`, `MeetAccountGame`, `MeetPersonGame` | Shortlisted and played games, and who played them. A shortlisted game can name who brings it (#115): `broughtByAccountId` (an account that owns it) or `broughtByPersonId` (a group person the organizer names), cleared when that person declines the night. Replacing the shortlist keeps the rows of games that stay. | `Meet`, `Game` (cascade); `Account` (cascade) / `GroupPerson` (restrict) |
 | `MeetGameVote` | One account would play one shortlisted game on that night (#114). The shortlist orders by votes; replacing the shortlist drops the votes of games taken off it. Accounts only: group people without an account do not vote. | `Meet`, `Game`, `Account` (cascade) |

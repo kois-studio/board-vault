@@ -91,6 +91,7 @@ export function describeActivity(entry: GroupActivityType): string {
             return `${actor} said ${bringer} will bring ${game} to ${night}`
         }
         case 'session_played_changed': {
+            if (entry.data['corrected'] === true) return `${actor} corrected the record of ${night}`
             const added = gameTitles(entry, 'addedGameIds')
             const removed = gameTitles(entry, 'removedGameIds')
             const changed = gameTitles(entry, 'changedGameIds')
@@ -106,6 +107,7 @@ export function describeActivity(entry: GroupActivityType): string {
         case 'session_attendance_changed':
             return `${actor} recorded who came to ${night}`
         case 'session_results_changed': {
+            if (typeof entry.data['plays'] === 'number') return `${actor} recorded results for an individual play on ${night}`
             const winners = [...accountNames(entry, 'winnerAccountIds'), ...personNames(entry, 'winnerPersonIds')]
             if (winners.length > 0) return `${actor} recorded that ${list(winners)} won ${game}`
             if (entry.data['scored'] === true) return `${actor} recorded the scores of ${game}`

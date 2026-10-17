@@ -78,26 +78,63 @@ account" with a grey avatar (ADR-0018). Neither changes a session's counts.
 
 ## Home
 
-Home follows where the person is. Pending invitations always come first.
+Record a session (primary) and Plan a game night remain visible on desktop
+and phones, whether or not history exists. Upcoming/live nights retain RSVP,
+shortlists and bringers, without a repeated planning empty-state prompt.
+Pending invitations remain prominent. Accounts without a group retain the
+first-group setup path.
 
-- **No group yet:** one card to create the first group (an invitation shows
-  up above it), and a three-step checklist: create a group, add your games,
-  plan a night. Nothing that would still be empty is shown.
-- **Any group:** the next game night leads, with its date, group, how many are
-  going and have not answered, the shortlist (most-voted first), what you are
-  bringing, and your answer. The next two nights follow as short rows. With
-  nothing planned, one row offers to plan (straight into the group when there
-  is only one).
-- **One group:** a large card with its people and three shortcuts (what to
-  play, its library, its history). Its owner is nudged to invite people while
-  the group has fewer than four.
-- **Several groups:** compact rows, ordered by a night under way, then the
-  soonest planned, then the most recently played, each saying which.
-- **History:** the last three nights, or one row inviting to record a past
-  night when there are none.
+One group or several use the same card: group identity, next/last play,
+scoped Record and Plan actions, Start playing now, What to play, Library and
+History. Every group-specific recording entry keeps its group selected.
+Pins belong to the account and appear first in the chosen pin order, moved
+with accessible up/down buttons. Unpinned groups sort by date played (default),
+next night, or name, with stable name/id ties. Loading/failure of preferences
+leaves the groups usable and offers Retry. Preferences follow the account
+across devices; they do not change other people's Home.
 
-Creating another group is a small "+ New group" link; it is a rare action
-once someone has a group.
+Home shows up to three optional, dismissible personal rating suggestions for
+games the account actually played and has not rated. Existing ratings are
+reused. Membership and collection maintenance stay within their contexts.
+Fully customizable Home is deferred to discovery issue #164.
+
+## Record or correct a session
+
+Recording has three steps: who and when, games and their players, note and
+review. Today/Yesterday supplement the date picker; the selected full date
+appears in the final summary. Same-day sessions in the selected group are
+suggested without preventing a separate gathering.
+
+Attendees' games are the initial offer. Search all games can add any catalogue
+game without first recording ownership. Every selected game starts with all
+attendees as players, individually removable. Played it again adds a separate
+play with its own players, optional winners and integer scores. A save is one
+transaction. Failed saves retain choices. Completed recordings open the saved
+session, with an optional personal rating follow-up and ownership entry naming
+My Games or a particular person without an account.
+
+An organizer, group owner or invited non-declined player can open Correct
+session on a completed night, or Edit games and players while active. The
+same form loads the recording, preserves separate plays/results and the
+session's group/status, and writes a new group-history entry. Former people
+already in the recording can stay. Changing active invitations is restricted
+to the organizer. Another edit, results save, or lifecycle change invalidates
+a stale form: saving answers 409 and asks to reload, without overwriting it.
+Any group member can save results separately for each play.
+
+Start playing now uses the who step and creates an active night using the
+current server time, without requiring games or an earlier planned session.
+People and games can then be added as the afternoon unfolds. Planning retains
+its existing ownership and shortlist rules.
+
+## Ownership
+
+My Games links to catalogue browsing. A person without an account has Add a
+game for [name] on their group page; it searches the catalogue and explicitly
+names the owner before saving. This is a group-scoped ownership statement,
+visible and editable by the group's members, never another account's private
+collection. Session ownership follow-up is optional and independent of the
+already-saved play history.
 
 ## Browser coverage
 
