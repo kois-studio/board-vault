@@ -1303,8 +1303,8 @@ describe('DatabaseService logging', () => {
         ).resolves.toEqual({ lastInsertRowid: 43 })
 
         expect(transaction.execute).toHaveBeenCalledWith({
-            sql: expect.stringContaining("VALUES (?, ?, ?, FALSE, 'scheduled', ?, ?, CURRENT_TIMESTAMP)"),
-            args: [7, 1, '2026-08-21T19:30:00.000Z', 'Europe/Madrid', null],
+            sql: expect.stringContaining('VALUES (?, ?, ?, FALSE, ?, ?, ?, CURRENT_TIMESTAMP)'),
+            args: [7, 1, '2026-08-21T19:30:00.000Z', 'scheduled', 'Europe/Madrid', null],
         })
         expect(transaction.batch).toHaveBeenCalledWith(
             expect.arrayContaining([

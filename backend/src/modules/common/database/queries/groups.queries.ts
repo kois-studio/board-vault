@@ -762,22 +762,32 @@ export class GroupQueries {
         const completedPlays = `
             WITH completed AS (SELECT id FROM Meet WHERE groupId = ? AND status = 'completed'),
             plays AS (
-                SELECT mag.meetId, mag.gameId, mag.accountId, NULL AS personId
-                FROM MeetAccountGame mag
-                JOIN completed c ON c.id = mag.meetId
+                SELECT mag.meetId, mag.gameId, -1 AS playOrder, mag.accountId, NULL AS personId
+                FROM MeetAccountGame mag JOIN completed c ON c.id = mag.meetId
+                WHERE NOT EXISTS (SELECT 1 FROM MeetPlay WHERE meetId = mag.meetId)
                 UNION
-                SELECT mpg.meetId, mpg.gameId, gp.accountId, CASE WHEN gp.accountId IS NULL THEN gp.id END
-                FROM MeetPersonGame mpg
-                JOIN completed c ON c.id = mpg.meetId
-                JOIN GroupPerson gp ON gp.id = mpg.groupPersonId
+                SELECT mpg.meetId, mpg.gameId, -1, gp.accountId, CASE WHEN gp.accountId IS NULL THEN gp.id END
+                FROM MeetPersonGame mpg JOIN completed c ON c.id = mpg.meetId JOIN GroupPerson gp ON gp.id = mpg.groupPersonId
+                WHERE NOT EXISTS (SELECT 1 FROM MeetPlay WHERE meetId = mpg.meetId)
+                UNION
+                SELECT mp.meetId, mp.gameId, mp.position, CAST(p.value AS INTEGER), NULL
+                FROM MeetPlay mp JOIN completed c ON c.id = mp.meetId, json_each(mp.details, '$.participantIds') p
+                UNION
+                SELECT mp.meetId, mp.gameId, mp.position, gp.accountId, CASE WHEN gp.accountId IS NULL THEN gp.id END
+                FROM MeetPlay mp JOIN completed c ON c.id = mp.meetId, json_each(mp.details, '$.participantPersonIds') p
+                JOIN GroupPerson gp ON gp.id = CAST(p.value AS INTEGER)
             ),
             wins AS (
-                SELECT DISTINCT r.meetId, r.gameId, COALESCE(r.accountId, gp.accountId) AS accountId,
+                SELECT DISTINCT r.meetId, r.gameId, -1 AS playOrder, COALESCE(r.accountId, gp.accountId) AS accountId,
                     CASE WHEN COALESCE(r.accountId, gp.accountId) IS NULL THEN r.groupPersonId END AS personId
-                FROM MeetGameResult r
-                JOIN completed c ON c.id = r.meetId
-                LEFT JOIN GroupPerson gp ON gp.id = r.groupPersonId
-                WHERE r.isWinner = 1
+                FROM MeetGameResult r JOIN completed c ON c.id = r.meetId LEFT JOIN GroupPerson gp ON gp.id = r.groupPersonId
+                WHERE r.isWinner = 1 AND NOT EXISTS (SELECT 1 FROM MeetPlay WHERE meetId = r.meetId)
+                UNION
+                SELECT mp.meetId, mp.gameId, mp.position, COALESCE(json_extract(r.value, '$.accountId'), gp.accountId),
+                    CASE WHEN COALESCE(json_extract(r.value, '$.accountId'), gp.accountId) IS NULL THEN gp.id END
+                FROM MeetPlay mp JOIN completed c ON c.id = mp.meetId, json_each(mp.details, '$.results') r
+                LEFT JOIN GroupPerson gp ON gp.id = json_extract(r.value, '$.groupPersonId')
+                WHERE json_extract(r.value, '$.isWinner') = 1
             )`
         const gameColumns = `g.id, g.imageUrl, g.gameAvgDuration, g.minPlayers, g.maxPlayers, gt_en.title, gt_es.title`
         const gameTitles = `
@@ -789,8 +799,8 @@ export class GroupQueries {
                 sql: `${completedPlays}
                     SELECT
                         (SELECT COUNT(*) FROM completed),
-                        (SELECT COUNT(*) FROM MeetGame mg JOIN completed c ON c.id = mg.meetId WHERE mg.gameStatus = 'played'),
-                        (SELECT COUNT(*) FROM (SELECT DISTINCT meetId, gameId FROM wins))`,
+                        (SELECT COUNT(*) FROM (SELECT mp.meetId, mp.position FROM MeetPlay mp JOIN completed c ON c.id = mp.meetId UNION ALL SELECT mg.meetId, -1 FROM MeetGame mg JOIN completed c ON c.id = mg.meetId WHERE mg.gameStatus = 'played' AND NOT EXISTS (SELECT 1 FROM MeetPlay WHERE meetId = mg.meetId))),
+                        (SELECT COUNT(*) FROM (SELECT DISTINCT meetId, gameId, playOrder FROM wins))`,
                 args: [groupId],
             }),
             this.database.execute({

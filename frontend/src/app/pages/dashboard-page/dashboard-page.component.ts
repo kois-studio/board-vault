@@ -5,6 +5,7 @@ import { CardGroupComponent } from '../../components/card-group/card-group.compo
 import { CardInvitationComponent } from '../../components/card-invitation/card-invitation.component'
 import { ImageProfileComponent } from '../../components/image-profile/image-profile.component'
 import { NextNightCardComponent } from '../../components/next-night-card/next-night-card.component'
+import { RatingFollowUpComponent } from '../../components/rating-follow-up/rating-follow-up.component'
 import { SessionAnswerComponent } from '../../components/session-answer/session-answer.component'
 import { SkeletonCardGroupComponent } from '../../components/skeletons/skeleton-card-group/skeleton-card-group.component'
 import { ButtonComponent } from '../../components/ui/button/button.component'
@@ -13,6 +14,7 @@ import { IconComponent } from '../../components/ui/icon/icon.component'
 import { LOADING_KEYS } from '../../core/enums/loading-keys-enum'
 import { CountPipe } from '../../core/pipes/count.pipe'
 import { DataService } from '../../core/services/data.service'
+import { HomePreferencesService } from '../../core/services/home-preferences.service'
 import { LoadingService } from '../../core/services/loading.service'
 import { gameTitle } from '../../core/utils/gameTitle'
 import { groupGameCount, groupPeopleCount } from '../../core/utils/groupCounts'
@@ -29,6 +31,7 @@ export type GroupActivity = { tone: 'live' | 'next' | 'past' | 'none'; label: st
  */
 @Component({
     imports: [
+        RatingFollowUpComponent,
         ButtonComponent,
         CardGroupComponent,
         CardInvitationComponent,
@@ -44,6 +47,7 @@ export type GroupActivity = { tone: 'live' | 'next' | 'past' | 'none'; label: st
     templateUrl: 'dashboard-page.component.html',
 })
 export class DashboardPageComponent {
+    readonly home = inject(HomePreferencesService)
     private readonly dataService = inject(DataService)
     private readonly loadingService = inject(LoadingService)
 
@@ -144,16 +148,29 @@ export class DashboardPageComponent {
 
     /** With several groups: a night under way first, then the soonest planned, then the most recently played. */
     public readonly orderedGroups = computed(() => {
-        const rank = { live: 0, next: 1, past: 2, none: 3 }
-        const activity = this.groupActivity()
-        const of = (group: GroupWithMembersAndGames) => activity.get(group.id) ?? { tone: 'none' as const, label: '', time: 0 }
+        const pins = this.home.preferences().pinnedGroupIds
+        const order = this.home.preferences().groupOrder
+        const lastPlayed = (id: number) =>
+            Math.max(
+                0,
+                ...this.dataService
+                    .userMeets()
+                    .filter((meet) => meet.groupId === id && meet.status === 'completed')
+                    .map((meet) => Date.parse(meet.meetDate)),
+            )
+        const next = (id: number) =>
+            Math.min(
+                Infinity,
+                ...this.upcomingSessions()
+                    .filter((meet) => meet.groupId === id)
+                    .map((meet) => Date.parse(meet.meetDate)),
+            )
         return [...this.userGroups$()].sort((a, b) => {
-            const left = of(a)
-            const right = of(b)
-            if (left.tone !== right.tone) return rank[left.tone] - rank[right.tone]
-            if (left.tone === 'next') return left.time - right.time
-            if (left.tone === 'past') return right.time - left.time
-            return a.name.localeCompare(b.name)
+            const leftPin = pins.indexOf(a.id)
+            const rightPin = pins.indexOf(b.id)
+            if (leftPin >= 0 || rightPin >= 0) return (leftPin < 0 ? Infinity : leftPin) - (rightPin < 0 ? Infinity : rightPin)
+            const difference = order === 'recent' ? lastPlayed(b.id) - lastPlayed(a.id) : order === 'upcoming' ? next(a.id) - next(b.id) : 0
+            return (Number.isNaN(difference) ? 0 : difference) || a.name.localeCompare(b.name) || a.id - b.id
         })
     })
 
@@ -172,7 +189,7 @@ export class DashboardPageComponent {
         return { link: ['/play/upcoming-sessions'], query: { plan: 1 } }
     })
 
-    /** Your page in the group you are most active in: your games and nights there. */
+    /** Your page in the first group on Home, respecting personal pins and ordering. */
     public readonly profileGroup = computed(() => this.orderedGroups()[0] ?? null)
     public readonly ownedGames = computed(() => this.dataService.userGames().length)
     public readonly nightsPlayed = computed(() => this.dataService.userHistory().length)

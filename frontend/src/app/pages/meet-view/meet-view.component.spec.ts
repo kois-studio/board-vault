@@ -83,6 +83,45 @@ describe('MeetViewComponent participant safeguards', () => {
         return { component, api, dataService, toastService }
     }
 
+    it('keeps both identity sources and their scores in mixed legacy plays', async () => {
+        const { component } = await setup()
+        component.groupPeople = [
+            {
+                person: {
+                    id: 11,
+                    accountId: 1,
+                    displayName: 'Ana',
+                    status: 'active',
+                    standing: 'member',
+                    avatar: null,
+                },
+            },
+        ] as never
+        component.recording = {
+            groupId: 7,
+            sessionDate: '2026-09-04T19:00:00Z',
+            timezone: 'Europe/Madrid',
+            revision: 0,
+            attendeeIds: [1],
+            groupPersonIds: [11],
+            games: [
+                {
+                    gameId: 42,
+                    participantIds: [1],
+                    participantPersonIds: [11],
+                    results: [
+                        { accountId: 1, isWinner: true, score: 7 },
+                        { groupPersonId: 11, isWinner: false, score: 3 },
+                    ],
+                },
+            ],
+        }
+        const players = component.roundPlayers(0)
+        expect(players.map((person) => person.key)).toEqual(['p11', 'a1'])
+        expect(players.map((person) => component.roundScore(0, person))).toEqual([3, 7])
+        expect(players[1]?.displayName).toContain('separate account entry')
+    })
+
     describe('roles (ADR-0019)', () => {
         it('lets an invitee who is coming run the night, but not shape or cancel it', async () => {
             const { component } = await setup()

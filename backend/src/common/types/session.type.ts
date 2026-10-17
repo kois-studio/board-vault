@@ -19,7 +19,44 @@ import {
 
 import { GameResultEntryDto, MeetGameBringerDto, MeetGameVotesDto } from './meet.type.js'
 
+export class GameResultBody {
+    @ApiProperty({
+        example: 1,
+        required: false,
+        description: 'For sessions recorded with accounts. Send exactly one of accountId or groupPersonId.',
+    })
+    @IsOptional()
+    @IsInt()
+    @Min(1)
+    accountId?: number
+
+    @ApiProperty({ example: 10, required: false, description: 'For sessions recorded with group people.' })
+    @IsOptional()
+    @IsInt()
+    @Min(1)
+    groupPersonId?: number
+
+    @ApiProperty({ example: true })
+    @IsBoolean()
+    isWinner: boolean
+
+    @ApiProperty({ example: 42, required: false, nullable: true })
+    @IsOptional()
+    @IsInt()
+    @Min(-1_000_000)
+    @Max(1_000_000)
+    score?: number | null
+}
+
 export class PlaySessionGameBody {
+    @ApiProperty({ type: [GameResultBody], required: false })
+    @IsOptional()
+    @IsArray()
+    @ArrayMaxSize(50)
+    @ValidateNested({ each: true })
+    @Type(() => GameResultBody)
+    results?: Array<GameResultBody>
+
     @ApiProperty({ example: 42 })
     @IsInt()
     @Min(1)
@@ -376,35 +413,6 @@ export class SessionAttendanceUpdatedDto {
     attendedPersonIds?: Array<number>
 }
 
-export class GameResultBody {
-    @ApiProperty({
-        example: 1,
-        required: false,
-        description: 'For sessions recorded with accounts. Send exactly one of accountId or groupPersonId.',
-    })
-    @IsOptional()
-    @IsInt()
-    @Min(1)
-    accountId?: number
-
-    @ApiProperty({ example: 10, required: false, description: 'For sessions recorded with group people.' })
-    @IsOptional()
-    @IsInt()
-    @Min(1)
-    groupPersonId?: number
-
-    @ApiProperty({ example: true })
-    @IsBoolean()
-    isWinner: boolean
-
-    @ApiProperty({ example: 42, required: false, nullable: true })
-    @IsOptional()
-    @IsInt()
-    @Min(-1_000_000)
-    @Max(1_000_000)
-    score?: number | null
-}
-
 export class UpdateGameResultsBody {
     @ApiProperty({
         type: [GameResultBody],
@@ -426,4 +434,31 @@ export class GameResultsUpdatedDto {
 
     @ApiProperty({ type: [GameResultEntryDto] })
     results: Array<GameResultEntryDto>
+}
+
+export class CorrectSessionBody extends CreatePlaySessionBody {
+    @ApiProperty({ description: 'Revision returned when the recording was opened; stale edits receive 409.' })
+    @IsInt()
+    @Min(0)
+    revision: number
+}
+
+export class SessionRecordingDto extends CreatePlaySessionBody {
+    @ApiProperty()
+    revision: number
+}
+
+export class LiveSessionCreatedDto {
+    @ApiProperty()
+    sessionId: number
+
+    @ApiProperty({ enum: ['active'] })
+    status: 'active'
+}
+
+export class UpdatePlayResultsBody extends UpdateGameResultsBody {
+    @ApiProperty()
+    @IsInt()
+    @Min(0)
+    revision: number
 }

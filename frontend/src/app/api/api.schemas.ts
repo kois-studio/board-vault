@@ -629,6 +629,7 @@ const historyRecordSchema: z.ZodMiniType<HistoryRecordType> = z.object({
     attendedByPeople: z.optional(z.array(historyPersonSchema)),
     gamesPlayed: z.array(
         z.object({
+            playCount: z.optional(z.number()),
             gameData: gameCompleteSchema,
             playedBy: z.array(historyUserSchema),
             playedByPeople: z.optional(z.array(historyPersonSchema)),
@@ -794,3 +795,37 @@ export const gameResultsUpdatedSchema: z.ZodMiniType<GameResultsUpdatedType> = z
     gameId: z.number(),
     results: z.array(gameResultEntrySchema),
 })
+
+export const homePreferencesSchema = z.object({
+    pinnedGroupIds: z.array(z.number()),
+    groupOrder: z.enum(['recent', 'upcoming', 'name']),
+    dismissedRatingGameIds: z.array(z.number()),
+})
+
+export const sessionRecordingSchema = z.object({
+    groupId: z.number(),
+    sessionDate: z.string(),
+    timezone: z.string(),
+    notes: z.optional(z.string()),
+    attendeeIds: z.optional(z.array(z.number())),
+    groupPersonIds: z.optional(z.array(z.number())),
+    revision: z.number(),
+    games: z.array(
+        z.object({
+            gameId: z.number(),
+            participantIds: z.optional(z.array(z.number())),
+            participantPersonIds: z.optional(z.array(z.number())),
+            results: z.optional(
+                z.array(
+                    z.object({
+                        accountId: z.optional(z.number()),
+                        groupPersonId: z.optional(z.number()),
+                        isWinner: z.boolean(),
+                        score: z.optional(z.nullable(z.number())),
+                    }),
+                ),
+            ),
+        }),
+    ),
+})
+export const liveSessionCreatedSchema = z.object({ sessionId: z.number(), status: z.literal('active') })

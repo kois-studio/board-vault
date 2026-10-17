@@ -53,6 +53,7 @@
                     }
                     <div class="min-w-0">
                         <p class="truncate text-sm font-semibold" [title]="game.title">{{ game.title }}</p>
+                        @if ((game.playCount ?? 1) > 1) { <p class="text-xs text-bv-text-muted">{{ game.playCount }} plays · results in the session</p> }
                         @if (game.winners) {
                         <p class="flex min-w-0 items-center gap-1 text-xs font-medium text-bv-success"><app-icon name="award-fill" [size]="12" className="shrink-0" aria-hidden="true" /><span class="min-w-0 truncate" [title]="game.winners">{{ game.winners }}</span></p>
                         }

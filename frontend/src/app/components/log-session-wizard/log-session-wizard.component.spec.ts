@@ -1,9 +1,9 @@
 import { signal } from '@angular/core'
 import { ComponentFixture, TestBed } from '@angular/core/testing'
-import { provideRouter, Router } from '@angular/router'
+import { ActivatedRoute, convertToParamMap, provideRouter, Router } from '@angular/router'
 import { isObservable, type Observable, of, Subject } from 'rxjs'
 import { Api } from '../../api/api'
-import type { GameCompleteType, GroupWithMembersAndGames } from '../../api/api.types'
+import type { GameCompleteType, GroupWithMembersAndGames, SessionRecording } from '../../api/api.types'
 import { DataService } from '../../core/services/data.service'
 import { LoadingService } from '../../core/services/loading.service'
 import { ToastService } from '../toast/toast.service'
@@ -76,11 +76,19 @@ describe('LogSessionWizardComponent games step', () => {
 
     const setup = async (
         people: Array<ReturnType<typeof linkedPerson>> | Observable<{ people: Array<ReturnType<typeof linkedPerson>> }>,
+        recording?: SessionRecording,
+        params: Record<string, string> = {},
     ) => {
         await TestBed.configureTestingModule({
             imports: [LogSessionWizardComponent],
             providers: [
                 provideRouter([]),
+                {
+                    provide: ActivatedRoute,
+                    useValue: {
+                        snapshot: { queryParamMap: convertToParamMap(recording ? { sessionId: '99', groupId: '1', ...params } : params) },
+                    },
+                },
                 {
                     provide: DataService,
                     useValue: {
@@ -100,6 +108,8 @@ describe('LogSessionWizardComponent games step', () => {
                         getGroupPeople: vi.fn().mockReturnValue(isObservable(people) ? people : of({ people })),
                         getGroupPersonCatalog: vi.fn().mockReturnValue(of([])),
                         createPlaySession: vi.fn(),
+                        getSessionRecording: vi.fn().mockReturnValue(of(recording)),
+                        getGameView: vi.fn().mockReturnValue(of({ gameData: nekoSyndicate })),
                     },
                 },
             ],
@@ -237,7 +247,7 @@ describe('LogSessionWizardComponent games step', () => {
         expect(api.createPlaySession).toHaveBeenCalledWith(
             expect.objectContaining({ groupId: 1, groupPersonIds: [3], games: [{ gameId: 48, participantPersonIds: [3] }] }),
         )
-        expect(navigate).toHaveBeenCalledWith(['/sessions', 99])
+        expect(navigate).toHaveBeenCalledWith(['/sessions', 99], { queryParams: { saved: 1 } })
         // The cached history (Play › History, Home) must include the new session without a reload.
         const dataService = TestBed.inject(DataService)
         expect(dataService.refreshUserHistory).toHaveBeenCalledOnce()
@@ -320,6 +330,100 @@ describe('LogSessionWizardComponent games step', () => {
         expect(component.visibleGames().map((selection) => selection.game.title)).toEqual(['Carcassonne', 'Neko Syndicate'])
         component.gameQuery.set('zzz')
         expect(component.visibleGames().map((selection) => selection.game.title)).toEqual(['Neko Syndicate'])
+    })
+
+    it('searches beyond ownership and saves repeated plays with different players and results', async () => {
+        await setup([])
+        reachGamesStepWith(['David', 'Bloody'])
+        const borrowed = game(99, 'Borrowed game')
+        vi.mocked(TestBed.inject(Api).getGroupPersonCatalog).mockReturnValue(of([borrowed]))
+        component.gameQuery.set('Borrowed')
+        await component.searchCatalog()
+        fixture.detectChanges()
+        expect(component.visibleGames().map((selection) => selection.game.id)).toEqual([99])
+        component.toggleGame(99)
+        fixture.detectChanges()
+        component.repeatGame(99)
+        const extra = component.playsFor(99)[0]
+        if (!extra) throw new Error('The second play was not added')
+        component.togglePlayPerson(extra.key, 6)
+        component.setResult(99, 1, 'isWinner', true, extra.key)
+        component.setResult(99, 1, 'score', '12', extra.key)
+        expect(component.recordedPlays()).toEqual([
+            { gameId: 99, participantIds: [1, 6] },
+            { gameId: 99, participantIds: [1], results: [{ accountId: 1, isWinner: true, score: 12 }] },
+        ])
+        component.togglePlayPerson(extra.key, 1)
+        expect(component.hasParticipantsForEveryGame()).toBe(false)
+    })
+
+    it('restores mixed legacy accounts and group people with results, despite overlapping same-group loads', async () => {
+        const people = new Subject<{ people: Array<ReturnType<typeof linkedPerson>> }>()
+        const play = {
+            gameId: 48,
+            participantIds: [1],
+            participantPersonIds: [12],
+            results: [
+                { accountId: 1, isWinner: true, score: 7 },
+                { groupPersonId: 12, isWinner: false, score: 3 },
+            ],
+        }
+        await setup(people, {
+            groupId: 1,
+            sessionDate: '2026-10-03T12:00:00Z',
+            timezone: 'Europe/Madrid',
+            attendeeIds: [1],
+            groupPersonIds: [12],
+            games: [play],
+            revision: 8,
+        })
+        await fixture.whenStable()
+        fixture.detectChanges()
+        people.next({ people: [linkedPerson(11, 1, 'David', [48]), linkedPerson(12, 6, 'Bloody', [48])] })
+        fixture.detectChanges()
+        expect(component.getSelectedAttendeeNames()).toContain('David')
+        expect(component.getSelectedAttendeeNames()).toContain('Bloody')
+        expect(component.recordedPlays()).toEqual([{ ...play, results: expect.arrayContaining(play.results) }])
+        expect(component.recordedPlays()[0]?.results).toHaveLength(2)
+        expect(component.canProceedToNextStep()).toBe(true)
+    })
+
+    it('does not silently substitute the only remaining group for an unavailable scoped group', async () => {
+        await setup([], undefined, { groupId: '9999' })
+        expect(component.selectedGroup()).toBeNull()
+        expect(component.canProceedToNextStep()).toBe(false)
+        component.selectGroup(group)
+        fixture.detectChanges()
+        expect(component.selectedGroup()?.id).toBe(group.id)
+    })
+
+    it('preserves separate account and linked-person results when both occur in an older recording', async () => {
+        const people = new Subject<{ people: Array<ReturnType<typeof linkedPerson>> }>()
+        const play = {
+            gameId: 48,
+            participantIds: [1],
+            participantPersonIds: [11],
+            results: [
+                { accountId: 1, isWinner: true, score: 7 },
+                { groupPersonId: 11, isWinner: false, score: 3 },
+            ],
+        }
+        await setup(people, {
+            groupId: 1,
+            sessionDate: '2026-10-03T12:00:00Z',
+            timezone: 'Europe/Madrid',
+            attendeeIds: [1],
+            groupPersonIds: [11],
+            games: [play],
+            revision: 8,
+        })
+        await fixture.whenStable()
+        fixture.detectChanges()
+        people.next({ people: [linkedPerson(11, 1, 'David', [48])] })
+        fixture.detectChanges()
+        expect(component.getSelectedAttendeeNames()).toContain('David (separate account entry)')
+        expect(component.recordedPlays()).toEqual([{ ...play, results: expect.arrayContaining(play.results) }])
+        expect(component.recordedPlays()[0]?.results).toHaveLength(2)
     })
 
     it('rejects a day in the future', async () => {

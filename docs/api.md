@@ -61,6 +61,23 @@ an image address (`PATCH /admin/games/:id`, proposal approval), which the API
 downloads and stores, or by uploading the file
 (`PUT /admin/games/:id/artwork`, image body up to 4 MB).
 
+## Recording and Home preferences
+
+`GET|PUT /profile/home` read/write only the authenticated account's pins,
+group sort and dismissed personal rating reminders. No account id is accepted
+from the client. Pins are filtered to current groups.
+
+`POST /sessions` accepts repeated game entries, each with its own players and
+optional results; actual play needs a catalogue game, not ownership.
+`GET /sessions/:sessionId/recording` returns the ordered plays and a revision.
+`PUT /sessions/:sessionId/recording` atomically corrects a recording and requires
+that revision. Group and lifecycle state are preserved; roles and identities
+are validated server-side. A stale recording receives 409. Individual results
+are saved with `PUT /sessions/:sessionId/plays/:position/results`, also with a
+revision, by any group member. Legacy per-game editors refuse repeated games.
+`POST /sessions/live` creates an active spontaneous night with server time.
+See [ADR-0022](adr/0022-everyday-play-and-corrections.md).
+
 ## Changing a route or DTO
 
 1. update the source contract and relevant response schemas;

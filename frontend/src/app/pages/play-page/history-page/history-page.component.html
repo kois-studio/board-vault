@@ -4,7 +4,7 @@
     } @else {
         The game nights your groups have recorded, newest first.
     }
-    <a appButton class="action-button text-center" icon="plus-lg" routerLink="/play/log-session">Record a session</a>
+    <a appButton class="action-button text-center" icon="plus-lg" routerLink="/play/log-session" [queryParams]="{ groupId: groupIdFilter() }">Record a session</a>
 </app-page-header>
 
 <container-wrapper>
@@ -65,14 +65,14 @@
                     <p class="mx-auto mt-2 max-w-lg text-sm leading-6 text-bv-text-muted">Plan the first night with this group, or record one you already played.</p>
                     <div class="mt-6 flex flex-col justify-center gap-3 sm:flex-row">
                         <a appButton class="text-center" [routerLink]="['/groups', groupIdFilter(), 'sessions', 'new']">Plan the first session</a>
-                        <a appButton variant="secondary" class="text-center" routerLink="/play/log-session">Record a past session</a>
+                        <a appButton variant="secondary" class="text-center" routerLink="/play/log-session" [queryParams]="{ groupId: groupIdFilter() }">Record a past session</a>
                     </div>
                 } @else {
                     <h2 class="mt-5 text-xl font-bold">No game nights recorded yet</h2>
                     <p class="mx-auto mt-2 max-w-lg text-sm leading-6 text-bv-text-muted">Once a session is complete it shows up here: who came, what you played, and any notes.</p>
                     <div class="mt-6 flex flex-col justify-center gap-3 sm:flex-row">
                         <a appButton class="text-center" routerLink="/play/upcoming-sessions" [queryParams]="{ plan: 1 }">Plan a session</a>
-                        <a appButton variant="secondary" class="text-center" routerLink="/play/log-session">Record a past session</a>
+                        <a appButton variant="secondary" class="text-center" routerLink="/play/log-session" [queryParams]="{ groupId: groupIdFilter() }">Record a past session</a>
                     </div>
                 }
             </div>

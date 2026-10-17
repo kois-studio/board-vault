@@ -11,7 +11,10 @@
                 }
             </div>
             @if (userGroups$().length > 0) {
-                <a appButton variant="secondary" icon="plus" class="hidden lg:inline-flex" [routerLink]="planLink().link" [queryParams]="planLink().query">Plan a game night</a>
+                <div class="flex w-full flex-wrap gap-2 sm:w-auto">
+                    <a appButton icon="plus" routerLink="/play/log-session" [queryParams]="userGroups$().length === 1 ? { groupId: userGroups$()[0]?.id } : null">Record a session</a>
+                    <a appButton variant="secondary" [routerLink]="planLink().link" [queryParams]="planLink().query">Plan a game night</a>
+                </div>
             }
         </header>
 
@@ -135,16 +138,8 @@
                                 </ul>
                             }
                             <a routerLink="/play/upcoming-sessions" class="inline-block text-sm font-semibold text-bv-primary hover:underline">All upcoming nights</a>
-                        } @else {
-                            <div class="flex items-center gap-3 rounded-2xl border border-dashed border-bv-border p-4">
-                                <span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-bv-primary-soft text-bv-on-primary-soft" aria-hidden="true"><app-icon name="calendar" [size]="20" /></span>
-                                <span class="min-w-0 flex-1">
-                                    <span class="block font-semibold">No game night planned</span>
-                                    <span class="block text-xs text-secondary">Pick a date; the group votes on what to play.</span>
-                                </span>
-                                <a appButton size="small" class="shrink-0" [routerLink]="planLink().link" [queryParams]="planLink().query">Plan one</a>
-                            </div>
                         }
+
                     </section>
 
                     <section aria-labelledby="groups-heading">
@@ -152,44 +147,28 @@
                             <h2 id="groups-heading" class="text-lg font-bold">{{ userGroups$().length === 1 ? 'Your group' : 'Your groups' }}</h2>
                             <a routerLink="/create-group" class="text-sm font-semibold text-bv-primary hover:underline">+ New group</a>
                         </div>
-                        @if (userGroups$().length === 1) {
-                            @for (group of userGroups$(); track group.id) {
-                                <app-card-group [group]="group" [invitations]="invitationsGroupIndex$()[group.id]" />
-                            }
-                        } @else {
-                            <ul class="grid grid-cols-1 gap-2 lg:grid-cols-2 lg:gap-3">
-                                @for (group of orderedGroups(); track group.id; let first = $first) {
-                                    @let activity = groupActivity().get(group.id);
-                                    <li>
-                                        <a [routerLink]="['/groups', group.id]" class="flex items-center gap-3 rounded-2xl border border-bv-border bg-bv-surface p-4 transition hover:border-bv-primary/40">
-                                            <span
-                                                class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl text-lg font-extrabold"
-                                                [class]="first ? 'bg-bv-primary text-bv-on-primary' : 'bg-bv-surface-2 text-bv-text'"
-                                                aria-hidden="true"
-                                                >{{ group.name.charAt(0).toUpperCase() }}</span
-                                            >
-                                            <span class="min-w-0 flex-1">
-                                                <span class="block truncate font-bold">{{ group.name }}</span>
-                                                <span class="block text-xs text-secondary">{{ peopleInGroup(group) | count: 'person' : 'people' }} · {{ gamesInGroup(group) | count: 'game' }}</span>
-                                            </span>
-                                            @if (activity) {
-                                                <span
-                                                    class="shrink-0 rounded-full px-2.5 py-0.5 text-xs font-semibold"
-                                                    [class]="activity.tone === 'live' ? 'bg-bv-success text-bv-on-success' : activity.tone === 'next' ? 'bg-bv-primary-soft text-bv-on-primary-soft' : 'bg-bv-surface-2 text-bv-text-muted'"
-                                                    >{{ activity.label }}</span
-                                                >
-                                            }
-                                            <app-icon name="chevron-right" [size]="18" className="shrink-0 text-bv-text-muted" aria-hidden="true" />
-                                        </a>
-                                    </li>
-                                }
-                            </ul>
+                        <div class="mb-3 flex flex-wrap items-center gap-2">
+                            <label for="group-order" class="text-sm text-bv-text-muted">Group order</label>
+                            <select id="group-order" class="app-input w-auto" [value]="home.preferences().groupOrder" [disabled]="home.loading() || home.error() || home.saving()" (change)="home.update({ groupOrder: $any($event.target).value })">
+                                <option value="recent">Recently played</option><option value="upcoming">Next game night</option><option value="name">Name A–Z</option>
+                            </select>
+                            @if (home.preferences().pinnedGroupIds.length > 0) { <span class="text-xs text-bv-text-muted">Pinned groups stay first</span> }
+                            @if (home.loading()) { <span class="text-sm text-bv-text-muted" role="status">Loading your preferences…</span> }
+                        </div>
+                        @if (home.error()) {
+                            <p class="mb-3 text-sm text-bv-warning" role="alert">Your preferences could not be loaded. <button type="button" class="underline" (click)="home.reload()">Retry</button></p>
                         }
+                        <ul class="space-y-4">
+                            @for (group of orderedGroups(); track group.id) {
+                                <li><app-card-group [group]="group" [invitations]="invitationsGroupIndex$()[group.id]" [pinned]="home.preferences().pinnedGroupIds.includes(group.id)" [pinPosition]="home.preferences().pinnedGroupIds.indexOf(group.id)" [pinCount]="home.preferences().pinnedGroupIds.length" [pinDisabled]="home.loading() || home.error() || home.saving()" [activity]="groupActivity().get(group.id)?.label ?? ''" (pinToggled)="home.togglePin(group.id)" (pinMoved)="home.movePin(group.id, $event)" /></li>
+                            }
+                        </ul>
                     </section>
                 </div>
 
                 <!-- What happened: recent nights, and you. -->
                 <div class="min-w-0 space-y-8">
+                    <app-rating-follow-up />
                     <section aria-labelledby="recent-heading">
                         <div class="mb-3 flex items-baseline justify-between gap-3">
                             <h2 id="recent-heading" class="text-lg font-bold">{{ recentlyPlayed().length > 0 ? 'Recently played' : 'Your history' }}</h2>

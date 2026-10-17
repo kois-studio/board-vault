@@ -24,6 +24,7 @@ deployment-specific evidence, live data, credentials, and personal details.
 - [0019 — Who may do what on a game night](0019-session-permissions.md)
 - [0020 — Group history](0020-group-history.md)
 - [0021 — Usage analytics of our own](0021-own-usage-analytics.md)
+- [0022 — Everyday play and recording corrections](0022-everyday-play-and-corrections.md)
 
 Accepted ADRs are durable constraints unless a later ADR explicitly supersedes
 them. Create an ADR when a decision changes architecture, persistence,

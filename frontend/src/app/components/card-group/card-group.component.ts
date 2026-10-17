@@ -1,4 +1,4 @@
-import { Component, computed, inject, input } from '@angular/core'
+import { Component, computed, inject, input, output } from '@angular/core'
 import { RouterLink } from '@angular/router'
 import type { GroupWithMembersAndGames, InvitationWithAccountsData } from '../../api/api.types'
 import { CountPipe } from '../../core/pipes/count.pipe'
@@ -6,6 +6,7 @@ import { DataService } from '../../core/services/data.service'
 import { groupGameCount, groupPeopleCount } from '../../core/utils/groupCounts'
 import { initialsAvatar } from '../../core/utils/initialsAvatar'
 import { ImageProfileComponent } from '../image-profile/image-profile.component'
+import { ButtonComponent } from '../ui/button/button.component'
 import { IconComponent } from '../ui/icon/icon.component'
 
 /** Below this many people a group still feels empty, so its owner is nudged to invite more. */
@@ -17,13 +18,20 @@ const AVATARS_SHOWN = 5
  * Its next night is not repeated here; Home shows it above.
  */
 @Component({
-    imports: [CountPipe, ImageProfileComponent, IconComponent, RouterLink],
+    imports: [ButtonComponent, CountPipe, ImageProfileComponent, IconComponent, RouterLink],
     selector: 'app-card-group',
     templateUrl: 'card-group.component.html',
 })
 export class CardGroupComponent {
     private readonly dataService = inject(DataService)
 
+    readonly pinned = input(false)
+    readonly pinDisabled = input(false)
+    readonly activity = input('')
+    readonly pinPosition = input(-1)
+    readonly pinCount = input(0)
+    readonly pinToggled = output<void>()
+    readonly pinMoved = output<-1 | 1>()
     readonly group = input.required<GroupWithMembersAndGames>()
     readonly invitations = input.required<undefined | Array<InvitationWithAccountsData>>()
 
@@ -48,7 +56,10 @@ export class CardGroupComponent {
 
     /** Only the owner invites (ADR-0007), and only while the group is still small. */
     public readonly showInviteNudge = computed(
-        () => this.group().createdBy === this.dataService.currentUser()?.id && this.peopleCount() < INVITE_NUDGE_BELOW,
+        () =>
+            this.group().createdBy === this.dataService.currentUser()?.id &&
+            this.peopleCount() < INVITE_NUDGE_BELOW &&
+            (!this.activity() || this.activity() === 'No nights yet'),
     )
     public readonly pendingInvitations = computed(() => this.invitations()?.length ?? 0)
 }

@@ -5,6 +5,7 @@ import { ActivatedRoute, RouterLink } from '@angular/router'
 import { firstValueFrom } from 'rxjs'
 import { Api } from '../../api/api'
 import type { GroupCollectionType, GroupStandingType } from '../../api/api.types'
+import { AddPersonGameComponent } from '../../components/add-person-game/add-person-game.component'
 import { ImageProfileComponent } from '../../components/image-profile/image-profile.component'
 import { ButtonComponent } from '../../components/ui/button/button.component'
 import { ContainerWrapperComponent } from '../../components/ui/container-wrapper/container-wrapper.component'
@@ -22,6 +23,7 @@ import { initialsAvatar } from '../../core/utils/initialsAvatar'
 @Component({
     selector: 'app-group-person-page',
     imports: [
+        AddPersonGameComponent,
         ButtonComponent,
         ContainerWrapperComponent,
         CurrencyPipe,
@@ -67,6 +69,8 @@ export class GroupPersonPageComponent {
             ) ?? null
         )
     })
+    public readonly ownedIds = computed(() => this.person()?.games.map((game) => game.id) ?? [])
+    public readonly isMe = computed(() => this.person()?.accountId === this.dataService.currentUser()?.id)
     public readonly initialsAvatar = initialsAvatar
 
     constructor() {

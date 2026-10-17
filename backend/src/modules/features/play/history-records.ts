@@ -46,6 +46,7 @@ export async function buildHistoryRecords(meets: Array<MeetDto>, sources: Histor
                 participantIds: personPlays.filter(play => play.gameId === gameId).map(play => play.personId),
             })),
             winners,
+            playCounts: details.playCounts?.get(meet.id) ?? [],
             accountParticipants: new Map(
                 gameIds.map(gameId => [gameId, accountPlays.filter(play => play.gameId === gameId).map(play => play.accountId)]),
             ),
@@ -97,6 +98,9 @@ export async function buildHistoryRecords(meets: Array<MeetDto>, sources: Histor
         gamesPlayed: session.gameIds
             .filter(gameId => games.has(gameId))
             .map(gameId => ({
+                ...((session.playCounts.find(play => play.gameId === gameId)?.count ?? 1) > 1
+                    ? { playCount: session.playCounts.find(play => play.gameId === gameId)?.count }
+                    : {}),
                 gameData: { ...games.get(gameId)!, titleTranslations: translations.get(gameId) ?? { en: '', es: '' } },
                 playedBy: toUsers(session.meet.groupId, session.accountParticipants.get(gameId) ?? []),
                 playedByPeople: toPeople(

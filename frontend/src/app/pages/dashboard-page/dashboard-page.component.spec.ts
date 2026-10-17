@@ -60,7 +60,13 @@ async function renderHome(overrides: Record<string, unknown> = {}) {
         imports: [DashboardPageComponent],
         providers: [
             { provide: DataService, useValue: dataService },
-            { provide: Api, useValue: { getSessionDetailsById: () => of(emptyNight) } },
+            {
+                provide: Api,
+                useValue: {
+                    getSessionDetailsById: () => of(emptyNight),
+                    getHomePreferences: () => of({ pinnedGroupIds: [], groupOrder: 'recent', dismissedRatingGameIds: [] }),
+                },
+            },
             { provide: ToastService, useValue: { error: vi.fn() } },
             {
                 provide: LoadingService,
@@ -158,8 +164,8 @@ describe('DashboardPageComponent (Home)', () => {
             const fixture = await renderHome(oneGroup)
             const element = fixture.nativeElement as HTMLElement
 
-            expect(text(element)).toContain('No game night planned')
-            const plan = Array.from(element.querySelectorAll('a')).find((link) => link.textContent?.trim() === 'Plan one')
+            expect(text(element)).not.toContain('No game night planned')
+            const plan = Array.from(element.querySelectorAll('a')).find((link) => link.textContent?.trim() === 'Plan a game night')
             expect(plan?.getAttribute('href')).toBe('/groups/10/sessions/new')
         })
 
@@ -196,34 +202,24 @@ describe('DashboardPageComponent (Home)', () => {
     })
 
     describe('with several groups', () => {
-        it('lists them compactly: a night under way, then the soonest planned, then the most recently played', async () => {
+        it('preserves useful cards for every group, with recent play ordering and scoped recording', async () => {
             const fixture = await renderHome({
-                userGroups: signal([group(1, 'Quiet'), group(2, 'Played'), group(3, 'Planned'), group(4, 'Live'), group(5, 'Later')]),
-                userMeets: signal([meet(1, 2, -30, 'completed'), meet(2, 3, 1), meet(3, 4, 0, 'active'), meet(4, 5, 6)]),
+                userGroups: signal([group(1, 'Quiet'), group(2, 'Played'), group(3, 'Planned')]),
+                userMeets: signal([meet(1, 2, -30, 'completed'), meet(2, 3, 1)]),
             })
             const element = fixture.nativeElement as HTMLElement
-
-            expect(element.querySelector('#groups-heading')?.textContent).toContain('Your groups')
-            expect(element.querySelector('app-card-group')).toBeNull()
-            const items = Array.from(element.querySelectorAll('section[aria-labelledby="groups-heading"] li'))
-            expect(items.map((item) => item.querySelector('.font-bold')?.textContent?.trim())).toEqual([
-                'Live',
-                'Planned',
-                'Later',
-                'Played',
-                'Quiet',
-            ])
-            const rows = items.map((item) => text(item))
-            expect(rows[0]).toContain('Happening now')
-            expect(rows[1]).toContain('Tomorrow')
-            expect(rows[3]).toContain('Last:')
-            expect(rows[4]).toContain('No nights yet')
+            const cards = Array.from(element.querySelectorAll('app-card-group'))
+            expect(cards).toHaveLength(3)
+            expect(cards.map((card) => card.querySelector('h3')?.textContent?.trim())).toEqual(['Played', 'Planned', 'Quiet'])
+            expect(cards[0]?.querySelector('a[href="/play/log-session?groupId=2"]')).not.toBeNull()
+            expect(cards[1]?.querySelector('a[href="/play/log-session?groupId=3"]')).not.toBeNull()
+            expect(cards.every((card) => text(card).includes('What to play') && text(card).includes('History'))).toBe(true)
         })
 
         it('asks which group to plan in', async () => {
             const fixture = await renderHome({ userGroups: signal([group(1, 'One'), group(2, 'Two')]) })
             const plan = Array.from((fixture.nativeElement as HTMLElement).querySelectorAll('a')).find(
-                (link) => link.textContent?.trim() === 'Plan one',
+                (link) => link.textContent?.trim() === 'Plan a game night',
             )
 
             expect(plan?.getAttribute('href')).toBe('/play/upcoming-sessions?plan=1')

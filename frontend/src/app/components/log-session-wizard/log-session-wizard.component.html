@@ -1,12 +1,15 @@
-<app-page-header titleText="Record a session" [showActionButton]="false">
-    Add a game night that already happened, so your group’s history stays complete. Planning one instead?
-    <a class="font-medium text-bv-primary underline underline-offset-2" routerLink="/play/upcoming-sessions" [queryParams]="{ plan: 1 }">Plan a session</a>.
+<app-page-header [titleText]="editingId ? 'Correct this session' : isLive ? 'Start playing now' : 'Record a session'" [showActionButton]="false">
+    @if (editingId) { Update the day, people, games and individual plays. Your correction will appear in the group’s history. }
+    @else if (isLive) { Choose who is here. You can add people and games as they arrive. }
+    @else { Add a game night that already happened. Planning one instead? <a class="font-medium text-bv-primary underline underline-offset-2" routerLink="/play/upcoming-sessions" [queryParams]="{ plan: 1 }">Plan a game night</a>. }
 </app-page-header>
 
 <container-wrapper>
     <div class="mx-auto max-w-4xl">
+        @if (loadingRecording()) { <p class="mb-4" role="status">Loading the recording…</p> }
+        @if (recordingError()) { <div class="mb-4 rounded-lg border border-bv-danger/30 p-4" role="alert"><p>{{ recordingError() }}</p>@if (editingId) { <button appButton variant="secondary" class="mt-2" (click)="loadRecording()">Reload recording</button> }</div> }
         <!-- Progress -->
-        <nav aria-label="Progress" class="mb-6">
+        <nav aria-label="Progress" class="mb-6" [hidden]="isLive">
             <ol class="grid grid-cols-3 gap-2">
                 @for (step of steps; track step.key) {
                     @let index = getStepIndex(step.key);
@@ -78,13 +81,14 @@
                                 <legend class="mb-2 text-sm font-semibold">Group</legend>
                                 <div class="flex flex-wrap gap-2">
                                     @for (group of userGroups(); track group.id) {
-                                        <button type="button" class="app-chip" [attr.aria-pressed]="selectedGroup()?.id === group.id" (click)="selectGroup(group)">{{ group.name }}</button>
+                                        <button type="button" class="app-chip" [attr.aria-pressed]="selectedGroup()?.id === group.id" [disabled]="!!editingId" (click)="selectGroup(group)">{{ group.name }}</button>
                                     }
                                 </div>
                             </fieldset>
-                            <div>
+                            <div [hidden]="isLive">
                                 <label for="session-date" class="mb-2 block text-sm font-semibold">Day</label>
                                 <input id="session-date" type="date" class="app-input sm:w-48" [max]="today" [formControl]="sessionDate" [class.border-bv-danger]="sessionDate.invalid" [attr.aria-invalid]="sessionDate.invalid" aria-describedby="session-date-error" />
+                                <div class="mt-2 flex gap-3"><button type="button" class="inline-flex min-h-11 items-center text-sm text-bv-primary underline" (click)="setDay(0)">Today</button><button type="button" class="inline-flex min-h-11 items-center text-sm text-bv-primary underline" (click)="setDay(-1)">Yesterday</button></div>
                                 <p id="session-date-error" class="mt-1 text-sm text-bv-danger" aria-live="polite">
                                     @if (sessionDate.hasError('required')) {
                                         Choose the day you played.
@@ -95,6 +99,9 @@
                             </div>
                         </div>
 
+                        @if (!isLive && sameDaySessions().length > 0) {
+                            <aside class="rounded-lg border border-bv-warning/30 p-3" aria-label="Sessions already on this day"><p class="text-sm font-medium">There’s already a session on this day. Is it the one you want?</p><ul class="mt-2 space-y-2">@for (session of sameDaySessions().slice(0, 3); track session.id) { <li><a class="text-sm text-bv-primary underline" [routerLink]="['/sessions', session.id]">Open {{ session.status === 'completed' ? 'recorded' : session.status === 'active' ? 'active' : 'planned' }} session · {{ sessionSuggestionLabel(session.id) }}</a></li> }</ul><p class="mt-2 text-xs text-bv-text-muted">If this was a separate gathering, continue recording it here.</p></aside>
+                        }
                         @if (selectedGroup()) {
                             <fieldset class="min-w-0">
                                 <div class="mb-2 flex flex-wrap items-baseline gap-x-4 gap-y-1">
@@ -134,9 +141,6 @@
             <!-- Step 2: games and players -->
             @if (currentStep() === 'games') {
                 <div class="space-y-4">
-                    @if (games().length === 0) {
-                        <p class="rounded-lg border border-dashed border-bv-border p-6 text-center text-sm text-bv-text-muted">Nobody who came owns a game in Board Vault yet. Add games to a collection first, then record the session.</p>
-                    } @else {
                         <div class="flex flex-wrap items-center justify-between gap-3">
                             <label class="relative block w-full sm:w-72">
                                 <span class="sr-only">Search the games</span>
@@ -145,6 +149,13 @@
                             </label>
                             <span class="text-sm text-bv-text-muted" aria-live="polite">{{ getSelectedGames().length }} chosen</span>
                         </div>
+
+                    <div class="flex flex-wrap items-center gap-3"><button appButton variant="secondary" [loading]="catalogLoading()" (click)="searchCatalog()">Search all games</button><span class="text-xs text-bv-text-muted">Borrowed games and new purchases can be recorded without adding ownership.</span></div>
+                    @if (catalogError()) { <p class="text-sm text-bv-danger" role="alert">Catalogue search failed. Your selections are safe; try again.</p> }
+
+                    @if (games().length === 0) {
+                        <p class="rounded-lg border border-dashed border-bv-border p-6 text-center text-sm text-bv-text-muted">No games are recorded for these people yet. Search the catalogue below; ownership is optional.</p>
+                    } @else {
 
                         <ul class="space-y-2">
                             @for (selection of visibleGames(); track selection.game.id) {
@@ -174,6 +185,16 @@
                                                     </button>
                                                 }
                                             </div>
+                                            <details class="mt-3"><summary class="cursor-pointer text-sm text-bv-primary">Winners and scores (optional)</summary><ng-container *ngTemplateOutlet="resultFields; context: { gameId: gameId, playerIds: primaryPlayers(gameId) }" /></details>
+                                            @for (play of playsFor(gameId); track play.key; let index = $index) {
+                                                <section class="mt-4 border-t border-bv-border pt-3" [attr.aria-label]="'Play ' + (index + 2) + ' of ' + getGameTitle(selection.game)">
+                                                    <div class="flex flex-wrap items-center justify-between gap-2"><h3 class="text-sm font-semibold">Play {{ index + 2 }}</h3><button appButton variant="secondary" size="small" (click)="removePlay(play.key)">Remove this play</button></div>
+                                                    <div class="mt-2 flex flex-wrap gap-2">@for (attendee of getSelectedAttendees(); track attendee.user.id) { <button type="button" class="app-chip max-w-full" [attr.aria-pressed]="play.participantIds.includes(attendee.user.id)" (click)="togglePlayPerson(play.key, attendee.user.id)">{{ attendee.user.displayName || attendee.user.username }}</button> }</div>
+                                                    @if (play.participantIds.length === 0) { <p class="mt-2 text-sm text-bv-danger" role="alert">Choose at least one player for this play.</p> }
+                                                    <details class="mt-3"><summary class="cursor-pointer text-sm text-bv-primary">Winners and scores (optional)</summary><ng-container *ngTemplateOutlet="resultFields; context: { gameId: gameId, playKey: play.key, playerIds: play.participantIds }" /></details>
+                                                </section>
+                                            }
+                                            <button appButton variant="secondary" size="small" class="mt-3" (click)="repeatGame(gameId)">Played it again</button>
                                             @if (getSelectedParticipantCount(gameId) === 0) {
                                                 <p class="mt-2 text-sm text-bv-danger" role="alert">Choose at least one player.</p>
                                             }
@@ -212,12 +233,12 @@
                             <div><dt class="text-bv-text-muted">Who came</dt><dd class="font-medium wrap-anywhere">{{ getSelectedAttendeeNames() }}</dd></div>
                         </dl>
                         <ul class="mt-4 space-y-2 border-t border-bv-border pt-4">
-                            @for (game of getSelectedGames(); track game.game.id) {
+                            @for (play of recordedPlays(); track $index) {
                                 <li class="flex min-w-0 items-center gap-3">
-                                    <image-background class="block h-10 w-10 shrink-0" [src]="game.game.imageUrl" [alt]="''" />
+
                                     <span class="min-w-0">
-                                        <span class="block text-sm font-medium wrap-anywhere">{{ getGameTitle(game.game) }}</span>
-                                        <span class="block text-xs text-bv-text-muted wrap-anywhere">{{ getPlayerNames(game.game.id) }}</span>
+                                        <span class="block text-sm font-medium wrap-anywhere">{{ playTitle(play.gameId) }}</span>
+                                        <span class="block text-xs text-bv-text-muted wrap-anywhere">{{ namesForPlay(play) }}</span>
                                     </span>
                                 </li>
                             }
@@ -227,7 +248,7 @@
             }
 
             <!-- Navigation -->
-            <div class="mt-8 flex items-center justify-between gap-3 border-t border-bv-border pt-6">
+            <div class="sticky bottom-20 z-10 mt-8 flex items-center justify-between gap-3 border-t border-bv-border bg-bv-surface py-4 lg:bottom-0">
                 @if (currentStep() !== 'who') {
                     <button appButton variant="secondary" icon="arrow-left" (click)="previousStep()">Back</button>
                 } @else {
@@ -235,9 +256,18 @@
                 }
 
                 <button appButton [disabled]="!canProceedToNextStep() || isLoading()" [loading]="isLoading()" (click)="nextStep()">
-                    {{ currentStep() === 'save' ? 'Save session' : 'Next' }}
+                    {{ isLive ? 'Start game night' : currentStep() === 'save' ? editingId ? 'Save correction' : 'Save session' : 'Next' }}
                 </button>
             </div>
         </div>
     </div>
 </container-wrapper>
+
+<ng-template #resultFields let-gameId="gameId" let-playKey="playKey" let-playerIds="playerIds">
+    <div class="mt-3 space-y-3">@for (id of playerIds; track id) {
+        <div class="flex flex-wrap items-center gap-3"><span class="min-w-0 flex-1 text-sm">{{ playerName(id) }}</span>
+            <label class="flex min-h-11 items-center gap-2 text-sm"><input type="checkbox" [checked]="resultFor(gameId, id, playKey).isWinner" (change)="setResult(gameId, id, 'isWinner', $any($event.target).checked, playKey)" /> Winner</label>
+            <label class="flex items-center gap-2 text-sm">Score <input type="number" class="app-input w-24" min="-1000000" max="1000000" step="1" [value]="resultFor(gameId, id, playKey).score ?? ''" (input)="setResult(gameId, id, 'score', $any($event.target).value, playKey)" [attr.aria-label]="'Score for ' + playerName(id)" /></label>
+        </div>
+    }</div>
+</ng-template>

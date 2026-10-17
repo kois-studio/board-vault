@@ -4872,6 +4872,236 @@
         ]
       }
     },
+    "/profile/home": {
+      "get": {
+        "operationId": "HomeController_get",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HomePreferencesDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "profile"
+        ]
+      },
+      "put": {
+        "operationId": "HomeController_save",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HomePreferencesDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HomePreferencesDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "profile"
+        ]
+      }
+    },
+    "/sessions/{sessionId}/recording": {
+      "get": {
+        "operationId": "SessionsController_getRecording",
+        "parameters": [
+          {
+            "name": "sessionId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SessionRecordingDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "sessions"
+        ]
+      },
+      "put": {
+        "operationId": "SessionsController_correctRecording",
+        "parameters": [
+          {
+            "name": "sessionId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CorrectSessionBody"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SessionRecordingDto"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "The recording changed; reload before correcting it."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "sessions"
+        ]
+      }
+    },
+    "/sessions/{sessionId}/plays/{position}/results": {
+      "put": {
+        "operationId": "SessionsController_resultsForPlay",
+        "parameters": [
+          {
+            "name": "sessionId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "position",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdatePlayResultsBody"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SessionRecordingDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "sessions"
+        ]
+      }
+    },
+    "/sessions/live": {
+      "post": {
+        "operationId": "SessionsController_startLive",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateScheduledSessionBody"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LiveSessionCreatedDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "sessions"
+        ]
+      }
+    },
     "/sessions/{sessionId}": {
       "get": {
         "operationId": "SessionsController_getSessionDetails",
@@ -9463,6 +9693,10 @@
       "GamePlayedDto": {
         "type": "object",
         "properties": {
+          "playCount": {
+            "type": "number",
+            "description": "Number of separate plays when greater than one."
+          },
           "gameData": {
             "description": "The game data.",
             "allOf": [
@@ -10312,9 +10546,74 @@
           "title"
         ]
       },
+      "HomePreferencesDto": {
+        "type": "object",
+        "properties": {
+          "pinnedGroupIds": {
+            "description": "Pinned groups, in the account’s chosen order.",
+            "type": "array",
+            "items": {
+              "type": "number"
+            }
+          },
+          "groupOrder": {
+            "type": "string",
+            "enum": [
+              "recent",
+              "upcoming",
+              "name"
+            ]
+          },
+          "dismissedRatingGameIds": {
+            "description": "Personal rating reminders dismissed by this account, at most 100.",
+            "type": "array",
+            "items": {
+              "type": "number"
+            }
+          }
+        },
+        "required": [
+          "pinnedGroupIds",
+          "groupOrder",
+          "dismissedRatingGameIds"
+        ]
+      },
+      "GameResultBody": {
+        "type": "object",
+        "properties": {
+          "accountId": {
+            "type": "number",
+            "example": 1,
+            "description": "For sessions recorded with accounts. Send exactly one of accountId or groupPersonId."
+          },
+          "groupPersonId": {
+            "type": "number",
+            "example": 10,
+            "description": "For sessions recorded with group people."
+          },
+          "isWinner": {
+            "type": "boolean",
+            "example": true
+          },
+          "score": {
+            "type": "object",
+            "example": 42,
+            "nullable": true
+          }
+        },
+        "required": [
+          "isWinner"
+        ]
+      },
       "PlaySessionGameBody": {
         "type": "object",
         "properties": {
+          "results": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/GameResultBody"
+            }
+          },
           "gameId": {
             "type": "number",
             "example": 42
@@ -10343,6 +10642,218 @@
         },
         "required": [
           "gameId"
+        ]
+      },
+      "SessionRecordingDto": {
+        "type": "object",
+        "properties": {
+          "groupId": {
+            "type": "number",
+            "example": 7
+          },
+          "sessionDate": {
+            "type": "string",
+            "example": "2026-08-16T19:30:00.000Z"
+          },
+          "timezone": {
+            "type": "string",
+            "example": "Europe/Madrid"
+          },
+          "notes": {
+            "type": "string",
+            "example": "Tried the new co-op expansion."
+          },
+          "attendeeIds": {
+            "example": [
+              1,
+              2
+            ],
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "groupPersonIds": {
+            "example": [
+              10,
+              11
+            ],
+            "description": "GroupPerson IDs invited to the session.",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "games": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PlaySessionGameBody"
+            }
+          },
+          "revision": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "groupId",
+          "sessionDate",
+          "timezone",
+          "games",
+          "revision"
+        ]
+      },
+      "CorrectSessionBody": {
+        "type": "object",
+        "properties": {
+          "groupId": {
+            "type": "number",
+            "example": 7
+          },
+          "sessionDate": {
+            "type": "string",
+            "example": "2026-08-16T19:30:00.000Z"
+          },
+          "timezone": {
+            "type": "string",
+            "example": "Europe/Madrid"
+          },
+          "notes": {
+            "type": "string",
+            "example": "Tried the new co-op expansion."
+          },
+          "attendeeIds": {
+            "example": [
+              1,
+              2
+            ],
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "groupPersonIds": {
+            "example": [
+              10,
+              11
+            ],
+            "description": "GroupPerson IDs invited to the session.",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "games": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PlaySessionGameBody"
+            }
+          },
+          "revision": {
+            "type": "number",
+            "description": "Revision returned when the recording was opened; stale edits receive 409."
+          }
+        },
+        "required": [
+          "groupId",
+          "sessionDate",
+          "timezone",
+          "games",
+          "revision"
+        ]
+      },
+      "UpdatePlayResultsBody": {
+        "type": "object",
+        "properties": {
+          "results": {
+            "description": "The full result set for one played game. It replaces the previous one; an empty list clears it.",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/GameResultBody"
+            }
+          },
+          "revision": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "results",
+          "revision"
+        ]
+      },
+      "CreateScheduledSessionBody": {
+        "type": "object",
+        "properties": {
+          "groupId": {
+            "type": "number",
+            "example": 7
+          },
+          "sessionDate": {
+            "type": "string",
+            "example": "2026-08-21T19:30:00.000Z"
+          },
+          "timezone": {
+            "type": "string",
+            "example": "Europe/Madrid"
+          },
+          "notes": {
+            "type": "string",
+            "example": "Bring the new co-op expansion."
+          },
+          "attendeeIds": {
+            "example": [
+              1,
+              2
+            ],
+            "description": "Selected group members attending the session.",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "groupPersonIds": {
+            "example": [
+              10,
+              11
+            ],
+            "description": "Selected group people attending the session.",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "plannedGameIds": {
+            "example": [
+              42,
+              84
+            ],
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "required": [
+          "groupId",
+          "sessionDate",
+          "timezone"
+        ]
+      },
+      "LiveSessionCreatedDto": {
+        "type": "object",
+        "properties": {
+          "sessionId": {
+            "type": "number"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "active"
+            ]
+          }
+        },
+        "required": [
+          "sessionId",
+          "status"
         ]
       },
       "CreatePlaySessionBody": {
@@ -10414,64 +10925,6 @@
         "required": [
           "sessionId",
           "status"
-        ]
-      },
-      "CreateScheduledSessionBody": {
-        "type": "object",
-        "properties": {
-          "groupId": {
-            "type": "number",
-            "example": 7
-          },
-          "sessionDate": {
-            "type": "string",
-            "example": "2026-08-21T19:30:00.000Z"
-          },
-          "timezone": {
-            "type": "string",
-            "example": "Europe/Madrid"
-          },
-          "notes": {
-            "type": "string",
-            "example": "Bring the new co-op expansion."
-          },
-          "attendeeIds": {
-            "example": [
-              1,
-              2
-            ],
-            "description": "Selected group members attending the session.",
-            "type": "array",
-            "items": {
-              "type": "string"
-            }
-          },
-          "groupPersonIds": {
-            "example": [
-              10,
-              11
-            ],
-            "description": "Selected group people attending the session.",
-            "type": "array",
-            "items": {
-              "type": "string"
-            }
-          },
-          "plannedGameIds": {
-            "example": [
-              42,
-              84
-            ],
-            "type": "array",
-            "items": {
-              "type": "string"
-            }
-          }
-        },
-        "required": [
-          "groupId",
-          "sessionDate",
-          "timezone"
         ]
       },
       "ScheduledSessionCreatedDto": {
@@ -10892,33 +11345,6 @@
           "sessionId",
           "status",
           "sessionDate"
-        ]
-      },
-      "GameResultBody": {
-        "type": "object",
-        "properties": {
-          "accountId": {
-            "type": "number",
-            "example": 1,
-            "description": "For sessions recorded with accounts. Send exactly one of accountId or groupPersonId."
-          },
-          "groupPersonId": {
-            "type": "number",
-            "example": 10,
-            "description": "For sessions recorded with group people."
-          },
-          "isWinner": {
-            "type": "boolean",
-            "example": true
-          },
-          "score": {
-            "type": "object",
-            "example": 42,
-            "nullable": true
-          }
-        },
-        "required": [
-          "isWinner"
         ]
       },
       "UpdateGameResultsBody": {

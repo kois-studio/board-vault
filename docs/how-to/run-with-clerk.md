@@ -87,3 +87,26 @@ Each spec's `test.skip` line lists any extra variables it needs (for example
 the invitation journey needs `PLAYWRIGHT_NEW_PERSON_INVITATION=1` and a new
 `+clerk_test` invitee). Never commit storage-state files, and delete them when
 you are done.
+
+## Everyday-play browser regression
+
+After local setup, `npm run seed:everyday-fixture` adds a second synthetic
+local group, a person without an account, and a catalogue game nobody owns.
+It only ever opens this checkout's `data/board-vault.local.db`; it ignores
+remote database variables. The command prints the fixture group id.
+
+With the local API/frontend running and owner storage state saved as above:
+
+```shell
+cd frontend
+PLAYWRIGHT_BASE_URL=http://localhost:4300 \
+PLAYWRIGHT_OWNER_STORAGE_STATE=/tmp/bv-states/owner.json \
+PLAYWRIGHT_EVERYDAY_GROUP_ID=<printed-id> \
+  npx playwright test e2e/everyday-play-flow.spec.ts --workers=1
+```
+
+The journey verifies multi-group cards, pin persistence, scoped retrospective
+recording of an unowned catalogue game, repeated plays, corrections, and a
+spontaneous live night at desktop and phone widths. Screenshots stay in the
+ignored Playwright results directory. Run this only against disposable local
+fixtures; it creates sessions.

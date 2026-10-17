@@ -24,6 +24,7 @@ import { ContainerWrapperComponent } from '../../components/ui/container-wrapper
 import { DialogDirective } from '../../components/ui/dialog/dialog.directive'
 import { IconComponent } from '../../components/ui/icon/icon.component'
 import { ImageBackgroundComponent } from '../../components/ui/image-background/image-background.component'
+import { InPageLinkDirective } from '../../components/ui/in-page-link/in-page-link.directive'
 import { StarRatingComponent } from '../../components/ui/star-rating/star-rating.component'
 import { CountPipe, PlayersPipe } from '../../core/pipes/count.pipe'
 import { CustomDatePipe } from '../../core/pipes/customDate.pipe'
@@ -55,6 +56,7 @@ const resultKey = (entry: Pick<GameResultEntryType, 'accountId' | 'groupPersonId
 
 @Component({
     imports: [
+        InPageLinkDirective,
         CountPipe,
         PlayersPipe,
         ButtonComponent,
@@ -72,6 +74,9 @@ const resultKey = (entry: Pick<GameResultEntryType, 'accountId' | 'groupPersonId
     templateUrl: 'meet-view.component.html',
 })
 export class MeetViewComponent {
+    get justSaved(): boolean {
+        return this.route.snapshot.queryParamMap?.get('saved') === '1'
+    }
     public loaded = false
     public readonly isLoading = signal(true)
     public readonly loadError = signal(false)
@@ -87,6 +92,14 @@ export class MeetViewComponent {
     public meetDataCopyOriginal: Nullable<MeetWithAttendeesAndGamesType> = null // to compare changes
 
     // Component state
+    public recording: import('../../api/api.types').SessionRecording | null = null
+    public ownershipTarget: Record<number, string> = {}
+    public ownershipSaving: Record<number, boolean> = {}
+    public ownershipSaved: Record<number, boolean> = {}
+    public recordingError = false
+    public resultPlay: number | null = null
+    public roundResultDraft: Record<number, { isWinner: boolean; score: number | null }> = {}
+    public savingRound = false
     public gameReviews: Record<GameType['id'], Record<UserType['id'], number>> = {}
     public avgReviewsIndex: Record<GameType['id'], number> = {}
     public lastMeeting: Nullable<MeetType> = null
@@ -177,6 +190,8 @@ export class MeetViewComponent {
                 this.groupPersonCatalog = await firstValueFrom(this.api.getGroupPersonCatalog(this.meetData.groupId))
             }
 
+            await this.loadRecordingDetails()
+
             // After getting group data, index all reviews by gameId
             this.#indexReviews(groupData)
 
@@ -189,6 +204,123 @@ export class MeetViewComponent {
             this.changeDetector.markForCheck()
             this.isLoading.set(false)
         }
+    }
+
+    public async loadRecordingDetails(): Promise<void> {
+        if (!this.meetData || typeof this.api.getSessionRecording !== 'function') return
+        this.recordingError = false
+        try {
+            this.recording = await firstValueFrom(this.api.getSessionRecording(this.meetData.id))
+            const known = new Set(this.totalGames.map((game) => game.id))
+            const missing = [...new Set(this.recording.games.map((play) => play.gameId))].filter((id) => !known.has(id))
+            const accountId = this.userData?.id
+            if (accountId) {
+                const games = await Promise.all(missing.map((id) => firstValueFrom(this.api.getGameView(accountId, id))))
+                this.groupPersonCatalog.push(...games.map((game) => game.gameData))
+            }
+        } catch {
+            this.recordingError = true
+        }
+        this.changeDetector.markForCheck()
+    }
+
+    get hasRepeatedPlays(): boolean {
+        return Boolean(this.recording && new Set(this.recording.games.map((play) => play.gameId)).size !== this.recording.games.length)
+    }
+    get hasMixedPlayers(): boolean {
+        return Boolean(this.meetData?.attendees.length && this.meetData.participants?.length)
+    }
+    get requiresRecordingEditor(): boolean {
+        return this.hasRepeatedPlays || this.hasMixedPlayers
+    }
+    playsOf(gameId: number) {
+        return (this.recording?.games ?? []).map((play, position) => ({ ...play, position })).filter((play) => play.gameId === gameId)
+    }
+    roundPlayers(position: number): Array<SessionPerson> {
+        const play = this.recording?.games[position]
+        return this.recordedPeople(play?.participantIds ?? [], play?.participantPersonIds ?? [])
+    }
+    roundScore(position: number, person: SessionPerson): number | null {
+        return this.roundEntry(position, person)?.score ?? null
+    }
+    roundEntry(position: number, person: SessionPerson) {
+        return this.recording?.games[position]?.results?.find((result) =>
+            person.personId !== null ? result.groupPersonId === person.personId : result.accountId === person.accountId,
+        )
+    }
+    beginRoundResults(position: number): void {
+        this.resultPlay = position
+        this.roundResultDraft = Object.fromEntries(
+            this.roundPlayers(position).map((person, index) => [
+                index,
+                { isWinner: this.roundEntry(position, person)?.isWinner ?? false, score: this.roundScore(position, person) },
+            ]),
+        )
+    }
+    async saveRoundResults(): Promise<void> {
+        if (this.resultPlay === null || !this.recording || !this.meetData || this.savingRound) return
+        const results = this.roundPlayers(this.resultPlay).map((person, index) => ({
+            ...(person.personId === null ? { accountId: person.accountId as number } : { groupPersonId: person.personId }),
+            isWinner: this.roundResultDraft[index]?.isWinner ?? false,
+            score: this.roundResultDraft[index]?.score ?? null,
+        }))
+        if (results.some((result) => result.score !== null && (!Number.isInteger(result.score) || Math.abs(result.score) > 1000000))) {
+            this.toastService.error('Scores must be whole numbers between −1000000 and 1000000.')
+            return
+        }
+        this.savingRound = true
+        try {
+            this.recording = await firstValueFrom(
+                this.api.savePlayResults(this.meetData.id, this.resultPlay, { revision: this.recording.revision, results }),
+            )
+            this.resultPlay = null
+            this.dataService.refreshUserHistory()
+            this.toastService.success('Results saved for this play.')
+        } catch {
+            this.actionError.set('The results could not be saved. The session may have changed; reload it before trying again.')
+        } finally {
+            this.savingRound = false
+            this.changeDetector.markForCheck()
+        }
+    }
+    get ownershipPeople() {
+        return this.groupPeople.filter((person) => person.person.accountId === null && person.person.status === 'active')
+    }
+    ownershipTargetName(gameId: number): string {
+        const target = this.ownershipTarget[gameId]
+        return target === 'me'
+            ? 'My Games'
+            : (this.ownershipPeople.find((person) => String(person.person.id) === target)?.person.displayName ?? 'Choose an owner')
+    }
+    async recordOwnership(gameId: number): Promise<void> {
+        const target = this.ownershipTarget[gameId]
+        if (!target || !this.meetData || !this.userData || this.ownershipSaving[gameId]) return
+        this.ownershipSaving[gameId] = true
+        try {
+            await firstValueFrom(
+                target === 'me'
+                    ? this.api.addGameToUserCollection(this.userData.id, gameId)
+                    : this.api.updateGroupPersonOwnership(this.meetData.groupId, Number(target), gameId, 'asserted'),
+            )
+            this.ownershipSaved[gameId] = true
+            this.dataService.refreshUserGames()
+            this.dataService.refreshUserGroups()
+            this.toastService.success(`Ownership recorded for ${this.ownershipTargetName(gameId)}.`)
+        } catch {
+            this.toastService.error('Could not record ownership. Your session is already saved; try again.')
+        } finally {
+            this.ownershipSaving[gameId] = false
+            this.changeDetector.markForCheck()
+        }
+    }
+    get myPlayedGames() {
+        return this.playedGameDetails.filter((game) => this.playersOf(game.id).some((person) => person.accountId === this.userData?.id))
+    }
+    get myUnratedGames() {
+        return this.myPlayedGames.filter((game) => this.getMyRating(game.id) === null)
+    }
+    get myRatedGames() {
+        return this.myPlayedGames.filter((game) => this.getMyRating(game.id) !== null)
     }
 
     #indexReviews(groupData: GroupWithMembersAndGames): void {
@@ -365,12 +497,39 @@ export class MeetViewComponent {
 
     /** The people recorded for a played game. */
     playersOf(gameId: number): Array<SessionPerson> {
-        if (this.isGroupPersonSession) {
-            const ids = new Set(this.getGameParticipantPersonIds(gameId))
-            return this.invitedPeople.filter((person) => person.personId !== null && ids.has(person.personId))
-        }
-        const ids = new Set(this.getGameParticipantIds(gameId))
-        return this.invitedPeople.filter((person) => person.accountId !== null && ids.has(person.accountId))
+        return this.recordedPeople(this.getGameParticipantIds(gameId), this.getGameParticipantPersonIds(gameId))
+    }
+
+    /** Keep both identity namespaces in old recordings; results must round-trip without dropping either source. */
+    private recordedPeople(accountIds: Array<number>, personIds: Array<number>): Array<SessionPerson> {
+        const people = this.groupPeople
+            .filter((person) => personIds.includes(person.person.id))
+            .map((person) => this.#fromGroupPerson(person))
+        const accounts = accountIds.map((id): SessionPerson => {
+            const member = this.groupData?.members.find((member) => member.id === id)
+            const linked = this.groupPeople.find((person) => person.person.accountId === id)
+            const person = member
+                ? this.#fromAccount(member)
+                : linked
+                  ? this.#fromGroupPerson(linked)
+                  : ({
+                        key: `a${id}`,
+                        accountId: id,
+                        personId: null,
+                        displayName: 'Former player',
+                        standing: 'left',
+                        avatar: { type: 'initials', initials: '?', backgroundColor: '#64748b', iconName: null, emoji: null },
+                    } satisfies SessionPerson)
+            return {
+                ...person,
+                key: `a${id}`,
+                personId: null,
+                displayName: people.some((entry) => entry.accountId === id)
+                    ? `${person.displayName} (separate account entry)`
+                    : person.displayName,
+            }
+        })
+        return [...people, ...accounts]
     }
 
     isPlayer(gameId: number, person: SessionPerson): boolean {
@@ -630,7 +789,7 @@ export class MeetViewComponent {
             await firstValueFrom(this.api.saveGameReview(this.userData.id, gameId, review))
             this.postSessionRatings[gameId] = review
             this.dataService.refreshGameReviews()
-            this.toastService.success('Your group rating was saved.')
+            this.toastService.success('Your rating was saved.')
         } catch {
             this.toastService.error('Could not save your rating.')
         } finally {
@@ -846,7 +1005,7 @@ export class MeetViewComponent {
     }
 
     get totalGames(): Array<GameCompleteType & { active: boolean }> {
-        const games: Array<GameCompleteType & { active: boolean }> = []
+        const games: Array<GameCompleteType & { active: boolean }> = this.groupPersonCatalog.map((game) => ({ ...game, active: false }))
 
         if (!this.groupData) {
             return []
