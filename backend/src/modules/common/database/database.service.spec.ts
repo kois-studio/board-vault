@@ -140,7 +140,8 @@ describe('DatabaseService logging', () => {
             transaction: transactionFactory,
         }
 
-        await expect(service.collection.updateGames(1, [42, 43], [7])).resolves.toBeUndefined()
+        // Every statement changed a row here, so all three games really changed.
+        await expect(service.collection.updateGames(1, [42, 43], [7])).resolves.toEqual({ added: [42, 43], removed: [7] })
 
         expect(transactionFactory).toHaveBeenCalledWith('write')
         expect(transaction.execute).toHaveBeenNthCalledWith(1, {
@@ -220,7 +221,7 @@ describe('DatabaseService logging', () => {
                     data: { gameTitle: 'Catan', proposalId: 12 },
                 },
             }),
-        ).resolves.toEqual({ createdGameId: 88 })
+        ).resolves.toEqual({ createdGameId: 88, addedToShelfOf: null })
 
         expect(transaction.execute).toHaveBeenNthCalledWith(
             1,
@@ -354,7 +355,8 @@ describe('DatabaseService logging', () => {
         ])("puts the new game on the proposer's %s and logs it", async (addTo, insert, action) => {
             const { service, transaction, statements } = setup(addTo)
 
-            await expect(approve(service)).resolves.toEqual({ createdGameId: 88 })
+            // Only a game put on the shelf is news to the proposer's groups.
+            await expect(approve(service)).resolves.toEqual({ createdGameId: 88, addedToShelfOf: addTo === 'shelf' ? 4 : null })
 
             expect(statements().find(statement => statement.sql.includes(insert))?.args).toEqual([4, 88])
             expect(statements().find(statement => statement.sql.includes('INSERT INTO CollectionActivity'))?.args).toEqual([

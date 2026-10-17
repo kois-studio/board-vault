@@ -3,8 +3,9 @@ export enum NotificationTypeEnum {
     SESSION_STARTED = 'session_started',
     SESSION_FINISHED = 'session_finished',
     SESSION_CANCELLED = 'session_cancelled',
-    GAMES_ADDED = 'games_added',
+    SHELF_CHANGED = 'shelf_changed',
     USER_JOINED_GROUP = 'user_joined_group',
+    USER_LEFT_GROUP = 'user_left_group',
     GROUP_PERSON_CHANGED = 'group_person_changed',
     GAME_PROPOSAL_APPROVED = 'game_proposal_approved',
     GAME_PROPOSAL_REJECTED = 'game_proposal_rejected',
@@ -18,6 +19,13 @@ type SessionNotificationData = {
     group: number
 }
 
+export type ShelfNotificationData = {
+    account: number
+    group: number
+    added: number[]
+    removed: number[]
+}
+
 export type NotificationDataMap = {
     // {account} scheduled a {meeting} for {group}
     [NotificationTypeEnum.MEETING_SCHEDULED]: {
@@ -29,16 +37,20 @@ export type NotificationDataMap = {
     [NotificationTypeEnum.SESSION_STARTED]: SessionNotificationData
     [NotificationTypeEnum.SESSION_FINISHED]: SessionNotificationData
     [NotificationTypeEnum.SESSION_CANCELLED]: SessionNotificationData
-    // {account} from {group} added {games[]}
-    [NotificationTypeEnum.GAMES_ADDED]: {
-        account: number
-        group: number
-        games: number[]
-    }
-    // {account} joined/left {group}
+    // {account} added {added[]} to and removed {removed[]} from their shelf, since you last read it.
+    // One unread notification per person whose shelf changed, kept up to date (ShelfNotifications).
+    // {group} is a group you share with them, where their games are shown.
+    [NotificationTypeEnum.SHELF_CHANGED]: ShelfNotificationData
+    // {account} joined {group}
     [NotificationTypeEnum.USER_JOINED_GROUP]: {
         account: number
         group: number
+    }
+    // {member} left {group}, or {account} (its owner) removed them from it
+    [NotificationTypeEnum.USER_LEFT_GROUP]: {
+        account: number
+        group: number
+        member: number
     }
     // {account} changed a game or preference you entered for {person} in {group} (ADR-0020)
     [NotificationTypeEnum.GROUP_PERSON_CHANGED]: {

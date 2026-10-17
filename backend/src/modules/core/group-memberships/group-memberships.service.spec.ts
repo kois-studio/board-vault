@@ -47,21 +47,31 @@ describe('GroupMembershipsService join policy', () => {
 
 describe('GroupMembershipsService leaving through DELETE /memberships', () => {
     const createService = ({ member = true, ownerId = 1 } = {}) => {
-        const leaveGroup = vi.fn().mockResolvedValue(undefined)
+        const leaveGroup = vi.fn().mockResolvedValue({ left: true })
+        const notifier = fakeActivityNotifier()
         const databaseService = fakeDatabase({
             getGroupMembershipById: vi.fn().mockResolvedValue({ rows: member ? [{ accountId: 7, groupId: 12 }] : [] }),
             getGroupById: vi.fn().mockResolvedValue({ rows: [{ id: 12, createdBy: ownerId }] }),
             leaveGroup,
         })
 
-        return { service: new GroupMembershipsService(databaseService, fakeActivityNotifier()), leaveGroup }
+        return { service: new GroupMembershipsService(databaseService, notifier), leaveGroup, notifier }
     }
 
     it('leaves the way the app does, so upcoming sessions drop the person and history keeps them', async () => {
-        const { service, leaveGroup } = createService()
+        const { service, leaveGroup, notifier } = createService()
 
         await expect(service.deleteGroupMembershipById(7, 12)).resolves.toEqual({ success: true })
         expect(leaveGroup).toHaveBeenCalledWith(7, 12, { groupId: 12, actorAccountId: 7, type: 'member_left' })
+        expect(notifier.memberLeft).toHaveBeenCalledWith(12, 7, 7)
+    })
+
+    it('tells nobody when the membership was already gone by the time it left', async () => {
+        const { service, leaveGroup, notifier } = createService()
+
+        leaveGroup.mockResolvedValue({ left: false })
+        await service.deleteGroupMembershipById(7, 12)
+        expect(notifier.memberLeft).not.toHaveBeenCalled()
     })
 
     it('does not let the owner leave their own group', async () => {

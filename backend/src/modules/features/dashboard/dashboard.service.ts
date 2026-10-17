@@ -11,6 +11,7 @@ import { GroupMembershipsService } from '../../core/group-memberships/group-memb
 import { GroupsService } from '../../core/groups/groups.service.js'
 import { MeetAccountGamesService } from '../../core/meet-account-games/meet-account-games.service.js'
 import { MeetsService } from '../../core/meets/meets.service.js'
+import { ActivityNotifier } from '../../core/notifications/activity-notifier.service.js'
 import { ReviewsService } from '../../core/reviews/reviews.service.js'
 import { UsersService } from '../../core/users/users.service.js'
 import { buildHistoryRecords, parseAvatar } from '../play/history-records.js'
@@ -40,6 +41,7 @@ export class DashboardService {
         private readonly meetAccountGamesService: MeetAccountGamesService,
         private readonly gameProposalService: GameProposalService,
         private readonly cacheService: CacheService,
+        private readonly activityNotifier: ActivityNotifier,
     ) {}
 
     @LogFeature(new Logger('DashboardService'))
@@ -179,7 +181,14 @@ export class DashboardService {
         }
 
         // Step 2: Leave: upcoming sessions drop them, history keeps them (ADR-0018)
-        await this.databaseService.groups.leaveGroup(userId, groupId, { groupId, actorAccountId: userId, type: 'member_left' })
+        const { left } = await this.databaseService.groups.leaveGroup(userId, groupId, {
+            groupId,
+            actorAccountId: userId,
+            type: 'member_left',
+        })
+
+        // Step 3: The members still in the group hear it
+        if (left) await this.activityNotifier.memberLeft(groupId, userId, userId)
 
         return { success: true }
     }
@@ -198,12 +207,15 @@ export class DashboardService {
         }
 
         // Step 2: Same as leaving: upcoming sessions drop them, history keeps them (ADR-0018)
-        await this.databaseService.groups.leaveGroup(memberId, groupId, {
+        const { left } = await this.databaseService.groups.leaveGroup(memberId, groupId, {
             groupId,
             actorAccountId: userId,
             type: 'member_removed',
             subjectAccountId: memberId,
         })
+
+        // Step 3: The members still in the group hear it
+        if (left) await this.activityNotifier.memberLeft(groupId, memberId, userId)
 
         return { success: true }
     }

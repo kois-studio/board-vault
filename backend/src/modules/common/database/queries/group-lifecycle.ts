@@ -1,4 +1,4 @@
-import { forgetGroupNotifications } from './notification-cleanup.js'
+import { forgetGroupNotifications, forgetShelfNotificationsAbout } from './notification-cleanup.js'
 import { forgetWhoIsNotComing } from './session-cleanup.js'
 
 import type { Transaction } from '@libsql/client'
@@ -11,7 +11,8 @@ import type { Transaction } from '@libsql/client'
  * sessions they organised that are still scheduled or running pass to the group
  * owner, who can then manage them. Their votes and the games they said they would bring go from
  * those upcoming sessions too, and so do their notifications about the group, which would only
- * lead to pages they can no longer open. Run it after any ownership change.
+ * lead to pages they can no longer open, and what the others were told about their shelf there.
+ * Run it after any ownership change.
  */
 export async function departGroup(transaction: Transaction, accountId: number, groupId: number): Promise<void> {
     const upcoming = "SELECT id FROM Meet WHERE groupId = ? AND status = 'scheduled'"
@@ -42,6 +43,7 @@ export async function departGroup(transaction: Transaction, accountId: number, g
             args: [groupId, groupId, accountId],
         },
         forgetGroupNotifications(groupId, accountId),
+        forgetShelfNotificationsAbout(accountId, groupId),
         // Last: who is coming has just changed, and the organizer may have too.
         ...forgetWhoIsNotComing(upcoming, [groupId]),
     ])

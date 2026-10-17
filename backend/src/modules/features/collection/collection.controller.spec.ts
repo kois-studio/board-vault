@@ -4,6 +4,7 @@ import request from 'supertest'
 
 import { AuthGuard } from '../../../common/guards/auth.guard.js'
 import { UserOwnershipGuard } from '../../../common/guards/ownership.guard.js'
+import { RateLimitGuard } from '../../../common/guards/rate-limit.guard.js'
 
 import { CollectionController } from './collection.controller.js'
 import { CollectionService } from './collection.service.js'
@@ -28,6 +29,8 @@ describe('CollectionController review validation', () => {
             .overrideGuard(AuthGuard)
             .useValue({ canActivate: () => true })
             .overrideGuard(UserOwnershipGuard)
+            .useValue({ canActivate: () => true })
+            .overrideGuard(RateLimitGuard)
             .useValue({ canActivate: () => true })
             .compile()
 

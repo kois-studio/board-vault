@@ -5,6 +5,7 @@ import { parseStoredDate } from '../../../common/utils/stored-date.js'
 import { DatabaseService } from '../../common/database/database.service.js'
 
 import { NotificationTypeEnum } from './notifications-enum.type.js'
+import { isEmptyShelfChange, type ShelfChange } from './shelf-notification.js'
 
 type SessionChange = 'active' | 'completed' | 'cancelled'
 
@@ -28,7 +29,8 @@ export function formatSessionDate(storedDate: string, timezone: string): string 
 
 /**
  * In-app notifications for what happens in a group: a game night planned, started, finished or
- * cancelled, someone joining, and someone changing what another member entered for a group person. Sent after the change is saved; a failure is logged and never
+ * cancelled, someone joining or leaving, someone's shelf changing, and someone changing what another
+ * member entered for a group person. Sent after the change is saved; a failure is logged and never
  * fails the request that caused it. The person who acted is never notified.
  */
 @Injectable()
@@ -80,21 +82,67 @@ export class ActivityNotifier {
         })
     }
 
+    /** The other members hear it; someone who left and comes back before they read it is no news. */
     async memberJoined(groupId: number, accountId: number): Promise<void> {
         await this.guard('member_joined', async () => {
-            const rows = (await this.databaseService.notifications.getGroupNotificationContext(groupId)).rows
-            const groupName = rows[0] ? String(rows[0][0]) : null
+            const members = await this.groupMembers(groupId)
 
-            if (!groupName) return
+            if (!members) return
             const name = await this.accountName(accountId)
 
-            await this.send(
-                rows.filter(row => row[1] !== null).map(row => Number(row[1])),
-                accountId,
-                NotificationTypeEnum.USER_JOINED_GROUP,
-                `${name} joined ${groupName}.`,
-                { account: accountId, group: groupId },
+            await this.databaseService.notifications.createOrCancel(
+                this.addressed(
+                    members.accountIds,
+                    [accountId],
+                    NotificationTypeEnum.USER_JOINED_GROUP,
+                    `${name} joined ${members.groupName}.`,
+                    {
+                        account: accountId,
+                        group: groupId,
+                    },
+                ),
+                { type: NotificationTypeEnum.USER_LEFT_GROUP, data: { group: groupId, member: accountId } },
             )
+        })
+    }
+
+    /**
+     * Someone left a group, or its owner (`actorAccountId`) removed them: the members still in it
+     * hear it, except whoever acted. Someone who leaves before they read that the person joined is no news.
+     */
+    async memberLeft(groupId: number, memberAccountId: number, actorAccountId: number): Promise<void> {
+        await this.guard('member_left', async () => {
+            const members = await this.groupMembers(groupId)
+
+            if (!members) return
+            const member = await this.accountName(memberAccountId)
+            const message =
+                actorAccountId === memberAccountId
+                    ? `${member} left ${members.groupName}.`
+                    : `${await this.accountName(actorAccountId)} removed ${member} from ${members.groupName}.`
+
+            await this.databaseService.notifications.createOrCancel(
+                this.addressed(members.accountIds, [actorAccountId, memberAccountId], NotificationTypeEnum.USER_LEFT_GROUP, message, {
+                    account: actorAccountId,
+                    group: groupId,
+                    member: memberAccountId,
+                }),
+                { type: NotificationTypeEnum.USER_JOINED_GROUP, data: { group: groupId, account: memberAccountId } },
+            )
+        })
+    }
+
+    /**
+     * Games went onto or off someone's shelf: everyone sharing a group with them hears it, in one
+     * notification per person that stays up to date while unread, so adding and removing games over
+     * and over never fills anyone's inbox (NotificationQueries.recordShelfChange).
+     */
+    async shelfChanged(accountId: number, change: Partial<ShelfChange>): Promise<void> {
+        const full = { added: change.added ?? [], removed: change.removed ?? [] }
+
+        if (isEmptyShelfChange(full)) return
+        await this.guard('shelf_changed', async () => {
+            await this.databaseService.notifications.recordShelfChange(accountId, await this.accountName(accountId), full)
         })
     }
 
@@ -156,12 +204,31 @@ export class ActivityNotifier {
         message: string,
         data: Record<string, number>,
     ): Promise<void> {
-        const accountIds = [...new Set(recipients)].filter(accountId => accountId !== actorAccountId)
+        const notifications = this.addressed(recipients, [actorAccountId], type, message, data)
 
-        if (accountIds.length === 0) return
-        await this.databaseService.notifications.createNotifications(
-            accountIds.map(accountId => ({ accountId, type, message, data: data as never })),
-        )
+        if (notifications.length === 0) return
+        await this.databaseService.notifications.createNotifications(notifications)
+    }
+
+    /** One notification per recipient, once each, leaving out the people it is about or who acted. */
+    private addressed(
+        recipients: Array<number>,
+        leftOut: Array<number>,
+        type: NotificationTypeEnum,
+        message: string,
+        data: Record<string, number>,
+    ) {
+        return [...new Set(recipients)]
+            .filter(accountId => !leftOut.includes(accountId))
+            .map(accountId => ({ accountId, type, message, data: data as never }))
+    }
+
+    /** A group's name and its members' accounts, or null when the group is gone. */
+    private async groupMembers(groupId: number) {
+        const rows = (await this.databaseService.notifications.getGroupNotificationContext(groupId)).rows
+
+        if (!rows[0]) return null
+        return { groupName: String(rows[0][0]), accountIds: rows.filter(row => row[1] !== null).map(row => Number(row[1])) }
     }
 
     private async sessionContext(sessionId: number) {

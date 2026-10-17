@@ -49,7 +49,12 @@ export class CardNotificationComponent {
             return { path: ['/sessions', sessionId], label: sessionLabel }
         }
         const groupId = notification.data?.['group']
-        const groupTypes = ['user_joined_group', 'group_person_changed']
+        const accountId = notification.data?.['account']
+        // A shelf change leads to that person's games, in a group the reader shares with them.
+        if (notification.type === 'shelf_changed' && typeof groupId === 'number' && typeof accountId === 'number') {
+            return { path: ['/groups', groupId, 'members', accountId], label: 'See their games' }
+        }
+        const groupTypes = ['user_joined_group', 'user_left_group', 'group_person_changed']
         if (groupTypes.includes(notification.type) && typeof groupId === 'number') {
             return { path: ['/groups', groupId], label: 'Open the group' }
         }
@@ -102,6 +107,8 @@ export class CardNotificationComponent {
                 session_finished: 'calendar-check',
                 session_cancelled: 'circle-x',
                 user_joined_group: 'user-check',
+                user_left_group: 'logout',
+                shelf_changed: 'library',
                 group_person_changed: 'pencil',
             }[type] ?? 'info'
         )

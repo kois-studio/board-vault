@@ -1,3 +1,4 @@
+import { fakeActivityNotifier, type FakeActivityNotifier } from '../../../../test/fake-activity-notifier.js'
 import { fakeDatabase } from '../../../../test/fake-database.js'
 
 import { AdminService } from './admin.service.js'
@@ -13,8 +14,10 @@ describe('AdminService', () => {
 
         const copied = { bytes: Buffer.from('webp'), hash: '0123456789abcdef', contentType: 'image/webp', width: 8, height: 8 }
         let artworkService: { copyFromAddress: Mock }
+        let notifier: FakeActivityNotifier
 
         function serviceWith(approveGameProposalAtomically: Mock) {
+            notifier = fakeActivityNotifier()
             artworkService = { copyFromAddress: vi.fn().mockImplementation(async (address: string) => ({ ...copied, sourceUrl: address })) }
             const gameProposalService = { getGameProposalById: vi.fn().mockResolvedValue(proposal) }
             const gameTranslationService = { normalizeTitle: (title: string) => title.toLowerCase() }
@@ -31,6 +34,7 @@ describe('AdminService', () => {
                 fakeDatabase({ approveGameProposalAtomically }),
                 cacheService as never,
                 artworkService as never,
+                notifier as never,
             )
         }
 
@@ -111,6 +115,14 @@ describe('AdminService', () => {
                     ],
                 }),
             )
+        })
+
+        it("tells the proposer's groups when the approved game goes onto their shelf, and only then", async () => {
+            await serviceWith(vi.fn().mockResolvedValue({ createdGameId: 40, addedToShelfOf: 7 })).approveGameProposal(3, 1, reviewed)
+            expect(notifier.shelfChanged).toHaveBeenCalledWith(7, { added: [40] })
+
+            await serviceWith(vi.fn().mockResolvedValue({ createdGameId: 41, addedToShelfOf: null })).approveGameProposal(3, 1, reviewed)
+            expect(notifier.shelfChanged).not.toHaveBeenCalled()
         })
     })
 })

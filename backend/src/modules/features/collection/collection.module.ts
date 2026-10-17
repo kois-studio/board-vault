@@ -1,11 +1,13 @@
 import { Module } from '@nestjs/common'
 
+import { CacheModule } from '../../common/cache/cache.module.js'
 import { DatabaseModule } from '../../common/database/database.module.js'
 import { CollectionActivityModule } from '../../core/collection-activity/collection-activity.module.js'
 import { GameTagsModule } from '../../core/game-tags/game-tags.module.js'
 import { GameTranslationModule } from '../../core/game-translation/game-translation.module.js'
 import { GamesModule } from '../../core/games/games.module.js'
 import { GamesOwnedModule } from '../../core/games-owned/games-owned.module.js'
+import { NotificationsModule } from '../../core/notifications/notifications.module.js'
 import { ReviewsModule } from '../../core/reviews/reviews.module.js'
 import { TagCategoryModule } from '../../core/tag-category/tag-category.module.js'
 import { TagsModule } from '../../core/tags/tags.module.js'
@@ -16,6 +18,7 @@ import { CollectionService } from './collection.service.js'
 
 @Module({
     imports: [
+        CacheModule,
         DatabaseModule,
         GamesModule,
         TagsModule,
@@ -26,6 +29,7 @@ import { CollectionService } from './collection.service.js'
         TagCategoryModule,
         GameTranslationModule,
         CollectionActivityModule,
+        NotificationsModule,
     ],
     providers: [CollectionService],
     exports: [CollectionService],

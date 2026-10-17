@@ -25,7 +25,8 @@ describe('UsersService account rows', () => {
         email: 'alice@example.test',
         id: 1,
     }
-    const serviceWith = (row: object) => new UsersService(fakeDatabase({ getUserById: vi.fn().mockResolvedValue({ rows: [row] }) }))
+    const serviceWith = (row: object) =>
+        new UsersService(fakeDatabase({ getUserById: vi.fn().mockResolvedValue({ rows: [row] }) }), {} as never)
 
     it('returns only public identity fields for nested user responses', async () => {
         await expect(serviceWith(accountRow).getPublicUserById(1)).resolves.toEqual({

@@ -4,12 +4,16 @@ import { Injectable, Logger, NotFoundException } from '@nestjs/common'
 import { usersSchema } from '../../../common/schemas/index.js'
 import { AvatarDto, UpdateUserBody, UserGetDto, UserPublicDto } from '../../../common/types/user.type.js'
 import { DatabaseService } from '../../common/database/database.service.js'
+import { ActivityNotifier } from '../notifications/activity-notifier.service.js'
 
 @Injectable()
 export class UsersService {
     private readonly LOGGER: Logger = new Logger(this.constructor.name)
 
-    constructor(private readonly databaseService: DatabaseService) {}
+    constructor(
+        private readonly databaseService: DatabaseService,
+        private readonly activityNotifier: ActivityNotifier,
+    ) {}
 
     // Read Account columns by name: the table's column order is not a contract.
     private _parseResultSet(resultSet: ResultSet): Array<UserGetDto> {
@@ -145,14 +149,17 @@ export class UsersService {
 
     async updateGames(accountId: number, gamesToAdd: number[], gamesToRemove: number[]): Promise<{ success: boolean }> {
         this.LOGGER.log('Updating games for user')
+        let changed: { added: Array<number>; removed: Array<number> }
+
         try {
             // TODO: responsability of games-owned.service, delete this query
-            await this.databaseService.collection.updateGames(accountId, gamesToAdd, gamesToRemove)
-
-            return { success: true }
+            changed = await this.databaseService.collection.updateGames(accountId, gamesToAdd, gamesToRemove)
         } catch {
             this.LOGGER.error('Failed to update games for user')
             throw new NotFoundException('Failed to update games for user')
         }
+
+        await this.activityNotifier.shelfChanged(accountId, changed)
+        return { success: true }
     }
 }

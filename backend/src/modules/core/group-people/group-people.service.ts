@@ -250,6 +250,8 @@ export class GroupPeopleService {
 
         if (result.alreadyClaimed) return { success: true, alreadyClaimed: true }
         if (!result.claimed) throw new ForbiddenException('This placeholder is not assigned to your verified account')
+        // Games brought over to the claimer's own shelf are news to their other groups too.
+        await this.activityNotifier.shelfChanged(actorAccountId, { added: result.addedToShelf })
         return { success: true, alreadyClaimed: false }
     }
 

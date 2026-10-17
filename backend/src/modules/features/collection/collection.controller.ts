@@ -17,6 +17,7 @@ import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagg
 
 import { AuthGuard } from '../../../common/guards/auth.guard.js'
 import { UserOwnershipGuard } from '../../../common/guards/ownership.guard.js'
+import { RateLimit, RateLimitGuard } from '../../../common/guards/rate-limit.guard.js'
 import { SuccessDto } from '../../../common/types/auth.type.js'
 import { CollectionActivityDto } from '../../../common/types/collection-activity.type.js'
 import { GameOwnedDto, UpdateGameOwnedDto } from '../../../common/types/game-owned.type.js'
@@ -26,6 +27,9 @@ import { CatalogueTagDto } from '../../../common/types/tag.type.js'
 import { WishlistResponseDto } from '../../../common/types/wishlisted-game.type.js'
 
 import { CollectionService } from './collection.service.js'
+
+/** Enough to enter a whole collection in one sitting, game by game. */
+export const SHELF_CHANGES_PER_HOUR = 300
 
 @UseGuards(AuthGuard)
 @UsePipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true, transform: true }))
@@ -51,7 +55,10 @@ export class CollectionController {
         return this.collectionService.getGameViewByUserId(userId, gameId)
     }
 
-    @UseGuards(UserOwnershipGuard)
+    // Adding and removing share this budget (one route path): a safety net under the inbox rule that
+    // already keeps a shelf's changes to one notification per reader (ActivityNotifier.shelfChanged).
+    @UseGuards(UserOwnershipGuard, RateLimitGuard)
+    @RateLimit(SHELF_CHANGES_PER_HOUR, 3600)
     @Post('/users/:userId/games/:gameId')
     @ApiOperation({ summary: "Add a game to a user's collection", deprecated: false })
     @ApiResponse({ status: 200, type: SuccessDto, description: "Game added to the user's collection" })
@@ -59,7 +66,8 @@ export class CollectionController {
         return this.collectionService.addGameToUserCollection(userId, gameId)
     }
 
-    @UseGuards(UserOwnershipGuard)
+    @UseGuards(UserOwnershipGuard, RateLimitGuard)
+    @RateLimit(SHELF_CHANGES_PER_HOUR, 3600)
     @Delete('/users/:userId/games/:gameId')
     @ApiOperation({ summary: "Remove a game from a user's collection", deprecated: false })
     @ApiResponse({ status: 200, type: SuccessDto, description: "Game removed from the user's collection" })

@@ -2,11 +2,14 @@ import { BadRequestException, ExecutionContext, INestApplication } from '@nestjs
 import { Test } from '@nestjs/testing'
 import request from 'supertest'
 
+import { fakeActivityNotifier } from '../../../../test/fake-activity-notifier.js'
 import { fakeDatabase } from '../../../../test/fake-database.js'
 import { AdminGuard } from '../../../common/guards/admin.guard.js'
 import { AuthGuard } from '../../../common/guards/auth.guard.js'
 import { UserOwnershipGuard } from '../../../common/guards/ownership.guard.js'
+import { RateLimitGuard } from '../../../common/guards/rate-limit.guard.js'
 import { DatabaseService } from '../../common/database/database.service.js'
+import { ActivityNotifier } from '../notifications/activity-notifier.service.js'
 
 import { UsersController } from './users.controller.js'
 import { UsersService } from './users.service.js'
@@ -26,12 +29,13 @@ describe('UsersController profile update boundary', () => {
 
             return { rows: [{ id: 1 }] }
         })
-        updateGames = vi.fn().mockResolvedValue(undefined)
+        updateGames = vi.fn().mockResolvedValue({ added: [], removed: [] })
 
         const module = await Test.createTestingModule({
             controllers: [UsersController],
             providers: [
                 UsersService,
+                { provide: ActivityNotifier, useValue: fakeActivityNotifier() },
                 { provide: DatabaseService, useValue: fakeDatabase({ updateUserProfile, updateGames }) },
                 AuthGuard,
                 UserOwnershipGuard,
@@ -45,6 +49,8 @@ describe('UsersController profile update boundary', () => {
                     return true
                 },
             })
+            .overrideGuard(RateLimitGuard)
+            .useValue({ canActivate: () => true })
             .compile()
 
         app = module.createNestApplication()

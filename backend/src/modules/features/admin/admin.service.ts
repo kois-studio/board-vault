@@ -24,6 +24,7 @@ import { GameProposalService } from '../../../modules/core/game-proposal/game-pr
 import { GameTagsService } from '../../../modules/core/game-tags/game-tags.service.js'
 import { GameTranslationService } from '../../../modules/core/game-translation/game-translation.service.js'
 import { GamesService } from '../../../modules/core/games/games.service.js'
+import { ActivityNotifier } from '../../../modules/core/notifications/activity-notifier.service.js'
 import { NotificationTypeEnum } from '../../../modules/core/notifications/notifications-enum.type.js'
 import { TagCategoryService } from '../../../modules/core/tag-category/tag-category.service.js'
 import { TagsService } from '../../../modules/core/tags/tags.service.js'
@@ -52,6 +53,7 @@ export class AdminService {
         private readonly databaseService: DatabaseService,
         private readonly cacheService: CacheService,
         private readonly artworkService: ArtworkService,
+        private readonly activityNotifier: ActivityNotifier,
     ) {}
 
     // #region Tag Categories
@@ -465,7 +467,7 @@ export class AdminService {
             .filter((entry): entry is [SupportedLanguage, string] => Boolean(entry[1]))
             .map(([languageCode, title]) => ({ languageCode, title, normalizedTitle: this.gameTranslationService.normalizeTitle(title) }))
 
-        const { createdGameId } = await this.databaseService.games.approveGameProposalAtomically({
+        const { createdGameId, addedToShelfOf } = await this.databaseService.games.approveGameProposalAtomically({
             proposalId,
             reviewerId,
             ...gameData,
@@ -493,6 +495,8 @@ export class AdminService {
             // The approval may have put the game on the proposer's shelf or wishlist.
             this.cacheService.deleteOne(`collection-activity:byAccountId:${proposal.submittedBy}`),
         ])
+        // The proposer's groups hear about a game that went onto their shelf, as when they add one.
+        if (addedToShelfOf) await this.activityNotifier.shelfChanged(addedToShelfOf, { added: [createdGameId] })
 
         return { success: true, createdGameId }
     }

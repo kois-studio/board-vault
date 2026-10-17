@@ -87,7 +87,7 @@ screen of the app. New routes usually belong in a `features` module.
 | `UserInGroupGuard` | The caller must be a member of `:groupId`. |
 | `GroupOwnerGuard` | The caller must own `:groupId`. |
 | `GroupPeopleFeatureGuard` | 404 when `BOARD_VAULT_GROUP_PEOPLE_ENABLED=false`. |
-| `RateLimitGuard` | `@RateLimit(limit, seconds)` per endpoint and account (or IP when anonymous). Used on invitation and game-proposal creation. Fails open without Redis. |
+| `RateLimitGuard` | `@RateLimit(limit, seconds)` per endpoint and account (or IP when anonymous). Used on invitation and game-proposal creation, and on shelf changes (they notify the person's groups). Fails open without Redis. |
 
 List `AuthGuard` first; the others read `request.user`.
 
