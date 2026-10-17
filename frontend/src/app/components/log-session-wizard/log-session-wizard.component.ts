@@ -258,7 +258,8 @@ export class LogSessionWizardComponent {
                 this.selectGroup(requested)
                 return
             }
-            if (groups.length === 1 && onlyGroup && untracked(() => this.selectedGroup()) === null) this.selectGroup(onlyGroup)
+            if (!this.requestedGroupId && groups.length === 1 && onlyGroup && untracked(() => this.selectedGroup()) === null)
+                this.selectGroup(onlyGroup)
         })
 
         effect(() => {

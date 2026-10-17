@@ -77,6 +77,7 @@ describe('LogSessionWizardComponent games step', () => {
     const setup = async (
         people: Array<ReturnType<typeof linkedPerson>> | Observable<{ people: Array<ReturnType<typeof linkedPerson>> }>,
         recording?: SessionRecording,
+        params: Record<string, string> = {},
     ) => {
         await TestBed.configureTestingModule({
             imports: [LogSessionWizardComponent],
@@ -84,7 +85,9 @@ describe('LogSessionWizardComponent games step', () => {
                 provideRouter([]),
                 {
                     provide: ActivatedRoute,
-                    useValue: { snapshot: { queryParamMap: convertToParamMap(recording ? { sessionId: '99', groupId: '1' } : {}) } },
+                    useValue: {
+                        snapshot: { queryParamMap: convertToParamMap(recording ? { sessionId: '99', groupId: '1', ...params } : params) },
+                    },
                 },
                 {
                     provide: DataService,
@@ -383,6 +386,15 @@ describe('LogSessionWizardComponent games step', () => {
         expect(component.recordedPlays()).toEqual([{ ...play, results: expect.arrayContaining(play.results) }])
         expect(component.recordedPlays()[0]?.results).toHaveLength(2)
         expect(component.canProceedToNextStep()).toBe(true)
+    })
+
+    it('does not silently substitute the only remaining group for an unavailable scoped group', async () => {
+        await setup([], undefined, { groupId: '9999' })
+        expect(component.selectedGroup()).toBeNull()
+        expect(component.canProceedToNextStep()).toBe(false)
+        component.selectGroup(group)
+        fixture.detectChanges()
+        expect(component.selectedGroup()?.id).toBe(group.id)
     })
 
     it('rejects a day in the future', async () => {
