@@ -3,7 +3,7 @@
         <!-- Greeting; planning is the everyday action, so it sits here once there is a group. -->
         <header class="flex flex-wrap items-center justify-between gap-4">
             <div class="min-w-0">
-                <h1 class="text-2xl font-extrabold tracking-tight lg:text-3xl">
+                <h1 class="text-2xl font-extrabold tracking-tight lg:text-3xl truncate max-w-2xl">
                     {{ isNew() ? 'Welcome' : 'Hi' }}{{ greetingName() ? ', ' + greetingName() : '' }}
                 </h1>
                 @if (isNew()) {
