@@ -44,7 +44,7 @@
                 </div>
             }
 
-            @if (canRunNight || canShapeNight || canAddToCalendar) {
+            @if (canRunNight || canShapeNight || canAddToCalendar || canCorrectRecording) {
                 <div class="mt-5 flex flex-wrap items-center gap-3 border-t border-bv-border pt-5">
                     @if (canRunNight) {
                         @if (meet.status === 'scheduled') {
@@ -69,6 +69,9 @@
                             </div>
                         </details>
                     }
+                    @if (canCorrectRecording) {
+                        <a appButton variant="secondary" icon="pencil" routerLink="/play/log-session" [queryParams]="{ groupId: meet.groupId, sessionId: meet.id }">{{ meet.status === 'completed' ? 'Correct session' : 'Edit games and players' }}</a>
+                    }
                     @if (canShapeNight) {
                         <button type="button" class="ml-auto rounded text-sm font-medium text-bv-danger underline-offset-2 hover:underline disabled:opacity-60" [disabled]="isUpdatingStatus" (click)="requestStatusUpdate('cancelled')">Cancel game night</button>
                     }
@@ -76,6 +79,10 @@
                 @if (canRunNight && meet.status === 'scheduled') {
                     <p class="mt-3 text-sm text-bv-text-muted">Start the night when the group sits down to play. Then mark the games you play, who played, and who won.</p>
                 }
+            }
+
+            @if (recordingError) {
+                <p class="mt-3 text-sm text-bv-warning" role="alert">Individual plays could not be loaded. <button type="button" class="font-medium underline" (click)="loadRecordingDetails()">Retry</button></p>
             }
 
             @if (actionError(); as actionErrorMessage) {
@@ -86,11 +93,13 @@
             }
         </app-session-summary>
 
-        @if (justSaved) { <div class="my-5 rounded-lg border border-bv-success/30 bg-bv-success/10 p-4" role="status"><p class="font-semibold">Session saved for {{ meet.meetDate | customDate: true: meet.timezone }}.</p>@if (myUnratedGames.length > 0) { <a appInPageLink="feedback-heading" class="mt-2 inline-block font-medium text-bv-primary underline">You played {{ myUnratedGames.length }} {{ myUnratedGames.length === 1 ? 'game' : 'games' }} you haven’t rated yet</a> }</div> }
-        @if (meet.status === 'active' || meet.status === 'completed') {
-            <div class="my-5 flex flex-wrap items-center justify-between gap-3">
-                @if (hasPlayerRole) { <a appButton variant="secondary" routerLink="/play/log-session" [queryParams]="{ groupId: meet.groupId, sessionId: meet.id }">{{ meet.status === 'completed' ? 'Correct session' : 'Edit games and players' }}</a> }
-                @if (recordingError) { <p class="text-sm text-bv-warning" role="alert">Individual plays could not be loaded. <button type="button" class="underline" (click)="loadRecordingDetails()">Retry</button></p> }
+        @if (justSaved) {
+            <div class="mt-5 flex flex-wrap items-center gap-x-4 gap-y-1 rounded-lg border border-bv-success/30 bg-bv-success/10 p-4" role="status">
+                <app-icon name="circle-check" [size]="20" className="shrink-0 text-bv-success" aria-hidden="true" />
+                <p class="font-semibold">Saved to the group’s history.</p>
+                @if (myUnratedGames.length > 0) {
+                    <a appInPageLink="feedback-heading" class="text-sm font-medium text-bv-primary hover:underline">Rate what you played ({{ myUnratedGames.length }})</a>
+                }
             </div>
         }
         @if (pendingStatus(); as requestedStatus) {
@@ -485,9 +494,9 @@
                 @if (canLeaveFeedback && myPlayedGames.length > 0) {
                     <section aria-labelledby="feedback-heading">
                         <h2 id="feedback-heading" class="text-lg font-semibold">How did it go for you?</h2>
-                        <p class="mb-3 mt-1 text-sm text-bv-text-muted">Rate the games you played for the first time. Your existing ratings are already saved.</p>
+                        <p class="mb-3 mt-1 text-sm text-bv-text-muted">Your own rating, kept for every night you play it.</p>
                         <ul class="grid gap-2 grid-cols-1 sm:grid-cols-2">
-                            @for (game of myUnratedGames; track game.id) {
+                            @for (game of myPlayedGames; track game.id) {
                                 <li class="flex min-w-0 flex-wrap items-center gap-3 rounded-lg border border-bv-border bg-bv-surface p-2">
                                     <image-background [src]="game.imageUrl" [alt]="gameTitle(game) + ' cover'" class="h-10 w-10 shrink-0" />
                                     <span class="min-w-0 flex-1 truncate text-sm font-medium">{{ gameTitle(game) }}</span>
@@ -495,11 +504,10 @@
                                 </li>
                             }
                         </ul>
-                        @if (myRatedGames.length > 0) { <details class="mt-3"><summary class="cursor-pointer text-sm text-bv-primary">Already rated ({{ myRatedGames.length }}) · update a rating</summary><ul class="mt-3 space-y-2">@for (game of myRatedGames; track game.id) { <li class="flex flex-wrap items-center gap-3"><span class="min-w-0 flex-1 text-sm">{{ gameTitle(game) }}</span><app-star-rating [value]="getMyRating(game.id)" [label]="gameTitle(game)" [disabled]="savingPostSessionRatings[game.id] ?? false" (rated)="savePostSessionRating(game.id, $event)" /></li> }</ul></details> }
                     </section>
                 }
 
-                @if (meet.status === 'completed' && playedGameDetails.length > 0) {
+                @if (justSaved && meet.status === 'completed' && playedGameDetails.length > 0) {
                     <details><summary class="cursor-pointer text-sm font-medium text-bv-primary">New purchase? Record who owns it (optional)</summary><p class="mt-2 text-sm text-bv-text-muted">Your session is already saved. Add a game to your own collection, or record it for someone without an account in this group.</p>
                         <ul class="mt-3 space-y-3">@for (game of playedGameDetails; track game.id) {
                             <li class="flex flex-wrap items-center gap-3"><span class="min-w-0 flex-1 text-sm">{{ gameTitle(game) }}</span><label><span class="sr-only">Owner of {{ gameTitle(game) }}</span><select class="app-input max-w-full" [value]="ownershipTarget[game.id] ?? ''" (change)="ownershipTarget[game.id] = $any($event.target).value; ownershipSaved[game.id] = false"><option value="">Choose an owner</option><option value="me">Me · My Games</option>@for (person of ownershipPeople; track person.person.id) { <option [value]="person.person.id">{{ person.person.displayName }} · {{ groupData?.name }}</option> }</select></label><button appButton variant="secondary" size="small" [disabled]="!ownershipTarget[game.id] || !!ownershipSaved[game.id]" [loading]="ownershipSaving[game.id] ?? false" (click)="recordOwnership(game.id)">{{ ownershipSaved[game.id] ? 'Recorded' : ownershipTarget[game.id] ? 'Add to ' + ownershipTargetName(game.id) : 'Record ownership' }}</button></li>

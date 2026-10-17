@@ -1,5 +1,5 @@
 import { ChangeDetectorRef, Component, effect, inject, signal } from '@angular/core'
-import { ActivatedRoute, RouterLink } from '@angular/router'
+import { ActivatedRoute, Router, RouterLink } from '@angular/router'
 import { firstValueFrom } from 'rxjs'
 import { Api } from '../../api/api'
 import type {
@@ -74,9 +74,9 @@ const resultKey = (entry: Pick<GameResultEntryType, 'accountId' | 'groupPersonId
     templateUrl: 'meet-view.component.html',
 })
 export class MeetViewComponent {
-    get justSaved(): boolean {
-        return this.route.snapshot.queryParamMap?.get('saved') === '1'
-    }
+    /** Arrived straight from saving a recording: the confirmation and follow-ups show this once. */
+    public justSaved = false
+    private readonly router = inject(Router)
     public loaded = false
     public readonly isLoading = signal(true)
     public readonly loadError = signal(false)
@@ -131,6 +131,15 @@ export class MeetViewComponent {
         private readonly dataService: DataService,
         private readonly toastService: ToastService,
     ) {
+        // Show the confirmation once: a reload or a shared link must not say it was just saved.
+        this.justSaved = this.route.snapshot.queryParamMap?.get('saved') === '1'
+        if (this.justSaved)
+            void this.router.navigate([], {
+                relativeTo: this.route,
+                queryParams: { saved: null },
+                queryParamsHandling: 'merge',
+                replaceUrl: true,
+            })
         effect(() => {
             this.userData = this.dataService.currentUser()
             this.userGroups = this.dataService.userGroups()
@@ -319,9 +328,6 @@ export class MeetViewComponent {
     get myUnratedGames() {
         return this.myPlayedGames.filter((game) => this.getMyRating(game.id) === null)
     }
-    get myRatedGames() {
-        return this.myPlayedGames.filter((game) => this.getMyRating(game.id) !== null)
-    }
 
     #indexReviews(groupData: GroupWithMembersAndGames): void {
         // Step 1: Index all reviews by gameId and userId
@@ -365,6 +371,11 @@ export class MeetViewComponent {
     /** Can change who is invited and the shortlist right now. */
     get canShapeNight(): boolean {
         return this.isOrganizer && this.canEditSession
+    }
+
+    /** Who can correct what was played: the same people who can run the night, once it has started (ADR-0022). */
+    get canCorrectRecording(): boolean {
+        return this.hasPlayerRole && (this.meetData?.status === 'active' || this.meetData?.status === 'completed')
     }
 
     get canEditSession(): boolean {
