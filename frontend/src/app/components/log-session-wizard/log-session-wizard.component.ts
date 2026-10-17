@@ -386,7 +386,12 @@ export class LogSessionWizardComponent {
                     const legacyAccountIds = new Set(this.pendingRecording?.attendeeIds ?? [])
                     this.attendees.set(
                         activePeople
-                            .filter((person) => person.person.accountId === null || !legacyAccountIds.has(person.person.accountId))
+                            .filter(
+                                (person) =>
+                                    person.person.accountId === null ||
+                                    !legacyAccountIds.has(person.person.accountId) ||
+                                    this.pendingRecording?.groupPersonIds?.includes(person.person.id),
+                            )
                             .map((person) => {
                                 const ownedGameIds = new Set(
                                     person.ownership
@@ -429,7 +434,11 @@ export class LogSessionWizardComponent {
                                 user: {
                                     id: -accountId,
                                     username: member?.username ?? name,
-                                    displayName: name,
+                                    displayName: this.pendingRecording?.groupPersonIds?.some((id) =>
+                                        response.people.some((entry) => entry.person.id === id && entry.person.accountId === accountId),
+                                    )
+                                        ? `${name} (separate account entry)`
+                                        : name,
                                     avatar: member?.avatar ??
                                         person?.avatar ?? {
                                             backgroundColor: '#64748b',

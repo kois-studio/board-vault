@@ -397,6 +397,35 @@ describe('LogSessionWizardComponent games step', () => {
         expect(component.selectedGroup()?.id).toBe(group.id)
     })
 
+    it('preserves separate account and linked-person results when both occur in an older recording', async () => {
+        const people = new Subject<{ people: Array<ReturnType<typeof linkedPerson>> }>()
+        const play = {
+            gameId: 48,
+            participantIds: [1],
+            participantPersonIds: [11],
+            results: [
+                { accountId: 1, isWinner: true, score: 7 },
+                { groupPersonId: 11, isWinner: false, score: 3 },
+            ],
+        }
+        await setup(people, {
+            groupId: 1,
+            sessionDate: '2026-10-03T12:00:00Z',
+            timezone: 'Europe/Madrid',
+            attendeeIds: [1],
+            groupPersonIds: [11],
+            games: [play],
+            revision: 8,
+        })
+        await fixture.whenStable()
+        fixture.detectChanges()
+        people.next({ people: [linkedPerson(11, 1, 'David', [48])] })
+        fixture.detectChanges()
+        expect(component.getSelectedAttendeeNames()).toContain('David (separate account entry)')
+        expect(component.recordedPlays()).toEqual([{ ...play, results: expect.arrayContaining(play.results) }])
+        expect(component.recordedPlays()[0]?.results).toHaveLength(2)
+    })
+
     it('rejects a day in the future', async () => {
         await setup([])
         component.sessionDate.setValue('2999-01-01')

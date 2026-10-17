@@ -227,16 +227,18 @@ export class MeetViewComponent {
     get hasRepeatedPlays(): boolean {
         return Boolean(this.recording && new Set(this.recording.games.map((play) => play.gameId)).size !== this.recording.games.length)
     }
+    get hasMixedPlayers(): boolean {
+        return Boolean(this.meetData?.attendees.length && this.meetData.participants?.length)
+    }
+    get requiresRecordingEditor(): boolean {
+        return this.hasRepeatedPlays || this.hasMixedPlayers
+    }
     playsOf(gameId: number) {
         return (this.recording?.games ?? []).map((play, position) => ({ ...play, position })).filter((play) => play.gameId === gameId)
     }
     roundPlayers(position: number): Array<SessionPerson> {
         const play = this.recording?.games[position]
-        return this.invitedPeople.filter((person) =>
-            person.personId !== null
-                ? play?.participantPersonIds?.includes(person.personId)
-                : person.accountId !== null && play?.participantIds?.includes(person.accountId),
-        )
+        return this.recordedPeople(play?.participantIds ?? [], play?.participantPersonIds ?? [])
     }
     roundScore(position: number, person: SessionPerson): number | null {
         return this.roundEntry(position, person)?.score ?? null
@@ -495,12 +497,39 @@ export class MeetViewComponent {
 
     /** The people recorded for a played game. */
     playersOf(gameId: number): Array<SessionPerson> {
-        if (this.isGroupPersonSession) {
-            const ids = new Set(this.getGameParticipantPersonIds(gameId))
-            return this.invitedPeople.filter((person) => person.personId !== null && ids.has(person.personId))
-        }
-        const ids = new Set(this.getGameParticipantIds(gameId))
-        return this.invitedPeople.filter((person) => person.accountId !== null && ids.has(person.accountId))
+        return this.recordedPeople(this.getGameParticipantIds(gameId), this.getGameParticipantPersonIds(gameId))
+    }
+
+    /** Keep both identity namespaces in old recordings; results must round-trip without dropping either source. */
+    private recordedPeople(accountIds: Array<number>, personIds: Array<number>): Array<SessionPerson> {
+        const people = this.groupPeople
+            .filter((person) => personIds.includes(person.person.id))
+            .map((person) => this.#fromGroupPerson(person))
+        const accounts = accountIds.map((id): SessionPerson => {
+            const member = this.groupData?.members.find((member) => member.id === id)
+            const linked = this.groupPeople.find((person) => person.person.accountId === id)
+            const person = member
+                ? this.#fromAccount(member)
+                : linked
+                  ? this.#fromGroupPerson(linked)
+                  : ({
+                        key: `a${id}`,
+                        accountId: id,
+                        personId: null,
+                        displayName: 'Former player',
+                        standing: 'left',
+                        avatar: { type: 'initials', initials: '?', backgroundColor: '#64748b', iconName: null, emoji: null },
+                    } satisfies SessionPerson)
+            return {
+                ...person,
+                key: `a${id}`,
+                personId: null,
+                displayName: people.some((entry) => entry.accountId === id)
+                    ? `${person.displayName} (separate account entry)`
+                    : person.displayName,
+            }
+        })
+        return [...people, ...accounts]
     }
 
     isPlayer(gameId: number, person: SessionPerson): boolean {

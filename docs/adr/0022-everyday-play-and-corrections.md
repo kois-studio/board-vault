@@ -37,6 +37,13 @@ and recommendation memory continue to group games by session. Existing
 sessions without detailed plays are read as one play per recorded game;
 there is no data backfill or change to existing history.
 
+Older recordings can contain both account and group-person participation.
+Correction and individual results preserve both source identities, including
+separate results for an account and its linked person. The UI labels such
+separate entries rather than silently merging scores or dropping a player.
+Mixed recordings use the full correction form instead of legacy per-game
+participation controls.
+
 The group's owner, organizer, or invited non-declined player can correct an
 active or completed session's recording. Changing active invitations remains
 an organizer action. A correction cannot move a session between groups,

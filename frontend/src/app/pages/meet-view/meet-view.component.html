@@ -199,12 +199,12 @@
                                                     }
                                                 </div>
 
-                                                @if (canRunNight && !hasRepeatedPlays) {
+                                                @if (canRunNight && !requiresRecordingEditor) {
                                                     <button type="button" class="shrink-0 rounded text-sm font-medium text-bv-text-muted underline-offset-2 hover:text-bv-danger hover:underline disabled:opacity-60" [disabled]="isPersistingChanges" [attr.aria-label]="'Unmark ' + gameTitle(game) + ' as played'" (click)="onClickGame(game.id)">Unmark</button>
                                                 }
                                             </div>
 
-                                                @if (playsOf(game.id).length > 1) {
+                                                @if (playsOf(game.id).length > 1 || hasMixedPlayers) {
                                                     <ol class="mt-4 space-y-4" aria-label="Individual plays">
                                                         @for (play of playsOf(game.id); track play.position; let number = $index) {
                                                             <li class="border-t border-bv-border pt-3">
@@ -255,7 +255,7 @@
                                                     </ol>
                                                 }
 
-                                                @if (canRunNight && !hasRepeatedPlays) {
+                                                @if (canRunNight && !requiresRecordingEditor) {
                                                     <div class="mt-3" role="group" [attr.aria-label]="'Who played ' + gameTitle(game)">
                                                         <p class="mb-2 text-xs font-medium text-bv-text-muted">Who played</p>
                                                         <div class="flex flex-wrap gap-2">
@@ -277,7 +277,7 @@
                                                     </div>
                                                 }
 
-                                                @if (canRecordResults && players.length > 0 && playsOf(game.id).length < 2) {
+                                                @if (canRecordResults && players.length > 0 && playsOf(game.id).length < 2 && !hasMixedPlayers) {
                                                     <button type="button" class="mt-3 inline-flex items-center gap-1.5 rounded text-sm font-semibold text-bv-primary hover:underline" (click)="startEditingResults(game.id)">
                                                         <app-icon name="award-fill" [size]="16" aria-hidden="true" />
                                                         {{ winners.length > 0 || scores.length > 0 ? 'Edit results' : 'Record who won' }}
@@ -290,7 +290,7 @@
                             </ul>
                         }
 
-                        @if (canRunNight && !hasRepeatedPlays) {
+                        @if (canRunNight && !requiresRecordingEditor) {
                             @let markable = playedSectionGames;
                             <div class="mt-6">
                                 <h3 class="mb-2 text-sm font-semibold">Mark a game as played</h3>
