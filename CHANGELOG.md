@@ -13,19 +13,20 @@ operational details.
 
 ### Added
 
-- Home always offers recording and planning, with consistent group cards on
-  desktop and phones, personal group pins, pin order and three group sorts.
+- Home always offers recording and planning. One group keeps its full card,
+  several groups show as compact rows with a corner pin that appears on
+  hover; pinned groups lead.
 - Recording keeps its group context, offers Today/Yesterday and same-day
   session suggestions, and can search catalogue games without ownership.
   Separate plays keep their own players, winners and scores. Completed
   recordings can be corrected with group history and stale-edit protection.
 - Optional personal rating follow-up reuses existing ratings and suggests
-  only games actually played. Home reminders can be dismissed. Ownership
-  entry names My Games or a person without an account, independently of
-  saving a session. Those people's pages can search and add games directly.
-- Start playing now creates a spontaneous live session without planning.
-
-
+  only games actually played, as a compact line under each recently played
+  night that can be dismissed. Ownership entry names My Games or a person
+  without an account, independently of saving a session. Those people's
+  pages can search and add games directly.
+- The Record flow can start a night live instead, and links to the group's
+  live night when one is already under way.
 - Usage statistics of our own, with no third party and nothing stored in the
   browser: which pages are opened and from where, which features are used,
   and two funnels (getting started, game night). Events carry a code instead
@@ -241,6 +242,9 @@ operational details.
 
 ### Fixed
 
+- Correcting a session no longer lists a removed game as "shortlisted but not
+  played", and on finished nights keeps people taken out as absent instead of
+  erasing their invitation.
 - Planning a game night, recording a past one, and choosing who is coming
   for suggestions no longer offer someone who left the group. Their group
   person stays for history, so the list showed them, and planning failed

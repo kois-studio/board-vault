@@ -166,6 +166,51 @@ describe('recording a past session with group people (e2e)', () => {
         expect((await request(app.getHttpServer()).get(`/sessions/${id}/recording`).set(withAuth)).body.games).toEqual(final.body.games)
     })
 
+    it('drops a game taken out of a correction instead of calling it skipped, and keeps whoever no longer came on record', async () => {
+        const { groupId, personIds } = await createGroupWithPeople()
+        const first = personIds[0] as number
+        const created = await request(app.getHttpServer())
+            .post('/sessions')
+            .set(withAuth)
+            .send({
+                groupId,
+                sessionDate: '2026-10-03T12:00:00.000Z',
+                timezone: 'Europe/Madrid',
+                groupPersonIds: personIds,
+                games: [
+                    { gameId: 10, participantPersonIds: personIds },
+                    { gameId: 12, participantPersonIds: personIds },
+                ],
+            })
+            .expect(201)
+        const id = Number(created.body.sessionId)
+        const recording = (await request(app.getHttpServer()).get(`/sessions/${id}/recording`).set(withAuth).expect(200)).body
+
+        await request(app.getHttpServer())
+            .put(`/sessions/${id}/recording`)
+            .set(withAuth)
+            .send({ ...recording, groupPersonIds: [first], games: [{ gameId: 10, participantPersonIds: [first] }] })
+            .expect(200)
+        const details = (await request(app.getHttpServer()).get(`/sessions/${id}`).set(withAuth).expect(200)).body
+
+        // Game 12 was never on a shortlist: it is gone, not "shortlisted but not played".
+        expect(details.playedGames).toEqual([10])
+        expect(details.skippedGames).toEqual([])
+        // The member who no longer came keeps their row, marked absent, rather than vanishing from the night.
+        const rows = await database.execute({
+            sql: 'SELECT groupPersonId, attendanceStatus FROM MeetPersonAttendee WHERE meetId = ? ORDER BY groupPersonId',
+            args: [id],
+        })
+
+        expect(rows.rows.map(row => [Number(row.groupPersonId), String(row.attendanceStatus)])).toEqual([
+            [first, 'attended'],
+            [personIds[1], 'absent'],
+        ])
+        const corrected = (await request(app.getHttpServer()).get(`/sessions/${id}/recording`).set(withAuth).expect(200)).body
+
+        expect(corrected.groupPersonIds).toEqual([first])
+    })
+
     it('stores personal pins and ordering without changing another account, and rejects malformed preferences', async () => {
         const { groupId } = await createGroupWithPeople()
         const prefs = { pinnedGroupIds: [groupId, 999999], groupOrder: 'upcoming', dismissedRatingGameIds: [12] }

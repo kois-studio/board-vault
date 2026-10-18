@@ -98,6 +98,7 @@ describe('LogSessionWizardComponent games step', () => {
                         refreshUserGroups: vi.fn(),
                         refreshUserHistory: vi.fn(),
                         refreshUserMeets: vi.fn(),
+                        userMeets: signal([]),
                     },
                 },
                 { provide: LoadingService, useValue: { loadingStatesIndex: signal({}) } },
@@ -340,9 +341,13 @@ describe('LogSessionWizardComponent games step', () => {
         component.gameQuery.set('Borrowed')
         await component.searchCatalog()
         fixture.detectChanges()
-        expect(component.visibleGames().map((selection) => selection.game.id)).toEqual([99])
-        component.toggleGame(99)
+        // Found beyond ownership, offered apart from the attendees' games until it is added.
+        expect(component.otherGames().map((item) => item.id)).toEqual([99])
+        expect(component.visibleGames()).toEqual([])
+        component.addCatalogGame(borrowed)
         fixture.detectChanges()
+        expect(component.getSelectedGames().map((selection) => selection.game.id)).toEqual([99])
+        expect(component.otherGames()).toEqual([])
         component.repeatGame(99)
         const extra = component.playsFor(99)[0]
         if (!extra) throw new Error('The second play was not added')
@@ -386,6 +391,30 @@ describe('LogSessionWizardComponent games step', () => {
         expect(component.recordedPlays()).toEqual([{ ...play, results: expect.arrayContaining(play.results) }])
         expect(component.recordedPlays()[0]?.results).toHaveLength(2)
         expect(component.canProceedToNextStep()).toBe(true)
+    })
+
+    it('switches to starting the night live in place, and will not start a second live night in the group', async () => {
+        await setup([linkedPerson(1, 1, 'David', [10])])
+        component.selectGroup(group)
+        fixture.detectChanges()
+        const offer = Array.from((fixture.nativeElement as HTMLElement).querySelectorAll('button')).find(
+            (button) => button.textContent?.trim() === 'Start the night live',
+        )
+        expect(offer).toBeDefined()
+        offer?.click()
+        fixture.detectChanges()
+        expect(component.isLive()).toBe(true)
+        expect(component.getStepInfo().label).toBe('Who is here')
+
+        component.toggleAttendee(component.attendees()[0]?.user.id as number)
+        expect(component.canProceedToNextStep()).toBe(true)
+        const meets = TestBed.inject(DataService).userMeets as unknown as ReturnType<
+            typeof signal<Array<{ id: number; groupId: number; status: string }>>
+        >
+        meets.set([{ id: 5, groupId: group.id, status: 'active' }])
+        fixture.detectChanges()
+        expect(component.canProceedToNextStep()).toBe(false)
+        expect((fixture.nativeElement as HTMLElement).querySelector('a[href="/sessions/5"]')?.textContent).toContain('Open it')
     })
 
     it('does not silently substitute the only remaining group for an unavailable scoped group', async () => {

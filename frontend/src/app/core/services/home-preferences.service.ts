@@ -76,20 +76,9 @@ export class HomePreferencesService {
         }
     }
 
+    /** Pinned groups lead Home in the order they were pinned; pinning again after unpinning moves one to the end. */
     togglePin(groupId: number): void {
         const pins = this.preferences().pinnedGroupIds
         void this.update({ pinnedGroupIds: pins.includes(groupId) ? pins.filter((id) => id !== groupId) : [...pins, groupId] })
-    }
-
-    movePin(groupId: number, direction: -1 | 1): void {
-        const pins = [...this.preferences().pinnedGroupIds]
-        const position = pins.indexOf(groupId)
-        const other = position + direction
-        if (position < 0 || other < 0 || other >= pins.length) return
-        const value = pins[other]
-        if (value === undefined) return
-        pins[other] = groupId
-        pins[position] = value
-        void this.update({ pinnedGroupIds: pins })
     }
 }

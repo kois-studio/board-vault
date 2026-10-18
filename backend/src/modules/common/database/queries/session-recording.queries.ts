@@ -127,24 +127,55 @@ export class RecordingQueries {
                 await transaction.rollback()
                 return false
             }
+            const status = String(
+                (await transaction.execute({ sql: 'SELECT status FROM Meet WHERE id = ?', args: [meetId] })).rows[0]?.status,
+            )
+            const notIn = (column: string, ids: number[]) => (ids.length ? `AND ${column} NOT IN (${ids.map(() => '?').join(',')})` : '')
+            const keptGameIds = [...new Set(body.games.map(play => play.gameId))]
+
             await transaction.batch([
                 { sql: 'DELETE FROM MeetGameResult WHERE meetId = ?', args: [meetId] },
                 { sql: 'DELETE FROM MeetAccountGame WHERE meetId = ?', args: [meetId] },
                 { sql: 'DELETE FROM MeetPersonGame WHERE meetId = ?', args: [meetId] },
-
-                { sql: "UPDATE MeetGame SET gameStatus = 'skipped' WHERE meetId = ? AND gameStatus = 'played'", args: [meetId] },
+                // A game taken out of the record was only "shortlisted but not played" if the shortlist left a
+                // trace (votes or someone bringing it); otherwise it was only ever recorded as played, so it goes.
+                {
+                    sql: `UPDATE MeetGame SET gameStatus = 'skipped' WHERE meetId = ? AND gameStatus = 'played'
+                        AND (broughtByAccountId IS NOT NULL OR broughtByPersonId IS NOT NULL
+                            OR EXISTS (SELECT 1 FROM MeetGameVote v WHERE v.meetId = MeetGame.meetId AND v.gameId = MeetGame.gameId))
+                        ${notIn('gameId', keptGameIds)}`,
+                    args: [meetId, ...keptGameIds],
+                },
+                {
+                    sql: `DELETE FROM MeetGame WHERE meetId = ? AND gameStatus = 'played' ${notIn('gameId', keptGameIds)}`,
+                    args: [meetId, ...keptGameIds],
+                },
             ])
             const accounts = body.attendeeIds ?? []
             const people = body.groupPersonIds ?? []
 
-            await transaction.execute({
-                sql: `DELETE FROM MeetAttendee WHERE meetId = ? ${accounts.length ? `AND accountId NOT IN (${accounts.map(() => '?').join(',')})` : ''}`,
-                args: [meetId, ...accounts],
-            })
-            await transaction.execute({
-                sql: `DELETE FROM MeetPersonAttendee WHERE meetId = ? ${people.length ? `AND groupPersonId NOT IN (${people.map(() => '?').join(',')})` : ''}`,
-                args: [meetId, ...people],
-            })
+            if (status === 'completed') {
+                // A finished night keeps its invitations and answers; whoever is no longer recorded simply did not come.
+                await transaction.batch([
+                    {
+                        sql: `UPDATE MeetAttendee SET attendanceStatus = 'absent' WHERE meetId = ? AND attendanceStatus = 'attended' ${notIn('accountId', accounts)}`,
+                        args: [meetId, ...accounts],
+                    },
+                    {
+                        sql: `UPDATE MeetPersonAttendee SET attendanceStatus = 'absent' WHERE meetId = ? AND attendanceStatus = 'attended' ${notIn('groupPersonId', people)}`,
+                        args: [meetId, ...people],
+                    },
+                ])
+            } else {
+                // While a night is on, the organizer's correction is the invitation list (checked by the service).
+                await transaction.batch([
+                    { sql: `DELETE FROM MeetAttendee WHERE meetId = ? ${notIn('accountId', accounts)}`, args: [meetId, ...accounts] },
+                    {
+                        sql: `DELETE FROM MeetPersonAttendee WHERE meetId = ? ${notIn('groupPersonId', people)}`,
+                        args: [meetId, ...people],
+                    },
+                ])
+            }
             const statements: InStatement[] = []
 
             for (const id of body.attendeeIds ?? [])
