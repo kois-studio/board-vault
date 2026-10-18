@@ -84,19 +84,25 @@ shortlists and bringers, without a repeated planning empty-state prompt.
 Pending invitations remain prominent. Accounts without a group retain the
 first-group setup path.
 
-One group or several use the same card: group identity, next/last play,
-scoped Record and Plan actions, Start playing now, What to play, Library and
-History. Every group-specific recording entry keeps its group selected.
-Pins belong to the account and appear first in the chosen pin order, moved
-with accessible up/down buttons. Unpinned groups sort by date played (default),
-next night, or name, with stable name/id ties. Loading/failure of preferences
-leaves the groups usable and offers Retry. Preferences follow the account
-across devices; they do not change other people's Home.
+One group shows its full card: identity, people, the invite nudge, and What to
+play, Library and History. Several groups show as compact rows (identity,
+last or next night) so the page stays short; the header's Record and Plan
+are the only recording entries on Home. Every group-specific recording entry
+elsewhere keeps its group selected.
 
-Home shows up to three optional, dismissible personal rating suggestions for
-games the account actually played and has not rated. Existing ratings are
-reused. Membership and collection maintenance stay within their contexts.
-Fully customizable Home is deferred to discovery issue #164.
+With several groups, each row has a small pin in its corner. On a pointer
+device it appears on hover or keyboard focus; on touch it stays faintly
+visible. Pinned groups lead in the order they were pinned, then live, next
+and past nights as before, with stable name/id ties. There is no sort
+control. Pins belong to the account, follow it across devices and never
+change other people's Home. Failing to load preferences leaves the groups
+usable.
+
+Under each Recently played night, Home offers a compact rating line for up to
+two games the account played that night and has not rated, each dismissible.
+Existing ratings are reused. Membership and collection maintenance stay
+within their contexts. Fully customizable Home is deferred to discovery
+issue #164.
 
 ## Record or correct a session
 
@@ -105,26 +111,35 @@ review. Today/Yesterday supplement the date picker; the selected full date
 appears in the final summary. Same-day sessions in the selected group are
 suggested without preventing a separate gathering.
 
-Attendees' games are the initial offer. Search all games can add any catalogue
-game without first recording ownership. Every selected game starts with all
+Attendees' games are the initial offer. One search box filters them and, from
+two letters, lists matching catalogue games under Other games, which can be
+added without first recording ownership. Every selected game starts with all
 attendees as players, individually removable. Played it again adds a separate
-play with its own players, optional winners and integer scores. A save is one
+play with its own players. Winners and scores are recorded afterwards on the
+session page, per play. A save is one
 transaction. Failed saves retain choices. Completed recordings open the saved
-session, with an optional personal rating follow-up and ownership entry naming
-My Games or a particular person without an account.
+session with a one-time "Saved" confirmation linking to the personal ratings,
+and, that once only, an optional ownership entry naming My Games or a
+particular person without an account. The ratings section lists every game
+the account played there, with its current stars.
 
 An organizer, group owner or invited non-declined player can open Correct
 session on a completed night, or Edit games and players while active. The
 same form loads the recording, preserves separate plays/results and the
-session's group/status, and writes a new group-history entry. Former people
+session's group/status, and writes a new group-history entry. A game taken out
+of a correction is removed, unless it was shortlisted, voted on or brought,
+in which case it stays as not played. On a completed night, people taken out
+stay on record as absent. Former people
 already in the recording can stay. Changing active invitations is restricted
 to the organizer. Another edit, results save, or lifecycle change invalidates
 a stale form: saving answers 409 and asks to reload, without overwriting it.
 Any group member can save results separately for each play.
 
-Start playing now uses the who step and creates an active night using the
-current server time, without requiring games or an earlier planned session.
-People and games can then be added as the afternoon unfolds. Planning retains
+Start the night live, offered on the Record flow's first step, uses the who
+step and creates an active night using the current server time, without requiring games or an earlier planned session.
+If the group already has a night under way, the flow links to it instead of
+starting a second one. People and games can then be added as the afternoon
+unfolds. Planning retains
 its existing ownership and shortlist rules.
 
 ## Ownership

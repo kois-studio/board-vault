@@ -68,6 +68,21 @@ server's current time. Recording a past night does not require planning or
 starting it first. Same-day session suggestions are non-blocking, because
 several gatherings on the same day can be legitimate.
 
+## Amendment (2026-10-18)
+
+Review of the first release (#166) narrowed the Home presentation. One group
+keeps its full card; several groups use compact rows. Scoped Record/Plan
+buttons inside each group were removed: the header actions are enough. Pins
+are a small corner toggle and order pinned groups by when they were pinned;
+the unpinned sort and the pin up/down controls were removed, so the stored
+`groupOrder` preference is no longer read by the interface. Rating
+follow-ups moved under each Recently played night, at most two per night.
+
+Corrections no longer turn a removed game into "skipped" unless the game had
+planning data (votes or a bringer); otherwise its row is removed. On a
+completed night, people taken out of a correction are kept as absent rather
+than having their invitation deleted, so history keeps who was invited.
+
 ## Consequences
 
 Migration 0025 is additive. Old application versions can ignore the new
