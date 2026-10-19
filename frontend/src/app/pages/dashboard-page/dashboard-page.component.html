@@ -260,18 +260,16 @@
                         </a>
                     }
 
-                    <!-- Desktop only: on phones your page is a tap away in the group's people. -->
-                    @if (profileGroup(); as group) {
-                        @if (currentUser$(); as user) {
-                            <a [routerLink]="['/groups', group.id, 'members', user.id]" class="hidden items-center gap-4 rounded-2xl border border-bv-border bg-bv-surface p-4 transition hover:border-bv-primary/40 lg:flex">
-                                <app-image-profile [avatar]="user.avatar" />
-                                <span class="min-w-0 flex-1">
-                                    <span class="block truncate font-semibold">{{ greetingName() }}</span>
-                                    <span class="block text-xs text-secondary">{{ ownedGames() | count: 'game' }} · {{ nightsPlayed() | count: 'night' }} played</span>
-                                    <span class="mt-1 block text-sm font-semibold text-bv-primary">Your profile in {{ group.name }} ›</span>
-                                </span>
-                            </a>
-                        }
+                    <!-- Desktop only: on phones your page is in the account menu. -->
+                    @if (currentUser$(); as user) {
+                        <a routerLink="/you" class="hidden items-center gap-4 rounded-2xl border border-bv-border bg-bv-surface p-4 transition hover:border-bv-primary/40 lg:flex">
+                            <app-image-profile [avatar]="user.avatar" />
+                            <span class="min-w-0 flex-1">
+                                <span class="block truncate font-semibold">{{ greetingName() }}</span>
+                                <span class="block text-xs text-secondary">{{ ownedGames() | count: 'game' }} · {{ nightsPlayed() | count: 'night' }} played</span>
+                                <span class="mt-1 block text-sm font-semibold text-bv-primary">Your page ›</span>
+                            </span>
+                        </a>
                     }
                 </div>
             </div>

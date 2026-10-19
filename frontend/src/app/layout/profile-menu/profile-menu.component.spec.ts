@@ -62,6 +62,16 @@ describe('ProfileMenuComponent', () => {
         expect(element().querySelector('#profile-menu input[type="radio"][value="system"]')).not.toBeNull()
     })
 
+    it('opens your page from your name, keeping the username under it', () => {
+        open()
+        const you = element().querySelector('#profile-menu a[href="/you"]')
+
+        expect(
+            [...element().querySelectorAll('#profile-menu a[href="/you"] :is(p, .sr-only)')].map((node) => node.textContent?.trim()),
+        ).toEqual(['Organizer', 'organizer', 'Your page'])
+        expect(you?.getAttribute('title')).toBe('Your page')
+    })
+
     it('links to the landing page and the source code, which the footer no longer shows on phones', () => {
         open()
 
