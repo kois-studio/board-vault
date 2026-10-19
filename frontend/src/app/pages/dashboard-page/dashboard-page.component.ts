@@ -187,7 +187,6 @@ export class DashboardPageComponent {
     })
 
     /** Your page in the first group on Home: the one you pinned first, or the one you are most active in. */
-    public readonly profileGroup = computed(() => this.orderedGroups()[0] ?? null)
     public readonly ownedGames = computed(() => this.dataService.userGames().length)
     public readonly nightsPlayed = computed(() => this.dataService.userHistory().length)
 

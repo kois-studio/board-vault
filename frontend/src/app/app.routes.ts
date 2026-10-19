@@ -129,6 +129,11 @@ export const routes: Routes = [
                 canActivate: [AuthOnlyGuard],
             },
             {
+                path: 'you',
+                loadComponent: () => import('./pages/you-page/you-page.component').then((m) => m.YouPageComponent),
+                canActivate: [AuthOnlyGuard],
+            },
+            {
                 path: 'groups/:groupId',
                 loadComponent: () => import('./pages/group-view/group-view.component').then((m) => m.GroupViewComponent),
                 canActivate: [AuthOnlyGuard],

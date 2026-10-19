@@ -19,13 +19,14 @@
     @if (disclosure.isOpen()) {
     <div id="profile-menu" class="absolute right-0 z-50 mt-2 w-72 overflow-hidden rounded-xl border border-bv-border bg-bv-surface text-bv-text shadow-xl">
         @if (currentUser$(); as user) {
-        <div class="flex items-center gap-3 border-b border-bv-border p-4">
+        <a routerLink="/you" class="flex items-center gap-3 border-b border-bv-border p-4 transition hover:bg-bv-surface-2">
             <app-image-profile [avatar]="user.avatar" />
-            <div class="min-w-0">
+            <div class="min-w-0 flex-1">
                 <p class="truncate font-semibold">{{ user.displayName }}</p>
-                <p class="truncate text-sm text-bv-text-muted">{{ user.username }}</p>
+                <p class="truncate text-sm text-bv-text-muted">Your page</p>
             </div>
-        </div>
+            <app-icon name="chevron-right" [size]="18" class="text-bv-text-muted" />
+        </a>
         }
 
         <ul class="p-1.5">

@@ -194,15 +194,15 @@ describe('DashboardPageComponent (Home)', () => {
             expect(element.querySelector('a[href="/play/log-session"]')).not.toBeNull()
         })
 
-        it('links to your page in the group', async () => {
+        it('links to your own page, across all your groups', async () => {
             const fixture = await renderHome({
                 ...oneGroup,
                 userGames: signal([{ id: 1, titleTranslations: { en: 'Azul' } }]),
             })
-            const profile = (fixture.nativeElement as HTMLElement).querySelector('a[href="/groups/10/members/1"]')
+            const profile = (fixture.nativeElement as HTMLElement).querySelector('a[href="/you"]')
 
             expect(text(profile)).toContain('1 game · 0 nights played')
-            expect(text(profile)).toContain('Your profile in Friday crew')
+            expect(text(profile)).toContain('Your page')
         })
     })
 
