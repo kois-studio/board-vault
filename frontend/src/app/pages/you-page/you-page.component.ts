@@ -21,7 +21,16 @@ type GroupLine = { id: number; name: string; standing: GroupStandingType | null;
  */
 @Component({
     selector: 'app-you-page',
-    imports: [ContainerWrapperComponent, CountPipe, CurrencyPipe, IconComponent, ImageBackgroundComponent, ImageProfileComponent, ReviewDisplayComponent, RouterLink],
+    imports: [
+        ContainerWrapperComponent,
+        CountPipe,
+        CurrencyPipe,
+        IconComponent,
+        ImageBackgroundComponent,
+        ImageProfileComponent,
+        ReviewDisplayComponent,
+        RouterLink,
+    ],
     templateUrl: './you-page.component.html',
 })
 export class YouPageComponent {
@@ -37,7 +46,12 @@ export class YouPageComponent {
         const standings = this.standings()
         return this.dataService.userGroups().map((group) => {
             const standing = standings[group.id]
-            return { id: group.id, name: group.name, standing: standing === 'failed' ? null : (standing ?? null), failed: standing === 'failed' }
+            return {
+                id: group.id,
+                name: group.name,
+                standing: standing === 'failed' ? null : (standing ?? null),
+                failed: standing === 'failed',
+            }
         })
     })
     public readonly totals = computed(() =>
@@ -51,7 +65,8 @@ export class YouPageComponent {
         ),
     )
     public readonly ownedGames = computed(() => this.dataService.userGames().length)
-    public readonly worth = computed(() => this.dataService.userStats().totalGamesValue)
+    /** What you entered as paid for your games: private, like the rest of this page. */
+    public readonly paid = computed(() => this.dataService.userStats().totalGamesValue)
 
     /** The games you played most, across every group, with how often you won them. */
     public readonly mostPlayed = computed(() => {
@@ -70,7 +85,10 @@ export class YouPageComponent {
         return [...byGame.values()].sort((a, b) => b.plays - a.plays || b.wins - a.wins).slice(0, 5)
     })
     public readonly topRated = computed(() =>
-        [...this.dataService.userReviews()].filter((review) => review.review > 0).sort((a, b) => b.review - a.review).slice(0, 5),
+        [...this.dataService.userReviews()]
+            .filter((review) => review.review > 0)
+            .sort((a, b) => b.review - a.review)
+            .slice(0, 5),
     )
     public readonly ratedCount = computed(() => this.dataService.userReviews().filter((review) => review.review > 0).length)
 

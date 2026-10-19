@@ -28,7 +28,7 @@
                 <div class="rounded-2xl border border-bv-border bg-bv-surface p-4 shadow-sm">
                     <dt class="text-xs text-secondary">Games you own</dt>
                     <dd class="mt-1 text-3xl font-bold"><a routerLink="/collection" class="hover:text-bv-primary">{{ ownedGames() }}</a></dd>
-                    @if (worth() > 0) { <dd class="text-xs text-secondary">≈ {{ worth() | currency: 'EUR' : 'symbol' : '1.0-0' }} at retail</dd> }
+                    @if (paid() > 0) { <dd class="text-xs text-secondary">{{ paid() | currency: 'EUR' : 'symbol' : '1.0-0' }} paid</dd> }
                 </div>
             </dl>
         </section>

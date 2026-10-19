@@ -25,6 +25,10 @@ operational details.
   night that can be dismissed. Ownership entry names My Games or a person
   without an account, independently of saving a session. Those people's
   pages can search and add games directly.
+- Your page (`/you`), visible only to you: nights, games played and wins
+  across all your groups, your line in each group, the games you play most
+  and your favourites. Open it from your name in the account menu or from
+  Home, whose card no longer points at a single group.
 - The Record flow can start a night live instead, and links to the group's
   live night when one is already under way.
 - Usage statistics of our own, with no third party and nothing stored in the

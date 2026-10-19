@@ -104,6 +104,18 @@ Existing ratings are reused. Membership and collection maintenance stay
 within their contexts. Fully customizable Home is deferred to discovery
 issue #164.
 
+## Your page
+
+`/you` is the signed-in person's own page across all their groups, opened
+from their name in the account menu and, on desktop, from the card under
+Recently played on Home. Only they see it, so it has no privacy settings;
+there is no public profile (ADR-0001 keeps the group the product centre).
+It shows nights, games played and wins summed from each group's standings,
+so they match the group pages; games owned, with what they entered as paid;
+one line per group linking to their page there, which is how that group sees
+them; the games they played most on finished nights; and their highest
+ratings.
+
 ## Record or correct a session
 
 Recording has three steps: who and when, games and their players, note and
