@@ -26,7 +26,10 @@ export class FormUpdateDisplayNameComponent {
     public isEditing = false
 
     public updateProfileFormGroup = new FormGroup({
-        displayName: new FormControl(this.currentUser$()?.displayName ?? '', [Validators.required, Validators.maxLength(DISPLAY_NAME_MAX_LENGTH)]),
+        displayName: new FormControl(this.currentUser$()?.displayName ?? '', [
+            Validators.required,
+            Validators.maxLength(DISPLAY_NAME_MAX_LENGTH),
+        ]),
     })
 
     constructor() {

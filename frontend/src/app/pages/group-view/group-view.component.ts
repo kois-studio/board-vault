@@ -37,8 +37,8 @@ import { formatAttendeeSummary } from '../../core/utils/formatAttendeeSummary'
 import { groupGameCount, groupPeopleCount } from '../../core/utils/groupCounts'
 import { formatWinners, historyWinnerNames, mergeHistoryParticipants } from '../../core/utils/historyParticipants'
 import { initialsAvatar } from '../../core/utils/initialsAvatar'
-import { DISPLAY_NAME_MAX_LENGTH } from '../../core/utils/shortName'
 import { upcomingState } from '../../core/utils/sessionTiming'
+import { DISPLAY_NAME_MAX_LENGTH } from '../../core/utils/shortName'
 import { GroupViewService } from './group-view.service'
 
 type GroupLibraryContext = {

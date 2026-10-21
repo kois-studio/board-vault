@@ -12,5 +12,8 @@ export function shortName(name: string): string {
     const characters = Array.from(graphemes.segment(name), ({ segment }) => segment)
 
     if (characters.length <= DISPLAY_NAME_MAX_LENGTH) return name
-    return `${characters.slice(0, DISPLAY_NAME_MAX_LENGTH - 1).join('').trimEnd()}…`
+    return `${characters
+        .slice(0, DISPLAY_NAME_MAX_LENGTH - 1)
+        .join('')
+        .trimEnd()}…`
 }
