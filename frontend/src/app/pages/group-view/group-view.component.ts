@@ -37,6 +37,7 @@ import { formatAttendeeSummary } from '../../core/utils/formatAttendeeSummary'
 import { groupGameCount, groupPeopleCount } from '../../core/utils/groupCounts'
 import { formatWinners, historyWinnerNames, mergeHistoryParticipants } from '../../core/utils/historyParticipants'
 import { initialsAvatar } from '../../core/utils/initialsAvatar'
+import { DISPLAY_NAME_MAX_LENGTH } from '../../core/utils/shortName'
 import { upcomingState } from '../../core/utils/sessionTiming'
 import { GroupViewService } from './group-view.service'
 
@@ -765,6 +766,7 @@ export class GroupViewComponent {
 
     /** People without an account or avatar show their initials. */
     public readonly initialsAvatar = initialsAvatar
+    public readonly nameMaxLength = DISPLAY_NAME_MAX_LENGTH
 
     /** "3 wins · 7 games · 4 nights" */
     public standingSummary(standing: GroupStandingType): string {

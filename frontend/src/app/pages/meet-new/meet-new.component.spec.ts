@@ -80,7 +80,7 @@ describe('MeetNewComponent social handoff', () => {
         return { fixture, component: fixture.componentInstance, api, dataService, loadingService }
     }
 
-    it('invites everyone by default and shows a long name without overflowing', async () => {
+    it('invites everyone by default and keeps a long name on one line', async () => {
         const longName = '⸻'.repeat(20)
         const { fixture, component } = await setup({}, { ...group, members: [organizer, { ...member, displayName: longName }] })
         fixture.detectChanges()
@@ -89,8 +89,9 @@ describe('MeetNewComponent social handoff', () => {
         const tile = [...fixture.nativeElement.querySelectorAll('button[aria-pressed]')].find((element: HTMLElement) =>
             element.textContent?.includes(longName),
         ) as HTMLButtonElement
-        const name = tile.querySelector('span.wrap-anywhere') as HTMLSpanElement
+        const name = tile.querySelector('span.truncate') as HTMLSpanElement
         expect(tile.getAttribute('aria-pressed')).toBe('true')
+        expect(name.textContent).toBe(longName)
         expect(name.parentElement?.classList).toContain('min-w-0')
     })
 

@@ -79,7 +79,7 @@
                                 >
                                     <app-image-profile [avatar]="person.avatar" aria-hidden="true" />
                                     <span class="min-w-0 flex-1">
-                                        <span class="line-clamp-2 font-medium wrap-anywhere" [title]="person.name">{{ person.name }}</span>
+                                        <span class="block truncate font-medium" [title]="person.name">{{ person.name }}</span>
                                         <span class="block text-xs text-bv-text-muted">{{ person.gameIds.size }} {{ person.gameIds.size === 1 ? 'game' : 'games' }}</span>
                                     </span>
                                     <span class="flex h-5 w-5 shrink-0 items-center justify-center rounded-full border" [class]="invited ? 'border-bv-primary bg-bv-primary text-bv-on-primary' : 'border-bv-border'" aria-hidden="true">

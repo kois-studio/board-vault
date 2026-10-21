@@ -520,7 +520,7 @@
                                 (input)="newGroupPersonName.set($any($event.target).value)"
                                 (keyup.enter)="addGroupPerson()"
                                 placeholder="Friend's name"
-                                maxlength="100"
+                                [maxLength]="nameMaxLength"
                             />
                             <button appButton type="button" class="shrink-0" [disabled]="!newGroupPersonName().trim() || groupPersonMutationId() !== null" (click)="addGroupPerson()">Add person</button>
                         </div>

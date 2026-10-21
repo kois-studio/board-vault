@@ -73,6 +73,13 @@ operational details.
 
 ### Changed
 
+- Names have at most 20 characters, for accounts and for people without one,
+  and the API enforces it. Longer names saved before are shown cut the same
+  way everywhere ("Bartholomew Montgom…"), notifications included. Names stay
+  on one line in cards and lists, so a long one no longer makes its card
+  taller, runs off the screen or covers the Winner box, and avatar initials
+  stay inside their circle.
+- The account menu and the footer show GitHub's mark beside "Source code".
 - Home follows where you are. A new account sees one card to create its
   first group and a short checklist. With a group, the next game night
   leads, showing who is going, the shortlist, what you're bringing, and your
