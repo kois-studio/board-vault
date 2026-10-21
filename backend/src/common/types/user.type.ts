@@ -15,6 +15,8 @@ import {
     ValidateNested,
 } from 'class-validator'
 
+import { DISPLAY_NAME_MAX_LENGTH } from '../utils/display-name.js'
+
 import { GameCompleteDto } from './game.type.js'
 
 // Initials are only shown, and so only required, on an initials avatar. Icon
@@ -110,7 +112,7 @@ export class UpdateUserBody {
     @IsOptional()
     @IsString()
     @IsNotEmpty()
-    @MaxLength(100)
+    @MaxLength(DISPLAY_NAME_MAX_LENGTH)
     displayName?: string
 
     @ApiProperty({ type: AvatarDto, required: false })

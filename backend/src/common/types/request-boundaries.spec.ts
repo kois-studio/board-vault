@@ -3,9 +3,10 @@ import { validate } from 'class-validator'
 
 import { CacheKeyParam } from './cache.type.js'
 import { CreateGameProposalBody } from './game-proposal.type.js'
+import { CreateGroupPersonBody, UpdateGroupPersonBody } from './group-person.type.js'
 import { LegacyCreateGroupParams } from './group.type.js'
 import { CreatePlaySessionBody, UpdateSessionShortlistBody } from './session.type.js'
-import { UserUpdateGamesBody } from './user.type.js'
+import { UpdateUserBody, UserUpdateGamesBody } from './user.type.js'
 
 describe('request boundary limits', () => {
     async function validationErrors<T extends object>(type: new () => T, value: object) {
@@ -18,6 +19,13 @@ describe('request boundary limits', () => {
         })
 
         expect(proposalErrors.map(error => error.property)).toContain('title')
+    })
+
+    it('bounds every display name to 20 characters', async () => {
+        for (const type of [UpdateUserBody, CreateGroupPersonBody, UpdateGroupPersonBody] as Array<new () => object>) {
+            expect(await validationErrors(type, { displayName: 'a'.repeat(20) })).toEqual([])
+            expect((await validationErrors(type, { displayName: 'a'.repeat(21) })).map(error => error.property)).toContain('displayName')
+        }
     })
 
     it('bounds bulk collection updates', async () => {

@@ -4,7 +4,7 @@
             <section class="flex flex-wrap items-center gap-4" aria-labelledby="you-name">
                 <app-image-profile size="large" class="shrink-0" [avatar]="user.avatar" />
                 <div class="min-w-0 flex-1">
-                    <h1 id="you-name" class="truncate text-3xl font-bold tracking-tight">{{ user.displayName }}</h1>
+                    <h1 id="you-name" class="text-3xl font-bold tracking-tight wrap-anywhere">{{ user.displayName }}</h1>
                     <p class="mt-1 text-secondary">{{ user.username }} · Only you see this page</p>
                 </div>
                 <a routerLink="/settings/profile" class="inline-flex min-h-11 items-center gap-2 text-sm font-semibold text-bv-primary hover:underline">Edit profile</a>

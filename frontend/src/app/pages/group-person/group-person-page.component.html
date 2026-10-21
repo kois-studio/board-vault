@@ -15,7 +15,7 @@
             <section class="flex items-center gap-4" aria-labelledby="person-name">
                 <app-image-profile size="large" class="shrink-0" [avatar]="person.avatar ?? initialsAvatar(person.displayName)" />
                 <div class="min-w-0">
-                    <h1 id="person-name" class="truncate text-3xl font-bold tracking-tight">{{ person.displayName }}</h1>
+                    <h1 id="person-name" class="text-3xl font-bold tracking-tight wrap-anywhere">{{ person.displayName }}</h1>
                     <p class="mt-1 text-secondary">{{ person.accountId !== null ? 'Member of ' + (groupName() ?? 'this group') : 'In ' + (groupName() ?? 'this group') + ', without an account' }}</p>
                 </div>
             </section>

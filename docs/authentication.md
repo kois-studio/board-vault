@@ -51,7 +51,9 @@ signed-in devices. Board Vault owns how people appear in groups: the display
 name and the avatar ([ADR-0017](adr/0017-profile-and-sign-in-ownership.md)).
 Settings → Account shows the username and email and opens Clerk's panel to
 change them; Settings → Profile edits the display name and avatar and shows
-the username read-only.
+the username read-only. Display names, of accounts and of group people alike,
+have at most 20 characters; the API rejects longer ones, and names saved
+before the limit are shown cut to 20 with "…" on every page.
 
 Clerk's first and last name are turned off in every instance, and the panel's
 profile row (photo, name) and delete section are hidden with

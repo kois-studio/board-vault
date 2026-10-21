@@ -11,6 +11,7 @@ import {
     type ClerkGroupInvitationSummaryDto,
     type ClerkGroupInvitationMetadata,
 } from '../../../common/types/clerk-invitation.type.js'
+import { shortName } from '../../../common/utils/display-name.js'
 import { ActivityNotifier } from '../../core/notifications/activity-notifier.service.js'
 import { UsageService } from '../../core/usage/usage.service.js'
 import { UsersService } from '../../core/users/users.service.js'
@@ -436,10 +437,10 @@ export class ClerkIdentityService {
     private buildDisplayName(firstName: string | null, lastName: string | null, username: string | null, email: string): string {
         const fullName = [firstName, lastName].filter(Boolean).join(' ').trim()
 
-        const safeName = (fullName || username || email.split('@')[0] || '').trim().slice(0, 100)
+        const safeName = (fullName || username || email.split('@')[0] || '').trim()
 
         // Short names are real names ("Ana"); only an empty one needs a stand-in (#125).
-        return safeName || 'Player'
+        return shortName(safeName) || 'Player'
     }
 
     private buildAvatar(displayName: string): AvatarDto {

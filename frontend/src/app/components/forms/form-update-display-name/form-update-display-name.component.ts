@@ -1,6 +1,7 @@
 import { Component, effect, inject } from '@angular/core'
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms'
 import { DataService } from '../../../core/services/data.service'
+import { DISPLAY_NAME_MAX_LENGTH } from '../../../core/utils/shortName'
 import { ButtonComponent } from '../../ui/button/button.component'
 import { IconComponent } from '../../ui/icon/icon.component'
 
@@ -21,10 +22,14 @@ export class FormUpdateDisplayNameComponent {
     // --------------------------------------------------------------------------
     //        Component props
     // --------------------------------------------------------------------------
+    public readonly maxLength = DISPLAY_NAME_MAX_LENGTH
     public isEditing = false
 
     public updateProfileFormGroup = new FormGroup({
-        displayName: new FormControl(this.currentUser$()?.displayName ?? '', [Validators.required, Validators.maxLength(20)]),
+        displayName: new FormControl(this.currentUser$()?.displayName ?? '', [
+            Validators.required,
+            Validators.maxLength(DISPLAY_NAME_MAX_LENGTH),
+        ]),
     })
 
     constructor() {

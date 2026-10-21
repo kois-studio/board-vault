@@ -149,7 +149,7 @@
                                         >
                                             <app-image-profile [avatar]="attendee.user.avatar" aria-hidden="true" />
                                             <span class="min-w-0 flex-1">
-                                                <span class="line-clamp-2 font-medium wrap-anywhere" [title]="attendee.user.displayName || attendee.user.username">{{ attendee.user.displayName || attendee.user.username }}</span>
+                                                <span class="block truncate font-medium" [title]="attendee.user.displayName || attendee.user.username">{{ attendee.user.displayName || attendee.user.username }}</span>
                                                 <span class="block text-xs text-bv-text-muted">{{ attendee.user.games.length }} {{ attendee.user.games.length === 1 ? 'game' : 'games' }}</span>
                                             </span>
                                             <span class="flex h-5 w-5 shrink-0 items-center justify-center rounded-full border" [class]="attendee.selected ? 'border-bv-primary bg-bv-primary text-bv-on-primary' : 'border-bv-border'" aria-hidden="true">

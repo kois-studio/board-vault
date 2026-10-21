@@ -1,12 +1,13 @@
 import { Component, inject } from '@angular/core'
 import { RouterLink } from '@angular/router'
+import { GithubMarkComponent } from '../../components/ui/github-mark/github-mark.component'
 import { LogoComponent } from '../../components/ui/logo/logo.component'
 import { ThemeSwitchComponent } from '../../components/ui/theme-switch/theme-switch.component'
 import { LoginService } from '../../core/services/login.service'
 
 @Component({
     selector: 'app-layout-footer',
-    imports: [LogoComponent, RouterLink, ThemeSwitchComponent],
+    imports: [GithubMarkComponent, LogoComponent, RouterLink, ThemeSwitchComponent],
     templateUrl: './footer.component.html',
 })
 export class LayoutFooterComponent {

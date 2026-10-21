@@ -16,7 +16,8 @@
             <span class="">{{ avatar.emoji }}</span>
         }
         @if (avatar.type === 'initials' && avatar.initials) {
-            <span class="font-bold -translate-y-[1px]" [class.text-xs]="size() === 'small'">{{ avatar.initials }}</span>
+            <!-- Two letters need less than an emoji: at the emoji size, wide initials like "WW" spill out of the circle. -->
+            <span class="font-bold leading-none tracking-tight" [class.text-xs]="size() === 'small'" [class.text-lg]="size() === 'base'" [class.text-3xl]="size() === 'large'">{{ avatar.initials }}</span>
         }
     </div>
 } @else {

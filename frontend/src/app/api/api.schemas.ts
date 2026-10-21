@@ -1,5 +1,6 @@
 import * as z from 'zod/mini'
 import { resolveArtworkUrl } from '../core/utils/artworkUrl'
+import { shortName } from '../core/utils/shortName'
 import type {
     AccountMeetType,
     AdminGameProposalsType,
@@ -54,6 +55,9 @@ import type {
     UserStatsType,
     UserType,
 } from './api.types'
+
+/** A person's name, cut to the shared limit so it reads the same everywhere (see shortName). */
+const displayNameSchema = z.pipe(z.string(), z.transform(shortName))
 
 /** A game's artwork: stored artwork arrives as a path on the API and leaves here as a full address. */
 const artworkUrlSchema = z.pipe(
@@ -164,7 +168,7 @@ export const adminOverviewSchema: z.ZodMiniType<AdminOverviewType> = z.object({
             title: z.string(),
             status: z.enum(['approved', 'rejected', 'duplicate']),
             reviewedAt: z.string(),
-            reviewerName: z.nullable(z.string()),
+            reviewerName: z.nullable(displayNameSchema),
             createdGameId: z.nullable(z.number()),
         }),
     ),
@@ -220,7 +224,7 @@ const standingSchema = z.optional(z.enum(['member', 'left', 'deleted']))
 export const publicUserSchema = z.object({
     id: z.number(),
     username: z.string(),
-    displayName: z.string(),
+    displayName: displayNameSchema,
     avatar: avatarSchema,
 })
 
@@ -258,7 +262,7 @@ export const groupCollectionSchema: z.ZodMiniType<GroupCollectionType> = z.objec
         z.object({
             accountId: z.nullable(z.number()),
             groupPersonId: z.nullable(z.number()),
-            displayName: z.string(),
+            displayName: displayNameSchema,
             avatar: z.nullable(avatarSchema),
             games: z.array(gameCompleteSchema),
             worth: z.number(),
@@ -327,7 +331,7 @@ export const groupInsightsSchema: z.ZodMiniType<GroupInsightsType> = z.object({
         z.object({
             accountId: z.nullable(z.number()),
             groupPersonId: z.nullable(z.number()),
-            displayName: z.string(),
+            displayName: displayNameSchema,
             avatar: z.nullable(avatarSchema),
             sessions: z.number(),
             gamesPlayed: z.number(),
@@ -434,7 +438,7 @@ const groupWithMembersAndGamesSchema: z.ZodMiniType<GroupWithMembersAndGames, un
             z.array(
                 z.object({
                     id: z.number(),
-                    displayName: z.string(),
+                    displayName: displayNameSchema,
                     avatar: z.nullable(avatarSchema),
                     gameIds: z.array(z.number()),
                     // Older APIs send only the ids.
@@ -454,7 +458,7 @@ const groupPersonSchema = z.object({
     accountId: z.nullable(z.number()),
     kind: z.enum(['placeholder', 'linked']),
     status: z.enum(['active', 'archived']),
-    displayName: z.string(),
+    displayName: displayNameSchema,
     avatar: z.nullable(avatarSchema),
     standing: standingSchema,
     createdAt: z.string(),
@@ -615,7 +619,7 @@ export const meetDetailsSchema: z.ZodMiniType<MeetWithAttendeesAndGamesType> = z
 
 const historyPersonSchema = z.object({
     id: z.number(),
-    displayName: z.string(),
+    displayName: displayNameSchema,
     avatar: z.nullable(avatarSchema),
     accountId: z.optional(z.nullable(z.number())),
     standing: standingSchema,
