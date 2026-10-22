@@ -33,6 +33,8 @@ import {
     groupInvitationsSchema,
     groupPeopleSchema,
     groupPersonSchemaResponse,
+    homePreferencesSchema,
+    liveSessionCreatedSchema,
     meetDetailsSchema,
     meetSchema,
     mergeTagResultSchema,
@@ -48,6 +50,7 @@ import {
     sessionGameProposedSchema,
     sessionGameVotesUpdatedSchema,
     sessionPlayedGamesUpdatedSchema,
+    sessionRecordingSchema,
     sessionRsvpUpdatedSchema,
     sessionShortlistUpdatedSchema,
     sessionStatusUpdatedSchema,
@@ -102,6 +105,7 @@ import type {
     GroupPersonWorkspaceType,
     GroupWithMembersAndGames,
     HistoryRecordType,
+    HomePreferences,
     InvitationWithAccountsData,
     InvitationWithExtraData,
     MeetType,
@@ -121,6 +125,7 @@ import type {
     SessionGameProposedType,
     SessionGameVotesUpdatedType,
     SessionPlayedGamesUpdatedType,
+    SessionRecording,
     SessionRsvpUpdatedType,
     SessionShortlistUpdatedType,
     SessionStatusUpdatedType,
@@ -229,6 +234,16 @@ export class Api {
 
     // #region games
 
+    getHomePreferences() {
+        return this.http.get<unknown>(`${this.url}/profile/home`).pipe(map((response) => homePreferencesSchema.parse(response)))
+    }
+
+    saveHomePreferences(preferences: HomePreferences) {
+        return this.http
+            .put<unknown>(`${this.url}/profile/home`, preferences)
+            .pipe(map((response) => homePreferencesSchema.parse(response)))
+    }
+
     getGames() {
         return this.http.get<Array<GameType>>(`${this.url}/games`).pipe(map((response) => gamesSchema.parse(response)))
     }
@@ -289,6 +304,32 @@ export class Api {
         return this.http
             .get<MeetWithAttendeesAndGamesType>(`${this.url}/sessions/${sessionId}`)
             .pipe(map((response) => meetDetailsSchema.parse(response)))
+    }
+
+    getSessionRecording(sessionId: number) {
+        return this.http
+            .get<unknown>(`${this.url}/sessions/${sessionId}/recording`)
+            .pipe(map((response) => sessionRecordingSchema.parse(response)))
+    }
+
+    savePlayResults(
+        sessionId: number,
+        position: number,
+        body: { revision: number; results: NonNullable<CreatePlaySessionRequest['games'][number]['results']> },
+    ) {
+        return this.http
+            .put<unknown>(`${this.url}/sessions/${sessionId}/plays/${position}/results`, body)
+            .pipe(map((response) => sessionRecordingSchema.parse(response)))
+    }
+
+    correctSession(sessionId: number, body: SessionRecording) {
+        return this.http
+            .put<unknown>(`${this.url}/sessions/${sessionId}/recording`, body)
+            .pipe(map((response) => sessionRecordingSchema.parse(response)))
+    }
+
+    startLiveSession(body: ScheduleSessionRequest) {
+        return this.http.post<unknown>(`${this.url}/sessions/live`, body).pipe(map((response) => liveSessionCreatedSchema.parse(response)))
     }
 
     createPlaySession(body: CreatePlaySessionRequest) {

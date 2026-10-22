@@ -6,6 +6,7 @@
           type="text"
           formControlName="displayName"
           aria-label="Display name"
+          [maxLength]="maxLength"
           class="app-input"
           [class]="displayNameClass"
           required
@@ -19,7 +20,7 @@
             }
             @if (displayName?.hasError('maxlength')) {
               <div class="text-sm text-bv-danger py-1">
-                <app-icon name="circle-alert" [size]="16" /> display name is too long.
+                <app-icon name="circle-alert" [size]="16" /> Use at most {{ maxLength }} characters.
               </div>
             }
           </div>

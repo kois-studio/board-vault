@@ -60,7 +60,7 @@ describe('GroupPersonPageComponent', () => {
                 provideRouter([]),
                 { provide: ActivatedRoute, useValue: { paramMap: of(convertToParamMap({ groupId: '10', ...params })) } },
                 { provide: Api, useValue: api },
-                { provide: DataService, useValue: { userGroups: () => groups } },
+                { provide: DataService, useValue: { userGroups: () => groups, currentUser: () => ({ id: 99 }) } },
             ],
         })
         const fixture = TestBed.createComponent(GroupPersonPageComponent)
@@ -78,10 +78,11 @@ describe('GroupPersonPageComponent', () => {
         expect(text).toContain('Member of Thursdays')
         expect(text).toContain('≈ €45')
         expect(text).toContain('From the retail prices of 1 of their 2 games. What anyone actually paid stays private.')
-        expect([...element.querySelectorAll('#person-games-heading + ul li p')].map((item) => item.textContent?.trim())).toEqual([
-            'Catan',
-            'Hanabi',
-        ])
+        expect(
+            [...element.querySelectorAll('section[aria-labelledby="person-games-heading"] > ul li p')].map((item) =>
+                item.textContent?.trim(),
+            ),
+        ).toEqual(['Catan', 'Hanabi'])
         expect(text).toMatch(/Wins\s*3/)
     })
 
@@ -139,7 +140,7 @@ describe('GroupPersonPageComponent', () => {
 
     it('names a game without a title instead of showing an empty card', async () => {
         const { element } = await render({ personId: '24' })
-        const items = [...element.querySelectorAll('#person-games-heading + ul li')]
+        const items = [...element.querySelectorAll('section[aria-labelledby="person-games-heading"] > ul li')]
 
         expect(items.map((item) => item.querySelector('p')?.textContent?.trim())).toEqual(['Untitled game', 'Azul'])
         expect(items[0]?.querySelector('a')?.textContent).toContain('Untitled game')

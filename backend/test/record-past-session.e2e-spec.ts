@@ -36,9 +36,10 @@ describe('recording a past session with group people (e2e)', () => {
                 INSERT INTO Account (id, email, username, avatar, displayName, clerkUserId)
                 VALUES
                     (1, 'organizer@example.test', 'organizer', ${avatar}, 'Organizer', 'user_organizer'),
-                    (2, 'member@example.test', 'member', ${avatar}, 'Member', 'user_member');
+                    (2, 'member@example.test', 'member', ${avatar}, 'Member', 'user_member'),
+                    (3, 'outsider@example.test', 'outsider', ${avatar}, 'Outsider', 'user_outsider');
                 INSERT INTO Game (id, imageUrl, gameAvgDuration, minPlayers, maxPlayers)
-                VALUES (10, 'https://example.test/game-10.png', 60, 2, 4), (11, 'https://example.test/game-11.png', 30, 2, 5);
+                VALUES (10, 'https://example.test/game-10.png', 60, 2, 4), (11, 'https://example.test/game-11.png', 30, 2, 5), (12, '', 15, 1, 8);
                 INSERT INTO GameTranslation (gameId, languageCode, title, normalizedTitle)
                 VALUES (10, 'en', 'Game Ten', 'game ten'), (11, 'en', 'Game Eleven', 'game eleven');
                 INSERT INTO OwnedGame (accountId, gameId) VALUES (2, 10), (2, 11);
@@ -94,6 +95,208 @@ describe('recording a past session with group people (e2e)', () => {
 
         return { groupId, personIds }
     }
+
+    it('keeps separate plays, scores and winners for an unowned catalogue game, corrects atomically and refuses stale writes', async () => {
+        const { groupId, personIds } = await createGroupWithPeople()
+        const first = personIds[0] as number
+        const second = personIds[1] as number
+        const body = {
+            groupId,
+            sessionDate: '2026-10-03T12:00:00.000Z',
+            timezone: 'Europe/Madrid',
+            groupPersonIds: personIds,
+            games: [
+                { gameId: 12, participantPersonIds: [first], results: [{ groupPersonId: first, isWinner: true, score: 12 }] },
+                { gameId: 12, participantPersonIds: personIds, results: [{ groupPersonId: second, isWinner: true, score: 25 }] },
+            ],
+        }
+        const created = await request(app.getHttpServer()).post('/sessions').set(withAuth).send(body).expect(201)
+        const id = Number(created.body.sessionId)
+        const read = await request(app.getHttpServer()).get(`/sessions/${id}/recording`).set(withAuth).expect(200)
+
+        expect(read.body.games).toEqual(body.games)
+        const details = await request(app.getHttpServer()).get(`/sessions/${id}`).set(withAuth).expect(200)
+
+        expect(details.body.playedGamePersonParticipants).toEqual([{ gameId: 12, participantIds: personIds }])
+        const insights = await request(app.getHttpServer()).get(`/groups/${groupId}/insights`).set(withAuth).expect(200)
+
+        expect(insights.body.standings.find((person: { accountId: number }) => person.accountId === 1)).toMatchObject({
+            gamesPlayed: 2,
+            wins: 1,
+        })
+        expect(insights.body.standings.find((person: { accountId: number }) => person.accountId === 2)).toMatchObject({
+            gamesPlayed: 1,
+            wins: 1,
+        })
+        const edited = { ...read.body, notes: 'Corrected with both plays preserved.' }
+
+        await request(app.getHttpServer()).put(`/sessions/${id}/recording`).set(withAuth).send(edited).expect(200)
+        await request(app.getHttpServer())
+            .put(`/sessions/${id}/recording`)
+            .set(withAuth)
+            .send({ ...edited, notes: 'Stale edit' })
+            .expect(409)
+        const after = await request(app.getHttpServer()).get(`/sessions/${id}/recording`).set(withAuth).expect(200)
+
+        expect(after.body.notes).toBe(edited.notes)
+        expect(after.body.games).toEqual(body.games)
+        const activity = await database.execute({
+            sql: "SELECT COUNT(*) AS n FROM GroupActivity WHERE meetId = ? AND type = 'session_played_changed'",
+            args: [id],
+        })
+
+        expect(Number(activity.rows[0]?.n)).toBe(1)
+        const before = after.body.revision
+
+        await request(app.getHttpServer())
+            .put(`/sessions/${id}/plays/1/results`)
+            .set({ Authorization: `Bearer ${sessionFor('user_member')}` })
+            .send({ revision: before, results: [{ groupPersonId: second, isWinner: true, score: -4 }] })
+            .expect(200)
+        await request(app.getHttpServer()).put(`/sessions/${id}/recording`).set(withAuth).send(after.body).expect(409)
+        const final = await request(app.getHttpServer()).get(`/sessions/${id}/recording`).set(withAuth).expect(200)
+
+        expect(final.body.games[0]).toEqual(body.games[0])
+        expect(final.body.games[1].results[0].score).toBe(-4)
+        await request(app.getHttpServer())
+            .put(`/sessions/${id}/plays/0/results`)
+            .set(withAuth)
+            .send({ revision: final.body.revision, results: [{ groupPersonId: second, isWinner: true }] })
+            .expect(400)
+        expect((await request(app.getHttpServer()).get(`/sessions/${id}/recording`).set(withAuth)).body.games).toEqual(final.body.games)
+    })
+
+    it('drops a game taken out of a correction instead of calling it skipped, and keeps whoever no longer came on record', async () => {
+        const { groupId, personIds } = await createGroupWithPeople()
+        const first = personIds[0] as number
+        const created = await request(app.getHttpServer())
+            .post('/sessions')
+            .set(withAuth)
+            .send({
+                groupId,
+                sessionDate: '2026-10-03T12:00:00.000Z',
+                timezone: 'Europe/Madrid',
+                groupPersonIds: personIds,
+                games: [
+                    { gameId: 10, participantPersonIds: personIds },
+                    { gameId: 12, participantPersonIds: personIds },
+                ],
+            })
+            .expect(201)
+        const id = Number(created.body.sessionId)
+        const recording = (await request(app.getHttpServer()).get(`/sessions/${id}/recording`).set(withAuth).expect(200)).body
+
+        await request(app.getHttpServer())
+            .put(`/sessions/${id}/recording`)
+            .set(withAuth)
+            .send({ ...recording, groupPersonIds: [first], games: [{ gameId: 10, participantPersonIds: [first] }] })
+            .expect(200)
+        const details = (await request(app.getHttpServer()).get(`/sessions/${id}`).set(withAuth).expect(200)).body
+
+        // Game 12 was never on a shortlist: it is gone, not "shortlisted but not played".
+        expect(details.playedGames).toEqual([10])
+        expect(details.skippedGames).toEqual([])
+        // The member who no longer came keeps their row, marked absent, rather than vanishing from the night.
+        const rows = await database.execute({
+            sql: 'SELECT groupPersonId, attendanceStatus FROM MeetPersonAttendee WHERE meetId = ? ORDER BY groupPersonId',
+            args: [id],
+        })
+
+        expect(rows.rows.map(row => [Number(row.groupPersonId), String(row.attendanceStatus)])).toEqual([
+            [first, 'attended'],
+            [personIds[1], 'absent'],
+        ])
+        const corrected = (await request(app.getHttpServer()).get(`/sessions/${id}/recording`).set(withAuth).expect(200)).body
+
+        expect(corrected.groupPersonIds).toEqual([first])
+    })
+
+    it('stores personal pins and ordering without changing another account, and rejects malformed preferences', async () => {
+        const { groupId } = await createGroupWithPeople()
+        const prefs = { pinnedGroupIds: [groupId, 999999], groupOrder: 'upcoming', dismissedRatingGameIds: [12] }
+        const response = await request(app.getHttpServer()).put('/profile/home').set(withAuth).send(prefs).expect(200)
+
+        expect(response.body).toEqual({ ...prefs, pinnedGroupIds: [groupId] })
+        expect((await request(app.getHttpServer()).get('/profile/home').set(withAuth)).body).toEqual(response.body)
+        const member = await request(app.getHttpServer())
+            .get('/profile/home')
+            .set({ Authorization: `Bearer ${sessionFor('user_member')}` })
+            .expect(200)
+
+        expect(member.body).toEqual({ pinnedGroupIds: [], groupOrder: 'recent', dismissedRatingGameIds: [] })
+        await request(app.getHttpServer())
+            .put('/profile/home')
+            .set(withAuth)
+            .send({ ...prefs, accountId: 2 })
+            .expect(400)
+        await request(app.getHttpServer())
+            .put('/profile/home')
+            .set(withAuth)
+            .send({ ...prefs, groupOrder: 'injected' })
+            .expect(400)
+        await request(app.getHttpServer()).get('/profile/home').expect(401)
+    })
+
+    it('keeps recording reads and corrections inside the group, validates people and results, and preserves lifecycle state', async () => {
+        const { groupId, personIds } = await createGroupWithPeople()
+        const created = await request(app.getHttpServer())
+            .post('/sessions')
+            .set(withAuth)
+            .send({
+                groupId,
+                sessionDate: '2026-10-03T12:00:00.000Z',
+                timezone: 'Europe/Madrid',
+                groupPersonIds: personIds,
+                games: [{ gameId: 10, participantPersonIds: personIds }],
+            })
+            .expect(201)
+        const id = Number(created.body.sessionId)
+        const recording = (await request(app.getHttpServer()).get(`/sessions/${id}/recording`).set(withAuth).expect(200)).body
+        const outsider = { Authorization: `Bearer ${sessionFor('user_outsider')}` }
+
+        await request(app.getHttpServer()).get(`/sessions/${id}/recording`).set(outsider).expect(404)
+        await request(app.getHttpServer()).put(`/sessions/${id}/recording`).set(outsider).send(recording).expect(404)
+        await request(app.getHttpServer())
+            .put(`/sessions/${id}/recording`)
+            .set(withAuth)
+            .send({ ...recording, groupId: 999999 })
+            .expect(400)
+        await request(app.getHttpServer())
+            .put(`/sessions/${id}/recording`)
+            .set(withAuth)
+            .send({ ...recording, groupPersonIds: [999999] })
+            .expect(400)
+        await request(app.getHttpServer())
+            .put(`/sessions/${id}/recording`)
+            .set(withAuth)
+            .send({ ...recording, status: 'active' })
+            .expect(400)
+        await request(app.getHttpServer())
+            .put(`/sessions/${id}/plays/0/results`)
+            .set(withAuth)
+            .send({ revision: recording.revision, results: [{ groupPersonId: personIds[0], isWinner: true, score: 1.5 }] })
+            .expect(400)
+        expect((await request(app.getHttpServer()).get(`/sessions/${id}`).set(withAuth)).body.status).toBe('completed')
+        expect((await request(app.getHttpServer()).get(`/sessions/${id}/recording`).set(withAuth)).body).toEqual(recording)
+    })
+
+    it('starts an unplanned live session in one request', async () => {
+        const { groupId, personIds } = await createGroupWithPeople()
+        const response = await request(app.getHttpServer())
+            .post('/sessions/live')
+            .set(withAuth)
+            .send({ groupId, groupPersonIds: personIds, sessionDate: '2020-01-01T12:00:00Z', timezone: 'Europe/Madrid' })
+            .expect(201)
+
+        expect(response.body.status).toBe('active')
+        const details = await request(app.getHttpServer()).get(`/sessions/${response.body.sessionId}`).set(withAuth).expect(200)
+
+        expect(details.body.status).toBe('active')
+        expect(
+            details.body.participantStatuses.every((person: { attendanceStatus: string }) => person.attendanceStatus === 'attended'),
+        ).toBe(true)
+        expect(Math.abs(Date.parse(details.body.meetDate) - Date.now())).toBeLessThan(10000)
+    })
 
     it('saves a completed session the way the Record a past session wizard sends it', async () => {
         const { groupId, personIds } = await createGroupWithPeople()

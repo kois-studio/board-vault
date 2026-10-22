@@ -38,6 +38,9 @@ export class HistoryUserDto extends UserPublicDto {
 }
 
 class GamePlayedDto {
+    @ApiProperty({ required: false, description: 'Number of separate plays when greater than one.' })
+    playCount?: number
+
     @ApiProperty({ type: GameCompleteDto, description: 'The game data.' })
     gameData: GameCompleteDto
 

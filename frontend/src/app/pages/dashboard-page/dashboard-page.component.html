@@ -1,9 +1,9 @@
 <container-wrapper>
     <div class="space-y-8 pb-16 pt-6 lg:pt-8">
-        <!-- Greeting; planning is the everyday action, so it sits here once there is a group. -->
+        <!-- Greeting; recording and planning are the everyday actions, so they sit here once there is a group. -->
         <header class="flex flex-wrap items-center justify-between gap-4">
-            <div class="min-w-0">
-                <h1 class="text-2xl font-extrabold tracking-tight lg:text-3xl">
+            <div class="min-w-0 max-w-full">
+                <h1 class="text-2xl font-extrabold tracking-tight wrap-anywhere lg:text-3xl">
                     {{ isNew() ? 'Welcome' : 'Hi' }}{{ greetingName() ? ', ' + greetingName() : '' }}
                 </h1>
                 @if (isNew()) {
@@ -11,7 +11,10 @@
                 }
             </div>
             @if (userGroups$().length > 0) {
-                <a appButton variant="secondary" icon="plus" class="hidden lg:inline-flex" [routerLink]="planLink().link" [queryParams]="planLink().query">Plan a game night</a>
+                <div class="grid w-full grid-cols-2 gap-2 sm:flex sm:w-auto">
+                    <a appButton icon="plus" class="justify-center" routerLink="/play/log-session" [queryParams]="userGroups$().length === 1 ? { groupId: userGroups$()[0]?.id } : null">Record a session</a>
+                    <a appButton variant="secondary" class="justify-center" [routerLink]="planLink().link" [queryParams]="planLink().query">Plan a game night</a>
+                </div>
             }
         </header>
 
@@ -109,6 +112,8 @@
             <div class="grid grid-cols-1 gap-8 lg:grid-cols-[minmax(0,1fr)_22rem] lg:items-start">
                 <!-- What's next: the night, then the group(s). -->
                 <div class="min-w-0 space-y-8">
+                    <!-- Only when there is a night to show: planning lives in the header, so nothing planned shows nothing. -->
+                    @if ((isLoadingMeets() && !nextNight()) || userMeetsError() || nextNight()) {
                     <section aria-label="Game nights" class="space-y-3">
                         @if (isLoadingMeets() && !nextNight()) {
                             <div class="h-44 animate-pulse rounded-2xl bg-bv-surface-2" aria-busy="true" aria-label="Loading game nights"></div>
@@ -135,17 +140,9 @@
                                 </ul>
                             }
                             <a routerLink="/play/upcoming-sessions" class="inline-block text-sm font-semibold text-bv-primary hover:underline">All upcoming nights</a>
-                        } @else {
-                            <div class="flex items-center gap-3 rounded-2xl border border-dashed border-bv-border p-4">
-                                <span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-bv-primary-soft text-bv-on-primary-soft" aria-hidden="true"><app-icon name="calendar" [size]="20" /></span>
-                                <span class="min-w-0 flex-1">
-                                    <span class="block font-semibold">No game night planned</span>
-                                    <span class="block text-xs text-secondary">Pick a date; the group votes on what to play.</span>
-                                </span>
-                                <a appButton size="small" class="shrink-0" [routerLink]="planLink().link" [queryParams]="planLink().query">Plan one</a>
-                            </div>
                         }
                     </section>
+                    }
 
                     <section aria-labelledby="groups-heading">
                         <div class="mb-3 flex items-baseline justify-between gap-3">
@@ -157,10 +154,11 @@
                                 <app-card-group [group]="group" [invitations]="invitationsGroupIndex$()[group.id]" />
                             }
                         } @else {
-                            <ul class="grid grid-cols-1 gap-2 lg:grid-cols-2 lg:gap-3">
+                            <ul class="grid grid-cols-1 gap-3 lg:grid-cols-2">
                                 @for (group of orderedGroups(); track group.id; let first = $first) {
                                     @let activity = groupActivity().get(group.id);
-                                    <li>
+                                    @let pinned = isPinned(group);
+                                    <li class="group/row relative">
                                         <a [routerLink]="['/groups', group.id]" class="flex items-center gap-3 rounded-2xl border border-bv-border bg-bv-surface p-4 transition hover:border-bv-primary/40">
                                             <span
                                                 class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl text-lg font-extrabold"
@@ -181,6 +179,19 @@
                                             }
                                             <app-icon name="chevron-right" [size]="18" className="shrink-0 text-bv-text-muted" aria-hidden="true" />
                                         </a>
+                                        <!-- A pin on the card's corner: always there once pinned, otherwise only on hover or focus (faint on touch screens). -->
+                                        <button
+                                            type="button"
+                                            class="absolute -right-2 -top-2 flex h-7 w-7 items-center justify-center rounded-full border shadow-sm transition focus:outline-none focus-visible:ring-2 focus-visible:ring-bv-primary disabled:cursor-not-allowed"
+                                            [class]="pinned ? 'border-bv-primary bg-bv-primary text-bv-on-primary' : 'border-bv-border bg-bv-surface text-bv-text-muted opacity-0 hover:text-bv-primary focus-visible:opacity-100 group-hover/row:opacity-100 pointer-coarse:opacity-70'"
+                                            [disabled]="home.loading() || home.error() || home.saving()"
+                                            [attr.aria-pressed]="pinned"
+                                            [attr.aria-label]="pinned ? 'Unpin ' + group.name : 'Pin ' + group.name + ' to the top'"
+                                            [title]="pinned ? 'Unpin' : 'Pin to the top'"
+                                            (click)="home.togglePin(group.id)"
+                                        >
+                                            <app-icon name="pin" [size]="14" aria-hidden="true" />
+                                        </button>
                                     </li>
                                 }
                             </ul>
@@ -222,6 +233,7 @@
                                                 </span>
                                             </span>
                                         </a>
+                                        <app-rating-follow-up [record]="record" />
                                     </li>
                                 }
                             </ul>
@@ -248,18 +260,16 @@
                         </a>
                     }
 
-                    <!-- Desktop only: on phones your page is a tap away in the group's people. -->
-                    @if (profileGroup(); as group) {
-                        @if (currentUser$(); as user) {
-                            <a [routerLink]="['/groups', group.id, 'members', user.id]" class="hidden items-center gap-4 rounded-2xl border border-bv-border bg-bv-surface p-4 transition hover:border-bv-primary/40 lg:flex">
-                                <app-image-profile [avatar]="user.avatar" />
-                                <span class="min-w-0 flex-1">
-                                    <span class="block truncate font-semibold">{{ greetingName() }}</span>
-                                    <span class="block text-xs text-secondary">{{ ownedGames() | count: 'game' }} · {{ nightsPlayed() | count: 'night' }} played</span>
-                                    <span class="mt-1 block text-sm font-semibold text-bv-primary">Your profile in {{ group.name }} ›</span>
-                                </span>
-                            </a>
-                        }
+                    <!-- Desktop only: on phones your page is in the account menu. -->
+                    @if (currentUser$(); as user) {
+                        <a routerLink="/you" class="hidden items-center gap-4 rounded-2xl border border-bv-border bg-bv-surface p-4 transition hover:border-bv-primary/40 lg:flex">
+                            <app-image-profile [avatar]="user.avatar" />
+                            <span class="min-w-0 flex-1">
+                                <span class="block truncate font-semibold">{{ greetingName() }}</span>
+                                <span class="block text-xs text-secondary">{{ ownedGames() | count: 'game' }} · {{ nightsPlayed() | count: 'night' }} played</span>
+                                <span class="mt-1 block text-sm font-semibold text-bv-primary">Your page ›</span>
+                            </span>
+                        </a>
                     }
                 </div>
             </div>

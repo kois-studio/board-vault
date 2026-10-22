@@ -1,15 +1,18 @@
 import { CommonModule } from '@angular/common'
 import { Component, computed, effect, inject, signal, untracked } from '@angular/core'
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
 import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms'
-import { Router, RouterLink } from '@angular/router'
+import { ActivatedRoute, Router, RouterLink } from '@angular/router'
 import { firstValueFrom } from 'rxjs'
 import { Api } from '../../api/api'
 import type {
+    CreatePlaySessionRequest,
     GameCompleteType,
     GameReviewDto,
     GroupPersonWorkspaceType,
     GroupWithMembersAndGames,
     PublicUserType,
+    SessionRecording,
 } from '../../api/api.types'
 import { ButtonComponent } from '../../components/ui/button/button.component'
 import { ContainerWrapperComponent } from '../../components/ui/container-wrapper/container-wrapper.component'
@@ -47,6 +50,13 @@ interface MatrixCell {
     attendeeId: number
     gameId: number
     selected: boolean
+}
+
+type PlayChoice = {
+    key: number
+    gameId: number
+    participantIds: number[]
+    results: Record<number, { isWinner: boolean; score: number | null }>
 }
 
 interface StepInfo {
@@ -92,6 +102,48 @@ export class LogSessionWizardComponent {
     private readonly router = inject(Router)
     private readonly api = inject(Api)
     private readonly toastService = inject(ToastService)
+    private readonly route = inject(ActivatedRoute)
+    readonly editingId = Number(this.route.snapshot.queryParamMap.get('sessionId')) || null
+    readonly isLive = signal(this.route.snapshot.queryParamMap.get('mode') === 'live' && !this.editingId)
+    readonly requestedGroupId = Number(this.route.snapshot.queryParamMap.get('groupId')) || null
+    readonly recordingError = signal('')
+    readonly loadingRecording = signal(Boolean(this.editingId))
+    readonly catalogLoading = signal(false)
+    readonly catalogError = signal(false)
+    /** Catalogue games matching the search, for games nobody here owns (borrowed, just bought). */
+    readonly catalogResults = signal<GameCompleteType[]>([])
+    readonly otherGames = computed(() => {
+        const offered = new Set(this.games().map((selection) => selection.game.id))
+        return this.catalogResults().filter((game) => !offered.has(game.id))
+    })
+    readonly extras = signal<GameCompleteType[]>([])
+    readonly additionalPlays = signal<PlayChoice[]>([])
+    readonly primaryResults = signal<Record<number, PlayChoice['results']>>({})
+    private pendingRecording: SessionRecording | null = null
+    private revision = 0
+    private nextPlayKey = 1
+    private recordingRestored = false
+    private groupLoadVersion = 0
+    readonly sameDaySessions = computed(() => {
+        const date = this.dateChoice()
+        const group = this.selectedGroup()
+        return (this.dataService.userMeets?.() ?? []).filter(
+            (session) =>
+                session.id !== this.editingId &&
+                session.groupId === group?.id &&
+                new Intl.DateTimeFormat('en-CA', { year: 'numeric', month: '2-digit', day: '2-digit', timeZone: session.timezone }).format(
+                    new Date(session.meetDate),
+                ) === date,
+        )
+    })
+    readonly dateChoice = signal(todayInputValue())
+    /** A night already under way in the chosen group: open it rather than starting a second one. */
+    readonly liveSession = computed(() => {
+        const group = this.selectedGroup()
+        return (
+            (this.dataService.userMeets?.() ?? []).find((session) => session.groupId === group?.id && session.status === 'active') ?? null
+        )
+    })
 
     public currentUser = this.dataService.currentUser
     public userGroups = this.dataService.userGroups
@@ -144,9 +196,21 @@ export class LogSessionWizardComponent {
     public gameQuery = signal('')
     /** The offered games matching the search; chosen games always stay visible. */
     public readonly visibleGames = computed(() => {
-        const query = this.gameQuery().trim().toLowerCase()
+        const normalize = (value: string) =>
+            value
+                .toLowerCase()
+                .normalize('NFD')
+                .replace(/[\u0300-\u036f]/g, '')
+                .replace(/[^\p{L}\p{N}]+/gu, ' ')
+                .trim()
+        const query = normalize(this.gameQuery())
         return this.games().filter(
-            (selection) => selection.selected || !query || this.getGameTitle(selection.game).toLowerCase().includes(query),
+            (selection) =>
+                selection.selected ||
+                !query ||
+                [this.getGameTitle(selection.game), ...Object.values(selection.game.titleTranslations)].some((title) =>
+                    normalize(title).includes(query),
+                ),
         )
     })
 
@@ -196,11 +260,31 @@ export class LogSessionWizardComponent {
     }
 
     constructor() {
+        this.sessionDate.valueChanges.pipe(takeUntilDestroyed()).subscribe((value) => this.dateChoice.set(value ?? ''))
+        if (this.editingId) void this.loadRecording()
+
+        // Typing in the one search box also looks beyond the games of the people who came.
+        effect((onCleanup) => {
+            const query = this.gameQuery().trim()
+            const group = this.selectedGroup()
+            if (!group || query.length < 2 || this.currentStep() !== 'games') {
+                untracked(() => this.catalogResults.set([]))
+                return
+            }
+            const timer = setTimeout(() => void this.searchCatalog(), 300)
+            onCleanup(() => clearTimeout(timer))
+        })
         // With a single group there is nothing to choose.
         effect(() => {
             const groups = this.userGroups()
             const [onlyGroup] = groups
-            if (groups.length === 1 && onlyGroup && untracked(() => this.selectedGroup()) === null) this.selectGroup(onlyGroup)
+            const requested = groups.find((group) => group.id === (this.pendingRecording?.groupId ?? this.requestedGroupId))
+            if (requested && untracked(() => this.selectedGroup()) === null) {
+                this.selectGroup(requested)
+                return
+            }
+            if (!this.requestedGroupId && groups.length === 1 && onlyGroup && untracked(() => this.selectedGroup()) === null)
+                this.selectGroup(onlyGroup)
         })
 
         effect(() => {
@@ -222,6 +306,7 @@ export class LogSessionWizardComponent {
             )
 
             const availableGames = new Map<number, GameCompleteType>()
+            for (const game of this.extras()) availableGames.set(game.id, game)
             for (const attendee of selectedAttendees) {
                 for (const game of attendee.user.games) availableGames.set(game.id, game)
             }
@@ -255,14 +340,37 @@ export class LogSessionWizardComponent {
     }
 
     private initializeForGroup(group: GroupWithMembersAndGames): void {
+        this.groupLoadVersion++
         this.attendees.set(group.members.map((member) => ({ user: member, selected: false })))
+        for (const id of this.pendingRecording?.attendeeIds ?? []) {
+            if (this.attendees().some((attendee) => attendee.user.id === id)) continue
+            this.attendees.update((attendees) => [
+                ...attendees,
+                {
+                    user: {
+                        id,
+                        username: 'Former player',
+                        displayName: 'Former player',
+                        avatar: { backgroundColor: '#64748b', iconName: null, emoji: null, type: 'initials', initials: 'FP' },
+                        joinedAt: '',
+                        games: [],
+                        reviews: [],
+                    },
+                    selected: false,
+                },
+            ])
+        }
         this.games.set([])
         this.matrix.set([])
         this.playerChoices.clear()
         this.groupPersonCatalog.set([])
         this.groupPeople.set([])
         this.usesGroupPeople.set(false)
+        this.additionalPlays.set([])
+        this.primaryResults.set({})
+        if (!this.pendingRecording) this.extras.set([])
         this.loadGroupPeople(group)
+        this.restoreRecording()
     }
 
     private loadGroupPeople(group: GroupWithMembersAndGames): void {
@@ -270,12 +378,15 @@ export class LogSessionWizardComponent {
         if (typeof loader !== 'function') return
 
         // Ignore a slow response for a group that is no longer selected.
-        const isCurrentGroup = () => this.selectedGroup()?.id === group.id
+        const version = this.groupLoadVersion
+        const isCurrentGroup = () => this.selectedGroup()?.id === group.id && this.groupLoadVersion === version
 
-        loader.call(this.api, group.id).subscribe({
+        loader.call(this.api, group.id, Boolean(this.editingId)).subscribe({
             next: (response) => {
                 if (!isCurrentGroup()) return
-                const activePeople = response.people.filter(canTakePart)
+                const activePeople = response.people.filter(
+                    (person) => canTakePart(person) || this.pendingRecording?.groupPersonIds?.includes(person.person.id),
+                )
                 if (activePeople.length === 0) return
 
                 const groupGames = new Map<number, GameCompleteType>()
@@ -297,40 +408,81 @@ export class LogSessionWizardComponent {
                     this.groupPersonCatalog.set(catalog)
                     this.groupPeople.set(activePeople)
                     this.usesGroupPeople.set(true)
+                    const legacyAccountIds = new Set(this.pendingRecording?.attendeeIds ?? [])
                     this.attendees.set(
-                        activePeople.map((person) => {
-                            const ownedGameIds = new Set(
-                                person.ownership
-                                    .filter((ownership) => ownership.status === 'asserted')
-                                    .map((ownership) => ownership.gameId),
+                        activePeople
+                            .filter(
+                                (person) =>
+                                    person.person.accountId === null ||
+                                    !legacyAccountIds.has(person.person.accountId) ||
+                                    this.pendingRecording?.groupPersonIds?.includes(person.person.id),
                             )
-                            const games = [...groupGames.values()].filter((game) => ownedGameIds.has(game.id))
-                            // A linked person's avatar and username live on their account.
-                            const member =
-                                person.person.accountId === null
-                                    ? undefined
-                                    : group.members.find((candidate) => candidate.id === person.person.accountId)
+                            .map((person) => {
+                                const ownedGameIds = new Set(
+                                    person.ownership
+                                        .filter((ownership) => ownership.status === 'asserted')
+                                        .map((ownership) => ownership.gameId),
+                                )
+                                const games = [...groupGames.values()].filter((game) => ownedGameIds.has(game.id))
+                                // A linked person's avatar and username live on their account.
+                                const member =
+                                    person.person.accountId === null
+                                        ? undefined
+                                        : group.members.find((candidate) => candidate.id === person.person.accountId)
+                                return {
+                                    user: {
+                                        id: person.person.id,
+                                        username: member?.username ?? person.person.displayName.toLowerCase().replace(/\s+/g, '-'),
+                                        displayName: person.person.displayName,
+                                        avatar: person.person.avatar ??
+                                            member?.avatar ?? {
+                                                backgroundColor: '#64748b',
+                                                iconName: null,
+                                                emoji: null,
+                                                type: 'initials' as const,
+                                                initials: person.person.displayName.slice(0, 2).toUpperCase(),
+                                            },
+                                        joinedAt: person.person.createdAt,
+                                        games,
+                                        reviews: [],
+                                    },
+                                    selected: person.person.accountId !== null && selectedAccountIds.has(person.person.accountId),
+                                }
+                            }),
+                    )
+                    if (this.pendingRecording) {
+                        const legacy = [...legacyAccountIds].map((accountId) => {
+                            const member = group.members.find((member) => member.id === accountId)
+                            const person = response.people.find((person) => person.person.accountId === accountId)?.person
+                            const name = member?.displayName || person?.displayName || 'Former player'
                             return {
                                 user: {
-                                    id: person.person.id,
-                                    username: member?.username ?? person.person.displayName.toLowerCase().replace(/\s+/g, '-'),
-                                    displayName: person.person.displayName,
-                                    avatar: person.person.avatar ??
-                                        member?.avatar ?? {
+                                    id: -accountId,
+                                    username: member?.username ?? name,
+                                    displayName: this.pendingRecording?.groupPersonIds?.some((id) =>
+                                        response.people.some((entry) => entry.person.id === id && entry.person.accountId === accountId),
+                                    )
+                                        ? `${name} (separate account entry)`
+                                        : name,
+                                    avatar: member?.avatar ??
+                                        person?.avatar ?? {
                                             backgroundColor: '#64748b',
                                             iconName: null,
                                             emoji: null,
                                             type: 'initials' as const,
-                                            initials: person.person.displayName.slice(0, 2).toUpperCase(),
+                                            initials: name.slice(0, 2).toUpperCase(),
                                         },
-                                    joinedAt: person.person.createdAt,
-                                    games,
-                                    reviews: [],
+                                    joinedAt: member?.joinedAt ?? '',
+                                    games: member?.games ?? [],
+                                    reviews: member?.reviews ?? [],
                                 },
-                                selected: person.person.accountId !== null && selectedAccountIds.has(person.person.accountId),
+                                selected: false,
                             }
-                        }),
-                    )
+                        })
+                        this.attendees.update((attendees) => [...attendees, ...legacy])
+                        this.recordingRestored = false
+                    }
+                    this.restoreRecording()
                 }
 
                 if (typeof this.api.getGroupPersonCatalog === 'function') {
@@ -354,11 +506,16 @@ export class LogSessionWizardComponent {
     //        STEP NAVIGATION
     // --------------------------------------------------------------------------
     public canProceedToNextStep(): boolean {
-        return this.isStepValid(this.currentStep())
+        if (this.isLive() && this.liveSession()) return false
+        return !this.loadingRecording() && (!this.editingId || this.recordingRestored) && this.isStepValid(this.currentStep())
     }
 
     public nextStep(): void {
         if (!this.canProceedToNextStep()) return
+        if (this.isLive()) {
+            void this.submitLive()
+            return
+        }
         const step = this.currentStep()
         if (step === 'save') {
             void this.submitSession()
@@ -383,6 +540,7 @@ export class LogSessionWizardComponent {
     //        GROUP AND ATTENDEES
     // --------------------------------------------------------------------------
     public selectGroup(group: GroupWithMembersAndGames): void {
+        if (this.editingId && this.pendingRecording && group.id !== this.pendingRecording.groupId) return
         this.selectedGroup.set(group)
     }
 
@@ -428,7 +586,19 @@ export class LogSessionWizardComponent {
     public hasParticipantsForEveryGame(): boolean {
         const selectedGames = this.getSelectedGames()
 
-        return selectedGames.length > 0 && selectedGames.every((game) => this.getSelectedParticipantCount(game.game.id) > 0)
+        return (
+            selectedGames.length > 0 &&
+            this.recordedPlays().every(
+                (play) =>
+                    (play.participantIds?.length ?? 0) + (play.participantPersonIds?.length ?? 0) > 0 &&
+                    (play.results ?? []).every(
+                        (result) =>
+                            result.score === null ||
+                            result.score === undefined ||
+                            (Number.isInteger(result.score) && Math.abs(result.score) <= 1000000),
+                    ),
+            )
+        )
     }
 
     // --------------------------------------------------------------------------
@@ -460,31 +630,284 @@ export class LogSessionWizardComponent {
         this.isLoading.set(true)
 
         try {
-            const result = await firstValueFrom(
-                this.api.createPlaySession({
-                    groupId: group.id,
-                    sessionDate: new Date(`${sessionDate}T12:00:00`).toISOString(),
-                    timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
-                    notes: this.sessionNotes.value?.trim() || undefined,
-                    ...(this.usesGroupPeople()
-                        ? {
-                              groupPersonIds: selectedAttendees.map((attendee) => attendee.user.id),
-                              games: games.map((game) => ({ gameId: game.gameId, participantPersonIds: game.participantIds })),
-                          }
-                        : {
-                              attendeeIds: selectedAttendees.map((attendee) => attendee.user.id),
-                              games,
-                          }),
-                }),
-            )
+            const body: CreatePlaySessionRequest = {
+                groupId: group.id,
+                sessionDate:
+                    this.editingId &&
+                    this.pendingRecording &&
+                    new Intl.DateTimeFormat('en-CA', {
+                        year: 'numeric',
+                        month: '2-digit',
+                        day: '2-digit',
+                        timeZone: this.pendingRecording.timezone,
+                    }).format(new Date(this.pendingRecording.sessionDate)) === sessionDate
+                        ? this.pendingRecording.sessionDate
+                        : new Date(`${sessionDate}T12:00:00`).toISOString(),
+                timezone: this.pendingRecording?.timezone ?? Intl.DateTimeFormat().resolvedOptions().timeZone,
+                notes: this.sessionNotes.value?.trim() || undefined,
+                ...(selectedAttendees.some((attendee) => !this.usesGroupPeople() || attendee.user.id < 0)
+                    ? {
+                          attendeeIds: selectedAttendees
+                              .filter((attendee) => !this.usesGroupPeople() || attendee.user.id < 0)
+                              .map((attendee) => Math.abs(attendee.user.id)),
+                      }
+                    : {}),
+                ...(this.usesGroupPeople() && selectedAttendees.some((attendee) => attendee.user.id > 0)
+                    ? { groupPersonIds: selectedAttendees.filter((attendee) => attendee.user.id > 0).map((attendee) => attendee.user.id) }
+                    : {}),
+                games: this.recordedPlays(),
+            }
+            let sessionId: number
+            if (this.editingId) {
+                await firstValueFrom(this.api.correctSession(this.editingId, { ...body, revision: this.revision }))
+                sessionId = this.editingId
+            } else sessionId = (await firstValueFrom(this.api.createPlaySession(body))).sessionId
 
             this.toastService.success('Session saved.')
             // Play › History and Home read these cached lists; reload them so the new session shows up.
             this.dataService.refreshUserHistory()
             this.dataService.refreshUserMeets()
-            await this.router.navigate(['/sessions', result.sessionId])
+            await this.router.navigate(['/sessions', sessionId], { queryParams: { saved: 1 } })
+        } catch (error) {
+            const status = (error as { status?: number }).status
+            this.recordingError.set(
+                status === 409
+                    ? 'This session changed while you were editing. Your changes have not been saved. Reload the recording before trying again.'
+                    : 'Could not save the session. Your choices are still here; check your connection and try again.',
+            )
+            this.toastService.error(this.recordingError())
+        } finally {
+            this.isLoading.set(false)
+        }
+    }
+
+    public setDay(offset: number): void {
+        this.sessionDate.setValue(this.dayValue(offset))
+    }
+
+    public async searchCatalog(): Promise<void> {
+        const group = this.selectedGroup()
+        const query = this.gameQuery().trim()
+        if (!group || !query) return
+        this.catalogLoading.set(true)
+        this.catalogError.set(false)
+        try {
+            const games = await firstValueFrom(this.api.getGroupPersonCatalog(group.id, query))
+            if (this.selectedGroup()?.id === group.id && this.gameQuery().trim() === query) this.catalogResults.set(games)
         } catch {
-            this.toastService.error('Could not save the session. Please review your selections and try again.')
+            this.catalogError.set(true)
+        } finally {
+            this.catalogLoading.set(false)
+        }
+    }
+
+    /** Adds a catalogue game nobody here owns, already ticked; recording a play never adds ownership. */
+    public addCatalogGame(game: GameCompleteType): void {
+        this.extras.update((previous) => (previous.some((item) => item.id === game.id) ? previous : [...previous, game]))
+        this.games.update((games) =>
+            games.some((selection) => selection.game.id === game.id)
+                ? games.map((selection) => (selection.game.id === game.id ? { ...selection, selected: true } : selection))
+                : [...games, { game, selected: true }],
+        )
+    }
+
+    /** Switches this form to starting a night now, keeping the group and people already chosen. */
+    public switchToLive(): void {
+        this.isLive.set(true)
+        void this.router.navigate([], {
+            relativeTo: this.route,
+            queryParams: { mode: 'live' },
+            queryParamsHandling: 'merge',
+            replaceUrl: true,
+        })
+    }
+
+    /** "2026-10-16" for yesterday (offset -1), in the browser's own day. */
+    public dayValue(offset: number): string {
+        const date = new Date()
+        date.setDate(date.getDate() + offset)
+        return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`
+    }
+
+    public repeatGame(gameId: number): void {
+        if (this.recordedPlays().length >= 100) return
+        this.additionalPlays.update((plays) => [
+            ...plays,
+            {
+                key: this.nextPlayKey++,
+                gameId,
+                participantIds: this.getSelectedAttendees().map((attendee) => attendee.user.id),
+                results: {},
+            },
+        ])
+    }
+    public removePlay(key: number): void {
+        this.additionalPlays.update((plays) => plays.filter((play) => play.key !== key))
+    }
+    public playsFor(gameId: number): PlayChoice[] {
+        return this.additionalPlays().filter((play) => play.gameId === gameId)
+    }
+    public togglePlayPerson(key: number, personId: number): void {
+        this.additionalPlays.update((plays) =>
+            plays.map((play) =>
+                play.key === key
+                    ? {
+                          ...play,
+                          participantIds: play.participantIds.includes(personId)
+                              ? play.participantIds.filter((id) => id !== personId)
+                              : [...play.participantIds, personId],
+                      }
+                    : play,
+            ),
+        )
+    }
+    public resultFor(gameId: number, personId: number, key?: number) {
+        return (
+            (key === undefined ? this.primaryResults()[gameId] : this.additionalPlays().find((play) => play.key === key)?.results)?.[
+                personId
+            ] ?? { isWinner: false, score: null }
+        )
+    }
+    public setResult(gameId: number, personId: number, field: 'isWinner' | 'score', value: boolean | string, key?: number): void {
+        const result = {
+            ...this.resultFor(gameId, personId, key),
+            [field]: field === 'score' ? (value === '' ? null : Number(value)) : value,
+        }
+        if (key === undefined)
+            this.primaryResults.update((results) => ({ ...results, [gameId]: { ...results[gameId], [personId]: result } }))
+        else
+            this.additionalPlays.update((plays) =>
+                plays.map((play) => (play.key === key ? { ...play, results: { ...play.results, [personId]: result } } : play)),
+            )
+    }
+    public recordedPlays(): CreatePlaySessionRequest['games'] {
+        const selectedPeople = new Set(this.getSelectedAttendees().map((attendee) => attendee.user.id))
+        return this.getSelectedGames().flatMap(({ game }) => {
+            const first: PlayChoice = {
+                key: 0,
+                gameId: game.id,
+                participantIds: this.matrix()
+                    .filter((cell) => cell.gameId === game.id && cell.selected)
+                    .map((cell) => cell.attendeeId),
+                results: this.primaryResults()[game.id] ?? {},
+            }
+            return [first, ...this.playsFor(game.id)].map((play) => {
+                const people = play.participantIds.filter((id) => selectedPeople.has(id))
+                const results = people.flatMap((id) => {
+                    const result = play.results[id]
+                    return result && (result.isWinner || result.score !== null)
+                        ? [{ ...(this.usesGroupPeople() && id > 0 ? { groupPersonId: id } : { accountId: Math.abs(id) }), ...result }]
+                        : []
+                })
+                return {
+                    gameId: game.id,
+                    ...(people.some((id) => !this.usesGroupPeople() || id < 0)
+                        ? { participantIds: people.filter((id) => !this.usesGroupPeople() || id < 0).map((id) => Math.abs(id)) }
+                        : {}),
+                    ...(this.usesGroupPeople() && people.some((id) => id > 0)
+                        ? { participantPersonIds: people.filter((id) => id > 0) }
+                        : {}),
+                    ...(results.length ? { results } : {}),
+                }
+            })
+        })
+    }
+
+    public async loadRecording(): Promise<void> {
+        if (!this.editingId) return
+        this.loadingRecording.set(true)
+        this.recordingError.set('')
+        try {
+            const recording = await firstValueFrom(this.api.getSessionRecording(this.editingId))
+            const user = this.currentUser()
+            if (!user) throw new Error('Sign in again')
+            const games = await Promise.all(
+                [...new Set(recording.games.map((play) => play.gameId))].map((id) => firstValueFrom(this.api.getGameView(user.id, id))),
+            )
+            this.pendingRecording = recording
+            this.recordingRestored = false
+            this.extras.set(games.map((game) => game.gameData))
+            this.revision = recording.revision
+            this.sessionDate.setValue(
+                new Intl.DateTimeFormat('en-CA', {
+                    year: 'numeric',
+                    month: '2-digit',
+                    day: '2-digit',
+                    timeZone: recording.timezone,
+                }).format(new Date(recording.sessionDate)),
+            )
+            this.sessionNotes.setValue(recording.notes ?? '')
+            const group = this.userGroups().find((group) => group.id === recording.groupId)
+            if (group) {
+                this.selectedGroup.set(null)
+                this.selectGroup(group)
+            }
+        } catch {
+            this.recordingError.set('Could not load this recording. Check your access and connection, then retry.')
+        } finally {
+            this.loadingRecording.set(false)
+        }
+    }
+
+    private restoreRecording(): void {
+        const recording = this.pendingRecording
+        if (!recording || this.recordingRestored || this.selectedGroup()?.id !== recording.groupId) return
+        if (recording.groupPersonIds?.length && !this.usesGroupPeople()) return
+        this.recordingRestored = true
+        const ids = this.usesGroupPeople()
+            ? [...(recording.groupPersonIds ?? []), ...(recording.attendeeIds ?? []).map((id) => -id)]
+            : (recording.attendeeIds ?? [])
+        this.attendees.update((people) => people.map((person) => ({ ...person, selected: ids.includes(person.user.id) })))
+        const games = new Map(this.extras().map((game) => [game.id, game]))
+        this.games.set([...games.values()].map((game) => ({ game, selected: recording.games.some((play) => play.gameId === game.id) })))
+        const primary = new Set<number>()
+        const results: Record<number, PlayChoice['results']> = {}
+        const extra: PlayChoice[] = []
+        const matrix: MatrixCell[] = []
+        for (const play of recording.games) {
+            const participantIds = this.usesGroupPeople()
+                ? [...(play.participantPersonIds ?? []), ...(play.participantIds ?? []).map((id) => -id)]
+                : (play.participantIds ?? [])
+            const playResults = Object.fromEntries(
+                (play.results ?? []).map((result) => [
+                    result.groupPersonId ?? (this.usesGroupPeople() ? -(result.accountId as number) : result.accountId),
+                    { isWinner: result.isWinner, score: result.score ?? null },
+                ]),
+            )
+            if (primary.has(play.gameId)) extra.push({ key: this.nextPlayKey++, gameId: play.gameId, participantIds, results: playResults })
+            else {
+                primary.add(play.gameId)
+                results[play.gameId] = playResults
+                for (const id of ids) {
+                    matrix.push({ gameId: play.gameId, attendeeId: id, selected: participantIds.includes(id) })
+                    this.playerChoices.set(`${id}:${play.gameId}`, participantIds.includes(id))
+                }
+            }
+        }
+        this.matrix.set(matrix)
+        this.primaryResults.set(results)
+        this.additionalPlays.set(extra)
+    }
+
+    private async submitLive(): Promise<void> {
+        const group = this.selectedGroup()
+        if (!group) return
+        this.isLoading.set(true)
+        try {
+            const ids = this.getSelectedAttendees().map((attendee) => attendee.user.id)
+            const session = await firstValueFrom(
+                this.api.startLiveSession({
+                    groupId: group.id,
+                    sessionDate: new Date().toISOString(),
+                    timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+                    plannedGameIds: [],
+                    ...(this.usesGroupPeople() ? { groupPersonIds: ids } : { attendeeIds: ids }),
+                }),
+            )
+            this.dataService.refreshUserMeets()
+            await this.router.navigate(['/sessions', session.sessionId])
+        } catch {
+            this.recordingError.set('Could not start the night. Your choices are still here; try again.')
         } finally {
             this.isLoading.set(false)
         }
@@ -494,7 +917,11 @@ export class LogSessionWizardComponent {
     //        UTILITY METHODS
     // --------------------------------------------------------------------------
     public getStepInfo(): StepInfo {
-        return this.steps.find((step) => step.key === this.currentStep()) ?? this.steps[0]
+        const step = this.steps.find((step) => step.key === this.currentStep()) ?? this.steps[0]
+        // A night starting now has no day to pick, and the people are the ones here.
+        return this.isLive() && step.key === 'who'
+            ? { ...step, label: 'Who is here', description: 'Pick the group and who is here.' }
+            : step
     }
 
     public getStepIndex(step: SessionStep): number {
@@ -509,6 +936,33 @@ export class LogSessionWizardComponent {
         return this.getSelectedAttendees()
             .map((attendee) => attendee.user.displayName || attendee.user.username)
             .join(', ')
+    }
+
+    public sessionSuggestionLabel(sessionId: number): string {
+        const history = (this.dataService.userHistory?.() ?? []).find((record) => record.meetData.id === sessionId)
+        return history?.gamesPlayed.map((play) => this.getGameTitle(play.gameData)).join(', ') || 'View people and games'
+    }
+    public primaryPlayers(gameId: number): number[] {
+        return this.matrix()
+            .filter((cell) => cell.gameId === gameId && cell.selected)
+            .map((cell) => cell.attendeeId)
+    }
+    public playerName(id: number): string {
+        const attendee = this.attendees().find((attendee) => attendee.user.id === id)
+        return attendee?.user.displayName || attendee?.user.username || 'Player'
+    }
+    public playTitle(gameId: number): string {
+        const game = this.games().find((selection) => selection.game.id === gameId)?.game
+        return game ? this.getGameTitle(game) : 'Game'
+    }
+    /** Account ids sit negated beside group-person ids in this form (see restoreRecording), so look them up the same way. */
+    public namesForPlay(play: CreatePlaySessionRequest['games'][number]): string {
+        const accounts = (play.participantIds ?? []).map((id) => (this.usesGroupPeople() ? -id : id))
+        return [...(play.participantPersonIds ?? []), ...accounts].map((id) => this.playerName(id)).join(', ')
+    }
+
+    public playImage(gameId: number): string {
+        return this.games().find((selection) => selection.game.id === gameId)?.game.imageUrl ?? ''
     }
 
     public getPlayerNames(gameId: number): string {

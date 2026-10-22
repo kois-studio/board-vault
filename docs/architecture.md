@@ -61,7 +61,7 @@ attempt may already have been applied.
 | `common/artwork/` | Game artwork without Nest (ADR-0015): the guarded download (public http(s) only, 8 MB, 10 s) and the compression to WebP within 800 px. `backend/scripts/import-artwork.mjs` uses it too. |
 | `modules/common/auth/` | Clerk token verification, account resolution, Clerk invitations, `GET /auth/clerk/status`. |
 | `modules/common/database/` | `DatabaseService`: the connection, `execute`, and `transaction`. |
-| `modules/common/database/queries/` | All SQL, one class per domain (`accounts`, `artwork`, `groups`, `games`, `collection`, `invitations`, `notifications`, `sessions`, `recommendations`), one method per query. |
+| `modules/common/database/queries/` | All SQL, one class per domain (`accounts`, `artwork`, `groups`, `home`, `recordings`, `games`, `collection`, `invitations`, `notifications`, `sessions`, `recommendations`), one method per query. |
 | `modules/common/cache/` | Upstash Redis wrapper and the admin cache endpoints. |
 | `modules/common/health/` | `/health` (liveness) and `/health/ready` (database, cache, schema version). |
 | `modules/core/artwork` | `GET /artwork/<gameId>-<hash>.webp` (public, cached for a year) and the copying of artwork when an admin approves or edits a game. `ArtworkDownloader` is its own provider so tests answer without the network. |
@@ -134,7 +134,7 @@ component through `takeUntilDestroyed` or `toSignal`.
 | --- | --- | --- |
 | `/` | none | Landing |
 | `/login`, `/register` | `GuestOnlyGuard` | Clerk sign-in; invitations and the private-beta notice |
-| `/dashboard` | `AuthOnlyGuard` | Home, by state (see [ux-flows](ux-flows.md#home)): invitations; then for a new account the first group and a set-up checklist; otherwise the next game night (answer it there), your group or groups, recently played, and on desktop a link to your page in the group |
+| `/dashboard` | `AuthOnlyGuard` | Home (see [ux-flows](ux-flows.md#home)): visible Record/Plan, upcoming nights, consistent group cards with personal pins/ordering, personal rating follow-up and recent history; new accounts retain first-group setup |
 | `/groups/:groupId` | `AuthOnlyGuard` | Group page (`/groups` redirects to Home), top to bottom: next night and Group pulse (approximate worth, links to each person), recent nights, standings, library (filtered by number of players), games to buy, people. Deciding what to play happens on the night |
 | `/groups/:groupId/members/:accountId`, `/groups/:groupId/people/:personId` | `AuthOnlyGuard` | One person in a group, with or without an account: the games they bring, their approximate collection worth (ADR-0016), and their game nights |
 | `/create-group`, `/groups/:groupId/edit` | `AuthOnlyGuard` | Group create and settings (invitations) |

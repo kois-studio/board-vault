@@ -60,7 +60,13 @@ async function renderHome(overrides: Record<string, unknown> = {}) {
         imports: [DashboardPageComponent],
         providers: [
             { provide: DataService, useValue: dataService },
-            { provide: Api, useValue: { getSessionDetailsById: () => of(emptyNight) } },
+            {
+                provide: Api,
+                useValue: {
+                    getSessionDetailsById: () => of(emptyNight),
+                    getHomePreferences: () => of({ pinnedGroupIds: [], groupOrder: 'recent', dismissedRatingGameIds: [] }),
+                },
+            },
             { provide: ToastService, useValue: { error: vi.fn() } },
             {
                 provide: LoadingService,
@@ -158,14 +164,19 @@ describe('DashboardPageComponent (Home)', () => {
             const fixture = await renderHome(oneGroup)
             const element = fixture.nativeElement as HTMLElement
 
-            expect(text(element)).toContain('No game night planned')
-            const plan = Array.from(element.querySelectorAll('a')).find((link) => link.textContent?.trim() === 'Plan one')
+            expect(text(element)).not.toContain('No game night planned')
+            const plan = Array.from(element.querySelectorAll('a')).find((link) => link.textContent?.trim() === 'Plan a game night')
             expect(plan?.getAttribute('href')).toBe('/groups/10/sessions/new')
         })
 
         it('shows the group as one large card, with a small link for another group', async () => {
             const fixture = await renderHome(oneGroup)
             const element = fixture.nativeElement as HTMLElement
+
+            // One group: nothing to sort or pin, and no actions repeated from the header.
+            expect(element.querySelector('select')).toBeNull()
+            expect(element.querySelector('button[aria-pressed]')).toBeNull()
+            expect(element.querySelector('section[aria-labelledby="groups-heading"] a[href^="/play/log-session"]')).toBeNull()
 
             expect(element.querySelector('#groups-heading')?.textContent).toContain('Your group')
             expect(element.querySelectorAll('app-card-group')).toHaveLength(1)
@@ -183,15 +194,15 @@ describe('DashboardPageComponent (Home)', () => {
             expect(element.querySelector('a[href="/play/log-session"]')).not.toBeNull()
         })
 
-        it('links to your page in the group', async () => {
+        it('links to your own page, across all your groups', async () => {
             const fixture = await renderHome({
                 ...oneGroup,
                 userGames: signal([{ id: 1, titleTranslations: { en: 'Azul' } }]),
             })
-            const profile = (fixture.nativeElement as HTMLElement).querySelector('a[href="/groups/10/members/1"]')
+            const profile = (fixture.nativeElement as HTMLElement).querySelector('a[href="/you"]')
 
             expect(text(profile)).toContain('1 game · 0 nights played')
-            expect(text(profile)).toContain('Your profile in Friday crew')
+            expect(text(profile)).toContain('Your page')
         })
     })
 
@@ -218,12 +229,31 @@ describe('DashboardPageComponent (Home)', () => {
             expect(rows[1]).toContain('Tomorrow')
             expect(rows[3]).toContain('Last:')
             expect(rows[4]).toContain('No nights yet')
+            // No group-level actions repeated per row, and no sort control.
+            expect(element.querySelector('section[aria-labelledby="groups-heading"] a[href^="/play/log-session"]')).toBeNull()
+            expect(element.querySelector('select')).toBeNull()
+        })
+
+        it('puts pinned groups first, in the order pinned, with a pin on each row', async () => {
+            const fixture = await renderHome({
+                userGroups: signal([group(1, 'Quiet'), group(2, 'Played'), group(3, 'Planned')]),
+                userMeets: signal([meet(1, 2, -30, 'completed'), meet(2, 3, 1)]),
+            })
+            fixture.componentInstance.home.preferences.set({ pinnedGroupIds: [1, 2], groupOrder: 'recent', dismissedRatingGameIds: [] })
+            fixture.detectChanges()
+            const element = fixture.nativeElement as HTMLElement
+            const items = Array.from(element.querySelectorAll('section[aria-labelledby="groups-heading"] li'))
+
+            expect(items.map((item) => item.querySelector('.font-bold')?.textContent?.trim())).toEqual(['Quiet', 'Played', 'Planned'])
+            const pins = items.map((item) => item.querySelector('button[aria-pressed]'))
+            expect(pins.map((pin) => pin?.getAttribute('aria-pressed'))).toEqual(['true', 'true', 'false'])
+            expect(pins[2]?.getAttribute('aria-label')).toBe('Pin Planned to the top')
         })
 
         it('asks which group to plan in', async () => {
             const fixture = await renderHome({ userGroups: signal([group(1, 'One'), group(2, 'Two')]) })
             const plan = Array.from((fixture.nativeElement as HTMLElement).querySelectorAll('a')).find(
-                (link) => link.textContent?.trim() === 'Plan one',
+                (link) => link.textContent?.trim() === 'Plan a game night',
             )
 
             expect(plan?.getAttribute('href')).toBe('/play/upcoming-sessions?plan=1')
@@ -276,6 +306,31 @@ describe('DashboardPageComponent (Home)', () => {
 
             expect(text(fixture.nativeElement)).toContain('3 people')
             expect(text(fixture.nativeElement)).toContain('2 people')
+        })
+
+        it('offers to rate the games you played there and have not rated, under the night', async () => {
+            const game = (id: number, title: string) => ({ id, titleTranslations: { en: title, es: title }, imageUrl: '' })
+            const fixture = await renderHome({
+                ...groups,
+                userReviews: signal([{ gameId: 2, review: 8 }]),
+                userHistory: signal([
+                    {
+                        meetData: meet(7, 10, -3, 'completed'),
+                        attendedBy: [{ id: 1 }],
+                        attendedByPeople: [],
+                        gamesPlayed: [
+                            { gameData: game(1, 'Root'), playedBy: [{ id: 1 }], playedByPeople: [] },
+                            { gameData: game(2, 'Azul'), playedBy: [{ id: 1 }], playedByPeople: [] },
+                            { gameData: game(3, 'Cascadia'), playedBy: [{ id: 2 }], playedByPeople: [] },
+                        ],
+                    },
+                ]),
+            })
+            const prompts = Array.from((fixture.nativeElement as HTMLElement).querySelectorAll('app-rating-follow-up li')).map(text)
+
+            // Azul is rated already; Cascadia was played by someone else.
+            expect(prompts).toHaveLength(1)
+            expect(prompts[0]).toContain('Rate Root')
         })
     })
 })

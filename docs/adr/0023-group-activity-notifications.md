@@ -82,7 +82,10 @@ by a scheduler is not available.
   trims them.
 - Accepted: a reader who marks a notification read just as a change updates
   it reads the change in the same click. A reader who stops sharing every group
-  with the person keeps an unread one that nothing updates any more.
+  with the person keeps an unread one that nothing updates any more. A reader
+  who shares two groups with the person loses the notification when the person
+  leaves the one in `data.group`, even though they still share the other; the
+  next change starts a new one there.
 
 ## Evidence
 

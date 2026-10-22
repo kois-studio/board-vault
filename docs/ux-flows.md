@@ -78,26 +78,90 @@ account" with a grey avatar (ADR-0018). Neither changes a session's counts.
 
 ## Home
 
-Home follows where the person is. Pending invitations always come first.
+Record a session (primary) and Plan a game night remain visible on desktop
+and phones, whether or not history exists. Upcoming/live nights retain RSVP,
+shortlists and bringers, without a repeated planning empty-state prompt.
+Pending invitations remain prominent. Accounts without a group retain the
+first-group setup path.
 
-- **No group yet:** one card to create the first group (an invitation shows
-  up above it), and a three-step checklist: create a group, add your games,
-  plan a night. Nothing that would still be empty is shown.
-- **Any group:** the next game night leads, with its date, group, how many are
-  going and have not answered, the shortlist (most-voted first), what you are
-  bringing, and your answer. The next two nights follow as short rows. With
-  nothing planned, one row offers to plan (straight into the group when there
-  is only one).
-- **One group:** a large card with its people and three shortcuts (what to
-  play, its library, its history). Its owner is nudged to invite people while
-  the group has fewer than four.
-- **Several groups:** compact rows, ordered by a night under way, then the
-  soonest planned, then the most recently played, each saying which.
-- **History:** the last three nights, or one row inviting to record a past
-  night when there are none.
+One group shows its full card: identity, people, the invite nudge, and What to
+play, Library and History. Several groups show as compact rows (identity,
+last or next night) so the page stays short; the header's Record and Plan
+are the only recording entries on Home. Every group-specific recording entry
+elsewhere keeps its group selected.
 
-Creating another group is a small "+ New group" link; it is a rare action
-once someone has a group.
+With several groups, each row has a small pin in its corner. On a pointer
+device it appears on hover or keyboard focus; on touch it stays faintly
+visible. Pinned groups lead in the order they were pinned, then live, next
+and past nights as before, with stable name/id ties. There is no sort
+control. Pins belong to the account, follow it across devices and never
+change other people's Home. Failing to load preferences leaves the groups
+usable.
+
+Under each Recently played night, Home offers a compact rating line for up to
+two games the account played that night and has not rated, each dismissible.
+Existing ratings are reused. Membership and collection maintenance stay
+within their contexts. Fully customizable Home is deferred to discovery
+issue #164.
+
+## Your page
+
+`/you` is the signed-in person's own page across all their groups, opened
+from their name in the account menu and, on desktop, from the card under
+Recently played on Home. Only they see it, so it has no privacy settings;
+there is no public profile (ADR-0001 keeps the group the product centre).
+It shows nights, games played and wins summed from each group's standings,
+so they match the group pages; games owned, with what they entered as paid;
+one line per group linking to their page there, which is how that group sees
+them; the games they played most on finished nights; and their highest
+ratings.
+
+## Record or correct a session
+
+Recording has three steps: who and when, games and their players, note and
+review. Today/Yesterday supplement the date picker; the selected full date
+appears in the final summary. Same-day sessions in the selected group are
+suggested without preventing a separate gathering.
+
+Attendees' games are the initial offer. One search box filters them and, from
+two letters, lists matching catalogue games under Other games, which can be
+added without first recording ownership. Every selected game starts with all
+attendees as players, individually removable. Played it again adds a separate
+play with its own players. Winners and scores are recorded afterwards on the
+session page, per play. A save is one
+transaction. Failed saves retain choices. Completed recordings open the saved
+session with a one-time "Saved" confirmation linking to the personal ratings,
+and, that once only, an optional ownership entry naming My Games or a
+particular person without an account. The ratings section lists every game
+the account played there, with its current stars.
+
+An organizer, group owner or invited non-declined player can open Correct
+session on a completed night, or Edit games and players while active. The
+same form loads the recording, preserves separate plays/results and the
+session's group/status, and writes a new group-history entry. A game taken out
+of a correction is removed, unless it was shortlisted, voted on or brought,
+in which case it stays as not played. On a completed night, people taken out
+stay on record as absent. Former people
+already in the recording can stay. Changing active invitations is restricted
+to the organizer. Another edit, results save, or lifecycle change invalidates
+a stale form: saving answers 409 and asks to reload, without overwriting it.
+Any group member can save results separately for each play.
+
+Start the night live, offered on the Record flow's first step, uses the who
+step and creates an active night using the current server time, without requiring games or an earlier planned session.
+If the group already has a night under way, the flow links to it instead of
+starting a second one. People and games can then be added as the afternoon
+unfolds. Planning retains
+its existing ownership and shortlist rules.
+
+## Ownership
+
+My Games links to catalogue browsing. A person without an account has Add a
+game for [name] on their group page; it searches the catalogue and explicitly
+names the owner before saving. This is a group-scoped ownership statement,
+visible and editable by the group's members, never another account's private
+collection. Session ownership follow-up is optional and independent of the
+already-saved play history.
 
 ## Browser coverage
 

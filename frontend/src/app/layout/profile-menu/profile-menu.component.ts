@@ -1,6 +1,7 @@
 import { Component, ElementRef, inject, viewChild } from '@angular/core'
 import { RouterLink } from '@angular/router'
 import { ImageProfileComponent } from '../../components/image-profile/image-profile.component'
+import { GithubMarkComponent } from '../../components/ui/github-mark/github-mark.component'
 import { IconComponent } from '../../components/ui/icon/icon.component'
 import { ThemeSwitchComponent } from '../../components/ui/theme-switch/theme-switch.component'
 import { DataService } from '../../core/services/data.service'
@@ -10,7 +11,7 @@ import { injectDisclosure } from '../../core/utils/disclosure'
 
 /** The avatar menu: account, settings, theme, submissions, administration, about, sign out (disclosure pattern). */
 @Component({
-    imports: [ImageProfileComponent, IconComponent, RouterLink, ThemeSwitchComponent],
+    imports: [GithubMarkComponent, ImageProfileComponent, IconComponent, RouterLink, ThemeSwitchComponent],
     selector: 'app-profile-menu',
     templateUrl: 'profile-menu.component.html',
 })

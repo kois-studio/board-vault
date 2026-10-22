@@ -18,6 +18,7 @@ const body = {
 
 function createDatabaseMock() {
     return {
+        getExistingGameIds: vi.fn().mockResolvedValue([42, 43, 84]),
         getGroupById: vi.fn().mockResolvedValue({ rows: [[7, 'Friday Group', 1, '2026-01-01']] }),
         getGroupMemberIds: vi.fn().mockResolvedValue([1, 2, 3]),
         getGroupAvailableGameIds: vi.fn().mockResolvedValue([42, 43]),
@@ -128,6 +129,7 @@ describe('SessionsService', () => {
             timezone: body.timezone,
             attendeeIds: body.attendeeIds,
             games: body.games,
+            plays: body.games,
             activity: { groupId: 7, actorAccountId: 1, type: 'session_recorded' },
         })
     })
@@ -160,6 +162,7 @@ describe('SessionsService', () => {
             groupPersonIds: [10, 11],
             games: [{ gameId: 84, participantIds: [1] }],
             personGames: [{ gameId: 84, participantIds: [10, 11] }],
+            plays: mixedBody.games,
             activity: { groupId: 7, actorAccountId: 1, type: 'session_recorded' },
         })
     })
@@ -232,7 +235,7 @@ describe('SessionsService', () => {
         expect(database.createCompletedSession).not.toHaveBeenCalled()
     })
 
-    it('rejects games unavailable to the selected group', async () => {
+    it('rejects games missing from the catalogue', async () => {
         const database = createDatabaseMock()
         const service = new SessionsService(fakeDatabase(database), fakeActivityNotifier())
 

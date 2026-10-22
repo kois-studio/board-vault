@@ -5,6 +5,7 @@ import { CardGroupComponent } from '../../components/card-group/card-group.compo
 import { CardInvitationComponent } from '../../components/card-invitation/card-invitation.component'
 import { ImageProfileComponent } from '../../components/image-profile/image-profile.component'
 import { NextNightCardComponent } from '../../components/next-night-card/next-night-card.component'
+import { RatingFollowUpComponent } from '../../components/rating-follow-up/rating-follow-up.component'
 import { SessionAnswerComponent } from '../../components/session-answer/session-answer.component'
 import { SkeletonCardGroupComponent } from '../../components/skeletons/skeleton-card-group/skeleton-card-group.component'
 import { ButtonComponent } from '../../components/ui/button/button.component'
@@ -13,6 +14,7 @@ import { IconComponent } from '../../components/ui/icon/icon.component'
 import { LOADING_KEYS } from '../../core/enums/loading-keys-enum'
 import { CountPipe } from '../../core/pipes/count.pipe'
 import { DataService } from '../../core/services/data.service'
+import { HomePreferencesService } from '../../core/services/home-preferences.service'
 import { LoadingService } from '../../core/services/loading.service'
 import { gameTitle } from '../../core/utils/gameTitle'
 import { groupGameCount, groupPeopleCount } from '../../core/utils/groupCounts'
@@ -29,6 +31,7 @@ export type GroupActivity = { tone: 'live' | 'next' | 'past' | 'none'; label: st
  */
 @Component({
     imports: [
+        RatingFollowUpComponent,
         ButtonComponent,
         CardGroupComponent,
         CardInvitationComponent,
@@ -44,6 +47,7 @@ export type GroupActivity = { tone: 'live' | 'next' | 'past' | 'none'; label: st
     templateUrl: 'dashboard-page.component.html',
 })
 export class DashboardPageComponent {
+    readonly home = inject(HomePreferencesService)
     private readonly dataService = inject(DataService)
     private readonly loadingService = inject(LoadingService)
 
@@ -142,20 +146,30 @@ export class DashboardPageComponent {
         return activity
     })
 
-    /** With several groups: a night under way first, then the soonest planned, then the most recently played. */
+    /**
+     * Your pinned groups first, in the order you pinned them; then a night under way, the soonest
+     * planned, and the most recently played. Pins are personal and follow the account (ADR-0022).
+     */
     public readonly orderedGroups = computed(() => {
+        const pins = this.home.preferences().pinnedGroupIds
         const rank = { live: 0, next: 1, past: 2, none: 3 }
         const activity = this.groupActivity()
         const of = (group: GroupWithMembersAndGames) => activity.get(group.id) ?? { tone: 'none' as const, label: '', time: 0 }
+        const pinOrder = (group: GroupWithMembersAndGames) => (pins.includes(group.id) ? pins.indexOf(group.id) : Infinity)
         return [...this.userGroups$()].sort((a, b) => {
+            if (pinOrder(a) !== pinOrder(b)) return pinOrder(a) - pinOrder(b)
             const left = of(a)
             const right = of(b)
             if (left.tone !== right.tone) return rank[left.tone] - rank[right.tone]
             if (left.tone === 'next') return left.time - right.time
             if (left.tone === 'past') return right.time - left.time
-            return a.name.localeCompare(b.name)
+            return a.name.localeCompare(b.name) || a.id - b.id
         })
     })
+
+    public isPinned(group: GroupWithMembersAndGames): boolean {
+        return this.home.preferences().pinnedGroupIds.includes(group.id)
+    }
 
     public peopleInGroup(group: GroupWithMembersAndGames): number {
         return groupPeopleCount(group)
@@ -172,8 +186,7 @@ export class DashboardPageComponent {
         return { link: ['/play/upcoming-sessions'], query: { plan: 1 } }
     })
 
-    /** Your page in the group you are most active in: your games and nights there. */
-    public readonly profileGroup = computed(() => this.orderedGroups()[0] ?? null)
+    /** Your page in the first group on Home: the one you pinned first, or the one you are most active in. */
     public readonly ownedGames = computed(() => this.dataService.userGames().length)
     public readonly nightsPlayed = computed(() => this.dataService.userHistory().length)
 

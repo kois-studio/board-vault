@@ -1,6 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common'
 
 import { safeErrorName, structuredLog } from '../../../common/logging/structured-log.js'
+import { shortName } from '../../../common/utils/display-name.js'
 import { parseStoredDate } from '../../../common/utils/stored-date.js'
 import { DatabaseService } from '../../common/database/database.service.js'
 
@@ -170,7 +171,7 @@ export class ActivityNotifier {
 
             if (!personRow) return
             const actor = await this.accountName(change.actorAccountId)
-            const person = String(personRow[5])
+            const person = shortName(String(personRow[5]))
             const game = gameRow?.[1] ? String(gameRow[1]) : 'a game'
             const message = {
                 owned: `${actor} said ${person} has ${game}, in ${groupName}.`,
@@ -247,6 +248,6 @@ export class ActivityNotifier {
     private async accountName(accountId: number): Promise<string> {
         const [row] = (await this.databaseService.notifications.getAccountName(accountId)).rows
 
-        return row?.[0] ? String(row[0]) : 'Someone'
+        return row?.[0] ? shortName(String(row[0])) : 'Someone'
     }
 }

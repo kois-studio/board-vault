@@ -15,7 +15,7 @@
             <section class="flex items-center gap-4" aria-labelledby="person-name">
                 <app-image-profile size="large" class="shrink-0" [avatar]="person.avatar ?? initialsAvatar(person.displayName)" />
                 <div class="min-w-0">
-                    <h1 id="person-name" class="truncate text-3xl font-bold tracking-tight">{{ person.displayName }}</h1>
+                    <h1 id="person-name" class="text-3xl font-bold tracking-tight wrap-anywhere">{{ person.displayName }}</h1>
                     <p class="mt-1 text-secondary">{{ person.accountId !== null ? 'Member of ' + (groupName() ?? 'this group') : 'In ' + (groupName() ?? 'this group') + ', without an account' }}</p>
                 </div>
             </section>
@@ -64,6 +64,8 @@
 
             <section aria-labelledby="person-games-heading">
                 <h2 id="person-games-heading" class="text-2xl font-bold">Games they bring</h2>
+                @if (person.accountId === null && person.groupPersonId !== null) { <app-add-person-game [groupId]="groupId()" [personId]="person.groupPersonId" [name]="person.displayName" [ownedIds]="ownedIds()" (added)="load()" /> }
+                @else if (isMe()) { <a appButton variant="secondary" class="mt-3" routerLink="/collection/browse">Add a game to My Games</a> }
                 @if (person.games.length > 0) {
                     <ul class="mt-4 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-5">
                         @for (game of person.games; track game.id) {

@@ -98,6 +98,7 @@ export class AccountDeletionQueries {
                     args: [String(email)],
                 },
                 // Private data.
+                { sql: 'DELETE FROM AccountHomePreference WHERE accountId = ?', args: [accountId] },
                 { sql: 'DELETE FROM OwnedGame WHERE accountId = ?', args: [accountId] },
                 { sql: 'DELETE FROM WishlistedGame WHERE accountId = ?', args: [accountId] },
                 { sql: 'DELETE FROM GameReview WHERE accountId = ?', args: [accountId] },

@@ -13,6 +13,24 @@ operational details.
 
 ### Added
 
+- Home always offers recording and planning. One group keeps its full card,
+  several groups show as compact rows with a corner pin that appears on
+  hover; pinned groups lead.
+- Recording keeps its group context, offers Today/Yesterday and same-day
+  session suggestions, and can search catalogue games without ownership.
+  Separate plays keep their own players, winners and scores. Completed
+  recordings can be corrected with group history and stale-edit protection.
+- Optional personal rating follow-up reuses existing ratings and suggests
+  only games actually played, as a compact line under each recently played
+  night that can be dismissed. Ownership entry names My Games or a person
+  without an account, independently of saving a session. Those people's
+  pages can search and add games directly.
+- Your page (`/you`), visible only to you: nights, games played and wins
+  across all your groups, your line in each group, the games you play most
+  and your favourites. Open it from your name in the account menu or from
+  Home, whose card no longer points at a single group.
+- The Record flow can start a night live instead, and links to the group's
+  live night when one is already under way.
 - Usage statistics of our own, with no third party and nothing stored in the
   browser: which pages are opened and from where, which features are used,
   and two funnels (getting started, game night). Events carry a code instead
@@ -55,6 +73,13 @@ operational details.
 
 ### Changed
 
+- Names have at most 20 characters, for accounts and for people without one,
+  and the API enforces it. Longer names saved before are shown cut the same
+  way everywhere ("Bartholomew Montgom…"), notifications included. Names stay
+  on one line in cards and lists, so a long one no longer makes its card
+  taller, runs off the screen or covers the Winner box, and avatar initials
+  stay inside their circle.
+- The account menu and the footer show GitHub's mark beside "Source code".
 - Home follows where you are. A new account sees one card to create its
   first group and a short checklist. With a group, the next game night
   leads, showing who is going, the shortlist, what you're bringing, and your
@@ -228,6 +253,9 @@ operational details.
 
 ### Fixed
 
+- Correcting a session no longer lists a removed game as "shortlisted but not
+  played", and on finished nights keeps people taken out as absent instead of
+  erasing their invitation.
 - Planning a game night, recording a past one, and choosing who is coming
   for suggestions no longer offer someone who left the group. Their group
   person stays for history, so the list showed them, and planning failed

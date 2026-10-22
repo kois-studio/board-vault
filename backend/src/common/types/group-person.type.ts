@@ -2,6 +2,8 @@ import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger'
 import { Type } from 'class-transformer'
 import { ArrayMaxSize, IsArray, IsIn, IsInt, IsNotEmpty, IsOptional, IsString, MaxLength, Min, ValidateNested } from 'class-validator'
 
+import { DISPLAY_NAME_MAX_LENGTH } from '../utils/display-name.js'
+
 import { AvatarDto } from './user.type.js'
 
 export type GroupPersonKind = 'placeholder' | 'linked'
@@ -55,7 +57,7 @@ export class CreateGroupPersonBody {
     @ApiProperty({ example: 'Ana' })
     @IsString()
     @IsNotEmpty()
-    @MaxLength(100)
+    @MaxLength(DISPLAY_NAME_MAX_LENGTH)
     displayName: string
 
     @ApiPropertyOptional({ type: AvatarDto, nullable: true })
@@ -70,7 +72,7 @@ export class UpdateGroupPersonBody {
     @IsOptional()
     @IsString()
     @IsNotEmpty()
-    @MaxLength(100)
+    @MaxLength(DISPLAY_NAME_MAX_LENGTH)
     displayName?: string
 
     @ApiPropertyOptional({ type: AvatarDto, nullable: true })

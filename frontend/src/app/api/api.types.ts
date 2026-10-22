@@ -403,6 +403,7 @@ export type CreatePlaySessionRequest = {
         gameId: number
         participantIds?: Array<number>
         participantPersonIds?: Array<number>
+        results?: Array<{ accountId?: number; groupPersonId?: number; isWinner: boolean; score?: number | null }>
     }>
 }
 
@@ -638,6 +639,7 @@ export type HistoryRecordType = {
     attendedBy: Array<HistoryUserType>
     attendedByPeople?: Array<HistoryPersonType>
     gamesPlayed: Array<{
+        playCount?: number
         gameData: GameCompleteType
         playedBy: Array<HistoryUserType>
         playedByPeople?: Array<HistoryPersonType>
@@ -787,3 +789,7 @@ export type UserProposalStatsType = {
     approvalRate: number
     reputationScore: number
 }
+
+export type HomePreferences = { pinnedGroupIds: number[]; groupOrder: 'recent' | 'upcoming' | 'name'; dismissedRatingGameIds: number[] }
+
+export type SessionRecording = CreatePlaySessionRequest & { revision: number }
