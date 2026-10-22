@@ -24,13 +24,16 @@ describe('GroupPeopleService participant boundaries', () => {
             getGroupPersonPreferences: vi.fn().mockResolvedValue({ rows: [[42, 'favorite', 'placeholder_setup', 7, 'a', 'b']] }),
             getGroupPersonById: vi.fn().mockResolvedValue({ rows: [personRow] }),
             getGameById: vi.fn().mockResolvedValue({ rows: [[42]] }),
-            claimGroupPerson: vi.fn().mockResolvedValue({ claimed: true, alreadyClaimed: false }),
+            claimGroupPerson: vi.fn().mockResolvedValue({ claimed: true, alreadyClaimed: false, addedToShelf: [] }),
             getLinkedGroupPersonByAccount: vi.fn().mockResolvedValue({ rows: [] }),
             createLinkedGroupPerson: vi.fn().mockResolvedValue({ lastInsertRowid: 22 }),
             ...overrides,
         } as Record<string, Mock>
 
-        const activityNotifier = { groupPersonEntryChanged: vi.fn().mockResolvedValue(undefined) }
+        const activityNotifier = {
+            groupPersonEntryChanged: vi.fn().mockResolvedValue(undefined),
+            shelfChanged: vi.fn().mockResolvedValue(undefined),
+        }
 
         return {
             service: new GroupPeopleService(fakeDatabase(databaseService), activityNotifier as unknown as ActivityNotifier),
@@ -87,6 +90,15 @@ describe('GroupPeopleService participant boundaries', () => {
             importOwnershipToCollection: false,
             activity: { groupId: 12, actorAccountId: 7, type: 'person_claimed', groupPersonId: 21 },
         })
+    })
+
+    it("tells the claimer's groups about the games that went onto their shelf", async () => {
+        const { service, activityNotifier } = createService({
+            claimGroupPerson: vi.fn().mockResolvedValue({ claimed: true, alreadyClaimed: false, addedToShelf: [42] }),
+        })
+
+        await service.claim(7, 12, 21, { importOwnershipToCollection: true })
+        expect(activityNotifier.shelfChanged).toHaveBeenCalledWith(7, { added: [42] })
     })
 
     it('rejects a non-member before reading or mutating participant data', async () => {

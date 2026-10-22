@@ -518,7 +518,7 @@ export class GroupQueries {
         keepPreferenceGameIds: Array<number>
         importOwnershipToCollection: boolean
         activity?: GroupActivityEntry
-    }): Promise<{ claimed: boolean; alreadyClaimed: boolean }> {
+    }): Promise<{ claimed: boolean; alreadyClaimed: boolean; addedToShelf: Array<number> }> {
         const transaction = await this.database.transaction('write')
 
         try {
@@ -541,7 +541,7 @@ export class GroupQueries {
                 })
 
                 await transaction.commit()
-                return { claimed: false, alreadyClaimed: Number(existing.rows[0]?.[0] ?? 0) === input.accountId }
+                return { claimed: false, alreadyClaimed: Number(existing.rows[0]?.[0] ?? 0) === input.accountId, addedToShelf: [] }
             }
 
             const ownership = await transaction.execute({
@@ -567,7 +567,7 @@ export class GroupQueries {
 
             if (update.rowsAffected !== 1) {
                 await transaction.rollback()
-                return { claimed: false, alreadyClaimed: false }
+                return { claimed: false, alreadyClaimed: false, addedToShelf: [] }
             }
 
             await transaction.batch(
@@ -594,18 +594,25 @@ export class GroupQueries {
                     })),
             )
 
+            // The games that were not on the claimer's shelf yet: their groups hear about these.
+            const addedToShelf: Array<number> = []
+
             if (input.importOwnershipToCollection && input.keepOwnershipGameIds.length > 0) {
-                await transaction.batch(
+                const imported = await transaction.batch(
                     input.keepOwnershipGameIds.map(gameId => ({
                         sql: 'INSERT OR IGNORE INTO OwnedGame (accountId, gameId) VALUES (?, ?)',
                         args: [input.accountId, gameId],
                     })),
                 )
+
+                imported.forEach((result, index) => {
+                    if (result.rowsAffected === 1) addedToShelf.push(input.keepOwnershipGameIds[index]!)
+                })
             }
 
             await recordInTransaction(transaction, input.activity)
             await transaction.commit()
-            return { claimed: true, alreadyClaimed: false }
+            return { claimed: true, alreadyClaimed: false, addedToShelf }
         } catch (error) {
             await transaction.rollback()
             throw error
@@ -1069,8 +1076,8 @@ export class GroupQueries {
         })
     }
 
-    /** Leaving or being removed: the membership goes, history stays (ADR-0018). */
-    async leaveGroup(accountId: number, groupId: number, activity?: GroupActivityEntry) {
+    /** Leaving or being removed: the membership goes, history stays (ADR-0018). `left` is false when they were not a member. */
+    async leaveGroup(accountId: number, groupId: number, activity?: GroupActivityEntry): Promise<{ left: boolean }> {
         const transaction = await this.database.transaction('write')
 
         try {
@@ -1078,11 +1085,13 @@ export class GroupQueries {
                 sql: 'SELECT 1 FROM GroupMembership WHERE accountId = ? AND groupId = ?',
                 args: [accountId, groupId],
             })
+            const left = membership.rows.length > 0
 
             await departGroup(transaction, accountId, groupId)
             // Someone who was not a member did not leave: no history entry.
-            if (membership.rows.length > 0) await recordInTransaction(transaction, activity)
+            if (left) await recordInTransaction(transaction, activity)
             await transaction.commit()
+            return { left }
         } catch (error) {
             await transaction.rollback()
             throw error

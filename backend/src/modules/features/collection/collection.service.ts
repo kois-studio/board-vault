@@ -8,6 +8,7 @@ import { DatabaseService } from '../../common/database/database.service.js'
 import { GameTagsService } from '../../core/game-tags/game-tags.service.js'
 import { GamesService } from '../../core/games/games.service.js'
 import { GamesOwnedService } from '../../core/games-owned/games-owned.service.js'
+import { ActivityNotifier } from '../../core/notifications/activity-notifier.service.js'
 import { ReviewsService } from '../../core/reviews/reviews.service.js'
 import { TagCategoryService } from '../../core/tag-category/tag-category.service.js'
 import { TagsService } from '../../core/tags/tags.service.js'
@@ -32,6 +33,7 @@ export class CollectionService {
         private readonly gameTranslationService: GameTranslationService,
         private readonly collectionActivityService: CollectionActivityService,
         private readonly databaseService: DatabaseService,
+        private readonly activityNotifier: ActivityNotifier,
     ) {}
 
     @LogFeature(new Logger('CollectionService'))
@@ -165,6 +167,7 @@ export class CollectionService {
         }
 
         await this.collectionActivityService.invalidateForAccount(userId)
+        await this.activityNotifier.shelfChanged(userId, { added: [gameId] })
 
         return { success: true }
     }
@@ -178,6 +181,7 @@ export class CollectionService {
         }
 
         await this.collectionActivityService.invalidateForAccount(userId)
+        await this.activityNotifier.shelfChanged(userId, { removed: [gameId] })
 
         return { success: true }
     }

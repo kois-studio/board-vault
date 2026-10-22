@@ -196,6 +196,23 @@ describe('DataService inbox', () => {
         expect(service.inboxArrivals()).toBe(1)
     })
 
+    it('counts an unread notification that came back updated, and shows what it says now', () => {
+        let answer = [notification(1)]
+        const { service } = setup({ getUserNotifications: vi.fn(() => of(answer)), getUserInvitations: vi.fn(() => of([])) })
+        service.currentUser.set({ id: 1 } as never)
+        TestBed.tick()
+
+        answer = [{ ...notification(1), message: 'Ana added Catan and Azul to their shelf.', createdAt: '2026-10-15T18:25:00.000Z' }]
+        service.refreshInbox()
+
+        expect(service.inboxArrivals()).toBe(1)
+        expect(service.userNotifications()[0]?.message).toBe('Ana added Catan and Azul to their shelf.')
+
+        // The same answer again is not news.
+        service.refreshInbox()
+        expect(service.inboxArrivals()).toBe(1)
+    })
+
     it('ignores a look still on its way once the person reads something meanwhile', () => {
         const pending = new Subject<Array<ReturnType<typeof notification>>>()
         const { service } = setup({

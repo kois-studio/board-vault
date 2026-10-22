@@ -4,6 +4,7 @@ import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagg
 import { AdminGuard } from '../../../common/guards/admin.guard.js'
 import { AuthGuard } from '../../../common/guards/auth.guard.js'
 import { UserOwnershipGuard } from '../../../common/guards/ownership.guard.js'
+import { RateLimit, RateLimitGuard } from '../../../common/guards/rate-limit.guard.js'
 import { SuccessDto } from '../../../common/types/auth.type.js'
 import { UpdateUserBody, UserGetDto, UserUpdateGamesBody } from '../../../common/types/user.type.js'
 
@@ -49,7 +50,9 @@ export class UsersController {
         })
     }
 
-    @UseGuards(UserOwnershipGuard)
+    // Each call can change many games; their groups hear it through one notification per reader.
+    @UseGuards(UserOwnershipGuard, RateLimitGuard)
+    @RateLimit(30, 3600)
     @Put('/:userId/games')
     @UsePipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true, transform: true }))
     @ApiOperation({ summary: 'Modify games owned by user' })

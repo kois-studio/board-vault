@@ -74,7 +74,7 @@ export class GameQueries {
         tagIds: number[]
         reviewNotes?: string
         notification: CreateNotificationBody
-    }): Promise<{ createdGameId: number }> {
+    }): Promise<{ createdGameId: number; addedToShelfOf: number | null }> {
         const transaction = await this.database.transaction('write')
 
         try {
@@ -160,7 +160,7 @@ export class GameQueries {
             })
 
             await transaction.commit()
-            return { createdGameId }
+            return { createdGameId, addedToShelfOf: addTo === 'shelf' ? submittedBy : null }
         } catch (error) {
             await transaction.rollback()
             throw error

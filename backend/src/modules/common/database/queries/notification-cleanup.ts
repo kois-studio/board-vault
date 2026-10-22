@@ -1,3 +1,5 @@
+import { NotificationTypeEnum } from '../../../core/notifications/notifications-enum.type.js'
+
 import type { InStatement } from '@libsql/client'
 
 /**
@@ -14,6 +16,17 @@ export function forgetGroupNotifications(groupId: number, accountId: number | nu
     return accountId === null
         ? { sql: `DELETE FROM Notification WHERE ${dataField('group')} = ?`, args: [groupId] }
         : { sql: `DELETE FROM Notification WHERE accountId = ? AND ${dataField('group')} = ?`, args: [accountId, groupId] }
+}
+
+/**
+ * What others were told about the leaver's shelf points to their games in this group (ADR-0018):
+ * once they leave it, those notifications go for everyone.
+ */
+export function forgetShelfNotificationsAbout(accountId: number, groupId: number): InStatement {
+    return {
+        sql: `DELETE FROM Notification WHERE type = ? AND ${dataField('account')} = ? AND ${dataField('group')} = ?`,
+        args: [NotificationTypeEnum.SHELF_CHANGED, accountId, groupId],
+    }
 }
 
 /**

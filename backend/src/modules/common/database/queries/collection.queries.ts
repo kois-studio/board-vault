@@ -30,25 +30,34 @@ export class CollectionQueries {
         })
     }
 
-    async updateGames(accountId: number, gamesToAdd: number[], gamesToRemove: number[]): Promise<void> {
+    /** Answers the games that really went onto and off the shelf: one already there, or removed and added back, is neither. */
+    async updateGames(accountId: number, gamesToAdd: number[], gamesToRemove: number[]): Promise<{ added: number[]; removed: number[] }> {
         const transaction = await this.database.transaction('write')
 
         try {
-            for (const gameId of gamesToRemove) {
-                await transaction.execute({
+            const removed: Array<number> = []
+            const added: Array<number> = []
+
+            for (const gameId of new Set(gamesToRemove)) {
+                const result = await transaction.execute({
                     sql: 'DELETE FROM OwnedGame WHERE accountId = ? AND gameId = ?',
                     args: [accountId, gameId],
                 })
+
+                if (result.rowsAffected === 1) removed.push(gameId)
             }
 
-            for (const gameId of gamesToAdd) {
-                await transaction.execute({
+            for (const gameId of new Set(gamesToAdd)) {
+                const result = await transaction.execute({
                     sql: 'INSERT OR IGNORE INTO OwnedGame (accountId, gameId) VALUES (?, ?)',
                     args: [accountId, gameId],
                 })
+
+                if (result.rowsAffected === 1) added.push(gameId)
             }
 
             await transaction.commit()
+            return { added: added.filter(gameId => !removed.includes(gameId)), removed: removed.filter(gameId => !added.includes(gameId)) }
         } catch (error) {
             await transaction.rollback()
             throw error
