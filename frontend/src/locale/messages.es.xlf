@@ -1,3 +1,13 @@
 <xliff version="2.0" xmlns="urn:oasis:names:tc:xliff:document:2.0" srcLang="en" trgLang="es">
-  <file id="ngi18n" original="ng.template"/>
+  <file id="ngi18n" original="ng.template">
+    <unit id="4272436583644511364">
+      <notes>
+        <note category="description">A moment ago, on a notification or a history line</note>
+      </notes>
+      <segment state="translated">
+        <source>Just now</source>
+        <target>Ahora mismo</target>
+      </segment>
+    </unit>
+  </file>
 </xliff>

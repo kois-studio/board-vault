@@ -1,8 +1,8 @@
 import { Component, computed, input, output } from '@angular/core'
 import { RouterLink } from '@angular/router'
 import type { NotificationType } from '../../api/api.types'
+import { timeAgo } from '../../core/i18n/format'
 import { DataService } from '../../core/services/data.service'
-import { formatDate } from '../../core/utils/formatDate'
 import { ButtonComponent } from '../ui/button/button.component'
 import { IconComponent } from '../ui/icon/icon.component'
 
@@ -28,7 +28,7 @@ export class CardNotificationComponent {
 
     public readonly notificationDate = computed(() => {
         const notification = this.notification()
-        return notification ? formatDate(new Date(notification.createdAt).getTime()) : ''
+        return notification ? timeAgo(new Date(notification.createdAt).getTime()) : ''
     })
 
     /** Where the notification leads, when it is about something that has a page. */

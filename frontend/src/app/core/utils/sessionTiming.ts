@@ -1,4 +1,5 @@
 import type { MeetType } from '../../api/api.types'
+import { formatDateTime, relativeDays } from '../i18n/format'
 
 /** A planned night counts as over this long after it starts. */
 const SESSION_LENGTH_MS = 12 * 60 * 60 * 1000
@@ -22,13 +23,7 @@ export type SessionDateParts = { month: string; day: string; weekday: string; ti
 /** Calendar parts in the session's own timezone, for date blocks. */
 export function sessionDateParts(meet: Pick<MeetType, 'meetDate' | 'timezone'>): SessionDateParts {
     const date = new Date(meet.meetDate)
-    const part = (options: Intl.DateTimeFormatOptions) => {
-        try {
-            return new Intl.DateTimeFormat('en-GB', { ...options, timeZone: meet.timezone }).format(date)
-        } catch {
-            return new Intl.DateTimeFormat('en-GB', options).format(date)
-        }
-    }
+    const part = (options: Intl.DateTimeFormatOptions) => formatDateTime(date, options, meet.timezone)
     return {
         month: part({ month: 'short' }),
         day: part({ day: 'numeric' }),
@@ -43,12 +38,5 @@ export function relativeDay(meetDate: string, now = new Date()): string {
     const startOfDay = (date: Date) => Date.UTC(date.getFullYear(), date.getMonth(), date.getDate())
     const days = Math.round((startOfDay(new Date(meetDate)) - startOfDay(now)) / DAY_MS)
 
-    if (days === 0) return 'Today'
-    if (days === 1) return 'Tomorrow'
-    if (days === -1) return 'Yesterday'
-
-    const distance = Math.abs(days)
-    const amount =
-        distance < 14 ? `${distance} days` : distance < 60 ? `${Math.round(distance / 7)} weeks` : `${Math.round(distance / 30)} months`
-    return days > 0 ? `In ${amount}` : `${amount} ago`
+    return relativeDays(days)
 }

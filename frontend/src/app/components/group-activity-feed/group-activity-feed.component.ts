@@ -3,7 +3,7 @@ import { RouterLink } from '@angular/router'
 import { firstValueFrom } from 'rxjs'
 import { Api } from '../../api/api'
 import type { GroupActivityType } from '../../api/api.types'
-import { formatDate } from '../../core/utils/formatDate'
+import { timeAgo } from '../../core/i18n/format'
 import { describeActivity } from '../../core/utils/groupActivity'
 import { ButtonComponent } from '../ui/button/button.component'
 
@@ -66,6 +66,6 @@ export class GroupActivityFeedComponent {
     }
 
     private toRow(entry: GroupActivityType): GroupActivityRow {
-        return { id: entry.id, text: describeActivity(entry), when: formatDate(storedTime(entry.createdAt)), meetId: entry.meetId }
+        return { id: entry.id, text: describeActivity(entry), when: timeAgo(storedTime(entry.createdAt)), meetId: entry.meetId }
     }
 }

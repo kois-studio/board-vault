@@ -13,6 +13,7 @@ import { IconComponent } from '../../components/ui/icon/icon.component'
 import { ImageBackgroundComponent } from '../../components/ui/image-background/image-background.component'
 import { PageHeaderComponent } from '../../components/ui/page-header/page-header.component'
 import { LOADING_KEYS } from '../../core/enums/loading-keys-enum'
+import { formatDateTime } from '../../core/i18n/format'
 import { PlayersPipe } from '../../core/pipes/count.pipe'
 import { DataService } from '../../core/services/data.service'
 import { LoadingService } from '../../core/services/loading.service'
@@ -190,7 +191,7 @@ export class MeetNewComponent {
         if (!date || !time) return 'Choose a day and time'
         const start = new Date(`${date}T${time}`)
         if (Number.isNaN(start.getTime())) return 'Choose a day and time'
-        const day = new Intl.DateTimeFormat('en-GB', { weekday: 'short', day: 'numeric', month: 'short' }).format(start)
+        const day = formatDateTime(start, { weekday: 'short', day: 'numeric', month: 'short' })
         return `${day} · ${time}`
     })
 
