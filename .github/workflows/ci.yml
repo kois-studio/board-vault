@@ -96,6 +96,8 @@ jobs:
               run: npm run build
             - name: Check frontend formatting and lint
               run: npx biome check src/app src/styles.css
+            - name: Check extracted messages are current
+              run: npm run i18n:extract && git diff --exit-code -- src/locale
             - name: Run unit tests
               run: npm test -- --watch=false
             # Lighthouse on the production build: landing, sign-in and sign-up (docs/how-to/audit-rendered-pages.md).

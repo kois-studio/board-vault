@@ -43,7 +43,8 @@ export class AppComponent {
     private updateDocumentMetadata(url: string): void {
         const path = url.split(/[?#]/)[0] || '/'
         const metadata = this.getPageMetadata(path)
-        const canonicalUrl = `${this.getPublicSiteOrigin()}${path === '/' ? '/' : path}`
+        // Under the language's prefix (`<base href="/es/">`): `/login` is `/es/login`.
+        const canonicalUrl = `${this.getPublicSiteOrigin()}${this.getBasePath()}${path.slice(1)}`
 
         this.title.setTitle(metadata.title)
         this.meta.updateTag({ name: 'description', content: metadata.description })
@@ -64,6 +65,11 @@ export class AppComponent {
             this.document.head.appendChild(canonical)
         }
         canonical.href = canonicalUrl
+    }
+
+    private getBasePath(): string {
+        const base = this.document.querySelector('base')?.getAttribute('href') ?? '/'
+        return base.endsWith('/') ? base : `${base}/`
     }
 
     private getPublicSiteOrigin(): string {

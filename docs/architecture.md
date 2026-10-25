@@ -172,6 +172,36 @@ list of sections at the base route that opens each section full width.
 service keeps the `theme-color` meta tags on the theme actually shown. The
 inline script in `index.html` applies the same rules before the first paint.
 
+### Languages
+
+The interface is built once per language with `@angular/localize`
+([ADR-0024](adr/0024-interface-languages.md)): `npm run build` writes
+`dist/frontend/browser/<locale>/` for `en`, `es`, `fr`, `de`, and `it`, each
+with its own `<html lang>`, `<base href="/<locale>/">`, `LOCALE_ID`, and web
+manifest, and [`scripts/assemble-locales.mjs`](../frontend/scripts/assemble-locales.mjs)
+moves the shared files of `public/` to the root, where the pages link them
+(`/favicon.svg`, `/runtime-config.js`, `/images/…`). Routes and router links
+are written without the prefix; the base address adds it.
+
+- [`core/i18n/locales.ts`](../frontend/src/app/core/i18n/locales.ts) lists the
+  supported languages and the offered ones (`OFFERED_LOCALES`, only those
+  fully translated), and chooses a language for an address without a prefix:
+  the `bv_lang` cookie, then `Accept-Language`, then English.
+- On Vercel, [`frontend/middleware.ts`](../frontend/middleware.ts) answers
+  every address without a prefix that is not a file with a `307` to the same
+  path and query under that language (`/register?__clerk_ticket=…` →
+  `/en/register?__clerk_ticket=…`), and
+  [`frontend/vercel.json`](../frontend/vercel.json) sends each prefix's app
+  routes to its own `index.html`. `scripts/serve-dist.mjs` does the same
+  locally.
+- Messages live in `frontend/src/locale/` (XLIFF 2.0): `messages.xlf` is
+  extracted from the source (`npm run i18n:extract`, which keeps existing
+  translations), and `messages.<locale>.xlf` holds each translation. The
+  production build fails on a missing translation, and CI fails when the
+  extracted file is stale.
+- `npm start` serves English at the root; `npm run start:es` (and `:fr`,
+  `:de`, `:it`) serves one other language.
+
 ## Security context
 
 - **Assets:** account records (email, username), private collections, group
