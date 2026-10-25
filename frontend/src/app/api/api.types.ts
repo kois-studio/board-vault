@@ -301,6 +301,16 @@ export type NotificationType = {
     createdAt: string
     isRead: boolean
     data?: Record<string, unknown>
+    /** What `data` points at, sent with the inbox so the app can word it (ADR-0024). */
+    context?: NotificationContextType
+}
+
+export type NotificationContextType = {
+    accounts: Array<{ id: number; name: string | null; deleted: boolean }>
+    groups: Array<{ id: number; name: string }>
+    sessions: Array<{ id: number; date: string; timezone: string }>
+    people: Array<{ id: number; name: string }>
+    games: Array<{ id: number; title: string; titleLanguage: string }>
 }
 
 export const NotificationTypeEnum = {

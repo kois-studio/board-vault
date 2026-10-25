@@ -6056,6 +6056,135 @@
           "keys"
         ]
       },
+      "NotificationAccountDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number",
+            "example": 7
+          },
+          "name": {
+            "type": "object",
+            "example": "Ana",
+            "nullable": true,
+            "description": "Null for a deleted account; the app writes \"Deleted account\"."
+          },
+          "deleted": {
+            "type": "boolean",
+            "example": false
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "deleted"
+        ]
+      },
+      "NotificationNamedDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number",
+            "example": 3
+          },
+          "name": {
+            "type": "string",
+            "example": "Thursday Crew"
+          }
+        },
+        "required": [
+          "id",
+          "name"
+        ]
+      },
+      "NotificationSessionDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number",
+            "example": 41
+          },
+          "date": {
+            "type": "string",
+            "example": "2026-10-09T17:00:00.000Z"
+          },
+          "timezone": {
+            "type": "string",
+            "example": "Europe/Madrid"
+          }
+        },
+        "required": [
+          "id",
+          "date",
+          "timezone"
+        ]
+      },
+      "NotificationGameDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number",
+            "example": 12
+          },
+          "title": {
+            "type": "string",
+            "example": "Ciudadelas"
+          },
+          "titleLanguage": {
+            "type": "string",
+            "example": "es",
+            "description": "The language of the title."
+          }
+        },
+        "required": [
+          "id",
+          "title",
+          "titleLanguage"
+        ]
+      },
+      "NotificationContextDto": {
+        "type": "object",
+        "properties": {
+          "accounts": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/NotificationAccountDto"
+            }
+          },
+          "groups": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/NotificationNamedDto"
+            }
+          },
+          "sessions": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/NotificationSessionDto"
+            }
+          },
+          "people": {
+            "description": "Group people.",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/NotificationNamedDto"
+            }
+          },
+          "games": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/NotificationGameDto"
+            }
+          }
+        },
+        "required": [
+          "accounts",
+          "groups",
+          "sessions",
+          "people",
+          "games"
+        ]
+      },
       "NotificationDto": {
         "type": "object",
         "properties": {
@@ -6086,6 +6215,14 @@
           "isRead": {
             "type": "boolean",
             "example": true
+          },
+          "context": {
+            "description": "Only on inbox reads.",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/NotificationContextDto"
+              }
+            ]
           }
         },
         "required": [

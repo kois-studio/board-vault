@@ -1,6 +1,7 @@
 import { Body, Controller, Get, Param, ParseIntPipe, Post, UseGuards, UsePipes, ValidationPipe } from '@nestjs/common'
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger'
 
+import { RequestLocale } from '../../../common/decorators/request-locale.decorator.js'
 import { AuthGuard } from '../../../common/guards/auth.guard.js'
 import { UserOwnershipGuard } from '../../../common/guards/ownership.guard.js'
 import { RateLimit, RateLimitGuard } from '../../../common/guards/rate-limit.guard.js'
@@ -12,6 +13,8 @@ import { UserProposalStatsDto } from '../../../common/types/stats.type.js'
 import { UserSelfDto } from '../../../common/types/user.type.js'
 
 import { ProfileService } from './profile.service.js'
+
+import type { Locale } from '../../../common/i18n/locale.js'
 
 @UseGuards(AuthGuard)
 @ApiTags('profile')
@@ -34,8 +37,8 @@ export class ProfileController {
     @ApiOperation({ summary: 'Get notifications by user id', deprecated: false })
     @ApiResponse({ status: 200, type: NotificationDto, description: 'Notifications found' })
     @ApiResponse({ status: 404, description: 'Notifications not found' })
-    async getNotificationsByAccountId(@Param('userId', ParseIntPipe) userId: number) {
-        return this.profileService.getNotificationsByAccountId(userId)
+    async getNotificationsByAccountId(@Param('userId', ParseIntPipe) userId: number, @RequestLocale() locale: Locale) {
+        return this.profileService.getNotificationsByAccountId(userId, locale)
     }
 
     @UseGuards(UserOwnershipGuard)

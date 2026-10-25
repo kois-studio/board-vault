@@ -1,5 +1,149 @@
 <xliff version="2.0" xmlns="urn:oasis:names:tc:xliff:document:2.0" srcLang="en" trgLang="de">
   <file id="ngi18n" original="ng.template">
+    <unit id="1200295485288897600">
+      <segment state="translated">
+        <source>Your game proposal &quot;<ph id="0" equiv="title" disp="data[&apos;gameTitle&apos;]"/>&quot; was approved!</source>
+        <target>Dein Spielvorschlag „<ph id="0" equiv="title" disp="data[&apos;gameTitle&apos;]"/>“ wurde angenommen!</target>
+      </segment>
+    </unit>
+    <unit id="1217286919775405184">
+      <notes>
+        <note category="description">A person whose account was deleted</note>
+      </notes>
+      <segment state="translated">
+        <source>Deleted account</source>
+        <target>Gelöschtes Konto</target>
+      </segment>
+    </unit>
+    <unit id="1227732393340087049">
+      <notes>
+        <note category="description">A game whose title is unknown</note>
+      </notes>
+      <segment state="translated">
+        <source>a game</source>
+        <target>ein Spiel</target>
+      </segment>
+    </unit>
+    <unit id="1289605213459398820">
+      <segment state="translated">
+        <source>Your game proposal &quot;<ph id="0" equiv="title" disp="data[&apos;gameTitle&apos;]"/>&quot; is already in Board Vault as &quot;<ph id="1" equiv="existingTitle" disp="data[&apos;duplicateOfTitle&apos;]"/>&quot;.</source>
+        <target>Dein Spielvorschlag „<ph id="0" equiv="title" disp="data[&apos;gameTitle&apos;]"/>“ ist schon als „<ph id="1" equiv="existingTitle" disp="data[&apos;duplicateOfTitle&apos;]"/>“ in Board Vault.</target>
+      </segment>
+    </unit>
+    <unit id="1426003387204338088">
+      <notes>
+        <note category="description">Button on a notification</note>
+      </notes>
+      <segment state="translated">
+        <source>Mark as read: <ph id="0" equiv="INTERPOLATION" disp="{{ text() }}"/></source>
+        <target>Als gelesen markieren: <ph id="0" equiv="INTERPOLATION" disp="{{ text() }}"/></target>
+      </segment>
+    </unit>
+    <unit id="1630988887703018223">
+      <notes>
+        <note category="description">Link on a notification</note>
+      </notes>
+      <segment state="translated">
+        <source>Review the proposal</source>
+        <target>Vorschlag prüfen</target>
+      </segment>
+    </unit>
+    <unit id="167090221720253484">
+      <segment state="translated">
+        <source><ph id="0" equiv="person" disp="actor"/> changed how much <ph id="1" equiv="groupPerson" disp="person"/> likes <ph id="2" equiv="game" disp="game"/>, in <ph id="3" equiv="group" disp="group"/>.</source>
+        <target><ph id="0" equiv="person" disp="actor"/> hat geändert, wie sehr <ph id="1" equiv="groupPerson" disp="person"/> <ph id="2" equiv="game" disp="game"/> mag, in <ph id="3" equiv="group" disp="group"/>.</target>
+      </segment>
+    </unit>
+    <unit id="1939361038776839397">
+      <notes>
+        <note category="description">Link on a notification</note>
+      </notes>
+      <segment state="translated">
+        <source>Open the existing game</source>
+        <target>Vorhandenes Spiel öffnen</target>
+      </segment>
+    </unit>
+    <unit id="2057533260886728415">
+      <segment state="translated">
+        <source><ph id="0" equiv="person" disp="actor"/> started the <ph id="1" equiv="group" disp="group"/> game night. Mark what you play as you go.</source>
+        <target><ph id="0" equiv="person" disp="actor"/> hat den Spieleabend von <ph id="1" equiv="group" disp="group"/> gestartet. Trag nebenbei ein, was ihr spielt.</target>
+      </segment>
+    </unit>
+    <unit id="2120057704151430913">
+      <segment state="translated">
+        <source><ph id="0" equiv="person" disp="actor"/> planned a game night in <ph id="1" equiv="group" disp="group"/> for <ph id="2" equiv="date" disp="when"/>. Can you make it?</source>
+        <target><ph id="0" equiv="person" disp="actor"/> hat in <ph id="1" equiv="group" disp="group"/> einen Spieleabend für <ph id="2" equiv="date" disp="when"/> geplant. Bist du dabei?</target>
+      </segment>
+    </unit>
+    <unit id="246838105482205685">
+      <notes>
+        <note category="description">Before the text of a notification not read yet, for screen readers</note>
+      </notes>
+      <segment state="translated">
+        <source>Unread: </source>
+        <target>Ungelesen: </target>
+      </segment>
+    </unit>
+    <unit id="2687104801645892688">
+      <segment state="translated">
+        <source><ph id="0" equiv="person" disp="actor"/> added <ph id="1" equiv="games" disp="addedList"/> to their shelf and removed <ph id="2" equiv="otherGames" disp="removedList"/>.</source>
+        <target><ph id="0" equiv="person" disp="actor"/> hat <ph id="1" equiv="games" disp="addedList"/> ins Regal gestellt und <ph id="2" equiv="otherGames" disp="removedList"/> herausgenommen.</target>
+      </segment>
+    </unit>
+    <unit id="2871617273892961858">
+      <notes>
+        <note category="description">Link on a notification</note>
+      </notes>
+      <segment state="translated">
+        <source>Open the game</source>
+        <target>Spiel öffnen</target>
+      </segment>
+    </unit>
+    <unit id="30921813512214027">
+      <notes>
+        <note category="description">Link on a notification</note>
+      </notes>
+      <segment state="translated">
+        <source>Rate what you played</source>
+        <target>Bewerte, was ihr gespielt habt</target>
+      </segment>
+    </unit>
+    <unit id="318898779291119217">
+      <notes>
+        <note category="description">Link on a notification</note>
+      </notes>
+      <segment state="translated">
+        <source>Review proposals</source>
+        <target>Vorschläge prüfen</target>
+      </segment>
+    </unit>
+    <unit id="3193445750573709207">
+      <segment state="translated">
+        <source><ph id="0" equiv="person" disp="actor"/> said <ph id="1" equiv="groupPerson" disp="person"/> has <ph id="2" equiv="game" disp="game"/>, in <ph id="3" equiv="group" disp="group"/>.</source>
+        <target><ph id="0" equiv="person" disp="actor"/> hat angegeben, dass <ph id="1" equiv="groupPerson" disp="person"/> <ph id="2" equiv="game" disp="game"/> hat, in <ph id="3" equiv="group" disp="group"/>.</target>
+      </segment>
+    </unit>
+    <unit id="3841095492114279113">
+      <segment state="translated">
+        <source>Your game proposal &quot;<ph id="0" equiv="title" disp="data[&apos;gameTitle&apos;]"/>&quot; was rejected: <ph id="1" equiv="reason" disp="data[&apos;reviewNotes&apos;]"/></source>
+        <target>Dein Spielvorschlag „<ph id="0" equiv="title" disp="data[&apos;gameTitle&apos;]"/>“ wurde abgelehnt: <ph id="1" equiv="reason" disp="data[&apos;reviewNotes&apos;]"/></target>
+      </segment>
+    </unit>
+    <unit id="3965292610786650718">
+      <notes>
+        <note category="description">Link on a notification</note>
+      </notes>
+      <segment state="translated">
+        <source>Open the game night</source>
+        <target>Spieleabend öffnen</target>
+      </segment>
+    </unit>
+    <unit id="425959220948419245">
+      <segment state="translated">
+        <source><ph id="0" equiv="person" disp="actor"/> added <ph id="1" equiv="games" disp="addedList"/> to their shelf.</source>
+        <target><ph id="0" equiv="person" disp="actor"/> hat <ph id="1" equiv="games" disp="addedList"/> ins Regal gestellt.</target>
+      </segment>
+    </unit>
     <unit id="4272436583644511364">
       <notes>
         <note category="description">A moment ago, on a notification or a history line</note>
@@ -7,6 +151,147 @@
       <segment state="translated">
         <source>Just now</source>
         <target>Gerade eben</target>
+      </segment>
+    </unit>
+    <unit id="4669216542007588508">
+      <notes>
+        <note category="description">Link on a notification about a planned game night</note>
+      </notes>
+      <segment state="translated">
+        <source>Answer</source>
+        <target>Antworten</target>
+      </segment>
+    </unit>
+    <unit id="4715165630183338203">
+      <notes>
+        <note category="description">A list of games ending in one more</note>
+      </notes>
+      <segment state="translated">
+        <source>one other game</source>
+        <target>ein weiteres Spiel</target>
+      </segment>
+    </unit>
+    <unit id="4758695142998179909">
+      <notes>
+        <note category="description">Several games whose titles are unknown</note>
+      </notes>
+      <segment state="translated">
+        <source><ph id="0" equiv="count" disp="rest"/> games</source>
+        <target><ph id="0" equiv="count" disp="rest"/> Spiele</target>
+      </segment>
+    </unit>
+    <unit id="4775243970485777734">
+      <segment state="translated">
+        <source><ph id="0" equiv="person" disp="actor"/> cancelled the <ph id="1" equiv="group" disp="group"/> game night of <ph id="2" equiv="date" disp="when"/>.</source>
+        <target><ph id="0" equiv="person" disp="actor"/> hat den Spieleabend von <ph id="1" equiv="group" disp="group"/> am <ph id="2" equiv="date" disp="when"/> abgesagt.</target>
+      </segment>
+    </unit>
+    <unit id="5376159775932580099">
+      <segment state="translated">
+        <source>The <ph id="0" equiv="group" disp="group"/> game night of <ph id="1" equiv="date" disp="when"/> is finished. Rate what you played.</source>
+        <target>Der Spieleabend von <ph id="0" equiv="group" disp="group"/> am <ph id="1" equiv="date" disp="when"/> ist vorbei. Bewerte, was ihr gespielt habt.</target>
+      </segment>
+    </unit>
+    <unit id="5611022416689146666">
+      <segment state="translated">
+        <source><ph id="0" equiv="person" disp="member"/> left <ph id="1" equiv="group" disp="group"/>.</source>
+        <target><ph id="0" equiv="person" disp="member"/> hat <ph id="1" equiv="group" disp="group"/> verlassen.</target>
+      </segment>
+    </unit>
+    <unit id="5772919894493102247">
+      <notes>
+        <note category="description">Link on a notification</note>
+      </notes>
+      <segment state="translated">
+        <source>See the game night</source>
+        <target>Spieleabend ansehen</target>
+      </segment>
+    </unit>
+    <unit id="6033490387027844807">
+      <segment state="translated">
+        <source><ph id="0" equiv="person" disp="actor"/> marked <ph id="1" equiv="game" disp="game"/> as unsure for <ph id="2" equiv="groupPerson" disp="person"/>, in <ph id="3" equiv="group" disp="group"/>.</source>
+        <target><ph id="0" equiv="person" disp="actor"/> hat <ph id="1" equiv="game" disp="game"/> für <ph id="2" equiv="groupPerson" disp="person"/> als unsicher markiert, in <ph id="3" equiv="group" disp="group"/>.</target>
+      </segment>
+    </unit>
+    <unit id="6303882608616595614">
+      <segment state="translated">
+        <source>New game proposal: &quot;<ph id="0" equiv="title" disp="data[&apos;gameTitle&apos;]"/>&quot;</source>
+        <target>Neuer Spielvorschlag: „<ph id="0" equiv="title" disp="data[&apos;gameTitle&apos;]"/>“</target>
+      </segment>
+    </unit>
+    <unit id="6558378588786598467">
+      <segment state="translated">
+        <source><ph id="0" equiv="person" disp="actor"/> removed <ph id="1" equiv="game" disp="game"/> from <ph id="2" equiv="groupPerson" disp="person"/>&apos;s games in <ph id="3" equiv="group" disp="group"/>.</source>
+        <target><ph id="0" equiv="person" disp="actor"/> hat <ph id="1" equiv="game" disp="game"/> aus den Spielen von <ph id="2" equiv="groupPerson" disp="person"/> entfernt, in <ph id="3" equiv="group" disp="group"/>.</target>
+      </segment>
+    </unit>
+    <unit id="7154237322367136444">
+      <notes>
+        <note category="description">A list of games ending in several more</note>
+      </notes>
+      <segment state="translated">
+        <source><ph id="0" equiv="count" disp="rest"/> other games</source>
+        <target><ph id="0" equiv="count" disp="rest"/> weitere Spiele</target>
+      </segment>
+    </unit>
+    <unit id="7906119584283878474">
+      <segment state="translated">
+        <source><ph id="0" equiv="person" disp="actor"/> removed what <ph id="1" equiv="groupPerson" disp="person"/> thinks of <ph id="2" equiv="game" disp="game"/>, in <ph id="3" equiv="group" disp="group"/>.</source>
+        <target><ph id="0" equiv="person" disp="actor"/> hat entfernt, was <ph id="1" equiv="groupPerson" disp="person"/> von <ph id="2" equiv="game" disp="game"/> hält, in <ph id="3" equiv="group" disp="group"/>.</target>
+      </segment>
+    </unit>
+    <unit id="8144023736490335972">
+      <segment state="translated">
+        <source><ph id="0" equiv="remover" disp="actor"/> removed <ph id="1" equiv="removedPerson" disp="member"/> from <ph id="2" equiv="group" disp="group"/>.</source>
+        <target><ph id="0" equiv="remover" disp="actor"/> hat <ph id="1" equiv="removedPerson" disp="member"/> aus <ph id="2" equiv="group" disp="group"/> entfernt.</target>
+      </segment>
+    </unit>
+    <unit id="8353091657473641191">
+      <notes>
+        <note category="description">Link on a notification</note>
+      </notes>
+      <segment state="translated">
+        <source>Open the group</source>
+        <target>Gruppe öffnen</target>
+      </segment>
+    </unit>
+    <unit id="8715838975991436163">
+      <notes>
+        <note category="description">Link on a notification</note>
+      </notes>
+      <segment state="translated">
+        <source>See your proposals</source>
+        <target>Deine Vorschläge ansehen</target>
+      </segment>
+    </unit>
+    <unit id="8739336026258908775">
+      <segment state="translated">
+        <source><ph id="0" equiv="person" disp="actor"/> joined <ph id="1" equiv="group" disp="group"/>.</source>
+        <target><ph id="0" equiv="person" disp="actor"/> ist <ph id="1" equiv="group" disp="group"/> beigetreten.</target>
+      </segment>
+    </unit>
+    <unit id="894008691966610130">
+      <notes>
+        <note category="description">Link on a notification</note>
+      </notes>
+      <segment state="translated">
+        <source>See their games</source>
+        <target>Spiele ansehen</target>
+      </segment>
+    </unit>
+    <unit id="9155075806001536387">
+      <notes>
+        <note category="description">Button on a notification</note>
+      </notes>
+      <segment state="translated">
+        <source>Delete notification: <ph id="0" equiv="INTERPOLATION" disp="{{ text() }}"/></source>
+        <target>Benachrichtigung löschen: <ph id="0" equiv="INTERPOLATION" disp="{{ text() }}"/></target>
+      </segment>
+    </unit>
+    <unit id="9174716236566498100">
+      <segment state="translated">
+        <source><ph id="0" equiv="person" disp="actor"/> removed <ph id="1" equiv="games" disp="removedList"/> from their shelf.</source>
+        <target><ph id="0" equiv="person" disp="actor"/> hat <ph id="1" equiv="games" disp="removedList"/> aus dem Regal genommen.</target>
       </segment>
     </unit>
   </file>

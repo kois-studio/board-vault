@@ -676,6 +676,15 @@ export const userNotificationsSchema: z.ZodMiniType<Array<NotificationType>> = z
         createdAt: z.string(),
         isRead: z.boolean(),
         data: z.optional(z.record(z.string(), z.unknown())),
+        context: z.optional(
+            z.object({
+                accounts: z.array(z.object({ id: z.number(), name: z.nullable(z.string()), deleted: z.boolean() })),
+                groups: z.array(z.object({ id: z.number(), name: z.string() })),
+                sessions: z.array(z.object({ id: z.number(), date: z.string(), timezone: z.string() })),
+                people: z.array(z.object({ id: z.number(), name: z.string() })),
+                games: z.array(z.object({ id: z.number(), title: z.string(), titleLanguage: z.string() })),
+            }),
+        ),
     }),
 )
 

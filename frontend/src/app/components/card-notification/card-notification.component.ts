@@ -2,16 +2,17 @@ import { Component, computed, input, output } from '@angular/core'
 import { RouterLink } from '@angular/router'
 import type { NotificationType } from '../../api/api.types'
 import { timeAgo } from '../../core/i18n/format'
+import { notificationText } from '../../core/i18n/notification-text'
 import { DataService } from '../../core/services/data.service'
 import { ButtonComponent } from '../ui/button/button.component'
 import { IconComponent } from '../ui/icon/icon.component'
 
 /** Notifications about a game night link to it; the label says what to do there. */
 const SESSION_LINK_LABELS: Record<string, string> = {
-    meeting_scheduled: 'Answer',
-    session_started: 'Open the game night',
-    session_finished: 'Rate what you played',
-    session_cancelled: 'See the game night',
+    meeting_scheduled: $localize`:Link on a notification about a planned game night:Answer`,
+    session_started: $localize`:Link on a notification:Open the game night`,
+    session_finished: $localize`:Link on a notification:Rate what you played`,
+    session_cancelled: $localize`:Link on a notification:See the game night`,
 }
 
 @Component({
@@ -26,6 +27,12 @@ export class CardNotificationComponent {
 
     constructor(private readonly dataService: DataService) {}
 
+    /** The notification worded in the page's language. */
+    public readonly text = computed(() => {
+        const notification = this.notification()
+        return notification ? notificationText(notification) : ''
+    })
+
     public readonly notificationDate = computed(() => {
         const notification = this.notification()
         return notification ? timeAgo(new Date(notification.createdAt).getTime()) : ''
@@ -37,11 +44,11 @@ export class CardNotificationComponent {
         if (!notification) return null
         const createdGameId = notification.data?.['createdGameId']
         if (notification.type === 'game_proposal_approved' && typeof createdGameId === 'number') {
-            return { path: ['/games', createdGameId], label: 'Open the game' }
+            return { path: ['/games', createdGameId], label: $localize`:Link on a notification:Open the game` }
         }
         const duplicateOfGameId = notification.data?.['duplicateOfGameId']
         if (notification.type === 'game_proposal_duplicate' && typeof duplicateOfGameId === 'number') {
-            return { path: ['/games', duplicateOfGameId], label: 'Open the existing game' }
+            return { path: ['/games', duplicateOfGameId], label: $localize`:Link on a notification:Open the existing game` }
         }
         const sessionId = notification.data?.['meeting']
         const sessionLabel = SESSION_LINK_LABELS[notification.type]
@@ -52,21 +59,21 @@ export class CardNotificationComponent {
         const accountId = notification.data?.['account']
         // A shelf change leads to that person's games, in a group the reader shares with them.
         if (notification.type === 'shelf_changed' && typeof groupId === 'number' && typeof accountId === 'number') {
-            return { path: ['/groups', groupId, 'members', accountId], label: 'See their games' }
+            return { path: ['/groups', groupId, 'members', accountId], label: $localize`:Link on a notification:See their games` }
         }
         const groupTypes = ['user_joined_group', 'user_left_group', 'group_person_changed']
         if (groupTypes.includes(notification.type) && typeof groupId === 'number') {
-            return { path: ['/groups', groupId], label: 'Open the group' }
+            return { path: ['/groups', groupId], label: $localize`:Link on a notification:Open the group` }
         }
         if (notification.type === 'game_proposal_submitted') {
             // Straight to the proposal; older notifications without its id open the list.
             const proposalId = notification.data?.['proposalId']
             return typeof proposalId === 'number'
-                ? { path: ['/admin', 'proposals', proposalId], label: 'Review the proposal' }
-                : { path: ['/admin', 'proposals'], label: 'Review proposals' }
+                ? { path: ['/admin', 'proposals', proposalId], label: $localize`:Link on a notification:Review the proposal` }
+                : { path: ['/admin', 'proposals'], label: $localize`:Link on a notification:Review proposals` }
         }
         if (notification.type === 'game_proposal_rejected') {
-            return { path: ['/submissions'], label: 'See your proposals' }
+            return { path: ['/submissions'], label: $localize`:Link on a notification:See your proposals` }
         }
         return null
     })
