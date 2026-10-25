@@ -26,6 +26,8 @@ deployment-specific evidence, live data, credentials, and personal details.
 - [0021 — Usage analytics of our own](0021-own-usage-analytics.md)
 - [0022 — Everyday play and recording corrections](0022-everyday-play-and-corrections.md)
 - [0023 — Notifications about shelves and members, without flooding an inbox](0023-group-activity-notifications.md)
+- [0024 — Interface languages](0024-interface-languages.md)
+- [0025 — Game editions and which title a game shows](0025-game-editions.md)
 
 Accepted ADRs are durable constraints unless a later ADR explicitly supersedes
 them. Create an ADR when a decision changes architecture, persistence,
