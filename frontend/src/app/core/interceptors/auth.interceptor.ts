@@ -5,6 +5,7 @@ import { Router } from '@angular/router'
 import { from, throwError } from 'rxjs'
 import { catchError, switchMap } from 'rxjs/operators'
 import { ToastService } from '../../components/toast/toast.service'
+import { pageLocale } from '../i18n/format'
 import { ClerkService } from '../services/clerk.service'
 import { LogService } from '../services/log.service'
 import { LoginService } from '../services/login.service'
@@ -16,15 +17,14 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
     const clerkService = inject(ClerkService)
     const toastService = inject(ToastService)
 
-    const requestWithToken = (token: string | null) => {
-        if (!token || req.headers.has('Authorization')) {
-            return req
-        }
-
-        return req.clone({
-            setHeaders: { Authorization: `Bearer ${token}` },
+    // The API answers in the page's language (ADR-0024): tag names, titles, anything it words.
+    const requestWithToken = (token: string | null) =>
+        req.clone({
+            setHeaders: {
+                'Accept-Language': pageLocale(),
+                ...(token && !req.headers.has('Authorization') ? { Authorization: `Bearer ${token}` } : {}),
+            },
         })
-    }
 
     return from(clerkService.getToken()).pipe(
         switchMap((clerkToken) => next(requestWithToken(clerkToken))),
