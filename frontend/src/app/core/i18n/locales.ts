@@ -45,7 +45,11 @@ export function matchAcceptLanguage(header: string | null, offered: ReadonlyArra
             const [tag, ...params] = entry.trim().split(';')
             const q = params.map((param) => param.trim()).find((param) => param.startsWith('q='))
             const quality = q ? Number(q.slice(2)) : 1
-            return { language: (tag ?? '').trim().toLowerCase().split('-')[0] ?? '', quality: Number.isFinite(quality) ? quality : 0, index }
+            return {
+                language: (tag ?? '').trim().toLowerCase().split('-')[0] ?? '',
+                quality: Number.isFinite(quality) ? quality : 0,
+                index,
+            }
         })
         .filter((range) => range.language && range.quality > 0)
         .sort((a, b) => b.quality - a.quality || a.index - b.index)
