@@ -10,7 +10,7 @@ where they are set, never values.
 | Local | `localhost:4200` (`npm start`) | `localhost:3000` (`npm run dev`) | Your own SQLite file, `data/board-vault.local.db` | Development instance | Off (optional [local profile](how-to/run-with-redis.md)) | You |
 | Shared development | Local | Local | Turso `board-vault-development` | Development instance | Off | David (reset/refresh is an owner operation) |
 | CI | Built in GitHub Actions | Built in GitHub Actions | Temporary SQLite files | Placeholder key, never contacted | Off | Pull requests |
-| Production | `board-vault.com` (Vercel `board-vault-front`) | `backend.board-vault.com` (Vercel `board-vault-back`) | Turso `board-vault` | Production instance | Upstash | David |
+| Production | `board-vault.com/<locale>/` (Vercel `board-vault-front`) | `backend.board-vault.com` (Vercel `board-vault-back`) | Turso `board-vault` | Production instance | Upstash | David |
 
 Vercel builds only from `main` and only when non-documentation files changed,
 so documentation-only pushes do not deploy. Pull request previews are not

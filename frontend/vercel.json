@@ -3,8 +3,23 @@
     "installCommand": "npx --yes npm@11.12.1 ci --ignore-scripts",
     "headers": [
         {
-            "source": "/:file((?:main|polyfills|chunk|styles)-[A-Za-z0-9_-]{8}\\.(?:js|css))",
-            "headers": [{ "key": "Cache-Control", "value": "public, max-age=31536000, immutable" }]
+            "source": "/:locale(en|es|fr|de|it)/:file((?:main|polyfills|chunk|styles)-[A-Za-z0-9_-]{8}\\.(?:js|css))",
+            "headers": [
+                {
+                    "key": "Cache-Control",
+                    "value": "public, max-age=31536000, immutable"
+                }
+            ]
+        }
+    ],
+    "rewrites": [
+        {
+            "source": "/:locale(en|es|fr|de|it)",
+            "destination": "/:locale/index.html"
+        },
+        {
+            "source": "/:locale(en|es|fr|de|it)/:path*",
+            "destination": "/:locale/index.html"
         }
     ]
 }

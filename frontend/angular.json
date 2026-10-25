@@ -51,7 +51,9 @@
                                     "maximumError": "4kB"
                                 }
                             ],
-                            "outputHashing": "all"
+                            "outputHashing": "all",
+                            "localize": true,
+                            "i18nMissingTranslation": "error"
                         },
                         "development": {
                             "optimization": false,
@@ -63,6 +65,30 @@
                                     "with": "src/environments/environment.development.ts"
                                 }
                             ]
+                        },
+                        "es": {
+                            "localize": [
+                                "es"
+                            ],
+                            "i18nMissingTranslation": "error"
+                        },
+                        "fr": {
+                            "localize": [
+                                "fr"
+                            ],
+                            "i18nMissingTranslation": "error"
+                        },
+                        "de": {
+                            "localize": [
+                                "de"
+                            ],
+                            "i18nMissingTranslation": "error"
+                        },
+                        "it": {
+                            "localize": [
+                                "it"
+                            ],
+                            "i18nMissingTranslation": "error"
                         }
                     },
                     "defaultConfiguration": "production"
@@ -75,18 +101,75 @@
                         },
                         "development": {
                             "buildTarget": "frontend:build:development"
+                        },
+                        "es": {
+                            "buildTarget": "frontend:build:development,es"
+                        },
+                        "fr": {
+                            "buildTarget": "frontend:build:development,fr"
+                        },
+                        "de": {
+                            "buildTarget": "frontend:build:development,de"
+                        },
+                        "it": {
+                            "buildTarget": "frontend:build:development,it"
                         }
                     },
                     "defaultConfiguration": "development"
                 },
                 "extract-i18n": {
-                    "builder": "@angular/build:extract-i18n"
+                    "builder": "ng-extract-i18n-merge:ng-extract-i18n-merge",
+                    "options": {
+                        "buildTarget": "frontend:build",
+                        "format": "xlf2",
+                        "outputPath": "src/locale",
+                        "sourceFile": "messages.xlf",
+                        "targetFiles": [
+                            "messages.es.xlf",
+                            "messages.fr.xlf",
+                            "messages.de.xlf",
+                            "messages.it.xlf"
+                        ],
+                        "newTranslationTargetsBlank": "omit",
+                        "fuzzyMatch": false,
+                        "resetTranslationState": true,
+                        "sort": "stableAlphabetNew",
+                        "includeContext": "sourceFileOnly",
+                        "includeMeaningAndDescription": true,
+                        "collapseWhitespace": true,
+                        "trim": false,
+                        "includeContextLineNumber": false
+                    }
                 },
                 "test": {
                     "builder": "@angular/build:unit-test",
                     "options": {
                         "tsConfig": "tsconfig.spec.json",
                         "buildTarget": "::development"
+                    }
+                }
+            },
+            "i18n": {
+                "sourceLocale": {
+                    "code": "en",
+                    "subPath": "en"
+                },
+                "locales": {
+                    "es": {
+                        "translation": "src/locale/messages.es.xlf",
+                        "subPath": "es"
+                    },
+                    "fr": {
+                        "translation": "src/locale/messages.fr.xlf",
+                        "subPath": "fr"
+                    },
+                    "de": {
+                        "translation": "src/locale/messages.de.xlf",
+                        "subPath": "de"
+                    },
+                    "it": {
+                        "translation": "src/locale/messages.it.xlf",
+                        "subPath": "it"
                     }
                 }
             }

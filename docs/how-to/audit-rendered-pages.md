@@ -7,10 +7,11 @@ so a release is always audited. The configuration is
 
 ## What is audited
 
-- `/` (landing), `/login` and `/register`, three runs each, on Lighthouse's
+- `/en/` (landing), `/en/login` and `/en/register`, three runs each, on Lighthouse's
   default mobile profile. The build is served by
   [`frontend/scripts/serve-dist.mjs`](../../frontend/scripts/serve-dist.mjs)
-  with gzip and the app-route fallback, as Vercel does. It also serves a
+  with gzip, the shared files at the root, each language's app-route
+  fallback, and the redirect of an address without a language, as Vercel does. It also serves a
   runtime config with a Clerk publishable key, as production has, so the
   audit downloads and runs Clerk's bundle. The key is fake: its frontend API
   is on `.invalid`, so Clerk's next request fails at once and no Clerk
