@@ -33,6 +33,16 @@ the other side:
 Endpoints consumed by third parties (today only the Clerk webhook) follow the
 provider's contract.
 
+## Language
+
+Every request from the frontend carries `Accept-Language` with the page's
+language (`en`, `es`, `fr`, `de`, `it`; [ADR-0024](adr/0024-interface-languages.md)).
+`LocaleMiddleware` reads it into `request.locale` (the best supported match
+for any other value, English without one), and handlers take it with
+`@RequestLocale()`. The API returns facts (ids, codes, numbers, dates) and
+the frontend writes the sentences; a response whose content depends on the
+language must include it in its cache key.
+
 ## Collections
 
 Catalogue browsing and admin listings are paginated with a maximum page size
