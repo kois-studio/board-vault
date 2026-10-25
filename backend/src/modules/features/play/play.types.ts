@@ -125,9 +125,60 @@ export class ParticipantRecommendationRequestBody {
     decisionLens?: RecommendationDecisionLens
 }
 
+/** Why a game is recommended, as a fact the app words in the page's language (ADR-0024). */
+export const RECOMMENDATION_REASON_CODES = [
+    'owned_by',
+    'fits_players',
+    'duration',
+    'duration_unknown',
+    'rating',
+    'no_rating',
+    'interested',
+    'passed_before',
+    'preferences_favor',
+    'marked_avoid',
+    'not_played_yet',
+    'played_before',
+    'strong_rating',
+    'shared_shelf',
+] as const
+export type RecommendationReasonCode = (typeof RECOMMENDATION_REASON_CODES)[number]
+
+export class RecommendationReasonDto {
+    @ApiProperty({ enum: RECOMMENDATION_REASON_CODES, example: 'owned_by' })
+    code: RecommendationReasonCode
+
+    @ApiProperty({
+        example: { owners: 2, attendees: 3 },
+        description:
+            'The numbers the reason needs: owners and attendees (owned_by; people is 1 when they are group people), players (fits_players), minutes (duration), rating (rating), count (interested, passed_before).',
+        required: false,
+    })
+    values?: Record<string, number>
+}
+
+/** Why nothing could be recommended. */
+export const NO_RESULT_REASON_CODES = ['no_owned_games', 'no_player_fit', 'no_duration_fit', 'no_titled_games', 'no_people_games'] as const
+export type NoResultReasonCode = (typeof NO_RESULT_REASON_CODES)[number]
+
+export class NoResultReasonDto {
+    @ApiProperty({ enum: NO_RESULT_REASON_CODES, example: 'no_player_fit' })
+    code: NoResultReasonCode
+
+    @ApiProperty({
+        example: { players: 5 },
+        description: 'players (no_player_fit, no_duration_fit), minutes (no_duration_fit).',
+        required: false,
+    })
+    values?: Record<string, number>
+}
+
 export class RecommendationExplanationDto {
     @ApiProperty({ example: ['Owned by 2 of 3 selected people', 'Fits 3 players'] })
     reasons: Array<string>
+
+    @ApiProperty({ type: [RecommendationReasonDto], description: 'The same reasons, as codes; `reasons` is their English.' })
+    reasonCodes: Array<RecommendationReasonDto>
 
     @ApiProperty({ example: 2 })
     attendeeOwnerCount: number
@@ -180,6 +231,9 @@ export class RecommendationsDto {
 
     @ApiProperty({ example: 'No owned games match the selected attendees and filters.', nullable: true })
     noResultReason: string | null
+
+    @ApiProperty({ type: NoResultReasonDto, nullable: true, description: 'The same reason, as a code; `noResultReason` is its English.' })
+    noResultReasonCode: NoResultReasonDto | null
 }
 
 export class RecommendationFeedbackBody {
