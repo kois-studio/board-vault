@@ -5,6 +5,7 @@ import { ButtonComponent } from '../../../components/ui/button/button.component'
 import { ContainerWrapperComponent } from '../../../components/ui/container-wrapper/container-wrapper.component'
 import { IconComponent } from '../../../components/ui/icon/icon.component'
 import { PageHeaderComponent } from '../../../components/ui/page-header/page-header.component'
+import { formatDateTime } from '../../../core/i18n/format'
 import { DataService } from '../../../core/services/data.service'
 
 @Component({
@@ -82,7 +83,7 @@ export class SubmissionsPageComponent {
     }
 
     public formatDate(dateString: string): string {
-        return new Date(dateString).toLocaleDateString('en-US', {
+        return formatDateTime(new Date(dateString), {
             year: 'numeric',
             month: 'short',
             day: 'numeric',

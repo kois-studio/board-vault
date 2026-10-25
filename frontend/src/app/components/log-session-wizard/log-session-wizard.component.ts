@@ -20,6 +20,7 @@ import { IconComponent } from '../../components/ui/icon/icon.component'
 import { PageHeaderComponent } from '../../components/ui/page-header/page-header.component'
 import { SpinnerComponent } from '../../components/ui/spinner/spinner.component'
 import { LOADING_KEYS } from '../../core/enums/loading-keys-enum'
+import { formatDateTime, isoDay } from '../../core/i18n/format'
 import { CountPipe, PlayersPipe } from '../../core/pipes/count.pipe'
 import { DataService } from '../../core/services/data.service'
 import { LoadingService } from '../../core/services/loading.service'
@@ -131,9 +132,7 @@ export class LogSessionWizardComponent {
             (session) =>
                 session.id !== this.editingId &&
                 session.groupId === group?.id &&
-                new Intl.DateTimeFormat('en-CA', { year: 'numeric', month: '2-digit', day: '2-digit', timeZone: session.timezone }).format(
-                    new Date(session.meetDate),
-                ) === date,
+                isoDay(new Date(session.meetDate), session.timezone) === date,
         )
     })
     readonly dateChoice = signal(todayInputValue())
@@ -635,12 +634,7 @@ export class LogSessionWizardComponent {
                 sessionDate:
                     this.editingId &&
                     this.pendingRecording &&
-                    new Intl.DateTimeFormat('en-CA', {
-                        year: 'numeric',
-                        month: '2-digit',
-                        day: '2-digit',
-                        timeZone: this.pendingRecording.timezone,
-                    }).format(new Date(this.pendingRecording.sessionDate)) === sessionDate
+                    isoDay(new Date(this.pendingRecording.sessionDate), this.pendingRecording.timezone) === sessionDate
                         ? this.pendingRecording.sessionDate
                         : new Date(`${sessionDate}T12:00:00`).toISOString(),
                 timezone: this.pendingRecording?.timezone ?? Intl.DateTimeFormat().resolvedOptions().timeZone,
@@ -828,14 +822,7 @@ export class LogSessionWizardComponent {
             this.recordingRestored = false
             this.extras.set(games.map((game) => game.gameData))
             this.revision = recording.revision
-            this.sessionDate.setValue(
-                new Intl.DateTimeFormat('en-CA', {
-                    year: 'numeric',
-                    month: '2-digit',
-                    day: '2-digit',
-                    timeZone: recording.timezone,
-                }).format(new Date(recording.sessionDate)),
-            )
+            this.sessionDate.setValue(isoDay(new Date(recording.sessionDate), recording.timezone))
             this.sessionNotes.setValue(recording.notes ?? '')
             const group = this.userGroups().find((group) => group.id === recording.groupId)
             if (group) {
@@ -983,9 +970,7 @@ export class LogSessionWizardComponent {
     public getSessionDateLabel(): string {
         const value = this.sessionDate.value
         if (!value) return 'Not set'
-        return new Intl.DateTimeFormat('en-GB', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' }).format(
-            new Date(`${value}T12:00:00`),
-        )
+        return formatDateTime(new Date(`${value}T12:00:00`), { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })
     }
 
     public retryGroups(): void {

@@ -8,6 +8,7 @@ import { ContainerWrapperComponent } from '../../../components/ui/container-wrap
 import { IconComponent } from '../../../components/ui/icon/icon.component'
 import { PageHeaderComponent } from '../../../components/ui/page-header/page-header.component'
 import { LOADING_KEYS } from '../../../core/enums/loading-keys-enum'
+import { formatDateTime } from '../../../core/i18n/format'
 import { CustomDatePipe } from '../../../core/pipes/customDate.pipe'
 import { DataService } from '../../../core/services/data.service'
 import { LoadingService } from '../../../core/services/loading.service'
@@ -22,7 +23,6 @@ import { sessionDateParts } from '../../../core/utils/sessionTiming'
 
 /** Sessions shown at first, and added by each "Show older sessions". */
 const PAGE_SIZE = 10
-const MONTH_FORMAT = new Intl.DateTimeFormat('en-GB', { month: 'long', year: 'numeric' })
 
 @Component({
     imports: [
@@ -88,7 +88,7 @@ export class HistoryPageComponent {
             const key = `${date.getFullYear()}-${date.getMonth() + 1}`
             const month = months.at(-1)
             if (month?.key === key) month.records.push(record)
-            else months.push({ key, label: MONTH_FORMAT.format(date), records: [record] })
+            else months.push({ key, label: formatDateTime(date, { month: 'long', year: 'numeric' }), records: [record] })
         }
         return months
     })

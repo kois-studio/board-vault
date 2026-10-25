@@ -1,4 +1,5 @@
 import { Pipe, PipeTransform } from '@angular/core'
+import { formatDateTime } from '../i18n/format'
 
 @Pipe({
     name: 'customDate',
@@ -25,12 +26,15 @@ export class CustomDatePipe implements PipeTransform {
         }
 
         // Format the date using Intl.DateTimeFormat
-        return new Intl.DateTimeFormat('en-GB', {
-            day: 'numeric',
-            month: 'long',
-            year: 'numeric',
-            ...(includeTime ? { hour: 'numeric', minute: '2-digit' } : {}),
-            ...(timezone ? { timeZone: timezone } : {}),
-        }).format(date)
+        return formatDateTime(
+            date,
+            {
+                day: 'numeric',
+                month: 'long',
+                year: 'numeric',
+                ...(includeTime ? { hour: 'numeric', minute: '2-digit' } : {}),
+            },
+            timezone,
+        )
     }
 }

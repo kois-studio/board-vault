@@ -196,9 +196,18 @@ are written without the prefix; the base address adds it.
   locally.
 - Messages live in `frontend/src/locale/` (XLIFF 2.0): `messages.xlf` is
   extracted from the source (`npm run i18n:extract`, which keeps existing
-  translations), and `messages.<locale>.xlf` holds each translation. The
-  production build fails on a missing translation, and CI fails when the
-  extracted file is stale.
+  translations), and `messages.<locale>.xlf` holds each translation.
+  `npm run build` fails when a message has no translation in any language
+  (`scripts/i18n-translations.mjs check`: Angular itself would quietly show
+  the English), and CI fails when the extracted file is stale.
+  `npm run i18n:missing` lists what needs translating and `npm run i18n:apply`
+  writes translations from a JSON file.
+- Dates, times, and numbers go through
+  [`core/i18n/format.ts`](../frontend/src/app/core/i18n/format.ts)
+  (`formatDateTime`, `relativeDays`, `timeAgo`, `formatNumber`), which use the
+  build's language (`$localize.locale`) with European conventions (`en-GB`
+  for English). `isoDay` makes `YYYY-MM-DD` day keys, a data format. No
+  component names a locale.
 - `npm start` serves English at the root; `npm run start:es` (and `:fr`,
   `:de`, `:it`) serves one other language.
 

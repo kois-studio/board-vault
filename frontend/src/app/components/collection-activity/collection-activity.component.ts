@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common'
 import { Component, computed, inject } from '@angular/core'
 import { RouterLink } from '@angular/router'
+import { formatDateTime, timeAgo } from '../../core/i18n/format'
 import { GameTitlePipe } from '../../core/pipes/game-title.pipe'
 import { DataService } from '../../core/services/data.service'
 import { IconComponent } from '../ui/icon/icon.component'
@@ -50,33 +51,10 @@ export class CollectionActivityComponent {
         const date = new Date(`${dateString.replace(' ', 'T')}Z`)
         const now = new Date()
 
-        // Calculate the time difference in seconds
-        const diffInSeconds = Math.floor((now.getTime() - date.getTime()) / 1000)
-
-        if (diffInSeconds < 60) {
-            return 'Just now'
+        // A week or more ago: the date itself.
+        if (now.getTime() - date.getTime() < 604800000) {
+            return timeAgo(date, now.getTime())
         }
-
-        if (diffInSeconds < 3600) {
-            const minutes = Math.floor(diffInSeconds / 60)
-            return `${minutes} ${minutes === 1 ? 'minute' : 'minutes'} ago`
-        }
-
-        if (diffInSeconds < 86400) {
-            const hours = Math.floor(diffInSeconds / 3600)
-            return `${hours} ${hours === 1 ? 'hour' : 'hours'} ago`
-        }
-
-        if (diffInSeconds < 604800) {
-            const days = Math.floor(diffInSeconds / 86400)
-            return `${days} ${days === 1 ? 'day' : 'days'} ago`
-        }
-
-        // For older dates, show formatted date in user's local timezone
-        return date.toLocaleDateString('en-US', {
-            year: 'numeric',
-            month: 'short',
-            day: 'numeric',
-        })
+        return formatDateTime(date, { year: 'numeric', month: 'short', day: 'numeric' })
     }
 }

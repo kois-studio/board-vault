@@ -4,6 +4,7 @@ import { firstValueFrom } from 'rxjs'
 import { Api } from '../../../../api/api'
 import type { AdminGameProposalsType, AdminGameProposalType, ApproveGameProposalType, ProposalStatus } from '../../../../api/api.types'
 import { ToastService } from '../../../../components/toast/toast.service'
+import { formatDateTime } from '../../../../core/i18n/format'
 import { LogService } from '../../../../core/services/log.service'
 import { PendingProposalsService } from '../../../../core/services/pending-proposals.service'
 
@@ -140,7 +141,7 @@ export class AdminGameProposalsService {
     }
 
     public formatDate(dateString: string): string {
-        return new Date(dateString).toLocaleDateString('en-US', {
+        return formatDateTime(new Date(dateString), {
             year: 'numeric',
             month: 'short',
             day: 'numeric',
