@@ -5974,6 +5974,19 @@
           "isAdmin": {
             "type": "boolean",
             "example": false
+          },
+          "locale": {
+            "type": "string",
+            "enum": [
+              "en",
+              "es",
+              "fr",
+              "de",
+              "it"
+            ],
+            "nullable": true,
+            "example": "es",
+            "description": "The interface language the person chose (ADR-0024); null until they choose one."
           }
         },
         "required": [
@@ -5984,7 +5997,8 @@
           "displayName",
           "avatar",
           "isDeleted",
-          "isAdmin"
+          "isAdmin",
+          "locale"
         ]
       },
       "UpdateUserBody": {
@@ -5996,6 +6010,17 @@
           },
           "avatar": {
             "$ref": "#/components/schemas/AvatarDto"
+          },
+          "locale": {
+            "type": "string",
+            "enum": [
+              "en",
+              "es",
+              "fr",
+              "de",
+              "it"
+            ],
+            "example": "es"
           }
         }
       },
@@ -10469,6 +10494,19 @@
                 "$ref": "#/components/schemas/AvatarDto"
               }
             ]
+          },
+          "locale": {
+            "type": "string",
+            "enum": [
+              "en",
+              "es",
+              "fr",
+              "de",
+              "it"
+            ],
+            "nullable": true,
+            "example": "es",
+            "description": "The interface language the person chose (ADR-0024); null until they choose one."
           }
         },
         "required": [
@@ -10477,7 +10515,8 @@
           "createdAt",
           "username",
           "displayName",
-          "avatar"
+          "avatar",
+          "locale"
         ]
       },
       "InvitationWithExtraData": {

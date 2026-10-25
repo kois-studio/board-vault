@@ -40,6 +40,7 @@ export class ProfileService {
             displayName: user.displayName,
             avatar: user.avatar,
             createdAt: user.createdAt,
+            locale: user.locale,
         }
     }
 

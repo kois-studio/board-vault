@@ -1,10 +1,13 @@
 import { ResultSet } from '@libsql/client'
 import { Injectable, Logger, NotFoundException } from '@nestjs/common'
 
+import { isSupportedLocale } from '../../../common/i18n/locale.js'
 import { usersSchema } from '../../../common/schemas/index.js'
 import { AvatarDto, UpdateUserBody, UserGetDto, UserPublicDto } from '../../../common/types/user.type.js'
 import { DatabaseService } from '../../common/database/database.service.js'
 import { ActivityNotifier } from '../notifications/activity-notifier.service.js'
+
+import type { Locale } from '../../../common/i18n/locale.js'
 
 @Injectable()
 export class UsersService {
@@ -26,6 +29,8 @@ export class UsersService {
             createdAt: String(row.created_at),
             isDeleted: Boolean(row.isDeleted),
             isAdmin: Number(row.isAdmin) === 1,
+            // An unknown value (a language since removed) reads as no choice.
+            locale: isSupportedLocale(row.locale) ? row.locale : null,
         }))
 
         const result = usersSchema.safeParse(users)
@@ -127,7 +132,14 @@ export class UsersService {
         return user
     }
 
-    async createClerkUser(user: { email: string; username: string; displayName: string; avatar: object; clerkUserId: string }) {
+    async createClerkUser(user: {
+        email: string
+        username: string
+        displayName: string
+        avatar: object
+        clerkUserId: string
+        locale: Locale
+    }) {
         await this.databaseService.accounts.createClerkUser({
             ...user,
             avatar: JSON.stringify(user.avatar),

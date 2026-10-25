@@ -1,3 +1,5 @@
+import type { Locale } from '../core/i18n/locales'
+
 // #region User
 
 export type UserType = {
@@ -13,6 +15,8 @@ export type UserType = {
         initials: string
     }
     createdAt: string
+    /** The interface language the person chose (ADR-0024); null until they choose one. Only on their own profile. */
+    locale?: Locale | null
 }
 
 export type PublicUserType = Pick<UserType, 'id' | 'username' | 'displayName' | 'avatar'>

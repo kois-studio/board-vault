@@ -20,7 +20,7 @@ import { RecordingQueries } from './queries/session-recording.queries.js'
 import { SessionQueries } from './queries/sessions.queries.js'
 import { UsageQueries } from './queries/usage.queries.js'
 
-export const CURRENT_SCHEMA_VERSION = '0025'
+export const CURRENT_SCHEMA_VERSION = '0026'
 
 /** Statements that only read, so running them twice is harmless. Any write keyword, even inside a `WITH`, makes it a write. */
 const READ_ONLY_SQL = /^\s*(SELECT|WITH)\b/i

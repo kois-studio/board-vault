@@ -1,5 +1,7 @@
 import { z } from 'zod'
 
+import { SUPPORTED_LOCALES } from '../i18n/locale.js'
+
 export const userSchema = z.object({
     id: z.number().int().nonnegative(),
     email: z.string().email(),
@@ -16,6 +18,7 @@ export const userSchema = z.object({
     createdAt: z.string().refine(date => !isNaN(Date.parse(date)), { message: 'Invalid date format' }),
     isDeleted: z.boolean(),
     isAdmin: z.boolean(),
+    locale: z.enum(SUPPORTED_LOCALES).nullable(),
 })
 
 export const usersSchema = z.array(userSchema)
