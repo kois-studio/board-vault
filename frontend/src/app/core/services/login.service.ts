@@ -145,7 +145,7 @@ export class LoginService {
                 this.logger.error('LoginService: Critical error - Failed to fetch USER_DATA after successful auth. Logging out.', err)
                 this.toastService.error(
                     // Specific toast for this critical failure
-                    'Failed to load essential user information. Please log in again.',
+                    $localize`:Toast when the account could not be loaded right after signing in:Failed to load essential user information. Please log in again.`,
                 )
                 this._performLogoutCleanup()
                 this.router.navigate(['/'])
@@ -172,10 +172,10 @@ export class LoginService {
 
     private get clerkHandoffErrorMessage(): string {
         if (this.clerkService.isInvitationFlow()) {
-            return 'We could not finish joining this group. The invitation may have expired, already been used, or the group may no longer be available. Try again, or sign out and ask the group owner for a fresh invitation.'
+            return $localize`:Error when joining a group from an invitation link failed:We could not finish joining this group. The invitation may have expired, already been used, or the group may no longer be available. Try again, or sign out and ask the group owner for a fresh invitation.`
         }
 
-        return 'We could not finish connecting this sign-in to Board Vault. Try again, or sign out and use your invitation link.'
+        return $localize`:Error when finishing sign-in failed:We could not finish connecting this sign-in to Board Vault. Try again, or sign out and use your invitation link.`
     }
 
     private shouldOpenDashboardAfterHandoff(): boolean {
@@ -197,7 +197,7 @@ export class LoginService {
         this.clerkAuthHandoffState.set('idle')
         this.clerkAuthHandoffError.set(null)
         await this.router.navigate(['/'])
-        this.toastService.success('Your account was deleted.')
+        this.toastService.success($localize`:Toast after someone deleted their account:Your account was deleted.`)
     }
 
     /**
@@ -212,7 +212,7 @@ export class LoginService {
         this.clerkAuthHandoffState.set('idle')
         this.clerkAuthHandoffError.set(null)
         await this.router.navigate(['/'])
-        this.toastService.success('You have been successfully logged out.')
+        this.toastService.success($localize`:Toast after signing out:You have been successfully logged out.`)
     }
 
     /**

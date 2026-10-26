@@ -8,6 +8,7 @@
                 (click)="toggleHelp()"
                 class="ml-2 rounded-full p-1 text-bv-text-muted focus-visible:outline-none"
                 aria-label="Show help information"
+                i18n-aria-label="Button next to a page heading that shows a short help text"
                 aria-controls="title-help-popover"
                 [attr.aria-expanded]="isHelpVisible"
             >
@@ -29,6 +30,7 @@
                     (click)="closeHelp()"
                     class="rounded p-1 text-bv-text-muted focus-visible:outline-none"
                     aria-label="Close help"
+                    i18n-aria-label="Button that closes the help text next to a page heading"
                 >
                     <app-icon name="x" [size]="16" />
                 </button>

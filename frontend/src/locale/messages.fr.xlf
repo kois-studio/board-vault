@@ -18,6 +18,51 @@
         <target><ph id="0" equiv="count" disp="count"/> personne choisie l’a déjà écarté</target>
       </segment>
     </unit>
+    <unit id="1023159118123911874">
+      <notes>
+        <note category="description">Label of the usage statistics switch on the invitation sign-up page; the same switch is in Settings, Privacy</note>
+      </notes>
+      <segment state="translated">
+        <source>Help improve Board Vault</source>
+        <target>Aider à améliorer Board Vault</target>
+      </segment>
+    </unit>
+    <unit id="1062104919522536322">
+      <notes>
+        <note category="description">Password advice in Clerk, the sign-in provider</note>
+      </notes>
+      <segment state="translated">
+        <source>You can create strong passwords without using symbols, numbers, or uppercase letters.</source>
+        <target>Vous pouvez créer des mots de passe forts sans utiliser de symboles, de chiffres ou de lettres majuscules.</target>
+      </segment>
+    </unit>
+    <unit id="1125545696015172640">
+      <notes>
+        <note category="description">Chip on a search result in the landing example: you own this game</note>
+      </notes>
+      <segment state="translated">
+        <source>On your shelf</source>
+        <target>Sur ton étagère</target>
+      </segment>
+    </unit>
+    <unit id="1171599222218766902">
+      <notes>
+        <note category="description">Name of the Accept button on a group invitation in the inbox</note>
+      </notes>
+      <segment state="translated">
+        <source>Accept invitation to <ph id="0" equiv="group" disp="group"/></source>
+        <target>Accepter l’invitation à <ph id="0" equiv="group" disp="group"/></target>
+      </segment>
+    </unit>
+    <unit id="1188193109474903303">
+      <notes>
+        <note category="description">Button on a group invitation in the inbox while it is being accepted or declined</note>
+      </notes>
+      <segment state="translated">
+        <source>Working…</source>
+        <target>Un instant…</target>
+      </segment>
+    </unit>
     <unit id="1200295485288897600">
       <segment state="translated">
         <source>Your game proposal &quot;<ph id="0" equiv="title" disp="data[&apos;gameTitle&apos;]"/>&quot; was approved!</source>
@@ -33,6 +78,15 @@
         <target>Compte supprimé</target>
       </segment>
     </unit>
+    <unit id="1225085275995545699">
+      <notes>
+        <note category="description">Description of a game&apos;s picture when no other is given</note>
+      </notes>
+      <segment state="translated">
+        <source>Game artwork</source>
+        <target>Image du jeu</target>
+      </segment>
+    </unit>
     <unit id="1227732393340087049">
       <notes>
         <note category="description">A game whose title is unknown</note>
@@ -42,10 +96,137 @@
         <target>un jeu</target>
       </segment>
     </unit>
+    <unit id="1234332817837554846">
+      <notes>
+        <note category="description">Name of the placeholder shown when a picture does not load; the placeholder is what the picture shows, such as Game artwork</note>
+      </notes>
+      <segment state="translated">
+        <source><ph id="0" equiv="picture" disp="this.alt()"/> unavailable</source>
+        <target><ph id="0" equiv="picture" disp="this.alt()"/> : indisponible</target>
+      </segment>
+    </unit>
+    <unit id="1234692818081853895">
+      <notes>
+        <note category="description">Answer on the landing page to Do I need a group to use it?</note>
+      </notes>
+      <segment state="translated">
+        <source>No. Board Vault works as a personal collection manager on its own. Groups are there when you want to play with others.</source>
+        <target>Non. Board Vault fonctionne seul comme gestionnaire de ta collection. Les groupes sont là quand tu veux jouer avec d’autres.</target>
+      </segment>
+    </unit>
+    <unit id="1235702505132058630">
+      <notes>
+        <note category="description">Heading of the fifth landing feature</note>
+      </notes>
+      <segment state="translated">
+        <source>Plan the night, keep the history</source>
+        <target>Prépare la soirée, garde l’historique</target>
+      </segment>
+    </unit>
+    <unit id="1238181001688941218">
+      <notes>
+        <note category="description">Password warning in Clerk, the sign-in provider</note>
+      </notes>
+      <segment state="translated">
+        <source>Repeated characters like &quot;aaa&quot; are easy to guess.</source>
+        <target>Les caractères répétés comme &apos;aaa&apos; sont faciles à deviner.</target>
+      </segment>
+    </unit>
     <unit id="1289605213459398820">
       <segment state="translated">
         <source>Your game proposal &quot;<ph id="0" equiv="title" disp="data[&apos;gameTitle&apos;]"/>&quot; is already in Board Vault as &quot;<ph id="1" equiv="existingTitle" disp="data[&apos;duplicateOfTitle&apos;]"/>&quot;.</source>
         <target>Ta proposition de jeu « <ph id="0" equiv="title" disp="data[&apos;gameTitle&apos;]"/> » est déjà dans Board Vault sous le nom « <ph id="1" equiv="existingTitle" disp="data[&apos;duplicateOfTitle&apos;]"/> ».</target>
+      </segment>
+    </unit>
+    <unit id="1292985735794176989">
+      <notes>
+        <note category="description">Answer on the landing page to Does it work on my phone?</note>
+      </notes>
+      <segment state="translated">
+        <source>Yes. It runs in any modern browser and you can install it to your home screen.</source>
+        <target>Oui. Il fonctionne dans tout navigateur récent et tu peux l’installer sur ton écran d’accueil.</target>
+      </segment>
+    </unit>
+    <unit id="1316194950149848003">
+      <notes>
+        <note category="description">Search and link preview description of the Session page</note>
+      </notes>
+      <segment state="translated">
+        <source>Review a private group session, attendance, games, and memories.</source>
+        <target>Revois une soirée jeux privée de ton groupe : présences, jeux et souvenirs.</target>
+      </segment>
+    </unit>
+    <unit id="1335927323467464219">
+      <notes>
+        <note category="description">Read to screen readers when the inbox has new things, more than one</note>
+        <note category="meaning">inbox arrival, other</note>
+      </notes>
+      <segment state="translated">
+        <source>Inbox: <ph id="0" equiv="count" disp="count"/> new</source>
+        <target>Boîte de réception : <ph id="0" equiv="count" disp="count"/> nouveautés</target>
+      </segment>
+    </unit>
+    <unit id="1338351316035322168">
+      <notes>
+        <note category="description">Note at the bottom of the access page while sign-up is by invitation only</note>
+      </notes>
+      <segment state="translated">
+        <source>Already have access? Sign in with your existing Board Vault account.</source>
+        <target>Tu as déjà accès ? Connecte-toi avec ton compte Board Vault.</target>
+      </segment>
+    </unit>
+    <unit id="1402424875650013710">
+      <notes>
+        <note category="description">Title in Clerk, the sign-in provider, when a password can no longer be trusted</note>
+      </notes>
+      <segment state="translated">
+        <source>Password untrusted</source>
+        <target>Mot de passe non fiable</target>
+      </segment>
+    </unit>
+    <unit id="1422491155254079742">
+      <notes>
+        <note category="description">Title of the box on the sign-in page that opens the sign-in window</note>
+      </notes>
+      <segment state="translated">
+        <source>Use secure sign-in</source>
+        <target>Utilise la connexion sécurisée</target>
+      </segment>
+    </unit>
+    <unit id="1525462353445570720">
+      <notes>
+        <note category="description">Help under an error when finishing sign-in failed</note>
+      </notes>
+      <segment state="translated">
+        <source>If you were invited by a group owner, use the invitation link again after signing out.</source>
+        <target>Si tu as reçu une invitation à un groupe, déconnecte-toi puis utilise de nouveau le lien d’invitation.</target>
+      </segment>
+    </unit>
+    <unit id="154867606131482974">
+      <notes>
+        <note category="description">Error on the invitation sign-up page when the password is too weak</note>
+      </notes>
+      <segment state="translated">
+        <source>That password does not meet the secure sign-up requirements. Use the guidance above and try again.</source>
+        <target>Ce mot de passe ne respecte pas les exigences de l’inscription sécurisée. Suis les indications ci-dessus et réessaie.</target>
+      </segment>
+    </unit>
+    <unit id="1582685296946620334">
+      <notes>
+        <note category="description">Name of the example group on the landing page, a group of friends who play on Fridays</note>
+      </notes>
+      <segment state="translated">
+        <source>Friday Crew</source>
+        <target>La bande du vendredi</target>
+      </segment>
+    </unit>
+    <unit id="1583195687933839267">
+      <notes>
+        <note category="description">Title of the sign-in panel from Clerk, the sign-in provider; the placeholder is Board Vault</note>
+      </notes>
+      <segment state="translated">
+        <source>Continue to <ph id="0" equiv="applicationName" disp="applicationName"/></source>
+        <target>Continuer vers <ph id="0" equiv="applicationName" disp="applicationName"/></target>
       </segment>
     </unit>
     <unit id="1608510651942979529">
@@ -55,6 +236,33 @@
       <segment state="translated">
         <source>Builds on the group’s shared shelf</source>
         <target>S’appuie sur l’étagère commune du groupe</target>
+      </segment>
+    </unit>
+    <unit id="1610683093877445085">
+      <notes>
+        <note category="description">Text on the invitation sign-up page for someone who already has an account</note>
+      </notes>
+      <segment state="translated">
+        <source>Use your existing Board Vault account to join the group that invited you.</source>
+        <target>Utilise ton compte Board Vault pour rejoindre le groupe qui t’a envoyé l’invitation.</target>
+      </segment>
+    </unit>
+    <unit id="1616102757855967475">
+      <notes>
+        <note category="description">Filter button in the landing example: every game</note>
+      </notes>
+      <segment state="translated">
+        <source>All</source>
+        <target>Tous</target>
+      </segment>
+    </unit>
+    <unit id="1617546397601140638">
+      <notes>
+        <note category="description">Count next to Administration in the avatar menu, of game proposals waiting for review; the words are read only by screen readers</note>
+      </notes>
+      <segment state="translated">
+        <source>{VAR_PLURAL, plural, one {<ph id="0" equiv="INTERPOLATION"/><pc id="1" equivStart="START_TAG_SPAN" equivEnd="CLOSE_TAG_SPAN" type="other"> proposal waiting</pc>} other {<ph id="2" equiv="INTERPOLATION"/><pc id="3" equivStart="START_TAG_SPAN" equivEnd="CLOSE_TAG_SPAN" type="other"> proposals waiting</pc>}}</source>
+        <target>{VAR_PLURAL, plural, one {<ph id="0" equiv="INTERPOLATION"/><pc id="1" equivStart="START_TAG_SPAN" equivEnd="CLOSE_TAG_SPAN" type="other"> proposition en attente</pc>} other {<ph id="2" equiv="INTERPOLATION"/><pc id="3" equivStart="START_TAG_SPAN" equivEnd="CLOSE_TAG_SPAN" type="other"> propositions en attente</pc>}}</target>
       </segment>
     </unit>
     <unit id="1630988887703018223">
@@ -72,6 +280,51 @@
         <target><ph id="0" equiv="person" disp="actor"/> a changé à quel point <ph id="1" equiv="groupPerson" disp="person"/> aime <ph id="2" equiv="game" disp="game"/>, dans <ph id="3" equiv="group" disp="group"/>.</target>
       </segment>
     </unit>
+    <unit id="16823705783062999">
+      <notes>
+        <note category="description">Main section of the app, with your games</note>
+      </notes>
+      <segment state="translated">
+        <source>Collection</source>
+        <target>Collection</target>
+      </segment>
+    </unit>
+    <unit id="1696742461752095316">
+      <notes>
+        <note category="description">Error from Clerk, the sign-in provider, about its check that a sign-in is not automated</note>
+      </notes>
+      <segment state="translated">
+        <source>Verification isn&apos;t supported in this environment. Please continue in a standard browser or contact support.</source>
+        <target>La vérification n’est pas prise en charge dans cet environnement. Continuez dans un navigateur standard ou contactez l’assistance.</target>
+      </segment>
+    </unit>
+    <unit id="1835096012816040438">
+      <notes>
+        <note category="description">Answer on the landing page to Can friends without an account join in?</note>
+      </notes>
+      <segment state="translated">
+        <source>Yes. Add the people who come but never sign up, and keep their games and wins in the group’s history.</source>
+        <target>Oui. Ajoute les personnes qui viennent sans jamais s’inscrire, et garde leurs jeux et leurs victoires dans l’historique du groupe.</target>
+      </segment>
+    </unit>
+    <unit id="186236568870281953">
+      <notes>
+        <note category="description">Tab in Play, the game nights already played</note>
+      </notes>
+      <segment state="translated">
+        <source>History</source>
+        <target>Historique</target>
+      </segment>
+    </unit>
+    <unit id="1866051814759945403">
+      <notes>
+        <note category="description">Tab in Collection, the games you own</note>
+      </notes>
+      <segment state="translated">
+        <source>My Games</source>
+        <target>Mes jeux</target>
+      </segment>
+    </unit>
     <unit id="1939361038776839397">
       <notes>
         <note category="description">Link on a notification</note>
@@ -81,16 +334,323 @@
         <target>Ouvrir le jeu existant</target>
       </segment>
     </unit>
+    <unit id="1944646529420508970">
+      <notes>
+        <note category="description">Search and link preview description of the Play page</note>
+      </notes>
+      <segment state="translated">
+        <source>Choose, plan, and remember the games your group plays together.</source>
+        <target>Choisis, planifie et garde en mémoire les jeux auxquels joue ton groupe.</target>
+      </segment>
+    </unit>
+    <unit id="1945748499180847679">
+      <notes>
+        <note category="description">Link in the avatar menu to the landing page</note>
+      </notes>
+      <segment state="translated">
+        <source>About Board Vault</source>
+        <target>À propos de Board Vault</target>
+      </segment>
+    </unit>
+    <unit id="1968746440402555823">
+      <notes>
+        <note category="description">Answer on the landing page to Is it open source?</note>
+      </notes>
+      <segment state="translated">
+        <source>Yes. The code is public on GitHub under the MIT license.</source>
+        <target>Oui. Le code est public sur GitHub sous licence MIT.</target>
+      </segment>
+    </unit>
+    <unit id="1991309224805970080">
+      <notes>
+        <note category="description">Title in Clerk, the sign-in provider, when a password appeared in a data breach</note>
+      </notes>
+      <segment state="translated">
+        <source>Password compromised</source>
+        <target>Mot de passe compromis</target>
+      </segment>
+    </unit>
+    <unit id="2001224549919062414">
+      <notes>
+        <note category="description">Small heading of the access page while sign-up is by invitation only</note>
+      </notes>
+      <segment state="translated">
+        <source>Private beta</source>
+        <target>Bêta privée</target>
+      </segment>
+    </unit>
+    <unit id="2005233829913860427">
+      <notes>
+        <note category="description">Password advice in Clerk, the sign-in provider</note>
+      </notes>
+      <segment state="translated">
+        <source>Avoid repeated words and characters.</source>
+        <target>Évitez les mots et les caractères répétés.</target>
+      </segment>
+    </unit>
+    <unit id="2017633160626855825">
+      <notes>
+        <note category="description">Toast when the inbox could not load group invitations</note>
+      </notes>
+      <segment state="translated">
+        <source>Error retrieving user&apos;s invitations</source>
+        <target>Impossible de charger tes invitations</target>
+      </segment>
+    </unit>
+    <unit id="2017823433923732184">
+      <notes>
+        <note category="description">Who owns a game in the landing example group; the placeholder is a list of names</note>
+      </notes>
+      <segment state="translated">
+        <source>Owned by <ph id="0" equiv="names" disp="names"/></source>
+        <target>À <ph id="0" equiv="names" disp="names"/></target>
+      </segment>
+    </unit>
+    <unit id="201855137823103381">
+      <notes>
+        <note category="description">Password warning in Clerk, the sign-in provider</note>
+      </notes>
+      <segment state="translated">
+        <source>Common character sequences like &quot;abc&quot; are easy to guess.</source>
+        <target>Des séquences de caractères communs comme &apos;abc&apos; sont faciles à deviner.</target>
+      </segment>
+    </unit>
+    <unit id="202194909402761079">
+      <notes>
+        <note category="description">A game you want, in the landing example</note>
+      </notes>
+      <segment state="translated">
+        <source>On your wishlist</source>
+        <target>Dans ta liste d’envies</target>
+      </segment>
+    </unit>
+    <unit id="2031932285140054383">
+      <notes>
+        <note category="description">Search and link preview description of the Join by invitation page</note>
+      </notes>
+      <segment state="translated">
+        <source>Create your Board Vault account from a group invitation.</source>
+        <target>Crée ton compte Board Vault à partir d’une invitation à un groupe.</target>
+      </segment>
+    </unit>
+    <unit id="2039576617926281033">
+      <notes>
+        <note category="description">Toast after marking a notification as read</note>
+      </notes>
+      <segment state="translated">
+        <source>Notification marked as read</source>
+        <target>Notification marquée comme lue</target>
+      </segment>
+    </unit>
     <unit id="2057533260886728415">
       <segment state="translated">
         <source><ph id="0" equiv="person" disp="actor"/> started the <ph id="1" equiv="group" disp="group"/> game night. Mark what you play as you go.</source>
         <target><ph id="0" equiv="person" disp="actor"/> a lancé la soirée jeux de <ph id="1" equiv="group" disp="group"/>. Note ce que vous jouez au fur et à mesure.</target>
       </segment>
     </unit>
+    <unit id="2096195057815684171">
+      <notes>
+        <note category="description">Password warning in Clerk, the sign-in provider</note>
+      </notes>
+      <segment state="translated">
+        <source>Your password was exposed by a data breach on the Internet.</source>
+        <target>Votre mot de passe a été divulgué suite à une violation de données sur Internet.</target>
+      </segment>
+    </unit>
     <unit id="2120057704151430913">
       <segment state="translated">
         <source><ph id="0" equiv="person" disp="actor"/> planned a game night in <ph id="1" equiv="group" disp="group"/> for <ph id="2" equiv="date" disp="when"/>. Can you make it?</source>
         <target><ph id="0" equiv="person" disp="actor"/> a prévu une soirée jeux dans <ph id="1" equiv="group" disp="group"/> pour le <ph id="2" equiv="date" disp="when"/>. Tu peux venir ?</target>
+      </segment>
+    </unit>
+    <unit id="2134897893235836867">
+      <notes>
+        <note category="description">Heading of the sign-up page when the sign-up service is down</note>
+      </notes>
+      <segment state="translated">
+        <source>We are reconnecting the sign-up service</source>
+        <target>Nous reconnectons le service d’inscription</target>
+      </segment>
+    </unit>
+    <unit id="2150820554747308947">
+      <notes>
+        <note category="description">Search and link preview description of the page shown for an address that does not exist</note>
+      </notes>
+      <segment state="translated">
+        <source>That Board Vault page could not be found.</source>
+        <target>Cette page de Board Vault est introuvable.</target>
+      </segment>
+    </unit>
+    <unit id="2154348577741476081">
+      <notes>
+        <note category="description">Small heading of the sign-up page</note>
+      </notes>
+      <segment state="translated">
+        <source>Create your shelf</source>
+        <target>Crée ton étagère</target>
+      </segment>
+    </unit>
+    <unit id="2179376959569917010">
+      <notes>
+        <note category="description">Error on the sign-in page, seen only by developers</note>
+      </notes>
+      <segment state="translated">
+        <source> Sign-in is not configured for this environment. Set <pc id="0" equivStart="START_TAG_CODE" equivEnd="CLOSE_TAG_CODE" type="other" dispStart="&lt;code&gt;" dispEnd="&lt;/code&gt;">CLERK_PUBLISHABLE_KEY</pc> and restart the app. </source>
+        <target>La connexion n’est pas configurée dans cet environnement. Définis <pc id="0" equivStart="START_TAG_CODE" equivEnd="CLOSE_TAG_CODE" type="other" dispStart="&lt;code&gt;" dispEnd="&lt;/code&gt;">CLERK_PUBLISHABLE_KEY</pc> et redémarre l’app.</target>
+      </segment>
+    </unit>
+    <unit id="2190081233855588477">
+      <notes>
+        <note category="description">Error on the sign-in page when the sign-in service does not load</note>
+      </notes>
+      <segment state="translated">
+        <source> The secure sign-in service could not be reached. Refresh this page to try again. </source>
+        <target>Le service de connexion sécurisée est injoignable. Recharge cette page pour réessayer.</target>
+      </segment>
+    </unit>
+    <unit id="2251647579667259226">
+      <notes>
+        <note category="description">The published title of the board game Ticket to Ride in this language</note>
+        <note category="meaning">game title</note>
+      </notes>
+      <segment state="translated">
+        <source>Ticket to Ride</source>
+        <target>Les Aventuriers du Rail</target>
+      </segment>
+    </unit>
+    <unit id="2270019012182179550">
+      <notes>
+        <note category="description">Browser tab title of the Home page</note>
+      </notes>
+      <segment state="translated">
+        <source>Home — Board Vault</source>
+        <target>Accueil — Board Vault</target>
+      </segment>
+    </unit>
+    <unit id="2308975396733519902">
+      <notes>
+        <note category="description">Footer link to the sign-up page</note>
+      </notes>
+      <segment state="translated">
+        <source>Create an account</source>
+        <target>Créer un compte</target>
+      </segment>
+    </unit>
+    <unit id="2309890458671719225">
+      <notes>
+        <note category="description">Read by screen readers while the game night history loads</note>
+      </notes>
+      <segment state="translated">
+        <source>Loading history</source>
+        <target>Chargement de l’historique</target>
+      </segment>
+    </unit>
+    <unit id="232589881577123682">
+      <notes>
+        <note category="description">Heading of the invitations list in the inbox</note>
+      </notes>
+      <segment state="translated">
+        <source>Group invitations</source>
+        <target>Invitations à des groupes</target>
+      </segment>
+    </unit>
+    <unit id="2336550011721758066">
+      <notes>
+        <note category="description">Button in the signed-out header that opens sign-in</note>
+      </notes>
+      <segment state="translated">
+        <source>Log in</source>
+        <target>Se connecter</target>
+      </segment>
+    </unit>
+    <unit id="234507628625197359">
+      <notes>
+        <note category="description">Heading of the games played at the previous game night, in the landing example</note>
+      </notes>
+      <segment state="translated">
+        <source>Last Friday</source>
+        <target>Vendredi dernier</target>
+      </segment>
+    </unit>
+    <unit id="2354722487650755409">
+      <notes>
+        <note category="description">Hint under the password field on the invitation sign-up page</note>
+      </notes>
+      <segment state="translated">
+        <source>Use at least 15 characters.</source>
+        <target>Utilise au moins 15 caractères.</target>
+      </segment>
+    </unit>
+    <unit id="2358983192776008663">
+      <notes>
+        <note category="description">Small line under the landing page buttons</note>
+      </notes>
+      <segment state="translated">
+        <source>Free to use. Works in any browser.</source>
+        <target>Gratuit. Fonctionne dans tous les navigateurs.</target>
+      </segment>
+    </unit>
+    <unit id="2369742814572661392">
+      <notes>
+        <note category="description">Shown by Clerk, the sign-in provider, while it checks that a sign-in is not automated</note>
+      </notes>
+      <segment state="translated">
+        <source>Loading…</source>
+        <target>Chargement…</target>
+      </segment>
+    </unit>
+    <unit id="2404444981573781985">
+      <notes>
+        <note category="description">Footer link to the project repository</note>
+      </notes>
+      <segment state="translated">
+        <source>Source code on GitHub</source>
+        <target>Code source sur GitHub</target>
+      </segment>
+    </unit>
+    <unit id="2407860499554401189">
+      <notes>
+        <note category="description">Link to a section of the landing page</note>
+      </notes>
+      <segment state="translated">
+        <source>How it works</source>
+        <target>Comment ça marche</target>
+      </segment>
+    </unit>
+    <unit id="2418611027222489907">
+      <notes>
+        <note category="description">Answer on the landing page to Who can see my collection?</note>
+      </notes>
+      <segment state="translated">
+        <source>Only you, until you join a group. The people in your groups see the games you own and how you rated them, never your wishlist or your account.</source>
+        <target>Personne d’autre que toi, jusqu’à ce que tu rejoignes un groupe. Les personnes de tes groupes voient les jeux que tu possèdes et tes notes, jamais ta liste d’envies ni ton compte.</target>
+      </segment>
+    </unit>
+    <unit id="2422073724818015702">
+      <notes>
+        <note category="description">Line at the bottom of the card that asks once about usage statistics; Settings → Privacy names the place in the app</note>
+      </notes>
+      <segment state="translated">
+        <source>Change it anytime in <pc id="0" equivStart="START_LINK" equivEnd="CLOSE_LINK" type="link" dispStart="&lt;a routerLink=&quot;/settings/privacy&quot; class=&quot;font-medium text-bv-primary underline&quot;&gt;" dispEnd="&lt;/a&gt;">Settings → Privacy</pc>.</source>
+        <target>Tu peux le changer à tout moment dans <pc id="0" equivStart="START_LINK" equivEnd="CLOSE_LINK" type="link" dispStart="&lt;a routerLink=&quot;/settings/privacy&quot; class=&quot;font-medium text-bv-primary underline&quot;&gt;" dispEnd="&lt;/a&gt;">Paramètres → Confidentialité</pc>.</target>
+      </segment>
+    </unit>
+    <unit id="242623158354490493">
+      <notes>
+        <note category="description">Text of the third landing feature</note>
+      </notes>
+      <segment state="translated">
+        <source>Give each game a rating after you play it, and keep a wishlist of the ones you want to get.</source>
+        <target>Note chaque jeu après y avoir joué, et garde une liste d’envies pour ceux que tu veux avoir.</target>
+      </segment>
+    </unit>
+    <unit id="2427460915092901296">
+      <notes>
+        <note category="description">Search and link preview description of the Sign in page</note>
+      </notes>
+      <segment state="translated">
+        <source>Securely sign in to your private Board Vault group workspace.</source>
+        <target>Connecte-toi en toute sécurité à l’espace privé de ton groupe sur Board Vault.</target>
       </segment>
     </unit>
     <unit id="2435997106501281068">
@@ -102,6 +662,15 @@
         <target>Aucun jeu ne convient aux personnes et aux filtres choisis.</target>
       </segment>
     </unit>
+    <unit id="2454066008648121037">
+      <notes>
+        <note category="description">Password advice in Clerk, the sign-in provider</note>
+      </notes>
+      <segment state="translated">
+        <source>Avoid dates and years that are associated with you.</source>
+        <target>Évitez les dates et les années qui vous sont associées. (ex: date ou année de naissance)</target>
+      </segment>
+    </unit>
     <unit id="246838105482205685">
       <notes>
         <note category="description">Before the text of a notification not read yet, for screen readers</note>
@@ -111,10 +680,199 @@
         <target>Non lue : </target>
       </segment>
     </unit>
+    <unit id="2485595059919735658">
+      <notes>
+        <note category="description">Button on the invitation sign-up page for someone who already has an account</note>
+      </notes>
+      <segment state="translated">
+        <source>Continue to the group</source>
+        <target>Continuer vers le groupe</target>
+      </segment>
+    </unit>
+    <unit id="2514247984958115884">
+      <notes>
+        <note category="description">Button under an error on a group invitation in the inbox</note>
+      </notes>
+      <segment state="translated">
+        <source>Refresh invitations</source>
+        <target>Actualiser les invitations</target>
+      </segment>
+    </unit>
+    <unit id="2521053447392428699">
+      <notes>
+        <note category="description">Error when finishing sign-in failed</note>
+      </notes>
+      <segment state="translated">
+        <source>We could not finish connecting this sign-in to Board Vault. Try again, or sign out and use your invitation link.</source>
+        <target>Nous n’avons pas pu relier cette connexion à Board Vault. Réessaie, ou déconnecte-toi et utilise ton lien d’invitation.</target>
+      </segment>
+    </unit>
+    <unit id="2535852132159535435">
+      <notes>
+        <note category="description">Name of the five rating stars; the placeholder is what is rated, usually a game title</note>
+      </notes>
+      <segment state="translated">
+        <source>Your rating for <ph id="0" equiv="subject" disp="this.label()"/></source>
+        <target>Ta note pour <ph id="0" equiv="subject" disp="this.label()"/></target>
+      </segment>
+    </unit>
+    <unit id="2548428183744005636">
+      <notes>
+        <note category="description">Button on a group invitation in the inbox that keeps it instead of declining</note>
+      </notes>
+      <segment state="translated">
+        <source>Keep it</source>
+        <target>La garder</target>
+      </segment>
+    </unit>
+    <unit id="2559754008210075307">
+      <notes>
+        <note category="description">Name of the player-count buttons in the landing example</note>
+      </notes>
+      <segment state="translated">
+        <source>Filter the example games by players</source>
+        <target>Filtrer les jeux d’exemple par nombre de joueurs</target>
+      </segment>
+    </unit>
+    <unit id="2561326148159407958">
+      <notes>
+        <note category="description">Field error on the invitation sign-up page</note>
+      </notes>
+      <segment state="translated">
+        <source>Passwords must match.</source>
+        <target>Les mots de passe doivent être identiques.</target>
+      </segment>
+    </unit>
+    <unit id="257886432852959192">
+      <notes>
+        <note category="description">Text on the page shown for an address that does not exist</note>
+      </notes>
+      <segment state="translated">
+        <source> Oops, are you lost? <ph id="0" equiv="LINE_BREAK" type="fmt" disp="&lt;br/&gt;"/> The page you are looking for might have been removed or its name changed. </source>
+        <target>Oups, on dirait que tu cherches ton chemin ! <ph id="0" equiv="LINE_BREAK" type="fmt" disp="&lt;br/&gt;"/> La page que tu cherches a peut-être été supprimée ou renommée.</target>
+      </segment>
+    </unit>
+    <unit id="2588359477760622631">
+      <notes>
+        <note category="description">Toast when saving the usage statistics choice failed</note>
+      </notes>
+      <segment state="translated">
+        <source>Could not save your choice. Try again.</source>
+        <target>Impossible d’enregistrer ton choix. Réessaie.</target>
+      </segment>
+    </unit>
+    <unit id="259281458488620365">
+      <notes>
+        <note category="description">Browser tab title of the Collection page</note>
+      </notes>
+      <segment state="translated">
+        <source>Collection — Board Vault</source>
+        <target>Collection — Board Vault</target>
+      </segment>
+    </unit>
+    <unit id="2651093893318942646">
+      <notes>
+        <note category="description">Error on the invitation sign-up page for any other failure</note>
+      </notes>
+      <segment state="translated">
+        <source>We could not complete this invitation right now. Check the fields and security check, then try again.</source>
+        <target>Nous n’avons pas pu finaliser cette invitation pour le moment. Vérifie les champs et la vérification de sécurité, puis réessaie.</target>
+      </segment>
+    </unit>
     <unit id="2687104801645892688">
       <segment state="translated">
         <source><ph id="0" equiv="person" disp="actor"/> added <ph id="1" equiv="games" disp="addedList"/> to their shelf and removed <ph id="2" equiv="otherGames" disp="removedList"/>.</source>
         <target><ph id="0" equiv="person" disp="actor"/> a ajouté <ph id="1" equiv="games" disp="addedList"/> à son étagère et a retiré <ph id="2" equiv="otherGames" disp="removedList"/>.</target>
+      </segment>
+    </unit>
+    <unit id="2699961251557116579">
+      <notes>
+        <note category="description">Password advice in Clerk, the sign-in provider</note>
+      </notes>
+      <segment state="translated">
+        <source>If you use this password elsewhere, you should change it.</source>
+        <target>Si vous utilisez ce mot de passe ailleurs, vous devriez le modifier.</target>
+      </segment>
+    </unit>
+    <unit id="2716706060230976579">
+      <notes>
+        <note category="description">Ends the sentence Your password must contain, in Clerk, the sign-in provider</note>
+      </notes>
+      <segment state="translated">
+        <source>less than <ph id="0" equiv="length" disp="length"/> characters</source>
+        <target>moins de <ph id="0" equiv="length" disp="length"/> caractères</target>
+      </segment>
+    </unit>
+    <unit id="2721916889637246959">
+      <notes>
+        <note category="description">Browser tab title of the Sign in page</note>
+      </notes>
+      <segment state="translated">
+        <source>Sign in — Board Vault</source>
+        <target>Connexion — Board Vault</target>
+      </segment>
+    </unit>
+    <unit id="2754237322863948261">
+      <notes>
+        <note category="description">Toast after deleting a notification</note>
+      </notes>
+      <segment state="translated">
+        <source>You have deleted the notification</source>
+        <target>Tu as supprimé la notification</target>
+      </segment>
+    </unit>
+    <unit id="2759471177662590223">
+      <notes>
+        <note category="description">Title of the landing example game night; Mia is a person in the example group</note>
+      </notes>
+      <segment state="translated">
+        <source>Game night at Mia’s</source>
+        <target>Soirée jeux chez Mia</target>
+      </segment>
+    </unit>
+    <unit id="2766969724475977787">
+      <notes>
+        <note category="description">Password advice in Clerk, the sign-in provider</note>
+      </notes>
+      <segment state="translated">
+        <source>Use multiple words, but avoid common phrases.</source>
+        <target>Utilisez plusieurs mots, mais évitez les phrases courantes.</target>
+      </segment>
+    </unit>
+    <unit id="2804366116178267633">
+      <notes>
+        <note category="description">Text of the fourth landing feature</note>
+      </notes>
+      <segment state="translated">
+        <source> Create a group and see everyone’s games in one place, who owns each one, and suggestions that fit the people coming. </source>
+        <target>Crée un groupe et vois au même endroit les jeux de tout le groupe, à qui ils sont, et des suggestions adaptées aux personnes présentes.</target>
+      </segment>
+    </unit>
+    <unit id="2806917038528218276">
+      <notes>
+        <note category="description">Link to the questions section of the landing page, short for frequently asked questions</note>
+      </notes>
+      <segment state="translated">
+        <source>FAQ</source>
+        <target>FAQ</target>
+      </segment>
+    </unit>
+    <unit id="2806986957690149156">
+      <notes>
+        <note category="description">Error from Clerk, the sign-in provider, when adding an email address</note>
+      </notes>
+      <segment state="translated">
+        <source>Too many verifications are pending on this account. Remove an unverified email address, phone number, or wallet you no longer need, or wait a few minutes for an incomplete passkey setup to expire, then try again.</source>
+        <target>Trop de vérifications sont en attente sur ce compte. Supprimez une adresse e-mail, un numéro de téléphone ou un portefeuille non vérifié dont vous n’avez plus besoin, ou attendez quelques minutes qu’une clé de sécurité à moitié configurée expire, puis réessayez.</target>
+      </segment>
+    </unit>
+    <unit id="281153916191694572">
+      <notes>
+        <note category="description">Link at the top of the avatar menu to the signed-in person&apos;s own page</note>
+      </notes>
+      <segment state="translated">
+        <source>Your page</source>
+        <target>Ta page</target>
       </segment>
     </unit>
     <unit id="2814590485100631296">
@@ -126,6 +884,15 @@
         <target>Pas encore de note des personnes présentes</target>
       </segment>
     </unit>
+    <unit id="2821179408673282599">
+      <notes>
+        <note category="description">Main section of the app, with your groups</note>
+      </notes>
+      <segment state="translated">
+        <source>Home</source>
+        <target>Accueil</target>
+      </segment>
+    </unit>
     <unit id="2871617273892961858">
       <notes>
         <note category="description">Link on a notification</note>
@@ -133,6 +900,69 @@
       <segment state="translated">
         <source>Open the game</source>
         <target>Ouvrir le jeu</target>
+      </segment>
+    </unit>
+    <unit id="293984633040548807">
+      <notes>
+        <note category="description">Label of the light, dark, or system theme switch in the avatar menu</note>
+      </notes>
+      <segment state="translated">
+        <source>Color scheme</source>
+        <target>Thème de couleur</target>
+      </segment>
+    </unit>
+    <unit id="2949848596707725099">
+      <notes>
+        <note category="description">Button at the bottom of the avatar menu</note>
+      </notes>
+      <segment state="translated">
+        <source>Sign out</source>
+        <target>Se déconnecter</target>
+      </segment>
+    </unit>
+    <unit id="29832309535656200">
+      <notes>
+        <note category="description">Option of the theme switch that follows the device</note>
+      </notes>
+      <segment state="translated">
+        <source>System</source>
+        <target>Système</target>
+      </segment>
+    </unit>
+    <unit id="2992514546647310147">
+      <notes>
+        <note category="description">Hint on the sign-in page; Forgot password? is the link in the sign-in window, which is translated separately</note>
+      </notes>
+      <segment state="translated">
+        <source>Forgot your password? Choose “Forgot password?” in the sign-in window.</source>
+        <target>Mot de passe oublié ? Choisis « Mot de passe oublié ? » dans la fenêtre de connexion.</target>
+      </segment>
+    </unit>
+    <unit id="3022911217122211328">
+      <notes>
+        <note category="description">Browser tab title of the Join by invitation page</note>
+      </notes>
+      <segment state="translated">
+        <source>Join by invitation — Board Vault</source>
+        <target>Rejoindre sur invitation — Board Vault</target>
+      </segment>
+    </unit>
+    <unit id="3059382382764975917">
+      <notes>
+        <note category="description">Button on the landing page that scrolls to the features</note>
+      </notes>
+      <segment state="translated">
+        <source>See how it works</source>
+        <target>Voir comment ça marche</target>
+      </segment>
+    </unit>
+    <unit id="306733880709423201">
+      <notes>
+        <note category="description">Link in the avatar menu to the project repository</note>
+      </notes>
+      <segment state="translated">
+        <source>Source code</source>
+        <target>Code source</target>
       </segment>
     </unit>
     <unit id="3092077784471830251">
@@ -153,6 +983,24 @@
         <target>Note ce que vous avez joué</target>
       </segment>
     </unit>
+    <unit id="3146348002114324720">
+      <notes>
+        <note category="description">Button on the invitation sign-up page while it joins the group</note>
+      </notes>
+      <segment state="translated">
+        <source>Joining…</source>
+        <target>Ajout en cours…</target>
+      </segment>
+    </unit>
+    <unit id="3183680813439010723">
+      <notes>
+        <note category="description">Error on the invitation sign-up page when the invitation is no longer valid</note>
+      </notes>
+      <segment state="translated">
+        <source>We could not complete this invitation. The link may have expired, been used already, or the group may no longer be available. Ask the group owner for a fresh invitation and try again.</source>
+        <target>Nous n’avons pas pu finaliser cette invitation. Le lien a peut-être expiré ou déjà servi, ou le groupe n’est plus disponible. Demande une nouvelle invitation à la personne qui a créé le groupe et réessaie.</target>
+      </segment>
+    </unit>
     <unit id="318898779291119217">
       <notes>
         <note category="description">Link on a notification</note>
@@ -168,6 +1016,96 @@
         <target><ph id="0" equiv="person" disp="actor"/> a indiqué que <ph id="1" equiv="groupPerson" disp="person"/> a <ph id="2" equiv="game" disp="game"/>, dans <ph id="3" equiv="group" disp="group"/>.</target>
       </segment>
     </unit>
+    <unit id="3206338293571625434">
+      <notes>
+        <note category="description">Text next to the questions on the landing page</note>
+      </notes>
+      <segment state="translated">
+        <source> Your wishlist and your account are private. A group sees the games its members own and how they rated them, so the suggestions fit everyone. </source>
+        <target>Ta liste d’envies et ton compte sont privés. Un groupe voit les jeux de ses membres et leurs notes, pour que les suggestions conviennent à tout le groupe.</target>
+      </segment>
+    </unit>
+    <unit id="3249513483374643425">
+      <notes>
+        <note category="description">Add a game to your shelf, a button in the landing example</note>
+      </notes>
+      <segment state="translated">
+        <source>Add</source>
+        <target>Ajouter</target>
+      </segment>
+    </unit>
+    <unit id="3256590211420252677">
+      <notes>
+        <note category="description">Name of the list of languages in the header&apos;s language menu</note>
+      </notes>
+      <segment state="translated">
+        <source>Choose a language</source>
+        <target>Choisis une langue</target>
+      </segment>
+    </unit>
+    <unit id="3269668325192817246">
+      <notes>
+        <note category="description">Text while someone joins a group from an invitation link</note>
+      </notes>
+      <segment state="translated">
+        <source>Your invitation is confirmed. We are adding you to the shared games and session history.</source>
+        <target>Ton invitation est confirmée. Nous t’ajoutons aux jeux partagés et à l’historique des soirées jeux.</target>
+      </segment>
+    </unit>
+    <unit id="3292157637371198074">
+      <notes>
+        <note category="description">Name of one rating star; the placeholders are the stars it gives, such as 2.5, and what is rated, usually a game title</note>
+      </notes>
+      <segment state="translated">
+        <source>Rate <ph id="0" equiv="stars" disp="formatNumber(star / 2)"/> out of 5 stars for <ph id="1" equiv="subject" disp="this.label()"/></source>
+        <target>Noter <ph id="1" equiv="subject" disp="this.label()"/> : <ph id="0" equiv="stars" disp="formatNumber(star / 2)"/> sur 5</target>
+      </segment>
+    </unit>
+    <unit id="3305597575023131643">
+      <notes>
+        <note category="description">Heading while sign-in finishes</note>
+      </notes>
+      <segment state="translated">
+        <source>Connecting you to your Board Vault</source>
+        <target>Connexion à ton Board Vault</target>
+      </segment>
+    </unit>
+    <unit id="335857619216190644">
+      <notes>
+        <note category="description">Button on the invitation sign-up page that creates the account and joins the group</note>
+      </notes>
+      <segment state="translated">
+        <source>Join the group</source>
+        <target>Rejoindre le groupe</target>
+      </segment>
+    </unit>
+    <unit id="3386246347342903734">
+      <notes>
+        <note category="description">Heading of the closing call to action on the landing page</note>
+      </notes>
+      <segment state="translated">
+        <source>Put your collection in order tonight.</source>
+        <target>Range ta collection dès ce soir.</target>
+      </segment>
+    </unit>
+    <unit id="3398338842701230044">
+      <notes>
+        <note category="description">Small line above the main heading of the landing page</note>
+      </notes>
+      <segment state="translated">
+        <source>Board game collection manager</source>
+        <target>Gestionnaire de collection de jeux de société</target>
+      </segment>
+    </unit>
+    <unit id="3405859134000071474">
+      <notes>
+        <note category="description">Reason for a suggestion in the landing example</note>
+      </notes>
+      <segment state="translated">
+        <source>Fits all 5 coming</source>
+        <target>Convient aux 5 personnes présentes</target>
+      </segment>
+    </unit>
     <unit id="3424516948436893066">
       <notes>
         <note category="description">Recommendation reason</note>
@@ -175,6 +1113,78 @@
       <segment state="translated">
         <source>Strong group rating</source>
         <target>Très bien noté par le groupe</target>
+      </segment>
+    </unit>
+    <unit id="356000382298639525">
+      <notes>
+        <note category="description">Text of the second landing feature</note>
+      </notes>
+      <segment state="translated">
+        <source>Filter by how many people are playing, and sort by title or by play time.</source>
+        <target>Filtre selon le nombre de personnes qui jouent, et trie par titre ou par durée.</target>
+      </segment>
+    </unit>
+    <unit id="3568097994808154139">
+      <notes>
+        <note category="description">Shown on the invitation sign-up page while the sign-up service loads</note>
+      </notes>
+      <segment state="translated">
+        <source>The secure sign-up service is still loading. Refresh this page to continue.</source>
+        <target>Le service d’inscription sécurisée est encore en cours de chargement. Recharge cette page pour continuer.</target>
+      </segment>
+    </unit>
+    <unit id="3646645416321057827">
+      <notes>
+        <note category="description">Search and link preview description of the Settings page</note>
+      </notes>
+      <segment state="translated">
+        <source>Manage your Board Vault account and security settings.</source>
+        <target>Gère ton compte Board Vault et sa sécurité.</target>
+      </segment>
+    </unit>
+    <unit id="364756386265147483">
+      <notes>
+        <note category="description">Question on the landing page</note>
+      </notes>
+      <segment state="translated">
+        <source>Does it work on my phone?</source>
+        <target>Est-ce que ça marche sur mon téléphone ?</target>
+      </segment>
+    </unit>
+    <unit id="3693351739760545097">
+      <notes>
+        <note category="description">Text in the box on the sign-in page</note>
+      </notes>
+      <segment state="translated">
+        <source>Sign in with your email and password, or with a one-time email code.</source>
+        <target>Connecte-toi avec ton e-mail et ton mot de passe, ou avec un code à usage unique reçu par e-mail.</target>
+      </segment>
+    </unit>
+    <unit id="3723717615538231637">
+      <notes>
+        <note category="description">Password strength in Clerk, the sign-in provider</note>
+      </notes>
+      <segment state="translated">
+        <source>Your password works, but could be stronger. Try adding more characters.</source>
+        <target>Votre mot de passe fonctionne mais pourrait être plus sûr. Essayez d&apos;ajouter des caractères.</target>
+      </segment>
+    </unit>
+    <unit id="3736594653461707643">
+      <notes>
+        <note category="description">Small heading while someone joins a group from an invitation link</note>
+      </notes>
+      <segment state="translated">
+        <source>Joining your group</source>
+        <target>Ajout à ton groupe</target>
+      </segment>
+    </unit>
+    <unit id="3743886829964190111">
+      <notes>
+        <note category="description">Heading when joining a group from an invitation link failed</note>
+      </notes>
+      <segment state="translated">
+        <source>We could not finish joining this group</source>
+        <target>Nous n’avons pas pu finir de t’ajouter à ce groupe</target>
       </segment>
     </unit>
     <unit id="37600627724821423">
@@ -186,10 +1196,92 @@
         <target>Les personnes présentes ont envie de ce jeu</target>
       </segment>
     </unit>
+    <unit id="3763652096020820194">
+      <notes>
+        <note category="description">Toast when declining a group invitation failed</note>
+      </notes>
+      <segment state="translated">
+        <source>Error declining invitation</source>
+        <target>Impossible de refuser l’invitation</target>
+      </segment>
+    </unit>
     <unit id="3841095492114279113">
       <segment state="translated">
         <source>Your game proposal &quot;<ph id="0" equiv="title" disp="data[&apos;gameTitle&apos;]"/>&quot; was rejected: <ph id="1" equiv="reason" disp="data[&apos;reviewNotes&apos;]"/></source>
         <target>Ta proposition de jeu « <ph id="0" equiv="title" disp="data[&apos;gameTitle&apos;]"/> » a été refusée : <ph id="1" equiv="reason" disp="data[&apos;reviewNotes&apos;]"/></target>
+      </segment>
+    </unit>
+    <unit id="3848463043339307213">
+      <notes>
+        <note category="description">Small heading of the invitation sign-up page</note>
+      </notes>
+      <segment state="translated">
+        <source>You are invited</source>
+        <target>Tu as reçu une invitation</target>
+      </segment>
+    </unit>
+    <unit id="386110646990661320">
+      <notes>
+        <note category="description">Name of the Decline button on a group invitation in the inbox</note>
+      </notes>
+      <segment state="translated">
+        <source>Decline invitation to <ph id="0" equiv="group" disp="group"/></source>
+        <target>Refuser l’invitation à <ph id="0" equiv="group" disp="group"/></target>
+      </segment>
+    </unit>
+    <unit id="3876641005141272845">
+      <notes>
+        <note category="description">Toast when the sign-in session ended</note>
+      </notes>
+      <segment state="translated">
+        <source>Your session has expired. Please log in again.</source>
+        <target>Ta session a expiré. Reconnecte-toi.</target>
+      </segment>
+    </unit>
+    <unit id="3882986981396129723">
+      <notes>
+        <note category="description">Button on a group invitation in the inbox that confirms declining it</note>
+      </notes>
+      <segment state="translated">
+        <source>Yes, decline</source>
+        <target>Oui, refuser</target>
+      </segment>
+    </unit>
+    <unit id="3892161059518616136">
+      <notes>
+        <note category="description">Option of the theme switch, the dark colors</note>
+      </notes>
+      <segment state="translated">
+        <source>Dark</source>
+        <target>Sombre</target>
+      </segment>
+    </unit>
+    <unit id="3902518469664841036">
+      <notes>
+        <note category="description">Read to screen readers when the inbox has new things, one</note>
+        <note category="meaning">inbox arrival, one</note>
+      </notes>
+      <segment state="translated">
+        <source>Inbox: <ph id="0" equiv="count" disp="count"/> new</source>
+        <target>Boîte de réception : <ph id="0" equiv="count" disp="count"/> nouveauté</target>
+      </segment>
+    </unit>
+    <unit id="3906374096707451187">
+      <notes>
+        <note category="description">Link that appears on the first Tab press and jumps past the header</note>
+      </notes>
+      <segment state="translated">
+        <source> Skip to main content </source>
+        <target>Aller au contenu principal</target>
+      </segment>
+    </unit>
+    <unit id="3944411679288375240">
+      <notes>
+        <note category="description">Button on the sign-in page that opens the sign-in window</note>
+      </notes>
+      <segment state="translated">
+        <source>Continue with secure sign-in</source>
+        <target>Continuer avec la connexion sécurisée</target>
       </segment>
     </unit>
     <unit id="3965292610786650718">
@@ -201,6 +1293,51 @@
         <target>Ouvrir la soirée jeux</target>
       </segment>
     </unit>
+    <unit id="3984435286175515755">
+      <notes>
+        <note category="description">Password warning in Clerk, the sign-in provider</note>
+      </notes>
+      <segment state="translated">
+        <source>Recent years are easy to guess.</source>
+        <target>Les années récentes sont faciles à deviner.</target>
+      </segment>
+    </unit>
+    <unit id="3995378846861632522">
+      <notes>
+        <note category="description">Answer of someone not coming to the landing example game night</note>
+      </notes>
+      <segment state="translated">
+        <source>Can’t come</source>
+        <target>Ne peut pas venir</target>
+      </segment>
+    </unit>
+    <unit id="4050851435935072722">
+      <notes>
+        <note category="description">Password warning in Clerk, the sign-in provider</note>
+      </notes>
+      <segment state="translated">
+        <source>There should not be any personal or page related data.</source>
+        <target>Le mot de passe ne doit pas comporter de données personnelles ou liées au site.</target>
+      </segment>
+    </unit>
+    <unit id="4057932224780575479">
+      <notes>
+        <note category="description">Line under the closing heading on the landing page</note>
+      </notes>
+      <segment state="translated">
+        <source>Free account. Your first game is a search away.</source>
+        <target>Compte gratuit. Ton premier jeu est à une recherche près.</target>
+      </segment>
+    </unit>
+    <unit id="4086606389696938932">
+      <notes>
+        <note category="description">Heading of the footer column of sign-in links</note>
+      </notes>
+      <segment state="translated">
+        <source>Account</source>
+        <target>Compte</target>
+      </segment>
+    </unit>
     <unit id="4096101151032067454">
       <notes>
         <note category="description">Recommendation reason</note>
@@ -208,6 +1345,105 @@
       <segment state="translated">
         <source><ph id="0" equiv="count" disp="count"/> selected attendee marked this as interesting</source>
         <target><ph id="0" equiv="count" disp="count"/> personne présente l’a trouvé intéressant</target>
+      </segment>
+    </unit>
+    <unit id="411354769244562331">
+      <notes>
+        <note category="description">How many games the landing example shows after filtering</note>
+      </notes>
+      <segment state="translated">
+        <source>{VAR_PLURAL, plural, one {<ph id="0" equiv="INTERPOLATION"/> game} other {<ph id="1" equiv="INTERPOLATION"/> games}}</source>
+        <target>{VAR_PLURAL, plural, one {<ph id="0" equiv="INTERPOLATION"/> jeu} other {<ph id="1" equiv="INTERPOLATION"/> jeux}}</target>
+      </segment>
+    </unit>
+    <unit id="413116577994876478">
+      <notes>
+        <note category="description">Option of the theme switch, the light colors</note>
+      </notes>
+      <segment state="translated">
+        <source>Light</source>
+        <target>Clair</target>
+      </segment>
+    </unit>
+    <unit id="413249134650595008">
+      <notes>
+        <note category="description">Error on a group invitation in the inbox when accepting it failed</note>
+      </notes>
+      <segment state="translated">
+        <source>We could not accept this invitation. It may have expired or the group may no longer be available. Try again or refresh your invitations.</source>
+        <target>Nous n’avons pas pu accepter cette invitation. Elle a peut-être expiré, ou le groupe n’existe plus. Réessaie ou actualise tes invitations.</target>
+      </segment>
+    </unit>
+    <unit id="4146411457225714951">
+      <notes>
+        <note category="description">Line on a group invitation in the inbox; the placeholder is a date</note>
+      </notes>
+      <segment state="translated">
+        <source>Expires <ph id="0" equiv="INTERPOLATION" disp="{{ invitation.expiresAt | customDate: false }}"/></source>
+        <target>Expire le <ph id="0" equiv="INTERPOLATION" disp="{{ invitation.expiresAt | customDate: false }}"/></target>
+      </segment>
+    </unit>
+    <unit id="4163254967855624491">
+      <notes>
+        <note category="description">Toast after signing out</note>
+      </notes>
+      <segment state="translated">
+        <source>You have been successfully logged out.</source>
+        <target>Session fermée.</target>
+      </segment>
+    </unit>
+    <unit id="4169893731951791508">
+      <notes>
+        <note category="description">Ends the sentence Your password must contain, in Clerk, the sign-in provider</note>
+      </notes>
+      <segment state="translated">
+        <source>a special character</source>
+        <target>un caractère spécial</target>
+      </segment>
+    </unit>
+    <unit id="4189467467511250248">
+      <notes>
+        <note category="description">Error in the inbox</note>
+      </notes>
+      <segment state="translated">
+        <source>Invitations could not be loaded.</source>
+        <target>Impossible de charger les invitations.</target>
+      </segment>
+    </unit>
+    <unit id="4194367887536857130">
+      <notes>
+        <note category="description">Heading of the sign-up page</note>
+      </notes>
+      <segment state="translated">
+        <source>Create your Board Vault account</source>
+        <target>Crée ton compte Board Vault</target>
+      </segment>
+    </unit>
+    <unit id="4200317694838753109">
+      <notes>
+        <note category="description">Small heading of the sign-in page</note>
+      </notes>
+      <segment state="translated">
+        <source>Welcome back</source>
+        <target>Content de te revoir</target>
+      </segment>
+    </unit>
+    <unit id="4227851058489820512">
+      <notes>
+        <note category="description">Toast after someone deleted their account</note>
+      </notes>
+      <segment state="translated">
+        <source>Your account was deleted.</source>
+        <target>Ton compte a été supprimé.</target>
+      </segment>
+    </unit>
+    <unit id="4238262366376573097">
+      <notes>
+        <note category="description">Shown by Clerk, the sign-in provider, while it checks that a sign-in is not automated</note>
+      </notes>
+      <segment state="translated">
+        <source>Please wait while we verify your request.</source>
+        <target>Veuillez patienter pendant que nous vérifions votre demande.</target>
       </segment>
     </unit>
     <unit id="425959220948419245">
@@ -225,6 +1461,15 @@
         <target>À l’instant</target>
       </segment>
     </unit>
+    <unit id="4281014528431517406">
+      <notes>
+        <note category="description">Heading of the third landing feature</note>
+      </notes>
+      <segment state="translated">
+        <source>Rate what you play, wish for what’s next</source>
+        <target>Note tes parties, garde une liste d’envies</target>
+      </segment>
+    </unit>
     <unit id="4287070028471913183">
       <notes>
         <note category="description">Recommendation reason</note>
@@ -232,6 +1477,60 @@
       <segment state="translated">
         <source>Owned by <ph id="0" equiv="owners" disp="owners"/> of <ph id="1" equiv="people" disp="attendees"/> selected people</source>
         <target><ph id="0" equiv="owners" disp="owners"/> des <ph id="1" equiv="people" disp="attendees"/> personnes choisies l’ont</target>
+      </segment>
+    </unit>
+    <unit id="4335187189634644598">
+      <notes>
+        <note category="description">Password warning in Clerk, the sign-in provider</note>
+      </notes>
+      <segment state="translated">
+        <source>Common names and surnames are easy to guess.</source>
+        <target>Les noms communs et les noms de famille sont faciles à deviner.</target>
+      </segment>
+    </unit>
+    <unit id="4369542638350223376">
+      <notes>
+        <note category="description">Error from Clerk, the sign-in provider, when signing in</note>
+      </notes>
+      <segment state="translated">
+        <source>Your password may be compromised. To protect your account, please continue with an alternative sign-in method. You will be required to reset your password after signing in.</source>
+        <target>Votre mot de passe a peut-être été compromis. Pour protéger votre compte, continuez avec une autre méthode de connexion. Après la connexion, vous devrez réinitialiser votre mot de passe.</target>
+      </segment>
+    </unit>
+    <unit id="4394551357615209611">
+      <notes>
+        <note category="description">Name of the tabs bar inside Collection or Play</note>
+      </notes>
+      <segment state="translated">
+        <source>Subsection navigation</source>
+        <target>Navigation des sous-sections</target>
+      </segment>
+    </unit>
+    <unit id="4419487360460921547">
+      <notes>
+        <note category="description">Name of the empty stars of a game with no rating</note>
+      </notes>
+      <segment state="translated">
+        <source>Not rated yet</source>
+        <target>Pas encore noté</target>
+      </segment>
+    </unit>
+    <unit id="4423631371614311212">
+      <notes>
+        <note category="description">Toast after Mark all read in the inbox</note>
+      </notes>
+      <segment state="translated">
+        <source>All notifications marked as read</source>
+        <target>Toutes les notifications sont marquées comme lues</target>
+      </segment>
+    </unit>
+    <unit id="4495457554525951237">
+      <notes>
+        <note category="description">Text on the access page while sign-up is by invitation only</note>
+      </notes>
+      <segment state="translated">
+        <source> Board Vault helps a group of friends organize its games, choose what to play, and remember every session. </source>
+        <target>Board Vault aide un groupe de proches à organiser ses jeux, à choisir à quoi jouer et à se souvenir de chaque soirée jeux.</target>
       </segment>
     </unit>
     <unit id="4669216542007588508">
@@ -252,6 +1551,15 @@
         <target>Durée estimée : <ph id="0" equiv="minutes" disp="values[&apos;minutes&apos;] ?? 0"/> minutes</target>
       </segment>
     </unit>
+    <unit id="4707281579410073038">
+      <notes>
+        <note category="description">Heading when finishing sign-in failed</note>
+      </notes>
+      <segment state="translated">
+        <source>We could not finish setting up your sign-in</source>
+        <target>Nous n’avons pas pu finir de préparer ta connexion</target>
+      </segment>
+    </unit>
     <unit id="4715165630183338203">
       <notes>
         <note category="description">A list of games ending in one more</note>
@@ -259,6 +1567,34 @@
       <segment state="translated">
         <source>one other game</source>
         <target>un autre jeu</target>
+      </segment>
+    </unit>
+    <unit id="4718209215979466067">
+      <notes>
+        <note category="description">Password strength in Clerk, the sign-in provider</note>
+      </notes>
+      <segment state="translated">
+        <source>Your password meets all the necessary requirements.</source>
+        <target>Bien joué. C&apos;est un excellent mot de passe.</target>
+      </segment>
+    </unit>
+    <unit id="475317156489631945">
+      <notes>
+        <note category="description">How many can play a game, one number</note>
+        <note category="meaning">player count, one</note>
+      </notes>
+      <segment state="translated">
+        <source><ph id="0" equiv="count" disp="min"/> player</source>
+        <target><ph id="0" equiv="count" disp="min"/> joueur</target>
+      </segment>
+    </unit>
+    <unit id="4757507927002475818">
+      <notes>
+        <note category="description">Shown in the inbox while invitations load</note>
+      </notes>
+      <segment state="translated">
+        <source>Loading invitations…</source>
+        <target>Chargement des invitations…</target>
       </segment>
     </unit>
     <unit id="4758695142998179909">
@@ -276,6 +1612,15 @@
         <target><ph id="0" equiv="person" disp="actor"/> a annulé la soirée jeux de <ph id="1" equiv="group" disp="group"/> du <ph id="2" equiv="date" disp="when"/>.</target>
       </segment>
     </unit>
+    <unit id="4809830440227489945">
+      <notes>
+        <note category="description">Question on a group invitation in the inbox before declining it</note>
+      </notes>
+      <segment state="translated">
+        <source>Decline this invitation?</source>
+        <target>Refuser cette invitation ?</target>
+      </segment>
+    </unit>
     <unit id="4834637535368761490">
       <notes>
         <note category="description">Recommendation reason</note>
@@ -283,6 +1628,42 @@
       <segment state="translated">
         <source>Not played by this group yet</source>
         <target>Le groupe n’y a pas encore joué</target>
+      </segment>
+    </unit>
+    <unit id="4862663633740506261">
+      <notes>
+        <note category="description">Note while sign-in or joining a group finishes</note>
+      </notes>
+      <segment state="translated">
+        <source>This usually takes a moment. Please keep this tab open.</source>
+        <target>Cela prend généralement un instant. Garde cet onglet ouvert.</target>
+      </segment>
+    </unit>
+    <unit id="4879288031259259008">
+      <notes>
+        <note category="description">Name of the links menu that opens on phones in the signed-out header</note>
+      </notes>
+      <segment state="translated">
+        <source>Mobile navigation</source>
+        <target>Navigation mobile</target>
+      </segment>
+    </unit>
+    <unit id="4893176640275242151">
+      <notes>
+        <note category="description">Name of the line with the group&apos;s votes on a suggested game</note>
+      </notes>
+      <segment state="translated">
+        <source>What the group thinks</source>
+        <target>L’avis du groupe</target>
+      </segment>
+    </unit>
+    <unit id="4895632873057636638">
+      <notes>
+        <note category="description">Error from Clerk, the sign-in provider, about its check that a sign-in is not automated</note>
+      </notes>
+      <segment state="translated">
+        <source>Couldn&apos;t load verification. Please contact support if this persists.</source>
+        <target>Impossible de charger la vérification. Si le problème persiste, contactez l’assistance.</target>
       </segment>
     </unit>
     <unit id="4913790515929049330">
@@ -294,6 +1675,142 @@
         <target>Durée inconnue</target>
       </segment>
     </unit>
+    <unit id="4930506384627295710">
+      <notes>
+        <note category="description">Item of the avatar menu</note>
+      </notes>
+      <segment state="translated">
+        <source>Settings</source>
+        <target>Paramètres</target>
+      </segment>
+    </unit>
+    <unit id="4945999461216663813">
+      <notes>
+        <note category="description">Thanks on the card that asks once about usage statistics after turning statistics on</note>
+      </notes>
+      <segment state="translated">
+        <source>Thank you, that really helps! 🙌</source>
+        <target>Merci, ça nous aide vraiment ! 🙌</target>
+      </segment>
+    </unit>
+    <unit id="4953883075448493084">
+      <notes>
+        <note category="description">Error in the inbox</note>
+      </notes>
+      <segment state="translated">
+        <source>Notifications could not be loaded.</source>
+        <target>Impossible de charger les notifications.</target>
+      </segment>
+    </unit>
+    <unit id="5000950882619340704">
+      <notes>
+        <note category="description">Toast after Mark all read in the inbox when some failed, more than one</note>
+        <note category="meaning">mark all read failed, other</note>
+      </notes>
+      <segment state="translated">
+        <source><ph id="0" equiv="count" disp="failed"/> notifications could not be marked as read</source>
+        <target><ph id="0" equiv="count" disp="failed"/> notifications n’ont pas pu être marquées comme lues</target>
+      </segment>
+    </unit>
+    <unit id="5001944210139291575">
+      <notes>
+        <note category="description">Password advice in Clerk, the sign-in provider</note>
+      </notes>
+      <segment state="translated">
+        <source>Add more words that are less common.</source>
+        <target>Ajoutez des mots moins courants.</target>
+      </segment>
+    </unit>
+    <unit id="502282038360646907">
+      <notes>
+        <note category="description">Error from Clerk, the sign-in provider, about its check that a sign-in is not automated</note>
+      </notes>
+      <segment state="translated">
+        <source>This sign-in needs an extra verification step that can&apos;t be shown here. Please try again or use a different sign-in method.</source>
+        <target>Cette connexion nécessite une étape de vérification supplémentaire qui ne peut pas être affichée ici. Réessayez ou utilisez une autre méthode de connexion.</target>
+      </segment>
+    </unit>
+    <unit id="5034473762587110175">
+      <notes>
+        <note category="description">Button on phones in the signed-out header that opens the links menu</note>
+      </notes>
+      <segment state="translated">
+        <source>Open navigation</source>
+        <target>Ouvrir la navigation</target>
+      </segment>
+    </unit>
+    <unit id="5072920679902574920">
+      <notes>
+        <note category="description">Heading of the invitation sign-up page</note>
+      </notes>
+      <segment state="translated">
+        <source>Join your Board Vault group</source>
+        <target>Rejoins ton groupe Board Vault</target>
+      </segment>
+    </unit>
+    <unit id="5080087328793619996">
+      <notes>
+        <note category="description">Browser tab title of the Settings page</note>
+      </notes>
+      <segment state="translated">
+        <source>Settings — Board Vault</source>
+        <target>Paramètres — Board Vault</target>
+      </segment>
+    </unit>
+    <unit id="5084001775448984862">
+      <notes>
+        <note category="description">Button on the sign-up page that opens the sign-up window</note>
+      </notes>
+      <segment state="translated">
+        <source>Open secure sign-up</source>
+        <target>Ouvrir l’inscription sécurisée</target>
+      </segment>
+    </unit>
+    <unit id="5121839105371523343">
+      <notes>
+        <note category="description">Error from Clerk, the sign-in provider, about its check that a sign-in is not automated</note>
+      </notes>
+      <segment state="translated">
+        <source>Couldn&apos;t load verification. This may be caused by a network issue or a Content Security Policy that blocks the verification script. Please try again or contact support.</source>
+        <target>Impossible de charger la vérification. Cela peut venir d’un problème de réseau ou d’une politique de sécurité du contenu (CSP) qui bloque le script de vérification. Réessayez ou contactez l’assistance.</target>
+      </segment>
+    </unit>
+    <unit id="5125783711124527112">
+      <notes>
+        <note category="description">Text of the first landing feature; Add is the button in the example next to it</note>
+      </notes>
+      <segment state="translated">
+        <source>Search the catalogue and tap Add. The box art, player count and play time come with it.</source>
+        <target>Cherche dans le catalogue et appuie sur Ajouter. La boîte, le nombre de joueurs et la durée sont déjà là.</target>
+      </segment>
+    </unit>
+    <unit id="513045381948130029">
+      <notes>
+        <note category="description">Error from Clerk, the sign-in provider, when an invitation link was used or withdrawn</note>
+      </notes>
+      <segment state="translated">
+        <source>This link is no longer valid or has already been used. Please start again or request a new link.</source>
+        <target>Ce lien n’est plus valide ou a déjà été utilisé. Recommencez ou demandez un nouveau lien.</target>
+      </segment>
+    </unit>
+    <unit id="5140281471826288799">
+      <notes>
+        <note category="description">How many people in the group want to play a suggested game</note>
+      </notes>
+      <segment state="translated">
+        <source>{VAR_PLURAL, plural, one {<ph id="0" equiv="INTERPOLATION"/> interested} other {<ph id="1" equiv="INTERPOLATION"/> interested}}</source>
+        <target>{VAR_PLURAL, plural, one {<ph id="0" equiv="INTERPOLATION"/> personne intéressée} other {<ph id="1" equiv="INTERPOLATION"/> personnes intéressées}}</target>
+      </segment>
+    </unit>
+    <unit id="5146386254486648933">
+      <notes>
+        <note category="description">Reason for a suggestion in the landing example; Ana and Mia are people in the example group</note>
+      </notes>
+      <segment state="translated">
+        <source>Ana and Mia rated it 9</source>
+        <target>Ana et Mia lui ont mis 9</target>
+      </segment>
+    </unit>
     <unit id="5159913659351412884">
       <notes>
         <note category="description">Recommendation reason</note>
@@ -303,16 +1820,214 @@
         <target>Le groupe y a déjà joué</target>
       </segment>
     </unit>
+    <unit id="5168805403362402794">
+      <notes>
+        <note category="description">Text while sign-in finishes</note>
+      </notes>
+      <segment state="translated">
+        <source>Your identity is confirmed. We are loading your groups and getting your private workspace ready.</source>
+        <target>Ton identité est confirmée. Nous chargeons tes groupes et préparons ton espace privé.</target>
+      </segment>
+    </unit>
+    <unit id="5169688561656463232">
+      <notes>
+        <note category="description">Start of a sentence in Clerk, the sign-in provider, completed by a list such as 8 or more characters</note>
+      </notes>
+      <segment state="translated">
+        <source>Your password must contain</source>
+        <target>Votre mot de passe doit contenir</target>
+      </segment>
+    </unit>
+    <unit id="5182556936985589025">
+      <notes>
+        <note category="description">Text on the invitation sign-up page for someone new</note>
+      </notes>
+      <segment state="translated">
+        <source>Choose a Board Vault username and password to join the group that invited you.</source>
+        <target>Choisis un nom d’utilisateur et un mot de passe Board Vault pour rejoindre le groupe qui t’a envoyé l’invitation.</target>
+      </segment>
+    </unit>
+    <unit id="5197686608910315875">
+      <notes>
+        <note category="description">Password advice in Clerk, the sign-in provider</note>
+      </notes>
+      <segment state="translated">
+        <source>Avoid recent years.</source>
+        <target>Évitez les dernières années.</target>
+      </segment>
+    </unit>
+    <unit id="5207635742003539443">
+      <notes>
+        <note category="description">Footer link to the sign-in page</note>
+      </notes>
+      <segment state="translated">
+        <source>Sign in</source>
+        <target>Se connecter</target>
+      </segment>
+    </unit>
+    <unit id="5229677678874555342">
+      <notes>
+        <note category="description">Toast when marking a notification as read failed</note>
+      </notes>
+      <segment state="translated">
+        <source>Error updating notification</source>
+        <target>Impossible de marquer la notification comme lue</target>
+      </segment>
+    </unit>
+    <unit id="5236245839134098768">
+      <notes>
+        <note category="description">Heading of the page shown for an address that does not exist</note>
+      </notes>
+      <segment state="translated">
+        <source>Error 404<ph id="0" equiv="LINE_BREAK" type="fmt" disp="&lt;br /&gt;"/> Page not found</source>
+        <target>Erreur 404<ph id="0" equiv="LINE_BREAK" type="fmt" disp="&lt;br /&gt;"/> Page introuvable</target>
+      </segment>
+    </unit>
+    <unit id="5286388501365817146">
+      <notes>
+        <note category="description">Question on the landing page</note>
+      </notes>
+      <segment state="translated">
+        <source>Is it open source?</source>
+        <target>Est-ce open source ?</target>
+      </segment>
+    </unit>
+    <unit id="5293165229453827063">
+      <notes>
+        <note category="description">Tab in Play, game suggestions for a group</note>
+      </notes>
+      <segment state="translated">
+        <source>What to play</source>
+        <target>À quoi jouer</target>
+      </segment>
+    </unit>
+    <unit id="5353758016329326598">
+      <notes>
+        <note category="description">Error from Clerk, the sign-in provider, when choosing a password</note>
+      </notes>
+      <segment state="translated">
+        <source>Password cannot match your email address, phone number or username. For account safety, please use a different password.</source>
+        <target>Le mot de passe ne peut pas être identique à votre adresse e-mail, votre numéro de téléphone ou votre nom d’utilisateur. Pour la sécurité de votre compte, choisissez un autre mot de passe.</target>
+      </segment>
+    </unit>
     <unit id="5376159775932580099">
       <segment state="translated">
         <source>The <ph id="0" equiv="group" disp="group"/> game night of <ph id="1" equiv="date" disp="when"/> is finished. Rate what you played.</source>
         <target>La soirée jeux de <ph id="0" equiv="group" disp="group"/> du <ph id="1" equiv="date" disp="when"/> est terminée. Note ce que vous avez joué.</target>
       </segment>
     </unit>
+    <unit id="5418220498903662149">
+      <notes>
+        <note category="description">Password warning in Clerk, the sign-in provider</note>
+      </notes>
+      <segment state="translated">
+        <source>Single names or surnames are easy to guess.</source>
+        <target>Des noms ou des prénoms simples sont faciles à deviner.</target>
+      </segment>
+    </unit>
+    <unit id="548035914615045180">
+      <notes>
+        <note category="description">Password warning in Clerk, the sign-in provider</note>
+      </notes>
+      <segment state="translated">
+        <source>This is similar to a commonly used password.</source>
+        <target>Ce mot de passe est similaire à un mot de passe couramment utilisé.</target>
+      </segment>
+    </unit>
+    <unit id="5492578273973439931">
+      <notes>
+        <note category="description">Toast when the account could not be loaded right after signing in</note>
+      </notes>
+      <segment state="translated">
+        <source>Failed to load essential user information. Please log in again.</source>
+        <target>Impossible de charger les informations de ton compte. Reconnecte-toi.</target>
+      </segment>
+    </unit>
+    <unit id="5503986945608542117">
+      <notes>
+        <note category="description">Call to action in the signed-out header that creates an account</note>
+      </notes>
+      <segment state="translated">
+        <source>Start free</source>
+        <target>Commencer gratuitement</target>
+      </segment>
+    </unit>
+    <unit id="5578874963527071333">
+      <notes>
+        <note category="description">Heading of the second landing feature</note>
+      </notes>
+      <segment state="translated">
+        <source>Find the right game fast</source>
+        <target>Trouve vite le bon jeu</target>
+      </segment>
+    </unit>
+    <unit id="5601530442010506564">
+      <notes>
+        <note category="description">Button that closes the card that asks once about usage statistics</note>
+      </notes>
+      <segment state="translated">
+        <source>Got it</source>
+        <target>Compris</target>
+      </segment>
+    </unit>
     <unit id="5611022416689146666">
       <segment state="translated">
         <source><ph id="0" equiv="person" disp="member"/> left <ph id="1" equiv="group" disp="group"/>.</source>
         <target><ph id="0" equiv="person" disp="member"/> a quitté <ph id="1" equiv="group" disp="group"/>.</target>
+      </segment>
+    </unit>
+    <unit id="5621728713939769423">
+      <notes>
+        <note category="description">Error from Clerk, the sign-in provider, when an invitation link is too old</note>
+      </notes>
+      <segment state="translated">
+        <source>This link has expired. Please start again or request a new link.</source>
+        <target>Ce lien a expiré. Recommencez ou demandez un nouveau lien.</target>
+      </segment>
+    </unit>
+    <unit id="5651951128882735477">
+      <notes>
+        <note category="description">Short weekday of the landing example game night, Friday</note>
+      </notes>
+      <segment state="translated">
+        <source>Fri</source>
+        <target>Ven</target>
+      </segment>
+    </unit>
+    <unit id="5673906746664423612">
+      <notes>
+        <note category="description">Heading while someone joins a group from an invitation link</note>
+      </notes>
+      <segment state="translated">
+        <source>Connecting you to your Board Vault group</source>
+        <target>Connexion à ton groupe Board Vault</target>
+      </segment>
+    </unit>
+    <unit id="5677837656801597684">
+      <notes>
+        <note category="description">Toast when deleting a notification failed</note>
+      </notes>
+      <segment state="translated">
+        <source>Error deleting notification</source>
+        <target>Impossible de supprimer la notification</target>
+      </segment>
+    </unit>
+    <unit id="5679842461476058145">
+      <notes>
+        <note category="description">Ends the sentence Your password must contain, in Clerk, the sign-in provider</note>
+      </notes>
+      <segment state="translated">
+        <source>a number</source>
+        <target>un chiffre</target>
+      </segment>
+    </unit>
+    <unit id="571053090376584692">
+      <notes>
+        <note category="description">Hint when adding an email address in the account panel from Clerk, the sign-in provider</note>
+      </notes>
+      <segment state="translated">
+        <source>You&apos;ll need to verify this email address before it can be added to your account.</source>
+        <target>Vous devrez vérifier cette adresse e-mail avant qu’elle puisse être ajoutée à votre compte.</target>
       </segment>
     </unit>
     <unit id="5715583810853284797">
@@ -324,6 +2039,25 @@
         <target><ph id="0" equiv="count" disp="count"/> personnes choisies l’ont déjà écarté</target>
       </segment>
     </unit>
+    <unit id="5729395938595388062">
+      <notes>
+        <note category="description">Name of the avatar button in the header</note>
+      </notes>
+      <segment state="translated">
+        <source>Account menu</source>
+        <target>Menu du compte</target>
+      </segment>
+    </unit>
+    <unit id="574725216372962499">
+      <notes>
+        <note category="description">Name of the avatar button in the header for an admin, with game proposals waiting for review, more than one</note>
+        <note category="meaning">account menu, other</note>
+      </notes>
+      <segment state="translated">
+        <source>Account menu, <ph id="0" equiv="count" disp="count"/> game proposals waiting</source>
+        <target>Menu du compte, <ph id="0" equiv="count" disp="count"/> propositions de jeu en attente</target>
+      </segment>
+    </unit>
     <unit id="5772919894493102247">
       <notes>
         <note category="description">Link on a notification</note>
@@ -331,6 +2065,96 @@
       <segment state="translated">
         <source>See the game night</source>
         <target>Voir la soirée jeux</target>
+      </segment>
+    </unit>
+    <unit id="5821029406705497005">
+      <notes>
+        <note category="description">Button in the inbox that marks every notification as read</note>
+      </notes>
+      <segment state="translated">
+        <source> Mark all read </source>
+        <target>Tout marquer comme lu</target>
+      </segment>
+    </unit>
+    <unit id="5836279243069136253">
+      <notes>
+        <note category="description">Name of the stars showing a rating; the placeholder is the rating out of 5, such as 3.50</note>
+      </notes>
+      <segment state="translated">
+        <source>Rating <ph id="0" equiv="rating" disp="this.parseReview(this.review())"/> out of 5</source>
+        <target>Note : <ph id="0" equiv="rating" disp="this.parseReview(this.review())"/> sur 5</target>
+      </segment>
+    </unit>
+    <unit id="5847297895702798294">
+      <notes>
+        <note category="description">Reason for a suggestion in the landing example</note>
+      </notes>
+      <segment state="translated">
+        <source>Fits in your 2 hours</source>
+        <target>Tient dans vos 2 heures</target>
+      </segment>
+    </unit>
+    <unit id="5847310634737729000">
+      <notes>
+        <note category="description">Button on phones in the signed-out header that closes the links menu</note>
+      </notes>
+      <segment state="translated">
+        <source>Close navigation</source>
+        <target>Fermer la navigation</target>
+      </segment>
+    </unit>
+    <unit id="5850698978356573024">
+      <notes>
+        <note category="description">Field label on the invitation sign-up page</note>
+      </notes>
+      <segment state="translated">
+        <source>Confirm your password</source>
+        <target>Confirme ton mot de passe</target>
+      </segment>
+    </unit>
+    <unit id="5851560788527570644">
+      <notes>
+        <note category="description">Heading of the notifications list in the inbox</note>
+      </notes>
+      <segment state="translated">
+        <source>Notifications</source>
+        <target>Notifications</target>
+      </segment>
+    </unit>
+    <unit id="5869913314404545561">
+      <notes>
+        <note category="description">Browser tab title of the page shown for an address that does not exist</note>
+      </notes>
+      <segment state="translated">
+        <source>Page not found — Board Vault</source>
+        <target>Page introuvable — Board Vault</target>
+      </segment>
+    </unit>
+    <unit id="5978166085424028670">
+      <notes>
+        <note category="description">Heading of the access page while sign-up is by invitation only</note>
+      </notes>
+      <segment state="translated">
+        <source>Board Vault is still invite-only</source>
+        <target>Board Vault est encore sur invitation uniquement</target>
+      </segment>
+    </unit>
+    <unit id="6003918591551761898">
+      <notes>
+        <note category="description">Text on the access page while sign-up is by invitation only</note>
+      </notes>
+      <segment state="translated">
+        <source>We are still building the core experience, so new accounts are created by invitation only.</source>
+        <target>Nous construisons encore l’essentiel, donc les nouveaux comptes sont créés uniquement sur invitation.</target>
+      </segment>
+    </unit>
+    <unit id="6023472757222269524">
+      <notes>
+        <note category="description">Password advice in Clerk, the sign-in provider</note>
+      </notes>
+      <segment state="translated">
+        <source>Capitalize more than the first letter.</source>
+        <target>Capitalisez mais pas seulement la première lettre.</target>
       </segment>
     </unit>
     <unit id="6024427301478848927">
@@ -348,6 +2172,96 @@
         <target><ph id="0" equiv="person" disp="actor"/> a marqué <ph id="1" equiv="game" disp="game"/> comme incertain pour <ph id="2" equiv="groupPerson" disp="person"/>, dans <ph id="3" equiv="group" disp="group"/>.</target>
       </segment>
     </unit>
+    <unit id="6036484491111823428">
+      <notes>
+        <note category="description">Heading of the first page of the panel from Clerk, the sign-in provider, that manages the username, email address, and password</note>
+      </notes>
+      <segment state="translated">
+        <source>Sign-in details</source>
+        <target>Informations de connexion</target>
+      </segment>
+    </unit>
+    <unit id="6041525304912058197">
+      <notes>
+        <note category="description">Search and link preview description of the Create a group page</note>
+      </notes>
+      <segment state="translated">
+        <source>Start a private board-game group and invite the people you play with.</source>
+        <target>Crée un groupe privé de jeux de société et invite les personnes avec qui tu joues.</target>
+      </segment>
+    </unit>
+    <unit id="6060616222319815628">
+      <notes>
+        <note category="description">Line on a group invitation in the inbox; the placeholder is the name of the person who sent it</note>
+      </notes>
+      <segment state="translated">
+        <source>Invited by <ph id="0" equiv="INTERPOLATION" disp="{{ invitation.fromAccount.displayName || invitation.fromAccount.username }}"/></source>
+        <target>Invitation de <ph id="0" equiv="INTERPOLATION" disp="{{ invitation.fromAccount.displayName || invitation.fromAccount.username }}"/></target>
+      </segment>
+    </unit>
+    <unit id="6070190345865948824">
+      <notes>
+        <note category="description">How often you played a game, in the landing example</note>
+      </notes>
+      <segment state="translated">
+        <source>{VAR_PLURAL, plural, one {Played once} other {Played <ph id="0" equiv="INTERPOLATION"/> times}}</source>
+        <target>{VAR_PLURAL, plural, one {Joué une fois} other {Joué <ph id="0" equiv="INTERPOLATION"/> fois}}</target>
+      </segment>
+    </unit>
+    <unit id="6099346861896174463">
+      <notes>
+        <note category="description">Button in the header that opens the language menu; the placeholder is the current language in itself, such as &quot;Español&quot;</note>
+      </notes>
+      <segment state="translated">
+        <source>Language: <ph id="0" equiv="language" disp="LOCALE_NAMES[this.current]"/></source>
+        <target>Langue : <ph id="0" equiv="language" disp="LOCALE_NAMES[this.current]"/></target>
+      </segment>
+    </unit>
+    <unit id="6102144840014276827">
+      <notes>
+        <note category="description">Toast after accepting a group invitation</note>
+      </notes>
+      <segment state="translated">
+        <source>You have joined the group!</source>
+        <target>Tu as rejoint le groupe !</target>
+      </segment>
+    </unit>
+    <unit id="6112466836031834243">
+      <notes>
+        <note category="description">Question on the landing page</note>
+      </notes>
+      <segment state="translated">
+        <source>Can friends without an account join in?</source>
+        <target>Des proches sans compte peuvent-ils participer ?</target>
+      </segment>
+    </unit>
+    <unit id="6123590976681789837">
+      <notes>
+        <note category="description">Password warning in Clerk, the sign-in provider</note>
+      </notes>
+      <segment state="translated">
+        <source>Straight rows of keys on your keyboard are easy to guess.</source>
+        <target>Les lignes droites de touches de votre clavier sont faciles à deviner.</target>
+      </segment>
+    </unit>
+    <unit id="6133379702600868150">
+      <notes>
+        <note category="description">Shown for a game the catalogue has no title for</note>
+      </notes>
+      <segment state="translated">
+        <source>Untitled game</source>
+        <target>Jeu sans titre</target>
+      </segment>
+    </unit>
+    <unit id="6174219018857528884">
+      <notes>
+        <note category="description">Password warning in Clerk, the sign-in provider</note>
+      </notes>
+      <segment state="translated">
+        <source>Dates are easy to guess.</source>
+        <target>Les dates sont faciles à deviner.</target>
+      </segment>
+    </unit>
     <unit id="6200674115821929527">
       <notes>
         <note category="description">Recommendation reason</note>
@@ -357,16 +2271,315 @@
         <target><ph id="0" equiv="owners" disp="owners"/> des <ph id="1" equiv="people" disp="attendees"/> personnes présentes l’ont</target>
       </segment>
     </unit>
+    <unit id="6205660505479571083">
+      <notes>
+        <note category="description">Shown on the sign-in page while the sign-in service loads</note>
+      </notes>
+      <segment state="translated">
+        <source>Loading secure sign-in…</source>
+        <target>Chargement de la connexion sécurisée…</target>
+      </segment>
+    </unit>
+    <unit id="6266867565509022026">
+      <notes>
+        <note category="description">Button on the page shown for an address that does not exist</note>
+      </notes>
+      <segment state="translated">
+        <source>Go back home</source>
+        <target>Retour à l’accueil</target>
+      </segment>
+    </unit>
+    <unit id="6272066987885914576">
+      <notes>
+        <note category="description">Text on the sign-up page; Clerk is the sign-in service</note>
+      </notes>
+      <segment state="translated">
+        <source>Set up your identity securely with Clerk.</source>
+        <target>Crée ton identité en toute sécurité avec Clerk.</target>
+      </segment>
+    </unit>
+    <unit id="6287427255130148032">
+      <notes>
+        <note category="description">Toast when a notification was already deleted elsewhere</note>
+      </notes>
+      <segment state="translated">
+        <source>Notification not found</source>
+        <target>Notification introuvable</target>
+      </segment>
+    </unit>
+    <unit id="6288431611067126915">
+      <notes>
+        <note category="description">Text in the box on the access page while sign-up is by invitation only; Clerk is the sign-in service</note>
+      </notes>
+      <segment state="translated">
+        <source>Ask a friend or group organizer who already uses Board Vault to invite you. Once invited, use the secure Clerk sign-up link they provide.</source>
+        <target>Demande à une personne qui utilise déjà Board Vault, ou qui organise un groupe, de t’inviter. Ensuite, utilise le lien d’inscription sécurisé de Clerk qu’elle te donne.</target>
+      </segment>
+    </unit>
     <unit id="6303882608616595614">
       <segment state="translated">
         <source>New game proposal: &quot;<ph id="0" equiv="title" disp="data[&apos;gameTitle&apos;]"/>&quot;</source>
         <target>Nouvelle proposition de jeu : « <ph id="0" equiv="title" disp="data[&apos;gameTitle&apos;]"/> »</target>
       </segment>
     </unit>
+    <unit id="6321267323966165564">
+      <notes>
+        <note category="description">Password advice in Clerk, the sign-in provider</note>
+      </notes>
+      <segment state="translated">
+        <source>Avoid predictable letter substitutions like &apos;@&apos; for &apos;a&apos;.</source>
+        <target>Évitez les substitutions de lettres prévisibles comme &apos;@&apos; pour &apos;a&apos;.</target>
+      </segment>
+    </unit>
+    <unit id="6363341208124688834">
+      <notes>
+        <note category="description">How many can play a game, one number</note>
+        <note category="meaning">player count, other</note>
+      </notes>
+      <segment state="translated">
+        <source><ph id="0" equiv="count" disp="min"/> players</source>
+        <target><ph id="0" equiv="count" disp="min"/> joueurs</target>
+      </segment>
+    </unit>
+    <unit id="6369425269629738896">
+      <notes>
+        <note category="description">Main button of the landing page, opens sign-up</note>
+      </notes>
+      <segment state="translated">
+        <source>Create your free account</source>
+        <target>Crée ton compte gratuit</target>
+      </segment>
+    </unit>
+    <unit id="6376922083892592201">
+      <notes>
+        <note category="description">Password advice in Clerk, the sign-in provider</note>
+      </notes>
+      <segment state="translated">
+        <source>Capitalize some, but not all letters.</source>
+        <target>Mettez quelques lettres en majuscules, mais pas toutes.</target>
+      </segment>
+    </unit>
+    <unit id="6403112028413315560">
+      <notes>
+        <note category="description">Shown in the inbox while notifications load</note>
+      </notes>
+      <segment state="translated">
+        <source>Loading notifications…</source>
+        <target>Chargement des notifications…</target>
+      </segment>
+    </unit>
+    <unit id="6410061944418845662">
+      <notes>
+        <note category="description">Browser tab title of the Game details page</note>
+      </notes>
+      <segment state="translated">
+        <source>Game details — Board Vault</source>
+        <target>Détails du jeu — Board Vault</target>
+      </segment>
+    </unit>
+    <unit id="6416477889465671000">
+      <notes>
+        <note category="description">Text on the sign-up page when the sign-up service is down</note>
+      </notes>
+      <segment state="translated">
+        <source>Your account has not been created. Please try again shortly or ask your group owner to send a fresh invitation.</source>
+        <target>Ton compte n’a pas été créé. Réessaie dans un moment ou demande une nouvelle invitation à la personne qui a créé le groupe.</target>
+      </segment>
+    </unit>
+    <unit id="6498062783927960685">
+      <notes>
+        <note category="description">Title of the box on the invitation sign-up page for someone who already has an account</note>
+      </notes>
+      <segment state="translated">
+        <source>Your Board Vault account is already registered.</source>
+        <target>Tu as déjà un compte Board Vault.</target>
+      </segment>
+    </unit>
+    <unit id="6505214317212036405">
+      <notes>
+        <note category="description">Password warning in Clerk, the sign-in provider</note>
+      </notes>
+      <segment state="translated">
+        <source>This is a frequently used password.</source>
+        <target>Ce mot de passe est fréquemment utilisé.</target>
+      </segment>
+    </unit>
     <unit id="6558378588786598467">
       <segment state="translated">
         <source><ph id="0" equiv="person" disp="actor"/> removed <ph id="1" equiv="game" disp="game"/> from <ph id="2" equiv="groupPerson" disp="person"/>&apos;s games in <ph id="3" equiv="group" disp="group"/>.</source>
         <target><ph id="0" equiv="person" disp="actor"/> a retiré <ph id="1" equiv="game" disp="game"/> des jeux de <ph id="2" equiv="groupPerson" disp="person"/> dans <ph id="3" equiv="group" disp="group"/>.</target>
+      </segment>
+    </unit>
+    <unit id="6582558331846075943">
+      <notes>
+        <note category="description">Text under the heading of the sign-in page</note>
+      </notes>
+      <segment state="translated">
+        <source>Return to the groups, games, and sessions you are building with your friends.</source>
+        <target>Retrouve les groupes, les jeux et les soirées jeux que tu construis avec tes proches.</target>
+      </segment>
+    </unit>
+    <unit id="6599364831830861985">
+      <notes>
+        <note category="description">Link to a section of the landing page</note>
+      </notes>
+      <segment state="translated">
+        <source>Features</source>
+        <target>Fonctionnalités</target>
+      </segment>
+    </unit>
+    <unit id="6602855542242739725">
+      <notes>
+        <note category="description">Error on the invitation sign-up page when the security check failed</note>
+      </notes>
+      <segment state="translated">
+        <source>The security check could not be completed. Complete it and try again.</source>
+        <target>La vérification de sécurité n’a pas pu aboutir. Termine-la et réessaie.</target>
+      </segment>
+    </unit>
+    <unit id="6615119373735355067">
+      <notes>
+        <note category="description">Search and link preview description of the My submissions page</note>
+      </notes>
+      <segment state="translated">
+        <source>Propose games for the shared catalogue and follow their review.</source>
+        <target>Propose des jeux pour le catalogue commun et suis leur validation.</target>
+      </segment>
+    </unit>
+    <unit id="6650633628037596693">
+      <notes>
+        <note category="description">Button from Clerk, the sign-in provider, after its check that a sign-in is not automated failed</note>
+      </notes>
+      <segment state="translated">
+        <source>Try again</source>
+        <target>Réessayer</target>
+      </segment>
+    </unit>
+    <unit id="6652598177678258129">
+      <notes>
+        <note category="description">Error on a group invitation in the inbox when declining it failed</note>
+      </notes>
+      <segment state="translated">
+        <source>We could not decline this invitation right now. Try again or refresh your invitations.</source>
+        <target>Nous n’avons pas pu refuser cette invitation pour le moment. Réessaie ou actualise tes invitations.</target>
+      </segment>
+    </unit>
+    <unit id="6678473138806353308">
+      <notes>
+        <note category="description">Shown in place of a game&apos;s picture that does not load</note>
+      </notes>
+      <segment state="translated">
+        <source>Artwork unavailable</source>
+        <target>Image indisponible</target>
+      </segment>
+    </unit>
+    <unit id="6680464724162231112">
+      <notes>
+        <note category="description">Password warning in Clerk, the sign-in provider</note>
+      </notes>
+      <segment state="translated">
+        <source>This is a commonly used password.</source>
+        <target>Ce mot de passe est couramment utilisé.</target>
+      </segment>
+    </unit>
+    <unit id="6692170698163862308">
+      <notes>
+        <note category="description">Browser tab title of the Groups page</note>
+      </notes>
+      <segment state="translated">
+        <source>Groups — Board Vault</source>
+        <target>Groupes — Board Vault</target>
+      </segment>
+    </unit>
+    <unit id="670007955983746939">
+      <notes>
+        <note category="description">Toast when accepting a group invitation failed</note>
+      </notes>
+      <segment state="translated">
+        <source>Error accepting invitation</source>
+        <target>Impossible d’accepter l’invitation</target>
+      </segment>
+    </unit>
+    <unit id="6716126281248146214">
+      <notes>
+        <note category="description">Error from Clerk, the sign-in provider, about its check that a sign-in is not automated</note>
+      </notes>
+      <segment state="translated">
+        <source>Verification couldn&apos;t start. Please contact support.</source>
+        <target>Impossible de démarrer la vérification. Contactez l’assistance.</target>
+      </segment>
+    </unit>
+    <unit id="6744211960979064014">
+      <notes>
+        <note category="description">Field error on the invitation sign-up page</note>
+      </notes>
+      <segment state="translated">
+        <source>Use 4–64 characters for your username.</source>
+        <target>Ton nom d’utilisateur doit contenir de 4 à 64 caractères.</target>
+      </segment>
+    </unit>
+    <unit id="6769713385277467769">
+      <notes>
+        <note category="description">Toast after Mark all read in the inbox when some failed, one</note>
+        <note category="meaning">mark all read failed, one</note>
+      </notes>
+      <segment state="translated">
+        <source><ph id="0" equiv="count" disp="failed"/> notification could not be marked as read</source>
+        <target><ph id="0" equiv="count" disp="failed"/> notification n’a pas pu être marquée comme lue</target>
+      </segment>
+    </unit>
+    <unit id="6796282918533611083">
+      <notes>
+        <note category="description">Name of the menu of an area such as Settings; the placeholder is the area&apos;s name</note>
+      </notes>
+      <segment state="translated">
+        <source><ph id="0" equiv="area" disp="this.title()"/> sections</source>
+        <target>Sections de <ph id="0" equiv="area" disp="this.title()"/></target>
+      </segment>
+    </unit>
+    <unit id="6801535761978393212">
+      <notes>
+        <note category="description">Button on the access page while sign-up is by invitation only that goes to the landing page</note>
+      </notes>
+      <segment state="translated">
+        <source>Back to home</source>
+        <target>Retour à l’accueil</target>
+      </segment>
+    </unit>
+    <unit id="6818417212441598328">
+      <notes>
+        <note category="description">Search and link preview description of the Game details page</note>
+      </notes>
+      <segment state="translated">
+        <source>Review a game in the context of your private collection and group history.</source>
+        <target>Consulte un jeu avec ta collection privée et l’historique de tes groupes.</target>
+      </segment>
+    </unit>
+    <unit id="6837138223026715835">
+      <notes>
+        <note category="description">Count next to My submissions in the avatar menu; the words are read only by screen readers</note>
+      </notes>
+      <segment state="translated">
+        <source>{VAR_PLURAL, plural, one {<ph id="0" equiv="INTERPOLATION"/><pc id="1" equivStart="START_TAG_SPAN" equivEnd="CLOSE_TAG_SPAN" type="other"> submitted</pc>} other {<ph id="2" equiv="INTERPOLATION"/><pc id="3" equivStart="START_TAG_SPAN" equivEnd="CLOSE_TAG_SPAN" type="other"> submitted</pc>}}</source>
+        <target>{VAR_PLURAL, plural, one {<ph id="0" equiv="INTERPOLATION"/><pc id="1" equivStart="START_TAG_SPAN" equivEnd="CLOSE_TAG_SPAN" type="other"> envoyée</pc>} other {<ph id="2" equiv="INTERPOLATION"/><pc id="3" equivStart="START_TAG_SPAN" equivEnd="CLOSE_TAG_SPAN" type="other"> envoyées</pc>}}</target>
+      </segment>
+    </unit>
+    <unit id="6898946761266708133">
+      <notes>
+        <note category="description">Heading of the card that asks once about usage statistics</note>
+      </notes>
+      <segment state="translated">
+        <source>Lend us a hand? 🎲</source>
+        <target>Un coup de main ? 🎲</target>
+      </segment>
+    </unit>
+    <unit id="6910932422025459839">
+      <notes>
+        <note category="description">Filter button in the landing example: games for this many people</note>
+      </notes>
+      <segment state="translated">
+        <source>{VAR_PLURAL, plural, one {<ph id="0" equiv="INTERPOLATION"/> player} other {<ph id="1" equiv="INTERPOLATION"/> players}}</source>
+        <target>{VAR_PLURAL, plural, one {<ph id="0" equiv="INTERPOLATION"/> joueur} other {<ph id="1" equiv="INTERPOLATION"/> joueurs}}</target>
       </segment>
     </unit>
     <unit id="6930216235586087894">
@@ -378,6 +2591,97 @@
         <target>Note des personnes présentes : <ph id="0" equiv="rating" disp="formatNumber(values[&apos;rating&apos;] ?? 0, { minimumFractionDigits: 1, maximumFractionDigits: 1 })"/>/10</target>
       </segment>
     </unit>
+    <unit id="6959910266115210305">
+      <notes>
+        <note category="description">Name of the panel from Clerk, the sign-in provider, that manages the username, email address, and password</note>
+        <note category="meaning">Clerk account panel title</note>
+      </notes>
+      <segment state="translated">
+        <source>Sign-in</source>
+        <target>Connexion</target>
+      </segment>
+    </unit>
+    <unit id="6963942788569864999">
+      <notes>
+        <note category="description">Question on the landing page</note>
+      </notes>
+      <segment state="translated">
+        <source>Is Board Vault free?</source>
+        <target>Board Vault est-il gratuit ?</target>
+      </segment>
+    </unit>
+    <unit id="7007703201160377234">
+      <notes>
+        <note category="description">Line at the bottom of the sign-up page with a link to the sign-in page</note>
+      </notes>
+      <segment state="translated">
+        <source>Already have an account? <pc id="0" equivStart="START_LINK" equivEnd="CLOSE_LINK" type="link" dispStart="&lt;a routerLink=&quot;/login&quot; class=&quot;underline&quot;&gt;" dispEnd="&lt;/a&gt;">Sign in</pc></source>
+        <target>Tu as déjà un compte ? <pc id="0" equivStart="START_LINK" equivEnd="CLOSE_LINK" type="link" dispStart="&lt;a routerLink=&quot;/login&quot; class=&quot;underline&quot;&gt;" dispEnd="&lt;/a&gt;">Se connecter</pc></target>
+      </segment>
+    </unit>
+    <unit id="7085036273592820424">
+      <notes>
+        <note category="description">Password advice in Clerk, the sign-in provider</note>
+      </notes>
+      <segment state="translated">
+        <source>Avoid common character sequences.</source>
+        <target>Évitez les séquences de caractères courantes.</target>
+      </segment>
+    </unit>
+    <unit id="7102237808273658201">
+      <notes>
+        <note category="description">Title shown by Clerk, the sign-in provider, while it checks that a sign-in is not automated</note>
+      </notes>
+      <segment state="translated">
+        <source>Verifying your request</source>
+        <target>Vérification de votre demande</target>
+      </segment>
+    </unit>
+    <unit id="7105490533744744390">
+      <notes>
+        <note category="description">Toast after declining a group invitation</note>
+      </notes>
+      <segment state="translated">
+        <source>Invitation declined</source>
+        <target>Invitation refusée</target>
+      </segment>
+    </unit>
+    <unit id="711220733019729012">
+      <notes>
+        <note category="description">Search and link preview description of the Home page</note>
+      </notes>
+      <segment state="translated">
+        <source>See what your group should do next, from one focused workspace.</source>
+        <target>Vois ce que ton groupe doit faire ensuite, dans un seul espace.</target>
+      </segment>
+    </unit>
+    <unit id="7118870479552816190">
+      <notes>
+        <note category="description">Name of the question on a group invitation in the inbox that confirms declining it</note>
+      </notes>
+      <segment state="translated">
+        <source>Confirm invitation decline</source>
+        <target>Confirmer le refus de l’invitation</target>
+      </segment>
+    </unit>
+    <unit id="7129009234443727881">
+      <notes>
+        <note category="description">Answer on the card that asks once about usage statistics after turning statistics off</note>
+      </notes>
+      <segment state="translated">
+        <source>No problem, thanks for playing anyway!</source>
+        <target>Pas de souci, merci de jouer quand même !</target>
+      </segment>
+    </unit>
+    <unit id="7152215099434266008">
+      <notes>
+        <note category="description">Title of the box on the access page while sign-up is by invitation only</note>
+      </notes>
+      <segment state="translated">
+        <source>How to get access</source>
+        <target>Comment obtenir l’accès</target>
+      </segment>
+    </unit>
     <unit id="7154237322367136444">
       <notes>
         <note category="description">A list of games ending in several more</note>
@@ -385,6 +2689,24 @@
       <segment state="translated">
         <source><ph id="0" equiv="count" disp="rest"/> other games</source>
         <target><ph id="0" equiv="count" disp="rest"/> autres jeux</target>
+      </segment>
+    </unit>
+    <unit id="7207149888715584322">
+      <notes>
+        <note category="description">Password warning in Clerk, the sign-in provider</note>
+      </notes>
+      <segment state="translated">
+        <source>This is a heavily used password.</source>
+        <target>Ce mot de passe est très utilisé.</target>
+      </segment>
+    </unit>
+    <unit id="7216290397854564667">
+      <notes>
+        <note category="description">Name of the list of answers in the landing example game night</note>
+      </notes>
+      <segment state="translated">
+        <source>Who is coming</source>
+        <target>Qui vient</target>
       </segment>
     </unit>
     <unit id="7233639534415316994">
@@ -396,6 +2718,123 @@
         <target>Certaines personnes préfèrent l’éviter</target>
       </segment>
     </unit>
+    <unit id="7279088663215707450">
+      <notes>
+        <note category="description">Password warning in Clerk, the sign-in provider</note>
+      </notes>
+      <segment state="translated">
+        <source>Single words are easy to guess.</source>
+        <target>Les mots simples sont faciles à deviner.</target>
+      </segment>
+    </unit>
+    <unit id="7288203349583372907">
+      <notes>
+        <note category="description">Badge with how well a suggested game fits, out of 100</note>
+      </notes>
+      <segment state="translated">
+        <source>Fit <ph id="0" equiv="score" disp="this.score()"/></source>
+        <target>Score <ph id="0" equiv="score" disp="this.score()"/></target>
+      </segment>
+    </unit>
+    <unit id="7294155788021660432">
+      <notes>
+        <note category="description">Question on the landing page</note>
+      </notes>
+      <segment state="translated">
+        <source>Who can see my collection?</source>
+        <target>Qui peut voir ma collection ?</target>
+      </segment>
+    </unit>
+    <unit id="7306616487170771288">
+      <notes>
+        <note category="description">Line at the bottom of the sign-in page with a link to the access page</note>
+      </notes>
+      <segment state="translated">
+        <source> Need access? <pc id="0" equivStart="START_LINK" equivEnd="CLOSE_LINK" type="link" dispStart="&lt;a routerLink=&quot;/register&quot; class=&quot;font-medium text-bv-primary underline&quot;&gt;" dispEnd="&lt;/a&gt;">View private-beta access</pc></source>
+        <target>Besoin d’un accès ? <pc id="0" equivStart="START_LINK" equivEnd="CLOSE_LINK" type="link" dispStart="&lt;a routerLink=&quot;/register&quot; class=&quot;font-medium text-bv-primary underline&quot;&gt;" dispEnd="&lt;/a&gt;">Voir l’accès à la bêta privée</pc></target>
+      </segment>
+    </unit>
+    <unit id="7310158085069615304">
+      <notes>
+        <note category="description">Link on the logo in the header, to Home or the landing page</note>
+      </notes>
+      <segment state="translated">
+        <source>Board Vault home</source>
+        <target>Accueil de Board Vault</target>
+      </segment>
+    </unit>
+    <unit id="7372277959950637369">
+      <notes>
+        <note category="description">Hint under the email address field in Clerk, the sign-in provider</note>
+      </notes>
+      <segment state="translated">
+        <source>Example format: name@example.com</source>
+        <target>Format attendu : nom@exemple.com</target>
+      </segment>
+    </unit>
+    <unit id="7375747030109081868">
+      <notes>
+        <note category="description">Ends the sentence Your password must contain, in Clerk, the sign-in provider</note>
+      </notes>
+      <segment state="translated">
+        <source>a lowercase letter</source>
+        <target>une lettre minuscule</target>
+      </segment>
+    </unit>
+    <unit id="7384935012309989418">
+      <notes>
+        <note category="description">Name of the main sections bar at the bottom on phones</note>
+      </notes>
+      <segment state="translated">
+        <source>Section navigation</source>
+        <target>Navigation des sections</target>
+      </segment>
+    </unit>
+    <unit id="7387635272539030076">
+      <notes>
+        <note category="description">Read by screen readers after a count in the Settings menu</note>
+      </notes>
+      <segment state="translated">
+        <source>new</source>
+        <target>nouveautés</target>
+      </segment>
+    </unit>
+    <unit id="7434447101665682282">
+      <notes>
+        <note category="description">Search and link preview description of the Groups page</note>
+      </notes>
+      <segment state="translated">
+        <source>Move between your private board-game groups and their shared history.</source>
+        <target>Passe d’un groupe privé de jeux de société à l’autre et retrouve leur historique commun.</target>
+      </segment>
+    </unit>
+    <unit id="7455956774102417623">
+      <notes>
+        <note category="description">Field label on the invitation sign-up page</note>
+      </notes>
+      <segment state="translated">
+        <source>Choose a username</source>
+        <target>Choisis un nom d’utilisateur</target>
+      </segment>
+    </unit>
+    <unit id="751762870379263730">
+      <notes>
+        <note category="description">Link at the bottom of the Settings menu back to Home</note>
+      </notes>
+      <segment state="translated">
+        <source>Back to app</source>
+        <target>Retour à l’app</target>
+      </segment>
+    </unit>
+    <unit id="756147812205802406">
+      <notes>
+        <note category="description">Error from Clerk, the sign-in provider, when changing a password</note>
+      </notes>
+      <segment state="translated">
+        <source>New password cannot be the same as the current password.</source>
+        <target>Le nouveau mot de passe doit être différent de l’actuel.</target>
+      </segment>
+    </unit>
     <unit id="7569659352704234282">
       <notes>
         <note category="description">No game can be recommended</note>
@@ -403,6 +2842,60 @@
       <segment state="translated">
         <source>No games are owned by the selected attendees.</source>
         <target>Les personnes présentes n’ont aucun jeu.</target>
+      </segment>
+    </unit>
+    <unit id="7586590255303874471">
+      <notes>
+        <note category="description">Screen-reader name of the fit badge on a suggested game</note>
+      </notes>
+      <segment state="translated">
+        <source>Fit score <ph id="0" equiv="score" disp="this.score()"/> out of 100</source>
+        <target>Score d’adéquation de <ph id="0" equiv="score" disp="this.score()"/> sur 100</target>
+      </segment>
+    </unit>
+    <unit id="7619560701830330401">
+      <notes>
+        <note category="description">Read by screen readers while something loads</note>
+      </notes>
+      <segment state="translated">
+        <source>Loading</source>
+        <target>Chargement</target>
+      </segment>
+    </unit>
+    <unit id="7630179682844831599">
+      <notes>
+        <note category="description">Browser tab title of the Session page</note>
+      </notes>
+      <segment state="translated">
+        <source>Session — Board Vault</source>
+        <target>Soirée jeux — Board Vault</target>
+      </segment>
+    </unit>
+    <unit id="7636378792229629378">
+      <notes>
+        <note category="description">Name of the landing page links in the signed-out header</note>
+      </notes>
+      <segment state="translated">
+        <source>Primary navigation</source>
+        <target>Navigation principale</target>
+      </segment>
+    </unit>
+    <unit id="7647510484935085361">
+      <notes>
+        <note category="description">Button under an error on the invitation sign-up page, back to the access page</note>
+      </notes>
+      <segment state="translated">
+        <source>Return to private-beta access</source>
+        <target>Retour à l’accès à la bêta privée</target>
+      </segment>
+    </unit>
+    <unit id="7699707220451182317">
+      <notes>
+        <note category="description">Text in the box on the invitation sign-up page for someone who already has an account</note>
+      </notes>
+      <segment state="translated">
+        <source>Continue with this secure invitation link and we’ll add you to the group. No new password is needed.</source>
+        <target>Continue avec ce lien d’invitation sécurisé et nous t’ajouterons au groupe. Pas besoin de nouveau mot de passe.</target>
       </segment>
     </unit>
     <unit id="7775401295627092008">
@@ -414,6 +2907,97 @@
         <target>Aucun jeu pour <ph id="0" equiv="players" disp="players"/> joueurs ne tient en <ph id="1" equiv="minutes" disp="values[&apos;minutes&apos;] ?? 0"/> minutes.</target>
       </segment>
     </unit>
+    <unit id="7786483200692238826">
+      <notes>
+        <note category="description">Note in the footer of the public pages</note>
+      </notes>
+      <segment state="translated">
+        <source>Board Vault is an early product; privacy, terms, and support content will be added before public launch.</source>
+        <target>Board Vault est un produit tout neuf. La confidentialité, les conditions et l’assistance seront ajoutées avant le lancement public.</target>
+      </segment>
+    </unit>
+    <unit id="7794280213228432643">
+      <notes>
+        <note category="description">Button on the sign-up page when the sign-up service is down</note>
+      </notes>
+      <segment state="translated">
+        <source>Try secure sign-up again</source>
+        <target>Réessayer l’inscription sécurisée</target>
+      </segment>
+    </unit>
+    <unit id="7819311160219446286">
+      <notes>
+        <note category="description">Name of the inbox button in the header with new things, one</note>
+        <note category="meaning">inbox button, one</note>
+      </notes>
+      <segment state="translated">
+        <source>Inbox, <ph id="0" equiv="count" disp="count"/> new</source>
+        <target>Boîte de réception, <ph id="0" equiv="count" disp="count"/> nouveauté</target>
+      </segment>
+    </unit>
+    <unit id="7826848079555265267">
+      <notes>
+        <note category="description">Heading of the first landing feature</note>
+      </notes>
+      <segment state="translated">
+        <source>Add a game in seconds</source>
+        <target>Ajoute un jeu en quelques secondes</target>
+      </segment>
+    </unit>
+    <unit id="7844706011418789951">
+      <notes>
+        <note category="description">Item of the avatar menu for admins</note>
+      </notes>
+      <segment state="translated">
+        <source>Administration</source>
+        <target>Administration</target>
+      </segment>
+    </unit>
+    <unit id="7853727421705146371">
+      <notes>
+        <note category="description">Text of the fifth landing feature</note>
+      </notes>
+      <segment state="translated">
+        <source> Set a date and see who’s coming. Afterwards, record what you played and who won, so the next pick is easier. </source>
+        <target>Choisis une date et vois qui vient. Ensuite, note à quoi vous avez joué et qui a gagné, pour que le prochain choix soit plus simple.</target>
+      </segment>
+    </unit>
+    <unit id="787163983066183218">
+      <notes>
+        <note category="description">Tab in Collection, the game catalogue</note>
+      </notes>
+      <segment state="translated">
+        <source>Browse</source>
+        <target>Parcourir</target>
+      </segment>
+    </unit>
+    <unit id="7871924721587190636">
+      <notes>
+        <note category="description">Size of the example group on the landing page</note>
+      </notes>
+      <segment state="translated">
+        <source>5 members · 23 games</source>
+        <target>5 membres · 23 jeux</target>
+      </segment>
+    </unit>
+    <unit id="7878155326303883504">
+      <notes>
+        <note category="description">When the group last played the game, in the landing example suggestion</note>
+      </notes>
+      <segment state="translated">
+        <source>Last played 6 weeks ago</source>
+        <target>Dernière partie il y a 6 semaines</target>
+      </segment>
+    </unit>
+    <unit id="7889671530504774232">
+      <notes>
+        <note category="description">Empty state of the notifications list in the inbox</note>
+      </notes>
+      <segment state="translated">
+        <source>You’re all caught up.</source>
+        <target>Tu es à jour.</target>
+      </segment>
+    </unit>
     <unit id="7899674800818281248">
       <notes>
         <note category="description">Button on a notification</note>
@@ -423,16 +3007,115 @@
         <target>Supprimer la notification : <ph id="0" equiv="text" disp="this.text()"/></target>
       </segment>
     </unit>
+    <unit id="7903843199053930">
+      <notes>
+        <note category="description">Password advice in Clerk, the sign-in provider</note>
+      </notes>
+      <segment state="translated">
+        <source>Use longer keyboard patterns and change typing direction multiple times.</source>
+        <target>Utilisez des motifs de clavier plus longs et changez de sens de frappe plusieurs fois.</target>
+      </segment>
+    </unit>
     <unit id="7906119584283878474">
       <segment state="translated">
         <source><ph id="0" equiv="person" disp="actor"/> removed what <ph id="1" equiv="groupPerson" disp="person"/> thinks of <ph id="2" equiv="game" disp="game"/>, in <ph id="3" equiv="group" disp="group"/>.</source>
         <target><ph id="0" equiv="person" disp="actor"/> a effacé l’avis de <ph id="1" equiv="groupPerson" disp="person"/> sur <ph id="2" equiv="game" disp="game"/>, dans <ph id="3" equiv="group" disp="group"/>.</target>
       </segment>
     </unit>
+    <unit id="7934833136974560675">
+      <notes>
+        <note category="description">Button that loads a list again after an error</note>
+      </notes>
+      <segment state="translated">
+        <source>Retry</source>
+        <target>Réessayer</target>
+      </segment>
+    </unit>
+    <unit id="799485662157076328">
+      <notes>
+        <note category="description">Heading of the inbox panel</note>
+      </notes>
+      <segment state="translated">
+        <source>Inbox</source>
+        <target>Boîte de réception</target>
+      </segment>
+    </unit>
+    <unit id="8025228332068674164">
+      <notes>
+        <note category="description">Small heading while sign-in finishes</note>
+      </notes>
+      <segment state="translated">
+        <source>Secure sign-in</source>
+        <target>Connexion sécurisée</target>
+      </segment>
+    </unit>
+    <unit id="8049452186746342791">
+      <notes>
+        <note category="description">Item of the avatar menu that lists the game proposals someone sent</note>
+      </notes>
+      <segment state="translated">
+        <source>My submissions</source>
+        <target>Mes propositions</target>
+      </segment>
+    </unit>
+    <unit id="8053410100631770875">
+      <notes>
+        <note category="description">Note at the bottom of the invitation sign-up page</note>
+      </notes>
+      <segment state="translated">
+        <source>This link is private and expires. Do not share it publicly.</source>
+        <target>Ce lien est privé et expire. Ne le partage pas publiquement.</target>
+      </segment>
+    </unit>
+    <unit id="8064022845715284898">
+      <notes>
+        <note category="description">Tab in Collection, games you want</note>
+      </notes>
+      <segment state="translated">
+        <source>Wishlist</source>
+        <target>Liste d’envies</target>
+      </segment>
+    </unit>
+    <unit id="8082437050234741884">
+      <notes>
+        <note category="description">Password warning in Clerk, the sign-in provider</note>
+      </notes>
+      <segment state="translated">
+        <source>Short keyboard patterns are easy to guess.</source>
+        <target>Des motifs de clavier courts sont faciles à deviner.</target>
+      </segment>
+    </unit>
+    <unit id="8116175184239166510">
+      <notes>
+        <note category="description">Button on a group invitation in the inbox</note>
+      </notes>
+      <segment state="translated">
+        <source>Decline</source>
+        <target>Refuser</target>
+      </segment>
+    </unit>
     <unit id="8144023736490335972">
       <segment state="translated">
         <source><ph id="0" equiv="remover" disp="actor"/> removed <ph id="1" equiv="removedPerson" disp="member"/> from <ph id="2" equiv="group" disp="group"/>.</source>
         <target><ph id="0" equiv="remover" disp="actor"/> a retiré <ph id="1" equiv="removedPerson" disp="member"/> de <ph id="2" equiv="group" disp="group"/>.</target>
+      </segment>
+    </unit>
+    <unit id="8144330943405153313">
+      <notes>
+        <note category="description">Error from Clerk, the sign-in provider</note>
+      </notes>
+      <segment state="translated">
+        <source>This action couldn&apos;t be completed. Please try again later or contact support if this persists.</source>
+        <target>Cette action n’a pas pu aboutir. Réessayez plus tard ou contactez l’assistance si le problème persiste.</target>
+      </segment>
+    </unit>
+    <unit id="8205762812117214148">
+      <notes>
+        <note category="description">Error from Clerk, the sign-in provider, about its check that a sign-in is not automated</note>
+      </notes>
+      <segment state="translated">
+        <source>Verification didn&apos;t complete in time. Please try again.</source>
+        <target>La vérification n’a pas abouti à temps. Réessayez.</target>
       </segment>
     </unit>
     <unit id="8206579759218160395">
@@ -444,6 +3127,80 @@
         <target>Aucun jeu des personnes présentes ne se joue à <ph id="0" equiv="players" disp="players"/>.</target>
       </segment>
     </unit>
+    <unit id="8218180595897396108">
+      <notes>
+        <note category="description">Heading of the sign-in page</note>
+      </notes>
+      <segment state="translated">
+        <source>Sign in to Board Vault</source>
+        <target>Connecte-toi à Board Vault</target>
+      </segment>
+    </unit>
+    <unit id="8235739714710984923">
+      <notes>
+        <note category="description">How many can play a game, a range such as 2–4</note>
+      </notes>
+      <segment state="translated">
+        <source><ph id="0" equiv="min" disp="min"/>–<ph id="1" equiv="max" disp="max"/> players</source>
+        <target><ph id="0" equiv="min" disp="min"/> à <ph id="1" equiv="max" disp="max"/> joueurs</target>
+      </segment>
+    </unit>
+    <unit id="824130478942009314">
+      <notes>
+        <note category="description">Browser tab title of the Create a group page</note>
+      </notes>
+      <segment state="translated">
+        <source>Create a group — Board Vault</source>
+        <target>Créer un groupe — Board Vault</target>
+      </segment>
+    </unit>
+    <unit id="8251908569174605565">
+      <notes>
+        <note category="description">Someone has not answered yet, in the landing example game night</note>
+      </notes>
+      <segment state="translated">
+        <source>No answer</source>
+        <target>Pas de réponse</target>
+      </segment>
+    </unit>
+    <unit id="8266579091925980255">
+      <notes>
+        <note category="description">Name of the avatar button in the header for an admin, with game proposals waiting for review, one</note>
+        <note category="meaning">account menu, one</note>
+      </notes>
+      <segment state="translated">
+        <source>Account menu, <ph id="0" equiv="count" disp="count"/> game proposal waiting</source>
+        <target>Menu du compte, <ph id="0" equiv="count" disp="count"/> proposition de jeu en attente</target>
+      </segment>
+    </unit>
+    <unit id="8344394793747735234">
+      <notes>
+        <note category="description">Name of the inbox button in the header with new things, more than one</note>
+        <note category="meaning">inbox button, other</note>
+      </notes>
+      <segment state="translated">
+        <source>Inbox, <ph id="0" equiv="count" disp="count"/> new</source>
+        <target>Boîte de réception, <ph id="0" equiv="count" disp="count"/> nouveautés</target>
+      </segment>
+    </unit>
+    <unit id="8344586071532675623">
+      <notes>
+        <note category="description">Under the title of the panel from Clerk, the sign-in provider, that manages the username, email address, and password</note>
+      </notes>
+      <segment state="translated">
+        <source>Manage how you sign in to Board Vault.</source>
+        <target>Gérer votre façon de vous connecter à Board Vault.</target>
+      </segment>
+    </unit>
+    <unit id="8348072798509355617">
+      <notes>
+        <note category="description">Button on a toast message that closes it</note>
+      </notes>
+      <segment state="translated">
+        <source>Dismiss notification</source>
+        <target>Fermer le message</target>
+      </segment>
+    </unit>
     <unit id="8353091657473641191">
       <notes>
         <note category="description">Link on a notification</note>
@@ -451,6 +3208,132 @@
       <segment state="translated">
         <source>Open the group</source>
         <target>Ouvrir le groupe</target>
+      </segment>
+    </unit>
+    <unit id="8375894054300753424">
+      <notes>
+        <note category="description">Search and link preview description of the Collection page</note>
+      </notes>
+      <segment state="translated">
+        <source>Keep your private shelf, wishlist, reviews, and group game context together.</source>
+        <target>Ton étagère privée, ta liste d’envies, tes avis et les jeux de tes groupes, au même endroit.</target>
+      </segment>
+    </unit>
+    <unit id="8389293487680016063">
+      <notes>
+        <note category="description">Question on the landing page</note>
+      </notes>
+      <segment state="translated">
+        <source>Do I need a group to use it?</source>
+        <target>Faut-il un groupe pour l’utiliser ?</target>
+      </segment>
+    </unit>
+    <unit id="8411650238871966394">
+      <notes>
+        <note category="description">Tagline in the footer of the public pages</note>
+      </notes>
+      <segment state="translated">
+        <source>A tidy home for your board game collection, and for the people you play with.</source>
+        <target>Un chez-soi bien rangé pour ta collection de jeux de société, et pour les personnes avec qui tu joues.</target>
+      </segment>
+    </unit>
+    <unit id="8431469809481222374">
+      <notes>
+        <note category="description">Browser tab title of the My submissions page</note>
+      </notes>
+      <segment state="translated">
+        <source>My submissions — Board Vault</source>
+        <target>Mes propositions — Board Vault</target>
+      </segment>
+    </unit>
+    <unit id="8435038262958370080">
+      <notes>
+        <note category="description">Error when joining a group from an invitation link failed</note>
+      </notes>
+      <segment state="translated">
+        <source>We could not finish joining this group. The invitation may have expired, already been used, or the group may no longer be available. Try again, or sign out and ask the group owner for a fresh invitation.</source>
+        <target>Nous n’avons pas pu finir de t’ajouter à ce groupe. L’invitation a peut-être expiré ou déjà servi, ou le groupe n’est plus disponible. Réessaie, ou déconnecte-toi et demande une nouvelle invitation à la personne qui a créé le groupe.</target>
+      </segment>
+    </unit>
+    <unit id="8469235912331273979">
+      <notes>
+        <note category="description">Text under the usage statistics switch on the invitation sign-up page; Settings → Privacy names the place in the app</note>
+      </notes>
+      <segment state="translated">
+        <source> Lend us a hand? 🎲 We&apos;re a tiny indie team. Leaving this on lets us count which pages get opened, under a pseudonym and in our own database, so we know what to fix next. No cookies, nothing shared. Change it anytime in Settings → Privacy. </source>
+        <target>Un coup de main ? 🎲 Nous sommes une toute petite équipe indépendante. En laissant ceci activé, tu nous permets de compter les pages ouvertes, sous un pseudonyme et dans notre propre base de données, pour savoir quoi corriger en priorité. Pas de cookies, rien de partagé. Tu peux le changer à tout moment dans Paramètres → Confidentialité.</target>
+      </segment>
+    </unit>
+    <unit id="8479252312260874856">
+      <notes>
+        <note category="description">How many people in the group said Not for us to a suggested game</note>
+      </notes>
+      <segment state="translated">
+        <source>{VAR_PLURAL, plural, other {<ph id="0" equiv="INTERPOLATION"/> passed}}</source>
+        <target>{VAR_PLURAL, plural, other {<ph id="0" equiv="INTERPOLATION"/> refus}}</target>
+      </segment>
+    </unit>
+    <unit id="8483051275583729367">
+      <notes>
+        <note category="description">Answer on the landing page to Is Board Vault free?</note>
+      </notes>
+      <segment state="translated">
+        <source>Yes. Create an account and start adding games.</source>
+        <target>Oui. Crée un compte et commence à ajouter des jeux.</target>
+      </segment>
+    </unit>
+    <unit id="8487119295846165326">
+      <notes>
+        <note category="description">Ends the sentence Your password must contain, in Clerk, the sign-in provider</note>
+      </notes>
+      <segment state="translated">
+        <source>an uppercase letter</source>
+        <target>une lettre majuscule</target>
+      </segment>
+    </unit>
+    <unit id="8506230638457254442">
+      <notes>
+        <note category="description">Password advice in Clerk, the sign-in provider</note>
+      </notes>
+      <segment state="translated">
+        <source>Avoid years that are associated with you.</source>
+        <target>Évitez les années qui vous sont associées. (ex: date de naissance)</target>
+      </segment>
+    </unit>
+    <unit id="8564202903947049539">
+      <notes>
+        <note category="description">Main section of the app, with game nights</note>
+      </notes>
+      <segment state="translated">
+        <source>Play</source>
+        <target>Jouer</target>
+      </segment>
+    </unit>
+    <unit id="8609256983948872272">
+      <notes>
+        <note category="description">Browser tab title of the Play page</note>
+      </notes>
+      <segment state="translated">
+        <source>Play — Board Vault</source>
+        <target>Jouer — Board Vault</target>
+      </segment>
+    </unit>
+    <unit id="8626011843982871371">
+      <notes>
+        <note category="description">Name of your own shelf, in the landing example</note>
+      </notes>
+      <segment state="translated">
+        <source>My games</source>
+        <target>Mes jeux</target>
+      </segment>
+    </unit>
+    <unit id="8654642196646765162">
+      <notes>
+        <note category="description">Password strength in Clerk, the sign-in provider</note>
+      </notes>
+      <segment state="translated">
+        <source>Your password is not strong enough.</source>
+        <target>Votre mot de passe n&apos;est pas assez fort.</target>
       </segment>
     </unit>
     <unit id="8668172233266414658">
@@ -462,6 +3345,33 @@
         <target><ph id="0" equiv="count" disp="count"/> personnes présentes l’ont trouvé intéressant</target>
       </segment>
     </unit>
+    <unit id="8694180754500384388">
+      <notes>
+        <note category="description">Search and link preview description of the landing page</note>
+      </notes>
+      <segment state="translated">
+        <source>A private workspace for recurring board-game groups to decide, play, and remember together.</source>
+        <target>Un espace privé pour les groupes de jeux de société réguliers, pour décider, jouer et se souvenir ensemble.</target>
+      </segment>
+    </unit>
+    <unit id="8698855233880130185">
+      <notes>
+        <note category="description">Password advice in Clerk, the sign-in provider</note>
+      </notes>
+      <segment state="translated">
+        <source>Avoid reversed spellings of common words.</source>
+        <target>Évitez les orthographes inversées des mots courants</target>
+      </segment>
+    </unit>
+    <unit id="871235372571809921">
+      <notes>
+        <note category="description">Help under an error when joining a group from an invitation link failed</note>
+      </notes>
+      <segment state="translated">
+        <source>Ask the group owner for a fresh invitation if this link has expired or the group is no longer available.</source>
+        <target>Demande une nouvelle invitation à la personne qui a créé le groupe si ce lien a expiré ou si le groupe n’est plus disponible.</target>
+      </segment>
+    </unit>
     <unit id="8715838975991436163">
       <notes>
         <note category="description">Link on a notification</note>
@@ -471,10 +3381,100 @@
         <target>Voir tes propositions</target>
       </segment>
     </unit>
+    <unit id="8725224299321680590">
+      <notes>
+        <note category="description">Tab in Play, the planned game nights</note>
+      </notes>
+      <segment state="translated">
+        <source>Upcoming</source>
+        <target>À venir</target>
+      </segment>
+    </unit>
+    <unit id="8739046962840362623">
+      <notes>
+        <note category="description">Who won a game, in the landing example</note>
+      </notes>
+      <segment state="translated">
+        <source><ph id="0" equiv="INTERPOLATION" disp="{{ play.winner }}"/> won</source>
+        <target><ph id="0" equiv="INTERPOLATION" disp="{{ play.winner }}"/> a gagné</target>
+      </segment>
+    </unit>
     <unit id="8739336026258908775">
       <segment state="translated">
         <source><ph id="0" equiv="person" disp="actor"/> joined <ph id="1" equiv="group" disp="group"/>.</source>
         <target><ph id="0" equiv="person" disp="actor"/> a rejoint <ph id="1" equiv="group" disp="group"/>.</target>
+      </segment>
+    </unit>
+    <unit id="8779419494821652108">
+      <notes>
+        <note category="description">Placeholder of the new password field in Clerk, the sign-in provider</note>
+      </notes>
+      <segment state="translated">
+        <source>Create a password</source>
+        <target>Crée un mot de passe</target>
+      </segment>
+    </unit>
+    <unit id="8819122373991228583">
+      <notes>
+        <note category="description">Heading of the fourth landing feature</note>
+      </notes>
+      <segment state="translated">
+        <source>Share the shelf with your group</source>
+        <target>Partage l’étagère avec ton groupe</target>
+      </segment>
+    </unit>
+    <unit id="8851134952747107313">
+      <notes>
+        <note category="description">Small heading above an error after signing in or following an invitation link</note>
+      </notes>
+      <segment state="translated">
+        <source>One more step needed</source>
+        <target>Encore une étape</target>
+      </segment>
+    </unit>
+    <unit id="8865777077981814555">
+      <notes>
+        <note category="description">Small heading of the sign-up page when the sign-up service is down</note>
+      </notes>
+      <segment state="translated">
+        <source>Secure sign-up unavailable</source>
+        <target>Inscription sécurisée indisponible</target>
+      </segment>
+    </unit>
+    <unit id="88693668940044224">
+      <notes>
+        <note category="description">Text on the card that asks once about usage statistics</note>
+      </notes>
+      <segment state="translated">
+        <source>Just counts under a pseudonym, in our own database. No cookies, no ads, nothing shared.</source>
+        <target>Juste des comptages sous un pseudonyme, dans notre propre base de données. Pas de cookies, pas de pub, rien de partagé.</target>
+      </segment>
+    </unit>
+    <unit id="8894032101147847060">
+      <notes>
+        <note category="description">Main heading of the landing page</note>
+      </notes>
+      <segment state="translated">
+        <source> Every game you own, on one tidy shelf. </source>
+        <target>Tous tes jeux, sur une seule étagère bien rangée.</target>
+      </segment>
+    </unit>
+    <unit id="8905995985388209337">
+      <notes>
+        <note category="description">Button on a group invitation in the inbox</note>
+      </notes>
+      <segment state="translated">
+        <source>Accept</source>
+        <target>Accepter</target>
+      </segment>
+    </unit>
+    <unit id="8924579998153942223">
+      <notes>
+        <note category="description">Toast when the inbox could not load notifications</note>
+      </notes>
+      <segment state="translated">
+        <source>Error retrieving user&apos;s notifications</source>
+        <target>Impossible de charger tes notifications</target>
       </segment>
     </unit>
     <unit id="8938331027934073927">
@@ -495,10 +3495,155 @@
         <target>Voir ses jeux</target>
       </segment>
     </unit>
+    <unit id="8957370839586560700">
+      <notes>
+        <note category="description">Error from Clerk, the sign-in provider, about its check that a sign-in is not automated</note>
+      </notes>
+      <segment state="translated">
+        <source>Verification didn&apos;t complete. Please try again.</source>
+        <target>La vérification n’a pas abouti. Réessayez.</target>
+      </segment>
+    </unit>
+    <unit id="9014138025274858717">
+      <notes>
+        <note category="description">Browser tab title of the landing page</note>
+      </notes>
+      <segment state="translated">
+        <source>Board Vault — Game night, remembered</source>
+        <target>Board Vault — Les soirées jeux, en mémoire</target>
+      </segment>
+    </unit>
+    <unit id="9022444498426613992">
+      <notes>
+        <note category="description">The published title of the board game Codenames in this language</note>
+        <note category="meaning">game title</note>
+      </notes>
+      <segment state="translated">
+        <source>Codenames</source>
+        <target>Codenames</target>
+      </segment>
+    </unit>
+    <unit id="9029286143304711365">
+      <notes>
+        <note category="description">Tab in Collection, your ratings and reviews</note>
+      </notes>
+      <segment state="translated">
+        <source>Reviews</source>
+        <target>Avis</target>
+      </segment>
+    </unit>
+    <unit id="9051495169044423604">
+      <notes>
+        <note category="description">Time of the landing example game night and how far away it is</note>
+      </notes>
+      <segment state="translated">
+        <source>19:30 · in 4 days</source>
+        <target>19:30 · dans 4 jours</target>
+      </segment>
+    </unit>
+    <unit id="9059961017078706616">
+      <notes>
+        <note category="description">Badge on the best suggested game</note>
+      </notes>
+      <segment state="translated">
+        <source>Top pick</source>
+        <target>Meilleur choix</target>
+      </segment>
+    </unit>
+    <unit id="9069807487293978018">
+      <notes>
+        <note category="description">Text on the card that asks once about usage statistics</note>
+      </notes>
+      <segment state="translated">
+        <source> Board Vault is made by a tiny indie team. Leaving this on lets us count which pages get opened and where game nights get stuck, so we know what to fix next. </source>
+        <target>Board Vault est fait par une toute petite équipe indépendante. En laissant ceci activé, tu nous permets de compter les pages ouvertes et de voir où les soirées jeux coincent, pour savoir quoi corriger en priorité.</target>
+      </segment>
+    </unit>
+    <unit id="907136822175606758">
+      <notes>
+        <note category="description">Heading of the questions on the landing page</note>
+      </notes>
+      <segment state="translated">
+        <source>Questions</source>
+        <target>Questions</target>
+      </segment>
+    </unit>
+    <unit id="9109084729550896366">
+      <notes>
+        <note category="description">Empty state of the invitations list in the inbox</note>
+      </notes>
+      <segment state="translated">
+        <source>No invitations waiting.</source>
+        <target>Aucune invitation en attente.</target>
+      </segment>
+    </unit>
+    <unit id="9115957101123254722">
+      <notes>
+        <note category="description">Password warning in Clerk, the sign-in provider</note>
+      </notes>
+      <segment state="translated">
+        <source>Repeated character patterns like &quot;abcabcabc&quot; are easy to guess.</source>
+        <target>Les caractères répétés comme &apos;abcabcabc&apos; sont faciles à deviner.</target>
+      </segment>
+    </unit>
+    <unit id="9137951864770451001">
+      <notes>
+        <note category="description">Text on a group invitation in the inbox</note>
+      </notes>
+      <segment state="translated">
+        <source>Accepting adds you to this private group’s shared games and future session plans.</source>
+        <target>En acceptant, tu rejoins les jeux partagés et les prochaines soirées de ce groupe privé.</target>
+      </segment>
+    </unit>
+    <unit id="9144060250307751763">
+      <notes>
+        <note category="description">Ends the sentence Your password must contain, in Clerk, the sign-in provider</note>
+      </notes>
+      <segment state="translated">
+        <source><ph id="0" equiv="length" disp="length"/> or more characters</source>
+        <target>au moins <ph id="0" equiv="length" disp="length"/> caractères</target>
+      </segment>
+    </unit>
+    <unit id="9145391012395389952">
+      <notes>
+        <note category="description">Answer of someone coming to the landing example game night</note>
+      </notes>
+      <segment state="translated">
+        <source>Going</source>
+        <target>Vient</target>
+      </segment>
+    </unit>
     <unit id="9174716236566498100">
       <segment state="translated">
         <source><ph id="0" equiv="person" disp="actor"/> removed <ph id="1" equiv="games" disp="removedList"/> from their shelf.</source>
         <target><ph id="0" equiv="person" disp="actor"/> a retiré <ph id="1" equiv="games" disp="removedList"/> de son étagère.</target>
+      </segment>
+    </unit>
+    <unit id="9212705249340904752">
+      <notes>
+        <note category="description">Heading of the footer column of links to the landing page</note>
+      </notes>
+      <segment state="translated">
+        <source>Explore</source>
+        <target>Découvrir</target>
+      </segment>
+    </unit>
+    <unit id="926163655842070473">
+      <notes>
+        <note category="description">Paragraph under the main heading of the landing page</note>
+      </notes>
+      <segment state="translated">
+        <source> Board Vault keeps your collection organised. Add a game in seconds, filter by players, rate what you’ve played, and share the shelf with the people you play with. </source>
+        <target>Board Vault garde ta collection en ordre. Ajoute un jeu en quelques secondes, filtre par nombre de joueurs, note ce que tu as joué et partage l’étagère avec les personnes avec qui tu joues.</target>
+      </segment>
+    </unit>
+    <unit id="950714964925956479">
+      <notes>
+        <note category="description">Error on the invitation sign-up page when the username is taken</note>
+      </notes>
+      <segment state="translated">
+        <source>That username is unavailable. Choose a different username and try again.</source>
+        <target>Ce nom d’utilisateur n’est pas disponible. Choisis-en un autre et réessaie.</target>
       </segment>
     </unit>
   </file>

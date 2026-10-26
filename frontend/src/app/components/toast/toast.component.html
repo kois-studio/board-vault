@@ -26,7 +26,7 @@
                         {{ action.label }}
                     </button>
                 }
-                <button type="button" (click)="closeToast(toast.id)" class="rounded p-1 text-bv-text-muted hover:bg-bv-surface-2 hover:text-bv-text" aria-label="Dismiss notification">
+                <button type="button" (click)="closeToast(toast.id)" class="rounded p-1 text-bv-text-muted hover:bg-bv-surface-2 hover:text-bv-text" aria-label="Dismiss notification" i18n-aria-label="Button on a toast message that closes it">
                     <app-icon name="x" [size]="16" aria-hidden="true" />
                 </button>
             </div>

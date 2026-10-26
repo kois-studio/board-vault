@@ -1,13 +1,13 @@
 @if (invitation(); as invitation) {
 <div class="rounded-2xl border border-bv-border bg-bv-surface p-4">
     <h2 class="font-bold text-lg tracking-wider wrap-anywhere">{{ invitation.group.name }}</h2>
-    <p class="mt-1 text-sm text-secondary wrap-anywhere">Invited by {{ invitation.fromAccount.displayName || invitation.fromAccount.username }}</p>
-    <p class="mt-2 text-xs text-secondary">Expires {{ invitation.expiresAt | customDate: false }}</p>
-    <p class="mt-3 text-sm leading-6 text-secondary">Accepting adds you to this private group’s shared games and future session plans.</p>
+    <p class="mt-1 text-sm text-secondary wrap-anywhere" i18n="Line on a group invitation in the inbox; the placeholder is the name of the person who sent it">Invited by {{ invitation.fromAccount.displayName || invitation.fromAccount.username }}</p>
+    <p class="mt-2 text-xs text-secondary" i18n="Line on a group invitation in the inbox; the placeholder is a date">Expires {{ invitation.expiresAt | customDate: false }}</p>
+    <p class="mt-3 text-sm leading-6 text-secondary" i18n="Text on a group invitation in the inbox">Accepting adds you to this private group’s shared games and future session plans.</p>
     @if (actionError()) {
         <div class="mt-4 rounded-xl border border-bv-warning/30 bg-bv-warning/10 p-3 text-sm text-bv-warning" role="alert">
             <p>{{ actionError() }}</p>
-            <button type="button" class="mt-2 font-semibold underline" (click)="refreshInvitations()">Refresh invitations</button>
+            <button type="button" class="mt-2 font-semibold underline" (click)="refreshInvitations()" i18n="Button under an error on a group invitation in the inbox">Refresh invitations</button>
         </div>
     }
     <div class="mt-4 flex flex-wrap justify-between items-center gap-3">
@@ -18,18 +18,23 @@
     
         <!-- RIGHT COL: buttons -->
         <div class="flex flex-wrap gap-3" [attr.aria-busy]="isLoading()">
-            <button appButton type="button" (click)="acceptInvitation()" [disabled]="isLoading()" [attr.aria-label]="'Accept invitation to ' + invitation.group.name">
-                <app-icon name="check" [size]="16" /> {{ isLoading() ? 'Working…' : 'Accept' }}
+            <button appButton type="button" (click)="acceptInvitation()" [disabled]="isLoading()" [attr.aria-label]="acceptLabel(invitation.group.name)">
+                <app-icon name="check" [size]="16" />
+                @if (isLoading()) {
+                <ng-container i18n="Button on a group invitation in the inbox while it is being accepted or declined">Working…</ng-container>
+                } @else {
+                <ng-container i18n="Button on a group invitation in the inbox">Accept</ng-container>
+                }
             </button>
             @if (isConfirmingDecline()) {
-                <div class="flex flex-wrap items-center gap-2 rounded-lg border border-bv-danger/30 bg-bv-danger/10 px-3 py-2 text-sm" role="group" aria-label="Confirm invitation decline">
-                    <span class="text-bv-danger">Decline this invitation?</span>
-                    <button appButton variant="danger" type="button" (click)="rejectInvitation()" class="py-2!" [disabled]="isLoading()">Yes, decline</button>
-                    <button appButton variant="secondary" type="button" (click)="isConfirmingDecline.set(false)" class="py-2!" [disabled]="isLoading()">Keep it</button>
+                <div class="flex flex-wrap items-center gap-2 rounded-lg border border-bv-danger/30 bg-bv-danger/10 px-3 py-2 text-sm" role="group" aria-label="Confirm invitation decline" i18n-aria-label="Name of the question on a group invitation in the inbox that confirms declining it">
+                    <span class="text-bv-danger" i18n="Question on a group invitation in the inbox before declining it">Decline this invitation?</span>
+                    <button appButton variant="danger" type="button" (click)="rejectInvitation()" class="py-2!" [disabled]="isLoading()" i18n="Button on a group invitation in the inbox that confirms declining it">Yes, decline</button>
+                    <button appButton variant="secondary" type="button" (click)="isConfirmingDecline.set(false)" class="py-2!" [disabled]="isLoading()" i18n="Button on a group invitation in the inbox that keeps it instead of declining">Keep it</button>
                 </div>
             } @else {
-                <button appButton variant="danger" type="button" (click)="rejectInvitation()" [disabled]="isLoading()" [attr.aria-label]="'Decline invitation to ' + invitation.group.name">
-                    <app-icon name="x" [size]="16" /> Decline
+                <button appButton variant="danger" type="button" (click)="rejectInvitation()" [disabled]="isLoading()" [attr.aria-label]="declineLabel(invitation.group.name)">
+                    <app-icon name="x" [size]="16" /> <ng-container i18n="Button on a group invitation in the inbox">Decline</ng-container>
                 </button>
             }
         </div>

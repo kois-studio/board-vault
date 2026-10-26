@@ -90,22 +90,22 @@ export class RegisterComponent {
         const errorCodes = this.getClerkErrorCodes(error)
 
         if (errorCodes.some((code) => /captcha|bot/.test(code))) {
-            return 'The security check could not be completed. Complete it and try again.'
+            return $localize`:Error on the invitation sign-up page when the security check failed:The security check could not be completed. Complete it and try again.`
         }
 
         if (errorCodes.some((code) => /identifier|username/.test(code))) {
-            return 'That username is unavailable. Choose a different username and try again.'
+            return $localize`:Error on the invitation sign-up page when the username is taken:That username is unavailable. Choose a different username and try again.`
         }
 
         if (errorCodes.some((code) => /password/.test(code))) {
-            return 'That password does not meet the secure sign-up requirements. Use the guidance above and try again.'
+            return $localize`:Error on the invitation sign-up page when the password is too weak:That password does not meet the secure sign-up requirements. Use the guidance above and try again.`
         }
 
         if (errorCodes.some((code) => /invitation|ticket/.test(code))) {
-            return 'We could not complete this invitation. The link may have expired, been used already, or the group may no longer be available. Ask the group owner for a fresh invitation and try again.'
+            return $localize`:Error on the invitation sign-up page when the invitation is no longer valid:We could not complete this invitation. The link may have expired, been used already, or the group may no longer be available. Ask the group owner for a fresh invitation and try again.`
         }
 
-        return 'We could not complete this invitation right now. Check the fields and security check, then try again.'
+        return $localize`:Error on the invitation sign-up page for any other failure:We could not complete this invitation right now. Check the fields and security check, then try again.`
     }
 
     private getClerkErrorCodes(error: unknown): string[] {

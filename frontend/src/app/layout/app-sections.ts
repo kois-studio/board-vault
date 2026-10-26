@@ -11,32 +11,32 @@ export type AppSection = {
 export const APP_SECTIONS: Array<AppSection> = [
     {
         path: '/dashboard',
-        name: 'Home',
+        name: $localize`:Main section of the app, with your groups:Home`,
         icon: 'home',
         // Groups and everything inside them live under Home.
         owns: ['/groups'],
     },
     {
         path: '/collection',
-        name: 'Collection',
+        name: $localize`:Main section of the app, with your games:Collection`,
         icon: 'library',
         owns: ['/games'],
         subsections: [
-            { path: '/collection/games', icon: 'collection-fill', name: 'My Games' },
-            { path: '/collection/browse', icon: 'search', name: 'Browse' },
-            { path: '/collection/reviews', icon: 'star-fill', name: 'Reviews' },
-            { path: '/collection/wishlist', icon: 'suit-heart-fill', name: 'Wishlist' },
+            { path: '/collection/games', icon: 'collection-fill', name: $localize`:Tab in Collection, the games you own:My Games` },
+            { path: '/collection/browse', icon: 'search', name: $localize`:Tab in Collection, the game catalogue:Browse` },
+            { path: '/collection/reviews', icon: 'star-fill', name: $localize`:Tab in Collection, your ratings and reviews:Reviews` },
+            { path: '/collection/wishlist', icon: 'suit-heart-fill', name: $localize`:Tab in Collection, games you want:Wishlist` },
         ],
     },
     {
         path: '/play',
-        name: 'Play',
+        name: $localize`:Main section of the app, with game nights:Play`,
         icon: 'dice',
         owns: ['/sessions', '/meets'],
         subsections: [
-            { path: '/play/upcoming-sessions', icon: 'calendar-clock', name: 'Upcoming' },
-            { path: '/play/recommendations', icon: 'lightbulb', name: 'What to play' },
-            { path: '/play/history', icon: 'history', name: 'History' },
+            { path: '/play/upcoming-sessions', icon: 'calendar-clock', name: $localize`:Tab in Play, the planned game nights:Upcoming` },
+            { path: '/play/recommendations', icon: 'lightbulb', name: $localize`:Tab in Play, game suggestions for a group:What to play` },
+            { path: '/play/history', icon: 'history', name: $localize`:Tab in Play, the game nights already played:History` },
         ],
     },
 ]

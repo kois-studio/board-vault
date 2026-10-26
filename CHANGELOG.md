@@ -13,6 +13,9 @@ operational details.
 
 ### Added
 
+- The landing page in Spanish, French, German, and Italian, with links
+  between its languages for search engines. The example games use each
+  language's edition title (Código Secreto, Zug um Zug).
 - Home always offers recording and planning. One group keeps its full card,
   several groups show as compact rows with a corner pin that appears on
   hover; pinned groups lead.

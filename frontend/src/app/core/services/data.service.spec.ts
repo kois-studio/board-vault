@@ -166,6 +166,15 @@ describe('DataService inbox', () => {
         expect(toast.success).not.toHaveBeenCalled()
     })
 
+    it('counts several failures in the plural', () => {
+        const { service, toast } = setup({ updateNotification: vi.fn(() => throwError(() => ({ status: 500 }))) })
+        service.userNotifications.set([notification(1), notification(2)])
+
+        service.markAllNotificationsRead()
+
+        expect(toast.error).toHaveBeenCalledWith('2 notifications could not be marked as read')
+    })
+
     it('says all were marked when none failed', () => {
         const { service, toast } = setup({ updateNotification: vi.fn(() => of({ success: true })) })
         service.userNotifications.set([notification(1), notification(2)])
