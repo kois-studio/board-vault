@@ -267,6 +267,9 @@ operational details.
 
 ### Fixed
 
+- Game titles on Home and the group pages show in the page's language, and
+  a few Spanish, French, German, and Italian texts there read more naturally
+  and without gendered forms.
 - Administration can create and rename tags: the API refused them, asking
   for a game count that only it can know.
 - Correcting a session no longer lists a removed game as "shortlisted but not

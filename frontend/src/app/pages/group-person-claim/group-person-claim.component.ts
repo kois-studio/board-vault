@@ -5,6 +5,7 @@ import { Api } from '../../api/api'
 import type { GameCompleteType, GroupPersonPreferenceType, GroupPersonWorkspaceType } from '../../api/api.types'
 import { ToastService } from '../../components/toast/toast.service'
 import { ButtonComponent } from '../../components/ui/button/button.component'
+import { gameTitle as titleOf } from '../../core/utils/gameTitle'
 
 type ClaimSummary = {
     ownershipKept: number
@@ -56,7 +57,10 @@ export class GroupPersonClaimComponent {
 
     public gameTitle(gameId: number): string {
         const game = this.games().find((candidate) => candidate.id === gameId)
-        return game?.title || $localize`:Name shown for a game whose title is missing; the placeholder is its number:Game #${gameId}:id:`
+        return (
+            (game && titleOf(game)) ||
+            $localize`:Name shown for a game whose title is missing; the placeholder is its number:Game #${gameId}:id:`
+        )
     }
 
     /** The same words as the group page's preference menu. */

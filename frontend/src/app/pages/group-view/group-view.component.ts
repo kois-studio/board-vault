@@ -559,13 +559,12 @@ export class GroupViewComponent {
         const query = this.groupPersonGameFilter().trim().toLowerCase()
         const recorded = (gameId: number) =>
             this.getGroupPersonOwnershipStatus(person, gameId) !== null || this.getGroupPersonPreference(person, gameId) !== null
+        const collator = new Intl.Collator(intlLocale())
+        const matches = (game: GameCompleteType) =>
+            [game.title, ...Object.values(game.titleTranslations ?? {})].some((title) => title?.toLowerCase().includes(query))
         return this.groupPersonAvailableGamesComputed()
-            .filter((game) => !query || (game.titleTranslations.en || game.title || '').toLowerCase().includes(query))
-            .sort(
-                (a, b) =>
-                    Number(recorded(b.id)) - Number(recorded(a.id)) ||
-                    (a.titleTranslations.en || '').localeCompare(b.titleTranslations.en || ''),
-            )
+            .filter((game) => !query || matches(game))
+            .sort((a, b) => Number(recorded(b.id)) - Number(recorded(a.id)) || collator.compare(gameTitle(a), gameTitle(b)))
     }
 
     public getGroupPersonOwnedGameCount(person: GroupPersonWorkspaceType): number {

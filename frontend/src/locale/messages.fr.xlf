@@ -69,7 +69,7 @@
       </notes>
       <segment state="translated">
         <source>No winners recorded yet. Mark who won on a session page and the table ranks by wins.</source>
-        <target>Pas encore de gagnants. Indique qui a gagné sur la page d’une soirée et le classement se fera par victoires.</target>
+        <target>Aucune victoire enregistrée pour l’instant. Indique qui a gagné sur la page d’une soirée et le classement se fera par victoires.</target>
       </segment>
     </unit>
     <unit id="1055686627716339120">
@@ -204,7 +204,7 @@
       </notes>
       <segment state="translated">
         <source>Keep the group private and focused on your real game nights.</source>
-        <target>Garde le groupe privé et centré sur vos vraies soirées jeux.</target>
+        <target>Garde le groupe privé et centré sur tes vraies soirées jeux.</target>
       </segment>
     </unit>
     <unit id="1171599222218766902">
@@ -1451,7 +1451,7 @@
       </notes>
       <segment state="translated">
         <source>Interested: No one yet</source>
-        <target>Intéressé·es : personne pour l’instant</target>
+        <target>Intérêt : personne pour l’instant</target>
       </segment>
     </unit>
     <unit id="2415298912764521981">
@@ -4817,7 +4817,7 @@
       </notes>
       <segment state="translated">
         <source>Board Vault works around a group: the people you play with and the games you all own.</source>
-        <target>Board Vault s’organise autour d’un groupe : les personnes avec qui tu joues et les jeux que vous possédez.</target>
+        <target>Board Vault s’organise autour d’un groupe : les personnes avec qui tu joues et leurs jeux.</target>
       </segment>
     </unit>
     <unit id="5683597377302812381">
@@ -4962,7 +4962,7 @@
       </notes>
       <segment state="translated">
         <source>Interested: <ph id="0" equiv="INTERPOLATION" disp="{{ names }}"/></source>
-        <target>Intéressé·es : <ph id="0" equiv="INTERPOLATION" disp="{{ names }}"/></target>
+        <target>Intérêt : <ph id="0" equiv="INTERPOLATION" disp="{{ names }}"/></target>
       </segment>
     </unit>
     <unit id="5821029406705497005">
@@ -5624,7 +5624,7 @@
       </notes>
       <segment state="translated">
         <source>owner</source>
-        <target>admin</target>
+        <target>responsable</target>
       </segment>
     </unit>
     <unit id="6410061944418845662">
@@ -6370,7 +6370,7 @@
       </notes>
       <segment state="translated">
         <source>Retry invitations</source>
-        <target>Réessayer</target>
+        <target>Réessayer les invitations</target>
       </segment>
     </unit>
     <unit id="7139520592812430718">
@@ -6677,7 +6677,7 @@
       </notes>
       <segment state="translated">
         <source>Games the group wants next</source>
-        <target>Les jeux que veut le groupe</target>
+        <target>Les prochains jeux que veut le groupe</target>
       </segment>
     </unit>
     <unit id="7487835358633203767">
@@ -7152,7 +7152,7 @@
       </notes>
       <segment state="translated">
         <source>Give the people you play with one place to decide what is available, plan a session, and remember what you played.</source>
-        <target>Donne aux personnes avec qui tu joues un endroit pour voir ce qui est disponible, prévoir une soirée jeux et garder en mémoire ce que vous avez joué.</target>
+        <target>Donne aux personnes avec qui tu joues un endroit pour voir ce qui est disponible, prévoir une soirée jeux et garder en mémoire ce qui a été joué.</target>
       </segment>
     </unit>
     <unit id="7924912164252500969">

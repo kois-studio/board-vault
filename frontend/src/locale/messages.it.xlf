@@ -69,7 +69,7 @@
       </notes>
       <segment state="translated">
         <source>No winners recorded yet. Mark who won on a session page and the table ranks by wins.</source>
-        <target>Ancora nessun vincitore. Segna chi ha vinto nella pagina di una serata e la classifica si ordina per vittorie.</target>
+        <target>Ancora nessuna vittoria registrata. Segna chi ha vinto nella pagina di una serata e la classifica si ordina per vittorie.</target>
       </segment>
     </unit>
     <unit id="1055686627716339120">
@@ -2669,7 +2669,7 @@
       </notes>
       <segment state="translated">
         <source>Keep an eye on people who have not joined yet. Revoke an invitation if the plan changed.</source>
-        <target>Tieni d’occhio chi non si è ancora unito. Revoca un invito se i piani sono cambiati.</target>
+        <target>Tieni d’occhio chi non fa ancora parte del gruppo. Revoca un invito se i piani sono cambiati.</target>
       </segment>
     </unit>
     <unit id="3604551336588731658">
@@ -3036,7 +3036,7 @@
       </notes>
       <segment state="translated">
         <source>You joined the group as a new person.</source>
-        <target>Ti sei unito al gruppo come nuova persona.</target>
+        <target>Ora fai parte del gruppo come nuova persona.</target>
       </segment>
     </unit>
     <unit id="3943327831062501605">
@@ -5624,7 +5624,7 @@
       </notes>
       <segment state="translated">
         <source>owner</source>
-        <target>admin</target>
+        <target>referente</target>
       </segment>
     </unit>
     <unit id="6410061944418845662">
@@ -6370,7 +6370,7 @@
       </notes>
       <segment state="translated">
         <source>Retry invitations</source>
-        <target>Riprova</target>
+        <target>Riprova a caricare gli inviti</target>
       </segment>
     </unit>
     <unit id="7139520592812430718">
@@ -6677,7 +6677,7 @@
       </notes>
       <segment state="translated">
         <source>Games the group wants next</source>
-        <target>Giochi che il gruppo vorrebbe</target>
+        <target>I prossimi giochi che il gruppo vorrebbe</target>
       </segment>
     </unit>
     <unit id="7487835358633203767">
