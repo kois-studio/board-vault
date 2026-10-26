@@ -30,15 +30,6 @@
         <target>La tua proposta di gioco «<ph id="0" equiv="title" disp="data[&apos;gameTitle&apos;]"/>» è già in Board Vault come «<ph id="1" equiv="existingTitle" disp="data[&apos;duplicateOfTitle&apos;]"/>».</target>
       </segment>
     </unit>
-    <unit id="1426003387204338088">
-      <notes>
-        <note category="description">Button on a notification</note>
-      </notes>
-      <segment state="translated">
-        <source>Mark as read: <ph id="0" equiv="INTERPOLATION" disp="{{ text() }}"/></source>
-        <target>Segna come letta: <ph id="0" equiv="INTERPOLATION" disp="{{ text() }}"/></target>
-      </segment>
-    </unit>
     <unit id="1630988887703018223">
       <notes>
         <note category="description">Link on a notification</note>
@@ -234,6 +225,15 @@
         <target>altri <ph id="0" equiv="count" disp="rest"/> giochi</target>
       </segment>
     </unit>
+    <unit id="7899674800818281248">
+      <notes>
+        <note category="description">Button on a notification</note>
+      </notes>
+      <segment state="translated">
+        <source>Delete notification: <ph id="0" equiv="text" disp="this.text()"/></source>
+        <target>Elimina la notifica: <ph id="0" equiv="text" disp="this.text()"/></target>
+      </segment>
+    </unit>
     <unit id="7906119584283878474">
       <segment state="translated">
         <source><ph id="0" equiv="person" disp="actor"/> removed what <ph id="1" equiv="groupPerson" disp="person"/> thinks of <ph id="2" equiv="game" disp="game"/>, in <ph id="3" equiv="group" disp="group"/>.</source>
@@ -270,6 +270,15 @@
         <target><ph id="0" equiv="person" disp="actor"/> ha raggiunto <ph id="1" equiv="group" disp="group"/>.</target>
       </segment>
     </unit>
+    <unit id="8938331027934073927">
+      <notes>
+        <note category="description">Button on a notification</note>
+      </notes>
+      <segment state="translated">
+        <source>Mark as read: <ph id="0" equiv="text" disp="this.text()"/></source>
+        <target>Segna come letta: <ph id="0" equiv="text" disp="this.text()"/></target>
+      </segment>
+    </unit>
     <unit id="894008691966610130">
       <notes>
         <note category="description">Link on a notification</note>
@@ -277,15 +286,6 @@
       <segment state="translated">
         <source>See their games</source>
         <target>Vedi i suoi giochi</target>
-      </segment>
-    </unit>
-    <unit id="9155075806001536387">
-      <notes>
-        <note category="description">Button on a notification</note>
-      </notes>
-      <segment state="translated">
-        <source>Delete notification: <ph id="0" equiv="INTERPOLATION" disp="{{ text() }}"/></source>
-        <target>Elimina la notifica: <ph id="0" equiv="INTERPOLATION" disp="{{ text() }}"/></target>
       </segment>
     </unit>
     <unit id="9174716236566498100">

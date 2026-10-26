@@ -35,15 +35,6 @@
         <source>Your game proposal &quot;<ph id="0" equiv="title" disp="data[&apos;gameTitle&apos;]"/>&quot; is already in Board Vault as &quot;<ph id="1" equiv="existingTitle" disp="data[&apos;duplicateOfTitle&apos;]"/>&quot;.</source>
       </segment>
     </unit>
-    <unit id="1426003387204338088">
-      <notes>
-        <note category="location">src/app/components/card-notification/card-notification.component.html</note>
-        <note category="description">Button on a notification</note>
-      </notes>
-      <segment>
-        <source>Mark as read: <ph id="0" equiv="INTERPOLATION" disp="{{ text() }}"/></source>
-      </segment>
-    </unit>
     <unit id="1630988887703018223">
       <notes>
         <note category="location">src/app/components/card-notification/card-notification.component.ts</note>
@@ -265,6 +256,15 @@
         <source><ph id="0" equiv="count" disp="rest"/> other games</source>
       </segment>
     </unit>
+    <unit id="7899674800818281248">
+      <notes>
+        <note category="location">src/app/components/card-notification/card-notification.component.ts</note>
+        <note category="description">Button on a notification</note>
+      </notes>
+      <segment>
+        <source>Delete notification: <ph id="0" equiv="text" disp="this.text()"/></source>
+      </segment>
+    </unit>
     <unit id="7906119584283878474">
       <notes>
         <note category="location">src/app/core/i18n/notification-text.ts</note>
@@ -307,6 +307,15 @@
         <source><ph id="0" equiv="person" disp="actor"/> joined <ph id="1" equiv="group" disp="group"/>.</source>
       </segment>
     </unit>
+    <unit id="8938331027934073927">
+      <notes>
+        <note category="location">src/app/components/card-notification/card-notification.component.ts</note>
+        <note category="description">Button on a notification</note>
+      </notes>
+      <segment>
+        <source>Mark as read: <ph id="0" equiv="text" disp="this.text()"/></source>
+      </segment>
+    </unit>
     <unit id="894008691966610130">
       <notes>
         <note category="location">src/app/components/card-notification/card-notification.component.ts</note>
@@ -314,15 +323,6 @@
       </notes>
       <segment>
         <source>See their games</source>
-      </segment>
-    </unit>
-    <unit id="9155075806001536387">
-      <notes>
-        <note category="location">src/app/components/card-notification/card-notification.component.html</note>
-        <note category="description">Button on a notification</note>
-      </notes>
-      <segment>
-        <source>Delete notification: <ph id="0" equiv="INTERPOLATION" disp="{{ text() }}"/></source>
       </segment>
     </unit>
     <unit id="9174716236566498100">

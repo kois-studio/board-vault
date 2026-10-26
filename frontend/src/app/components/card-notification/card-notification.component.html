@@ -26,11 +26,11 @@
     <!-- RIGHT: buttons, named after the notification they act on. -->
     <div class="flex shrink-0 items-center text-lg">
         @if(!notification.isRead){
-            <button appButton variant="secondary" size="small" type="button" class="mr-2 p-2" (click)="markAsRead()" i18n-aria-label="Button on a notification" aria-label="Mark as read: {{ text() }}">
+            <button appButton variant="secondary" size="small" type="button" class="mr-2 p-2" (click)="markAsRead()" [attr.aria-label]="markAsReadLabel()">
                 <app-icon name="check" [size]="18" aria-hidden="true" />
             </button>
         }
-        <button appButton variant="secondary" size="small" type="button" class="p-2" (click)="deleteNotification()" i18n-aria-label="Button on a notification" aria-label="Delete notification: {{ text() }}">
+        <button appButton variant="secondary" size="small" type="button" class="p-2" (click)="deleteNotification()" [attr.aria-label]="deleteLabel()">
             <app-icon name="trash" [size]="18" aria-hidden="true" />
         </button>
     </div>

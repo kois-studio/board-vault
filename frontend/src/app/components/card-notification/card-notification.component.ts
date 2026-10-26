@@ -33,6 +33,13 @@ export class CardNotificationComponent {
         return notification ? notificationText(notification) : ''
     })
 
+    /**
+     * The buttons' names, built here: `i18n-aria-label` on an `aria-label` with an interpolation
+     * renders no `aria-label` at all (Angular 22, docs/i18n.md).
+     */
+    public readonly markAsReadLabel = computed(() => $localize`:Button on a notification:Mark as read: ${this.text()}:text:`)
+    public readonly deleteLabel = computed(() => $localize`:Button on a notification:Delete notification: ${this.text()}:text:`)
+
     public readonly notificationDate = computed(() => {
         const notification = this.notification()
         return notification ? timeAgo(new Date(notification.createdAt).getTime()) : ''
