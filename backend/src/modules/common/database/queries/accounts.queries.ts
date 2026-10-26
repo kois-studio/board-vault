@@ -49,10 +49,10 @@ export class AccountQueries {
         })
     }
 
-    createClerkUser(user: { email: string; username: string; displayName: string; avatar: string; clerkUserId: string }) {
+    createClerkUser(user: { email: string; username: string; displayName: string; avatar: string; clerkUserId: string; locale: string }) {
         return this.database.execute({
-            sql: 'INSERT INTO Account (email, username, displayName, avatar, clerkUserId) VALUES (?, ?, ?, ?, ?)',
-            args: [user.email, user.username, user.displayName, user.avatar, user.clerkUserId],
+            sql: 'INSERT INTO Account (email, username, displayName, avatar, clerkUserId, locale) VALUES (?, ?, ?, ?, ?, ?)',
+            args: [user.email, user.username, user.displayName, user.avatar, user.clerkUserId, user.locale],
         })
     }
 
@@ -67,6 +67,10 @@ export class AccountQueries {
         if (partialUserDto.avatar) {
             fields.push('avatar = ?')
             args.push(JSON.stringify(partialUserDto.avatar))
+        }
+        if (partialUserDto.locale) {
+            fields.push('locale = ?')
+            args.push(partialUserDto.locale)
         }
 
         if (fields.length === 0) {

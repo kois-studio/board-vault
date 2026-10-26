@@ -1,4 +1,5 @@
 import * as z from 'zod/mini'
+import { SUPPORTED_LOCALES } from '../core/i18n/locales'
 import { noResultText, reasonsText } from '../core/i18n/recommendation-text'
 import { resolveArtworkUrl } from '../core/utils/artworkUrl'
 import { shortName } from '../core/utils/shortName'
@@ -242,6 +243,7 @@ export const userSchema: z.ZodMiniType<UserType> = z.object({
     ...publicUserSchema.shape,
     email: z.email(),
     createdAt: z.string(),
+    locale: z.optional(z.nullable(z.enum(SUPPORTED_LOCALES))),
 })
 
 const groupSchema: z.ZodMiniType<GroupType> = z.object({

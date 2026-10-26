@@ -39,14 +39,17 @@ Every request from the frontend carries `Accept-Language` with the page's
 language (`en`, `es`, `fr`, `de`, `it`; [ADR-0024](adr/0024-interface-languages.md)).
 `LocaleMiddleware` reads it into `request.locale` (the best supported match
 for any other value, English without one), and handlers take it with
-`@RequestLocale()`. The API returns facts (ids, codes, numbers, dates) and
-the frontend writes the sentences; a response whose content depends on the
-language must include it in its cache key. Where a response already had
-English for people (notification `message`, recommendation `reasons` and
-`noResultReason`), it keeps it for older clients and adds the facts beside
-it: the inbox's `context`, `reasonCodes`, and `noResultReasonCode`. A
-deleted account is still named `"Deleted account"`, which the app shows in
-the page's language.
+`@RequestLocale()`. A new account is created in that language. The API
+returns facts (ids, codes, numbers, dates) and the frontend writes the
+sentences; a response whose content depends on the language must include it
+in its cache key. Where a response already had English for people
+(notification `message`, recommendation `reasons` and `noResultReason`), it
+keeps it for older clients and adds the facts beside it: the inbox's
+`context`, `reasonCodes`, and `noResultReasonCode`. A deleted account is
+still named `"Deleted account"`, which the app shows in the page's language.
+`PUT /users/:userId` with `locale` saves the person's choice, returned on
+their own profile (`GET /profile/users/:userId`) and on no nested user
+response.
 Browse sorts by the title in the reader's language, else the English one, so
 the order matches what the page shows (ADR-0025).
 

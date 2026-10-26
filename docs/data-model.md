@@ -10,7 +10,7 @@ The database is SQLite through libSQL: a local file in development, Turso in
 production. The schema is
 [`database/schema/schema.sql`](../database/schema/schema.sql) (the 0001–0005
 baseline) plus the numbered files in
-[`database/migrations/`](../database/migrations/). Current version: **0025**.
+[`database/migrations/`](../database/migrations/). Current version: **0026**.
 All SQL lives in the per-domain query classes in
 [`database/queries/`](../backend/src/modules/common/database/queries/).
 
@@ -51,7 +51,7 @@ sessions they created, and more.
 
 | Table | What it holds | References (on delete) |
 | --- | --- | --- |
-| `Account` | A person who signs in: `email`, `username`, `displayName`, `avatar`, `isAdmin`, `isDeleted`, and `clerkUserId` (unique). No credentials (ADR-0012). `email` and `username` are copies of Clerk's, kept in step by webhook and `POST /auth/sync-from-clerk`; usernames match case-insensitively (ADR-0017). | — |
+| `Account` | A person who signs in: `email`, `username`, `displayName`, `avatar`, `isAdmin`, `isDeleted`, `clerkUserId` (unique), and `locale`, the interface language they chose or signed up in (NULL until then; the API validates it, ADR-0024). No credentials (ADR-0012). `email` and `username` are copies of Clerk's, kept in step by webhook and `POST /auth/sync-from-clerk`; usernames match case-insensitively (ADR-0017). | — |
 | `Game` | Catalogue game: artwork address, duration, player counts. `imageUrl` is `/artwork/<id>-<hash>.webp` for stored artwork, or empty for none. `retailPriceCents` is the recommended retail price in euro cents (NULL when unknown); collection-worth estimates read it, never `OwnedGame.purchasePrice` (ADR-0016). | — |
 | `GameArtwork` | Board Vault's copy of a game's artwork (ADR-0015): compressed WebP bytes, size, the hash in its address, and the address it was copied from (NULL for an upload). | `Game` (cascade) |
 | `GameTranslation` | Title per language (`en`, `es`) and a normalized title for search. | `Game` (cascade) |

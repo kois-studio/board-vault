@@ -90,7 +90,7 @@ describe('ClerkIdentityService', () => {
     })
 
     it('provisions a local account for a new Clerk identity', async () => {
-        const result = await service.resolveAccount('user_new')
+        const result = await service.resolveAccount('user_new', 'es')
 
         expect(result).toEqual({ id: 9, email: 'new@example.com', isAdmin: false })
         expect(usersService.createClerkUser).toHaveBeenCalledWith({
@@ -98,6 +98,7 @@ describe('ClerkIdentityService', () => {
             username: 'new-player',
             displayName: 'New Player',
             clerkUserId: 'user_new',
+            locale: 'es',
             avatar: {
                 backgroundColor: '#6366F1',
                 iconName: null,

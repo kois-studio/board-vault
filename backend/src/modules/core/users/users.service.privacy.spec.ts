@@ -47,6 +47,7 @@ describe('UsersService account rows', () => {
             createdAt: '2026-01-01T00:00:00.000Z',
             isDeleted: false,
             isAdmin: true,
+            locale: null,
         })
     })
 })

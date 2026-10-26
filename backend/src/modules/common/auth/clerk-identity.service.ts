@@ -4,6 +4,7 @@ import { ConfigService } from '@nestjs/config'
 
 import { API_ERROR_CODES, BoardVaultHttpException } from '../../../common/http/api-error.js'
 import { ProviderTimeoutError, withTimeout } from '../../../common/http/provider-timeout.js'
+import { DEFAULT_LOCALE } from '../../../common/i18n/locale.js'
 import { assertSelfRegistrationEnabled } from '../../../common/registration-policy.js'
 import {
     CLERK_GROUP_INVITATION_METADATA_KEY,
@@ -18,6 +19,7 @@ import { UsersService } from '../../core/users/users.service.js'
 import { DatabaseService } from '../database/database.service.js'
 
 import type { ClerkProfile } from './clerk-account-sync.service.js'
+import type { Locale } from '../../../common/i18n/locale.js'
 import type { AvatarDto, UserGetDto } from '../../../common/types/user.type.js'
 
 @Injectable()
@@ -213,7 +215,8 @@ export class ClerkIdentityService {
      * self-registration. An email that already belongs to another account is
      * never linked implicitly.
      */
-    async resolveAccount(clerkUserId: string): Promise<UserGetDto> {
+    /** The local account of a Clerk user, created on first sight in the language they signed up in (`locale`). */
+    async resolveAccount(clerkUserId: string, locale: Locale = DEFAULT_LOCALE): Promise<UserGetDto> {
         const linkedUser = await this.findUser(() => this.usersService.getUserByClerkId(clerkUserId))
 
         if (linkedUser) {
@@ -253,7 +256,7 @@ export class ClerkIdentityService {
             await this.assertInvitationStillValid(groupInvitation)
         }
 
-        const provisionedAccount = await this.provisionAccount(clerkUserId, clerkUser, primaryEmail)
+        const provisionedAccount = await this.provisionAccount(clerkUserId, clerkUser, primaryEmail, locale)
 
         await this.usageService?.record(provisionedAccount.id, 'account_created')
         if (groupInvitation) {
@@ -392,7 +395,7 @@ export class ClerkIdentityService {
         }
     }
 
-    private async provisionAccount(clerkUserId: string, clerkUser: ClerkUser, email: string): Promise<UserGetDto> {
+    private async provisionAccount(clerkUserId: string, clerkUser: ClerkUser, email: string, locale: Locale): Promise<UserGetDto> {
         const username = await this.buildUsername(clerkUser.username, email, clerkUserId)
         const displayName = this.buildDisplayName(clerkUser.firstName, clerkUser.lastName, clerkUser.username, email)
         const avatar = this.buildAvatar(displayName)
@@ -404,6 +407,7 @@ export class ClerkIdentityService {
                 displayName,
                 avatar,
                 clerkUserId,
+                locale,
             })
         } catch {
             // A concurrent first request may have created the same row.
