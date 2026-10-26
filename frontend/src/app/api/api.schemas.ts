@@ -1,4 +1,5 @@
 import * as z from 'zod/mini'
+import { noResultText, reasonsText } from '../core/i18n/recommendation-text'
 import { resolveArtworkUrl } from '../core/utils/artworkUrl'
 import { shortName } from '../core/utils/shortName'
 import type {
@@ -57,7 +58,16 @@ import type {
 } from './api.types'
 
 /** A person's name, cut to the shared limit so it reads the same everywhere (see shortName). */
-const displayNameSchema = z.pipe(z.string(), z.transform(shortName))
+/** What the API calls a deleted account wherever it still appears (ADR-0018). */
+const DELETED_ACCOUNT_NAME = 'Deleted account'
+
+/** Names are cut once, here; a deleted account reads in the page's language. */
+const displayNameSchema = z.pipe(
+    z.string(),
+    z.transform((name) =>
+        name === DELETED_ACCOUNT_NAME ? $localize`:A person whose account was deleted:Deleted account` : shortName(name),
+    ),
+)
 
 /** A game's artwork: stored artwork arrives as a path on the API and leaves here as a full address. */
 const artworkUrlSchema = z.pipe(
@@ -676,6 +686,15 @@ export const userNotificationsSchema: z.ZodMiniType<Array<NotificationType>> = z
         createdAt: z.string(),
         isRead: z.boolean(),
         data: z.optional(z.record(z.string(), z.unknown())),
+        context: z.optional(
+            z.object({
+                accounts: z.array(z.object({ id: z.number(), name: z.nullable(z.string()), deleted: z.boolean() })),
+                groups: z.array(z.object({ id: z.number(), name: z.string() })),
+                sessions: z.array(z.object({ id: z.number(), date: z.string(), timezone: z.string() })),
+                people: z.array(z.object({ id: z.number(), name: z.string() })),
+                games: z.array(z.object({ id: z.number(), title: z.string(), titleLanguage: z.string() })),
+            }),
+        ),
     }),
 )
 
@@ -742,29 +761,44 @@ export const sessionPlayedGamesUpdatedSchema: z.ZodMiniType<SessionPlayedGamesUp
     ),
 })
 
-export const recommendationsSchema: z.ZodMiniType<RecommendationsType> = z.object({
-    groupId: z.number(),
-    attendeeIds: z.array(z.number()),
-    participantIds: z.optional(z.array(z.number())),
-    availableMinutes: z.nullable(z.number()),
-    decisionLens: z.enum(['balanced', 'fresh', 'favorite']),
-    recommendations: z.array(
-        z.object({
-            gameData: gameCompleteSchema,
-            score: z.number(),
-            explanation: z.object({
-                reasons: z.array(z.string()),
-                attendeeOwnerCount: z.number(),
-                attendeeCount: z.number(),
-                averageReview: z.nullable(z.number()),
-                lastPlayedAt: z.nullable(z.string()),
-                interestedCount: z.number(),
-                notForUsCount: z.number(),
+const reasonCodeSchema = z.object({ code: z.string(), values: z.optional(z.record(z.string(), z.number())) })
+
+/** Reasons arrive as codes and leave here as sentences in the page's language (ADR-0024). */
+export const recommendationsSchema: z.ZodMiniType<RecommendationsType> = z.pipe(
+    z.object({
+        groupId: z.number(),
+        attendeeIds: z.array(z.number()),
+        participantIds: z.optional(z.array(z.number())),
+        availableMinutes: z.nullable(z.number()),
+        decisionLens: z.enum(['balanced', 'fresh', 'favorite']),
+        recommendations: z.array(
+            z.object({
+                gameData: gameCompleteSchema,
+                score: z.number(),
+                explanation: z.object({
+                    reasons: z.array(z.string()),
+                    reasonCodes: z.optional(z.array(reasonCodeSchema)),
+                    attendeeOwnerCount: z.number(),
+                    attendeeCount: z.number(),
+                    averageReview: z.nullable(z.number()),
+                    lastPlayedAt: z.nullable(z.string()),
+                    interestedCount: z.number(),
+                    notForUsCount: z.number(),
+                }),
             }),
-        }),
-    ),
-    noResultReason: z.nullable(z.string()),
-})
+        ),
+        noResultReason: z.nullable(z.string()),
+        noResultReasonCode: z.optional(z.nullable(reasonCodeSchema)),
+    }),
+    z.transform(({ noResultReasonCode, ...result }) => ({
+        ...result,
+        recommendations: result.recommendations.map(({ explanation: { reasonCodes, ...explanation }, ...recommendation }) => ({
+            ...recommendation,
+            explanation: { ...explanation, reasons: reasonsText(explanation.reasons, reasonCodes) },
+        })),
+        noResultReason: (noResultReasonCode && noResultText(noResultReasonCode)) || result.noResultReason,
+    })),
+)
 
 export const recommendationSignalsSchema: z.ZodMiniType<RecommendationSignalsType> = z.object({
     groupId: z.number(),

@@ -225,6 +225,55 @@ export class NotificationQueries {
         })
     }
 
+    // What an inbox needs to word its notifications (ADR-0024): read when the inbox is read, so a
+    // name or a date is always the current one and a deleted account reads as one.
+    private static placeholders = (ids: Array<number>) => ids.map(() => '?').join(', ')
+
+    getContextAccounts(accountIds: Array<number>) {
+        return this.database.execute({
+            sql: `SELECT id, COALESCE(NULLIF(TRIM(displayName), ''), username) AS name, isDeleted FROM Account WHERE id IN (${NotificationQueries.placeholders(accountIds)})`,
+            args: accountIds,
+        })
+    }
+
+    getContextGroups(groupIds: Array<number>) {
+        return this.database.execute({
+            sql: `SELECT id, name FROM UserGroup WHERE id IN (${NotificationQueries.placeholders(groupIds)})`,
+            args: groupIds,
+        })
+    }
+
+    getContextSessions(sessionIds: Array<number>) {
+        return this.database.execute({
+            sql: `SELECT id, meetDate, timezone FROM Meet WHERE id IN (${NotificationQueries.placeholders(sessionIds)})`,
+            args: sessionIds,
+        })
+    }
+
+    getContextPeople(groupPersonIds: Array<number>) {
+        return this.database.execute({
+            sql: `SELECT id, displayName FROM GroupPerson WHERE id IN (${NotificationQueries.placeholders(groupPersonIds)})`,
+            args: groupPersonIds,
+        })
+    }
+
+    /** Each game's title in the reader's language, else English, else Spanish, with the language it is in. */
+    getContextGames(gameIds: Array<number>, locale: string) {
+        return this.database.execute({
+            sql: `
+                SELECT g.id,
+                    COALESCE(t.title, en.title, es.title) AS title,
+                    CASE WHEN t.title IS NOT NULL THEN t.languageCode WHEN en.title IS NOT NULL THEN 'en' ELSE 'es' END AS language
+                FROM Game g
+                LEFT JOIN GameTranslation t ON t.gameId = g.id AND t.languageCode = ?
+                LEFT JOIN GameTranslation en ON en.gameId = g.id AND en.languageCode = 'en'
+                LEFT JOIN GameTranslation es ON es.gameId = g.id AND es.languageCode = 'es'
+                WHERE g.id IN (${NotificationQueries.placeholders(gameIds)})
+            `,
+            args: [locale, ...gameIds],
+        })
+    }
+
     /** Several notifications in one statement, for an event that reaches many people. */
     createNotifications(notifications: Array<CreateNotificationBody>) {
         return this.database.execute(this.insertStatement(notifications))

@@ -221,6 +221,9 @@ are written without the prefix; the base address adds it.
   prefix, so they show no language menu; use `npm run build` and
   `node scripts/serve-dist.mjs` to try it.
 
+How to mark text, translate it, and which words to use:
+[i18n.md](i18n.md).
+
 ## Security context
 
 - **Assets:** account records (email, username), private collections, group

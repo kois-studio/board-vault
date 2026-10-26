@@ -218,6 +218,11 @@ describe('PlayService history', () => {
                             'Owned by 2 of 2 selected people',
                             'The preferences of the people coming favor this game',
                         ]),
+                        reasonCodes: expect.arrayContaining([
+                            { code: 'owned_by', values: { owners: 2, attendees: 2, people: 1 } },
+                            { code: 'fits_players', values: { players: 2 } },
+                            { code: 'preferences_favor' },
+                        ]),
                     }),
                 }),
             ],

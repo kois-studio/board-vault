@@ -13,9 +13,9 @@
             <app-icon class="shrink-0" [name]="iconFor(notification.type)" [size]="20" aria-hidden="true" />
             <p class="min-w-0 wrap-anywhere" [class.font-medium]="!notification.isRead">
                 @if (!notification.isRead) {
-                    <span class="sr-only">Unread: </span>
+                    <span class="sr-only" i18n="Before the text of a notification not read yet, for screen readers">Unread: </span>
                 }
-                {{ notification.message }}
+                {{ text() }}
             </p>
         </div>
         <p><time [attr.datetime]="notification.createdAt">{{ notificationDate() }}</time></p>
@@ -26,11 +26,11 @@
     <!-- RIGHT: buttons, named after the notification they act on. -->
     <div class="flex shrink-0 items-center text-lg">
         @if(!notification.isRead){
-            <button appButton variant="secondary" size="small" type="button" class="mr-2 p-2" (click)="markAsRead()" [attr.aria-label]="'Mark as read: ' + notification.message">
+            <button appButton variant="secondary" size="small" type="button" class="mr-2 p-2" (click)="markAsRead()" [attr.aria-label]="markAsReadLabel()">
                 <app-icon name="check" [size]="18" aria-hidden="true" />
             </button>
         }
-        <button appButton variant="secondary" size="small" type="button" class="p-2" (click)="deleteNotification()" [attr.aria-label]="'Delete notification: ' + notification.message">
+        <button appButton variant="secondary" size="small" type="button" class="p-2" (click)="deleteNotification()" [attr.aria-label]="deleteLabel()">
             <app-icon name="trash" [size]="18" aria-hidden="true" />
         </button>
     </div>

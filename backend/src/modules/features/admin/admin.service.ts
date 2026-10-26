@@ -561,6 +561,7 @@ export class AdminService {
                     proposalId: proposal.id,
                     duplicateOfGameId: body.duplicateOfGameId,
                     duplicateOfTitle,
+                    ...(reviewNotes ? { reviewNotes } : {}),
                 },
             },
         })

@@ -1,5 +1,23 @@
 <xliff version="2.0" xmlns="urn:oasis:names:tc:xliff:document:2.0" srcLang="en" trgLang="de">
   <file id="ngi18n" original="ng.template">
+    <unit id="1003341091816362100">
+      <notes>
+        <note category="description">Recommendation reason</note>
+      </notes>
+      <segment state="translated">
+        <source>Fits <ph id="0" equiv="players" disp="players"/> players</source>
+        <target>Für <ph id="0" equiv="players" disp="players"/> Personen</target>
+      </segment>
+    </unit>
+    <unit id="1022072569342469305">
+      <notes>
+        <note category="description">Recommendation reason</note>
+      </notes>
+      <segment state="translated">
+        <source><ph id="0" equiv="count" disp="count"/> selected participant passed on this before</source>
+        <target><ph id="0" equiv="count" disp="count"/> ausgewählte Person hat es schon abgelehnt</target>
+      </segment>
+    </unit>
     <unit id="1023159118123911874">
       <notes>
         <note category="description">Label of the usage statistics switch on the invitation sign-up page; the same switch is in Settings, Privacy</note>
@@ -27,6 +45,21 @@
         <target>Einen Moment…</target>
       </segment>
     </unit>
+    <unit id="1200295485288897600">
+      <segment state="translated">
+        <source>Your game proposal &quot;<ph id="0" equiv="title" disp="data[&apos;gameTitle&apos;]"/>&quot; was approved!</source>
+        <target>Dein Spielvorschlag „<ph id="0" equiv="title" disp="data[&apos;gameTitle&apos;]"/>“ wurde angenommen!</target>
+      </segment>
+    </unit>
+    <unit id="1217286919775405184">
+      <notes>
+        <note category="description">A person whose account was deleted</note>
+      </notes>
+      <segment state="translated">
+        <source>Deleted account</source>
+        <target>Gelöschtes Konto</target>
+      </segment>
+    </unit>
     <unit id="1225085275995545699">
       <notes>
         <note category="description">Description of a game&apos;s picture when no other is given</note>
@@ -36,6 +69,15 @@
         <target>Spielbild</target>
       </segment>
     </unit>
+    <unit id="1227732393340087049">
+      <notes>
+        <note category="description">A game whose title is unknown</note>
+      </notes>
+      <segment state="translated">
+        <source>a game</source>
+        <target>ein Spiel</target>
+      </segment>
+    </unit>
     <unit id="1234332817837554846">
       <notes>
         <note category="description">Name of the placeholder shown when a picture does not load; the placeholder is what the picture shows, such as Game artwork</note>
@@ -43,6 +85,12 @@
       <segment state="translated">
         <source><ph id="0" equiv="picture" disp="this.alt()"/> unavailable</source>
         <target><ph id="0" equiv="picture" disp="this.alt()"/>: nicht verfügbar</target>
+      </segment>
+    </unit>
+    <unit id="1289605213459398820">
+      <segment state="translated">
+        <source>Your game proposal &quot;<ph id="0" equiv="title" disp="data[&apos;gameTitle&apos;]"/>&quot; is already in Board Vault as &quot;<ph id="1" equiv="existingTitle" disp="data[&apos;duplicateOfTitle&apos;]"/>&quot;.</source>
+        <target>Dein Spielvorschlag „<ph id="0" equiv="title" disp="data[&apos;gameTitle&apos;]"/>“ ist schon als „<ph id="1" equiv="existingTitle" disp="data[&apos;duplicateOfTitle&apos;]"/>“ in Board Vault.</target>
       </segment>
     </unit>
     <unit id="1316194950149848003">
@@ -100,6 +148,15 @@
         <target>Dieses Passwort erfüllt die Anforderungen der sicheren Registrierung nicht. Folge den Hinweisen oben und versuch es noch einmal.</target>
       </segment>
     </unit>
+    <unit id="1608510651942979529">
+      <notes>
+        <note category="description">Recommendation reason</note>
+      </notes>
+      <segment state="translated">
+        <source>Builds on the group’s shared shelf</source>
+        <target>Baut auf dem gemeinsamen Regal der Gruppe auf</target>
+      </segment>
+    </unit>
     <unit id="1610683093877445085">
       <notes>
         <note category="description">Text on the invitation sign-up page for someone who already has an account</note>
@@ -116,6 +173,21 @@
       <segment state="translated">
         <source>{VAR_PLURAL, plural, one {<ph id="0" equiv="INTERPOLATION"/><pc id="1" equivStart="START_TAG_SPAN" equivEnd="CLOSE_TAG_SPAN" type="other"> proposal waiting</pc>} other {<ph id="2" equiv="INTERPOLATION"/><pc id="3" equivStart="START_TAG_SPAN" equivEnd="CLOSE_TAG_SPAN" type="other"> proposals waiting</pc>}}</source>
         <target>{VAR_PLURAL, plural, one {<ph id="0" equiv="INTERPOLATION"/><pc id="1" equivStart="START_TAG_SPAN" equivEnd="CLOSE_TAG_SPAN" type="other"> Vorschlag wartet</pc>} other {<ph id="2" equiv="INTERPOLATION"/><pc id="3" equivStart="START_TAG_SPAN" equivEnd="CLOSE_TAG_SPAN" type="other"> Vorschläge warten</pc>}}</target>
+      </segment>
+    </unit>
+    <unit id="1630988887703018223">
+      <notes>
+        <note category="description">Link on a notification</note>
+      </notes>
+      <segment state="translated">
+        <source>Review the proposal</source>
+        <target>Vorschlag prüfen</target>
+      </segment>
+    </unit>
+    <unit id="167090221720253484">
+      <segment state="translated">
+        <source><ph id="0" equiv="person" disp="actor"/> changed how much <ph id="1" equiv="groupPerson" disp="person"/> likes <ph id="2" equiv="game" disp="game"/>, in <ph id="3" equiv="group" disp="group"/>.</source>
+        <target><ph id="0" equiv="person" disp="actor"/> hat geändert, wie sehr <ph id="1" equiv="groupPerson" disp="person"/> <ph id="2" equiv="game" disp="game"/> mag, in <ph id="3" equiv="group" disp="group"/>.</target>
       </segment>
     </unit>
     <unit id="16823705783062999">
@@ -143,6 +215,15 @@
       <segment state="translated">
         <source>My Games</source>
         <target>Meine Spiele</target>
+      </segment>
+    </unit>
+    <unit id="1939361038776839397">
+      <notes>
+        <note category="description">Link on a notification</note>
+      </notes>
+      <segment state="translated">
+        <source>Open the existing game</source>
+        <target>Vorhandenes Spiel öffnen</target>
       </segment>
     </unit>
     <unit id="1944646529420508970">
@@ -197,6 +278,18 @@
       <segment state="translated">
         <source>Notification marked as read</source>
         <target>Benachrichtigung als gelesen markiert</target>
+      </segment>
+    </unit>
+    <unit id="2057533260886728415">
+      <segment state="translated">
+        <source><ph id="0" equiv="person" disp="actor"/> started the <ph id="1" equiv="group" disp="group"/> game night. Mark what you play as you go.</source>
+        <target><ph id="0" equiv="person" disp="actor"/> hat den Spieleabend von <ph id="1" equiv="group" disp="group"/> gestartet. Trag nebenbei ein, was ihr spielt.</target>
+      </segment>
+    </unit>
+    <unit id="2120057704151430913">
+      <segment state="translated">
+        <source><ph id="0" equiv="person" disp="actor"/> planned a game night in <ph id="1" equiv="group" disp="group"/> for <ph id="2" equiv="date" disp="when"/>. Can you make it?</source>
+        <target><ph id="0" equiv="person" disp="actor"/> hat in <ph id="1" equiv="group" disp="group"/> einen Spieleabend für <ph id="2" equiv="date" disp="when"/> geplant. Bist du dabei?</target>
       </segment>
     </unit>
     <unit id="2134897893235836867">
@@ -334,6 +427,24 @@
         <target>Melde dich sicher im privaten Bereich deiner Gruppe auf Board Vault an.</target>
       </segment>
     </unit>
+    <unit id="2435997106501281068">
+      <notes>
+        <note category="description">No game can be recommended</note>
+      </notes>
+      <segment state="translated">
+        <source>No suitable titled games were found for the selected attendees and filters.</source>
+        <target>Kein Spiel passt zu den ausgewählten Personen und Filtern.</target>
+      </segment>
+    </unit>
+    <unit id="246838105482205685">
+      <notes>
+        <note category="description">Before the text of a notification not read yet, for screen readers</note>
+      </notes>
+      <segment state="translated">
+        <source>Unread: </source>
+        <target>Ungelesen: </target>
+      </segment>
+    </unit>
     <unit id="2485595059919735658">
       <notes>
         <note category="description">Button on the invitation sign-up page for someone who already has an account</note>
@@ -424,6 +535,12 @@
         <target>Wir konnten diese Einladung gerade nicht abschließen. Prüf die Felder und die Sicherheitsprüfung und versuch es dann noch einmal.</target>
       </segment>
     </unit>
+    <unit id="2687104801645892688">
+      <segment state="translated">
+        <source><ph id="0" equiv="person" disp="actor"/> added <ph id="1" equiv="games" disp="addedList"/> to their shelf and removed <ph id="2" equiv="otherGames" disp="removedList"/>.</source>
+        <target><ph id="0" equiv="person" disp="actor"/> hat <ph id="1" equiv="games" disp="addedList"/> ins Regal gestellt und <ph id="2" equiv="otherGames" disp="removedList"/> herausgenommen.</target>
+      </segment>
+    </unit>
     <unit id="2721916889637246959">
       <notes>
         <note category="description">Browser tab title of the Sign in page</note>
@@ -460,6 +577,15 @@
         <target>Deine Seite</target>
       </segment>
     </unit>
+    <unit id="2814590485100631296">
+      <notes>
+        <note category="description">Recommendation reason</note>
+      </notes>
+      <segment state="translated">
+        <source>No selected-attendee rating yet</source>
+        <target>Noch keine Bewertung der Anwesenden</target>
+      </segment>
+    </unit>
     <unit id="2821179408673282599">
       <notes>
         <note category="description">Main section of the app, with your groups</note>
@@ -467,6 +593,15 @@
       <segment state="translated">
         <source>Home</source>
         <target>Start</target>
+      </segment>
+    </unit>
+    <unit id="2871617273892961858">
+      <notes>
+        <note category="description">Link on a notification</note>
+      </notes>
+      <segment state="translated">
+        <source>Open the game</source>
+        <target>Spiel öffnen</target>
       </segment>
     </unit>
     <unit id="293984633040548807">
@@ -523,6 +658,24 @@
         <target>Quellcode</target>
       </segment>
     </unit>
+    <unit id="3092077784471830251">
+      <notes>
+        <note category="description">Recommendation reason</note>
+      </notes>
+      <segment state="translated">
+        <source>Fits <ph id="0" equiv="players" disp="players"/> player</source>
+        <target>Für <ph id="0" equiv="players" disp="players"/> Person</target>
+      </segment>
+    </unit>
+    <unit id="30921813512214027">
+      <notes>
+        <note category="description">Link on a notification</note>
+      </notes>
+      <segment state="translated">
+        <source>Rate what you played</source>
+        <target>Bewerte, was ihr gespielt habt</target>
+      </segment>
+    </unit>
     <unit id="3146348002114324720">
       <notes>
         <note category="description">Button on the invitation sign-up page while it joins the group</note>
@@ -539,6 +692,21 @@
       <segment state="translated">
         <source>We could not complete this invitation. The link may have expired, been used already, or the group may no longer be available. Ask the group owner for a fresh invitation and try again.</source>
         <target>Wir konnten diese Einladung nicht abschließen. Vielleicht ist der Link abgelaufen oder schon benutzt, oder die Gruppe ist nicht mehr verfügbar. Bitte die Person, die die Gruppe erstellt hat, um eine neue Einladung und versuch es noch einmal.</target>
+      </segment>
+    </unit>
+    <unit id="318898779291119217">
+      <notes>
+        <note category="description">Link on a notification</note>
+      </notes>
+      <segment state="translated">
+        <source>Review proposals</source>
+        <target>Vorschläge prüfen</target>
+      </segment>
+    </unit>
+    <unit id="3193445750573709207">
+      <segment state="translated">
+        <source><ph id="0" equiv="person" disp="actor"/> said <ph id="1" equiv="groupPerson" disp="person"/> has <ph id="2" equiv="game" disp="game"/>, in <ph id="3" equiv="group" disp="group"/>.</source>
+        <target><ph id="0" equiv="person" disp="actor"/> hat angegeben, dass <ph id="1" equiv="groupPerson" disp="person"/> <ph id="2" equiv="game" disp="game"/> hat, in <ph id="3" equiv="group" disp="group"/>.</target>
       </segment>
     </unit>
     <unit id="3256590211420252677">
@@ -586,6 +754,15 @@
         <target>Der Gruppe beitreten</target>
       </segment>
     </unit>
+    <unit id="3424516948436893066">
+      <notes>
+        <note category="description">Recommendation reason</note>
+      </notes>
+      <segment state="translated">
+        <source>Strong group rating</source>
+        <target>In der Gruppe sehr gut bewertet</target>
+      </segment>
+    </unit>
     <unit id="3568097994808154139">
       <notes>
         <note category="description">Shown on the invitation sign-up page while the sign-up service loads</note>
@@ -631,6 +808,15 @@
         <target>Wir konnten dich nicht fertig zu dieser Gruppe hinzufügen</target>
       </segment>
     </unit>
+    <unit id="37600627724821423">
+      <notes>
+        <note category="description">Recommendation reason</note>
+      </notes>
+      <segment state="translated">
+        <source>The preferences of the people coming favor this game</source>
+        <target>Die Anwesenden haben Lust auf dieses Spiel</target>
+      </segment>
+    </unit>
     <unit id="3763652096020820194">
       <notes>
         <note category="description">Toast when declining a group invitation failed</note>
@@ -638,6 +824,12 @@
       <segment state="translated">
         <source>Error declining invitation</source>
         <target>Die Einladung konnte nicht abgelehnt werden</target>
+      </segment>
+    </unit>
+    <unit id="3841095492114279113">
+      <segment state="translated">
+        <source>Your game proposal &quot;<ph id="0" equiv="title" disp="data[&apos;gameTitle&apos;]"/>&quot; was rejected: <ph id="1" equiv="reason" disp="data[&apos;reviewNotes&apos;]"/></source>
+        <target>Dein Spielvorschlag „<ph id="0" equiv="title" disp="data[&apos;gameTitle&apos;]"/>“ wurde abgelehnt: <ph id="1" equiv="reason" disp="data[&apos;reviewNotes&apos;]"/></target>
       </segment>
     </unit>
     <unit id="3848463043339307213">
@@ -713,6 +905,15 @@
         <target>Mit sicherer Anmeldung fortfahren</target>
       </segment>
     </unit>
+    <unit id="3965292610786650718">
+      <notes>
+        <note category="description">Link on a notification</note>
+      </notes>
+      <segment state="translated">
+        <source>Open the game night</source>
+        <target>Spieleabend öffnen</target>
+      </segment>
+    </unit>
     <unit id="4086606389696938932">
       <notes>
         <note category="description">Heading of the footer column of sign-in links</note>
@@ -720,6 +921,15 @@
       <segment state="translated">
         <source>Account</source>
         <target>Konto</target>
+      </segment>
+    </unit>
+    <unit id="4096101151032067454">
+      <notes>
+        <note category="description">Recommendation reason</note>
+      </notes>
+      <segment state="translated">
+        <source><ph id="0" equiv="count" disp="count"/> selected attendee marked this as interesting</source>
+        <target><ph id="0" equiv="count" disp="count"/> anwesende Person fand es interessant</target>
       </segment>
     </unit>
     <unit id="413116577994876478">
@@ -794,6 +1004,12 @@
         <target>Dein Konto wurde gelöscht.</target>
       </segment>
     </unit>
+    <unit id="425959220948419245">
+      <segment state="translated">
+        <source><ph id="0" equiv="person" disp="actor"/> added <ph id="1" equiv="games" disp="addedList"/> to their shelf.</source>
+        <target><ph id="0" equiv="person" disp="actor"/> hat <ph id="1" equiv="games" disp="addedList"/> ins Regal gestellt.</target>
+      </segment>
+    </unit>
     <unit id="4272436583644511364">
       <notes>
         <note category="description">A moment ago, on a notification or a history line</note>
@@ -801,6 +1017,15 @@
       <segment state="translated">
         <source>Just now</source>
         <target>Gerade eben</target>
+      </segment>
+    </unit>
+    <unit id="4287070028471913183">
+      <notes>
+        <note category="description">Recommendation reason</note>
+      </notes>
+      <segment state="translated">
+        <source>Owned by <ph id="0" equiv="owners" disp="owners"/> of <ph id="1" equiv="people" disp="attendees"/> selected people</source>
+        <target><ph id="0" equiv="owners" disp="owners"/> von <ph id="1" equiv="people" disp="attendees"/> ausgewählten Personen haben es</target>
       </segment>
     </unit>
     <unit id="4394551357615209611">
@@ -839,6 +1064,24 @@
         <target>Board Vault hilft einer Freundesgruppe, ihre Spiele zu organisieren, auszuwählen, was gespielt wird, und sich an jeden Spieleabend zu erinnern.</target>
       </segment>
     </unit>
+    <unit id="4669216542007588508">
+      <notes>
+        <note category="description">Link on a notification about a planned game night</note>
+      </notes>
+      <segment state="translated">
+        <source>Answer</source>
+        <target>Antworten</target>
+      </segment>
+    </unit>
+    <unit id="4682764955670501888">
+      <notes>
+        <note category="description">Recommendation reason</note>
+      </notes>
+      <segment state="translated">
+        <source>Estimated duration: <ph id="0" equiv="minutes" disp="values[&apos;minutes&apos;] ?? 0"/> minutes</source>
+        <target>Geschätzte Dauer: <ph id="0" equiv="minutes" disp="values[&apos;minutes&apos;] ?? 0"/> Minuten</target>
+      </segment>
+    </unit>
     <unit id="4707281579410073038">
       <notes>
         <note category="description">Heading when finishing sign-in failed</note>
@@ -846,6 +1089,15 @@
       <segment state="translated">
         <source>We could not finish setting up your sign-in</source>
         <target>Wir konnten deine Anmeldung nicht abschließen</target>
+      </segment>
+    </unit>
+    <unit id="4715165630183338203">
+      <notes>
+        <note category="description">A list of games ending in one more</note>
+      </notes>
+      <segment state="translated">
+        <source>one other game</source>
+        <target>ein weiteres Spiel</target>
       </segment>
     </unit>
     <unit id="4757507927002475818">
@@ -857,6 +1109,21 @@
         <target>Einladungen werden geladen…</target>
       </segment>
     </unit>
+    <unit id="4758695142998179909">
+      <notes>
+        <note category="description">Several games whose titles are unknown</note>
+      </notes>
+      <segment state="translated">
+        <source><ph id="0" equiv="count" disp="rest"/> games</source>
+        <target><ph id="0" equiv="count" disp="rest"/> Spiele</target>
+      </segment>
+    </unit>
+    <unit id="4775243970485777734">
+      <segment state="translated">
+        <source><ph id="0" equiv="person" disp="actor"/> cancelled the <ph id="1" equiv="group" disp="group"/> game night of <ph id="2" equiv="date" disp="when"/>.</source>
+        <target><ph id="0" equiv="person" disp="actor"/> hat den Spieleabend von <ph id="1" equiv="group" disp="group"/> am <ph id="2" equiv="date" disp="when"/> abgesagt.</target>
+      </segment>
+    </unit>
     <unit id="4809830440227489945">
       <notes>
         <note category="description">Question on a group invitation in the inbox before declining it</note>
@@ -864,6 +1131,15 @@
       <segment state="translated">
         <source>Decline this invitation?</source>
         <target>Diese Einladung ablehnen?</target>
+      </segment>
+    </unit>
+    <unit id="4834637535368761490">
+      <notes>
+        <note category="description">Recommendation reason</note>
+      </notes>
+      <segment state="translated">
+        <source>Not played by this group yet</source>
+        <target>Die Gruppe hat es noch nicht gespielt</target>
       </segment>
     </unit>
     <unit id="4862663633740506261">
@@ -882,6 +1158,15 @@
       <segment state="translated">
         <source>Mobile navigation</source>
         <target>Mobile Navigation</target>
+      </segment>
+    </unit>
+    <unit id="4913790515929049330">
+      <notes>
+        <note category="description">Recommendation reason</note>
+      </notes>
+      <segment state="translated">
+        <source>Duration is not available</source>
+        <target>Dauer unbekannt</target>
       </segment>
     </unit>
     <unit id="4930506384627295710">
@@ -957,6 +1242,15 @@
         <target>Sichere Registrierung öffnen</target>
       </segment>
     </unit>
+    <unit id="5159913659351412884">
+      <notes>
+        <note category="description">Recommendation reason</note>
+      </notes>
+      <segment state="translated">
+        <source>Previously played by this group</source>
+        <target>Die Gruppe hat es schon gespielt</target>
+      </segment>
+    </unit>
     <unit id="5168805403362402794">
       <notes>
         <note category="description">Text while sign-in finishes</note>
@@ -1011,6 +1305,12 @@
         <target>Was spielen wir?</target>
       </segment>
     </unit>
+    <unit id="5376159775932580099">
+      <segment state="translated">
+        <source>The <ph id="0" equiv="group" disp="group"/> game night of <ph id="1" equiv="date" disp="when"/> is finished. Rate what you played.</source>
+        <target>Der Spieleabend von <ph id="0" equiv="group" disp="group"/> am <ph id="1" equiv="date" disp="when"/> ist vorbei. Bewerte, was ihr gespielt habt.</target>
+      </segment>
+    </unit>
     <unit id="5492578273973439931">
       <notes>
         <note category="description">Toast when the account could not be loaded right after signing in</note>
@@ -1038,6 +1338,12 @@
         <target>Verstanden</target>
       </segment>
     </unit>
+    <unit id="5611022416689146666">
+      <segment state="translated">
+        <source><ph id="0" equiv="person" disp="member"/> left <ph id="1" equiv="group" disp="group"/>.</source>
+        <target><ph id="0" equiv="person" disp="member"/> hat <ph id="1" equiv="group" disp="group"/> verlassen.</target>
+      </segment>
+    </unit>
     <unit id="5673906746664423612">
       <notes>
         <note category="description">Heading while someone joins a group from an invitation link</note>
@@ -1054,6 +1360,15 @@
       <segment state="translated">
         <source>Error deleting notification</source>
         <target>Die Benachrichtigung konnte nicht gelöscht werden</target>
+      </segment>
+    </unit>
+    <unit id="5715583810853284797">
+      <notes>
+        <note category="description">Recommendation reason</note>
+      </notes>
+      <segment state="translated">
+        <source><ph id="0" equiv="count" disp="count"/> selected participants passed on this before</source>
+        <target><ph id="0" equiv="count" disp="count"/> ausgewählte Personen haben es schon abgelehnt</target>
       </segment>
     </unit>
     <unit id="5729395938595388062">
@@ -1073,6 +1388,15 @@
       <segment state="translated">
         <source>Account menu, <ph id="0" equiv="count" disp="count"/> game proposals waiting</source>
         <target>Kontomenü, <ph id="0" equiv="count" disp="count"/> Spielvorschläge warten</target>
+      </segment>
+    </unit>
+    <unit id="5772919894493102247">
+      <notes>
+        <note category="description">Link on a notification</note>
+      </notes>
+      <segment state="translated">
+        <source>See the game night</source>
+        <target>Spieleabend ansehen</target>
       </segment>
     </unit>
     <unit id="5821029406705497005">
@@ -1147,6 +1471,21 @@
         <target>Wir bauen noch am Kern, deshalb werden neue Konten nur auf Einladung erstellt.</target>
       </segment>
     </unit>
+    <unit id="6024427301478848927">
+      <notes>
+        <note category="description">No game can be recommended</note>
+      </notes>
+      <segment state="translated">
+        <source>No games are available from the selected group people.</source>
+        <target>Die ausgewählten Personen der Gruppe haben keine Spiele.</target>
+      </segment>
+    </unit>
+    <unit id="6033490387027844807">
+      <segment state="translated">
+        <source><ph id="0" equiv="person" disp="actor"/> marked <ph id="1" equiv="game" disp="game"/> as unsure for <ph id="2" equiv="groupPerson" disp="person"/>, in <ph id="3" equiv="group" disp="group"/>.</source>
+        <target><ph id="0" equiv="person" disp="actor"/> hat <ph id="1" equiv="game" disp="game"/> für <ph id="2" equiv="groupPerson" disp="person"/> als unsicher markiert, in <ph id="3" equiv="group" disp="group"/>.</target>
+      </segment>
+    </unit>
     <unit id="6041525304912058197">
       <notes>
         <note category="description">Search and link preview description of the Create a group page</note>
@@ -1181,6 +1520,15 @@
       <segment state="translated">
         <source>You have joined the group!</source>
         <target>Du bist der Gruppe beigetreten!</target>
+      </segment>
+    </unit>
+    <unit id="6200674115821929527">
+      <notes>
+        <note category="description">Recommendation reason</note>
+      </notes>
+      <segment state="translated">
+        <source>Owned by <ph id="0" equiv="owners" disp="owners"/> of <ph id="1" equiv="people" disp="attendees"/> selected attendees</source>
+        <target><ph id="0" equiv="owners" disp="owners"/> von <ph id="1" equiv="people" disp="attendees"/> Anwesenden haben es</target>
       </segment>
     </unit>
     <unit id="6205660505479571083">
@@ -1228,6 +1576,12 @@
         <target>Bitte eine Person, die Board Vault schon nutzt oder eine Gruppe organisiert, dich einzuladen. Danach nutzt du den sicheren Registrierungslink von Clerk, den du bekommst.</target>
       </segment>
     </unit>
+    <unit id="6303882608616595614">
+      <segment state="translated">
+        <source>New game proposal: &quot;<ph id="0" equiv="title" disp="data[&apos;gameTitle&apos;]"/>&quot;</source>
+        <target>Neuer Spielvorschlag: „<ph id="0" equiv="title" disp="data[&apos;gameTitle&apos;]"/>“</target>
+      </segment>
+    </unit>
     <unit id="6403112028413315560">
       <notes>
         <note category="description">Shown in the inbox while notifications load</note>
@@ -1262,6 +1616,12 @@
       <segment state="translated">
         <source>Your Board Vault account is already registered.</source>
         <target>Du hast schon ein Board-Vault-Konto.</target>
+      </segment>
+    </unit>
+    <unit id="6558378588786598467">
+      <segment state="translated">
+        <source><ph id="0" equiv="person" disp="actor"/> removed <ph id="1" equiv="game" disp="game"/> from <ph id="2" equiv="groupPerson" disp="person"/>&apos;s games in <ph id="3" equiv="group" disp="group"/>.</source>
+        <target><ph id="0" equiv="person" disp="actor"/> hat <ph id="1" equiv="game" disp="game"/> aus den Spielen von <ph id="2" equiv="groupPerson" disp="person"/> entfernt, in <ph id="3" equiv="group" disp="group"/>.</target>
       </segment>
     </unit>
     <unit id="6582558331846075943">
@@ -1409,6 +1769,15 @@
         <target>Hilfst du uns? 🎲</target>
       </segment>
     </unit>
+    <unit id="6930216235586087894">
+      <notes>
+        <note category="description">Recommendation reason, a rating out of 10</note>
+      </notes>
+      <segment state="translated">
+        <source>Selected-attendee rating: <ph id="0" equiv="rating" disp="formatNumber(values[&apos;rating&apos;] ?? 0, { minimumFractionDigits: 1, maximumFractionDigits: 1 })"/>/10</source>
+        <target>Bewertung der Anwesenden: <ph id="0" equiv="rating" disp="formatNumber(values[&apos;rating&apos;] ?? 0, { minimumFractionDigits: 1, maximumFractionDigits: 1 })"/>/10</target>
+      </segment>
+    </unit>
     <unit id="7007703201160377234">
       <notes>
         <note category="description">Line at the bottom of the sign-up page with a link to the sign-in page</note>
@@ -1461,6 +1830,24 @@
       <segment state="translated">
         <source>How to get access</source>
         <target>So bekommst du Zugang</target>
+      </segment>
+    </unit>
+    <unit id="7154237322367136444">
+      <notes>
+        <note category="description">A list of games ending in several more</note>
+      </notes>
+      <segment state="translated">
+        <source><ph id="0" equiv="count" disp="rest"/> other games</source>
+        <target><ph id="0" equiv="count" disp="rest"/> weitere Spiele</target>
+      </segment>
+    </unit>
+    <unit id="7233639534415316994">
+      <notes>
+        <note category="description">Recommendation reason</note>
+      </notes>
+      <segment state="translated">
+        <source>Some selected people have marked this game to avoid</source>
+        <target>Manche der Anwesenden möchten es lieber meiden</target>
       </segment>
     </unit>
     <unit id="7306616487170771288">
@@ -1526,6 +1913,15 @@
         <target>Zurück zur App</target>
       </segment>
     </unit>
+    <unit id="7569659352704234282">
+      <notes>
+        <note category="description">No game can be recommended</note>
+      </notes>
+      <segment state="translated">
+        <source>No games are owned by the selected attendees.</source>
+        <target>Die Anwesenden haben keine Spiele.</target>
+      </segment>
+    </unit>
     <unit id="7619560701830330401">
       <notes>
         <note category="description">Read by screen readers while something loads</note>
@@ -1569,6 +1965,15 @@
       <segment state="translated">
         <source>Continue with this secure invitation link and we’ll add you to the group. No new password is needed.</source>
         <target>Mach mit diesem sicheren Einladungslink weiter, und wir fügen dich der Gruppe hinzu. Du brauchst kein neues Passwort.</target>
+      </segment>
+    </unit>
+    <unit id="7775401295627092008">
+      <notes>
+        <note category="description">No game can be recommended</note>
+      </notes>
+      <segment state="translated">
+        <source>No games for <ph id="0" equiv="players" disp="players"/> players fit within <ph id="1" equiv="minutes" disp="values[&apos;minutes&apos;] ?? 0"/> minutes.</source>
+        <target>Kein Spiel für <ph id="0" equiv="players" disp="players"/> Personen passt in <ph id="1" equiv="minutes" disp="values[&apos;minutes&apos;] ?? 0"/> Minuten.</target>
       </segment>
     </unit>
     <unit id="7786483200692238826">
@@ -1624,6 +2029,21 @@
       <segment state="translated">
         <source>You’re all caught up.</source>
         <target>Du bist auf dem neuesten Stand.</target>
+      </segment>
+    </unit>
+    <unit id="7899674800818281248">
+      <notes>
+        <note category="description">Button on a notification</note>
+      </notes>
+      <segment state="translated">
+        <source>Delete notification: <ph id="0" equiv="text" disp="this.text()"/></source>
+        <target>Benachrichtigung löschen: <ph id="0" equiv="text" disp="this.text()"/></target>
+      </segment>
+    </unit>
+    <unit id="7906119584283878474">
+      <segment state="translated">
+        <source><ph id="0" equiv="person" disp="actor"/> removed what <ph id="1" equiv="groupPerson" disp="person"/> thinks of <ph id="2" equiv="game" disp="game"/>, in <ph id="3" equiv="group" disp="group"/>.</source>
+        <target><ph id="0" equiv="person" disp="actor"/> hat entfernt, was <ph id="1" equiv="groupPerson" disp="person"/> von <ph id="2" equiv="game" disp="game"/> hält, in <ph id="3" equiv="group" disp="group"/>.</target>
       </segment>
     </unit>
     <unit id="7934833136974560675">
@@ -1689,6 +2109,21 @@
         <target>Ablehnen</target>
       </segment>
     </unit>
+    <unit id="8144023736490335972">
+      <segment state="translated">
+        <source><ph id="0" equiv="remover" disp="actor"/> removed <ph id="1" equiv="removedPerson" disp="member"/> from <ph id="2" equiv="group" disp="group"/>.</source>
+        <target><ph id="0" equiv="remover" disp="actor"/> hat <ph id="1" equiv="removedPerson" disp="member"/> aus <ph id="2" equiv="group" disp="group"/> entfernt.</target>
+      </segment>
+    </unit>
+    <unit id="8206579759218160395">
+      <notes>
+        <note category="description">No game can be recommended</note>
+      </notes>
+      <segment state="translated">
+        <source>No games owned by the selected attendees support <ph id="0" equiv="players" disp="players"/> players.</source>
+        <target>Keines der Spiele der Anwesenden ist für <ph id="0" equiv="players" disp="players"/> Personen.</target>
+      </segment>
+    </unit>
     <unit id="8218180595897396108">
       <notes>
         <note category="description">Heading of the sign-in page</note>
@@ -1734,6 +2169,15 @@
       <segment state="translated">
         <source>Dismiss notification</source>
         <target>Meldung schließen</target>
+      </segment>
+    </unit>
+    <unit id="8353091657473641191">
+      <notes>
+        <note category="description">Link on a notification</note>
+      </notes>
+      <segment state="translated">
+        <source>Open the group</source>
+        <target>Gruppe öffnen</target>
       </segment>
     </unit>
     <unit id="8375894054300753424">
@@ -1799,6 +2243,15 @@
         <target>Spielen — Board Vault</target>
       </segment>
     </unit>
+    <unit id="8668172233266414658">
+      <notes>
+        <note category="description">Recommendation reason</note>
+      </notes>
+      <segment state="translated">
+        <source><ph id="0" equiv="count" disp="count"/> selected attendees marked this as interesting</source>
+        <target><ph id="0" equiv="count" disp="count"/> anwesende Personen fanden es interessant</target>
+      </segment>
+    </unit>
     <unit id="8694180754500384388">
       <notes>
         <note category="description">Search and link preview description of the landing page</note>
@@ -1817,6 +2270,15 @@
         <target>Bitte die Person, die die Gruppe erstellt hat, um eine neue Einladung, wenn dieser Link abgelaufen ist oder die Gruppe nicht mehr verfügbar ist.</target>
       </segment>
     </unit>
+    <unit id="8715838975991436163">
+      <notes>
+        <note category="description">Link on a notification</note>
+      </notes>
+      <segment state="translated">
+        <source>See your proposals</source>
+        <target>Deine Vorschläge ansehen</target>
+      </segment>
+    </unit>
     <unit id="8725224299321680590">
       <notes>
         <note category="description">Tab in Play, the planned game nights</note>
@@ -1824,6 +2286,12 @@
       <segment state="translated">
         <source>Upcoming</source>
         <target>Demnächst</target>
+      </segment>
+    </unit>
+    <unit id="8739336026258908775">
+      <segment state="translated">
+        <source><ph id="0" equiv="person" disp="actor"/> joined <ph id="1" equiv="group" disp="group"/>.</source>
+        <target><ph id="0" equiv="person" disp="actor"/> ist <ph id="1" equiv="group" disp="group"/> beigetreten.</target>
       </segment>
     </unit>
     <unit id="8779419494821652108">
@@ -1880,6 +2348,24 @@
         <target>Deine Benachrichtigungen konnten nicht geladen werden</target>
       </segment>
     </unit>
+    <unit id="8938331027934073927">
+      <notes>
+        <note category="description">Button on a notification</note>
+      </notes>
+      <segment state="translated">
+        <source>Mark as read: <ph id="0" equiv="text" disp="this.text()"/></source>
+        <target>Als gelesen markieren: <ph id="0" equiv="text" disp="this.text()"/></target>
+      </segment>
+    </unit>
+    <unit id="894008691966610130">
+      <notes>
+        <note category="description">Link on a notification</note>
+      </notes>
+      <segment state="translated">
+        <source>See their games</source>
+        <target>Spiele ansehen</target>
+      </segment>
+    </unit>
     <unit id="9014138025274858717">
       <notes>
         <note category="description">Browser tab title of the landing page</note>
@@ -1923,6 +2409,12 @@
       <segment state="translated">
         <source>Accepting adds you to this private group’s shared games and future session plans.</source>
         <target>Wenn du annimmst, bekommst du Zugang zu den gemeinsamen Spielen und geplanten Spieleabenden dieser privaten Gruppe.</target>
+      </segment>
+    </unit>
+    <unit id="9174716236566498100">
+      <segment state="translated">
+        <source><ph id="0" equiv="person" disp="actor"/> removed <ph id="1" equiv="games" disp="removedList"/> from their shelf.</source>
+        <target><ph id="0" equiv="person" disp="actor"/> hat <ph id="1" equiv="games" disp="removedList"/> aus dem Regal genommen.</target>
       </segment>
     </unit>
     <unit id="9212705249340904752">

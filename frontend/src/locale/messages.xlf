@@ -1,6 +1,24 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <xliff version="2.0" xmlns="urn:oasis:names:tc:xliff:document:2.0" srcLang="en">
   <file id="ngi18n" original="ng.template">
+    <unit id="1003341091816362100">
+      <notes>
+        <note category="location">src/app/core/i18n/recommendation-text.ts</note>
+        <note category="description">Recommendation reason</note>
+      </notes>
+      <segment>
+        <source>Fits <ph id="0" equiv="players" disp="players"/> players</source>
+      </segment>
+    </unit>
+    <unit id="1022072569342469305">
+      <notes>
+        <note category="location">src/app/core/i18n/recommendation-text.ts</note>
+        <note category="description">Recommendation reason</note>
+      </notes>
+      <segment>
+        <source><ph id="0" equiv="count" disp="count"/> selected participant passed on this before</source>
+      </segment>
+    </unit>
     <unit id="1023159118123911874">
       <notes>
         <note category="location">src/app/layout/usage-notice/usage-notice.component.html</note>
@@ -29,6 +47,24 @@
         <source>Working…</source>
       </segment>
     </unit>
+    <unit id="1200295485288897600">
+      <notes>
+        <note category="location">src/app/core/i18n/notification-text.ts</note>
+      </notes>
+      <segment>
+        <source>Your game proposal &quot;<ph id="0" equiv="title" disp="data[&apos;gameTitle&apos;]"/>&quot; was approved!</source>
+      </segment>
+    </unit>
+    <unit id="1217286919775405184">
+      <notes>
+        <note category="location">src/app/api/api.schemas.ts</note>
+        <note category="location">src/app/core/i18n/notification-text.ts</note>
+        <note category="description">A person whose account was deleted</note>
+      </notes>
+      <segment>
+        <source>Deleted account</source>
+      </segment>
+    </unit>
     <unit id="1225085275995545699">
       <notes>
         <note category="location">src/app/components/ui/image-background/image-background.component.ts</note>
@@ -38,6 +74,15 @@
         <source>Game artwork</source>
       </segment>
     </unit>
+    <unit id="1227732393340087049">
+      <notes>
+        <note category="location">src/app/core/i18n/notification-text.ts</note>
+        <note category="description">A game whose title is unknown</note>
+      </notes>
+      <segment>
+        <source>a game</source>
+      </segment>
+    </unit>
     <unit id="1234332817837554846">
       <notes>
         <note category="location">src/app/components/ui/image-background/image-background.component.ts</note>
@@ -45,6 +90,14 @@
       </notes>
       <segment>
         <source><ph id="0" equiv="picture" disp="this.alt()"/> unavailable</source>
+      </segment>
+    </unit>
+    <unit id="1289605213459398820">
+      <notes>
+        <note category="location">src/app/core/i18n/notification-text.ts</note>
+      </notes>
+      <segment>
+        <source>Your game proposal &quot;<ph id="0" equiv="title" disp="data[&apos;gameTitle&apos;]"/>&quot; is already in Board Vault as &quot;<ph id="1" equiv="existingTitle" disp="data[&apos;duplicateOfTitle&apos;]"/>&quot;.</source>
       </segment>
     </unit>
     <unit id="1316194950149848003">
@@ -102,6 +155,15 @@
         <source>That password does not meet the secure sign-up requirements. Use the guidance above and try again.</source>
       </segment>
     </unit>
+    <unit id="1608510651942979529">
+      <notes>
+        <note category="location">src/app/core/i18n/recommendation-text.ts</note>
+        <note category="description">Recommendation reason</note>
+      </notes>
+      <segment>
+        <source>Builds on the group’s shared shelf</source>
+      </segment>
+    </unit>
     <unit id="1610683093877445085">
       <notes>
         <note category="location">src/app/pages/auth/register/register.component.html</note>
@@ -118,6 +180,23 @@
       </notes>
       <segment>
         <source>{VAR_PLURAL, plural, one {<ph id="0" equiv="INTERPOLATION"/><pc id="1" equivStart="START_TAG_SPAN" equivEnd="CLOSE_TAG_SPAN" type="other"> proposal waiting</pc>} other {<ph id="2" equiv="INTERPOLATION"/><pc id="3" equivStart="START_TAG_SPAN" equivEnd="CLOSE_TAG_SPAN" type="other"> proposals waiting</pc>}}</source>
+      </segment>
+    </unit>
+    <unit id="1630988887703018223">
+      <notes>
+        <note category="location">src/app/components/card-notification/card-notification.component.ts</note>
+        <note category="description">Link on a notification</note>
+      </notes>
+      <segment>
+        <source>Review the proposal</source>
+      </segment>
+    </unit>
+    <unit id="167090221720253484">
+      <notes>
+        <note category="location">src/app/core/i18n/notification-text.ts</note>
+      </notes>
+      <segment>
+        <source><ph id="0" equiv="person" disp="actor"/> changed how much <ph id="1" equiv="groupPerson" disp="person"/> likes <ph id="2" equiv="game" disp="game"/>, in <ph id="3" equiv="group" disp="group"/>.</source>
       </segment>
     </unit>
     <unit id="16823705783062999">
@@ -145,6 +224,15 @@
       </notes>
       <segment>
         <source>My Games</source>
+      </segment>
+    </unit>
+    <unit id="1939361038776839397">
+      <notes>
+        <note category="location">src/app/components/card-notification/card-notification.component.ts</note>
+        <note category="description">Link on a notification</note>
+      </notes>
+      <segment>
+        <source>Open the existing game</source>
       </segment>
     </unit>
     <unit id="1944646529420508970">
@@ -199,6 +287,22 @@
       </notes>
       <segment>
         <source>Notification marked as read</source>
+      </segment>
+    </unit>
+    <unit id="2057533260886728415">
+      <notes>
+        <note category="location">src/app/core/i18n/notification-text.ts</note>
+      </notes>
+      <segment>
+        <source><ph id="0" equiv="person" disp="actor"/> started the <ph id="1" equiv="group" disp="group"/> game night. Mark what you play as you go.</source>
+      </segment>
+    </unit>
+    <unit id="2120057704151430913">
+      <notes>
+        <note category="location">src/app/core/i18n/notification-text.ts</note>
+      </notes>
+      <segment>
+        <source><ph id="0" equiv="person" disp="actor"/> planned a game night in <ph id="1" equiv="group" disp="group"/> for <ph id="2" equiv="date" disp="when"/>. Can you make it?</source>
       </segment>
     </unit>
     <unit id="2134897893235836867">
@@ -338,6 +442,24 @@
         <source>Securely sign in to your private Board Vault group workspace.</source>
       </segment>
     </unit>
+    <unit id="2435997106501281068">
+      <notes>
+        <note category="location">src/app/core/i18n/recommendation-text.ts</note>
+        <note category="description">No game can be recommended</note>
+      </notes>
+      <segment>
+        <source>No suitable titled games were found for the selected attendees and filters.</source>
+      </segment>
+    </unit>
+    <unit id="246838105482205685">
+      <notes>
+        <note category="location">src/app/components/card-notification/card-notification.component.html</note>
+        <note category="description">Before the text of a notification not read yet, for screen readers</note>
+      </notes>
+      <segment>
+        <source>Unread: </source>
+      </segment>
+    </unit>
     <unit id="2485595059919735658">
       <notes>
         <note category="location">src/app/pages/auth/register/register.component.html</note>
@@ -428,6 +550,14 @@
         <source>We could not complete this invitation right now. Check the fields and security check, then try again.</source>
       </segment>
     </unit>
+    <unit id="2687104801645892688">
+      <notes>
+        <note category="location">src/app/core/i18n/notification-text.ts</note>
+      </notes>
+      <segment>
+        <source><ph id="0" equiv="person" disp="actor"/> added <ph id="1" equiv="games" disp="addedList"/> to their shelf and removed <ph id="2" equiv="otherGames" disp="removedList"/>.</source>
+      </segment>
+    </unit>
     <unit id="2721916889637246959">
       <notes>
         <note category="location">src/app/app.component.ts</note>
@@ -465,6 +595,15 @@
         <source>Your page</source>
       </segment>
     </unit>
+    <unit id="2814590485100631296">
+      <notes>
+        <note category="location">src/app/core/i18n/recommendation-text.ts</note>
+        <note category="description">Recommendation reason</note>
+      </notes>
+      <segment>
+        <source>No selected-attendee rating yet</source>
+      </segment>
+    </unit>
     <unit id="2821179408673282599">
       <notes>
         <note category="location">src/app/layout/app-sections.ts</note>
@@ -472,6 +611,15 @@
       </notes>
       <segment>
         <source>Home</source>
+      </segment>
+    </unit>
+    <unit id="2871617273892961858">
+      <notes>
+        <note category="location">src/app/components/card-notification/card-notification.component.ts</note>
+        <note category="description">Link on a notification</note>
+      </notes>
+      <segment>
+        <source>Open the game</source>
       </segment>
     </unit>
     <unit id="293984633040548807">
@@ -530,6 +678,24 @@
         <source>Source code</source>
       </segment>
     </unit>
+    <unit id="3092077784471830251">
+      <notes>
+        <note category="location">src/app/core/i18n/recommendation-text.ts</note>
+        <note category="description">Recommendation reason</note>
+      </notes>
+      <segment>
+        <source>Fits <ph id="0" equiv="players" disp="players"/> player</source>
+      </segment>
+    </unit>
+    <unit id="30921813512214027">
+      <notes>
+        <note category="location">src/app/components/card-notification/card-notification.component.ts</note>
+        <note category="description">Link on a notification</note>
+      </notes>
+      <segment>
+        <source>Rate what you played</source>
+      </segment>
+    </unit>
     <unit id="3146348002114324720">
       <notes>
         <note category="location">src/app/pages/auth/register/register.component.html</note>
@@ -546,6 +712,23 @@
       </notes>
       <segment>
         <source>We could not complete this invitation. The link may have expired, been used already, or the group may no longer be available. Ask the group owner for a fresh invitation and try again.</source>
+      </segment>
+    </unit>
+    <unit id="318898779291119217">
+      <notes>
+        <note category="location">src/app/components/card-notification/card-notification.component.ts</note>
+        <note category="description">Link on a notification</note>
+      </notes>
+      <segment>
+        <source>Review proposals</source>
+      </segment>
+    </unit>
+    <unit id="3193445750573709207">
+      <notes>
+        <note category="location">src/app/core/i18n/notification-text.ts</note>
+      </notes>
+      <segment>
+        <source><ph id="0" equiv="person" disp="actor"/> said <ph id="1" equiv="groupPerson" disp="person"/> has <ph id="2" equiv="game" disp="game"/>, in <ph id="3" equiv="group" disp="group"/>.</source>
       </segment>
     </unit>
     <unit id="3256590211420252677">
@@ -593,6 +776,15 @@
         <source>Join the group</source>
       </segment>
     </unit>
+    <unit id="3424516948436893066">
+      <notes>
+        <note category="location">src/app/core/i18n/recommendation-text.ts</note>
+        <note category="description">Recommendation reason</note>
+      </notes>
+      <segment>
+        <source>Strong group rating</source>
+      </segment>
+    </unit>
     <unit id="3568097994808154139">
       <notes>
         <note category="location">src/app/pages/auth/register/register.component.html</note>
@@ -638,6 +830,15 @@
         <source>We could not finish joining this group</source>
       </segment>
     </unit>
+    <unit id="37600627724821423">
+      <notes>
+        <note category="location">src/app/core/i18n/recommendation-text.ts</note>
+        <note category="description">Recommendation reason</note>
+      </notes>
+      <segment>
+        <source>The preferences of the people coming favor this game</source>
+      </segment>
+    </unit>
     <unit id="3763652096020820194">
       <notes>
         <note category="location">src/app/core/services/data.service.ts</note>
@@ -645,6 +846,14 @@
       </notes>
       <segment>
         <source>Error declining invitation</source>
+      </segment>
+    </unit>
+    <unit id="3841095492114279113">
+      <notes>
+        <note category="location">src/app/core/i18n/notification-text.ts</note>
+      </notes>
+      <segment>
+        <source>Your game proposal &quot;<ph id="0" equiv="title" disp="data[&apos;gameTitle&apos;]"/>&quot; was rejected: <ph id="1" equiv="reason" disp="data[&apos;reviewNotes&apos;]"/></source>
       </segment>
     </unit>
     <unit id="3848463043339307213">
@@ -720,6 +929,15 @@
         <source>Continue with secure sign-in</source>
       </segment>
     </unit>
+    <unit id="3965292610786650718">
+      <notes>
+        <note category="location">src/app/components/card-notification/card-notification.component.ts</note>
+        <note category="description">Link on a notification</note>
+      </notes>
+      <segment>
+        <source>Open the game night</source>
+      </segment>
+    </unit>
     <unit id="4086606389696938932">
       <notes>
         <note category="location">src/app/layout/footer/footer.component.html</note>
@@ -727,6 +945,15 @@
       </notes>
       <segment>
         <source>Account</source>
+      </segment>
+    </unit>
+    <unit id="4096101151032067454">
+      <notes>
+        <note category="location">src/app/core/i18n/recommendation-text.ts</note>
+        <note category="description">Recommendation reason</note>
+      </notes>
+      <segment>
+        <source><ph id="0" equiv="count" disp="count"/> selected attendee marked this as interesting</source>
       </segment>
     </unit>
     <unit id="413116577994876478">
@@ -801,6 +1028,14 @@
         <source>Your account was deleted.</source>
       </segment>
     </unit>
+    <unit id="425959220948419245">
+      <notes>
+        <note category="location">src/app/core/i18n/notification-text.ts</note>
+      </notes>
+      <segment>
+        <source><ph id="0" equiv="person" disp="actor"/> added <ph id="1" equiv="games" disp="addedList"/> to their shelf.</source>
+      </segment>
+    </unit>
     <unit id="4272436583644511364">
       <notes>
         <note category="location">src/app/core/i18n/format.ts</note>
@@ -808,6 +1043,15 @@
       </notes>
       <segment>
         <source>Just now</source>
+      </segment>
+    </unit>
+    <unit id="4287070028471913183">
+      <notes>
+        <note category="location">src/app/core/i18n/recommendation-text.ts</note>
+        <note category="description">Recommendation reason</note>
+      </notes>
+      <segment>
+        <source>Owned by <ph id="0" equiv="owners" disp="owners"/> of <ph id="1" equiv="people" disp="attendees"/> selected people</source>
       </segment>
     </unit>
     <unit id="4394551357615209611">
@@ -846,6 +1090,24 @@
         <source> Board Vault helps a group of friends organize its games, choose what to play, and remember every session. </source>
       </segment>
     </unit>
+    <unit id="4669216542007588508">
+      <notes>
+        <note category="location">src/app/components/card-notification/card-notification.component.ts</note>
+        <note category="description">Link on a notification about a planned game night</note>
+      </notes>
+      <segment>
+        <source>Answer</source>
+      </segment>
+    </unit>
+    <unit id="4682764955670501888">
+      <notes>
+        <note category="location">src/app/core/i18n/recommendation-text.ts</note>
+        <note category="description">Recommendation reason</note>
+      </notes>
+      <segment>
+        <source>Estimated duration: <ph id="0" equiv="minutes" disp="values[&apos;minutes&apos;] ?? 0"/> minutes</source>
+      </segment>
+    </unit>
     <unit id="4707281579410073038">
       <notes>
         <note category="location">src/app/layout/auth-handoff/auth-handoff.component.html</note>
@@ -853,6 +1115,15 @@
       </notes>
       <segment>
         <source>We could not finish setting up your sign-in</source>
+      </segment>
+    </unit>
+    <unit id="4715165630183338203">
+      <notes>
+        <note category="location">src/app/core/i18n/notification-text.ts</note>
+        <note category="description">A list of games ending in one more</note>
+      </notes>
+      <segment>
+        <source>one other game</source>
       </segment>
     </unit>
     <unit id="4757507927002475818">
@@ -864,6 +1135,23 @@
         <source>Loading invitations…</source>
       </segment>
     </unit>
+    <unit id="4758695142998179909">
+      <notes>
+        <note category="location">src/app/core/i18n/notification-text.ts</note>
+        <note category="description">Several games whose titles are unknown</note>
+      </notes>
+      <segment>
+        <source><ph id="0" equiv="count" disp="rest"/> games</source>
+      </segment>
+    </unit>
+    <unit id="4775243970485777734">
+      <notes>
+        <note category="location">src/app/core/i18n/notification-text.ts</note>
+      </notes>
+      <segment>
+        <source><ph id="0" equiv="person" disp="actor"/> cancelled the <ph id="1" equiv="group" disp="group"/> game night of <ph id="2" equiv="date" disp="when"/>.</source>
+      </segment>
+    </unit>
     <unit id="4809830440227489945">
       <notes>
         <note category="location">src/app/components/card-invitation/card-invitation.component.html</note>
@@ -871,6 +1159,15 @@
       </notes>
       <segment>
         <source>Decline this invitation?</source>
+      </segment>
+    </unit>
+    <unit id="4834637535368761490">
+      <notes>
+        <note category="location">src/app/core/i18n/recommendation-text.ts</note>
+        <note category="description">Recommendation reason</note>
+      </notes>
+      <segment>
+        <source>Not played by this group yet</source>
       </segment>
     </unit>
     <unit id="4862663633740506261">
@@ -889,6 +1186,15 @@
       </notes>
       <segment>
         <source>Mobile navigation</source>
+      </segment>
+    </unit>
+    <unit id="4913790515929049330">
+      <notes>
+        <note category="location">src/app/core/i18n/recommendation-text.ts</note>
+        <note category="description">Recommendation reason</note>
+      </notes>
+      <segment>
+        <source>Duration is not available</source>
       </segment>
     </unit>
     <unit id="4930506384627295710">
@@ -964,6 +1270,15 @@
         <source>Open secure sign-up</source>
       </segment>
     </unit>
+    <unit id="5159913659351412884">
+      <notes>
+        <note category="location">src/app/core/i18n/recommendation-text.ts</note>
+        <note category="description">Recommendation reason</note>
+      </notes>
+      <segment>
+        <source>Previously played by this group</source>
+      </segment>
+    </unit>
     <unit id="5168805403362402794">
       <notes>
         <note category="location">src/app/layout/auth-handoff/auth-handoff.component.html</note>
@@ -1019,6 +1334,14 @@
         <source>What to play</source>
       </segment>
     </unit>
+    <unit id="5376159775932580099">
+      <notes>
+        <note category="location">src/app/core/i18n/notification-text.ts</note>
+      </notes>
+      <segment>
+        <source>The <ph id="0" equiv="group" disp="group"/> game night of <ph id="1" equiv="date" disp="when"/> is finished. Rate what you played.</source>
+      </segment>
+    </unit>
     <unit id="5492578273973439931">
       <notes>
         <note category="location">src/app/core/services/login.service.ts</note>
@@ -1047,6 +1370,14 @@
         <source>Got it</source>
       </segment>
     </unit>
+    <unit id="5611022416689146666">
+      <notes>
+        <note category="location">src/app/core/i18n/notification-text.ts</note>
+      </notes>
+      <segment>
+        <source><ph id="0" equiv="person" disp="member"/> left <ph id="1" equiv="group" disp="group"/>.</source>
+      </segment>
+    </unit>
     <unit id="5673906746664423612">
       <notes>
         <note category="location">src/app/layout/auth-handoff/auth-handoff.component.html</note>
@@ -1063,6 +1394,15 @@
       </notes>
       <segment>
         <source>Error deleting notification</source>
+      </segment>
+    </unit>
+    <unit id="5715583810853284797">
+      <notes>
+        <note category="location">src/app/core/i18n/recommendation-text.ts</note>
+        <note category="description">Recommendation reason</note>
+      </notes>
+      <segment>
+        <source><ph id="0" equiv="count" disp="count"/> selected participants passed on this before</source>
       </segment>
     </unit>
     <unit id="5729395938595388062">
@@ -1082,6 +1422,15 @@
       </notes>
       <segment>
         <source>Account menu, <ph id="0" equiv="count" disp="count"/> game proposals waiting</source>
+      </segment>
+    </unit>
+    <unit id="5772919894493102247">
+      <notes>
+        <note category="location">src/app/components/card-notification/card-notification.component.ts</note>
+        <note category="description">Link on a notification</note>
+      </notes>
+      <segment>
+        <source>See the game night</source>
       </segment>
     </unit>
     <unit id="5821029406705497005">
@@ -1156,6 +1505,23 @@
         <source>We are still building the core experience, so new accounts are created by invitation only.</source>
       </segment>
     </unit>
+    <unit id="6024427301478848927">
+      <notes>
+        <note category="location">src/app/core/i18n/recommendation-text.ts</note>
+        <note category="description">No game can be recommended</note>
+      </notes>
+      <segment>
+        <source>No games are available from the selected group people.</source>
+      </segment>
+    </unit>
+    <unit id="6033490387027844807">
+      <notes>
+        <note category="location">src/app/core/i18n/notification-text.ts</note>
+      </notes>
+      <segment>
+        <source><ph id="0" equiv="person" disp="actor"/> marked <ph id="1" equiv="game" disp="game"/> as unsure for <ph id="2" equiv="groupPerson" disp="person"/>, in <ph id="3" equiv="group" disp="group"/>.</source>
+      </segment>
+    </unit>
     <unit id="6041525304912058197">
       <notes>
         <note category="location">src/app/app.component.ts</note>
@@ -1190,6 +1556,15 @@
       </notes>
       <segment>
         <source>You have joined the group!</source>
+      </segment>
+    </unit>
+    <unit id="6200674115821929527">
+      <notes>
+        <note category="location">src/app/core/i18n/recommendation-text.ts</note>
+        <note category="description">Recommendation reason</note>
+      </notes>
+      <segment>
+        <source>Owned by <ph id="0" equiv="owners" disp="owners"/> of <ph id="1" equiv="people" disp="attendees"/> selected attendees</source>
       </segment>
     </unit>
     <unit id="6205660505479571083">
@@ -1237,6 +1612,14 @@
         <source>Ask a friend or group organizer who already uses Board Vault to invite you. Once invited, use the secure Clerk sign-up link they provide.</source>
       </segment>
     </unit>
+    <unit id="6303882608616595614">
+      <notes>
+        <note category="location">src/app/core/i18n/notification-text.ts</note>
+      </notes>
+      <segment>
+        <source>New game proposal: &quot;<ph id="0" equiv="title" disp="data[&apos;gameTitle&apos;]"/>&quot;</source>
+      </segment>
+    </unit>
     <unit id="6403112028413315560">
       <notes>
         <note category="location">src/app/layout/inbox/inbox.component.html</note>
@@ -1271,6 +1654,14 @@
       </notes>
       <segment>
         <source>Your Board Vault account is already registered.</source>
+      </segment>
+    </unit>
+    <unit id="6558378588786598467">
+      <notes>
+        <note category="location">src/app/core/i18n/notification-text.ts</note>
+      </notes>
+      <segment>
+        <source><ph id="0" equiv="person" disp="actor"/> removed <ph id="1" equiv="game" disp="game"/> from <ph id="2" equiv="groupPerson" disp="person"/>&apos;s games in <ph id="3" equiv="group" disp="group"/>.</source>
       </segment>
     </unit>
     <unit id="6582558331846075943">
@@ -1419,6 +1810,15 @@
         <source>Lend us a hand? 🎲</source>
       </segment>
     </unit>
+    <unit id="6930216235586087894">
+      <notes>
+        <note category="location">src/app/core/i18n/recommendation-text.ts</note>
+        <note category="description">Recommendation reason, a rating out of 10</note>
+      </notes>
+      <segment>
+        <source>Selected-attendee rating: <ph id="0" equiv="rating" disp="formatNumber(values[&apos;rating&apos;] ?? 0, { minimumFractionDigits: 1, maximumFractionDigits: 1 })"/>/10</source>
+      </segment>
+    </unit>
     <unit id="7007703201160377234">
       <notes>
         <note category="location">src/app/pages/auth/register/register.component.html</note>
@@ -1471,6 +1871,24 @@
       </notes>
       <segment>
         <source>How to get access</source>
+      </segment>
+    </unit>
+    <unit id="7154237322367136444">
+      <notes>
+        <note category="location">src/app/core/i18n/notification-text.ts</note>
+        <note category="description">A list of games ending in several more</note>
+      </notes>
+      <segment>
+        <source><ph id="0" equiv="count" disp="rest"/> other games</source>
+      </segment>
+    </unit>
+    <unit id="7233639534415316994">
+      <notes>
+        <note category="location">src/app/core/i18n/recommendation-text.ts</note>
+        <note category="description">Recommendation reason</note>
+      </notes>
+      <segment>
+        <source>Some selected people have marked this game to avoid</source>
       </segment>
     </unit>
     <unit id="7306616487170771288">
@@ -1537,6 +1955,15 @@
         <source>Back to app</source>
       </segment>
     </unit>
+    <unit id="7569659352704234282">
+      <notes>
+        <note category="location">src/app/core/i18n/recommendation-text.ts</note>
+        <note category="description">No game can be recommended</note>
+      </notes>
+      <segment>
+        <source>No games are owned by the selected attendees.</source>
+      </segment>
+    </unit>
     <unit id="7619560701830330401">
       <notes>
         <note category="location">src/app/components/ui/spinner/spinner.component.ts</note>
@@ -1580,6 +2007,15 @@
       </notes>
       <segment>
         <source>Continue with this secure invitation link and we’ll add you to the group. No new password is needed.</source>
+      </segment>
+    </unit>
+    <unit id="7775401295627092008">
+      <notes>
+        <note category="location">src/app/core/i18n/recommendation-text.ts</note>
+        <note category="description">No game can be recommended</note>
+      </notes>
+      <segment>
+        <source>No games for <ph id="0" equiv="players" disp="players"/> players fit within <ph id="1" equiv="minutes" disp="values[&apos;minutes&apos;] ?? 0"/> minutes.</source>
       </segment>
     </unit>
     <unit id="7786483200692238826">
@@ -1635,6 +2071,23 @@
       </notes>
       <segment>
         <source>You’re all caught up.</source>
+      </segment>
+    </unit>
+    <unit id="7899674800818281248">
+      <notes>
+        <note category="location">src/app/components/card-notification/card-notification.component.ts</note>
+        <note category="description">Button on a notification</note>
+      </notes>
+      <segment>
+        <source>Delete notification: <ph id="0" equiv="text" disp="this.text()"/></source>
+      </segment>
+    </unit>
+    <unit id="7906119584283878474">
+      <notes>
+        <note category="location">src/app/core/i18n/notification-text.ts</note>
+      </notes>
+      <segment>
+        <source><ph id="0" equiv="person" disp="actor"/> removed what <ph id="1" equiv="groupPerson" disp="person"/> thinks of <ph id="2" equiv="game" disp="game"/>, in <ph id="3" equiv="group" disp="group"/>.</source>
       </segment>
     </unit>
     <unit id="7934833136974560675">
@@ -1701,6 +2154,23 @@
         <source>Decline</source>
       </segment>
     </unit>
+    <unit id="8144023736490335972">
+      <notes>
+        <note category="location">src/app/core/i18n/notification-text.ts</note>
+      </notes>
+      <segment>
+        <source><ph id="0" equiv="remover" disp="actor"/> removed <ph id="1" equiv="removedPerson" disp="member"/> from <ph id="2" equiv="group" disp="group"/>.</source>
+      </segment>
+    </unit>
+    <unit id="8206579759218160395">
+      <notes>
+        <note category="location">src/app/core/i18n/recommendation-text.ts</note>
+        <note category="description">No game can be recommended</note>
+      </notes>
+      <segment>
+        <source>No games owned by the selected attendees support <ph id="0" equiv="players" disp="players"/> players.</source>
+      </segment>
+    </unit>
     <unit id="8218180595897396108">
       <notes>
         <note category="location">src/app/pages/auth/login/login.component.html</note>
@@ -1746,6 +2216,15 @@
       </notes>
       <segment>
         <source>Dismiss notification</source>
+      </segment>
+    </unit>
+    <unit id="8353091657473641191">
+      <notes>
+        <note category="location">src/app/components/card-notification/card-notification.component.ts</note>
+        <note category="description">Link on a notification</note>
+      </notes>
+      <segment>
+        <source>Open the group</source>
       </segment>
     </unit>
     <unit id="8375894054300753424">
@@ -1811,6 +2290,15 @@
         <source>Play — Board Vault</source>
       </segment>
     </unit>
+    <unit id="8668172233266414658">
+      <notes>
+        <note category="location">src/app/core/i18n/recommendation-text.ts</note>
+        <note category="description">Recommendation reason</note>
+      </notes>
+      <segment>
+        <source><ph id="0" equiv="count" disp="count"/> selected attendees marked this as interesting</source>
+      </segment>
+    </unit>
     <unit id="8694180754500384388">
       <notes>
         <note category="location">src/app/app.component.ts</note>
@@ -1829,6 +2317,15 @@
         <source>Ask the group owner for a fresh invitation if this link has expired or the group is no longer available.</source>
       </segment>
     </unit>
+    <unit id="8715838975991436163">
+      <notes>
+        <note category="location">src/app/components/card-notification/card-notification.component.ts</note>
+        <note category="description">Link on a notification</note>
+      </notes>
+      <segment>
+        <source>See your proposals</source>
+      </segment>
+    </unit>
     <unit id="8725224299321680590">
       <notes>
         <note category="location">src/app/layout/app-sections.ts</note>
@@ -1836,6 +2333,14 @@
       </notes>
       <segment>
         <source>Upcoming</source>
+      </segment>
+    </unit>
+    <unit id="8739336026258908775">
+      <notes>
+        <note category="location">src/app/core/i18n/notification-text.ts</note>
+      </notes>
+      <segment>
+        <source><ph id="0" equiv="person" disp="actor"/> joined <ph id="1" equiv="group" disp="group"/>.</source>
       </segment>
     </unit>
     <unit id="8779419494821652108">
@@ -1892,6 +2397,24 @@
         <source>Error retrieving user&apos;s notifications</source>
       </segment>
     </unit>
+    <unit id="8938331027934073927">
+      <notes>
+        <note category="location">src/app/components/card-notification/card-notification.component.ts</note>
+        <note category="description">Button on a notification</note>
+      </notes>
+      <segment>
+        <source>Mark as read: <ph id="0" equiv="text" disp="this.text()"/></source>
+      </segment>
+    </unit>
+    <unit id="894008691966610130">
+      <notes>
+        <note category="location">src/app/components/card-notification/card-notification.component.ts</note>
+        <note category="description">Link on a notification</note>
+      </notes>
+      <segment>
+        <source>See their games</source>
+      </segment>
+    </unit>
     <unit id="9014138025274858717">
       <notes>
         <note category="location">src/app/app.component.ts</note>
@@ -1935,6 +2458,14 @@
       </notes>
       <segment>
         <source>Accepting adds you to this private group’s shared games and future session plans.</source>
+      </segment>
+    </unit>
+    <unit id="9174716236566498100">
+      <notes>
+        <note category="location">src/app/core/i18n/notification-text.ts</note>
+      </notes>
+      <segment>
+        <source><ph id="0" equiv="person" disp="actor"/> removed <ph id="1" equiv="games" disp="removedList"/> from their shelf.</source>
       </segment>
     </unit>
     <unit id="9212705249340904752">
