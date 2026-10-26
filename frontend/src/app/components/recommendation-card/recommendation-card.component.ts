@@ -1,4 +1,4 @@
-import { Component, input } from '@angular/core'
+import { Component, computed, input } from '@angular/core'
 import { RouterLink } from '@angular/router'
 import { PlayersPipe } from '../../core/pipes/count.pipe'
 import { BadgeComponent } from '../ui/badge/badge.component'
@@ -30,4 +30,11 @@ export class RecommendationCardComponent {
     readonly score = input.required<number>()
     readonly isTopPick = input(false)
     readonly signal = input<RecommendationGroupSignal | null>(null)
+
+    protected readonly fitText = computed(
+        () => $localize`:Badge with how well a suggested game fits, out of 100:Fit ${this.score()}:score:`,
+    )
+    protected readonly fitLabel = computed(
+        () => $localize`:Screen-reader name of the fit badge on a suggested game:Fit score ${this.score()}:score: out of 100`,
+    )
 }

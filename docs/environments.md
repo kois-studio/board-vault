@@ -93,6 +93,12 @@ which writes the ignored `frontend/public/runtime-config.js` from:
 | --- | --- | --- |
 | `CLERK_PUBLISHABLE_KEY` | `backend/.env` | Vercel `board-vault-front` |
 | `BOARD_VAULT_SELF_REGISTRATION_ENABLED` | `backend/.env` | Not set, so `false` |
+| `VERCEL`, `VERCEL_ENV` | Not set, so `previewLocales` is `true` | Set by Vercel: `previewLocales` is `true` only when `VERCEL_ENV` is `preview` |
+
+`previewLocales` lets the header's language menu list every supported
+language, not only the offered ones, so a translation can be checked before it
+is offered ([ADR-0024](adr/0024-interface-languages.md)). A Vercel build that
+does not say which environment it is counts as production.
 
 Only public values may go there. The API base URL is fixed per build in
 [`src/environments/`](../frontend/src/environments/).
