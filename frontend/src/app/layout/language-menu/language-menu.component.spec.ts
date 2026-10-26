@@ -1,6 +1,8 @@
-import { Component } from '@angular/core'
+import { Component, signal } from '@angular/core'
 import { ComponentFixture, TestBed } from '@angular/core/testing'
 import { provideRouter, Router } from '@angular/router'
+import { AccountLanguageService } from '../../core/i18n/account-language.service'
+import { DataService } from '../../core/services/data.service'
 import { LanguageMenuComponent, languageMenuLocales } from './language-menu.component'
 
 @Component({ template: '' })
@@ -30,6 +32,8 @@ describe('languageMenuLocales', () => {
 describe('LanguageMenuComponent', () => {
     let fixture: ComponentFixture<LanguageMenuComponent>
     const originalPath = window.location.pathname
+    const currentUser = signal<unknown>(null)
+    const choose = vi.fn()
 
     const element = () => fixture.nativeElement as HTMLElement
     const trigger = () => element().querySelector('button') as HTMLButtonElement
@@ -40,7 +44,11 @@ describe('LanguageMenuComponent', () => {
         window.history.replaceState(null, '', '/es/groups/12')
         await TestBed.configureTestingModule({
             imports: [LanguageMenuComponent],
-            providers: [provideRouter([{ path: '**', component: EmptyPageComponent }])],
+            providers: [
+                provideRouter([{ path: '**', component: EmptyPageComponent }]),
+                { provide: DataService, useValue: { currentUser } },
+                { provide: AccountLanguageService, useValue: { choose } },
+            ],
         }).compileComponents()
         await TestBed.inject(Router).navigateByUrl('/groups/12?tab=games#library')
 
@@ -50,6 +58,8 @@ describe('LanguageMenuComponent', () => {
     })
 
     afterEach(() => {
+        currentUser.set(null)
+        choose.mockClear()
         window.history.replaceState(null, '', originalPath)
         // biome-ignore lint/suspicious/noDocumentCookie: removes the cookie a test chose.
         document.cookie = 'bv_lang=; Path=/; Max-Age=0'
@@ -98,6 +108,26 @@ describe('LanguageMenuComponent', () => {
         document.removeEventListener('click', stay)
 
         expect(document.cookie).toContain('bv_lang=de')
+        expect(choose).not.toHaveBeenCalled()
+    })
+
+    it('signed in, saves the choice on the account before leaving and does not follow the link itself', () => {
+        currentUser.set({ id: 7 })
+        trigger().click()
+        fixture.detectChanges()
+
+        const event = new MouseEvent('click', { bubbles: true, cancelable: true })
+        links()
+            .find((link) => link.hreflang === 'de')
+            ?.dispatchEvent(event)
+
+        expect(event.defaultPrevented).toBe(true)
+        expect(choose).toHaveBeenCalledWith('de')
+        expect(
+            links()
+                .find((link) => link.hreflang === 'de')
+                ?.getAttribute('href'),
+        ).toBe('/de/groups/12?tab=games#library')
     })
 
     it('closes with Escape and gives focus back to the button', () => {

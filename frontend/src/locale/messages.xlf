@@ -83,6 +83,15 @@
         <source>Deleted account</source>
       </segment>
     </unit>
+    <unit id="121980130682744616">
+      <notes>
+        <note category="location">src/app/pages/settings/appearance/settings-appearance.component.html</note>
+        <note category="description">Hint under the language heading in the Appearance settings</note>
+      </notes>
+      <segment>
+        <source>The language of Board Vault&apos;s menus and messages. Saved on your account.</source>
+      </segment>
+    </unit>
     <unit id="1225085275995545699">
       <notes>
         <note category="location">src/app/components/ui/image-background/image-background.component.ts</note>
@@ -909,6 +918,15 @@
       </notes>
       <segment>
         <source>Home</source>
+      </segment>
+    </unit>
+    <unit id="2826581353496868063">
+      <notes>
+        <note category="location">src/app/pages/settings/appearance/settings-appearance.component.html</note>
+        <note category="description">Heading of the language choice in the Appearance settings</note>
+      </notes>
+      <segment>
+        <source>Language</source>
       </segment>
     </unit>
     <unit id="2871617273892961858">

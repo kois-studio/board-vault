@@ -1,7 +1,34 @@
 <h2 class="pb-2 text-2xl font-bold tracking-wide">Appearance</h2>
-<p class="pb-8 text-bv-text-muted">Choose how Board Vault looks. Your choices are saved on this device.</p>
+<p class="pb-8 text-bv-text-muted">Choose how Board Vault looks. Except for the language, your choices are saved on this device.</p>
 
 <div class="space-y-10">
+    @if (languages.length) {
+    <fieldset class="min-w-0">
+        <legend class="pb-1 font-semibold" i18n="Heading of the language choice in the Appearance settings">Language</legend>
+        <p class="pb-3 text-sm text-bv-text-muted" i18n="Hint under the language heading in the Appearance settings">The language of Board Vault's menus and messages. Saved on your account.</p>
+        <div class="grid gap-4 sm:grid-cols-3">
+            @for (option of languages; track option.locale) {
+            <label [class]="optionClass(currentLanguage === option.locale)">
+                <input
+                    type="radio"
+                    name="language"
+                    class="sr-only"
+                    [value]="option.locale"
+                    [checked]="currentLanguage === option.locale"
+                    (change)="chooseLanguage(option.locale)"
+                />
+                <span class="flex items-center gap-2 px-1 py-1 font-semibold" [attr.lang]="option.locale">
+                    {{ option.name }}
+                    @if (currentLanguage === option.locale) {
+                    <app-icon name="check" [size]="18" className="ml-auto text-bv-primary" />
+                    }
+                </span>
+            </label>
+            }
+        </div>
+    </fieldset>
+    }
+
     <fieldset class="min-w-0">
         <legend class="pb-3 font-semibold">Color scheme</legend>
         <div class="grid gap-4 sm:grid-cols-3">

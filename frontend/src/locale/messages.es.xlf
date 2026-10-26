@@ -78,6 +78,15 @@
         <target>Cuenta eliminada</target>
       </segment>
     </unit>
+    <unit id="121980130682744616">
+      <notes>
+        <note category="description">Hint under the language heading in the Appearance settings</note>
+      </notes>
+      <segment state="translated">
+        <source>The language of Board Vault&apos;s menus and messages. Saved on your account.</source>
+        <target>El idioma de los menús y mensajes de Board Vault. Se guarda en tu cuenta.</target>
+      </segment>
+    </unit>
     <unit id="1225085275995545699">
       <notes>
         <note category="description">Description of a game&apos;s picture when no other is given</note>
@@ -891,6 +900,15 @@
       <segment state="translated">
         <source>Home</source>
         <target>Inicio</target>
+      </segment>
+    </unit>
+    <unit id="2826581353496868063">
+      <notes>
+        <note category="description">Heading of the language choice in the Appearance settings</note>
+      </notes>
+      <segment state="translated">
+        <source>Language</source>
+        <target>Idioma</target>
       </segment>
     </unit>
     <unit id="2871617273892961858">
