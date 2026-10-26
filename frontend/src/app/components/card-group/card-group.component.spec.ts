@@ -72,6 +72,15 @@ describe('CardGroupComponent (Home)', () => {
         expect(element().textContent).toContain('3 people · 3 games')
     })
 
+    it('lets a long name take two lines, breaking even without spaces, with the whole name on hover', () => {
+        const title = element().querySelector('h3') as HTMLElement
+
+        expect(title.classList).toContain('line-clamp-2')
+        expect(title.classList).toContain('wrap-anywhere')
+        expect(title.classList).not.toContain('truncate')
+        expect(title.querySelector('a')?.getAttribute('title')).toBe('Friday crew')
+    })
+
     it('names the group in its people list, so stacked cards are told apart', () => {
         expect(element().querySelector('ul')?.getAttribute('aria-label')).toBe('People in Friday crew')
     })

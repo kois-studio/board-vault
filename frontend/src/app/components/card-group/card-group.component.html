@@ -1,9 +1,10 @@
 <article class="overflow-hidden rounded-2xl border border-bv-border bg-bv-surface shadow-sm lg:grid lg:grid-cols-[18rem_1fr]">
     <header class="relative bg-bv-primary p-5 text-bv-on-primary lg:p-6">
         <div class="flex items-start justify-between gap-3">
-            <h3 class="min-w-0 truncate text-2xl font-bold tracking-tight lg:text-3xl">
+            <!-- A long name takes a second line, then ends in "…"; the whole name is in the tooltip. -->
+            <h3 class="min-w-0 line-clamp-2 text-2xl font-bold tracking-tight wrap-anywhere lg:text-3xl">
                 <!-- The whole band opens the group; the name is the link's text. -->
-                <a [routerLink]="['/groups', group().id]" class="rounded-sm after:absolute after:inset-0 focus:outline-none focus-visible:ring-2 focus-visible:ring-bv-on-primary">{{ group().name }}</a>
+                <a [routerLink]="['/groups', group().id]" [title]="group().name" class="rounded-sm after:absolute after:inset-0 focus:outline-none focus-visible:ring-2 focus-visible:ring-bv-on-primary">{{ group().name }}</a>
             </h3>
             <app-icon name="chevron-right" [size]="22" className="mt-1 shrink-0 text-bv-on-primary/80" aria-hidden="true" />
         </div>
