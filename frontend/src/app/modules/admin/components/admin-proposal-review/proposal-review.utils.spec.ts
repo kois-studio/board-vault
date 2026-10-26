@@ -11,9 +11,9 @@ describe('proposal review helpers', () => {
 
     it('matches proposed tags to catalogue tags ignoring case, spaces and dashes', () => {
         const tags: Array<TagType> = [
-            { id: 1, name: 'Strategy', categoryId: 1, gameCount: 0 },
-            { id: 2, name: 'Card game', categoryId: 1, gameCount: 0 },
-            { id: 3, name: 'Party', categoryId: 2, gameCount: 0 },
+            { id: 1, name: 'Strategy', categoryId: 1, gameCount: 0, translations: {} },
+            { id: 2, name: 'Card game', categoryId: 1, gameCount: 0, translations: {} },
+            { id: 3, name: 'Party', categoryId: 2, gameCount: 0, translations: {} },
         ]
 
         expect(matchProposedTags(['strategy', 'card-game', 'cooperative'], tags)).toEqual([1, 2])

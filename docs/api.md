@@ -51,6 +51,14 @@ still named `"Deleted account"`, which the app shows in the page's language.
 their own profile (`GET /profile/users/:userId`) and on no nested user
 response.
 
+Tag and tag category names are vocabulary, so they follow the reader's
+language: `GET /collection/tags` and a game page's `tags` name them in
+`request.locale` (English where a language has no name yet) and sort them as
+that language sorts. Administration reads and writes the other languages as
+`translations` (`{ es, fr, de, it }`) on `/admin/tags` and
+`/admin/tag-categories`; in a request, a language left out stays as it is and
+an empty string removes it. Admin game lists keep English names.
+
 ## Collections
 
 Catalogue browsing and admin listings are paginated with a maximum page size

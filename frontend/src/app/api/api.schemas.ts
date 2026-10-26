@@ -35,6 +35,7 @@ import type {
     MeetAttendeeStatusType,
     MeetType,
     MeetWithAttendeesAndGamesType,
+    NameTranslationsType,
     NotificationType,
     PrivacySettingsStateType,
     RecommendationSignalsType,
@@ -115,11 +116,20 @@ const paginationSchema = z.object({
     itemsPerPage: z.number(),
 })
 
+/** Absent from an API older than the translations, which reads as "none yet". */
+const nameTranslationsSchema: z.ZodMiniType<NameTranslationsType> = z._default(
+    z.optional(
+        z.object({ es: z.optional(z.string()), fr: z.optional(z.string()), de: z.optional(z.string()), it: z.optional(z.string()) }),
+    ),
+    {},
+)
+
 export const tagCategorySchema: z.ZodMiniType<TagCategoryType> = z.object({
     id: z.number(),
     name: z.string(),
     tags: z.array(z.number()),
     gameCount: z.number(),
+    translations: nameTranslationsSchema,
 })
 
 export const tagSchema: z.ZodMiniType<TagType> = z.object({
@@ -127,6 +137,7 @@ export const tagSchema: z.ZodMiniType<TagType> = z.object({
     name: z.string(),
     categoryId: z.number(),
     gameCount: z.number(),
+    translations: nameTranslationsSchema,
 })
 
 export const adminTagCategoriesSchema = z.array(tagCategorySchema)

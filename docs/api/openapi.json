@@ -8352,6 +8352,27 @@
           "months"
         ]
       },
+      "NameTranslationsDto": {
+        "type": "object",
+        "properties": {
+          "es": {
+            "type": "string",
+            "example": "Cooperativo"
+          },
+          "fr": {
+            "type": "string",
+            "example": "Coopératif"
+          },
+          "de": {
+            "type": "string",
+            "example": "Kooperativ"
+          },
+          "it": {
+            "type": "string",
+            "example": "Cooperativo"
+          }
+        }
+      },
       "TagCategoryWithTagsDto": {
         "type": "object",
         "properties": {
@@ -8362,6 +8383,14 @@
           "name": {
             "type": "string",
             "example": "Action"
+          },
+          "translations": {
+            "description": "The name in the other interface languages",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/NameTranslationsDto"
+              }
+            ]
           },
           "tags": {
             "example": [
@@ -8394,6 +8423,14 @@
           "name": {
             "type": "string",
             "example": "Action"
+          },
+          "translations": {
+            "description": "The name in the other interface languages",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/NameTranslationsDto"
+              }
+            ]
           }
         },
         "required": [
@@ -8418,6 +8455,14 @@
           "gameCount": {
             "type": "number",
             "example": 10
+          },
+          "translations": {
+            "description": "The name in the other interface languages",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/NameTranslationsDto"
+              }
+            ]
           }
         },
         "required": [
@@ -8438,15 +8483,18 @@
             "type": "number",
             "example": 1
           },
-          "gameCount": {
-            "type": "number",
-            "example": 10
+          "translations": {
+            "description": "The name in the other interface languages",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/NameTranslationsDto"
+              }
+            ]
           }
         },
         "required": [
           "name",
-          "categoryId",
-          "gameCount"
+          "categoryId"
         ]
       },
       "MergeTagBody": {
@@ -8686,12 +8734,12 @@
           "name": {
             "type": "string",
             "example": "Strategy",
-            "description": "Tag name"
+            "description": "Tag name, in the reader's language where it has one (admin game lists: English)"
           },
           "categoryName": {
             "type": "string",
             "example": "Game Type",
-            "description": "Category name"
+            "description": "Category name, in the reader's language where it has one (admin game lists: English)"
           }
         },
         "required": [
@@ -9457,12 +9505,12 @@
           "name": {
             "type": "string",
             "example": "Strategy",
-            "description": "Tag name"
+            "description": "Tag name, in the reader's language where it has one (admin game lists: English)"
           },
           "categoryName": {
             "type": "string",
             "example": "Game Type",
-            "description": "Category name"
+            "description": "Category name, in the reader's language where it has one (admin game lists: English)"
           },
           "gameCount": {
             "type": "number",

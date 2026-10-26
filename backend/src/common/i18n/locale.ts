@@ -27,3 +27,8 @@ export function localeFromAcceptLanguage(header: string | undefined | null): Loc
 
     return ranges.map(range => range.language).find(isSupportedLocale) ?? DEFAULT_LOCALE
 }
+
+/** Compares names the way the reader's language sorts them ("Área" next to "Arte", not after "Zombis"). */
+export function compareNames(locale: Locale): (a: string, b: string) => number {
+    return new Intl.Collator(locale, { sensitivity: 'base', numeric: true }).compare
+}

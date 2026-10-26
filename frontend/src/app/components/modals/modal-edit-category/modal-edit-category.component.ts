@@ -7,9 +7,15 @@ import { ToastService } from '../../toast/toast.service'
 import { ButtonComponent } from '../../ui/button/button.component'
 import { DialogDirective } from '../../ui/dialog/dialog.directive'
 import { IconComponent } from '../../ui/icon/icon.component'
+import {
+    NameTranslationFieldsComponent,
+    nameTranslationsForm,
+    nameTranslationsPayload,
+    nameTranslationsValue,
+} from '../../ui/name-translation-fields/name-translation-fields.component'
 
 @Component({
-    imports: [ReactiveFormsModule, ButtonComponent, DialogDirective, IconComponent],
+    imports: [ReactiveFormsModule, ButtonComponent, DialogDirective, IconComponent, NameTranslationFieldsComponent],
     selector: 'app-modal-edit-category',
     templateUrl: './modal-edit-category.component.html',
 })
@@ -38,6 +44,7 @@ export class ModalEditCategoryComponent {
     // --------------------------------------------------------------------------
     public editCategoryForm = new FormGroup({
         name: new FormControl('', [Validators.required, Validators.minLength(2), Validators.maxLength(50)]),
+        translations: nameTranslationsForm(),
     })
 
     // --------------------------------------------------------------------------
@@ -47,6 +54,7 @@ export class ModalEditCategoryComponent {
         this.category.set(category)
         this.editCategoryForm.setValue({
             name: category.name,
+            translations: nameTranslationsValue(category.translations),
         })
         this.isVisible.set(true)
     }
@@ -69,22 +77,24 @@ export class ModalEditCategoryComponent {
         this.isLoading.set(true)
 
         // Call API to update category
-        this.api.updateAdminTagCategory(category.id, formValue.name).subscribe({
-            next: (updatedCategory: TagCategoryType) => {
-                this.isLoading.set(false)
-                this.toastService.success('Category updated successfully!')
-                this.categoryUpdated.emit({
-                    id: updatedCategory.id,
-                    name: updatedCategory.name,
-                })
-                this.hideDialog()
-            },
-            error: (error: any) => {
-                this.isLoading.set(false)
-                this.logger.error('Error updating category:', error)
-                this.toastService.error('Failed to update category. Please try again.')
-            },
-        })
+        this.api
+            .updateAdminTagCategory(category.id, formValue.name, nameTranslationsPayload(this.editCategoryForm.controls.translations))
+            .subscribe({
+                next: (updatedCategory: TagCategoryType) => {
+                    this.isLoading.set(false)
+                    this.toastService.success('Category updated successfully!')
+                    this.categoryUpdated.emit({
+                        id: updatedCategory.id,
+                        name: updatedCategory.name,
+                    })
+                    this.hideDialog()
+                },
+                error: (error: any) => {
+                    this.isLoading.set(false)
+                    this.logger.error('Error updating category:', error)
+                    this.toastService.error('Failed to update category. Please try again.')
+                },
+            })
     }
 
     // --------------------------------------------------------------------------

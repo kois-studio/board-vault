@@ -1,19 +1,18 @@
 import { ConflictException, Injectable, Logger, NotFoundException } from '@nestjs/common'
 
 import { LogFeature } from '../../../common/decorators/logger.decorator.js'
+import { compareNames } from '../../../common/i18n/locale.js'
 import { UpdateGameOwnedDto } from '../../../common/types/game-owned.type.js'
 import { CollectionActivityService } from '../../../modules/core/collection-activity/collection-activity.service.js'
 import { GameTranslationService } from '../../../modules/core/game-translation/game-translation.service.js'
 import { DatabaseService } from '../../common/database/database.service.js'
-import { GameTagsService } from '../../core/game-tags/game-tags.service.js'
 import { GamesService } from '../../core/games/games.service.js'
 import { GamesOwnedService } from '../../core/games-owned/games-owned.service.js'
 import { ActivityNotifier } from '../../core/notifications/activity-notifier.service.js'
 import { ReviewsService } from '../../core/reviews/reviews.service.js'
-import { TagCategoryService } from '../../core/tag-category/tag-category.service.js'
-import { TagsService } from '../../core/tags/tags.service.js'
 import { WishlistService } from '../../core/wishlist/wishlist.service.js'
 
+import type { Locale } from '../../../common/i18n/locale.js'
 import type { SuccessDto } from '../../../common/types/auth.type.js'
 import type { CollectionActivityWithGameDataDto } from '../../../common/types/collection-activity.type.js'
 import type { CreateGameReviewBody, GameReviewWithGameDataDto } from '../../../common/types/game-review.type.js'
@@ -24,12 +23,9 @@ import type { CatalogueTagDto } from '../../../common/types/tag.type.js'
 export class CollectionService {
     constructor(
         private readonly gamesService: GamesService,
-        private readonly tagsService: TagsService,
-        private readonly gameTagsService: GameTagsService,
         private readonly reviewsService: ReviewsService,
         private readonly wishlistService: WishlistService,
         private readonly gamesOwnedService: GamesOwnedService,
-        private readonly tagCategoriesService: TagCategoryService,
         private readonly gameTranslationService: GameTranslationService,
         private readonly collectionActivityService: CollectionActivityService,
         private readonly databaseService: DatabaseService,
@@ -90,16 +86,15 @@ export class CollectionService {
     }
 
     @LogFeature(new Logger('CollectionService'))
-    async getCatalogueTags(): Promise<Array<CatalogueTagDto>> {
-        return this.gamesService.getCatalogueTags()
+    async getCatalogueTags(locale: Locale): Promise<Array<CatalogueTagDto>> {
+        return this.gamesService.getCatalogueTags(locale)
     }
 
     @LogFeature(new Logger('CollectionService'))
-    async getGameViewByUserId(userId: number, gameId: number): Promise<GameViewDto> {
+    async getGameViewByUserId(userId: number, gameId: number, locale: Locale): Promise<GameViewDto> {
         // Step 1: Get each part of data needed in the view
         const gameData = await this.gamesService.getGameById(gameId)
         const titleTranslations = await this.gameTranslationService.getGameTranslations(gameId)
-        const gameTags = await this.gameTagsService.getGameTags(gameId)
         const ownedGameData = await this.gamesOwnedService.isGameIdOwnedByAccountId(userId, gameId, false)
         const wishlistGameData = await this.wishlistService.isGameWishlisted(userId, gameId)
         // reviews
@@ -112,14 +107,11 @@ export class CollectionService {
         const similarGames = await Promise.all(similarGameIds.map(id => this.gamesService.getSafeGameById(id)))
         const similarGamesFiltered = similarGames.filter(Boolean) as Array<GameDto>
 
-        // Tags
-        const tags = await Promise.all(gameTags.map(async tag => this.tagsService.getTagById(tag.tagId)))
-        const tagsWithCategory = await Promise.all(
-            tags.map(async tag => ({
-                ...tag,
-                category: await this.tagCategoriesService.getTagCategoryById(tag.categoryId),
-            })),
-        )
+        // Tags, in the reader's language, by category and then name
+        const compare = compareNames(locale)
+        const tags = (await this.databaseService.games.getGameTagNames(gameId, locale)).rows
+            .map(row => ({ tag: String(row['name']), category: String(row['categoryName']) }))
+            .sort((a, b) => compare(a.category, b.category) || compare(a.tag, b.tag))
 
         // Step 2: Construct the GameView
         return {
@@ -134,10 +126,7 @@ export class CollectionService {
                       purchasePrice: ownedGameData.purchasePrice,
                       purchaseNotes: ownedGameData.purchaseNotes,
                   },
-            tags: tagsWithCategory.map(tag => ({
-                tag: tag.name,
-                category: tag.category.name,
-            })),
+            tags,
             wishlistedGameData: wishlistGameData
                 ? {
                       dateAdded: '',

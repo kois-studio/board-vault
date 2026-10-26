@@ -13,6 +13,9 @@ operational details.
 
 ### Added
 
+- Tag and tag category names in Spanish, French, German, and Italian, edited
+  in Administration → Tags; Browse filters and game pages show them in the
+  page's language.
 - Home always offers recording and planning. One group keeps its full card,
   several groups show as compact rows with a corner pin that appears on
   hover; pinned groups lead.
@@ -253,6 +256,8 @@ operational details.
 
 ### Fixed
 
+- Administration can create and rename tags: the API refused them, asking
+  for a game count that only it can know.
 - Correcting a session no longer lists a removed game as "shortlisted but not
   played", and on finished nights keeps people taken out as absent instead of
   erasing their invitation.
