@@ -110,6 +110,7 @@ import type {
     InvitationWithExtraData,
     MeetType,
     MeetWithAttendeesAndGamesType,
+    NameTranslationsType,
     NotificationType,
     PrivacySettingsStateType,
     PrivacySettingsType,
@@ -419,15 +420,15 @@ export class Api {
             .pipe(map((response) => adminTagCategoriesSchema.parse(response)))
     }
 
-    createAdminTagCategory(name: string) {
+    createAdminTagCategory(name: string, translations?: NameTranslationsType) {
         return this.http
-            .post<TagCategoryType>(`${this.url}/admin/tag-categories`, { name })
+            .post<TagCategoryType>(`${this.url}/admin/tag-categories`, { name, translations })
             .pipe(map((response) => tagCategorySchema.parse(response)))
     }
 
-    updateAdminTagCategory(id: number, name: string) {
+    updateAdminTagCategory(id: number, name: string, translations?: NameTranslationsType) {
         return this.http
-            .put<TagCategoryType>(`${this.url}/admin/tag-categories/${id}`, { name })
+            .put<TagCategoryType>(`${this.url}/admin/tag-categories/${id}`, { name, translations })
             .pipe(map((response) => tagCategorySchema.parse(response)))
     }
 
@@ -441,11 +442,11 @@ export class Api {
         return this.http.get<Array<TagType>>(`${this.url}/admin/tags`).pipe(map((response) => adminTagsSchema.parse(response)))
     }
 
-    createAdminTag(payload: { name: string; categoryId: number }) {
+    createAdminTag(payload: { name: string; categoryId: number; translations?: NameTranslationsType }) {
         return this.http.post<TagType>(`${this.url}/admin/tags`, payload).pipe(map((response) => tagSchema.parse(response)))
     }
 
-    updateAdminTag(id: number, payload: { name: string; categoryId: number }) {
+    updateAdminTag(id: number, payload: { name: string; categoryId: number; translations?: NameTranslationsType }) {
         return this.http.put<TagType>(`${this.url}/admin/tags/${id}`, payload).pipe(map((response) => tagSchema.parse(response)))
     }
 

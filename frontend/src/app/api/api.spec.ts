@@ -357,7 +357,8 @@ describe('Api response contracts', () => {
 
         http.expectOne(`${environment.apiUrl}/admin/tag-categories`).flush([category])
 
-        await expect(response).resolves.toEqual([category])
+        // `translations` is optional in the contract; without it there are none yet.
+        await expect(response).resolves.toEqual([{ ...category, translations: {} }])
     })
 
     it('rejects admin tag categories that carry tag objects instead of ids', async () => {

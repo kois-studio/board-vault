@@ -13,6 +13,9 @@ operational details.
 
 ### Added
 
+- Tag and tag category names in Spanish, French, German, and Italian, edited
+  in Administration → Tags; Browse filters and game pages show them in the
+  page's language.
 - The landing page in Spanish, French, German, and Italian, with links
   between its languages for search engines. The example games use each
   language's edition title (Código Secreto, Zug um Zug).
@@ -256,6 +259,8 @@ operational details.
 
 ### Fixed
 
+- Administration can create and rename tags: the API refused them, asking
+  for a game count that only it can know.
 - Correcting a session no longer lists a removed game as "shortlisted but not
   played", and on finished nights keeps people taken out as absent instead of
   erasing their invitation.

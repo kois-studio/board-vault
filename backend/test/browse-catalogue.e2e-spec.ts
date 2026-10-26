@@ -49,6 +49,9 @@ describe('browsing the catalogue with filters (e2e)', () => {
                 INSERT INTO TagCategory (id, name) VALUES (1, 'Genre'), (2, 'Mechanic');
                 INSERT INTO Tag (id, name, categoryId) VALUES (1, 'Abstract', 1), (2, 'Strategy', 1), (3, 'Trading', 2), (4, 'Unused', 2);
                 INSERT INTO GameTag (gameId, tagId) VALUES (1, 1), (2, 2), (2, 3), (4, 2);
+                -- Spanish for some: "Trading" and "Mechanic" have none, so they stay English.
+                INSERT INTO TagTranslation (tagId, locale, name) VALUES (1, 'es', 'Abstracto'), (2, 'es', 'Estrategia'), (2, 'fr', 'Stratégie');
+                INSERT INTO TagCategoryTranslation (categoryId, locale, name) VALUES (1, 'es', 'Género');
 
                 INSERT INTO OwnedGame (accountId, gameId) VALUES (1, 2);
             `,
@@ -163,6 +166,36 @@ describe('browsing the catalogue with filters (e2e)', () => {
             { id: 1, name: 'Abstract', categoryName: 'Genre', gameCount: 1 },
             { id: 2, name: 'Strategy', categoryName: 'Genre', gameCount: 2 },
             { id: 3, name: 'Trading', categoryName: 'Mechanic', gameCount: 1 },
+        ])
+    })
+
+    it('names tags in the reader’s language, falling back to English, sorted as that language sorts', async () => {
+        const response = await request(app.getHttpServer()).get('/collection/tags').set(asPlayer).set('Accept-Language', 'es').expect(200)
+
+        expect(response.body).toEqual([
+            { id: 1, name: 'Abstracto', categoryName: 'Género', gameCount: 1 },
+            { id: 2, name: 'Estrategia', categoryName: 'Género', gameCount: 2 },
+            { id: 3, name: 'Trading', categoryName: 'Mechanic', gameCount: 1 },
+        ])
+    })
+
+    it('shows a game’s tags in the reader’s language on its page', async () => {
+        const tags = async (language: string) =>
+            (
+                await request(app.getHttpServer())
+                    .get('/collection/users/1/games/2')
+                    .set(asPlayer)
+                    .set('Accept-Language', language)
+                    .expect(200)
+            ).body.tags
+
+        expect(await tags('en')).toEqual([
+            { tag: 'Strategy', category: 'Genre' },
+            { tag: 'Trading', category: 'Mechanic' },
+        ])
+        expect(await tags('fr')).toEqual([
+            { tag: 'Stratégie', category: 'Genre' },
+            { tag: 'Trading', category: 'Mechanic' },
         ])
     })
 })

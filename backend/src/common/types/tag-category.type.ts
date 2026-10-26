@@ -1,5 +1,8 @@
 import { ApiProperty, OmitType } from '@nestjs/swagger'
-import { IsNumber, IsString, MaxLength } from 'class-validator'
+import { Type } from 'class-transformer'
+import { IsNumber, IsOptional, IsString, MaxLength, ValidateNested } from 'class-validator'
+
+import { NameTranslationsDto } from './tag.type.js'
 
 /**
  * Tag category
@@ -13,6 +16,12 @@ export class TagCategoryDto {
     @IsString()
     @MaxLength(100)
     name: string
+
+    @ApiProperty({ type: NameTranslationsDto, required: false, description: 'The name in the other interface languages' })
+    @IsOptional()
+    @ValidateNested()
+    @Type(() => NameTranslationsDto)
+    translations?: NameTranslationsDto
 }
 
 /**

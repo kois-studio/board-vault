@@ -719,11 +719,15 @@ export type CollectionActivityWithGameDataType = CollectionActivityType & {
 // --------------------------------------------------------------------------
 // #region admin
 // --------------------------------------------------------------------------
+/** A tag's or category's name in the languages other than English (ADR-0024); English is `name`. */
+export type NameTranslationsType = Partial<Record<'es' | 'fr' | 'de' | 'it', string>>
+
 export type TagCategoryType = {
     id: number
     name: string
     tags: Array<TagType['id']>
     gameCount: number
+    translations: NameTranslationsType
 }
 
 export type TagType = {
@@ -731,6 +735,7 @@ export type TagType = {
     name: string
     categoryId: TagCategoryType['id']
     gameCount: number
+    translations: NameTranslationsType
 }
 
 // #region Game Proposal

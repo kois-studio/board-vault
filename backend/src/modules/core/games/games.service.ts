@@ -1,6 +1,7 @@
 import { ResultSet } from '@libsql/client'
 import { Injectable, Logger, NotFoundException } from '@nestjs/common'
 
+import { compareNames } from '../../../common/i18n/locale.js'
 import { safeErrorName } from '../../../common/logging/structured-log.js'
 import { gamesSchema } from '../../../common/schemas/index.js'
 import { GameDto } from '../../../common/types/game.type.js'
@@ -59,15 +60,19 @@ export class GamesService {
         return { gameIds: page.rows.map(row => Number(row[0])), total: Number(count.rows[0]?.[0] ?? 0) }
     }
 
-    async getCatalogueTags(): Promise<Array<CatalogueTagDto>> {
-        const resultSet = await this.databaseService.games.getCatalogueTags()
+    /** Tags used by catalogue games, named in `locale` and sorted the way it sorts: by category, then name. */
+    async getCatalogueTags(locale: Locale): Promise<Array<CatalogueTagDto>> {
+        const resultSet = await this.databaseService.games.getCatalogueTags(locale)
+        const compare = compareNames(locale)
 
-        return resultSet.rows.map(row => ({
-            id: Number(row[0]),
-            name: String(row[1]),
-            categoryName: String(row[2]),
-            gameCount: Number(row[3]),
-        }))
+        return resultSet.rows
+            .map(row => ({
+                id: Number(row['id']),
+                name: String(row['name']),
+                categoryName: String(row['categoryName']),
+                gameCount: Number(row['gameCount']),
+            }))
+            .sort((a, b) => compare(a.categoryName, b.categoryName) || compare(a.name, b.name))
     }
 
     /** Many games in one query, keyed by id. Missing ids are left out. */

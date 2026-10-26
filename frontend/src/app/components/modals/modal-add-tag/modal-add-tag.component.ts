@@ -7,9 +7,14 @@ import { ToastService } from '../../toast/toast.service'
 import { ButtonComponent } from '../../ui/button/button.component'
 import { DialogDirective } from '../../ui/dialog/dialog.directive'
 import { IconComponent } from '../../ui/icon/icon.component'
+import {
+    NameTranslationFieldsComponent,
+    nameTranslationsForm,
+    nameTranslationsPayload,
+} from '../../ui/name-translation-fields/name-translation-fields.component'
 
 @Component({
-    imports: [ReactiveFormsModule, ButtonComponent, DialogDirective, IconComponent],
+    imports: [ReactiveFormsModule, ButtonComponent, DialogDirective, IconComponent, NameTranslationFieldsComponent],
     selector: 'app-modal-add-tag',
     templateUrl: './modal-add-tag.component.html',
 })
@@ -36,6 +41,7 @@ export class ModalAddTagComponent {
     public addTagForm = new FormGroup({
         name: new FormControl('', [Validators.required, Validators.minLength(2), Validators.maxLength(50)]),
         categoryId: new FormControl<number | null>(null, [Validators.required]),
+        translations: nameTranslationsForm(),
     })
 
     // --------------------------------------------------------------------------
@@ -68,6 +74,7 @@ export class ModalAddTagComponent {
             .createAdminTag({
                 name: formValue.name,
                 categoryId: formValue.categoryId,
+                translations: nameTranslationsPayload(this.addTagForm.controls.translations),
             })
             .subscribe({
                 next: (newTag: TagType) => {

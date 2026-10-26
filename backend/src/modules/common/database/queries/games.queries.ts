@@ -9,6 +9,7 @@ import type { CatalogueQualityIssue } from '../../../../common/types/admin.type.
 import type { SupportedLanguage } from '../../../../common/types/game-translation.type.js'
 import type { BrowseSort, GameLength } from '../../../../common/types/game.type.js'
 import type { CreateNotificationBody } from '../../../../common/types/notification.type.js'
+import type { NameTranslations } from '../../../../common/types/tag.type.js'
 import type { DatabaseService } from '../database.service.js'
 import type { InValue } from '@libsql/client'
 
@@ -22,6 +23,12 @@ export type CatalogueFilters = {
     /** Leave out the games this account owns. */
     hideOwnedBy?: number
 }
+
+/** A tag's and its category's names in `:locale`, joined as `tagName` and `categoryName` (null when not translated). */
+const LOCALIZED_TAG_NAMES = `
+    LEFT JOIN TagTranslation tagName ON tagName.tagId = tag.id AND tagName.locale = :locale
+    LEFT JOIN TagCategoryTranslation categoryName ON categoryName.categoryId = category.id AND categoryName.locale = :locale
+`
 
 /** Average length in minutes. The ranges meet without overlapping. */
 const CATALOGUE_LENGTH: Record<GameLength, string> = {
@@ -300,16 +307,60 @@ export class GameQueries {
         })
     }
 
-    /** Tags used by at least one game, with their category and how many games have them. */
-    getCatalogueTags() {
-        return this.database.execute(`
-            SELECT tag.id, tag.name, category.name AS categoryName, COUNT(gameTag.gameId) AS gameCount
-            FROM Tag tag
-            JOIN TagCategory category ON category.id = tag.categoryId
-            JOIN GameTag gameTag ON gameTag.tagId = tag.id
-            GROUP BY tag.id
-            ORDER BY category.name, tag.name
-        `)
+    /** Tags used by at least one game, with their category and how many games have them; names in `locale`, else English. */
+    getCatalogueTags(locale: Locale) {
+        return this.database.execute({
+            sql: `
+                SELECT tag.id, COALESCE(tagName.name, tag.name) AS name, COALESCE(categoryName.name, category.name) AS categoryName,
+                    COUNT(gameTag.gameId) AS gameCount
+                FROM Tag tag
+                JOIN TagCategory category ON category.id = tag.categoryId
+                JOIN GameTag gameTag ON gameTag.tagId = tag.id
+                ${LOCALIZED_TAG_NAMES}
+                GROUP BY tag.id
+            `,
+            args: { locale },
+        })
+    }
+
+    /** One game's tags with their category; names in `locale`, else English. */
+    getGameTagNames(gameId: number, locale: Locale) {
+        return this.database.execute({
+            sql: `
+                SELECT COALESCE(tagName.name, tag.name) AS name, COALESCE(categoryName.name, category.name) AS categoryName
+                FROM GameTag gameTag
+                JOIN Tag tag ON tag.id = gameTag.tagId
+                JOIN TagCategory category ON category.id = tag.categoryId
+                ${LOCALIZED_TAG_NAMES}
+                WHERE gameTag.gameId = :gameId
+            `,
+            args: { gameId, locale },
+        })
+    }
+
+    /** Every tag's names in the other languages, for Administration. */
+    getTagTranslations() {
+        return this.database.execute('SELECT tagId AS id, locale, name FROM TagTranslation')
+    }
+
+    /** Every tag category's names in the other languages, for Administration. */
+    getTagCategoryTranslations() {
+        return this.database.execute('SELECT categoryId AS id, locale, name FROM TagCategoryTranslation')
+    }
+
+    /** Sets a tag's (or category's) name in the given languages; an empty name removes that language. */
+    setNameTranslations(table: 'TagTranslation' | 'TagCategoryTranslation', id: number, names: NameTranslations) {
+        const key = table === 'TagTranslation' ? 'tagId' : 'categoryId'
+        const statements = Object.entries(names).map(([locale, name]) =>
+            name
+                ? {
+                      sql: `INSERT INTO ${table} (${key}, locale, name) VALUES (?, ?, ?) ON CONFLICT (${key}, locale) DO UPDATE SET name = excluded.name`,
+                      args: [id, locale, name],
+                  }
+                : { sql: `DELETE FROM ${table} WHERE ${key} = ? AND locale = ?`, args: [id, locale] },
+        )
+
+        return statements.length > 0 ? this.database.batch(statements) : Promise.resolve([])
     }
 
     private catalogueWhere(filters: CatalogueFilters): { where: string; args: Array<InValue> } {

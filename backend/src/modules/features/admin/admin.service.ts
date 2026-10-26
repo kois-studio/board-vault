@@ -1,6 +1,7 @@
 import { BadRequestException, Injectable, Logger, NotFoundException } from '@nestjs/common'
 
 import { LogFeature } from '../../../common/decorators/logger.decorator.js'
+import { isSupportedLocale } from '../../../common/i18n/locale.js'
 import { structuredLog } from '../../../common/logging/structured-log.js'
 import {
     AdminGameDto,
@@ -32,6 +33,7 @@ import { CacheService } from '../../common/cache/cache.service.js'
 import { DatabaseService } from '../../common/database/database.service.js'
 
 import type { TagCategoryWithTagsDto } from '../../../common/types/tag-category.type.js'
+import type { NameTranslations } from '../../../common/types/tag.type.js'
 
 const ADMIN_OVERVIEW_CACHE_KEY = 'admin:overview'
 
@@ -60,21 +62,58 @@ export class AdminService {
 
     @LogFeature(new Logger('AdminService'))
     async getAdminTagCategories(): Promise<TagCategoryWithTagsDto[]> {
-        return this.tagCategoryService.getTagCategoriesWithTags()
+        const [categories, translations] = await Promise.all([
+            this.tagCategoryService.getTagCategoriesWithTags(),
+            this.nameTranslations('TagCategoryTranslation'),
+        ])
+
+        return categories.map(category => ({ ...category, translations: translations.get(category.id) ?? {} }))
     }
 
     // #endregion
 
-    async createTagCategory(name: string): Promise<TagCategoryWithTagsDto> {
+    async createTagCategory(name: string, translations: NameTranslations = {}): Promise<TagCategoryWithTagsDto> {
         const category = await this.tagCategoryService.createTagCategory(name)
 
-        return this.tagCategoryService.getTagCategoryWithTags(category.id)
+        await this.databaseService.games.setNameTranslations('TagCategoryTranslation', category.id, translations)
+
+        return this.adminTagCategory(category.id)
     }
 
-    async updateTagCategory(id: number, name: string): Promise<TagCategoryWithTagsDto> {
+    async updateTagCategory(id: number, name: string, translations: NameTranslations = {}): Promise<TagCategoryWithTagsDto> {
         await this.tagCategoryService.updateTagCategory(id, name)
+        await this.databaseService.games.setNameTranslations('TagCategoryTranslation', id, translations)
 
-        return this.tagCategoryService.getTagCategoryWithTags(id)
+        return this.adminTagCategory(id)
+    }
+
+    private async adminTagCategory(id: number): Promise<TagCategoryWithTagsDto> {
+        const [category, translations] = await Promise.all([
+            this.tagCategoryService.getTagCategoryWithTags(id),
+            this.nameTranslations('TagCategoryTranslation'),
+        ])
+
+        return { ...category, translations: translations.get(id) ?? {} }
+    }
+
+    /** Names in the other languages by tag (or category) id. */
+    private async nameTranslations(table: 'TagTranslation' | 'TagCategoryTranslation'): Promise<Map<number, NameTranslations>> {
+        const resultSet =
+            table === 'TagTranslation'
+                ? await this.databaseService.games.getTagTranslations()
+                : await this.databaseService.games.getTagCategoryTranslations()
+        const byId = new Map<number, NameTranslations>()
+
+        for (const row of resultSet.rows) {
+            const locale = String(row['locale'])
+
+            if (!isSupportedLocale(locale) || locale === 'en') continue
+            const id = Number(row['id'])
+
+            byId.set(id, { ...byId.get(id), [locale]: String(row['name']) })
+        }
+
+        return byId
     }
 
     async deleteTagCategory(id: number): Promise<{ success: boolean }> {
@@ -85,7 +124,7 @@ export class AdminService {
 
     @LogFeature(new Logger('AdminService'))
     async getAdminTags(): Promise<TagDto[]> {
-        const tags = await this.tagService.getTags()
+        const [tags, translations] = await Promise.all([this.tagService.getTags(), this.nameTranslations('TagTranslation')])
 
         return Promise.all(
             tags.map(async tag => {
@@ -94,6 +133,7 @@ export class AdminService {
                 return {
                     ...tag,
                     gameCount,
+                    translations: translations.get(tag.id) ?? {},
                 }
             }),
         )
@@ -101,24 +141,29 @@ export class AdminService {
 
     // #endregion
 
-    async createTag(name: string, categoryId: number): Promise<TagDto> {
+    async createTag(name: string, categoryId: number, translations: NameTranslations = {}): Promise<TagDto> {
         const tag = await this.tagService.createTag(name, categoryId)
-        const gameCount = await this.gameTagsService.getGameCountByTagId(tag.id)
 
-        return {
-            ...tag,
-            gameCount,
-        }
+        await this.databaseService.games.setNameTranslations('TagTranslation', tag.id, translations)
+
+        return this.adminTag(tag)
     }
 
-    async updateTag(id: number, name: string, categoryId: number): Promise<TagDto> {
+    async updateTag(id: number, name: string, categoryId: number, translations: NameTranslations = {}): Promise<TagDto> {
         const tag = await this.tagService.updateTag(id, name, categoryId)
-        const gameCount = await this.gameTagsService.getGameCountByTagId(tag.id)
 
-        return {
-            ...tag,
-            gameCount,
-        }
+        await this.databaseService.games.setNameTranslations('TagTranslation', id, translations)
+
+        return this.adminTag(tag)
+    }
+
+    private async adminTag(tag: TagDto): Promise<TagDto> {
+        const [gameCount, translations] = await Promise.all([
+            this.gameTagsService.getGameCountByTagId(tag.id),
+            this.nameTranslations('TagTranslation'),
+        ])
+
+        return { ...tag, gameCount, translations: translations.get(tag.id) ?? {} }
     }
 
     async deleteTag(id: number): Promise<{ success: boolean }> {
