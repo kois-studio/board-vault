@@ -211,6 +211,9 @@ are written without the prefix; the base address adds it.
 - `npm start` serves English at the root; `npm run start:es` (and `:fr`,
   `:de`, `:it`) serves one other language.
 
+How to mark text, translate it, and which words to use:
+[i18n.md](i18n.md).
+
 ## Security context
 
 - **Assets:** account records (email, username), private collections, group

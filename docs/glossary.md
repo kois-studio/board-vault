@@ -7,7 +7,7 @@ product decisions.
 | --- | --- | --- |
 | Group | A private workspace for one recurring game group. It owns shared decisions, sessions, and memory. | Community, public club |
 | Group person | A person represented inside one group (`GroupPerson`). It is either `linked` to a member's account, or a `placeholder` with no account until its owner claims it. The UI marks placeholders as “No account yet”. | Fake user, synthetic account, phantom member |
-| Shelf | One account's private list of games they can bring, labelled “My Games” in the Collection section. It is not automatically visible as a global catalogue. | Library, catalogue |
+| Shelf | One account's private list of games they can bring, labelled “My Games” in the Collection section. It is not automatically visible as a global catalogue. | Library (that is the group's tab), catalogue |
 | Shared shelf | The group view derived from member-owned games and group-scoped ownership records. It is the input to recommendations and planning. | Marketplace, public library |
 | Session | One planned or completed game night. The API still contains historical `Meet` names for compatibility. | Event when discussing game-night state |
 | Shortlist | The games a group has chosen to consider for a session. A shortlisted game is not necessarily played. | Final selection |
@@ -21,6 +21,9 @@ When a phrase must be shortened, prefer “person in this group” in explanator
 copy and “group person” in labels, API names, and documentation. In the UI the
 private list is “My Games” inside the “Collection” section; in documentation
 and API descriptions keep “shelf” for it and “shared shelf” for the group view.
+
+The Spanish, French, German, and Italian words for these terms, and the tone
+in each language, are in the [translation glossary](i18n.md#glossary).
 
 ## Pricing and currency boundary
 
