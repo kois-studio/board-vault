@@ -60,7 +60,7 @@
       </notes>
       <segment state="translated">
         <source>Repeated characters like &quot;aaa&quot; are easy to guess.</source>
-        <target>Sich wiederholende Zeichen wie "aaa" sind leicht zu erraten.</target>
+        <target>Sich wiederholende Zeichen wie &quot;aaa&quot; sind leicht zu erraten.</target>
       </segment>
     </unit>
     <unit id="1316194950149848003">
@@ -250,7 +250,7 @@
       </notes>
       <segment state="translated">
         <source>Common character sequences like &quot;abc&quot; are easy to guess.</source>
-        <target>Häufige Zeichenfolgen wie "abc" sind leicht zu erraten.</target>
+        <target>Häufige Zeichenfolgen wie &quot;abc&quot; sind leicht zu erraten.</target>
       </segment>
     </unit>
     <unit id="2031932285140054383">
@@ -1594,7 +1594,7 @@
       </notes>
       <segment state="translated">
         <source>Avoid predictable letter substitutions like &apos;@&apos; for &apos;a&apos;.</source>
-        <target>Vorhersehbare Buchstabenersetzungen wie '@' für 'a' vermeiden.</target>
+        <target>Vorhersehbare Buchstabenersetzungen wie &apos;@&apos; für &apos;a&apos; vermeiden.</target>
       </segment>
     </unit>
     <unit id="6376922083892592201">
@@ -2490,7 +2490,7 @@
       </notes>
       <segment state="translated">
         <source>Repeated character patterns like &quot;abcabcabc&quot; are easy to guess.</source>
-        <target>Sich wiederholende Zeichenmuster wie "abcabcabc" sind leicht zu erraten.</target>
+        <target>Sich wiederholende Zeichenmuster wie &quot;abcabcabc&quot; sind leicht zu erraten.</target>
       </segment>
     </unit>
     <unit id="9137951864770451001">

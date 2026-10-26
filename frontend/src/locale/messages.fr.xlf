@@ -60,7 +60,7 @@
       </notes>
       <segment state="translated">
         <source>Repeated characters like &quot;aaa&quot; are easy to guess.</source>
-        <target>Les caractères répétés comme 'aaa' sont faciles à deviner.</target>
+        <target>Les caractères répétés comme &apos;aaa&apos; sont faciles à deviner.</target>
       </segment>
     </unit>
     <unit id="1316194950149848003">
@@ -250,7 +250,7 @@
       </notes>
       <segment state="translated">
         <source>Common character sequences like &quot;abc&quot; are easy to guess.</source>
-        <target>Des séquences de caractères communs comme 'abc' sont faciles à deviner.</target>
+        <target>Des séquences de caractères communs comme &apos;abc&apos; sont faciles à deviner.</target>
       </segment>
     </unit>
     <unit id="2031932285140054383">
@@ -754,7 +754,7 @@
       </notes>
       <segment state="translated">
         <source>Your password works, but could be stronger. Try adding more characters.</source>
-        <target>Votre mot de passe fonctionne mais pourrait être plus sûr. Essayez d'ajouter des caractères.</target>
+        <target>Votre mot de passe fonctionne mais pourrait être plus sûr. Essayez d&apos;ajouter des caractères.</target>
       </segment>
     </unit>
     <unit id="3736594653461707643">
@@ -1052,7 +1052,7 @@
       </notes>
       <segment state="translated">
         <source>Your password meets all the necessary requirements.</source>
-        <target>Bien joué. C'est un excellent mot de passe.</target>
+        <target>Bien joué. C&apos;est un excellent mot de passe.</target>
       </segment>
     </unit>
     <unit id="4757507927002475818">
@@ -1594,7 +1594,7 @@
       </notes>
       <segment state="translated">
         <source>Avoid predictable letter substitutions like &apos;@&apos; for &apos;a&apos;.</source>
-        <target>Évitez les substitutions de lettres prévisibles comme '@' pour 'a'.</target>
+        <target>Évitez les substitutions de lettres prévisibles comme &apos;@&apos; pour &apos;a&apos;.</target>
       </segment>
     </unit>
     <unit id="6376922083892592201">
@@ -2346,7 +2346,7 @@
       </notes>
       <segment state="translated">
         <source>Your password is not strong enough.</source>
-        <target>Votre mot de passe n'est pas assez fort.</target>
+        <target>Votre mot de passe n&apos;est pas assez fort.</target>
       </segment>
     </unit>
     <unit id="8694180754500384388">
@@ -2490,7 +2490,7 @@
       </notes>
       <segment state="translated">
         <source>Repeated character patterns like &quot;abcabcabc&quot; are easy to guess.</source>
-        <target>Les caractères répétés comme 'abcabcabc' sont faciles à deviner.</target>
+        <target>Les caractères répétés comme &apos;abcabcabc&apos; sont faciles à deviner.</target>
       </segment>
     </unit>
     <unit id="9137951864770451001">
