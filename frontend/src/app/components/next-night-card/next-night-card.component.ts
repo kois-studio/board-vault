@@ -5,7 +5,7 @@ import { firstValueFrom } from 'rxjs'
 import { Api } from '../../api/api'
 import type { AccountMeetType, GameCompleteType } from '../../api/api.types'
 import { intlLocale } from '../../core/i18n/format'
-import { gameTitle } from '../../core/utils/gameTitle'
+import { gameTitle, gameTitleLanguage } from '../../core/utils/gameTitle'
 import { type NightSummary, summariseNight } from '../../core/utils/nightSummary'
 import { relativeDay, sessionDate, upcomingState } from '../../core/utils/sessionTiming'
 import { SessionAnswerComponent } from '../session-answer/session-answer.component'
@@ -65,7 +65,7 @@ export class NextNightCardComponent {
             .map(({ gameId }) => this.games().get(gameId))
             .filter((game): game is GameCompleteType => game !== undefined)
             .slice(0, COVERS_SHOWN)
-            .map((game) => ({ id: game.id, title: gameTitle(game), imageUrl: game.imageUrl })),
+            .map((game) => ({ id: game.id, title: gameTitle(game), lang: gameTitleLanguage(game), imageUrl: game.imageUrl })),
     )
 
     /** "Azul leads with 3 votes" when one game is ahead, otherwise how many are shortlisted. */

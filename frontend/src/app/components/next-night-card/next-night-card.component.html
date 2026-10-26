@@ -58,7 +58,7 @@
 <ng-template #coverRow let-size="size">
     <ul class="flex shrink-0 gap-1.5" aria-label="Shortlist" i18n-aria-label="Name of the covers of the shortlisted games on the game night card on Home">
         @for (game of covers(); track game.id) {
-            <li class="relative flex items-center justify-center overflow-hidden rounded-lg bg-bv-surface-2 text-xs font-bold text-bv-text-muted" [class]="size" [title]="game.title">
+            <li class="relative flex items-center justify-center overflow-hidden rounded-lg bg-bv-surface-2 text-xs font-bold text-bv-text-muted" [class]="size" [title]="game.title" [attr.lang]="game.lang">
                 <span aria-hidden="true">{{ game.title.slice(0, 2).toUpperCase() }}</span>
                 <span class="sr-only">{{ game.title }}</span>
                 @if (game.imageUrl) {

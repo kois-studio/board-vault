@@ -69,7 +69,7 @@
       </notes>
       <segment state="translated">
         <source>No winners recorded yet. Mark who won on a session page and the table ranks by wins.</source>
-        <target>Noch keine Sieger eingetragen. Trag auf der Seite eines Spieleabends ein, wer gewonnen hat, dann sortiert die Tabelle nach Siegen.</target>
+        <target>Noch keine Siege eingetragen. Trag auf der Seite eines Spieleabends ein, wer gewonnen hat, dann sortiert die Tabelle nach Siegen.</target>
       </segment>
     </unit>
     <unit id="1055686627716339120">
@@ -5606,7 +5606,7 @@
       </notes>
       <segment state="translated">
         <source>owner</source>
-        <target>Admin</target>
+        <target>Verwaltung</target>
       </segment>
     </unit>
     <unit id="6410061944418845662">
@@ -6352,7 +6352,7 @@
       </notes>
       <segment state="translated">
         <source>Retry invitations</source>
-        <target>Erneut versuchen</target>
+        <target>Einladungen erneut versuchen</target>
       </segment>
     </unit>
     <unit id="7139520592812430718">
@@ -6659,7 +6659,7 @@
       </notes>
       <segment state="translated">
         <source>Games the group wants next</source>
-        <target>Spiele, die sich die Gruppe wünscht</target>
+        <target>Spiele, die sich die Gruppe als Nächstes wünscht</target>
       </segment>
     </unit>
     <unit id="7487835358633203767">

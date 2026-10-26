@@ -97,7 +97,7 @@
                                     <div class="aspect-square overflow-hidden rounded-xl">
                                         <image-background class="h-full" [src]="game.imageUrl" [alt]="''" />
                                     </div>
-                                    <p class="mt-2 truncate px-1 text-sm font-medium group-hover:text-bv-primary" [title]="game.title || untitledGame">{{ game.title || untitledGame }}</p>
+                                    <p class="mt-2 truncate px-1 text-sm font-medium group-hover:text-bv-primary" [title]="game | gameTitle" [attr.lang]="titleLanguage(game)">{{ game | gameTitle }}</p>
                                 </a>
                             </li>
                         }
