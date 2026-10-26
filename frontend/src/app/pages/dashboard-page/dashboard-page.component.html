@@ -4,16 +4,28 @@
         <header class="flex flex-wrap items-center justify-between gap-4">
             <div class="min-w-0 max-w-full">
                 <h1 class="text-2xl font-extrabold tracking-tight wrap-anywhere lg:text-3xl">
-                    {{ isNew() ? 'Welcome' : 'Hi' }}{{ greetingName() ? ', ' + greetingName() : '' }}
+                    @if (isNew()) {
+                        @if (greetingName()) {
+                            <ng-container i18n="Greeting on Home for a new account; the placeholder is your name">Welcome, {{ greetingName() }}</ng-container>
+                        } @else {
+                            <ng-container i18n="Greeting on Home for a new account without a name">Welcome</ng-container>
+                        }
+                    } @else {
+                        @if (greetingName()) {
+                            <ng-container i18n="Greeting on Home; the placeholder is your name">Hi, {{ greetingName() }}</ng-container>
+                        } @else {
+                            <ng-container i18n="Greeting on Home for an account without a name">Hi</ng-container>
+                        }
+                    }
                 </h1>
                 @if (isNew()) {
-                    <p class="mt-1 max-w-xl text-sm text-secondary">Board Vault works around a group: the people you play with and the games you all own.</p>
+                    <p class="mt-1 max-w-xl text-sm text-secondary" i18n="Line under the greeting on Home for a new account">Board Vault works around a group: the people you play with and the games you all own.</p>
                 }
             </div>
             @if (userGroups$().length > 0) {
                 <div class="grid w-full grid-cols-2 gap-2 sm:flex sm:w-auto">
-                    <a appButton icon="plus" class="justify-center" routerLink="/play/log-session" [queryParams]="userGroups$().length === 1 ? { groupId: userGroups$()[0]?.id } : null">Record a session</a>
-                    <a appButton variant="secondary" class="justify-center" [routerLink]="planLink().link" [queryParams]="planLink().query">Plan a game night</a>
+                    <a appButton icon="plus" class="justify-center" routerLink="/play/log-session" [queryParams]="userGroups$().length === 1 ? { groupId: userGroups$()[0]?.id } : null" i18n="Button at the top of Home that records a game night that already happened">Record a session</a>
+                    <a appButton variant="secondary" class="justify-center" [routerLink]="planLink().link" [queryParams]="planLink().query" i18n="Button at the top of Home">Plan a game night</a>
                 </div>
             }
         </header>
@@ -21,18 +33,18 @@
         <!-- Invitations come first: they are the only thing waiting on you. -->
         @if (!isLoadingInvitations() && userInvitationsError()) {
             <section class="rounded-2xl border border-bv-warning/30 bg-bv-warning/10 p-6" aria-labelledby="invitations-error-heading">
-                <h2 id="invitations-error-heading" class="text-lg font-bold">Invitations are temporarily unavailable</h2>
-                <p class="mt-2 text-sm text-secondary">We could not refresh your pending group invitations. Your groups are still available below.</p>
-                <button appButton variant="secondary" type="button" class="mt-4" (click)="retryInvitations()">Retry invitations</button>
+                <h2 id="invitations-error-heading" class="text-lg font-bold" i18n="Heading on Home when your group invitations could not be loaded">Invitations are temporarily unavailable</h2>
+                <p class="mt-2 text-sm text-secondary" i18n="Text on Home when your group invitations could not be loaded">We could not refresh your pending group invitations. Your groups are still available below.</p>
+                <button appButton variant="secondary" type="button" class="mt-4" (click)="retryInvitations()" i18n="Button on Home when your group invitations could not be loaded">Retry invitations</button>
             </section>
         } @else if (!isLoadingInvitations() && userInvitations$().length > 0) {
             <section class="rounded-2xl border border-bv-primary/30 bg-bv-primary-soft p-6" aria-labelledby="pending-invitations-heading">
                 <div class="flex flex-wrap items-start justify-between gap-3">
                     <div>
-                        <h2 id="pending-invitations-heading" class="text-xl font-bold">Invitations waiting for you</h2>
-                        <p class="mt-1 text-sm text-secondary">Accept to join the group’s shared games and history, or decline if it is not for you.</p>
+                        <h2 id="pending-invitations-heading" class="text-xl font-bold" i18n="Heading on Home above the group invitations you have not answered">Invitations waiting for you</h2>
+                        <p class="mt-1 text-sm text-secondary" i18n="Text on Home under Invitations waiting for you">Accept to join the group’s shared games and history, or decline if it is not for you.</p>
                     </div>
-                    <span class="rounded-full bg-bv-surface px-3 py-1 text-sm font-semibold text-bv-primary">{{ userInvitations$().length }} pending</span>
+                    <span class="rounded-full bg-bv-surface px-3 py-1 text-sm font-semibold text-bv-primary" i18n="Chip on Home with how many group invitations you have not answered">{userInvitations$().length, plural, one {{{ userInvitations$().length }} pending} other {{{ userInvitations$().length }} pending}}</span>
                 </div>
                 <ul class="mt-5 grid grid-cols-1 gap-4 lg:grid-cols-2">
                     @for (invitation of userInvitations$(); track invitation.id) {
@@ -43,43 +55,43 @@
         }
 
         @if (isLoadingGroups() && userGroups$().length === 0) {
-            <div class="grid grid-cols-1 gap-6 xl:grid-cols-2" aria-busy="true" aria-label="Loading your groups">
+            <div class="grid grid-cols-1 gap-6 xl:grid-cols-2" aria-busy="true" aria-label="Loading your groups" i18n-aria-label="Name of the placeholder shown on Home while your groups load">
                 @for (item of [1, 2]; track item) {
                     <app-skeleton-card-group />
                 }
             </div>
         } @else if (userGroupsError()) {
             <div class="rounded-2xl border border-bv-warning/30 bg-bv-warning/10 p-8 text-center" role="alert">
-                <p class="text-lg font-medium">Your groups could not be loaded.</p>
-                <p class="mt-2 text-secondary">Try again without losing your saved groups.</p>
-                <button appButton type="button" class="mt-4" (click)="retryGroups()">Retry</button>
+                <p class="text-lg font-medium" i18n="Error on Home when your groups could not be loaded">Your groups could not be loaded.</p>
+                <p class="mt-2 text-secondary" i18n="Error on Home when your groups could not be loaded">Try again without losing your saved groups.</p>
+                <button appButton type="button" class="mt-4" (click)="retryGroups()" i18n="Button under an error">Retry</button>
             </div>
         } @else if (isNew()) {
             <!-- A new account: one thing to do, and what comes after it. Nothing else has anything to show yet. -->
             <div class="grid grid-cols-1 gap-8 lg:grid-cols-2 lg:items-start">
                 <section class="rounded-2xl border border-bv-primary/40 bg-bv-primary-soft p-6" aria-labelledby="first-group-heading">
                     <span class="flex h-11 w-11 items-center justify-center rounded-xl bg-bv-primary text-bv-on-primary" aria-hidden="true"><app-icon name="users" [size]="22" /></span>
-                    <h2 id="first-group-heading" class="mt-4 text-xl font-extrabold">Start with the people you play with</h2>
-                    <p class="mt-2 text-sm leading-6 text-secondary">Create a private group and invite your friends. Friends without an account can be added by name.</p>
-                    <a appButton routerLink="/create-group" class="mt-5 w-full justify-center sm:w-auto">Create your first group</a>
+                    <h2 id="first-group-heading" class="mt-4 text-xl font-extrabold" i18n="Heading on Home for a new account">Start with the people you play with</h2>
+                    <p class="mt-2 text-sm leading-6 text-secondary" i18n="Text on Home for a new account">Create a private group and invite your friends. Friends without an account can be added by name.</p>
+                    <a appButton routerLink="/create-group" class="mt-5 w-full justify-center sm:w-auto" i18n="Button on Home for a new account">Create your first group</a>
                     <p class="mt-4 flex items-center gap-2 text-xs text-secondary">
                         <app-icon name="mail" [size]="14" aria-hidden="true" />
-                        Waiting for an invitation? It appears right here.
+                        <ng-container i18n="Hint on Home for a new account">Waiting for an invitation? It appears right here.</ng-container>
                     </p>
                 </section>
 
                 <section aria-labelledby="setup-heading">
                     <div class="mb-3 flex items-baseline justify-between gap-3">
-                        <h2 id="setup-heading" class="text-lg font-bold">Getting set up</h2>
-                        <span class="text-xs text-secondary">{{ hasGames() ? 1 : 0 }} of 3 done</span>
+                        <h2 id="setup-heading" class="text-lg font-bold" i18n="Heading of the first steps on Home for a new account">Getting set up</h2>
+                        <span class="text-xs text-secondary" i18n="How many of the three first steps on Home are done; the placeholder is 0 or 1">{{ hasGames() ? 1 : 0 }} of 3 done</span>
                     </div>
                     <ol class="divide-y divide-bv-border rounded-2xl border border-bv-border bg-bv-surface">
                         <li>
                             <a routerLink="/create-group" class="flex items-center gap-3 p-4 transition hover:bg-bv-bg">
                                 <span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-bv-primary text-sm font-bold text-bv-on-primary" aria-hidden="true">1</span>
                                 <span class="min-w-0 flex-1">
-                                    <span class="block font-semibold">Create a group</span>
-                                    <span class="block text-xs text-secondary">Everything else hangs off it</span>
+                                    <span class="block font-semibold" i18n="First step on Home for a new account">Create a group</span>
+                                    <span class="block text-xs text-secondary" i18n="Line under the first step on Home for a new account, Create a group">Everything else hangs off it</span>
                                 </span>
                                 <app-icon name="chevron-right" [size]="18" className="text-bv-text-muted" aria-hidden="true" />
                             </a>
@@ -92,8 +104,8 @@
                                     <span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-bv-border text-sm font-bold text-bv-text-muted" aria-hidden="true">2</span>
                                 }
                                 <span class="min-w-0 flex-1">
-                                    <span class="block font-semibold">Add the games you own<span class="sr-only">{{ hasGames() ? ' (done)' : '' }}</span></span>
-                                    <span class="block text-xs text-secondary">Your group sees them when planning a night</span>
+                                    <span class="block font-semibold"><ng-container i18n="Step on Home that leads to Browse">Add the games you own</ng-container>@if (hasGames()) {<span class="sr-only" i18n="Read by screen readers after a first step on Home that is done"> (done)</span>}</span>
+                                    <span class="block text-xs text-secondary" i18n="Line under the step on Home, Add the games you own">Your group sees them when planning a night</span>
                                 </span>
                                 <app-icon name="chevron-right" [size]="18" className="text-bv-text-muted" aria-hidden="true" />
                             </a>
@@ -101,8 +113,8 @@
                         <li class="flex items-center gap-3 p-4 text-bv-text-muted">
                             <span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-bv-border text-sm font-bold text-bv-text-muted" aria-hidden="true">3</span>
                             <span class="min-w-0 flex-1">
-                                <span class="block font-semibold">Plan your first game night</span>
-                                <span class="block text-xs text-secondary">Once you have a group</span>
+                                <span class="block font-semibold" i18n="Third step on Home for a new account">Plan your first game night</span>
+                                <span class="block text-xs text-secondary" i18n="Line under the third step on Home for a new account">Once you have a group</span>
                             </span>
                         </li>
                     </ol>
@@ -114,18 +126,18 @@
                 <div class="min-w-0 space-y-8">
                     <!-- Only when there is a night to show: planning lives in the header, so nothing planned shows nothing. -->
                     @if ((isLoadingMeets() && !nextNight()) || userMeetsError() || nextNight()) {
-                    <section aria-label="Game nights" class="space-y-3">
+                    <section aria-label="Game nights" i18n-aria-label="Name of the section on Home with the next game nights" class="space-y-3">
                         @if (isLoadingMeets() && !nextNight()) {
-                            <div class="h-44 animate-pulse rounded-2xl bg-bv-surface-2" aria-busy="true" aria-label="Loading game nights"></div>
+                            <div class="h-44 animate-pulse rounded-2xl bg-bv-surface-2" aria-busy="true" aria-label="Loading game nights" i18n-aria-label="Name of the placeholder on Home while game nights load"></div>
                         } @else if (userMeetsError()) {
                             <p class="rounded-2xl border border-bv-warning/30 bg-bv-warning/10 p-5 text-sm" role="alert">
-                                Game nights could not be loaded.
-                                <button type="button" class="ml-2 font-semibold underline" (click)="retryGroups()">Retry</button>
+                                <ng-container i18n="Error on Home">Game nights could not be loaded.</ng-container>
+                                <button type="button" class="ml-2 font-semibold underline" (click)="retryGroups()" i18n="Button under an error">Retry</button>
                             </p>
                         } @else if (nextNight(); as night) {
                             <app-next-night-card class="block" [night]="night" [groupName]="groupName(night.groupId)" [games]="nextNightGames()" [bringing]="gamesToBringLabel(night)" />
                             @if (laterNights().length > 0) {
-                                <ul class="divide-y divide-bv-border rounded-2xl border border-bv-border bg-bv-surface" aria-label="Later game nights">
+                                <ul class="divide-y divide-bv-border rounded-2xl border border-bv-border bg-bv-surface" aria-label="Later game nights" i18n-aria-label="Name of the list on Home of the game nights after the next one">
                                     @for (meet of laterNights(); track meet.id) {
                                         <li class="flex flex-wrap items-center gap-x-3 gap-y-2 p-3 sm:flex-nowrap">
                                             <a [routerLink]="['/sessions', meet.id]" class="flex min-w-0 flex-1 items-center gap-3 rounded-lg hover:underline">
@@ -139,15 +151,15 @@
                                     }
                                 </ul>
                             }
-                            <a routerLink="/play/upcoming-sessions" class="inline-block text-sm font-semibold text-bv-primary hover:underline">All upcoming nights</a>
+                            <a routerLink="/play/upcoming-sessions" class="inline-block text-sm font-semibold text-bv-primary hover:underline" i18n="Link on Home to Play, Upcoming">All upcoming nights</a>
                         }
                     </section>
                     }
 
                     <section aria-labelledby="groups-heading">
                         <div class="mb-3 flex items-baseline justify-between gap-3">
-                            <h2 id="groups-heading" class="text-lg font-bold">{{ userGroups$().length === 1 ? 'Your group' : 'Your groups' }}</h2>
-                            <a routerLink="/create-group" class="text-sm font-semibold text-bv-primary hover:underline">+ New group</a>
+                            <h2 id="groups-heading" class="text-lg font-bold" i18n="Heading of your groups on Home">{userGroups$().length, plural, =1 {Your group} other {Your groups}}</h2>
+                            <a routerLink="/create-group" class="text-sm font-semibold text-bv-primary hover:underline" i18n="Link on Home that creates a group">+ New group</a>
                         </div>
                         @if (userGroups$().length === 1) {
                             @for (group of userGroups$(); track group.id) {
@@ -168,7 +180,7 @@
                                             >
                                             <span class="min-w-0 flex-1">
                                                 <span class="block truncate font-bold">{{ group.name }}</span>
-                                                <span class="block text-xs text-secondary">{{ peopleInGroup(group) | count: 'person' : 'people' }} · {{ gamesInGroup(group) | count: 'game' }}</span>
+                                                <span class="block text-xs text-secondary"><ng-container i18n="How many people a group has">{peopleInGroup(group), plural, one {{{ peopleInGroup(group) }} person} other {{{ peopleInGroup(group) }} people}}</ng-container> · <ng-container i18n="How many different games the people in a group own">{gamesInGroup(group), plural, one {{{ gamesInGroup(group) }} game} other {{{ gamesInGroup(group) }} games}}</ng-container></span>
                                             </span>
                                             @if (activity) {
                                                 <span
@@ -186,8 +198,8 @@
                                             [class]="pinned ? 'border-bv-primary bg-bv-primary text-bv-on-primary' : 'border-bv-border bg-bv-surface text-bv-text-muted opacity-0 hover:text-bv-primary focus-visible:opacity-100 group-hover/row:opacity-100 pointer-coarse:opacity-70'"
                                             [disabled]="home.loading() || home.error() || home.saving()"
                                             [attr.aria-pressed]="pinned"
-                                            [attr.aria-label]="pinned ? 'Unpin ' + group.name : 'Pin ' + group.name + ' to the top'"
-                                            [title]="pinned ? 'Unpin' : 'Pin to the top'"
+                                            [attr.aria-label]="pinLabel(group, pinned)"
+                                            [title]="pinTitle(pinned)"
                                             (click)="home.togglePin(group.id)"
                                         >
                                             <app-icon name="pin" [size]="14" aria-hidden="true" />
@@ -203,9 +215,15 @@
                 <div class="min-w-0 space-y-8">
                     <section aria-labelledby="recent-heading">
                         <div class="mb-3 flex items-baseline justify-between gap-3">
-                            <h2 id="recent-heading" class="text-lg font-bold">{{ recentlyPlayed().length > 0 ? 'Recently played' : 'Your history' }}</h2>
+                            <h2 id="recent-heading" class="text-lg font-bold">
+                                @if (recentlyPlayed().length > 0) {
+                                    <ng-container i18n="Heading on Home above your last game nights">Recently played</ng-container>
+                                } @else {
+                                    <ng-container i18n="Heading on Home above your history, before anything is recorded">Your history</ng-container>
+                                }
+                            </h2>
                             @if (recentlyPlayed().length > 0) {
-                                <a routerLink="/play/history" class="text-sm font-semibold text-bv-primary hover:underline">Full history</a>
+                                <a routerLink="/play/history" class="text-sm font-semibold text-bv-primary hover:underline" i18n="Link on Home to Play, History">Full history</a>
                             }
                         </div>
                         @if (recentlyPlayed().length > 0) {
@@ -224,12 +242,18 @@
                                                 }
                                             </span>
                                             <span class="min-w-0 flex-1">
-                                                <span class="block truncate font-semibold">{{ gameTitles(record) || 'No games recorded' }}</span>
+                                                <span class="block truncate font-semibold">
+                                                    @if (gameTitles(record); as titles) {
+                                                        {{ titles }}
+                                                    } @else {
+                                                        <ng-container i18n="A played game night on Home with no games recorded">No games recorded</ng-container>
+                                                    }
+                                                </span>
                                                 <span class="block truncate text-xs text-secondary">
                                                     @if (userGroups$().length > 1) {
                                                         {{ groupName(record.meetData.groupId) }} ·
                                                     }
-                                                    {{ historyDate(record) }} · {{ peopleCount(record) | count: 'person' : 'people' }}
+                                                    {{ historyDate(record) }} · <ng-container i18n="How many people came to a game night">{peopleCount(record), plural, one {{{ peopleCount(record) }} person} other {{{ peopleCount(record) }} people}}</ng-container>
                                                 </span>
                                             </span>
                                         </a>
@@ -241,10 +265,10 @@
                             <div class="flex items-center gap-3 rounded-2xl border border-dashed border-bv-border p-4">
                                 <span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-bv-surface-2 text-bv-text-muted" aria-hidden="true"><app-icon name="history" [size]="20" /></span>
                                 <span class="min-w-0 flex-1">
-                                    <span class="block text-sm font-semibold">Nothing recorded yet</span>
-                                    <span class="block text-xs text-secondary">Played before joining? Add past nights.</span>
+                                    <span class="block text-sm font-semibold" i18n="Empty history on Home">Nothing recorded yet</span>
+                                    <span class="block text-xs text-secondary" i18n="Empty history on Home">Played before joining? Add past nights.</span>
                                 </span>
-                                <a routerLink="/play/log-session" class="shrink-0 text-sm font-semibold text-bv-primary hover:underline">Record<span class="sr-only"> a past night</span></a>
+                                <a routerLink="/play/log-session" class="shrink-0 text-sm font-semibold text-bv-primary hover:underline" i18n="Link next to the empty history on Home; the hidden words are read only by screen readers">Record<span class="sr-only"> a past night</span></a>
                             </div>
                         }
                     </section>
@@ -253,8 +277,8 @@
                         <a routerLink="/collection/browse" class="flex items-center gap-3 rounded-2xl border border-dashed border-bv-border p-4 transition hover:border-bv-primary/40">
                             <span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-bv-primary-soft text-bv-on-primary-soft" aria-hidden="true"><app-icon name="circle-plus" [size]="20" /></span>
                             <span class="min-w-0 flex-1">
-                                <span class="block text-sm font-semibold">Add the games you own</span>
-                                <span class="block text-xs text-secondary">Your group sees them when planning a night</span>
+                                <span class="block text-sm font-semibold" i18n="Step on Home that leads to Browse">Add the games you own</span>
+                                <span class="block text-xs text-secondary" i18n="Line under the step on Home, Add the games you own">Your group sees them when planning a night</span>
                             </span>
                             <app-icon name="chevron-right" [size]="18" className="shrink-0 text-bv-text-muted" aria-hidden="true" />
                         </a>
@@ -266,8 +290,8 @@
                             <app-image-profile [avatar]="user.avatar" />
                             <span class="min-w-0 flex-1">
                                 <span class="block truncate font-semibold">{{ greetingName() }}</span>
-                                <span class="block text-xs text-secondary">{{ ownedGames() | count: 'game' }} · {{ nightsPlayed() | count: 'night' }} played</span>
-                                <span class="mt-1 block text-sm font-semibold text-bv-primary">Your page ›</span>
+                                <span class="block text-xs text-secondary"><ng-container i18n="How many games are on your shelf">{ownedGames(), plural, one {{{ ownedGames() }} game} other {{{ ownedGames() }} games}}</ng-container> · <ng-container i18n="How many game nights you have played">{nightsPlayed(), plural, one {{{ nightsPlayed() }} night played} other {{{ nightsPlayed() }} nights played}}</ng-container></span>
+                                <span class="mt-1 block text-sm font-semibold text-bv-primary" i18n="Link on Home to your page">Your page ›</span>
                             </span>
                         </a>
                     }

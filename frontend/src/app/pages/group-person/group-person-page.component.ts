@@ -40,6 +40,8 @@ export class GroupPersonPageComponent {
     private readonly dataService = inject(DataService)
     private readonly params = toSignal(inject(ActivatedRoute).paramMap, { requireSync: true })
 
+    public readonly untitledGame = $localize`:Name shown for a game the catalogue has no title for:Untitled game`
+
     public readonly groupId = computed(() => Number(this.params().get('groupId')))
     private readonly accountId = computed(() => (this.params().has('accountId') ? Number(this.params().get('accountId')) : null))
     private readonly personId = computed(() => (this.params().has('personId') ? Number(this.params().get('personId')) : null))

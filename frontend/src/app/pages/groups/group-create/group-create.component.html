@@ -1,23 +1,24 @@
 <main class="min-h-[calc(100vh-8rem)] bg-bv-bg px-4 py-10 sm:px-6 lg:px-8 lg:py-16">
   <div class="mx-auto max-w-5xl">
-    <a appButton routerLink="/dashboard" icon="arrow-left" variant="secondary" size="small">Back to groups</a>
+    <a appButton routerLink="/dashboard" icon="arrow-left" variant="secondary" size="small" i18n="Link on the page that creates a group, back to Home">Back to groups</a>
 
     <div class="mt-8 grid grid-cols-1 gap-8 lg:grid-cols-[minmax(0,1.1fr)_minmax(18rem,0.9fr)] lg:items-start">
       <section class="rounded-3xl border border-bv-border bg-bv-surface p-6 shadow-sm sm:p-10" aria-labelledby="create-group-heading">
-        <p class="text-sm font-semibold uppercase tracking-[0.18em] text-bv-primary">Start a shared space</p>
-        <h1 id="create-group-heading" class="mt-3 text-3xl font-bold tracking-tight text-bv-text sm:text-4xl">Create your game group</h1>
-        <p class="mt-4 max-w-xl text-lg leading-8 text-bv-text-muted">Give the people you play with one place to decide what is available, plan a session, and remember what you played.</p>
+        <p class="text-sm font-semibold uppercase tracking-[0.18em] text-bv-primary" i18n="Label on the page that creates a group">Start a shared space</p>
+        <h1 id="create-group-heading" class="mt-3 text-3xl font-bold tracking-tight text-bv-text sm:text-4xl" i18n="Heading on the page that creates a group">Create your game group</h1>
+        <p class="mt-4 max-w-xl text-lg leading-8 text-bv-text-muted" i18n="Text on the page that creates a group">Give the people you play with one place to decide what is available, plan a session, and remember what you played.</p>
         @if (!currentUser$()) {
-          <p class="mt-5 rounded-2xl border border-bv-primary/30 bg-bv-primary-soft p-4 text-sm text-bv-on-primary-soft" role="status">Loading your account before we create the group…</p>
+          <p class="mt-5 rounded-2xl border border-bv-primary/30 bg-bv-primary-soft p-4 text-sm text-bv-on-primary-soft" role="status" i18n="Shown on the page that creates a group while your account loads">Loading your account before we create the group…</p>
         }
 
         <form class="mt-8" (submit)="onSubmit($event)" novalidate>
-          <label for="group-name" class="mb-2 block text-sm font-semibold text-bv-text">What should your group be called?</label>
+          <label for="group-name" class="mb-2 block text-sm font-semibold text-bv-text" i18n="Label of the group name field on the page that creates a group">What should your group be called?</label>
           <input
             id="group-name"
             type="text"
             [formControl]="groupNameForm"
             placeholder="Friday night games"
+            i18n-placeholder="Example group name in the field on the page that creates a group"
             class="app-input"
             [class]="groupNameClass"
             autocomplete="organization"
@@ -25,19 +26,19 @@
             required
             aria-describedby="group-name-help group-name-error"
             />
-          <p id="group-name-help" class="mt-2 text-sm text-bv-text-muted">Use a name your friends will recognize. Next, you invite the people you play with.</p>
+          <p id="group-name-help" class="mt-2 text-sm text-bv-text-muted" i18n="Under the group name field on the page that creates a group">Use a name your friends will recognize. Next, you invite the people you play with.</p>
           <div id="group-name-error" aria-live="polite">
             @if (groupName.invalid && groupName.touched && groupName.hasError('required')) {
-              <p class="mt-2 text-sm text-bv-danger" role="alert">Choose a group name to continue.</p>
+              <p class="mt-2 text-sm text-bv-danger" role="alert" i18n="Error under an empty group name field">Choose a group name to continue.</p>
             }
             @if (groupName.invalid && groupName.touched && groupName.hasError('minlength')) {
-              <p class="mt-2 text-sm text-bv-danger" role="alert">Use at least 2 characters.</p>
+              <p class="mt-2 text-sm text-bv-danger" role="alert" i18n="Error under a group name field with a name that is too short">Use at least 2 characters.</p>
             }
             @if (groupName.invalid && groupName.touched && groupName.hasError('maxlength')) {
-              <p class="mt-2 text-sm text-bv-danger" role="alert">Keep the group name to 40 characters or fewer.</p>
+              <p class="mt-2 text-sm text-bv-danger" role="alert" i18n="Error under a group name field with a name that is too long">Keep the group name to 40 characters or fewer.</p>
             }
           </div>
-          <button appButton class="mt-6" type="submit" [disabled]="disableCreateButton" [loading]="isLoading()" variant="primary" [wide]="true">Create group</button>
+          <button appButton class="mt-6" type="submit" [disabled]="disableCreateButton" [loading]="isLoading()" variant="primary" [wide]="true" i18n="Button on the page that creates a group">Create group</button>
           @if (createError()) {
             <p class="mt-4 rounded-2xl border border-bv-danger/30 bg-bv-danger/10 p-4 text-sm text-bv-danger" role="alert">{{ createError() }}</p>
           }
@@ -45,20 +46,20 @@
       </section>
 
       <aside class="rounded-3xl border border-bv-primary/30 bg-bv-primary-soft p-6" aria-labelledby="after-create-heading">
-        <p class="text-sm font-semibold uppercase tracking-[0.18em] text-bv-primary">What happens next</p>
-        <h2 id="after-create-heading" class="mt-3 text-2xl font-bold text-bv-text">Build the group context</h2>
+        <p class="text-sm font-semibold uppercase tracking-[0.18em] text-bv-primary" i18n="Label of the steps on the page that creates a group">What happens next</p>
+        <h2 id="after-create-heading" class="mt-3 text-2xl font-bold text-bv-text" i18n="Heading of the steps on the page that creates a group">Build the group context</h2>
         <ol class="mt-6 space-y-5">
           <li class="flex gap-3">
             <span class="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-bv-primary text-sm font-bold text-bv-on-primary">1</span>
-            <div><h3 class="font-semibold text-bv-text">Invite the people you play with</h3><p class="mt-1 text-sm leading-6 text-bv-text-muted">Keep the group private and focused on your real game nights.</p></div>
+            <div><h3 class="font-semibold text-bv-text" i18n="First step on the page that creates a group">Invite the people you play with</h3><p class="mt-1 text-sm leading-6 text-bv-text-muted" i18n="Under the first step on the page that creates a group">Keep the group private and focused on your real game nights.</p></div>
           </li>
           <li class="flex gap-3">
             <span class="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-bv-primary text-sm font-bold text-bv-on-primary">2</span>
-            <div><h3 class="font-semibold text-bv-text">Add useful games</h3><p class="mt-1 text-sm leading-6 text-bv-text-muted">Your personal shelf becomes the source for recommendations.</p></div>
+            <div><h3 class="font-semibold text-bv-text" i18n="Second step on the page that creates a group">Add useful games</h3><p class="mt-1 text-sm leading-6 text-bv-text-muted" i18n="Under the second step on the page that creates a group">Your personal shelf becomes the source for recommendations.</p></div>
           </li>
           <li class="flex gap-3">
             <span class="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-bv-primary text-sm font-bold text-bv-on-primary">3</span>
-            <div><h3 class="font-semibold text-bv-text">Plan and remember a session</h3><p class="mt-1 text-sm leading-6 text-bv-text-muted">The more your group records, the more useful its history becomes.</p></div>
+            <div><h3 class="font-semibold text-bv-text" i18n="Third step on the page that creates a group">Plan and remember a session</h3><p class="mt-1 text-sm leading-6 text-bv-text-muted" i18n="Under the third step on the page that creates a group">The more your group records, the more useful its history becomes.</p></div>
           </li>
         </ol>
       </aside>

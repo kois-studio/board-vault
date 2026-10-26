@@ -78,6 +78,11 @@ export function timeAgo(date: Date | number, now = Date.now()): string {
     return capitalize(relativeFormat().format(-Math.floor(seconds / divisor), unit))
 }
 
+/** "Ana", "Ana and Bo", "Ana, Bo and Cy": a complete list joined in the page's language. */
+export function formatList(items: Array<string>): string {
+    return new Intl.ListFormat(intlLocale(), { style: 'long', type: 'conjunction' }).format(items)
+}
+
 /** A number in the page's language ("1,234" / "1.234"). */
 export function formatNumber(value: number, options?: Intl.NumberFormatOptions): string {
     return new Intl.NumberFormat(intlLocale(), options).format(value)

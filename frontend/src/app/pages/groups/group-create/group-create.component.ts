@@ -54,7 +54,9 @@ export class GroupCreateComponent {
             // Inviting people is the next step, so start there.
             await this.router.navigate(['/groups', createdGroup.groupId, 'edit'])
         } catch {
-            this.createError.set('We could not create the group. Check your connection and try again; your group name is still here.')
+            this.createError.set(
+                $localize`:Error when a group could not be created:We could not create the group. Check your connection and try again; your group name is still here.`,
+            )
         } finally {
             this.isLoading.set(false)
         }

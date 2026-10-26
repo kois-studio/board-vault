@@ -33,10 +33,18 @@ export function sessionDateParts(meet: Pick<MeetType, 'meetDate' | 'timezone'>):
     }
 }
 
+/** The session's date in its own timezone, as the options ask ("Sat 24 Oct", "24 Oct 2026"). */
+export function sessionDate(meet: Pick<MeetType, 'meetDate' | 'timezone'>, options: Intl.DateTimeFormatOptions): string {
+    return formatDateTime(new Date(meet.meetDate), options, meet.timezone)
+}
+
+/** Calendar days from today to the session: 0 today, 1 tomorrow, -1 yesterday. */
+export function daysUntil(meetDate: string, now = new Date()): number {
+    const startOfDay = (date: Date) => Date.UTC(date.getFullYear(), date.getMonth(), date.getDate())
+    return Math.round((startOfDay(new Date(meetDate)) - startOfDay(now)) / DAY_MS)
+}
+
 /** "Today", "Tomorrow", "In 5 days", "Yesterday", "3 weeks ago", counted in calendar days. */
 export function relativeDay(meetDate: string, now = new Date()): string {
-    const startOfDay = (date: Date) => Date.UTC(date.getFullYear(), date.getMonth(), date.getDate())
-    const days = Math.round((startOfDay(new Date(meetDate)) - startOfDay(now)) / DAY_MS)
-
-    return relativeDays(days)
+    return relativeDays(daysUntil(meetDate, now))
 }

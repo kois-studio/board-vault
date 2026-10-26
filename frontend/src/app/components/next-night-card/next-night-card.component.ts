@@ -4,10 +4,10 @@ import { RouterLink } from '@angular/router'
 import { firstValueFrom } from 'rxjs'
 import { Api } from '../../api/api'
 import type { AccountMeetType, GameCompleteType } from '../../api/api.types'
+import { intlLocale } from '../../core/i18n/format'
 import { gameTitle } from '../../core/utils/gameTitle'
 import { type NightSummary, summariseNight } from '../../core/utils/nightSummary'
-import { countOf } from '../../core/utils/plural'
-import { relativeDay, sessionDateParts, upcomingState } from '../../core/utils/sessionTiming'
+import { relativeDay, sessionDate, upcomingState } from '../../core/utils/sessionTiming'
 import { SessionAnswerComponent } from '../session-answer/session-answer.component'
 import { ButtonComponent } from '../ui/button/button.component'
 
@@ -53,9 +53,10 @@ export class NextNightCardComponent {
     }
 
     readonly isLive = computed(() => upcomingState(this.night()) === 'live')
+    /** "Sat 24 Oct · 19:30" in the night's own timezone. */
     readonly when = computed(() => {
-        const parts = sessionDateParts(this.night())
-        return `${parts.weekday} ${parts.day} ${parts.month} · ${parts.time}`
+        const day = sessionDate(this.night(), { weekday: 'short', day: 'numeric', month: 'short' })
+        return `${day} · ${sessionDate(this.night(), { hour: '2-digit', minute: '2-digit', hour12: false })}`
     })
     readonly relative = computed(() => relativeDay(this.night().meetDate))
 
@@ -73,10 +74,18 @@ export class NextNightCardComponent {
         if (shortlist.length === 0) return null
         const [first, second] = shortlist
         const leader = first && first.votes > 0 && (!second || second.votes < first.votes) ? this.games().get(first.gameId) : undefined
+        const plural = new Intl.PluralRules(intlLocale())
         if (leader && first) {
-            return `${gameTitle(leader)} leads with ${countOf(first.votes, 'vote')}`
+            const title = gameTitle(leader)
+            const votes = first.votes
+            return plural.select(votes) === 'one'
+                ? $localize`:On the game night card on Home, the shortlisted game with the most votes, one vote:${title}:title: leads with ${votes}:votes: vote`
+                : $localize`:On the game night card on Home, the shortlisted game with the most votes, several votes:${title}:title: leads with ${votes}:votes: votes`
         }
-        return `${countOf(shortlist.length, 'game')} on the shortlist`
+        const count = shortlist.length
+        return plural.select(count) === 'one'
+            ? $localize`:On the game night card on Home, how many games are shortlisted, one:${count}:count: game on the shortlist`
+            : $localize`:On the game night card on Home, how many games are shortlisted, several:${count}:count: games on the shortlist`
     })
 
     public hideBrokenImage(event: Event): void {
