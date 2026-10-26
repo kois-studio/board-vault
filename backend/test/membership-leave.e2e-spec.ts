@@ -49,6 +49,10 @@ describe('leaving a group through DELETE /memberships (e2e)', () => {
                     (2, 'bruno@example.test', 'bruno', ${avatar}, 'Bruno', 'user_bruno');
                 INSERT INTO Game (id, imageUrl, gameAvgDuration, minPlayers, maxPlayers) VALUES (10, '', 60, 2, 4);
                 INSERT INTO GameTranslation (gameId, languageCode, title, normalizedTitle) VALUES (10, 'en', 'Catan', 'catan');
+                INSERT INTO GameEdition (gameId, languageCode, title, normalizedTitle, isPrimary)
+                SELECT gameId, languageCode, title, normalizedTitle,
+                       ROW_NUMBER() OVER (PARTITION BY gameId ORDER BY languageCode = 'en' DESC, languageCode) = 1
+                FROM GameTranslation ORDER BY gameId, languageCode;
                 INSERT INTO OwnedGame (accountId, gameId) VALUES (1, 10);
             `,
             encoding: 'utf8',

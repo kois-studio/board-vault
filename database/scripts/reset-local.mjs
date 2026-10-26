@@ -178,6 +178,10 @@ async function seedLocalScenario() {
                     sql: 'INSERT INTO GameTranslation (gameId, languageCode, title, normalizedTitle) VALUES (?, ?, ?, ?)',
                     args: [gameId, languageCode, title, title.toLowerCase()],
                 })
+                await transaction.execute({
+                    sql: 'INSERT INTO GameEdition (gameId, languageCode, title, normalizedTitle, isPrimary) VALUES (?, ?, ?, ?, ?)',
+                    args: [gameId, languageCode, title, title.toLowerCase(), languageCode === 'en' ? 1 : 0],
+                })
             }
         }
 

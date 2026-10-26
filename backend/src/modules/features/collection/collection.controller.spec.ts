@@ -77,6 +77,7 @@ describe('CollectionController review validation', () => {
         expect(browseCatalogue).toHaveBeenCalledWith(
             1,
             expect.objectContaining({ search: 'catan', page: 2, limit: 20, tags: [], hideOwned: false, sort: 'title' }),
+            'en',
         )
     })
 })

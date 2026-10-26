@@ -13,6 +13,8 @@ operational details.
 
 ### Added
 
+- Games now store their titles as editions, one per language. Nothing
+  changes on screen yet.
 - Tag and tag category names in Spanish, French, German, and Italian, edited
   in Administration → Tags; Browse filters and game pages show them in the
   page's language.

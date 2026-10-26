@@ -42,6 +42,10 @@ describe('recording a past session with group people (e2e)', () => {
                 VALUES (10, 'https://example.test/game-10.png', 60, 2, 4), (11, 'https://example.test/game-11.png', 30, 2, 5), (12, '', 15, 1, 8);
                 INSERT INTO GameTranslation (gameId, languageCode, title, normalizedTitle)
                 VALUES (10, 'en', 'Game Ten', 'game ten'), (11, 'en', 'Game Eleven', 'game eleven');
+                INSERT INTO GameEdition (gameId, languageCode, title, normalizedTitle, isPrimary)
+                SELECT gameId, languageCode, title, normalizedTitle,
+                       ROW_NUMBER() OVER (PARTITION BY gameId ORDER BY languageCode = 'en' DESC, languageCode) = 1
+                FROM GameTranslation ORDER BY gameId, languageCode;
                 INSERT INTO OwnedGame (accountId, gameId) VALUES (2, 10), (2, 11);
             `,
             encoding: 'utf8',

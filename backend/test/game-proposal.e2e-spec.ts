@@ -233,6 +233,10 @@ describe('proposing a game (e2e)', () => {
                 sql: 'SELECT languageCode, title FROM GameTranslation WHERE gameId = ? ORDER BY languageCode',
                 args: [gameId],
             })
+            const editions = await database.execute({
+                sql: 'SELECT languageCode, title, isPrimary FROM GameEdition WHERE gameId = ? ORDER BY languageCode',
+                args: [gameId],
+            })
             const tags = await database.execute({ sql: 'SELECT tagId FROM GameTag WHERE gameId = ?', args: [gameId] })
             const artwork = await database.execute({
                 sql: 'SELECT hash, contentType, sourceUrl FROM GameArtwork WHERE gameId = ?',
@@ -252,6 +256,10 @@ describe('proposing a game (e2e)', () => {
             expect(titles.rows.map(row => [row.languageCode, row.title])).toEqual([
                 ['en', 'Codenames'],
                 ['es', 'Código Secreto'],
+            ])
+            expect(editions.rows.map(row => [row.languageCode, row.title, Number(row.isPrimary)])).toEqual([
+                ['en', 'Codenames', 1],
+                ['es', 'Código Secreto', 0],
             ])
             expect(tags.rows.map(row => Number(row.tagId))).toEqual([partyTag])
         })
@@ -317,10 +325,16 @@ describe('proposing a game (e2e)', () => {
             )
             const catanId = Number(catan.rows[0]?.id)
 
-            await database.execute({
-                sql: "INSERT INTO GameTranslation (gameId, languageCode, title, normalizedTitle) VALUES (?, 'en', 'Catan', 'catan')",
-                args: [catanId],
-            })
+            await database.batch([
+                {
+                    sql: "INSERT INTO GameTranslation (gameId, languageCode, title, normalizedTitle) VALUES (?, 'en', 'Catan', 'catan')",
+                    args: [catanId],
+                },
+                {
+                    sql: "INSERT INTO GameEdition (gameId, languageCode, title, normalizedTitle, isPrimary) VALUES (?, 'en', 'Catan', 'catan', 1)",
+                    args: [catanId],
+                },
+            ])
 
             await request(app.getHttpServer()).post(`/admin/proposals/${proposalId}/duplicate`).set(asAdmin).send({}).expect(400)
             await request(app.getHttpServer())

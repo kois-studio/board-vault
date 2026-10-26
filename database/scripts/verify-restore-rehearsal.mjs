@@ -84,7 +84,7 @@ try {
                    (SELECT COUNT(*) FROM MeetGame) || '|' ||
                    (SELECT COUNT(*) FROM MeetAccountGame);
             SELECT (SELECT name FROM UserGroup WHERE id = 20) || '|' ||
-                   (SELECT title FROM GameTranslation WHERE gameId = 10 AND languageCode = 'en') || '|' ||
+                   (SELECT title FROM GameEdition WHERE gameId = 10 AND isPrimary = 1) || '|' ||
                    (SELECT expiresAt FROM Invitation WHERE id = 40);
             SELECT CASE WHEN (SELECT notes FROM Meet WHERE id = 30) IS NULL THEN 'notes:ok' ELSE 'notes:unexpected' END;
             SELECT (SELECT COUNT(*) FROM SchemaMigrations) || '|' || (SELECT MAX(version) FROM SchemaMigrations);

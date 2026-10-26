@@ -111,8 +111,12 @@ export class CollectionController {
     @Get('/users/:userId/browse/games')
     @ApiOperation({ summary: 'Browse the catalogue with filters', deprecated: false })
     @ApiResponse({ status: 200, type: BrowseGamesResultDto, description: 'One page of catalogue games matching the filters' })
-    async browseCatalogue(@Param('userId', ParseIntPipe) userId: number, @Query() query: BrowseGamesQuery) {
-        return this.collectionService.browseCatalogue(userId, query)
+    async browseCatalogue(
+        @Param('userId', ParseIntPipe) userId: number,
+        @Query() query: BrowseGamesQuery,
+        @RequestLocale() locale: Locale,
+    ) {
+        return this.collectionService.browseCatalogue(userId, query, locale)
     }
 
     @Get('/tags')

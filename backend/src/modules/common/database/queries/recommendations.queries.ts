@@ -194,13 +194,15 @@ export class RecommendationQueries {
                 INNER JOIN OwnedGame ownedByAttendee
                     ON ownedByAttendee.gameId = g.id
                    AND ownedByAttendee.accountId IN (${attendeePlaceholders})
-                LEFT JOIN GameTranslation gt_en
+                LEFT JOIN GameEdition gt_en
                     ON gt_en.gameId = g.id AND gt_en.languageCode = 'en'
-                LEFT JOIN GameTranslation gt_es
+                LEFT JOIN GameEdition gt_es
                     ON gt_es.gameId = g.id AND gt_es.languageCode = 'es'
+                LEFT JOIN GameEdition gt_pr
+                    ON gt_pr.gameId = g.id AND gt_pr.isPrimary = 1
                 WHERE (g.minPlayers IS NULL OR g.minPlayers <= ?)
                   AND (g.maxPlayers IS NULL OR g.maxPlayers >= ?)
-                  AND COALESCE(gt_en.title, gt_es.title) IS NOT NULL
+                  AND gt_pr.title IS NOT NULL
                   ${durationFilter}
                 GROUP BY g.id
             `,
@@ -288,11 +290,12 @@ export class RecommendationQueries {
                     ), 0) AS preferenceScore
                 FROM Game g
                 INNER JOIN available_games ON available_games.gameId = g.id
-                LEFT JOIN GameTranslation gt_en ON gt_en.gameId = g.id AND gt_en.languageCode = 'en'
-                LEFT JOIN GameTranslation gt_es ON gt_es.gameId = g.id AND gt_es.languageCode = 'es'
+                LEFT JOIN GameEdition gt_en ON gt_en.gameId = g.id AND gt_en.languageCode = 'en'
+                LEFT JOIN GameEdition gt_es ON gt_es.gameId = g.id AND gt_es.languageCode = 'es'
+                LEFT JOIN GameEdition gt_pr ON gt_pr.gameId = g.id AND gt_pr.isPrimary = 1
                 WHERE (g.minPlayers IS NULL OR g.minPlayers <= ?)
                   AND (g.maxPlayers IS NULL OR g.maxPlayers >= ?)
-                  AND COALESCE(gt_en.title, gt_es.title) IS NOT NULL
+                  AND gt_pr.title IS NOT NULL
                   ${durationFilter}
                 GROUP BY g.id
             `,

@@ -59,8 +59,8 @@ const gameResult = await client.execute({
     sql: `
         SELECT g.id, COALESCE(gt_en.title, gt_es.title) AS title
         FROM Game g
-        LEFT JOIN GameTranslation gt_en ON gt_en.gameId = g.id AND gt_en.languageCode = 'en'
-        LEFT JOIN GameTranslation gt_es ON gt_es.gameId = g.id AND gt_es.languageCode = 'es'
+        LEFT JOIN GameEdition gt_en ON gt_en.gameId = g.id AND gt_en.languageCode = 'en'
+        LEFT JOIN GameEdition gt_es ON gt_es.gameId = g.id AND gt_es.languageCode = 'es'
         WHERE g.id = ?
     `,
     args: [gameId],

@@ -48,6 +48,10 @@ describe('admin catalogue (e2e)', () => {
                     (1, 'en', 'Azul', 'azul'), (1, 'es', 'Azul (edición)', 'azul (edicion)'),
                     (2, 'en', 'Catan', 'catan'), (2, 'es', 'Catan', 'catan'),
                     (3, 'en', 'Hanabi', 'hanabi');
+                INSERT INTO GameEdition (gameId, languageCode, title, normalizedTitle, isPrimary)
+                SELECT gameId, languageCode, title, normalizedTitle,
+                       ROW_NUMBER() OVER (PARTITION BY gameId ORDER BY languageCode = 'en' DESC, languageCode) = 1
+                FROM GameTranslation ORDER BY gameId, languageCode;
                 INSERT INTO GameProposal (submittedBy, status, title, createdGameId, reviewedBy, reviewedAt, submittedAt) VALUES
                     (2, 'approved', 'Hanabi', 3, 1, datetime('now', '-2 days'), datetime('now', '-3 days')),
                     (2, 'rejected', 'Monopoly', NULL, 1, datetime('now', '-40 days'), datetime('now', '-41 days')),

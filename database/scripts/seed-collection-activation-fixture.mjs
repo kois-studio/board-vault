@@ -54,6 +54,10 @@ try {
                 sql: 'INSERT OR IGNORE INTO GameTranslation (gameId, languageCode, title, normalizedTitle) VALUES (?, \'en\', ?, ?)',
                 args: [game.id, game.title, game.title.toLowerCase().replace(/\s+/g, '-')],
             },
+            {
+                sql: 'INSERT OR IGNORE INTO GameEdition (gameId, languageCode, title, normalizedTitle, isPrimary) VALUES (?, \'en\', ?, ?, 1)',
+                args: [game.id, game.title, game.title.toLowerCase().replace(/\s+/g, '-')],
+            },
         ]),
         'write',
     )

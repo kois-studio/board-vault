@@ -164,10 +164,11 @@ export class NotificationQueries {
         const rows = (
             await transaction.execute({
                 sql: `
-                    SELECT g.id, COALESCE(gt_en.title, gt_es.title)
+                    SELECT g.id, COALESCE(gt_pr.title, gt_en.title, gt_es.title)
                     FROM Game g
-                    LEFT JOIN GameTranslation gt_en ON gt_en.gameId = g.id AND gt_en.languageCode = 'en'
-                    LEFT JOIN GameTranslation gt_es ON gt_es.gameId = g.id AND gt_es.languageCode = 'es'
+                    LEFT JOIN GameEdition gt_en ON gt_en.gameId = g.id AND gt_en.languageCode = 'en'
+                    LEFT JOIN GameEdition gt_es ON gt_es.gameId = g.id AND gt_es.languageCode = 'es'
+                    LEFT JOIN GameEdition gt_pr ON gt_pr.gameId = g.id AND gt_pr.isPrimary = 1
                     WHERE g.id IN (${placeholders(gameIds)})
                 `,
                 args: gameIds,
@@ -257,17 +258,16 @@ export class NotificationQueries {
         })
     }
 
-    /** Each game's title in the reader's language, else English, else Spanish, with the language it is in. */
+    /** Each game's title in the reader's language, else the primary edition, with the language it is in. */
     getContextGames(gameIds: Array<number>, locale: string) {
         return this.database.execute({
             sql: `
                 SELECT g.id,
-                    COALESCE(t.title, en.title, es.title) AS title,
-                    CASE WHEN t.title IS NOT NULL THEN t.languageCode WHEN en.title IS NOT NULL THEN 'en' ELSE 'es' END AS language
+                    COALESCE(t.title, pr.title) AS title,
+                    COALESCE(t.languageCode, pr.languageCode) AS language
                 FROM Game g
-                LEFT JOIN GameTranslation t ON t.gameId = g.id AND t.languageCode = ?
-                LEFT JOIN GameTranslation en ON en.gameId = g.id AND en.languageCode = 'en'
-                LEFT JOIN GameTranslation es ON es.gameId = g.id AND es.languageCode = 'es'
+                LEFT JOIN GameEdition t ON t.gameId = g.id AND t.languageCode = ?
+                LEFT JOIN GameEdition pr ON pr.gameId = g.id AND pr.isPrimary = 1
                 WHERE g.id IN (${NotificationQueries.placeholders(gameIds)})
             `,
             args: [locale, ...gameIds],

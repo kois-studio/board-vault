@@ -24,7 +24,7 @@ export class GameTranslationService {
     private _parseResultSet(resultSet: ResultSet): Array<GameTranslationDto> {
         const gameTranslations = resultSet.rows.map(row => ({
             gameId: Number(row[0]),
-            languageCode: String(row[1]) as SupportedLanguage,
+            languageCode: String(row[1]),
             title: String(row[2]),
             normalizedTitle: String(row[3]),
         }))
@@ -69,14 +69,17 @@ export class GameTranslationService {
         )
     }
 
+    /** One title per edition, keyed by its language. `en` and `es` are always present (empty when the game has no such edition). */
     private _reduceGameTranslations(gameTranslations: Array<GameTranslationDto>): Record<SupportedLanguage, string> {
-        return gameTranslations.reduce(
+        const titles = gameTranslations.reduce(
             (acc, translation) => {
                 acc[translation.languageCode] = translation.title
                 return acc
             },
-            { en: '', es: '' } as Record<SupportedLanguage, string>,
+            { en: '', es: '' } as Record<string, string>,
         )
+
+        return titles as Record<SupportedLanguage, string>
     }
 
     // --------------------------------------------------------------------------

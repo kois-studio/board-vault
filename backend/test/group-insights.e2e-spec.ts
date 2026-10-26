@@ -56,6 +56,10 @@ describe('group insights (e2e)', () => {
                     (13, 'https://example.test/13.png', 20, 3, 8);
                 INSERT INTO GameTranslation (gameId, languageCode, title, normalizedTitle)
                 VALUES (10, 'en', 'Alpha', 'alpha'), (11, 'en', 'Bravo', 'bravo'), (12, 'en', 'Charlie', 'charlie'), (13, 'es', 'Delta', 'delta');
+                INSERT INTO GameEdition (gameId, languageCode, title, normalizedTitle, isPrimary)
+                SELECT gameId, languageCode, title, normalizedTitle,
+                       ROW_NUMBER() OVER (PARTITION BY gameId ORDER BY languageCode = 'en' DESC, languageCode) = 1
+                FROM GameTranslation ORDER BY gameId, languageCode;
                 INSERT INTO OwnedGame (accountId, gameId) VALUES (1, 10), (2, 11), (2, 12), (3, 13);
             `,
             encoding: 'utf8',
