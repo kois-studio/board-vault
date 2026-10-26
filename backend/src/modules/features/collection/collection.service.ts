@@ -14,6 +14,7 @@ import { TagCategoryService } from '../../core/tag-category/tag-category.service
 import { TagsService } from '../../core/tags/tags.service.js'
 import { WishlistService } from '../../core/wishlist/wishlist.service.js'
 
+import type { Locale } from '../../../common/i18n/locale.js'
 import type { SuccessDto } from '../../../common/types/auth.type.js'
 import type { CollectionActivityWithGameDataDto } from '../../../common/types/collection-activity.type.js'
 import type { CreateGameReviewBody, GameReviewWithGameDataDto } from '../../../common/types/game-review.type.js'
@@ -50,7 +51,7 @@ export class CollectionService {
     }
 
     @LogFeature(new Logger('CollectionService'))
-    async browseCatalogue(userId: number, query: BrowseGamesQuery): Promise<BrowseGamesResultDto> {
+    async browseCatalogue(userId: number, query: BrowseGamesQuery, locale: Locale): Promise<BrowseGamesResultDto> {
         const search = this.gameTranslationService.normalizeTitle(query.search)
 
         // Punctuation alone, such as `%%`, normalizes to nothing: a search with no match, not the whole catalogue.
@@ -67,6 +68,7 @@ export class CollectionService {
             sort: query.sort,
             page: query.page,
             pageSize: query.limit,
+            locale,
         })
         const [games, translations] = await Promise.all([
             this.gamesService.getGamesByIds(gameIds),

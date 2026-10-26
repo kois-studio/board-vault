@@ -2244,6 +2244,15 @@
         <target>Le file di tasti consecutive sulla tastiera sono facili da indovinare.</target>
       </segment>
     </unit>
+    <unit id="6133379702600868150">
+      <notes>
+        <note category="description">Shown for a game the catalogue has no title for</note>
+      </notes>
+      <segment state="translated">
+        <source>Untitled game</source>
+        <target>Gioco senza titolo</target>
+      </segment>
+    </unit>
     <unit id="6174219018857528884">
       <notes>
         <note category="description">Password warning in Clerk, the sign-in provider</note>

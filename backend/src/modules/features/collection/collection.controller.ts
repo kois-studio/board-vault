@@ -15,6 +15,7 @@ import {
 } from '@nestjs/common'
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger'
 
+import { RequestLocale } from '../../../common/decorators/request-locale.decorator.js'
 import { AuthGuard } from '../../../common/guards/auth.guard.js'
 import { UserOwnershipGuard } from '../../../common/guards/ownership.guard.js'
 import { RateLimit, RateLimitGuard } from '../../../common/guards/rate-limit.guard.js'
@@ -27,6 +28,8 @@ import { CatalogueTagDto } from '../../../common/types/tag.type.js'
 import { WishlistResponseDto } from '../../../common/types/wishlisted-game.type.js'
 
 import { CollectionService } from './collection.service.js'
+
+import type { Locale } from '../../../common/i18n/locale.js'
 
 /** Enough to enter a whole collection in one sitting, game by game. */
 export const SHELF_CHANGES_PER_HOUR = 300
@@ -104,8 +107,12 @@ export class CollectionController {
     @Get('/users/:userId/browse/games')
     @ApiOperation({ summary: 'Browse the catalogue with filters', deprecated: false })
     @ApiResponse({ status: 200, type: BrowseGamesResultDto, description: 'One page of catalogue games matching the filters' })
-    async browseCatalogue(@Param('userId', ParseIntPipe) userId: number, @Query() query: BrowseGamesQuery) {
-        return this.collectionService.browseCatalogue(userId, query)
+    async browseCatalogue(
+        @Param('userId', ParseIntPipe) userId: number,
+        @Query() query: BrowseGamesQuery,
+        @RequestLocale() locale: Locale,
+    ) {
+        return this.collectionService.browseCatalogue(userId, query, locale)
     }
 
     @Get('/tags')

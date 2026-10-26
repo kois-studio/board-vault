@@ -94,6 +94,23 @@ describe('browsing the catalogue with filters (e2e)', () => {
         })
     })
 
+    it('sorts by the title in the reader’s language, else the English one', async () => {
+        const response = await request(app.getHttpServer())
+            .get('/collection/users/1/browse/games?sort=title')
+            .set(asPlayer)
+            .set('Accept-Language', 'es')
+            .expect(200)
+
+        // Codenames is Código Secreto and Catan is Los colonos de Catán in Spanish.
+        expect(response.body.games.map((game: { titleTranslations: { en: string } }) => game.titleTranslations.en)).toEqual([
+            'Azul',
+            'Codenames',
+            'Catan',
+            'Love Letter',
+            'Twilight Imperium',
+        ])
+    })
+
     it('pages through the filtered order', async () => {
         expect(await browse('limit=2&page=2')).toEqual({ titles: ['Codenames', 'Love Letter'], totalItems: 5, totalPages: 3 })
     })
