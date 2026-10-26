@@ -216,6 +216,13 @@ are written without the prefix; the base address adds it.
   (`previewLocales` in the runtime config) it lists every supported language.
   It shows only under a prefix and when there is more than one language to
   choose, so today's production English pages have no menu.
+- Clerk's panels take the page's language from
+  [`core/i18n/clerk-localization.ts`](../frontend/src/app/core/i18n/clerk-localization.ts):
+  Clerk's own `@clerk/localizations` bundle, fetched only by pages in that
+  language (a lazy chunk alongside Clerk), then our text where Clerk has no
+  translation, then our own names ("Sign-in" for its account panel). English
+  loads no bundle. Clerk's French and German use `vous` and `Sie`, an accepted
+  exception (ADR-0024 amendment).
 - `npm start` serves English at the root; `npm run start:es` (and `:fr`,
   `:de`, `:it`) serves one other language. The development servers have no
   prefix, so they show no language menu; use `npm run build` and

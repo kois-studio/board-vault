@@ -20,14 +20,6 @@ const CLERK_HIDDEN_SECTIONS = {
     profileSection__danger: { display: 'none' },
 }
 
-/** Clerk's panel calls its first page "Profile"; in Board Vault, Profile is how groups see you. */
-const CLERK_LOCALIZATION = {
-    userProfile: {
-        navbar: { title: 'Sign-in', description: 'Manage how you sign in to Board Vault.', account: 'Sign-in' },
-        start: { headerTitle__account: 'Sign-in details' },
-    },
-}
-
 /**
  * Thin browser-side adapter around Clerk.
  *
@@ -83,13 +75,23 @@ export class ClerkService {
         }
 
         try {
-            const { Clerk: ClerkConstructor } = await import('@clerk/clerk-js')
+            // The page's language comes alongside Clerk, not after it, and like Clerk stays out of the first page.
+            const [{ Clerk: ClerkConstructor }, localization] = await Promise.all([
+                import('@clerk/clerk-js'),
+                // A missing translation chunk (say, after a deploy) leaves Clerk in English rather than unavailable.
+                import('../i18n/clerk-localization')
+                    .then((module) => module.clerkLocalization())
+                    .catch((error: unknown) => {
+                        console.error('Clerk’s translation could not be loaded; it stays in English.', error)
+                        return undefined
+                    }),
+            ])
             const clerkUiCtor = await this.loadClerkUiScript()
             const clerk = new ClerkConstructor(environment.clerkPublishableKey)
             await clerk.load({
                 ui: { ClerkUI: clerkUiCtor },
                 appearance: { ...this.themeAppearance(), elements: CLERK_HIDDEN_SECTIONS },
-                localization: CLERK_LOCALIZATION,
+                localization,
             })
 
             this.clerk = clerk
