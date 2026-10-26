@@ -43,7 +43,7 @@
         }
 
         @if (isLoadingGroups() && userGroups$().length === 0) {
-            <div class="grid grid-cols-1 gap-6 xl:grid-cols-2" aria-busy="true" aria-label="Loading your groups">
+            <div class="space-y-4" aria-busy="true" aria-label="Loading your groups">
                 @for (item of [1, 2]; track item) {
                     <app-skeleton-card-group />
                 }
@@ -154,35 +154,16 @@
                                 <app-card-group [group]="group" [invitations]="invitationsGroupIndex$()[group.id]" />
                             }
                         } @else {
-                            <ul class="grid grid-cols-1 gap-3 lg:grid-cols-2">
-                                @for (group of orderedGroups(); track group.id; let first = $first) {
-                                    @let activity = groupActivity().get(group.id);
+                            <!-- Several groups: the same full card for each, stacked in Home's order. -->
+                            <ul class="space-y-4">
+                                @for (group of orderedGroups(); track group.id) {
                                     @let pinned = isPinned(group);
                                     <li class="group/row relative">
-                                        <a [routerLink]="['/groups', group.id]" class="flex items-center gap-3 rounded-2xl border border-bv-border bg-bv-surface p-4 transition hover:border-bv-primary/40">
-                                            <span
-                                                class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl text-lg font-extrabold"
-                                                [class]="first ? 'bg-bv-primary text-bv-on-primary' : 'bg-bv-surface-2 text-bv-text'"
-                                                aria-hidden="true"
-                                                >{{ group.name.charAt(0).toUpperCase() }}</span
-                                            >
-                                            <span class="min-w-0 flex-1">
-                                                <span class="block truncate font-bold">{{ group.name }}</span>
-                                                <span class="block text-xs text-secondary">{{ peopleInGroup(group) | count: 'person' : 'people' }} · {{ gamesInGroup(group) | count: 'game' }}</span>
-                                            </span>
-                                            @if (activity) {
-                                                <span
-                                                    class="shrink-0 rounded-full px-2.5 py-0.5 text-xs font-semibold"
-                                                    [class]="activity.tone === 'live' ? 'bg-bv-success text-bv-on-success' : activity.tone === 'next' ? 'bg-bv-primary-soft text-bv-on-primary-soft' : 'bg-bv-surface-2 text-bv-text-muted'"
-                                                    >{{ activity.label }}</span
-                                                >
-                                            }
-                                            <app-icon name="chevron-right" [size]="18" className="shrink-0 text-bv-text-muted" aria-hidden="true" />
-                                        </a>
+                                        <app-card-group [group]="group" [invitations]="invitationsGroupIndex$()[group.id]" [activity]="groupActivity().get(group.id) ?? null" />
                                         <!-- A pin on the card's corner: always there once pinned, otherwise only on hover or focus (faint on touch screens). -->
                                         <button
                                             type="button"
-                                            class="absolute -right-2 -top-2 flex h-7 w-7 items-center justify-center rounded-full border shadow-sm transition focus:outline-none focus-visible:ring-2 focus-visible:ring-bv-primary disabled:cursor-not-allowed"
+                                            class="absolute -right-2 -top-2 z-10 flex h-7 w-7 items-center justify-center rounded-full border shadow-sm ring-2 ring-bv-bg transition focus:outline-none focus-visible:ring-bv-primary disabled:cursor-not-allowed"
                                             [class]="pinned ? 'border-bv-primary bg-bv-primary text-bv-on-primary' : 'border-bv-border bg-bv-surface text-bv-text-muted opacity-0 hover:text-bv-primary focus-visible:opacity-100 group-hover/row:opacity-100 pointer-coarse:opacity-70'"
                                             [disabled]="home.loading() || home.error() || home.saving()"
                                             [attr.aria-pressed]="pinned"

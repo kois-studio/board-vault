@@ -13,9 +13,8 @@ operational details.
 
 ### Added
 
-- Home always offers recording and planning. One group keeps its full card,
-  several groups show as compact rows with a corner pin that appears on
-  hover; pinned groups lead.
+- Home always offers recording and planning. With several groups each has a
+  corner pin that appears on hover; pinned groups lead.
 - Recording keeps its group context, offers Today/Yesterday and same-day
   session suggestions, and can search catalogue games without ownership.
   Separate plays keep their own players, winners and scores. Completed
@@ -73,6 +72,10 @@ operational details.
 
 ### Changed
 
+- Home shows every group as its full card, stacked, when there are several:
+  people, the invite nudge, and What to play, Library and History for each,
+  with the last or next night under the name and the pin on the card's
+  corner. Pinned groups still lead.
 - Names have at most 20 characters, for accounts and for people without one,
   and the API enforces it. Longer names saved before are shown cut the same
   way everywhere ("Bartholomew Montgom…"), notifications included. Names stay

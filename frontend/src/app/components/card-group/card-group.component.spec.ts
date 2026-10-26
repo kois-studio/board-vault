@@ -5,7 +5,7 @@ import type { GroupWithMembersAndGames, InvitationWithAccountsData } from '../..
 import { DataService } from '../../core/services/data.service'
 import { CardGroupComponent } from './card-group.component'
 
-describe('CardGroupComponent (Home, one group)', () => {
+describe('CardGroupComponent (Home)', () => {
     let fixture: ComponentFixture<CardGroupComponent>
     const currentUser = signal<{ id: number } | null>({ id: 1 })
 
@@ -72,6 +72,10 @@ describe('CardGroupComponent (Home, one group)', () => {
         expect(element().textContent).toContain('3 people · 3 games')
     })
 
+    it('names the group in its people list, so stacked cards are told apart', () => {
+        expect(element().querySelector('ul')?.getAttribute('aria-label')).toBe('People in Friday crew')
+    })
+
     it('shows the first five faces and how many more there are', () => {
         fixture.componentRef.setInput('group', { ...group, members: [1, 2, 3, 4, 5, 6, 7].map((id) => member(id, [])) })
         fixture.detectChanges()
@@ -87,6 +91,22 @@ describe('CardGroupComponent (Home, one group)', () => {
         const nudge = element().querySelector('a[href="/groups/7/edit"]')
         expect(nudge?.textContent).toContain('Invite your people')
         expect(nudge?.textContent).toContain('1 invitation pending')
+    })
+
+    it('says where the group stands only when given, in the tone of its night', () => {
+        expect(element().querySelector('header .rounded-full.text-xs')).toBeNull()
+
+        fixture.componentRef.setInput('activity', { tone: 'live', label: 'Happening now', time: 0 })
+        fixture.detectChanges()
+        const chip = element().querySelector('header .rounded-full.text-xs')
+        expect(chip?.textContent?.trim()).toBe('Happening now')
+        expect(chip?.classList).toContain('bg-bv-success')
+
+        fixture.componentRef.setInput('activity', { tone: 'next', label: 'Tomorrow', time: 0 })
+        fixture.detectChanges()
+        expect(element().querySelector('header .rounded-full.text-xs')?.classList).toContain('bg-bv-primary-soft')
+        // The chip sits outside the name, which stays the link's only text.
+        expect(element().querySelector('h3 a')?.textContent?.trim()).toBe('Friday crew')
     })
 
     it('stops nudging once the group has four people, and never nudges a member who cannot invite', () => {

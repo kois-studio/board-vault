@@ -1,7 +1,7 @@
 import { Component, computed, inject } from '@angular/core'
 import { RouterLink } from '@angular/router'
 import type { AccountMeetType, GameCompleteType, GroupWithMembersAndGames, HistoryRecordType } from '../../api/api.types'
-import { CardGroupComponent } from '../../components/card-group/card-group.component'
+import { CardGroupComponent, type GroupActivity } from '../../components/card-group/card-group.component'
 import { CardInvitationComponent } from '../../components/card-invitation/card-invitation.component'
 import { ImageProfileComponent } from '../../components/image-profile/image-profile.component'
 import { NextNightCardComponent } from '../../components/next-night-card/next-night-card.component'
@@ -17,16 +17,12 @@ import { DataService } from '../../core/services/data.service'
 import { HomePreferencesService } from '../../core/services/home-preferences.service'
 import { LoadingService } from '../../core/services/loading.service'
 import { gameTitle } from '../../core/utils/gameTitle'
-import { groupGameCount, groupPeopleCount } from '../../core/utils/groupCounts'
 import { mergeHistoryParticipants } from '../../core/utils/historyParticipants'
 import { relativeDay, sessionDateParts, upcomingState } from '../../core/utils/sessionTiming'
 
-/** How a group's row on Home says where it stands. */
-export type GroupActivity = { tone: 'live' | 'next' | 'past' | 'none'; label: string; time: number }
-
 /**
  * Home: the signed-in starting point. It follows where the person is: a new account is pointed at its
- * first group; after that the next game night leads, then the group (one large card, or a compact list
+ * first group; after that the next game night leads, then the groups (one large card each, stacked
  * when there are several), then what was played lately. Groups live here; there is no separate groups page.
  */
 @Component({
@@ -169,14 +165,6 @@ export class DashboardPageComponent {
 
     public isPinned(group: GroupWithMembersAndGames): boolean {
         return this.home.preferences().pinnedGroupIds.includes(group.id)
-    }
-
-    public peopleInGroup(group: GroupWithMembersAndGames): number {
-        return groupPeopleCount(group)
-    }
-
-    public gamesInGroup(group: GroupWithMembersAndGames): number {
-        return groupGameCount(group)
     }
 
     /** Where "Plan a game night" goes: straight into the only group, or the planner that asks which one. */

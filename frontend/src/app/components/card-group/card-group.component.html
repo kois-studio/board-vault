@@ -8,7 +8,7 @@
             <app-icon name="chevron-right" [size]="22" className="mt-1 shrink-0 text-bv-on-primary/80" aria-hidden="true" />
         </div>
         <div class="mt-3 flex flex-wrap items-center gap-x-3 gap-y-2 lg:flex-col lg:items-start">
-            <ul class="flex" aria-label="People in this group">
+            <ul class="flex" [attr.aria-label]="'People in ' + group().name">
                 @for (person of avatars(); track person.key) {
                     <li class="-ml-2 rounded-full ring-2 ring-bv-primary first:ml-0" [title]="person.name">
                         <app-image-profile size="small" [avatar]="person.avatar" />
@@ -22,6 +22,10 @@
                 }
             </ul>
             <p class="text-sm text-bv-on-primary/90 lg:order-first">{{ peopleCount() | count: 'person' : 'people' }} · {{ sharedGameCount() | count: 'game' }}</p>
+            <!-- Below the name, so it never shortens it; on wide screens right under the counts. -->
+            @if (activity(); as activity) {
+                <span class="rounded-full px-2.5 py-0.5 text-xs font-semibold lg:order-first" [class]="activityClass()">{{ activity.label }}</span>
+            }
         </div>
     </header>
 

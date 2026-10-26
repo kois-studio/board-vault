@@ -180,6 +180,8 @@ describe('DashboardPageComponent (Home)', () => {
 
             expect(element.querySelector('#groups-heading')?.textContent).toContain('Your group')
             expect(element.querySelectorAll('app-card-group')).toHaveLength(1)
+            // Home's next night already says where the only group stands.
+            expect(text(element.querySelector('app-card-group'))).not.toContain('No nights yet')
             expect(
                 element.querySelector('#groups-heading')?.parentElement?.querySelector('a[href="/create-group"]')?.textContent,
             ).toContain('New group')
@@ -207,7 +209,11 @@ describe('DashboardPageComponent (Home)', () => {
     })
 
     describe('with several groups', () => {
-        it('lists them compactly: a night under way, then the soonest planned, then the most recently played', async () => {
+        // Each stacked group is one list item holding its card; the cards hold lists of their own.
+        const groupItems = (element: HTMLElement) =>
+            Array.from(element.querySelectorAll('section[aria-labelledby="groups-heading"] > ul > li'))
+
+        it('stacks a full card per group: a night under way, then the soonest planned, then the most recently played', async () => {
             const fixture = await renderHome({
                 userGroups: signal([group(1, 'Quiet'), group(2, 'Played'), group(3, 'Planned'), group(4, 'Live'), group(5, 'Later')]),
                 userMeets: signal([meet(1, 2, -30, 'completed'), meet(2, 3, 1), meet(3, 4, 0, 'active'), meet(4, 5, 6)]),
@@ -215,9 +221,9 @@ describe('DashboardPageComponent (Home)', () => {
             const element = fixture.nativeElement as HTMLElement
 
             expect(element.querySelector('#groups-heading')?.textContent).toContain('Your groups')
-            expect(element.querySelector('app-card-group')).toBeNull()
-            const items = Array.from(element.querySelectorAll('section[aria-labelledby="groups-heading"] li'))
-            expect(items.map((item) => item.querySelector('.font-bold')?.textContent?.trim())).toEqual([
+            const items = groupItems(element)
+            expect(items.map((item) => item.querySelectorAll('app-card-group').length)).toEqual([1, 1, 1, 1, 1])
+            expect(items.map((item) => item.querySelector('h3')?.textContent?.trim())).toEqual([
                 'Live',
                 'Planned',
                 'Later',
@@ -229,12 +235,15 @@ describe('DashboardPageComponent (Home)', () => {
             expect(rows[1]).toContain('Tomorrow')
             expect(rows[3]).toContain('Last:')
             expect(rows[4]).toContain('No nights yet')
-            // No group-level actions repeated per row, and no sort control.
+            // Every card keeps its shortcuts, as with one group.
+            expect(items.map((item) => item.querySelectorAll('nav a').length)).toEqual([3, 3, 3, 3, 3])
+            expect(items[0]?.querySelector('nav a')?.getAttribute('href')).toBe('/play/recommendations?groupId=4')
+            // No recording actions repeated per card, and no sort control.
             expect(element.querySelector('section[aria-labelledby="groups-heading"] a[href^="/play/log-session"]')).toBeNull()
             expect(element.querySelector('select')).toBeNull()
         })
 
-        it('puts pinned groups first, in the order pinned, with a pin on each row', async () => {
+        it('puts pinned groups first, in the order pinned, with a pin on each card', async () => {
             const fixture = await renderHome({
                 userGroups: signal([group(1, 'Quiet'), group(2, 'Played'), group(3, 'Planned')]),
                 userMeets: signal([meet(1, 2, -30, 'completed'), meet(2, 3, 1)]),
@@ -242,12 +251,25 @@ describe('DashboardPageComponent (Home)', () => {
             fixture.componentInstance.home.preferences.set({ pinnedGroupIds: [1, 2], groupOrder: 'recent', dismissedRatingGameIds: [] })
             fixture.detectChanges()
             const element = fixture.nativeElement as HTMLElement
-            const items = Array.from(element.querySelectorAll('section[aria-labelledby="groups-heading"] li'))
+            const items = groupItems(element)
 
-            expect(items.map((item) => item.querySelector('.font-bold')?.textContent?.trim())).toEqual(['Quiet', 'Played', 'Planned'])
+            expect(items.map((item) => item.querySelector('h3')?.textContent?.trim())).toEqual(['Quiet', 'Played', 'Planned'])
             const pins = items.map((item) => item.querySelector('button[aria-pressed]'))
             expect(pins.map((pin) => pin?.getAttribute('aria-pressed'))).toEqual(['true', 'true', 'false'])
             expect(pins[2]?.getAttribute('aria-label')).toBe('Pin Planned to the top')
+        })
+
+        it('pins the group whose card was tapped', async () => {
+            const fixture = await renderHome({ userGroups: signal([group(1, 'One'), group(2, 'Two')]) })
+            fixture.componentInstance.home.preferences.set({ pinnedGroupIds: [], groupOrder: 'recent', dismissedRatingGameIds: [] })
+            const togglePin = vi.spyOn(fixture.componentInstance.home, 'togglePin').mockImplementation(() => {})
+            fixture.detectChanges()
+
+            const pin = (fixture.nativeElement as HTMLElement).querySelector('button[aria-label="Pin Two to the top"]') as HTMLButtonElement
+            expect(pin.disabled).toBe(false)
+            pin.click()
+
+            expect(togglePin).toHaveBeenCalledWith(2)
         })
 
         it('asks which group to plan in', async () => {

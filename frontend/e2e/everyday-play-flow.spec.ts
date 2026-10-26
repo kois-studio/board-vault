@@ -17,11 +17,12 @@ test.describe('everyday play', () => {
             await page.goto('/dashboard')
             const notice = page.getByRole('button', { name: 'Got it', exact: true })
             if (await notice.isVisible()) await notice.click()
-            // Several groups: compact rows, no actions repeated per group, a pin on each row's corner.
+            // Several groups: a full card each, stacked, no recording actions repeated per group, a pin on each card's corner.
             const groups = page.locator('section[aria-labelledby="groups-heading"]')
-            const row = groups.locator('li').filter({ hasText: groupName })
+            const row = groups.locator(':scope > ul > li').filter({ hasText: groupName })
             await expect(row).toBeVisible()
-            await expect(groups.locator('app-card-group')).toHaveCount(0)
+            await expect(row.locator('app-card-group')).toHaveCount(1)
+            await expect(row.getByRole('navigation', { name: `${groupName} shortcuts` })).toBeVisible()
             await expect(groups.getByRole('link', { name: 'Record a session' })).toHaveCount(0)
             await page.screenshot({ path: testInfo.outputPath(`home-${width}.png`), fullPage: true, animations: 'disabled' })
             const pin = row.getByRole('button', { name: `Pin ${groupName} to the top`, exact: true })
@@ -31,7 +32,7 @@ test.describe('everyday play', () => {
             }
             await expect(row.getByRole('button', { name: `Unpin ${groupName}`, exact: true })).toBeEnabled()
             await page.reload()
-            await expect(groups.locator('li').first()).toContainText(groupName)
+            await expect(groups.locator(':scope > ul > li').first()).toContainText(groupName)
             await page.goto(`/play/log-session?groupId=${groupId}`)
             await expect(page.getByRole('button', { name: groupName, exact: true })).toHaveAttribute('aria-pressed', 'true')
             await page.getByLabel('Day', { exact: true }).fill('2026-10-03')
