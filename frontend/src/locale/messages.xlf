@@ -265,6 +265,15 @@
         <source>Deleted account</source>
       </segment>
     </unit>
+    <unit id="121980130682744616">
+      <notes>
+        <note category="location">src/app/pages/settings/appearance/settings-appearance.component.html</note>
+        <note category="description">Hint under the language heading in the Appearance settings</note>
+      </notes>
+      <segment>
+        <source>The language of Board Vault&apos;s menus and messages. Saved on your account.</source>
+      </segment>
+    </unit>
     <unit id="1221643742069715632">
       <notes>
         <note category="location">src/app/pages/group-view/group-view.component.html</note>
@@ -2013,6 +2022,15 @@
       </notes>
       <segment>
         <source>Back to groups</source>
+      </segment>
+    </unit>
+    <unit id="2826581353496868063">
+      <notes>
+        <note category="location">src/app/pages/settings/appearance/settings-appearance.component.html</note>
+        <note category="description">Heading of the language choice in the Appearance settings</note>
+      </notes>
+      <segment>
+        <source>Language</source>
       </segment>
     </unit>
     <unit id="2852547726247313987">

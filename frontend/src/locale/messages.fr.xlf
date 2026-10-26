@@ -258,6 +258,15 @@
         <target>Compte supprimé</target>
       </segment>
     </unit>
+    <unit id="121980130682744616">
+      <notes>
+        <note category="description">Hint under the language heading in the Appearance settings</note>
+      </notes>
+      <segment state="translated">
+        <source>The language of Board Vault&apos;s menus and messages. Saved on your account.</source>
+        <target>La langue des menus et des messages de Board Vault. Enregistrée sur ton compte.</target>
+      </segment>
+    </unit>
     <unit id="1221643742069715632">
       <notes>
         <note category="description">Shown on the group page when no game night is planned</note>
@@ -1980,6 +1989,15 @@
       <segment state="translated">
         <source>Back to groups</source>
         <target>Retour aux groupes</target>
+      </segment>
+    </unit>
+    <unit id="2826581353496868063">
+      <notes>
+        <note category="description">Heading of the language choice in the Appearance settings</note>
+      </notes>
+      <segment state="translated">
+        <source>Language</source>
+        <target>Langue</target>
       </segment>
     </unit>
     <unit id="2852547726247313987">

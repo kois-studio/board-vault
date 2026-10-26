@@ -3,7 +3,9 @@ import { toSignal } from '@angular/core/rxjs-interop'
 import { NavigationEnd, Router } from '@angular/router'
 import { filter, map } from 'rxjs/operators'
 import { IconComponent } from '../../components/ui/icon/icon.component'
+import { AccountLanguageService } from '../../core/i18n/account-language.service'
 import { LOCALE_NAMES, type Locale, localeCookie, localeOfPath, localizedUrl, menuLocales, SOURCE_LOCALE } from '../../core/i18n/locales'
+import { DataService } from '../../core/services/data.service'
 import { injectDisclosure } from '../../core/utils/disclosure'
 
 /**
@@ -21,7 +23,7 @@ export function languageMenuLocales(pathname: string, preview: boolean): Array<L
 /**
  * The language menu next to the inbox (ADR-0024, disclosure pattern). Each language is a link to the same page
  * under its prefix, a full page load into that language's build; following it remembers the choice in the
- * `bv_lang` cookie for addresses without a prefix.
+ * `bv_lang` cookie for addresses without a prefix. Signed in, the choice is also saved on the account first.
  */
 @Component({
     imports: [IconComponent],
@@ -31,6 +33,8 @@ export function languageMenuLocales(pathname: string, preview: boolean): Array<L
 export class LanguageMenuComponent {
     private readonly document = inject(DOCUMENT)
     private readonly router = inject(Router)
+    private readonly accountLanguage = inject(AccountLanguageService)
+    private readonly dataService = inject(DataService)
     private readonly trigger = viewChild<ElementRef<HTMLElement>>('trigger')
 
     /** What to list, from languageMenuLocales(). */
@@ -55,8 +59,16 @@ export class LanguageMenuComponent {
         $localize`:Button in the header that opens the language menu; the placeholder is the current language in itself, such as "Español":Language: ${LOCALE_NAMES[this.current]}:language:`
     public readonly listLabel = $localize`:Name of the list of languages in the header's language menu:Choose a language`
 
-    /** The link goes on to load the page in that language; the cookie makes the choice stick. */
-    public choose(locale: Locale): void {
-        this.document.cookie = localeCookie(locale, this.document.location.protocol === 'https:')
+    /**
+     * Signed out, the link goes on to load the page in that language and the cookie makes the choice stick.
+     * Signed in, the link waits: the save finishes before the page unloads, and the service then loads the page.
+     */
+    public choose(event: Event, locale: Locale): void {
+        if (!this.dataService.currentUser()) {
+            this.document.cookie = localeCookie(locale, this.document.location.protocol === 'https:')
+            return
+        }
+        event.preventDefault()
+        void this.accountLanguage.choose(locale)
     }
 }

@@ -7,6 +7,7 @@ import { catchError, finalize, map, shareReplay, switchMap, tap } from 'rxjs/ope
 import { Api } from '../../api/api'
 import { ToastService } from '../../components/toast/toast.service'
 import { LOADING_KEYS } from '../enums/loading-keys-enum'
+import { AccountLanguageService } from '../i18n/account-language.service'
 import { ClerkService } from './clerk.service'
 import { DataService } from './data.service'
 import { LoadingService } from './loading.service'
@@ -24,6 +25,7 @@ export class LoginService {
     private readonly toastService = inject(ToastService)
     private readonly loadingService = inject(LoadingService)
     private readonly clerkService = inject(ClerkService)
+    private readonly accountLanguage = inject(AccountLanguageService)
 
     // --- Signals for Authentication State ---
     public readonly isAuthenticated = signal<boolean>(false)
@@ -138,6 +140,7 @@ export class LoginService {
             tap((userData) => {
                 this.logger.log('LoginService: USER_DATA fetched successfully.')
                 this.dataService.currentUser.set(userData)
+                this.accountLanguage.followAccountLanguage(userData)
                 this.loadingService.finish(LOADING_KEYS.USER_DATA)
             }),
             map(() => true),

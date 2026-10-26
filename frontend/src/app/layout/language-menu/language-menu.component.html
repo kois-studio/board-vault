@@ -23,7 +23,7 @@
                     <app-icon name="check" [size]="18" class="ml-auto" aria-hidden="true" />
                 </span>
                 } @else {
-                <a class="app-menu-item" [href]="link.href" [attr.hreflang]="link.locale" [attr.lang]="link.locale" (click)="choose(link.locale)">{{ link.name }}</a>
+                <a class="app-menu-item" [href]="link.href" [attr.hreflang]="link.locale" [attr.lang]="link.locale" (click)="choose($event, link.locale)">{{ link.name }}</a>
                 }
             </li>
             }

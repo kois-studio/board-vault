@@ -220,6 +220,16 @@ are written without the prefix; the base address adds it.
   (`previewLocales` in the runtime config) it lists every supported language.
   It shows only under a prefix and when there is more than one language to
   choose, so today's production English pages have no menu.
+- The account's language: signed in, choosing a language (in the menu or in
+  Settings → Appearance → Language) first saves it on the account
+  (`PUT /users/:id` with `locale`; a failed save is logged and the page still
+  changes), then loads the page in it. Both go through
+  [`AccountLanguageService`](../frontend/src/app/core/i18n/account-language.service.ts).
+  When the account is loaded after sign-in, the same service moves the page to
+  the account's language once per browser session (the `bv_lang_followed` flag
+  in `sessionStorage`), so a language chosen later in the session sticks. It
+  never moves anyone into a language that is not offered (the menu's list),
+  nor a page without a prefix.
 - Clerk's panels take the page's language from
   [`core/i18n/clerk-localization.ts`](../frontend/src/app/core/i18n/clerk-localization.ts):
   Clerk's own `@clerk/localizations` bundle, fetched only by pages in that
