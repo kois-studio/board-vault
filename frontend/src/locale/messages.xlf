@@ -2280,6 +2280,15 @@
         <source>Straight rows of keys on your keyboard are easy to guess.</source>
       </segment>
     </unit>
+    <unit id="6133379702600868150">
+      <notes>
+        <note category="location">src/app/core/utils/gameTitle.ts</note>
+        <note category="description">Shown for a game the catalogue has no title for</note>
+      </notes>
+      <segment>
+        <source>Untitled game</source>
+      </segment>
+    </unit>
     <unit id="6174219018857528884">
       <notes>
         <note category="location">src/app/core/i18n/clerk-localization.ts</note>

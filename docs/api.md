@@ -47,6 +47,8 @@ English for people (notification `message`, recommendation `reasons` and
 it: the inbox's `context`, `reasonCodes`, and `noResultReasonCode`. A
 deleted account is still named `"Deleted account"`, which the app shows in
 the page's language.
+Browse sorts by the title in the reader's language, else the English one, so
+the order matches what the page shows (ADR-0025).
 
 ## Collections
 

@@ -8,6 +8,7 @@ import { CatalogueTagDto } from '../../../common/types/tag.type.js'
 import { CacheService } from '../../common/cache/cache.service.js'
 import { DatabaseService } from '../../common/database/database.service.js'
 
+import type { Locale } from '../../../common/i18n/locale.js'
 import type { BrowseSort } from '../../../common/types/game.type.js'
 import type { CatalogueFilters } from '../../common/database/queries/games.queries.js'
 
@@ -48,7 +49,7 @@ export class GamesService {
 
     /** One page of catalogue game ids for Browse, and how many games match in total. */
     async browseCatalogue(
-        filters: CatalogueFilters & { sort: BrowseSort; page: number; pageSize: number },
+        filters: CatalogueFilters & { sort: BrowseSort; page: number; pageSize: number; locale: Locale },
     ): Promise<{ gameIds: Array<number>; total: number }> {
         const [page, count] = await Promise.all([
             this.databaseService.games.browseCatalogue({ ...filters, skip: (filters.page - 1) * filters.pageSize, take: filters.pageSize }),
