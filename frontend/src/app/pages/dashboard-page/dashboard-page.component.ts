@@ -12,14 +12,13 @@ import { ButtonComponent } from '../../components/ui/button/button.component'
 import { ContainerWrapperComponent } from '../../components/ui/container-wrapper/container-wrapper.component'
 import { IconComponent } from '../../components/ui/icon/icon.component'
 import { LOADING_KEYS } from '../../core/enums/loading-keys-enum'
-import { CountPipe } from '../../core/pipes/count.pipe'
 import { DataService } from '../../core/services/data.service'
 import { HomePreferencesService } from '../../core/services/home-preferences.service'
 import { LoadingService } from '../../core/services/loading.service'
 import { gameTitle } from '../../core/utils/gameTitle'
 import { groupGameCount, groupPeopleCount } from '../../core/utils/groupCounts'
 import { mergeHistoryParticipants } from '../../core/utils/historyParticipants'
-import { relativeDay, sessionDateParts, upcomingState } from '../../core/utils/sessionTiming'
+import { daysUntil, relativeDay, sessionDate, upcomingState } from '../../core/utils/sessionTiming'
 
 /** How a group's row on Home says where it stands. */
 export type GroupActivity = { tone: 'live' | 'next' | 'past' | 'none'; label: string; time: number }
@@ -36,7 +35,6 @@ export type GroupActivity = { tone: 'live' | 'next' | 'past' | 'none'; label: st
         CardGroupComponent,
         CardInvitationComponent,
         ContainerWrapperComponent,
-        CountPipe,
         IconComponent,
         ImageProfileComponent,
         NextNightCardComponent,
@@ -76,7 +74,7 @@ export class DashboardPageComponent {
     private readonly groupsById = computed(() => new Map(this.userGroups$().map((group) => [group.id, group])))
 
     public groupName(groupId: number): string {
-        return this.groupsById().get(groupId)?.name ?? 'Your group'
+        return this.groupsById().get(groupId)?.name ?? $localize`:Name used on Home for a group that is no longer in your list:Your group`
     }
 
     /** Every game in the next night's group, members' and people's without an account, to show its shortlist. */
@@ -95,7 +93,8 @@ export class DashboardPageComponent {
     /** "Azul, Wingspan" for the games you said you'd bring; they are on your own shelf. */
     public gamesToBringLabel(meet: AccountMeetType): string {
         const shelf = new Map(this.dataService.userGames().map((game) => [game.id, gameTitle(game)]))
-        return meet.gamesToBring.map((gameId) => shelf.get(gameId) ?? 'a game').join(', ')
+        const aGame = $localize`:On Home, the name used for a game you said you would bring that is no longer on your shelf:a game`
+        return meet.gamesToBring.map((gameId) => shelf.get(gameId) ?? aGame).join(', ')
     }
 
     /** Running or planned game nights across every group, soonest first (the same rule as Play and Upcoming). */
@@ -112,26 +111,37 @@ export class DashboardPageComponent {
     public readonly nextNight = computed(() => this.upcomingSessions()[0] ?? null)
     public readonly laterNights = computed(() => this.upcomingSessions().slice(1, 3))
 
+    /** "Sat 24 Oct · 19:30" in the night's own timezone. */
     public shortDate(meet: AccountMeetType): string {
-        const parts = sessionDateParts(meet)
-        return `${parts.weekday} ${parts.day} ${parts.month} · ${parts.time}`
+        const day = sessionDate(meet, { weekday: 'short', day: 'numeric', month: 'short' })
+        return `${day} · ${sessionDate(meet, { hour: '2-digit', minute: '2-digit', hour12: false })}`
     }
 
     /** Per group: a night under way, the next planned one, or the last one played. */
     public readonly groupActivity = computed(() => {
         const activity = new Map<number, GroupActivity>()
-        for (const group of this.userGroups$()) activity.set(group.id, { tone: 'none', label: 'No nights yet', time: 0 })
+        for (const group of this.userGroups$())
+            activity.set(group.id, {
+                tone: 'none',
+                label: $localize`:Chip on a group in the list on Home, before it has had a game night:No nights yet`,
+                time: 0,
+            })
 
         // Soonest first, so the first planned night a group meets is its next one.
         for (const meet of this.upcomingSessions()) {
             const current = activity.get(meet.groupId)
             if (!current || current.tone === 'live' || current.tone === 'next') continue
             const time = new Date(meet.meetDate).getTime()
-            if (upcomingState(meet) === 'live') activity.set(meet.groupId, { tone: 'live', label: 'Happening now', time })
+            if (upcomingState(meet) === 'live')
+                activity.set(meet.groupId, {
+                    tone: 'live',
+                    label: $localize`:Chip on a group in the list on Home while its game night is under way:Happening now`,
+                    time,
+                })
             else {
-                const relative = relativeDay(meet.meetDate)
-                const parts = sessionDateParts(meet)
-                const label = relative === 'Today' || relative === 'Tomorrow' ? relative : `${parts.day} ${parts.month}`
+                // "Today" and "Tomorrow" say it best; any later night shows its date.
+                const days = daysUntil(meet.meetDate)
+                const label = days === 0 || days === 1 ? relativeDay(meet.meetDate) : sessionDate(meet, { day: 'numeric', month: 'short' })
                 activity.set(meet.groupId, { tone: 'next', label, time })
             }
         }
@@ -140,8 +150,12 @@ export class DashboardPageComponent {
             if (meet.status !== 'completed' || !current || current.tone === 'live' || current.tone === 'next') continue
             const time = new Date(meet.meetDate).getTime()
             if (current.tone === 'past' && current.time >= time) continue
-            const parts = sessionDateParts(meet)
-            activity.set(meet.groupId, { tone: 'past', label: `Last: ${parts.day} ${parts.month}`, time })
+            const date = sessionDate(meet, { day: 'numeric', month: 'short' })
+            activity.set(meet.groupId, {
+                tone: 'past',
+                label: $localize`:Chip on a group in the list on Home, the date of its last game night such as 24 Oct:Last: ${date}:date:`,
+                time,
+            })
         }
         return activity
     })
@@ -169,6 +183,20 @@ export class DashboardPageComponent {
 
     public isPinned(group: GroupWithMembersAndGames): boolean {
         return this.home.preferences().pinnedGroupIds.includes(group.id)
+    }
+
+    /** What the pin on a group's row does, for screen readers. */
+    public pinLabel(group: GroupWithMembersAndGames, pinned: boolean): string {
+        return pinned
+            ? $localize`:Pin button on a group in the list on Home, when the group is pinned:Unpin ${group.name}:group:`
+            : $localize`:Pin button on a group in the list on Home:Pin ${group.name}:group: to the top`
+    }
+
+    /** The pin's tooltip. */
+    public pinTitle(pinned: boolean): string {
+        return pinned
+            ? $localize`:Tooltip of the pin button on a group in the list on Home, when the group is pinned:Unpin`
+            : $localize`:Tooltip of the pin button on a group in the list on Home:Pin to the top`
     }
 
     public peopleInGroup(group: GroupWithMembersAndGames): number {
@@ -213,8 +241,7 @@ export class DashboardPageComponent {
     }
 
     public historyDate(record: HistoryRecordType): string {
-        const parts = sessionDateParts(record.meetData)
-        return `${parts.day} ${parts.month} ${parts.year}`
+        return sessionDate(record.meetData, { day: 'numeric', month: 'short', year: 'numeric' })
     }
 
     public hideBrokenImage(event: Event): void {

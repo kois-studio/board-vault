@@ -1,71 +1,94 @@
 <container-wrapper>
     <div class="space-y-8 pb-16 pt-6">
         <a [routerLink]="['/groups', groupId()]" class="inline-flex min-h-11 items-center gap-2 text-sm font-medium text-bv-text-muted hover:text-bv-text">
-            <app-icon name="arrow-left" [size]="16" /> {{ groupName() ?? 'Back to the group' }}
+            <app-icon name="arrow-left" [size]="16" />
+            @if (groupName(); as name) {
+                {{ name }}
+            } @else {
+                <ng-container i18n="Link on the page of a person of a group back to the group page, before the group name loads">Back to the group</ng-container>
+            }
         </a>
 
         @if (isLoading()) {
             <div class="flex justify-center py-16"><app-spinner size="large" /></div>
         } @else if (loadError()) {
             <div class="rounded-2xl border border-bv-warning/30 bg-bv-warning/10 p-5 text-sm" role="alert">
-                <p>This person could not be loaded.</p>
-                <button appButton variant="secondary" class="mt-4" icon="arrow-repeat" (click)="load()">Retry</button>
+                <p i18n="Error on the page of a person of a group">This person could not be loaded.</p>
+                <button appButton variant="secondary" class="mt-4" icon="arrow-repeat" (click)="load()" i18n="Button under an error">Retry</button>
             </div>
         } @else if (person(); as person) {
             <section class="flex items-center gap-4" aria-labelledby="person-name">
                 <app-image-profile size="large" class="shrink-0" [avatar]="person.avatar ?? initialsAvatar(person.displayName)" />
                 <div class="min-w-0">
                     <h1 id="person-name" class="text-3xl font-bold tracking-tight wrap-anywhere">{{ person.displayName }}</h1>
-                    <p class="mt-1 text-secondary">{{ person.accountId !== null ? 'Member of ' + (groupName() ?? 'this group') : 'In ' + (groupName() ?? 'this group') + ', without an account' }}</p>
+                    <p class="mt-1 text-secondary">
+                        @if (groupName(); as name) {
+                            @if (person.accountId !== null) {
+                                <ng-container i18n="Under the name on the page of a person of a group, for someone with an account; the placeholder is the group name">Member of {{ name }}</ng-container>
+                            } @else {
+                                <ng-container i18n="Under the name on the page of a person of a group, for someone without an account; the placeholder is the group name">In {{ name }}, without an account</ng-container>
+                            }
+                        } @else {
+                            @if (person.accountId !== null) {
+                                <ng-container i18n="Under the name on the page of a person of a group, for someone with an account, before the group name loads">Member of this group</ng-container>
+                            } @else {
+                                <ng-container i18n="Under the name on the page of a person of a group, for someone without an account, before the group name loads">In this group, without an account</ng-container>
+                            }
+                        }
+                    </p>
                 </div>
             </section>
 
-            <section class="grid grid-cols-1 gap-4 sm:grid-cols-2" aria-label="Collection and game nights">
+            <section class="grid grid-cols-1 gap-4 sm:grid-cols-2" aria-label="Collection and game nights" i18n-aria-label="Name of the numbers on the page of a person of a group">
                 <article class="rounded-2xl border border-bv-border bg-bv-surface p-5 shadow-sm">
-                    <h2 class="text-sm font-semibold uppercase tracking-[0.18em] text-bv-primary">Collection worth</h2>
+                    <h2 class="text-sm font-semibold uppercase tracking-[0.18em] text-bv-primary" i18n="Heading on the page of a person of a group">Collection worth</h2>
                     @if (person.pricedGames > 0) {
                         <p class="mt-2 text-3xl font-bold">≈ {{ person.worth | currency: 'EUR' : 'symbol' : '1.0-0' }}</p>
                         <p class="mt-2 text-sm text-secondary">
-                            From the retail prices of {{ person.pricedGames === person.games.length ? 'their ' + person.games.length : person.pricedGames + ' of their ' + person.games.length }} game{{ person.games.length === 1 ? '' : 's' }}. What anyone actually paid stays private.
+                            @if (person.pricedGames === person.games.length) {
+                                <ng-container i18n="Under the collection worth on the page of a person of a group, when all their games have a price">{person.games.length, plural, one {From the retail prices of their {{ person.games.length }} game. What anyone actually paid stays private.} other {From the retail prices of their {{ person.games.length }} games. What anyone actually paid stays private.}}</ng-container>
+                            } @else {
+                                <ng-container i18n="Under the collection worth on the page of a person of a group, when only some of their games have a price">{person.games.length, plural, one {From the retail prices of {{ person.pricedGames }} of their {{ person.games.length }} game. What anyone actually paid stays private.} other {From the retail prices of {{ person.pricedGames }} of their {{ person.games.length }} games. What anyone actually paid stays private.}}</ng-container>
+                            }
                         </p>
                     } @else if (person.games.length > 0) {
-                        <p class="mt-2 text-sm text-secondary">No retail prices are known for their games yet.</p>
+                        <p class="mt-2 text-sm text-secondary" i18n="Under Collection worth on the page of a person of a group">No retail prices are known for their games yet.</p>
                     } @else {
-                        <p class="mt-2 text-sm text-secondary">They bring no games to this group yet.</p>
+                        <p class="mt-2 text-sm text-secondary" i18n="Under Collection worth on the page of a person of a group">They bring no games to this group yet.</p>
                     }
                 </article>
                 <article class="rounded-2xl border border-bv-border bg-bv-surface p-5 shadow-sm">
-                    <h2 class="text-sm font-semibold uppercase tracking-[0.18em] text-bv-primary">Game nights</h2>
+                    <h2 class="text-sm font-semibold uppercase tracking-[0.18em] text-bv-primary" i18n="Heading on the page of a person of a group">Game nights</h2>
                     @if (standingsError()) {
                         <div class="mt-2 text-sm" role="alert">
-                            <p>Their game nights could not be loaded.</p>
-                            <button type="button" class="mt-1 font-medium text-bv-primary underline" (click)="loadStandings()">Retry</button>
+                            <p i18n="Error on the page of a person of a group">Their game nights could not be loaded.</p>
+                            <button type="button" class="mt-1 font-medium text-bv-primary underline" (click)="loadStandings()" i18n="Button under an error">Retry</button>
                         </div>
                     } @else if (standing(); as standing) {
                         <dl class="mt-3 grid grid-cols-3 gap-3 text-center">
                             <div class="rounded-xl bg-bv-bg p-3">
-                                <dt class="text-xs text-secondary">Wins</dt>
+                                <dt class="text-xs text-secondary" i18n="One of the numbers on the page of a person of a group">Wins</dt>
                                 <dd class="mt-1 text-2xl font-bold">{{ standing.wins }}</dd>
                             </div>
                             <div class="rounded-xl bg-bv-bg p-3">
-                                <dt class="text-xs text-secondary">Games</dt>
+                                <dt class="text-xs text-secondary" i18n="games played|One of the numbers on the page of a person of a group, games played">Games</dt>
                                 <dd class="mt-1 text-2xl font-bold">{{ standing.gamesPlayed }}</dd>
                             </div>
                             <div class="rounded-xl bg-bv-bg p-3">
-                                <dt class="text-xs text-secondary">Nights</dt>
+                                <dt class="text-xs text-secondary" i18n="One of the numbers on the page of a person of a group, game nights">Nights</dt>
                                 <dd class="mt-1 text-2xl font-bold">{{ standing.sessions }}</dd>
                             </div>
                         </dl>
                     } @else {
-                        <p class="mt-2 text-sm text-secondary">No finished game nights with this group yet.</p>
+                        <p class="mt-2 text-sm text-secondary" i18n="Under Game nights on the page of a person of a group">No finished game nights with this group yet.</p>
                     }
                 </article>
             </section>
 
             <section aria-labelledby="person-games-heading">
-                <h2 id="person-games-heading" class="text-2xl font-bold">Games they bring</h2>
+                <h2 id="person-games-heading" class="text-2xl font-bold" i18n="Heading on the page of a person of a group">Games they bring</h2>
                 @if (person.accountId === null && person.groupPersonId !== null) { <app-add-person-game [groupId]="groupId()" [personId]="person.groupPersonId" [name]="person.displayName" [ownedIds]="ownedIds()" (added)="load()" /> }
-                @else if (isMe()) { <a appButton variant="secondary" class="mt-3" routerLink="/collection/browse">Add a game to My Games</a> }
+                @else if (isMe()) { <a appButton variant="secondary" class="mt-3" routerLink="/collection/browse" i18n="Button on your own page in a group, to Browse">Add a game to My Games</a> }
                 @if (person.games.length > 0) {
                     <ul class="mt-4 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-5">
                         @for (game of person.games; track game.id) {
@@ -74,19 +97,25 @@
                                     <div class="aspect-square overflow-hidden rounded-xl">
                                         <image-background class="h-full" [src]="game.imageUrl" [alt]="''" />
                                     </div>
-                                    <p class="mt-2 truncate px-1 text-sm font-medium group-hover:text-bv-primary" [title]="game.title || 'Untitled game'">{{ game.title || 'Untitled game' }}</p>
+                                    <p class="mt-2 truncate px-1 text-sm font-medium group-hover:text-bv-primary" [title]="game.title || untitledGame">{{ game.title || untitledGame }}</p>
                                 </a>
                             </li>
                         }
                     </ul>
                 } @else {
-                    <p class="mt-4 rounded-2xl border border-dashed border-bv-border p-5 text-secondary">No games on the shelf yet.</p>
+                    <p class="mt-4 rounded-2xl border border-dashed border-bv-border p-5 text-secondary" i18n="Under Games they bring on the page of a person of a group">No games on the shelf yet.</p>
                 }
             </section>
         } @else {
             <div class="rounded-2xl border border-dashed border-bv-border p-6 text-center text-secondary">
-                <h1 class="text-xl font-semibold text-bv-text">This person is not in this group.</h1>
-                <a appButton variant="secondary" class="mt-4" [routerLink]="['/groups', groupId()]">Back to {{ groupName() ?? 'the group' }}</a>
+                <h1 class="text-xl font-semibold text-bv-text" i18n="Shown on the page of someone who is not in the group">This person is not in this group.</h1>
+                <a appButton variant="secondary" class="mt-4" [routerLink]="['/groups', groupId()]">
+                    @if (groupName(); as name) {
+                        <ng-container i18n="Button back to the group page; the placeholder is the group name">Back to {{ name }}</ng-container>
+                    } @else {
+                        <ng-container i18n="Button back to the group page, before the group name loads">Back to the group</ng-container>
+                    }
+                </a>
             </div>
         }
     </div>

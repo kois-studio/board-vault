@@ -19,17 +19,18 @@ import { StarRatingComponent } from '../ui/star-rating/star-rating.component'
     imports: [IconComponent, StarRatingComponent],
     host: { class: 'block' },
     template: `@if (pending().length > 0) {
-        <ul class="space-y-1 px-3 pb-3" [attr.aria-label]="'Rate what you played'">
+        <ul class="space-y-1 px-3 pb-3" aria-label="Rate what you played" i18n-aria-label="Name of the list on Home, under a played game night, of games you played and have not rated">
             @for (game of pending(); track game.id) {
                 <li class="flex min-w-0 items-center gap-2 rounded-lg bg-bv-bg py-1 pl-3 pr-1">
-                    <span class="min-w-0 flex-1 truncate text-xs text-bv-text-muted">Rate <span class="font-semibold text-bv-text">{{ title(game) }}</span></span>
+                    <span class="min-w-0 flex-1 truncate text-xs text-bv-text-muted" i18n="Prompt on Home to rate a game you played; the placeholder is the game title">Rate <span class="font-semibold text-bv-text">{{ title(game) }}</span></span>
                     <app-star-rating class="shrink-0" [value]="null" [label]="title(game)" [disabled]="saving().includes(game.id)" (rated)="rate(game.id, $event)" />
                     <button
                         type="button"
                         class="flex h-8 w-8 shrink-0 items-center justify-center rounded-md text-bv-text-muted transition hover:bg-bv-surface-2 hover:text-bv-text disabled:opacity-60"
                         [disabled]="home.loading() || home.error() || home.saving()"
-                        [attr.aria-label]="'Not now: stop asking to rate ' + title(game)"
-                        [title]="'Not now'"
+                        [attr.aria-label]="dismissLabel(game)"
+                        title="Not now"
+                        i18n-title="Tooltip of the button on Home that stops asking you to rate a game"
                         (click)="dismiss(game.id)"
                     >
                         <app-icon name="x" [size]="16" aria-hidden="true" />
@@ -49,6 +50,10 @@ export class RatingFollowUpComponent {
     readonly saving = signal<number[]>([])
     readonly rated = signal<number[]>([])
     readonly title = gameTitle
+
+    dismissLabel(game: GameCompleteType): string {
+        return $localize`:Button on Home that stops asking you to rate a game; the placeholder is the game title:Not now: stop asking to rate ${gameTitle(game)}:title:`
+    }
 
     /** Played by you in this night, not rated, not dismissed; at most two so the row stays a row. */
     readonly pending = computed(() => {
@@ -77,9 +82,9 @@ export class RatingFollowUpComponent {
             if (this.data.currentUser()?.id !== accountId) return
             this.rated.update((ids) => [...ids, gameId])
             this.data.refreshGameReviews()
-            this.toast.success('Your rating was saved.')
+            this.toast.success($localize`:Toast after rating a game:Your rating was saved.`)
         } catch {
-            this.toast.error('Could not save your rating. Try again.')
+            this.toast.error($localize`:Toast when a rating could not be saved:Could not save your rating. Try again.`)
         } finally {
             this.saving.update((ids) => ids.filter((id) => id !== gameId))
         }

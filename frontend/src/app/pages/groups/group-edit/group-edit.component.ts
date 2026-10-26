@@ -13,14 +13,12 @@ import { ButtonComponent } from '../../../components/ui/button/button.component'
 import { DialogDirective } from '../../../components/ui/dialog/dialog.directive'
 import { IconComponent } from '../../../components/ui/icon/icon.component'
 import { LOADING_KEYS } from '../../../core/enums/loading-keys-enum'
-import { CountPipe } from '../../../core/pipes/count.pipe'
 import { CustomDatePipe } from '../../../core/pipes/customDate.pipe'
 import { DataService } from '../../../core/services/data.service'
 import { LoadingService } from '../../../core/services/loading.service'
 import { groupGameCount, groupPeopleCount } from '../../../core/utils/groupCounts'
 @Component({
     imports: [
-        CountPipe,
         ButtonComponent,
         RouterLink,
         ImageProfileComponent,
@@ -121,19 +119,24 @@ export class GroupEditComponent {
     /** What is wrong with the entry, in words; null when it can be sent. */
     public inviteProblem(): string | null {
         const value = this.inviteTarget.value.trim()
-        if (!value) return 'Enter their username or email.'
+        if (!value)
+            return $localize`:Error under the invite field on the group's settings page, when it is empty:Enter their username or email.`
         if (this.inviteKind() === 'email') {
-            return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value) && value.length <= 320 ? null : 'Enter a valid email address.'
+            return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value) && value.length <= 320
+                ? null
+                : $localize`:Error under the invite field on the group's settings page:Enter a valid email address.`
         }
-        if (value.length < 4 || value.length > 20) return 'Usernames have 4 to 20 characters.'
+        if (value.length < 4 || value.length > 20)
+            return $localize`:Error under the invite field on the group's settings page:Usernames have 4 to 20 characters.`
         const group = this.groupData
-        if (group?.members.some((member) => member.username.toLowerCase() === value.toLowerCase())) return 'They are already in this group.'
+        if (group?.members.some((member) => member.username.toLowerCase() === value.toLowerCase()))
+            return $localize`:Error under the invite field on the group's settings page:They are already in this group.`
         if (
             (this.invitationsGroupIndex[group?.id ?? -1] ?? []).some(
                 (invitation) => invitation.toAccount.username.toLowerCase() === value.toLowerCase(),
             )
         ) {
-            return 'They already have an invitation waiting.'
+            return $localize`:Error under the invite field on the group's settings page:They already have an invitation waiting.`
         }
         return null
     }
@@ -154,6 +157,10 @@ export class GroupEditComponent {
         return this.groupData ? groupGameCount(this.groupData) : 0
     }
 
+    public confirmRemoveLabel(name: string): string {
+        return $localize`:Name of the confirmation on the group's settings page before removing a member; the placeholder is their name:Confirm removing ${name}:name:`
+    }
+
     async onInviteUser() {
         const username = this.inviteTarget.value.trim()
         if (!this.isGroupOwner || !this.groupData || !username || this.isLoading()) return
@@ -168,8 +175,8 @@ export class GroupEditComponent {
         } catch (error) {
             this.inviteError.set(
                 httpStatus(error) === 404
-                    ? 'No Board Vault account has this username. Check it and try again; your entry is still here.'
-                    : 'We could not send this invite. Check the username and try again; your entry is still here.',
+                    ? $localize`:Error under the invite field on the group's settings page, after sending:No Board Vault account has this username. Check it and try again; your entry is still here.`
+                    : $localize`:Error under the invite field on the group's settings page, after sending:We could not send this invite. Check the username and try again; your entry is still here.`,
             )
         } finally {
             this.isLoading.set(false)
@@ -195,8 +202,8 @@ export class GroupEditComponent {
         } catch (error) {
             this.inviteError.set(
                 httpStatus(error) === 409
-                    ? 'This email already has a pending invitation. Find it under Pending invitations, where you can revoke it and send a new one.'
-                    : 'We could not send the email invitation. Check the address and try again; your entry is still here.',
+                    ? $localize`:Error under the invite field on the group's settings page, after sending; Pending invitations is a heading on the page:This email already has a pending invitation. Find it under Pending invitations, where you can revoke it and send a new one.`
+                    : $localize`:Error under the invite field on the group's settings page, after sending:We could not send the email invitation. Check the address and try again; your entry is still here.`,
             )
         } finally {
             this.isLoading.set(false)
@@ -248,10 +255,10 @@ export class GroupEditComponent {
         try {
             await firstValueFrom(this.api.revokeClerkGroupInvitation(this.groupData.id, invitationId))
             this.pendingClerkRevokeId.set(null)
-            this.toastService.success('Email invitation revoked')
+            this.toastService.success($localize`:Toast after revoking an email invitation:Email invitation revoked`)
             await this.refreshClerkInvitations(this.groupData.id)
         } catch {
-            this.toastService.error('Error revoking email invitation')
+            this.toastService.error($localize`:Toast when an email invitation could not be revoked:Error revoking email invitation`)
         } finally {
             this.isLoading.set(false)
         }

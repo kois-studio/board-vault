@@ -1,11 +1,11 @@
 @if (rows().length > 0) {
-    <ol class="divide-y divide-bv-border rounded-2xl border border-bv-border bg-bv-surface" aria-label="Changes in this group, newest first">
+    <ol class="divide-y divide-bv-border rounded-2xl border border-bv-border bg-bv-surface" aria-label="Changes in this group, newest first" i18n-aria-label="Name of the list of the group's history of changes">
         @for (row of rows(); track row.id) {
             <li class="flex flex-col gap-1 px-4 py-3 sm:flex-row sm:items-baseline sm:justify-between sm:gap-4">
                 <p class="min-w-0 text-sm wrap-anywhere">
                     {{ row.text }}
                     @if (row.meetId !== null) {
-                        <a class="ml-1 font-medium text-bv-primary underline underline-offset-2" [routerLink]="['/sessions', row.meetId]">Open</a>
+                        <a class="ml-1 font-medium text-bv-primary underline underline-offset-2" [routerLink]="['/sessions', row.meetId]" i18n="Link after a line in the group's history of changes that opens the game night">Open</a>
                     }
                 </p>
                 <p class="shrink-0 text-xs text-secondary">{{ row.when }}</p>
@@ -14,19 +14,19 @@
     </ol>
 } @else if (!loading() && !failed()) {
     <div class="rounded-2xl border border-dashed border-bv-border p-6 text-center text-sm text-secondary">
-        Nothing has changed yet. Planning a night, recording games or editing someone's games shows up here.
+        <ng-container i18n="Shown in the group's history of changes before anything changed">Nothing has changed yet. Planning a night, recording games or editing someone’s games shows up here.</ng-container>
     </div>
 }
 
 @if (failed()) {
     <div class="mt-3 rounded-2xl border border-bv-warning/30 bg-bv-warning/10 p-4 text-center text-sm" role="alert">
-        <p>The history could not be loaded.</p>
-        <button appButton variant="secondary" type="button" class="mt-3" (click)="retry()">Retry</button>
+        <p i18n="Error in the group's history of changes">The history could not be loaded.</p>
+        <button appButton variant="secondary" type="button" class="mt-3" (click)="retry()" i18n="Button under an error">Retry</button>
     </div>
 } @else if (loading()) {
-    <p class="mt-3 text-center text-sm text-secondary" role="status">Loading the history…</p>
+    <p class="mt-3 text-center text-sm text-secondary" role="status" i18n="Shown while the group's history of changes loads">Loading the history…</p>
 } @else if (hasMore()) {
     <div class="mt-3 text-center">
-        <button appButton variant="secondary" type="button" (click)="showOlder()">Show older changes</button>
+        <button appButton variant="secondary" type="button" (click)="showOlder()" i18n="Button at the end of the group's history of changes">Show older changes</button>
     </div>
 }

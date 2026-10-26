@@ -36,7 +36,9 @@ export class SessionAnswerComponent {
         try {
             await firstValueFrom(this.dataService.answerSession(this.session().id, rsvpStatus))
         } catch {
-            this.toastService.error('Your answer could not be saved. Try again.')
+            this.toastService.error(
+                $localize`:Toast when your answer to a game night could not be saved:Your answer could not be saved. Try again.`,
+            )
         } finally {
             this.isSaving.set(false)
         }

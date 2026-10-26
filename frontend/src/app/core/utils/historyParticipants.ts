@@ -1,4 +1,5 @@
 import type { GroupStanding, HistoryPersonType, HistoryUserType, PublicUserType } from '../../api/api.types'
+import { formatList } from '../i18n/format'
 
 export type HistoryPerson = HistoryPersonType
 
@@ -7,13 +8,13 @@ export type HistoryPerson = HistoryPersonType
  * A deleted account already carries the name "Deleted account".
  */
 export function nameWithStanding(name: string, standing: GroupStanding | undefined): string {
-    return standing === 'left' ? `${name} (left)` : name
+    return standing === 'left' ? $localize`:A name in a group's history, of someone who left the group:${name}:name: (left)` : name
 }
 
 /** The words a tooltip or screen reader adds for someone no longer in the group, or empty. */
 export function standingNote(standing: GroupStanding | undefined): string {
-    if (standing === 'left') return 'Left the group'
-    if (standing === 'deleted') return 'Deleted their account'
+    if (standing === 'left') return $localize`:Note on someone in a group's history who left the group:Left the group`
+    if (standing === 'deleted') return $localize`:Note on someone in a group's history who deleted their account:Deleted their account`
     return ''
 }
 
@@ -97,6 +98,6 @@ export function historyWinnerNames(game: {
 /** "Ana won", "Ana and Bo won", "Ana, Bo and Cy won"; empty without winners. */
 export function formatWinners(names: Array<string>): string {
     if (names.length === 0) return ''
-    if (names.length === 1) return `${names[0]} won`
-    return `${names.slice(0, -1).join(', ')} and ${names[names.length - 1]} won`
+    if (names.length === 1) return $localize`:Who won a game, one person:${names[0]}:name: won`
+    return $localize`:Who won a game, several people; the placeholder is a list such as Ana, Bo and Cy:${formatList(names)}:names: won`
 }

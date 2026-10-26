@@ -2,101 +2,111 @@
     <div class="mx-auto max-w-6xl">
         <a class="inline-flex items-center gap-2 text-sm font-medium text-bv-primary hover:underline" [routerLink]="['/groups', $safeNavigationMigration(groupData?.id)]">
             <app-icon name="arrow-left" [size]="18" aria-hidden="true" />
-            Back to group workspace
+            <ng-container i18n="Link on the group's settings page, back to the group page">Back to group workspace</ng-container>
         </a>
 
         @if (isResolvingGroup()) {
             <section class="mt-8 rounded-3xl border border-bv-border bg-bv-surface p-8 text-center shadow-sm" role="status" aria-live="polite">
-                <p class="text-lg font-semibold text-bv-text">Loading group management…</p>
-                <p class="mt-2 text-secondary">We are checking your membership and pending invitations.</p>
+                <p class="text-lg font-semibold text-bv-text" i18n="Shown while the group's settings page loads">Loading group management…</p>
+                <p class="mt-2 text-secondary" i18n="Shown while the group's settings page loads">We are checking your membership and pending invitations.</p>
             </section>
         } @else if (groupResolutionError()) {
             <section class="mt-8 rounded-3xl border border-bv-warning/30 bg-bv-warning/10 p-8 text-center" role="alert">
-                <p class="text-lg font-semibold">This group is not available.</p>
-                <p class="mt-2 text-secondary">It may have been deleted, or your membership may have changed.</p>
-                <a appButton class="mt-5" routerLink="/dashboard">Back to groups</a>
+                <p class="text-lg font-semibold" i18n="Shown on the group page for a group you are not in">This group is not available.</p>
+                <p class="mt-2 text-secondary" i18n="Shown on the group page for a group you are not in">It may have been deleted, or your membership may have changed.</p>
+                <a appButton class="mt-5" routerLink="/dashboard" i18n="Button on the group page for a group you are not in, to Home">Back to groups</a>
             </section>
         } @else if (groupData) {
             <header class="mt-8 flex flex-col gap-5 rounded-3xl border border-bv-border bg-bv-surface p-6 shadow-sm sm:p-8 lg:flex-row lg:items-end lg:justify-between">
                 <div>
-                    <p class="text-sm font-semibold uppercase tracking-[0.18em] text-bv-primary">Group management</p>
+                    <p class="text-sm font-semibold uppercase tracking-[0.18em] text-bv-primary" i18n="Label on the group's settings page">Group management</p>
                     <h1 class="mt-2 text-3xl font-bold tracking-tight text-bv-text sm:text-4xl">{{ groupData.name }}</h1>
-                    <p class="mt-3 max-w-2xl text-lg leading-8 text-secondary">Keep the people in this private group, its invitations, and its shared game context in sync.</p>
+                    <p class="mt-3 max-w-2xl text-lg leading-8 text-secondary" i18n="Text on the group's settings page">Keep the people in this private group, its invitations, and its shared game context in sync.</p>
                 </div>
                 <div class="flex flex-wrap items-center gap-3">
                     @if (isGroupOwner) {
-                        <span class="rounded-full bg-bv-primary-soft px-3 py-1 text-sm font-semibold text-bv-on-primary-soft">Owner controls</span>
+                        <span class="rounded-full bg-bv-primary-soft px-3 py-1 text-sm font-semibold text-bv-on-primary-soft" i18n="Badge on the group's settings page for its owner">Owner controls</span>
                     } @else {
-                        <span class="rounded-full bg-bv-surface-2 px-3 py-1 text-sm font-semibold text-secondary">Member view</span>
+                        <span class="rounded-full bg-bv-surface-2 px-3 py-1 text-sm font-semibold text-secondary" i18n="Badge on the group's settings page for a member who is not its owner">Member view</span>
                     }
                 </div>
             </header>
 
             @if (!isGroupOwner) {
                 <section class="mt-6 rounded-2xl border border-bv-warning/30 bg-bv-warning/10 p-5" role="status">
-                    <p class="font-semibold text-bv-text">You can see the group context, but only the owner can manage membership.</p>
-                    <p class="mt-1 text-sm text-secondary">Return to the workspace to decide what to play, review sessions, and use the shared library.</p>
+                    <p class="font-semibold text-bv-text" i18n="Shown on the group's settings page to a member who is not its owner">You can see the group context, but only the owner can manage membership.</p>
+                    <p class="mt-1 text-sm text-secondary" i18n="Shown on the group's settings page to a member who is not its owner">Return to the workspace to decide what to play, review sessions, and use the shared library.</p>
                 </section>
             }
 
-            <section class="mt-6 grid grid-cols-1 gap-3 sm:grid-cols-3" aria-label="Group summary">
+            <section class="mt-6 grid grid-cols-1 gap-3 sm:grid-cols-3" aria-label="Group summary" i18n-aria-label="Name of the group's numbers on the group's settings page">
                 <article class="rounded-2xl border border-bv-border bg-bv-surface p-5">
-                    <p class="text-sm text-secondary">People in the group</p>
+                    <p class="text-sm text-secondary" i18n="One of the group's numbers on the group's settings page">People in the group</p>
                     <p class="mt-2 text-3xl font-bold text-bv-text">{{ peopleCount }}</p>
-                    <p class="mt-1 text-xs text-secondary">The friends who shape group decisions</p>
+                    <p class="mt-1 text-xs text-secondary" i18n="Under People in the group on the group's settings page">The friends who shape group decisions</p>
                 </article>
                 <article class="rounded-2xl border border-bv-border bg-bv-surface p-5">
-                    <p class="text-sm text-secondary">Games available</p>
+                    <p class="text-sm text-secondary" i18n="One of the group's numbers on the group's settings page">Games available</p>
                     <p class="mt-2 text-3xl font-bold text-bv-text">{{ gameCount }}</p>
-                    <p class="mt-1 text-xs text-secondary">The shared shelf for recommendations</p>
+                    <p class="mt-1 text-xs text-secondary" i18n="Under Games available on the group's settings page">The shared shelf for recommendations</p>
                 </article>
                 <article class="rounded-2xl border border-bv-border bg-bv-surface p-5">
-                    <p class="text-sm text-secondary">Pending invitations</p>
+                    <p class="text-sm text-secondary" i18n="One of the group's numbers on the group's settings page, and the heading of its list of invitations">Pending invitations</p>
                     <p class="mt-2 text-3xl font-bold text-bv-text">{{ getPendingAccountInvitations(groupData.id).length + clerkPendingInvitations().length }}</p>
-                    <p class="mt-1 text-xs text-secondary">People who have not joined yet</p>
+                    <p class="mt-1 text-xs text-secondary" i18n="Under Pending invitations on the group's settings page">People who have not joined yet</p>
                 </article>
             </section>
 
             @if (isGroupOwner) {
                 <section class="mt-8" aria-labelledby="invite-people-heading">
                     <div>
-                        <h2 id="invite-people-heading" class="text-2xl font-bold text-bv-text">Invite the people you play with</h2>
-                        <p class="mt-2 max-w-3xl text-secondary">Whether or not they already have an account.</p>
+                        <h2 id="invite-people-heading" class="text-2xl font-bold text-bv-text" i18n="Heading on the group's settings page">Invite the people you play with</h2>
+                        <p class="mt-2 max-w-3xl text-secondary" i18n="Under Invite the people you play with on the group's settings page">Whether or not they already have an account.</p>
                     </div>
 
                     <form class="mt-5 rounded-3xl border border-bv-border bg-bv-surface p-6 shadow-sm" (submit)="onInviteSubmit($event)" novalidate>
-                        <label for="group-invite" class="block text-sm font-semibold text-bv-text">Their username or email</label>
+                        <label for="group-invite" class="block text-sm font-semibold text-bv-text" i18n="Label of the invite field on the group's settings page">Their username or email</label>
                         <div class="mt-2 flex flex-col gap-3 sm:flex-row">
-                            <input id="group-invite" type="text" [formControl]="inviteTarget" placeholder="friend_username or friend@example.com" class="app-input min-w-0 flex-1" [class.border-bv-danger]="inviteTarget.touched && inviteProblem() !== null" autocomplete="off" aria-describedby="group-invite-help group-invite-error" />
-                            <button appButton type="submit" class="shrink-0" [disabled]="isLoading()">{{ isLoading() ? 'Sending…' : 'Send invite' }}</button>
+                            <input id="group-invite" type="text" [formControl]="inviteTarget" placeholder="friend_username or friend@example.com" i18n-placeholder="Placeholder of the invite field on the group's settings page; keep the example username and address in the same form" class="app-input min-w-0 flex-1" [class.border-bv-danger]="inviteTarget.touched && inviteProblem() !== null" autocomplete="off" aria-describedby="group-invite-help group-invite-error" />
+                            <button appButton type="submit" class="shrink-0" [disabled]="isLoading()">@if (isLoading()) {<ng-container i18n="Invite button on the group's settings page, while it sends">Sending…</ng-container>} @else {<ng-container i18n="Invite button on the group's settings page">Send invite</ng-container>}</button>
                         </div>
                         <p id="group-invite-help" class="mt-2 text-sm text-secondary">
-                            {{ inviteKind() === 'email' ? 'We email them a secure link; they join after creating their account.' : 'Someone who already has an account sees the invitation in their inbox.' }}
+                            @if (inviteKind() === 'email') {
+                                <ng-container i18n="Under the invite field on the group's settings page, when it holds an email address">We email them a secure link; they join after creating their account.</ng-container>
+                            } @else {
+                                <ng-container i18n="Under the invite field on the group's settings page, when it holds a username">Someone who already has an account sees the invitation in their inbox.</ng-container>
+                            }
                         </p>
                         <div id="group-invite-error" aria-live="polite">
                             @if (inviteTarget.touched && inviteProblem(); as problem) { <p class="mt-2 text-sm text-bv-danger">{{ problem }}</p> }
                         </div>
                         @if (claimablePeople().length > 0) {
-                            <label for="group-invite-person" class="mt-4 block text-sm font-semibold text-bv-text">Are they someone already in this group?</label>
+                            <label for="group-invite-person" class="mt-4 block text-sm font-semibold text-bv-text" i18n="Label of the menu on the group's settings page that links an invitation to a person without an account">Are they someone already in this group?</label>
                             <select id="group-invite-person" class="app-input mt-2" [value]="selectedClaimPersonId() ?? ''" (change)="selectedClaimPersonId.set($any($event.target).value ? +$any($event.target).value : null)">
-                                <option value="">No, they join as themselves</option>
+                                <option value="" i18n="Choice of the menu on the group's settings page that links an invitation to a person without an account">No, they join as themselves</option>
                                 @for (person of claimablePeople(); track person.person.id) {
-                                    <option [value]="person.person.id" [selected]="person.person.id === selectedClaimPersonId()">Yes, they are {{ person.person.displayName }}</option>
+                                    <option [value]="person.person.id" [selected]="person.person.id === selectedClaimPersonId()" i18n="Choice of the menu on the group's settings page that links an invitation to a person without an account; the placeholder is that person's name">Yes, they are {{ person.person.displayName }}</option>
                                 }
                             </select>
-                            <p class="mt-2 text-xs text-secondary">They review what was recorded for that person and take over its history when they join.</p>
+                            <p class="mt-2 text-xs text-secondary" i18n="Under the menu on the group's settings page that links an invitation to a person without an account">They review what was recorded for that person and take over its history when they join.</p>
                         }
                         @if (inviteError()) { <p class="mt-4 rounded-2xl border border-bv-danger/30 bg-bv-danger/10 p-4 text-sm text-bv-danger" role="alert">{{ inviteError() }}</p> }
                         @if (clerkInvitation(); as invitation) {
                             <div class="mt-5 rounded-2xl border border-bv-success/30 bg-bv-success/10 p-4" role="status" aria-live="polite">
-                                <p class="font-semibold text-bv-success">Invitation sent to {{ invitation.emailAddress }}.</p>
-                                <p class="mt-1 text-sm text-secondary">Share the secure link directly if the email does not arrive.</p>
+                                <p class="font-semibold text-bv-success" i18n="Shown on the group's settings page after an email invitation is sent; the placeholder is the address">Invitation sent to {{ invitation.emailAddress }}.</p>
+                                <p class="mt-1 text-sm text-secondary" i18n="Shown on the group's settings page after an email invitation is sent">Share the secure link directly if the email does not arrive.</p>
                                 <div class="mt-3 flex flex-wrap gap-3">
-                                    <button appButton variant="secondary" type="button" (click)="copyClerkInvitationLink()">Copy secure link</button>
-                                    <a appButton variant="secondary" [href]="invitation.url" target="_blank" rel="noreferrer">Open link</a>
+                                    <button appButton variant="secondary" type="button" (click)="copyClerkInvitationLink()" i18n="Button on the group's settings page after an email invitation is sent">Copy secure link</button>
+                                    <a appButton variant="secondary" [href]="invitation.url" target="_blank" rel="noreferrer" i18n="Button on the group's settings page after an email invitation is sent, and the button the copy messages refer to">Open link</a>
                                 </div>
                                 @if (copyLinkStatus() !== 'idle') {
-                                    <p class="mt-2 text-xs text-secondary">{{ copyLinkStatus() === 'copied' ? 'Secure link copied.' : copyLinkStatus() === 'unavailable' ? 'Clipboard access is unavailable; use Open link.' : 'The link could not be copied; use Open link.' }}</p>
+                                    <p class="mt-2 text-xs text-secondary">
+                                        @switch (copyLinkStatus()) {
+                                            @case ('copied') { <ng-container i18n="Shown on the group's settings page after copying the invitation link">Secure link copied.</ng-container> }
+                                            @case ('unavailable') { <ng-container i18n="Shown on the group's settings page when the browser cannot copy; Open link is the button next to it">Clipboard access is unavailable; use Open link.</ng-container> }
+                                            @default { <ng-container i18n="Shown on the group's settings page when copying fails; Open link is the button next to it">The link could not be copied; use Open link.</ng-container> }
+                                        }
+                                    </p>
                                 }
                             </div>
                         }
@@ -106,25 +116,25 @@
                 <section class="mt-8 rounded-3xl border border-bv-border bg-bv-surface p-6 shadow-sm" aria-labelledby="pending-invitations-heading">
                     <div class="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
                         <div>
-                            <p class="text-sm font-semibold uppercase tracking-[0.18em] text-bv-primary">Waiting to join</p>
-                            <h2 id="pending-invitations-heading" class="mt-1 text-2xl font-bold text-bv-text">Pending invitations</h2>
-                            <p class="mt-2 text-secondary">Keep an eye on people who have not joined yet. Revoke an invitation if the plan changed.</p>
+                            <p class="text-sm font-semibold uppercase tracking-[0.18em] text-bv-primary" i18n="Label on the group's settings page">Waiting to join</p>
+                            <h2 id="pending-invitations-heading" class="mt-1 text-2xl font-bold text-bv-text" i18n="One of the group's numbers on the group's settings page, and the heading of its list of invitations">Pending invitations</h2>
+                            <p class="mt-2 text-secondary" i18n="Under Pending invitations on the group's settings page">Keep an eye on people who have not joined yet. Revoke an invitation if the plan changed.</p>
                         </div>
-                        @if (clerkPendingInvitations().length > 0) { <span class="rounded-full bg-bv-primary-soft px-3 py-1 text-sm font-semibold text-bv-on-primary-soft">{{ clerkPendingInvitations().length }} email link{{ clerkPendingInvitations().length === 1 ? '' : 's' }}</span> }
+                        @if (clerkPendingInvitations().length > 0) { <span class="rounded-full bg-bv-primary-soft px-3 py-1 text-sm font-semibold text-bv-on-primary-soft" i18n="How many email invitations are waiting on the group's settings page">{clerkPendingInvitations().length, plural, one {{{ clerkPendingInvitations().length }} email link} other {{{ clerkPendingInvitations().length }} email links}}</span> }
                     </div>
 
                     @if (clerkInvitationsLoading()) {
-                        <p class="mt-5 text-sm text-secondary" role="status" aria-live="polite">Loading pending email invitations…</p>
+                        <p class="mt-5 text-sm text-secondary" role="status" aria-live="polite" i18n="Shown on the group's settings page while the email invitations load">Loading pending email invitations…</p>
                     } @else if (clerkInvitationsError()) {
-                        <div class="mt-5 rounded-2xl border border-bv-warning/30 bg-bv-warning/10 p-4" role="alert"><p class="text-sm text-secondary">Pending email invitations could not be loaded.</p><button appButton variant="secondary" type="button" class="mt-3" (click)="refreshClerkInvitations(groupData.id)">Retry</button></div>
+                        <div class="mt-5 rounded-2xl border border-bv-warning/30 bg-bv-warning/10 p-4" role="alert"><p class="text-sm text-secondary" i18n="Error on the group's settings page">Pending email invitations could not be loaded.</p><button appButton variant="secondary" type="button" class="mt-3" (click)="refreshClerkInvitations(groupData.id)" i18n="Button under an error">Retry</button></div>
                     } @else if (clerkPendingInvitations().length > 0) {
                         <ul class="mt-5 grid grid-cols-1 gap-3 lg:grid-cols-2">
                             @for (invitation of clerkPendingInvitations(); track invitation.invitationId) {
                                 <li class="flex flex-wrap items-center justify-between gap-3 rounded-2xl bg-bv-bg p-4">
-                                    <div><p class="font-medium text-bv-text">{{ invitation.emailAddress }}</p><p class="mt-1 text-xs text-secondary">Sent {{ invitation.createdAt | customDate: true }}</p></div>
+                                    <div><p class="font-medium text-bv-text">{{ invitation.emailAddress }}</p><p class="mt-1 text-xs text-secondary" i18n="When an email invitation was sent; the placeholder is a date">Sent {{ invitation.createdAt | customDate: true }}</p></div>
                                     @if (pendingClerkRevokeId() === invitation.invitationId) {
-                                        <div class="flex flex-wrap items-center gap-2" role="group" aria-label="Confirm email invitation revocation"><span class="text-xs text-secondary">Revoke this link?</span><button appButton variant="danger" type="button" [disabled]="isLoading()" (click)="revokeClerkInvitation(invitation.invitationId)">Yes, revoke</button><button appButton variant="secondary" type="button" [disabled]="isLoading()" (click)="pendingClerkRevokeId.set(null)">Keep it</button></div>
-                                    } @else { <button appButton variant="danger" type="button" [disabled]="isLoading()" (click)="requestClerkRevoke(invitation.invitationId)">Revoke</button> }
+                                        <div class="flex flex-wrap items-center gap-2" role="group" aria-label="Confirm email invitation revocation" i18n-aria-label="Name of the confirmation on the group's settings page before revoking an email invitation"><span class="text-xs text-secondary" i18n="Confirmation on the group's settings page before revoking an email invitation">Revoke this link?</span><button appButton variant="danger" type="button" [disabled]="isLoading()" (click)="revokeClerkInvitation(invitation.invitationId)" i18n="Button that confirms revoking an email invitation">Yes, revoke</button><button appButton variant="secondary" type="button" [disabled]="isLoading()" (click)="pendingClerkRevokeId.set(null)" i18n="Button that cancels revoking or withdrawing an invitation">Keep it</button></div>
+                                    } @else { <button appButton variant="danger" type="button" [disabled]="isLoading()" (click)="requestClerkRevoke(invitation.invitationId)" i18n="Button on an email invitation on the group's settings page">Revoke</button> }
                                 </li>
                             }
                         </ul>
@@ -132,22 +142,22 @@
 
                     @if (getPendingAccountInvitations(groupData.id).length > 0) {
                         <div class="mt-6 border-t border-bv-border pt-5">
-                            <h3 class="font-semibold text-bv-text">Existing account invitations</h3>
+                            <h3 class="font-semibold text-bv-text" i18n="Heading on the group's settings page, of the invitations sent to people with an account">Existing account invitations</h3>
                             <ul class="mt-3 grid grid-cols-1 gap-3 lg:grid-cols-2">
                                 @for (invitation of getPendingAccountInvitations(groupData.id); track invitation.id) {
                                     <li class="flex min-w-0 flex-wrap items-center justify-between gap-3 rounded-2xl bg-bv-bg p-4">
                                         <div class="flex min-w-0 flex-1 basis-56 items-center gap-3"><app-image-profile [avatar]="invitation.toAccount.avatar" /><div class="min-w-0"><p class="truncate font-medium text-bv-text">{{ invitation.toAccount.displayName }}</p><p class="truncate text-sm text-secondary">{{ invitation.toAccount.username }}</p></div></div>
                                         @if (pendingRemoval() === 'i' + invitation.id) {
-                                            <div class="flex flex-wrap items-center gap-2" role="group" aria-label="Confirm withdrawing the invitation"><span class="text-xs text-secondary">Withdraw?</span><button appButton variant="danger" type="button" [disabled]="isLoading()" (click)="withdrawInvitation(invitation.id)">Yes, withdraw</button><button appButton variant="secondary" type="button" [disabled]="isLoading()" (click)="pendingRemoval.set(null)">Keep it</button></div>
+                                            <div class="flex flex-wrap items-center gap-2" role="group" aria-label="Confirm withdrawing the invitation" i18n-aria-label="Name of the confirmation on the group's settings page before withdrawing an invitation"><span class="text-xs text-secondary" i18n="Confirmation on the group's settings page before withdrawing an invitation">Withdraw?</span><button appButton variant="danger" type="button" [disabled]="isLoading()" (click)="withdrawInvitation(invitation.id)" i18n="Button that confirms withdrawing an invitation">Yes, withdraw</button><button appButton variant="secondary" type="button" [disabled]="isLoading()" (click)="pendingRemoval.set(null)" i18n="Button that cancels revoking or withdrawing an invitation">Keep it</button></div>
                                         } @else {
-                                            <button appButton variant="danger" type="button" class="shrink-0" [disabled]="isLoading()" (click)="pendingRemoval.set('i' + invitation.id)">Withdraw</button>
+                                            <button appButton variant="danger" type="button" class="shrink-0" [disabled]="isLoading()" (click)="pendingRemoval.set('i' + invitation.id)" i18n="Button on an invitation on the group's settings page">Withdraw</button>
                                         }
                                     </li>
                                 }
                             </ul>
                         </div>
                     } @else if (!clerkInvitationsLoading() && clerkPendingInvitations().length === 0) {
-                        <p class="mt-5 rounded-2xl border border-dashed border-bv-border p-5 text-sm text-secondary">No invitations are waiting right now. Invite someone above when the group is ready for another player.</p>
+                        <p class="mt-5 rounded-2xl border border-dashed border-bv-border p-5 text-sm text-secondary" i18n="Shown on the group's settings page when no invitation is waiting">No invitations are waiting right now. Invite someone above when the group is ready for another player.</p>
                     }
                 </section>
             }
@@ -155,43 +165,43 @@
             <section class="mt-8 rounded-3xl border border-bv-border bg-bv-surface p-6 shadow-sm" aria-labelledby="members-heading">
                 <div class="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
                     <div>
-                        <p class="text-sm font-semibold uppercase tracking-[0.18em] text-bv-primary">The people behind the nights</p>
-                        <h2 id="members-heading" class="mt-1 text-2xl font-bold text-bv-text">Current members</h2>
-                        <p class="mt-2 text-secondary">These members’ collections and play history shape this group’s recommendations.</p>
+                        <p class="text-sm font-semibold uppercase tracking-[0.18em] text-bv-primary" i18n="Label on the group's settings page">The people behind the nights</p>
+                        <h2 id="members-heading" class="mt-1 text-2xl font-bold text-bv-text" i18n="Heading on the group's settings page">Current members</h2>
+                        <p class="mt-2 text-secondary" i18n="Under Current members on the group's settings page">These members’ collections and play history shape this group’s recommendations.</p>
                     </div>
                 </div>
                 <ul class="mt-5 grid grid-cols-1 gap-3 lg:grid-cols-2">
                     @for (member of groupData.members; track member.id) {
                         <li class="flex min-w-0 flex-wrap items-center justify-between gap-3 rounded-2xl border border-bv-border bg-bv-bg p-4">
-                            <div class="flex min-w-0 flex-1 basis-56 items-center gap-3"><app-card-account [member]="member" [isOwner]="groupData.createdBy === member.id" class="min-w-0" /><span class="shrink-0 text-xs text-secondary">{{ member.games.length }} game{{ member.games.length === 1 ? '' : 's' }}</span></div>
+                            <div class="flex min-w-0 flex-1 basis-56 items-center gap-3"><app-card-account [member]="member" [isOwner]="groupData.createdBy === member.id" class="min-w-0" /><span class="shrink-0 text-xs text-secondary" i18n="How many games a member owns on the group's settings page">{member.games.length, plural, one {{{ member.games.length }} game} other {{{ member.games.length }} games}}</span></div>
                             @if (isGroupOwner && groupData.createdBy !== member.id) {
                                 @if (pendingRemoval() === 'm' + member.id) {
-                                    <div class="flex flex-wrap items-center gap-2" role="group" [attr.aria-label]="'Confirm removing ' + (member.displayName || member.username)"><span class="text-xs text-secondary">Remove from the group?</span><button appButton variant="danger" type="button" [disabled]="isLoading()" (click)="removeMember(member.id)">Yes, remove</button><button appButton variant="secondary" type="button" [disabled]="isLoading()" (click)="pendingRemoval.set(null)">Keep</button></div>
+                                    <div class="flex flex-wrap items-center gap-2" role="group" [attr.aria-label]="confirmRemoveLabel(member.displayName || member.username)"><span class="text-xs text-secondary" i18n="Confirmation on the group's settings page before removing a member">Remove from the group?</span><button appButton variant="danger" type="button" [disabled]="isLoading()" (click)="removeMember(member.id)" i18n="Button that confirms removing a member">Yes, remove</button><button appButton variant="secondary" type="button" [disabled]="isLoading()" (click)="pendingRemoval.set(null)" i18n="Button that cancels removing a member">Keep</button></div>
                                 } @else {
-                                    <button appButton variant="danger" type="button" class="shrink-0" [disabled]="isLoading()" (click)="pendingRemoval.set('m' + member.id)">Remove</button>
+                                    <button appButton variant="danger" type="button" class="shrink-0" [disabled]="isLoading()" (click)="pendingRemoval.set('m' + member.id)" i18n="Button on a member on the group's settings page">Remove</button>
                                 }
                             }
                         </li>
                     }
                 </ul>
                 @if (isGroupOwner) {
-                    <p class="mt-4 text-sm text-secondary">People you remove lose access to the group’s plans; the game nights they played keep them.</p>
+                    <p class="mt-4 text-sm text-secondary" i18n="Under the members on the group's settings page, for its owner">People you remove lose access to the group’s plans; the game nights they played keep them.</p>
                 }
             </section>
 
             <section class="mt-8 rounded-3xl border border-bv-primary/30 bg-bv-primary-soft p-6" aria-labelledby="shared-context-heading">
-                <p class="text-sm font-semibold uppercase tracking-[0.18em] text-bv-primary">Shared context</p>
-                <h2 id="shared-context-heading" class="mt-1 text-2xl font-bold text-bv-text">{{ gameCount | count: 'game' }} {{ gameCount === 1 ? 'is' : 'are' }} currently available to this group</h2>
-                <p class="mt-2 max-w-2xl text-secondary">The shared shelf comes from what everyone in the group owns, with or without an account. It is the foundation for recommendations and session planning—not a public catalog.</p>
-                <a appButton variant="secondary" class="mt-5" [routerLink]="['/groups', groupData.id]" fragment="library">Open the shared library</a>
+                <p class="text-sm font-semibold uppercase tracking-[0.18em] text-bv-primary" i18n="Label on the group's settings page">Shared context</p>
+                <h2 id="shared-context-heading" class="mt-1 text-2xl font-bold text-bv-text" i18n="Heading on the group's settings page, how many games the group can play">{gameCount, plural, one {{{ gameCount }} game is currently available to this group} other {{{ gameCount }} games are currently available to this group}}</h2>
+                <p class="mt-2 max-w-2xl text-secondary" i18n="Under the number of games on the group's settings page">The shared shelf comes from what everyone in the group owns, with or without an account. It is the foundation for recommendations and session planning—not a public catalog.</p>
+                <a appButton variant="secondary" class="mt-5" [routerLink]="['/groups', groupData.id]" fragment="library" i18n="Button on the group's settings page to the group page's library">Open the shared library</a>
             </section>
 
             @if (isGroupOwner) {
                 <section class="mt-10 rounded-3xl border border-bv-danger/30 bg-bv-danger/10 p-6" aria-labelledby="danger-zone-heading">
-                    <p class="text-sm font-semibold uppercase tracking-[0.18em] text-bv-danger">Danger zone</p>
-                    <h2 id="danger-zone-heading" class="mt-1 text-xl font-bold text-bv-text">Delete this group</h2>
-                    <p class="mt-2 max-w-2xl text-sm leading-6 text-secondary">This removes the group, its invitations, and its shared play context. Use this only if the group should no longer exist.</p>
-                    <button appButton variant="danger" type="button" class="mt-5" (click)="onDeleteGroup()">Delete {{ groupData.name }}</button>
+                    <p class="text-sm font-semibold uppercase tracking-[0.18em] text-bv-danger" i18n="Label on the group's settings page, of the part that deletes the group">Danger zone</p>
+                    <h2 id="danger-zone-heading" class="mt-1 text-xl font-bold text-bv-text" i18n="Heading on the group's settings page">Delete this group</h2>
+                    <p class="mt-2 max-w-2xl text-sm leading-6 text-secondary" i18n="Under Delete this group on the group's settings page">This removes the group, its invitations, and its shared play context. Use this only if the group should no longer exist.</p>
+                    <button appButton variant="danger" type="button" class="mt-5" (click)="onDeleteGroup()" i18n="Button on the group's settings page; the placeholder is the group name">Delete {{ groupData.name }}</button>
                 </section>
             }
         }
@@ -204,13 +214,13 @@
             <div class="flex items-start gap-4">
                 <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-bv-danger/10 text-bv-danger" aria-hidden="true"><app-icon name="trash" [size]="22" /></div>
                 <div>
-                    <h2 id="delete-group-dialog-title" class="text-xl font-bold text-bv-text">Delete {{ groupData?.name }}?</h2>
-                    <p id="delete-group-dialog-description" class="mt-2 text-sm leading-6 text-secondary">This removes the group, its invitations, and its shared play context. It cannot be undone.</p>
+                    <h2 id="delete-group-dialog-title" class="text-xl font-bold text-bv-text" i18n="Question in the dialog that deletes a group; the placeholder is the group name">Delete {{ groupData?.name }}?</h2>
+                    <p id="delete-group-dialog-description" class="mt-2 text-sm leading-6 text-secondary" i18n="Text in the dialog that deletes a group">This removes the group, its invitations, and its shared play context. It cannot be undone.</p>
                 </div>
             </div>
             <div class="mt-6 flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
-                <button appButton variant="secondary" id="delete-group-dialog-cancel" type="button" [disabled]="isDeletingGroup()" (click)="cancelDeleteGroup()">Keep group</button>
-                <button appButton variant="danger" type="button" [disabled]="isDeletingGroup()" (click)="confirmDeleteGroup()">{{ isDeletingGroup() ? 'Deleting…' : 'Delete group' }}</button>
+                <button appButton variant="secondary" id="delete-group-dialog-cancel" type="button" [disabled]="isDeletingGroup()" (click)="cancelDeleteGroup()" i18n="Button in the dialog that deletes a group, that keeps it">Keep group</button>
+                <button appButton variant="danger" type="button" [disabled]="isDeletingGroup()" (click)="confirmDeleteGroup()">@if (isDeletingGroup()) {<ng-container i18n="Button in the dialog that deletes a group, while it does">Deleting…</ng-container>} @else {<ng-container i18n="Button in the dialog that deletes a group">Delete group</ng-container>}</button>
             </div>
         </section>
     </div>

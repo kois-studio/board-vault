@@ -1,41 +1,41 @@
-<app-page-header [titleText]="groupData$()?.name ?? 'Group home'" [showActionButton]="true">
-    The next game night, what you have played, and the games you can bring.
+<app-page-header [titleText]="pageTitle()" [showActionButton]="true">
+    <ng-container i18n="Line under the title of the group page">The next game night, what you have played, and the games you can bring.</ng-container>
 
     @if (isGroupOwnerComputed()) {
-        <button appButton class="action-button" icon="gear-fill" (click)="onClickEditGroup()">Manage group</button>
+        <button appButton class="action-button" icon="gear-fill" (click)="onClickEditGroup()" i18n="Button at the top of the group page, for its owner">Manage group</button>
     } @else {
-        <button appButton class="action-button" icon="calendar-plus" (click)="onClickNewMeet()">Plan a game night</button>
+        <button appButton class="action-button" icon="calendar-plus" (click)="onClickNewMeet()" i18n="Button at the top of the group page">Plan a game night</button>
     }
 </app-page-header>
 
 <container-wrapper>
     @if (isLoadingGroups()) {
         <div class="rounded-2xl border border-bv-border bg-bv-surface p-8 text-center shadow-sm" role="status" aria-live="polite">
-            <p class="text-lg font-semibold">Loading your group…</p>
-            <p class="mt-2 text-secondary">We are checking the group and its shared context.</p>
+            <p class="text-lg font-semibold" i18n="Shown while the group page loads">Loading your group…</p>
+            <p class="mt-2 text-secondary" i18n="Shown while the group page loads">We are checking the group and its shared context.</p>
         </div>
     } @else if (userGroupsError()) {
         <div class="rounded-2xl border border-bv-warning/30 bg-bv-warning/10 p-8 text-center" role="alert">
-            <p class="text-lg font-semibold">This group could not be loaded.</p>
-            <p class="mt-2 text-secondary">Your group data is safe. Try again when the connection is ready.</p>
-            <button appButton type="button" class="mt-5" (click)="retryGroups()">Retry group</button>
+            <p class="text-lg font-semibold" i18n="Error on the group page">This group could not be loaded.</p>
+            <p class="mt-2 text-secondary" i18n="Under an error on the group page">Your group data is safe. Try again when the connection is ready.</p>
+            <button appButton type="button" class="mt-5" (click)="retryGroups()" i18n="Button under an error on the group page">Retry group</button>
         </div>
     } @else if (!groupData$()) {
         <div class="rounded-2xl border border-bv-warning/30 bg-bv-warning/10 p-8 text-center" role="alert">
-            <p class="text-lg font-semibold">This group is not available.</p>
-            <p class="mt-2 text-secondary">It may have been deleted, or your membership may have changed.</p>
-            <a appButton class="mt-5" routerLink="/dashboard">Back to groups</a>
+            <p class="text-lg font-semibold" i18n="Shown on the group page for a group you are not in">This group is not available.</p>
+            <p class="mt-2 text-secondary" i18n="Shown on the group page for a group you are not in">It may have been deleted, or your membership may have changed.</p>
+            <a appButton class="mt-5" routerLink="/dashboard" i18n="Button on the group page for a group you are not in, to Home">Back to groups</a>
         </div>
     } @else {
         @if (groupData$(); as group) {
         <div class="flex flex-col space-y-8 py-6">
-            <nav class="flex flex-col gap-3 rounded-2xl border border-bv-border bg-bv-surface p-4 shadow-sm sm:flex-row sm:items-center sm:justify-between" aria-label="Current group context">
+            <nav class="flex flex-col gap-3 rounded-2xl border border-bv-border bg-bv-surface p-4 shadow-sm sm:flex-row sm:items-center sm:justify-between" aria-label="Current group context" i18n-aria-label="Name of the group switcher at the top of the group page">
                 <div>
-                    <p class="text-xs font-semibold uppercase tracking-[0.18em] text-secondary">Current group</p>
-                    <p class="mt-1 text-sm text-secondary">All decisions, games, and sessions stay scoped to this private group.</p>
+                    <p class="text-xs font-semibold uppercase tracking-[0.18em] text-secondary" i18n="Label of the group switcher at the top of the group page">Current group</p>
+                    <p class="mt-1 text-sm text-secondary" i18n="Text next to the group switcher at the top of the group page">All decisions, games, and sessions stay scoped to this private group.</p>
                 </div>
                 <div class="flex flex-wrap items-center gap-3">
-                    <label class="sr-only" for="current-group-switcher">Switch current group</label>
+                    <label class="sr-only" for="current-group-switcher" i18n="Label of the group switcher at the top of the group page, read by screen readers">Switch current group</label>
                     <select
                         id="current-group-switcher"
                         class="min-h-11 min-w-48 rounded-xl border border-bv-border bg-bv-surface px-3 py-2 text-sm font-semibold text-bv-text"
@@ -46,19 +46,19 @@
                             <option [value]="availableGroup.id">{{ availableGroup.name }}</option>
                         }
                     </select>
-                    <a appButton variant="secondary" class="text-center" routerLink="/dashboard">All groups</a>
+                    <a appButton variant="secondary" class="text-center" routerLink="/dashboard" i18n="Button next to the group switcher, to Home">All groups</a>
                 </div>
             </nav>
 
             @if (needsFirstGroupSetup()) {
                 <section class="rounded-3xl border border-bv-primary/30 bg-bv-primary-soft p-6 sm:p-8" aria-labelledby="first-group-setup-heading">
-                    <p class="text-sm font-semibold uppercase tracking-[0.18em] text-bv-primary">First steps for this group</p>
+                    <p class="text-sm font-semibold uppercase tracking-[0.18em] text-bv-primary" i18n="Label of the first steps on the page of a new group">First steps for this group</p>
                     <div class="mt-3 flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
                         <div>
-                            <h2 id="first-group-setup-heading" class="text-2xl font-bold text-bv-text sm:text-3xl">Make {{ group.name }} ready for a game night</h2>
-                            <p class="mt-2 max-w-2xl leading-7 text-secondary">This space is ready. Add the people and games that make its decisions useful, then plan the first night together.</p>
+                            <h2 id="first-group-setup-heading" class="text-2xl font-bold text-bv-text sm:text-3xl" i18n="Heading of the first steps on the page of a new group; the placeholder is the group name">Make {{ group.name }} ready for a game night</h2>
+                            <p class="mt-2 max-w-2xl leading-7 text-secondary" i18n="Text of the first steps on the page of a new group">This space is ready. Add the people and games that make its decisions useful, then plan the first night together.</p>
                         </div>
-                        <a appButton variant="secondary" class="shrink-0 text-center" [routerLink]="['/groups', group.id, 'sessions', 'new']">Plan the first night</a>
+                        <a appButton variant="secondary" class="shrink-0 text-center" [routerLink]="['/groups', group.id, 'sessions', 'new']" i18n="Button in the first steps on the page of a new group">Plan the first night</a>
                     </div>
 
                     <ol class="mt-6 grid grid-cols-1 gap-3 lg:grid-cols-3">
@@ -66,12 +66,12 @@
                             <div class="flex items-start gap-3">
                                 <span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-bv-primary text-sm font-bold text-bv-on-primary">1</span>
                                 <div>
-                                    <h3 class="font-semibold text-bv-text">Bring in your people</h3>
+                                    <h3 class="font-semibold text-bv-text" i18n="First step on the page of a new group">Bring in your people</h3>
                                     @if (isGroupOwnerComputed()) {
-                                        <p class="mt-1 text-sm leading-6 text-secondary">Invite the friends who make this a real game night.</p>
-                                        <a class="mt-3 inline-block text-sm font-semibold text-bv-primary hover:underline" [routerLink]="['/groups', group.id, 'edit']">Invite friends</a>
+                                        <p class="mt-1 text-sm leading-6 text-secondary" i18n="Under the first step on the page of a new group, for its owner">Invite the friends who make this a real game night.</p>
+                                        <a class="mt-3 inline-block text-sm font-semibold text-bv-primary hover:underline" [routerLink]="['/groups', group.id, 'edit']" i18n="Link in the first step on the page of a new group">Invite friends</a>
                                     } @else {
-                                        <p class="mt-1 text-sm leading-6 text-secondary">Ask the group owner to invite the rest of your table.</p>
+                                        <p class="mt-1 text-sm leading-6 text-secondary" i18n="Under the first step on the page of a new group, for someone who is not its owner">Ask the group owner to invite the rest of your table.</p>
                                     }
                                 </div>
                             </div>
@@ -80,9 +80,9 @@
                             <div class="flex items-start gap-3">
                                 <span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-bv-primary text-sm font-bold text-bv-on-primary">2</span>
                                 <div>
-                                    <h3 class="font-semibold text-bv-text">Add useful games</h3>
-                                    <p class="mt-1 text-sm leading-6 text-secondary">Add the games you actually own so the shared shelf reflects reality.</p>
-                                    <a class="mt-3 inline-block text-sm font-semibold text-bv-primary hover:underline" routerLink="/collection/browse">Add games</a>
+                                    <h3 class="font-semibold text-bv-text" i18n="Second step on the page of a new group">Add useful games</h3>
+                                    <p class="mt-1 text-sm leading-6 text-secondary" i18n="Under the second step on the page of a new group">Add the games you actually own so the shared shelf reflects reality.</p>
+                                    <a class="mt-3 inline-block text-sm font-semibold text-bv-primary hover:underline" routerLink="/collection/browse" i18n="Link in the second step on the page of a new group, to Browse">Add games</a>
                                 </div>
                             </div>
                         </li>
@@ -90,9 +90,9 @@
                             <div class="flex items-start gap-3">
                                 <span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-bv-primary text-sm font-bold text-bv-on-primary">3</span>
                                 <div>
-                                    <h3 class="font-semibold text-bv-text">Plan the first night</h3>
-                                    <p class="mt-1 text-sm leading-6 text-secondary">Choose a date and let the group turn this space into a memory.</p>
-                                    <a class="mt-3 inline-block text-sm font-semibold text-bv-primary hover:underline" [routerLink]="['/groups', group.id, 'sessions', 'new']">Plan a session</a>
+                                    <h3 class="font-semibold text-bv-text" i18n="Third step on the page of a new group">Plan the first night</h3>
+                                    <p class="mt-1 text-sm leading-6 text-secondary" i18n="Under the third step on the page of a new group">Choose a date and let the group turn this space into a memory.</p>
+                                    <a class="mt-3 inline-block text-sm font-semibold text-bv-primary hover:underline" [routerLink]="['/groups', group.id, 'sessions', 'new']" i18n="Link that plans a game night on the group page">Plan a session</a>
                                 </div>
                             </div>
                         </li>
@@ -100,39 +100,45 @@
                 </section>
             }
 
-            <section id="overview" class="grid grid-cols-1 gap-4 lg:grid-cols-3" aria-label="Group overview">
+            <section id="overview" class="grid grid-cols-1 gap-4 lg:grid-cols-3" aria-label="Group overview" i18n-aria-label="Name of the section at the top of the group page with the next game night and the group's numbers">
                 <article class="rounded-2xl bg-bv-primary p-6 text-bv-on-primary shadow-lg lg:col-span-2">
-                    <p class="text-sm font-semibold uppercase tracking-[0.18em] text-bv-on-primary/80">Next game night</p>
+                    <p class="text-sm font-semibold uppercase tracking-[0.18em] text-bv-on-primary/80" i18n="Label of the next game night on the group page">Next game night</p>
                     @if (nextMeetingComputed(); as nextMeeting) {
                         <div class="mt-3 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
                             <div>
                                 <h2 class="text-3xl font-bold">{{ nextMeeting.meetDate | customDate: true: nextMeeting.timezone }}</h2>
-                                <p class="mt-2 text-bv-on-primary/90">{{ nextMeeting.status === 'active' ? 'This session is happening now.' : 'Your next planned session.' }}</p>
+                                <p class="mt-2 text-bv-on-primary/90">
+                                    @if (nextMeeting.status === 'active') {
+                                        <ng-container i18n="Under the date of the next game night on the group page, while it is under way">This session is happening now.</ng-container>
+                                    } @else {
+                                        <ng-container i18n="Under the date of the next game night on the group page">Your next planned session.</ng-container>
+                                    }
+                                </p>
                             </div>
-                            <a appButton variant="secondary" class="text-center" [routerLink]="['/sessions', nextMeeting.id]">Open session</a>
+                            <a appButton variant="secondary" class="text-center" [routerLink]="['/sessions', nextMeeting.id]" i18n="Button that opens the next game night on the group page">Open session</a>
                         </div>
                     } @else {
-                        <h2 class="mt-3 text-3xl font-bold">Nothing planned yet</h2>
-                        <p class="mt-2 max-w-xl text-bv-on-primary/90">Give the group a date and let everyone know what you might play.</p>
-                        <a appButton variant="secondary" class="mt-5" [routerLink]="['/groups', group.id, 'sessions', 'new']">Plan a session</a>
+                        <h2 class="mt-3 text-3xl font-bold" i18n="Shown on the group page when no game night is planned">Nothing planned yet</h2>
+                        <p class="mt-2 max-w-xl text-bv-on-primary/90" i18n="Shown on the group page when no game night is planned">Give the group a date and let everyone know what you might play.</p>
+                        <a appButton variant="secondary" class="mt-5" [routerLink]="['/groups', group.id, 'sessions', 'new']" i18n="Link that plans a game night on the group page">Plan a session</a>
                     }
                 </article>
 
                 <article class="rounded-2xl border border-bv-border bg-bv-surface p-6 shadow-sm">
-                    <p class="text-sm font-semibold uppercase tracking-[0.18em] text-bv-primary">Group pulse</p>
+                    <p class="text-sm font-semibold uppercase tracking-[0.18em] text-bv-primary" i18n="Label of the group's numbers on the group page">Group pulse</p>
                     <dl class="mt-5 grid grid-cols-3 gap-3 text-center">
                         <div class="rounded-xl bg-bv-bg p-3">
-                            <dt class="text-xs text-secondary">People</dt>
+                            <dt class="text-xs text-secondary" i18n="One of the group's numbers on the group page">People</dt>
                             <dd class="mt-1 text-2xl font-bold">{{ groupPeopleCount(group) }}</dd>
                         </div>
                         <div class="rounded-xl bg-bv-bg p-3">
-                            <dt class="text-xs text-secondary">Games</dt>
+                            <dt class="text-xs text-secondary" i18n="games owned|One of the group's numbers on the group page, how many games its people own">Games</dt>
                             <dd class="mt-1 text-2xl font-bold">{{ groupGameCount(group) }}</dd>
                         </div>
                         <div class="rounded-xl bg-bv-bg p-3">
-                            <dt class="text-xs text-secondary">Sessions</dt>
+                            <dt class="text-xs text-secondary" i18n="One of the group's numbers on the group page, how many game nights it has played">Sessions</dt>
                             @if (isLoading()) {
-                                <dd class="mt-1 text-2xl font-bold" aria-label="Sessions loading">—</dd>
+                                <dd class="mt-1 text-2xl font-bold" aria-label="Sessions loading" i18n-aria-label="Read by screen readers while the number of game nights on the group page loads">—</dd>
                             } @else {
                                 <dd class="mt-1 text-2xl font-bold">{{ groupHistory$().length }}</dd>
                             }
@@ -141,17 +147,23 @@
                     @if (collection$(); as collection) {
                         @if (collection.pricedCopies > 0) {
                             <p class="mt-5 text-sm">
-                                Collection worth about <span class="font-semibold">{{ collection.worth | currency: 'EUR' : 'symbol' : '1.0-0' }}</span>
-                                <span class="block text-xs text-secondary">From retail prices{{ collection.pricedCopies < collection.copies ? ' for ' + collection.pricedCopies + ' of ' + collection.copies + ' copies' : '' }}, not what anyone paid.</span>
+                                <ng-container i18n="The group's collection worth on the group page; the placeholder is an amount in euros">Collection worth about <span class="font-semibold">{{ collection.worth | currency: 'EUR' : 'symbol' : '1.0-0' }}</span></ng-container>
+                                <span class="block text-xs text-secondary">
+                                    @if (collection.pricedCopies < collection.copies) {
+                                        <ng-container i18n="Under the group's collection worth, when only some copies have a price">From retail prices for {{ collection.pricedCopies }} of {{ collection.copies }} copies, not what anyone paid.</ng-container>
+                                    } @else {
+                                        <ng-container i18n="Under the group's collection worth">From retail prices, not what anyone paid.</ng-container>
+                                    }
+                                </span>
                             </p>
                         }
                         @if (collection.people.length > 0) {
                             <div class="mt-4">
-                                <p class="text-xs text-secondary">Who brings what</p>
+                                <p class="text-xs text-secondary" i18n="Label of the faces on the group page that open each person's games">Who brings what</p>
                                 <ul class="mt-2 flex flex-wrap gap-2">
                                     @for (person of collection.people; track person.accountId ?? 'person-' + person.groupPersonId) {
                                         <li>
-                                            <a [routerLink]="personLink(group.id, person)" class="block rounded-full transition hover:opacity-80" [title]="person.displayName" [attr.aria-label]="person.displayName + ': games they bring'">
+                                            <a [routerLink]="personLink(group.id, person)" class="block rounded-full transition hover:opacity-80" [title]="person.displayName" [attr.aria-label]="bringsLabel(person.displayName)">
                                                 <app-image-profile size="small" [avatar]="person.avatar ?? initialsAvatar(person.displayName)" />
                                             </a>
                                         </li>
@@ -160,53 +172,53 @@
                             </div>
                         }
                     } @else if (collectionLoading()) {
-                        <p class="mt-5 text-sm text-secondary" role="status">Adding up the collection…</p>
+                        <p class="mt-5 text-sm text-secondary" role="status" i18n="Shown on the group page while the collection worth loads">Adding up the collection…</p>
                     } @else if (collectionError()) {
                         <div class="mt-5 text-sm" role="alert">
-                            <p>The collection’s worth and who brings what could not be loaded.</p>
-                            <button type="button" class="mt-1 font-medium text-bv-primary underline" (click)="retryCollection()">Retry</button>
+                            <p i18n="Error on the group page">The collection’s worth and who brings what could not be loaded.</p>
+                            <button type="button" class="mt-1 font-medium text-bv-primary underline" (click)="retryCollection()" i18n="Button under an error">Retry</button>
                         </div>
                     } @else {
-                        <p class="mt-5 text-sm text-secondary">The more sessions you record, the better the group’s memory becomes.</p>
+                        <p class="mt-5 text-sm text-secondary" i18n="Shown on the group page before the group has a collection worth">The more sessions you record, the better the group’s memory becomes.</p>
                     }
                 </article>
             </section>
 
-            <nav class="overflow-x-auto rounded-2xl border border-bv-border bg-bv-surface p-2 shadow-sm" aria-label="Group workspace areas">
+            <nav class="overflow-x-auto rounded-2xl border border-bv-border bg-bv-surface p-2 shadow-sm" aria-label="Group workspace areas" i18n-aria-label="Name of the links to the sections of the group page">
                 <div class="flex min-w-max gap-2">
-                    <a appInPageLink="history" class="rounded-xl px-3 py-2 text-sm font-medium text-bv-text-muted transition hover:bg-bv-surface-2">History</a>
+                    <a appInPageLink="history" class="rounded-xl px-3 py-2 text-sm font-medium text-bv-text-muted transition hover:bg-bv-surface-2" i18n="Link to a section of the group page">History</a>
                     @if (insights$()) {
-                        <a appInPageLink="insights" class="rounded-xl px-3 py-2 text-sm font-medium text-bv-text-muted transition hover:bg-bv-surface-2">Standings</a>
+                        <a appInPageLink="insights" class="rounded-xl px-3 py-2 text-sm font-medium text-bv-text-muted transition hover:bg-bv-surface-2" i18n="Link to a section of the group page">Standings</a>
                     }
-                    <a appInPageLink="library" class="rounded-xl px-3 py-2 text-sm font-medium text-bv-text-muted transition hover:bg-bv-surface-2">Library</a>
-                    <a appInPageLink="acquire" class="rounded-xl px-3 py-2 text-sm font-medium text-bv-text-muted transition hover:bg-bv-surface-2">Games to buy</a>
-                    <a appInPageLink="people" class="rounded-xl px-3 py-2 text-sm font-medium text-bv-text-muted transition hover:bg-bv-surface-2">People</a>
-                    <a appInPageLink="changes" class="rounded-xl px-3 py-2 text-sm font-medium text-bv-text-muted transition hover:bg-bv-surface-2">What changed</a>
+                    <a appInPageLink="library" class="rounded-xl px-3 py-2 text-sm font-medium text-bv-text-muted transition hover:bg-bv-surface-2" i18n="Link to a section of the group page, the group's games">Library</a>
+                    <a appInPageLink="acquire" class="rounded-xl px-3 py-2 text-sm font-medium text-bv-text-muted transition hover:bg-bv-surface-2" i18n="Link to a section of the group page">Games to buy</a>
+                    <a appInPageLink="people" class="rounded-xl px-3 py-2 text-sm font-medium text-bv-text-muted transition hover:bg-bv-surface-2" i18n="Link to a section of the group page">People</a>
+                    <a appInPageLink="changes" class="rounded-xl px-3 py-2 text-sm font-medium text-bv-text-muted transition hover:bg-bv-surface-2" i18n="Link to a section of the group page, the group's history of changes">What changed</a>
                 </div>
             </nav>
 
             <section id="history" class="scroll-mt-24" aria-labelledby="history-heading">
                 <div class="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
                     <div>
-                        <h2 id="history-heading" class="mt-1 text-2xl font-bold">Recent sessions</h2>
-                        <p class="mt-1 text-secondary">What this group has played together.</p>
+                        <h2 id="history-heading" class="mt-1 text-2xl font-bold" i18n="Heading of a section on the group page">Recent sessions</h2>
+                        <p class="mt-1 text-secondary" i18n="Under Recent sessions on the group page">What this group has played together.</p>
                     </div>
                 </div>
 
                 @if (isLoading()) {
-                    <div class="mt-5" role="status" aria-live="polite"><span class="sr-only">Loading recent sessions…</span><app-skeleton-history /></div>
+                    <div class="mt-5" role="status" aria-live="polite"><span class="sr-only" i18n="Read by screen readers while the recent game nights on the group page load">Loading recent sessions…</span><app-skeleton-history /></div>
                 } @else if (groupHistoryError()) {
                     <div class="mt-5 rounded-2xl border border-bv-warning/30 bg-bv-warning/10 p-8 text-center" role="alert">
-                        <p class="font-medium">Recent sessions could not be loaded.</p>
-                        <p class="mt-2 text-sm text-secondary">Your group data is safe. Try again when the connection is ready.</p>
-                        <button appButton class="mt-4" icon="arrow-repeat" (click)="retryGroupHistory()">Retry</button>
+                        <p class="font-medium" i18n="Error on the group page">Recent sessions could not be loaded.</p>
+                        <p class="mt-2 text-sm text-secondary" i18n="Under an error on the group page">Your group data is safe. Try again when the connection is ready.</p>
+                        <button appButton class="mt-4" icon="arrow-repeat" (click)="retryGroupHistory()" i18n="Button under an error">Retry</button>
                     </div>
                 } @else if (groupHistory$().length === 0) {
                     <div class="mt-5 rounded-2xl border border-dashed border-bv-border p-8 text-center">
                         <app-icon name="calendar-heart" [size]="40" className="text-bv-primary" />
-                        <h3 class="mt-3 text-lg font-semibold">Your group history starts here</h3>
-                        <p class="mt-2 text-secondary">Record the next game night so recommendations can learn from what you really play.</p>
-                        <button appButton class="mt-5" icon="plus-lg" (click)="onClickNewMeet()">Plan a session</button>
+                        <h3 class="mt-3 text-lg font-semibold" i18n="Shown on the group page before anything is recorded">Your group history starts here</h3>
+                        <p class="mt-2 text-secondary" i18n="Shown on the group page before anything is recorded">Record the next game night so recommendations can learn from what you really play.</p>
+                        <button appButton class="mt-5" icon="plus-lg" (click)="onClickNewMeet()" i18n="Link that plans a game night on the group page">Plan a session</button>
                     </div>
                 } @else {
                     <div class="mt-5 grid grid-cols-1 gap-4 lg:grid-cols-3">
@@ -216,9 +228,9 @@
                                     <div class="min-w-0">
                                         <p class="font-semibold">{{ historyRecord.meetData.meetDate | customDate: true: historyRecord.meetData.timezone }}</p>
                                         <p class="mt-1 text-sm text-secondary wrap-anywhere">{{ getAttendeeSummary(historyRecord.attendedBy, historyRecord.attendedByPeople ?? []) }}</p>
-                                        <p class="mt-1 text-sm text-secondary">{{ historyRecord.gamesPlayed.length }} game{{ historyRecord.gamesPlayed.length === 1 ? '' : 's' }} played</p>
+                                        <p class="mt-1 text-sm text-secondary" i18n="How many games a game night played">{historyRecord.gamesPlayed.length, plural, one {{{ historyRecord.gamesPlayed.length }} game played} other {{{ historyRecord.gamesPlayed.length }} games played}}</p>
                                     </div>
-                                    <a [routerLink]="['/sessions', historyRecord.meetData.id]" class="text-sm text-bv-primary hover:underline">View</a>
+                                    <a [routerLink]="['/sessions', historyRecord.meetData.id]" class="text-sm text-bv-primary hover:underline" i18n="Link on a played game night on the group page that opens it">View</a>
                                 </div>
                                 @if (historyRecord.meetData.notes) {
                                     <p class="mt-4 rounded-xl bg-bv-bg p-3 text-sm text-secondary wrap-anywhere">{{ historyRecord.meetData.notes }}</p>
@@ -226,7 +238,7 @@
                                 <ul class="mt-4 space-y-3">
                                     @for (gamePlayed of historyRecord.gamesPlayed; track gamePlayed.gameData.id) {
                                         <li class="flex items-center gap-3">
-                                            <image-background class="block h-10 w-10 shrink-0 rounded-lg" [src]="gamePlayed.gameData.imageUrl" [alt]="gamePlayed.gameData.titleTranslations.en + ' cover'" />
+                                            <image-background class="block h-10 w-10 shrink-0 rounded-lg" [src]="gamePlayed.gameData.imageUrl" [alt]="coverAlt(gamePlayed.gameData)" />
                                             <span class="min-w-0 flex-1">
                                                 <span class="block truncate text-sm font-medium">{{ gamePlayed.gameData | gameTitle }}</span>
                                                 @if (getWinners(gamePlayed); as winners) {
@@ -234,9 +246,9 @@
                                                 }
                                             </span>
                                             @if (getPlayerCount(gamePlayed) > 0) {
-                                                <span class="text-xs text-secondary">{{ getPlayerCount(gamePlayed) }} played</span>
+                                                <span class="text-xs text-secondary" i18n="How many people played a game on a played game night">{getPlayerCount(gamePlayed), plural, one {{{ getPlayerCount(gamePlayed) }} played} other {{{ getPlayerCount(gamePlayed) }} played}}</span>
                                             } @else {
-                                                <span class="text-xs text-secondary">Players not recorded</span>
+                                                <span class="text-xs text-secondary" i18n="On a game of a played game night that recorded nobody as playing it">Players not recorded</span>
                                             }
                                         </li>
                                     }
@@ -245,7 +257,7 @@
                         }
                     </div>
                     @if (groupHistory$().length > 3) {
-                        <a routerLink="/play/history" [queryParams]="{ groupId: group.id }" class="mt-5 inline-block text-sm font-medium text-bv-primary hover:underline">See all {{ group.name }} sessions</a>
+                        <a routerLink="/play/history" [queryParams]="{ groupId: group.id }" class="mt-5 inline-block text-sm font-medium text-bv-primary hover:underline" i18n="Link on the group page to Play, History; the placeholder is the group name">See all {{ group.name }} sessions</a>
                     }
                 }
             </section>
@@ -254,21 +266,21 @@
                 @if (insights.sessions > 0 || insights.neverPlayedCount > 0) {
                     <section id="insights" class="scroll-mt-24" aria-labelledby="insights-heading">
                         <div>
-                            <h2 id="insights-heading" class="mt-1 text-2xl font-bold">Standings and stats</h2>
+                            <h2 id="insights-heading" class="mt-1 text-2xl font-bold" i18n="Heading of a section on the group page">Standings and stats</h2>
                             <p class="mt-1 text-secondary">
                                 @if (insights.sessions > 0) {
-                                    From {{ insights.sessions }} finished game night{{ insights.sessions === 1 ? '' : 's' }} and {{ insights.gamesPlayed }} game{{ insights.gamesPlayed === 1 ? '' : 's' }} played.
+                                    <ng-container i18n="Under Standings and stats on the group page, how many finished game nights and games played the numbers come from">{insights.sessions, plural, one {From {{ insights.sessions }} finished game night and {insights.gamesPlayed, plural, one {{{ insights.gamesPlayed }} game played.} other {{{ insights.gamesPlayed }} games played.}}} other {From {{ insights.sessions }} finished game nights and {insights.gamesPlayed, plural, one {{{ insights.gamesPlayed }} game played.} other {{{ insights.gamesPlayed }} games played.}}}}</ng-container>
                                 } @else {
-                                    Finish a game night to start the standings.
+                                    <ng-container i18n="Under Standings and stats on the group page, before any game night is finished">Finish a game night to start the standings.</ng-container>
                                 }
                             </p>
                         </div>
                         <div class="mt-5 grid grid-cols-1 gap-4 lg:grid-cols-2">
                             @if (insights.standings.length > 0) {
                                 <article class="rounded-2xl border border-bv-border bg-bv-surface p-5 shadow-sm">
-                                    <h3 class="font-semibold">Standings</h3>
+                                    <h3 class="font-semibold" i18n="Heading of a group's standings">Standings</h3>
                                     @if (insights.gamesWithWinner === 0) {
-                                        <p class="mt-1 text-sm text-secondary">No winners recorded yet. Mark who won on a session page and the table ranks by wins.</p>
+                                        <p class="mt-1 text-sm text-secondary" i18n="Under a group's standings before any winner is recorded">No winners recorded yet. Mark who won on a session page and the table ranks by wins.</p>
                                     }
                                     <ol class="mt-4 space-y-3">
                                         @for (standing of insights.standings; track standing.accountId ?? 'p' + standing.groupPersonId) {
@@ -280,7 +292,7 @@
                                                     <span class="block text-xs text-secondary">{{ standingSummary(standing) }}</span>
                                                 </span>
                                                 @if (standing.wins > 0) {
-                                                    <span class="flex shrink-0 items-center gap-1 rounded-full bg-bv-success/15 px-2 py-0.5 text-xs font-semibold text-bv-success" ><app-icon name="award-fill" [size]="12" aria-hidden="true" /><span aria-hidden="true">{{ standing.wins }}</span><span class="sr-only">{{ standing.wins | count: 'win' }}</span></span>
+                                                    <span class="flex shrink-0 items-center gap-1 rounded-full bg-bv-success/15 px-2 py-0.5 text-xs font-semibold text-bv-success" ><app-icon name="award-fill" [size]="12" aria-hidden="true" /><span aria-hidden="true">{{ standing.wins }}</span><span class="sr-only" i18n="Read by screen readers after the number of wins in a group's standings">{standing.wins, plural, one {{{ standing.wins }} win} other {{{ standing.wins }} wins}}</span></span>
                                                 }
                                             </li>
                                         }
@@ -289,14 +301,14 @@
                             }
                             @if (insights.mostPlayed.length > 0) {
                                 <article class="rounded-2xl border border-bv-border bg-bv-surface p-5 shadow-sm">
-                                    <h3 class="font-semibold">Most played</h3>
+                                    <h3 class="font-semibold" i18n="Heading of a group's most played games">Most played</h3>
                                     <ol class="mt-4 space-y-3">
                                         @for (item of insights.mostPlayed; track item.gameData.id) {
                                             <li class="flex min-w-0 items-center gap-3">
                                                 <span class="w-5 shrink-0 text-sm text-secondary">{{ $index + 1 }}</span>
-                                                <image-background [src]="item.gameData.imageUrl" [alt]="(item.gameData.titleTranslations.en || item.gameData.title || 'Game') + ' cover'" class="h-10 w-10 shrink-0 rounded-lg" />
-                                                <a class="min-w-0 flex-1 truncate text-sm font-medium hover:underline" [routerLink]="['/games', item.gameData.id]">{{ item.gameData.titleTranslations.en || item.gameData.title || 'Untitled game' }}</a>
-                                                <span class="shrink-0 text-right text-xs text-secondary">{{ item.sessions }} night{{ item.sessions === 1 ? '' : 's' }}<br />last {{ item.lastPlayedAt | customDate }}</span>
+                                                <image-background [src]="item.gameData.imageUrl" [alt]="coverAlt(item.gameData)" class="h-10 w-10 shrink-0 rounded-lg" />
+                                                <a class="min-w-0 flex-1 truncate text-sm font-medium hover:underline" [routerLink]="['/games', item.gameData.id]">{{ item.gameData | gameTitle }}</a>
+                                                <span class="shrink-0 text-right text-xs text-secondary"><ng-container i18n="On a group's most played game, how many game nights played it">{item.sessions, plural, one {{{ item.sessions }} night} other {{{ item.sessions }} nights}}</ng-container><br /><ng-container i18n="On a group's most played game; the placeholder is a date">last {{ item.lastPlayedAt | customDate }}</ng-container></span>
                                             </li>
                                         }
                                     </ol>
@@ -304,28 +316,28 @@
                             }
                             @if (insights.neverPlayedCount > 0) {
                                 <article class="rounded-2xl border border-bv-border bg-bv-surface p-5 shadow-sm">
-                                    <h3 class="font-semibold">On the shelf, never played</h3>
-                                    <p class="mt-1 text-sm text-secondary">{{ insights.neverPlayedCount }} game{{ insights.neverPlayedCount === 1 ? '' : 's' }} someone in the group owns that {{ insights.neverPlayedCount === 1 ? 'has' : 'have' }} not hit the table yet.</p>
+                                    <h3 class="font-semibold" i18n="Heading of the games a group owns and never played">On the shelf, never played</h3>
+                                    <p class="mt-1 text-sm text-secondary" i18n="Under On the shelf, never played on the group page">{insights.neverPlayedCount, plural, one {{{ insights.neverPlayedCount }} game someone in the group owns that has not hit the table yet.} other {{{ insights.neverPlayedCount }} games someone in the group owns that have not hit the table yet.}}</p>
                                     <ul class="mt-4 flex flex-wrap gap-2">
                                         @for (game of insights.neverPlayed; track game.id) {
-                                            <li class="max-w-full"><a class="app-chip max-w-full" [routerLink]="['/games', game.id]"><span class="truncate">{{ game.titleTranslations.en || game.title || 'Untitled game' }}</span></a></li>
+                                            <li class="max-w-full"><a class="app-chip max-w-full" [routerLink]="['/games', game.id]"><span class="truncate">{{ game | gameTitle }}</span></a></li>
                                         }
                                         @if (insights.neverPlayedCount > insights.neverPlayed.length) {
-                                            <li class="self-center text-sm text-secondary">and {{ insights.neverPlayedCount - insights.neverPlayed.length }} more</li>
+                                            <li class="self-center text-sm text-secondary" i18n="After the never played games on the group page, how many more there are">{insights.neverPlayedCount - insights.neverPlayed.length, plural, one {and {{ insights.neverPlayedCount - insights.neverPlayed.length }} more} other {and {{ insights.neverPlayedCount - insights.neverPlayed.length }} more}}</li>
                                         }
                                     </ul>
                                 </article>
                             }
                             @if (revisitGamesComputed().length > 0) {
                                 <article class="rounded-2xl border border-bv-border bg-bv-surface p-5 shadow-sm">
-                                    <h3 class="font-semibold">Worth revisiting</h3>
-                                    <p class="mt-1 text-sm text-secondary">Played before, but not in the last three game nights.</p>
+                                    <h3 class="font-semibold" i18n="Heading of the games a group played before but not lately">Worth revisiting</h3>
+                                    <p class="mt-1 text-sm text-secondary" i18n="Under Worth revisiting on the group page">Played before, but not in the last three game nights.</p>
                                     <ul class="mt-4 space-y-3">
                                         @for (item of revisitGamesComputed(); track item.gameData.id) {
                                             <li class="flex min-w-0 items-center gap-3">
-                                                <image-background [src]="item.gameData.imageUrl" [alt]="(item.gameData.titleTranslations.en || item.gameData.title || 'Game') + ' cover'" class="h-10 w-10 shrink-0 rounded-lg" />
-                                                <span class="min-w-0 flex-1 truncate text-sm font-medium">{{ item.gameData.titleTranslations.en || item.gameData.title || 'Untitled game' }}</span>
-                                                <span class="shrink-0 text-right text-xs text-secondary">{{ item.sessionCount }} night{{ item.sessionCount === 1 ? '' : 's' }}</span>
+                                                <image-background [src]="item.gameData.imageUrl" [alt]="coverAlt(item.gameData)" class="h-10 w-10 shrink-0 rounded-lg" />
+                                                <span class="min-w-0 flex-1 truncate text-sm font-medium">{{ item.gameData | gameTitle }}</span>
+                                                <span class="shrink-0 text-right text-xs text-secondary" i18n="On a game worth revisiting, how many game nights played it">{item.sessionCount, plural, one {{{ item.sessionCount }} night} other {{{ item.sessionCount }} nights}}</span>
                                             </li>
                                         }
                                     </ul>
@@ -336,23 +348,23 @@
                 }
             } @else if (insightsError()) {
                 <section id="insights" class="scroll-mt-24 rounded-2xl border border-bv-warning/30 bg-bv-warning/10 p-5 text-sm" role="alert">
-                    <p>Standings and stats could not be loaded.</p>
-                    <button type="button" class="mt-2 font-medium text-bv-primary underline" (click)="loadInsights(group.id)">Retry</button>
+                    <p i18n="Error on the group page">Standings and stats could not be loaded.</p>
+                    <button type="button" class="mt-2 font-medium text-bv-primary underline" (click)="loadInsights(group.id)" i18n="Button under an error">Retry</button>
                 </section>
             }
 
             <section id="library" class="scroll-mt-24" aria-labelledby="library-heading">
                 <div class="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
                     <div>
-                        <h2 id="library-heading" class="mt-1 text-2xl font-bold">Games this group can play</h2>
-                        <p class="mt-1 text-secondary">Every game someone in the group owns, best rated first.</p>
+                        <h2 id="library-heading" class="mt-1 text-2xl font-bold" i18n="Heading of the group's library on the group page">Games this group can play</h2>
+                        <p class="mt-1 text-secondary" i18n="Under the heading of the group's library on the group page">Every game someone in the group owns, best rated first.</p>
                     </div>
                     <fieldset class="min-w-0">
-                        <legend class="sr-only">Show games for</legend>
+                        <legend class="sr-only" i18n="Name of the player count filter of the group's library, read by screen readers">Show games for</legend>
                         <div class="flex flex-wrap items-center gap-2">
-                            <span class="text-sm text-secondary" aria-hidden="true">Players</span>
+                            <span class="text-sm text-secondary" aria-hidden="true" i18n="Label of the player count filter of the group's library">Players</span>
                             @for (count of PLAYER_COUNTS; track count) {
-                                <button type="button" class="app-chip" [attr.aria-pressed]="playerCount$() === count" [attr.aria-label]="'Games for ' + count + ' players'" (click)="setPlayerCount(count)">{{ count }}</button>
+                                <button type="button" class="app-chip" [attr.aria-pressed]="playerCount$() === count" [attr.aria-label]="gamesForLabel(count)" (click)="setPlayerCount(count)">{{ count }}</button>
                             }
                         </div>
                     </fieldset>
@@ -361,8 +373,13 @@
                 @if (totalUniqueGamesComputed().length === 0) {
                     <div class="mt-5 rounded-2xl border border-dashed border-bv-border p-8 text-center">
                         <app-icon name="dice" [size]="40" className="text-bv-primary" />
-                        <h3 class="mt-3 text-lg font-semibold">{{ playerCount$() === null ? 'No games in this group yet' : 'No game fits ' + playerCount$() + ' players' }}</h3>
-                        <p class="mt-2 text-secondary">{{ playerCount$() === null ? 'Add the games you own and they appear here for everyone.' : 'Try another number of players.' }}</p>
+                        @if (playerCount$(); as players) {
+                            <h3 class="mt-3 text-lg font-semibold" i18n="Shown in the group's library when no game fits the chosen player count">{players, plural, one {No game fits {{ players }} player} other {No game fits {{ players }} players}}</h3>
+                            <p class="mt-2 text-secondary" i18n="Shown in the group's library when no game fits the chosen player count">Try another number of players.</p>
+                        } @else {
+                            <h3 class="mt-3 text-lg font-semibold" i18n="Shown in the group's library before anyone adds a game">No games in this group yet</h3>
+                            <p class="mt-2 text-secondary" i18n="Shown in the group's library before anyone adds a game">Add the games you own and they appear here for everyone.</p>
+                        }
                     </div>
                 } @else {
                     <div class="mt-5 grid grid-cols-1 gap-4 md:grid-cols-2">
@@ -371,35 +388,35 @@
                                 <a
                                     [routerLink]="['/games', game.id]"
                                     class="block h-24 w-24 shrink-0"
-                                    [attr.aria-label]="'View ' + (game.titleTranslations.en || game.title || 'game')"
+                                    [attr.aria-label]="viewGameLabel(game)"
                                 >
-                                    <image-background [src]="game.imageUrl" [alt]="(game.titleTranslations.en || game.title || 'Game') + ' cover'" class="block h-full w-full rounded-xl" />
+                                    <image-background [src]="game.imageUrl" [alt]="coverAlt(game)" class="block h-full w-full rounded-xl" />
                                 </a>
                                 <div class="min-w-0 flex-1">
                                     <div class="flex items-start justify-between gap-3">
                                         <a [routerLink]="['/games', game.id]" class="font-semibold hover:underline">{{ game | gameTitle }}</a>
                                         @if (avgReviewsIndexComputed()[game.id]; as review) {
-                                            <span class="shrink-0 text-sm font-medium text-bv-warning">★ {{ review.average }}</span>
+                                            <span class="shrink-0 text-sm font-medium text-bv-warning">★ {{ formatNumber(review.average) }}</span>
                                         }
                                     </div>
-                                    <p class="mt-2 text-sm text-secondary">{{ game.gameAvgDuration }} min · {{ game | players }}</p>
+                                    <p class="mt-2 text-sm text-secondary"><ng-container i18n="How long a game lasts, in minutes">{{ game.gameAvgDuration }} min</ng-container> · {{ game | players }}</p>
                                     <div class="mt-3 flex flex-wrap gap-2 text-xs text-secondary">
-                                        <span class="rounded-full bg-bv-surface-2 px-2 py-1">{{ game.quantity }} owner{{ game.quantity === 1 ? '' : 's' }}</span>
+                                        <span class="rounded-full bg-bv-surface-2 px-2 py-1" i18n="How many people in the group own a game in its library">{game.quantity, plural, one {{{ game.quantity }} owner} other {{{ game.quantity }} owners}}</span>
                                         @if (avgReviewsIndexComputed()[game.id]; as review) {
-                                            <span class="rounded-full bg-bv-surface-2 px-2 py-1">{{ review.voters }} rating{{ review.voters === 1 ? '' : 's' }}</span>
+                                            <span class="rounded-full bg-bv-surface-2 px-2 py-1" i18n="How many people in the group rated a game in its library">{review.voters, plural, one {{{ review.voters }} rating} other {{{ review.voters }} ratings}}</span>
                                         }
                                         @if (groupLibraryContextComputed()[game.id]; as libraryContext) {
-                                            <span class="rounded-full bg-bv-surface-2 px-2 py-1">{{ libraryContext.playCount }} played</span>
+                                            <span class="rounded-full bg-bv-surface-2 px-2 py-1" i18n="times played|How many times the group played a game in its library">{libraryContext.playCount, plural, one {{{ libraryContext.playCount }} played} other {{{ libraryContext.playCount }} played}}</span>
                                         }
                                     </div>
                                     @if (groupLibraryContextComputed()[game.id]; as libraryContext) {
-                                        <p class="mt-3 truncate text-xs text-secondary">Owned by {{ libraryContext.ownerNames.join(', ') }}</p>
+                                        <p class="mt-3 truncate text-xs text-secondary" i18n="Who owns a game in the group's library; the placeholder is a list of names">Owned by {{ libraryContext.ownerNames.join(', ') }}</p>
                                     }
                                     @if (groupLibraryContextComputed()[game.id]; as libraryContext) {
                                         @if (libraryContext.lastPlayedAt; as lastPlayedAt) {
-                                            <p class="mt-3 text-xs text-secondary">Last played {{ lastPlayedAt | customDate: false: libraryContext.lastPlayedTimezone ?? undefined }}</p>
+                                            <p class="mt-3 text-xs text-secondary" i18n="When the group last played a game in its library; the placeholder is a date">Last played {{ lastPlayedAt | customDate: false: libraryContext.lastPlayedTimezone ?? undefined }}</p>
                                         } @else {
-                                            <p class="mt-3 text-xs text-secondary">Not played by this group yet</p>
+                                            <p class="mt-3 text-xs text-secondary" i18n="On a game in the group's library the group has never played">Not played by this group yet</p>
                                         }
                                     }
                                 </div>
@@ -412,25 +429,25 @@
             <section id="acquire" class="scroll-mt-24" aria-labelledby="acquisition-heading">
                 <div class="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
                     <div>
-                        <h2 id="acquisition-heading" class="mt-1 text-2xl font-bold">Games the group wants next</h2>
-                        <p class="mt-1 text-secondary">Games nobody in the group owns yet. Anyone can say they’re interested; the group owner decides whether to plan buying one.</p>
+                        <h2 id="acquisition-heading" class="mt-1 text-2xl font-bold" i18n="Heading of the games the group might buy on the group page">Games the group wants next</h2>
+                        <p class="mt-1 text-secondary" i18n="Under the heading of the games the group might buy on the group page">Games nobody in the group owns yet. Anyone can say they’re interested; the group owner decides whether to plan buying one.</p>
                     </div>
-                    <a appButton variant="secondary" class="shrink-0 text-center" [routerLink]="['/collection/browse']" [queryParams]="{ groupId: group.id }">Browse catalog</a>
+                    <a appButton variant="secondary" class="shrink-0 text-center" [routerLink]="['/collection/browse']" [queryParams]="{ groupId: group.id }" i18n="Button on the group page to Browse, to find games the group might buy">Browse catalog</a>
                 </div>
 
                 @if (acquisitionBoardLoading()) {
-                    <div class="mt-5 rounded-2xl border border-dashed border-bv-border p-6 text-center text-secondary" role="status">Loading the group shortlist…</div>
+                    <div class="mt-5 rounded-2xl border border-dashed border-bv-border p-6 text-center text-secondary" role="status" i18n="Shown while the games the group might buy load">Loading the group shortlist…</div>
                 } @else if (acquisitionBoardError()) {
                     <div class="mt-5 rounded-2xl border border-bv-warning/30 bg-bv-warning/10 p-6 text-center" role="alert">
-                        <p class="font-medium">The group shortlist could not be loaded.</p>
-                        <button appButton class="mt-4" icon="arrow-repeat" (click)="retryAcquisitionBoard()">Retry</button>
+                        <p class="font-medium" i18n="Error on the group page, about the games the group might buy">The group shortlist could not be loaded.</p>
+                        <button appButton class="mt-4" icon="arrow-repeat" (click)="retryAcquisitionBoard()" i18n="Button under an error">Retry</button>
                     </div>
                 } @else if (acquisitionBoard$().length === 0) {
                     <div class="mt-5 rounded-2xl border border-dashed border-bv-border p-8 text-center">
                         <app-icon name="shopping-bag" [size]="40" className="text-bv-primary" />
-                        <h3 class="mt-3 text-lg font-semibold">No group acquisition ideas yet</h3>
-                        <p class="mt-2 text-secondary">Browse the catalog and add games that would make a good next group purchase.</p>
-                        <a appButton class="mt-5" [routerLink]="['/collection/browse']" [queryParams]="{ groupId: group.id }">Find a game to add</a>
+                        <h3 class="mt-3 text-lg font-semibold" i18n="Shown on the group page before anyone suggests a game to buy">No group acquisition ideas yet</h3>
+                        <p class="mt-2 text-secondary" i18n="Shown on the group page before anyone suggests a game to buy">Browse the catalog and add games that would make a good next group purchase.</p>
+                        <a appButton class="mt-5" [routerLink]="['/collection/browse']" [queryParams]="{ groupId: group.id }" i18n="Button on the group page to Browse, to find games the group might buy">Find a game to add</a>
                     </div>
                 } @else {
                     <div class="mt-5 grid grid-cols-1 gap-4 md:grid-cols-2">
@@ -439,36 +456,48 @@
                                 <a
                                     [routerLink]="['/games', entry.gameData.id]"
                                     class="block h-20 w-20 shrink-0"
-                                    [attr.aria-label]="'View ' + (entry.gameData.titleTranslations.en || entry.gameData.title || 'game')"
+                                    [attr.aria-label]="viewGameLabel(entry.gameData)"
                                 >
-                                    <image-background [src]="entry.gameData.imageUrl" [alt]="(entry.gameData.titleTranslations.en || entry.gameData.title || 'Game') + ' cover'" class="block h-full w-full rounded-xl" />
+                                    <image-background [src]="entry.gameData.imageUrl" [alt]="coverAlt(entry.gameData)" class="block h-full w-full rounded-xl" />
                                 </a>
                                 <div class="min-w-0 flex-1">
                                     <div class="flex items-start justify-between gap-3">
                                         <a [routerLink]="['/games', entry.gameData.id]" class="font-semibold hover:underline">{{ entry.gameData | gameTitle }}</a>
                                     </div>
-                                    <p class="mt-2 text-sm text-secondary">{{ entry.gameData.gameAvgDuration }} min · {{ entry.gameData | players }}</p>
+                                    <p class="mt-2 text-sm text-secondary"><ng-container i18n="How long a game lasts, in minutes">{{ entry.gameData.gameAvgDuration }} min</ng-container> · {{ entry.gameData | players }}</p>
                                         <div class="mt-3 flex flex-wrap gap-2 text-xs text-secondary">
-                                            <span class="rounded-full bg-bv-primary-soft px-2 py-1">{{ entry.interestCount }} interested</span>
+                                            <span class="rounded-full bg-bv-primary-soft px-2 py-1" i18n="How many people in the group are interested in a game the group might buy">{entry.interestCount, plural, one {{{ entry.interestCount }} interested} other {{{ entry.interestCount }} interested}}</span>
                                             <span
                                             class="rounded-full px-2 py-1"
                                             [ngClass]="entry.decisionStatus === 'planned' ? 'bg-bv-success/10 text-bv-success' : entry.decisionStatus === 'not_now' ? 'bg-bv-surface-2 text-bv-text-muted' : 'bg-bv-warning/10 text-bv-warning'"
                                         >{{ getAcquisitionDecisionLabel(entry.decisionStatus) }}</span>
                                     </div>
-                                    <p class="mt-3 text-xs text-secondary">Interested: {{ getInterestNames(entry) || 'No one yet' }}</p>
+                                    <p class="mt-3 text-xs text-secondary">
+                                        @if (getInterestNames(entry); as names) {
+                                            <ng-container i18n="Who is interested in a game the group might buy; the placeholder is a list of names">Interested: {{ names }}</ng-container>
+                                        } @else {
+                                            <ng-container i18n="On a game the group might buy that nobody is interested in yet">Interested: No one yet</ng-container>
+                                        }
+                                    </p>
                                     <div class="mt-3 flex flex-wrap items-center gap-3">
                                         @if (isCurrentUserInterested(entry)) {
-                                            <span class="text-xs font-medium text-bv-success" role="status">You are interested</span>
-                                            <button type="button" class="shrink-0 text-xs text-secondary underline" [disabled]="acquisitionMutationGameId() === entry.gameData.id" (click)="removeAcquisitionInterest(entry.gameData.id)">Remove my interest</button>
+                                            <span class="text-xs font-medium text-bv-success" role="status" i18n="On a game the group might buy that you are interested in">You are interested</span>
+                                            <button type="button" class="shrink-0 text-xs text-secondary underline" [disabled]="acquisitionMutationGameId() === entry.gameData.id" (click)="removeAcquisitionInterest(entry.gameData.id)" i18n="Button on a game the group might buy">Remove my interest</button>
                                         } @else {
-                                            <button appButton variant="secondary" type="button" class="text-xs" [disabled]="acquisitionMutationGameId() === entry.gameData.id" (click)="addAcquisitionInterest(entry.gameData.id)">{{ acquisitionMutationGameId() === entry.gameData.id ? 'Saving…' : 'Add my interest' }}</button>
+                                            <button appButton variant="secondary" type="button" class="text-xs" [disabled]="acquisitionMutationGameId() === entry.gameData.id" (click)="addAcquisitionInterest(entry.gameData.id)">
+                                                @if (acquisitionMutationGameId() === entry.gameData.id) {
+                                                    <ng-container i18n="Button on a game the group might buy, while your interest is being saved">Saving…</ng-container>
+                                                } @else {
+                                                    <ng-container i18n="Button on a game the group might buy">Add my interest</ng-container>
+                                                }
+                                            </button>
                                         }
                                     </div>
                                     @if (acquisitionMutationErrors()[entry.gameData.id]; as interestError) {
                                         <p class="mt-2 text-xs text-bv-danger" role="alert">{{ interestError }}</p>
                                     }
                                     @if (entry.decisionBy; as decisionBy) {
-                                        <p class="mt-2 text-xs text-secondary">Last decision by {{ decisionBy.displayName || decisionBy.username }}</p>
+                                        <p class="mt-2 text-xs text-secondary" i18n="Who last decided about a game the group might buy; the placeholder is a name">Last decision by {{ decisionBy.displayName || decisionBy.username }}</p>
                                     }
                                     @if (isGroupOwnerComputed()) {
                                         <div class="mt-3 flex flex-wrap gap-2">
@@ -477,12 +506,14 @@
                                                 class="rounded-lg border border-bv-success/30 px-3 py-2 text-xs font-medium text-bv-success disabled:opacity-60"
                                                 [disabled]="acquisitionDecisionMutationGameId() === entry.gameData.id || entry.decisionStatus === 'planned'"
                                                 (click)="updateAcquisitionDecision(entry.gameData.id, 'planned')"
+                                                i18n="Status of a game the group might buy, and the group owner's button that sets it"
                                             >Plan to acquire</button>
                                             <button
                                                 type="button"
                                                 class="rounded-lg border border-bv-border px-3 py-2 text-xs font-medium text-bv-text-muted disabled:opacity-60"
                                                 [disabled]="acquisitionDecisionMutationGameId() === entry.gameData.id || entry.decisionStatus === 'not_now'"
                                                 (click)="updateAcquisitionDecision(entry.gameData.id, 'not_now')"
+                                                i18n="Status of a game the group might buy, and the group owner's button that sets it"
                                             >Not now</button>
                                             @if (entry.decisionStatus !== 'open') {
                                                 <button
@@ -490,6 +521,7 @@
                                                     class="text-xs text-secondary underline disabled:opacity-60"
                                                     [disabled]="acquisitionDecisionMutationGameId() === entry.gameData.id"
                                                     (click)="updateAcquisitionDecision(entry.gameData.id, 'open')"
+                                                    i18n="The group owner's button on a game the group might buy that undoes the decision about it"
                                                 >Reopen</button>
                                             }
                                         </div>
@@ -507,52 +539,59 @@
             <section id="people" class="scroll-mt-24 rounded-2xl border border-bv-primary/30 bg-bv-primary-soft/60 p-6" aria-labelledby="people-heading">
                 <div class="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
                     <div>
-                        <h2 id="people-heading" class="mt-1 text-2xl font-bold">People around your table</h2>
-                        <p class="mt-1 max-w-2xl text-secondary">Add friends by name; they don’t need an account. Invite them whenever they want to join, and their history comes with them.</p>
+                        <h2 id="people-heading" class="mt-1 text-2xl font-bold" i18n="Heading of the people of the group on the group page">People around your table</h2>
+                        <p class="mt-1 max-w-2xl text-secondary" i18n="Under the heading of the people of the group on the group page">Add friends by name; they don’t need an account. Invite them whenever they want to join, and their history comes with them.</p>
                     </div>
                     @if (isGroupOwnerComputed()) {
                         <div class="flex w-full gap-2 sm:w-auto">
-                            <label class="sr-only" for="new-group-person-name">Person name</label>
+                            <label class="sr-only" for="new-group-person-name" i18n="Label of the field on the group page that adds a person without an account, read by screen readers">Person name</label>
                             <input
                                 id="new-group-person-name"
                                 class="min-w-0 flex-1 rounded-xl border border-bv-border bg-bv-surface px-3 py-2 text-sm sm:w-48"
                                 [value]="newGroupPersonName()"
                                 (input)="newGroupPersonName.set($any($event.target).value)"
                                 (keyup.enter)="addGroupPerson()"
-                                placeholder="Friend's name"
+                                placeholder="Friend’s name"
+                                i18n-placeholder="Placeholder of the field on the group page that adds a person without an account"
                                 [maxLength]="nameMaxLength"
                             />
-                            <button appButton type="button" class="shrink-0" [disabled]="!newGroupPersonName().trim() || groupPersonMutationId() !== null" (click)="addGroupPerson()">Add person</button>
+                            <button appButton type="button" class="shrink-0" [disabled]="!newGroupPersonName().trim() || groupPersonMutationId() !== null" (click)="addGroupPerson()" i18n="Button on the group page that adds a person without an account">Add person</button>
                         </div>
-                        <button appButton variant="secondary" type="button" class="shrink-0" (click)="toggleArchivedGroupPeople()">{{ includeArchivedGroupPeople() ? 'Hide archived' : 'Show archived' }}</button>
+                        <button appButton variant="secondary" type="button" class="shrink-0" (click)="toggleArchivedGroupPeople()">
+                            @if (includeArchivedGroupPeople()) {
+                                <ng-container i18n="Button on the group page that hides the archived people">Hide archived</ng-container>
+                            } @else {
+                                <ng-container i18n="Button on the group page that shows the archived people">Show archived</ng-container>
+                            }
+                        </button>
                     }
                 </div>
 
                 @if (claimableGroupPersonComputed(); as claimablePerson) {
                     <div class="mt-5 rounded-2xl border border-bv-success/30 bg-bv-success/10 p-4" role="status">
-                        <p class="font-semibold text-bv-success">A group person is waiting for you</p>
-                        <p class="mt-1 text-sm text-secondary">Review the games and preferences recorded for {{ claimablePerson.person.displayName }}, then link that history to your account.</p>
-                        <a appButton class="mt-3" [routerLink]="['/groups', group.id, 'people', claimablePerson.person.id, 'claim']">Review and claim</a>
+                        <p class="font-semibold text-bv-success" i18n="Shown on the group page when a person without an account was prepared for you">A group person is waiting for you</p>
+                        <p class="mt-1 text-sm text-secondary" i18n="Shown on the group page when a person without an account was prepared for you; the placeholder is that person's name">Review the games and preferences recorded for {{ claimablePerson.person.displayName }}, then link that history to your account.</p>
+                        <a appButton class="mt-3" [routerLink]="['/groups', group.id, 'people', claimablePerson.person.id, 'claim']" i18n="Button on the group page to take over a person prepared for you">Review and claim</a>
                     </div>
                 } @else if (!currentUserHasGroupPersonComputed() && !isGroupOwnerComputed()) {
                     <div class="mt-5 rounded-2xl border border-bv-border bg-bv-surface p-4">
-                        <p class="font-semibold">You’re not in this group’s game nights yet</p>
-                        <p class="mt-1 text-sm text-secondary">Add yourself so you can be invited to nights and show up in its history.</p>
-                        <button appButton variant="secondary" type="button" class="mt-3" [disabled]="groupPersonMutationId() !== null" (click)="joinAsNewGroupPerson()">Add me</button>
+                        <p class="font-semibold" i18n="Shown on the group page to a member who is not one of the group's people yet">You’re not in this group’s game nights yet</p>
+                        <p class="mt-1 text-sm text-secondary" i18n="Shown on the group page to a member who is not one of the group's people yet">Add yourself so you can be invited to nights and show up in its history.</p>
+                        <button appButton variant="secondary" type="button" class="mt-3" [disabled]="groupPersonMutationId() !== null" (click)="joinAsNewGroupPerson()" i18n="Button on the group page that adds you to the group's people">Add me</button>
                     </div>
                 }
 
                 @if (groupPeopleLoading()) {
-                    <div class="mt-5 rounded-2xl border border-dashed border-bv-primary/30 p-6 text-center text-secondary" role="status">Loading group people…</div>
+                    <div class="mt-5 rounded-2xl border border-dashed border-bv-primary/30 p-6 text-center text-secondary" role="status" i18n="Shown while the people of the group load">Loading group people…</div>
                 } @else if (groupPeopleError()) {
                     <div class="mt-5 rounded-2xl border border-bv-warning/30 bg-bv-warning/10 p-6 text-center" role="alert">
-                        <p class="font-medium">Group people could not be loaded.</p>
-                        <button appButton variant="secondary" type="button" class="mt-4" (click)="retryGroupPeople()">Retry</button>
+                        <p class="font-medium" i18n="Error on the group page">Group people could not be loaded.</p>
+                        <button appButton variant="secondary" type="button" class="mt-4" (click)="retryGroupPeople()" i18n="Button under an error">Retry</button>
                     </div>
                 } @else if (visibleGroupPeopleComputed().length === 0) {
                     <div class="mt-5 rounded-2xl border border-dashed border-bv-primary/30 p-6 text-center">
-                        <p class="font-medium">No group profiles yet.</p>
-                        <p class="mt-1 text-sm text-secondary">Add the people who usually play with you so recommendations and history can include them.</p>
+                        <p class="font-medium" i18n="Shown on the group page before the group has people">No group profiles yet.</p>
+                        <p class="mt-1 text-sm text-secondary" i18n="Shown on the group page before the group has people">Add the people who usually play with you so recommendations and history can include them.</p>
                     </div>
                 } @else {
                     <div class="mt-5 grid grid-cols-1 gap-4 md:grid-cols-2">
@@ -564,78 +603,88 @@
                                             <h3 class="max-w-full truncate font-semibold">{{ person.person.displayName }}</h3>
                                             <span class="rounded-full bg-bv-surface-2 px-2 py-1 text-xs text-secondary">{{ groupPersonBadge(person.person) }}</span>
                                         </div>
-                                        <p class="mt-1 text-xs text-secondary">{{ getGroupPersonOwnedGameCount(person) | count: 'game' }} · {{ person.preferences.length | count: 'preference' }}</p>
+                                        <p class="mt-1 text-xs text-secondary"><ng-container i18n="How many games a person of the group owns">{getGroupPersonOwnedGameCount(person), plural, one {{{ getGroupPersonOwnedGameCount(person) }} game} other {{{ getGroupPersonOwnedGameCount(person) }} games}}</ng-container> · <ng-container i18n="How many games a person of the group has a preference about">{person.preferences.length, plural, one {{{ person.preferences.length }} preference} other {{{ person.preferences.length }} preferences}}</ng-container></p>
                                     </div>
                                     @if (isGroupOwnerComputed() && person.person.kind === 'placeholder') {
                                         <div class="flex shrink-0 items-center gap-3">
                                             @if (person.person.status === 'active') {
-                                                <a class="text-xs font-semibold text-bv-primary hover:underline" [routerLink]="['/groups', group.id, 'edit']" [queryParams]="{ person: person.person.id }" [attr.aria-label]="'Invite ' + person.person.displayName">Invite</a>
+                                                <a class="text-xs font-semibold text-bv-primary hover:underline" [routerLink]="['/groups', group.id, 'edit']" [queryParams]="{ person: person.person.id }" [attr.aria-label]="inviteLabel(person.person.displayName)" i18n="Link on a person without an account on the group page, to invite them">Invite</a>
                                             }
-                                            <button type="button" class="text-xs text-secondary underline disabled:opacity-60" [disabled]="groupPersonMutationId() !== null" (click)="archiveGroupPerson(person)">{{ person.person.status === 'archived' ? 'Restore' : 'Archive' }}</button>
+                                            <button type="button" class="text-xs text-secondary underline disabled:opacity-60" [disabled]="groupPersonMutationId() !== null" (click)="archiveGroupPerson(person)">
+                                                @if (person.person.status === 'archived') {
+                                                    <ng-container i18n="Button on an archived person on the group page">Restore</ng-container>
+                                                } @else {
+                                                    <ng-container i18n="Button on a person without an account on the group page">Archive</ng-container>
+                                                }
+                                            </button>
                                         </div>
                                     }
                                 </div>
                                 @let ownedGames = getGroupPersonOwnedGames(person);
                                 @if (ownedGames.length) {
-                                    <ul class="mt-3 flex flex-wrap gap-1.5" aria-label="Games {{ person.person.displayName }} owns">
+                                    <ul class="mt-3 flex flex-wrap gap-1.5" [attr.aria-label]="ownedGamesLabel(person.person.displayName)">
                                         @for (game of ownedGames.slice(0, 8); track game.id) {
-                                            <li class="max-w-full truncate rounded-full bg-bv-surface-2 px-2.5 py-1 text-xs">{{ game.titleTranslations.en || game.title }}</li>
+                                            <li class="max-w-full truncate rounded-full bg-bv-surface-2 px-2.5 py-1 text-xs">{{ game | gameTitle }}</li>
                                         }
                                         @if (ownedGames.length > 8) {
-                                            <li class="rounded-full px-2.5 py-1 text-xs text-secondary">+{{ ownedGames.length - 8 }} more</li>
+                                            <li class="rounded-full px-2.5 py-1 text-xs text-secondary" i18n="After the games a person of the group owns, how many more there are">{ownedGames.length - 8, plural, one {+{{ ownedGames.length - 8 }} more} other {+{{ ownedGames.length - 8 }} more}}</li>
                                         }
                                     </ul>
                                 } @else {
-                                    <p class="mt-3 text-sm text-secondary">No games recorded yet.</p>
+                                    <p class="mt-3 text-sm text-secondary" i18n="On a person of the group who owns no games">No games recorded yet.</p>
                                 }
                                 <!-- Any member may edit a person's games and preferences: the group history shows who did (ADR-0020). -->
                                 @if (groupPersonAvailableGamesComputed().length > 0) {
                                     <button type="button" class="mt-3 text-sm font-semibold text-bv-primary hover:underline" [attr.aria-expanded]="editingGroupPersonId() === person.person.id" (click)="toggleGroupPersonEditor(person.person.id)">
-                                        {{ editingGroupPersonId() === person.person.id ? 'Done' : 'Edit games and preferences' }}
+                                        @if (editingGroupPersonId() === person.person.id) {
+                                            <ng-container i18n="Button that closes the editor of a person's games on the group page">Done</ng-container>
+                                        } @else {
+                                            <ng-container i18n="Button that opens the editor of a person's games on the group page">Edit games and preferences</ng-container>
+                                        }
                                     </button>
                                     @if (editingGroupPersonId() === person.person.id) {
                                         <div class="mt-3 rounded-xl border border-bv-border">
                                             <label class="block border-b border-bv-border p-2">
-                                                <span class="sr-only">Filter games for {{ person.person.displayName }}</span>
-                                                <input type="search" class="w-full rounded-lg border border-bv-border px-3 py-2 text-sm bg-bv-surface" placeholder="Filter games" [value]="groupPersonGameFilter()" (input)="groupPersonGameFilter.set($any($event.target).value)" />
+                                                <span class="sr-only" i18n="Label of the filter in the editor of a person's games on the group page; the placeholder is the person's name">Filter games for {{ person.person.displayName }}</span>
+                                                <input type="search" class="w-full rounded-lg border border-bv-border px-3 py-2 text-sm bg-bv-surface" placeholder="Filter games" i18n-placeholder="Placeholder of the filter in the editor of a person's games on the group page" [value]="groupPersonGameFilter()" (input)="groupPersonGameFilter.set($any($event.target).value)" />
                                             </label>
                                             <ul class="max-h-96 divide-y divide-bv-border overflow-y-auto">
                                                 @for (game of getGroupPersonEditorGames(person); track game.id) {
                                                     <li class="grid grid-cols-[1fr_auto_auto] items-center gap-2 px-3 py-2">
                                                         <span class="min-w-0">
-                                                            <span class="block truncate text-sm font-medium">{{ game.titleTranslations.en || game.title || 'Game' }}</span>
+                                                            <span class="block truncate text-sm font-medium">{{ game | gameTitle }}</span>
                                                             @if (getGroupPersonOwnershipSource(person, game.id); as source) {
                                                                 <span class="block truncate text-xs text-secondary">{{ source }}</span>
                                                             }
                                                         </span>
                                                         <select
                                                             class="rounded-lg border border-bv-border bg-bv-surface px-2 py-1.5 text-xs"
-                                                            [attr.aria-label]="(game.titleTranslations.en || 'Game') + ' ownership for ' + person.person.displayName"
+                                                            [attr.aria-label]="ownershipLabel(game, person.person.displayName)"
                                                             [value]="getGroupPersonOwnershipStatus(person, game.id) ?? ''"
                                                             [disabled]="groupPersonMutationId() !== null"
                                                             (change)="setGroupPersonOwnership(person, game.id, $event)"
                                                         >
-                                                            <option value="" [disabled]="getGroupPersonOwnershipStatus(person, game.id) !== null">Owns? –</option>
-                                                            <option value="asserted">Owns it</option>
-                                                            <option value="disputed">Not sure</option>
-                                                            <option value="rejected">Doesn't own</option>
+                                                            <option value="" [disabled]="getGroupPersonOwnershipStatus(person, game.id) !== null" i18n="Empty choice of the menu that says whether a person owns a game on the group page">Owns? –</option>
+                                                            <option value="asserted" i18n="Choice of the menu that says whether a person owns a game on the group page">Owns it</option>
+                                                            <option value="disputed" i18n="Choice of the menu that says whether a person owns a game on the group page">Not sure</option>
+                                                            <option value="rejected" i18n="Choice of the menu that says whether a person owns a game on the group page">Doesn’t own</option>
                                                         </select>
                                                         <select
                                                             class="rounded-lg border border-bv-border bg-bv-surface px-2 py-1.5 text-xs"
-                                                            [attr.aria-label]="(game.titleTranslations.en || 'Game') + ' preference for ' + person.person.displayName"
+                                                            [attr.aria-label]="preferenceLabel(game, person.person.displayName)"
                                                             [value]="getGroupPersonPreference(person, game.id) ?? ''"
                                                             [disabled]="groupPersonMutationId() !== null"
                                                             (change)="setGroupPersonPreference(person, game.id, $event)"
                                                         >
-                                                            <option value="">Likes? –</option>
-                                                            <option value="favorite">Favorite</option>
-                                                            <option value="like">Likes</option>
-                                                            <option value="neutral">Neutral</option>
-                                                            <option value="avoid">Avoids</option>
+                                                            <option value="" i18n="Empty choice of the menu that says what a person thinks of a game on the group page">Likes? –</option>
+                                                            <option value="favorite" i18n="Choice of the menu that says what a person thinks of a game on the group page">Favorite</option>
+                                                            <option value="like" i18n="Choice of the menu that says what a person thinks of a game on the group page">Likes</option>
+                                                            <option value="neutral" i18n="Choice of the menu that says what a person thinks of a game on the group page">Neutral</option>
+                                                            <option value="avoid" i18n="Choice of the menu that says what a person thinks of a game on the group page">Avoids</option>
                                                         </select>
                                                     </li>
                                                 } @empty {
-                                                    <li class="p-4 text-center text-sm text-secondary">No games match.</li>
+                                                    <li class="p-4 text-center text-sm text-secondary" i18n="Shown in the editor of a person's games on the group page when the filter matches nothing">No games match.</li>
                                                 }
                                             </ul>
                                         </div>
@@ -647,15 +696,15 @@
                 }
                 @if (!isGroupOwnerComputed()) {
                     <div class="mt-6 border-t border-bv-primary/20 pt-4">
-                        <button type="button" class="text-sm font-medium text-bv-danger underline-offset-2 hover:underline" (click)="onClickLeaveGroup()">Leave this group</button>
+                        <button type="button" class="text-sm font-medium text-bv-danger underline-offset-2 hover:underline" (click)="onClickLeaveGroup()" i18n="Button on the group page for a member who is not its owner">Leave this group</button>
                     </div>
                 }
             </section>
 
             <section id="changes" class="scroll-mt-24" aria-labelledby="changes-heading">
                 <div class="mb-4">
-                    <h2 id="changes-heading" class="mt-1 text-2xl font-bold">What changed</h2>
-                    <p class="mt-1 max-w-2xl text-secondary">Who changed what in this group, newest first. Nothing here can be edited: a mistake is fixed by changing it back, and both changes stay.</p>
+                    <h2 id="changes-heading" class="mt-1 text-2xl font-bold" i18n="Heading of the group's history of changes on the group page">What changed</h2>
+                    <p class="mt-1 max-w-2xl text-secondary" i18n="Under the heading of the group's history of changes on the group page">Who changed what in this group, newest first. Nothing here can be edited: a mistake is fixed by changing it back, and both changes stay.</p>
                 </div>
                 <app-group-activity-feed [groupId]="group.id" />
             </section>
@@ -679,13 +728,19 @@
                     <app-icon name="arrow-right" [size]="20" />
                 </div>
                 <div>
-                    <h2 id="leave-group-dialog-title" class="text-xl font-bold text-bv-text">Leave {{ groupData$()?.name }}?</h2>
-                    <p id="leave-group-dialog-description" class="mt-2 text-sm leading-6 text-secondary">You will lose access to this group’s games, plans, and shared play history. The owner can invite you again later.</p>
+                    <h2 id="leave-group-dialog-title" class="text-xl font-bold text-bv-text" i18n="Question in the dialog that leaves a group; the placeholder is the group name">Leave {{ groupData$()?.name }}?</h2>
+                    <p id="leave-group-dialog-description" class="mt-2 text-sm leading-6 text-secondary" i18n="Text in the dialog that leaves a group">You will lose access to this group’s games, plans, and shared play history. The owner can invite you again later.</p>
                 </div>
             </div>
             <div class="mt-6 flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
-                <button appButton variant="secondary" id="leave-group-dialog-cancel" type="button" [disabled]="isLeavingGroup()" (click)="cancelLeaveGroup()">Keep group access</button>
-                <button appButton variant="danger" type="button" [disabled]="isLeavingGroup()" (click)="confirmLeaveGroup()">{{ isLeavingGroup() ? 'Leaving…' : 'Leave group' }}</button>
+                <button appButton variant="secondary" id="leave-group-dialog-cancel" type="button" [disabled]="isLeavingGroup()" (click)="cancelLeaveGroup()" i18n="Button in the dialog that leaves a group, that keeps you in it">Keep group access</button>
+                <button appButton variant="danger" type="button" [disabled]="isLeavingGroup()" (click)="confirmLeaveGroup()">
+                    @if (isLeavingGroup()) {
+                        <ng-container i18n="Button in the dialog that leaves a group, while it does">Leaving…</ng-container>
+                    } @else {
+                        <ng-container i18n="Button in the dialog that leaves a group">Leave group</ng-container>
+                    }
+                </button>
             </div>
         </section>
     </div>

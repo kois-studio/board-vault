@@ -5,12 +5,12 @@
             class="mr-auto text-sm font-medium"
             [class]="status === 'accepted' ? 'text-bv-success' : status === 'declined' ? 'text-bv-text-muted' : 'text-bv-primary'"
         >{{ label() }}</span>
-        <div class="flex gap-2" role="group" aria-label="Your answer">
+        <div class="flex gap-2" role="group" aria-label="Your answer" i18n-aria-label="Name of the two answer buttons on a game night card">
             <button type="button" class="app-chip" [attr.aria-pressed]="status === 'accepted'" [disabled]="isSaving()" (click)="answer('accepted')">
-                <app-icon name="thumbs-up" [size]="16" aria-hidden="true" /> I’m going
+                <app-icon name="thumbs-up" [size]="16" aria-hidden="true" /> <ng-container i18n="Answer button on a game night card">I’m going</ng-container>
             </button>
             <button type="button" class="app-chip" [attr.aria-pressed]="status === 'declined'" [disabled]="isSaving()" (click)="answer('declined')">
-                <app-icon name="thumbs-down" [size]="16" aria-hidden="true" /> Can’t make it
+                <app-icon name="thumbs-down" [size]="16" aria-hidden="true" /> <ng-container i18n="Answer button on a game night card">Can’t make it</ng-container>
             </button>
         </div>
     </div>

@@ -497,4 +497,18 @@ describe('GroupViewComponent page layout', () => {
         fixture.detectChanges()
         expect((fixture.nativeElement as HTMLElement).textContent).toContain('Owned by Mirian')
     })
+
+    it('says how many game nights and games the standings come from, in one sentence', async () => {
+        const fixture = await render(7)
+        const insights = { gamesWithWinner: 0, standings: [], mostPlayed: [], neverPlayed: [], neverPlayedCount: 0 }
+        const summary = () => (fixture.nativeElement as HTMLElement).querySelector('#insights p')?.textContent?.replace(/\s+/g, ' ').trim()
+
+        fixture.componentInstance.insights$.set({ ...insights, sessions: 1, gamesPlayed: 1 })
+        fixture.detectChanges()
+        expect(summary()).toBe('From 1 finished game night and 1 game played.')
+
+        fixture.componentInstance.insights$.set({ ...insights, sessions: 3, gamesPlayed: 7 })
+        fixture.detectChanges()
+        expect(summary()).toBe('From 3 finished game nights and 7 games played.')
+    })
 })

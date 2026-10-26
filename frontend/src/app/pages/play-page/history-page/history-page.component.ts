@@ -12,7 +12,7 @@ import { formatDateTime } from '../../../core/i18n/format'
 import { CustomDatePipe } from '../../../core/pipes/customDate.pipe'
 import { DataService } from '../../../core/services/data.service'
 import { LoadingService } from '../../../core/services/loading.service'
-import { formatAttendeeSummary } from '../../../core/utils/formatAttendeeSummary'
+import { attendeeNames, formatAttendeeSummary } from '../../../core/utils/formatAttendeeSummary'
 import {
     formatWinners,
     type HistoryParticipant,
@@ -214,7 +214,7 @@ export class HistoryPageComponent {
     }
 
     public getPlayedBySummary(players: Array<{ displayName: string; username: string }>): string {
-        return formatAttendeeSummary(players).replace(/^With /, '')
+        return attendeeNames(players)
     }
 
     public retryHistory(): void {

@@ -1,51 +1,51 @@
 <main class="min-h-[calc(100vh-8rem)] bg-bv-bg px-4 py-8 sm:px-6 lg:px-8 lg:py-12">
     <div class="mx-auto max-w-3xl">
-        <a class="text-sm font-medium text-bv-primary hover:underline" [routerLink]="['/groups', route.snapshot.paramMap.get('groupId')]">Back to group</a>
+        <a class="text-sm font-medium text-bv-primary hover:underline" [routerLink]="['/groups', route.snapshot.paramMap.get('groupId')]" i18n="Link on the page where you take over a person prepared for you in a group, back to the group page">Back to group</a>
 
         @if (isLoading()) {
             <section class="mt-8 rounded-3xl border border-bv-border bg-bv-surface p-8 text-center shadow-sm" role="status" aria-live="polite">
-                <p class="text-lg font-semibold">Loading your group-person handoff…</p>
+                <p class="text-lg font-semibold" i18n="Shown while the page loads where you take over a person prepared for you">Loading your group-person handoff…</p>
             </section>
         } @else if (error() && !person()) {
             <section class="mt-8 rounded-3xl border border-bv-warning/30 bg-bv-warning/10 p-8" role="alert">
-                <h1 class="text-2xl font-bold">This handoff is unavailable</h1>
+                <h1 class="text-2xl font-bold" i18n="Error on the page where you take over a person prepared for you in a group">This handoff is unavailable</h1>
                 <p class="mt-2 text-secondary">{{ error() }}</p>
-                <button appButton type="button" class="mt-5" (click)="joinAsNewPerson()">Join as a new person</button>
+                <button appButton type="button" class="mt-5" (click)="joinAsNewPerson()" i18n="Button under an error on the page where you take over a person prepared for you in a group">Join as a new person</button>
             </section>
         } @else {
             @if (person(); as groupPerson) {
             <header class="mt-8 rounded-3xl border border-bv-primary/30 bg-bv-primary-soft p-6 sm:p-8">
-                <p class="text-sm font-semibold uppercase tracking-[0.18em] text-bv-primary">Continue your group history</p>
-                <h1 class="mt-2 text-3xl font-bold text-bv-text wrap-anywhere">Is this {{ groupPerson.person.displayName }}?</h1>
-                <p class="mt-3 leading-7 text-secondary">Someone in this group prepared this profile before you joined. Keep the entries that are yours, remove mistakes, and your old sessions will stay connected to you.</p>
+                <p class="text-sm font-semibold uppercase tracking-[0.18em] text-bv-primary" i18n="Label on the page where you take over a person prepared for you in a group">Continue your group history</p>
+                <h1 class="mt-2 text-3xl font-bold text-bv-text wrap-anywhere" i18n="Heading on the page where you take over a person prepared for you in a group; the placeholder is that person's name">Is this {{ groupPerson.person.displayName }}?</h1>
+                <p class="mt-3 leading-7 text-secondary" i18n="Text on the page where you take over a person prepared for you in a group">Someone in this group prepared this profile before you joined. Keep the entries that are yours, remove mistakes, and your old sessions will stay connected to you.</p>
             </header>
 
             @if (claimSummary(); as summary) {
                 <section class="mt-6 rounded-3xl border border-bv-success/30 bg-bv-success/10 p-6" aria-labelledby="claim-complete-heading" role="status">
-                    <p class="text-sm font-semibold uppercase tracking-[0.18em] text-bv-success">History linked</p>
-                    <h2 id="claim-complete-heading" class="mt-2 text-2xl font-bold text-bv-success">Your choices are saved</h2>
-                    <p class="mt-2 text-secondary">This group person is now linked to your account. The group history stays private to its members.</p>
+                    <p class="text-sm font-semibold uppercase tracking-[0.18em] text-bv-success" i18n="Label on the page where you take over a person prepared for you in a group, after you saved">History linked</p>
+                    <h2 id="claim-complete-heading" class="mt-2 text-2xl font-bold text-bv-success" i18n="Heading on the page where you take over a person prepared for you in a group, after you saved">Your choices are saved</h2>
+                    <p class="mt-2 text-secondary" i18n="Text on the page where you take over a person prepared for you in a group, after you saved">This group person is now linked to your account. The group history stays private to its members.</p>
                     <dl class="mt-5 grid grid-cols-1 gap-3 sm:grid-cols-2">
-                        <div class="rounded-2xl bg-bv-surface/70 p-4"><dt class="text-sm text-secondary">Ownership kept</dt><dd class="mt-1 text-2xl font-bold">{{ summary.ownershipKept }}</dd></div>
-                        <div class="rounded-2xl bg-bv-surface/70 p-4"><dt class="text-sm text-secondary">Preferences kept</dt><dd class="mt-1 text-2xl font-bold">{{ summary.preferencesKept }}</dd></div>
-                        <div class="rounded-2xl bg-bv-surface/70 p-4"><dt class="text-sm text-secondary">Entries discarded</dt><dd class="mt-1 text-2xl font-bold">{{ summary.ownershipDiscarded + summary.preferencesDiscarded }}</dd></div>
-                        <div class="rounded-2xl bg-bv-surface/70 p-4"><dt class="text-sm text-secondary">Private collection import</dt><dd class="mt-1 font-semibold">{{ summary.importedOwnership ? 'Included' : 'Not included' }}</dd></div>
+                        <div class="rounded-2xl bg-bv-surface/70 p-4"><dt class="text-sm text-secondary" i18n="One of the numbers on the page where you take over a person prepared for you in a group, after you saved">Ownership kept</dt><dd class="mt-1 text-2xl font-bold">{{ summary.ownershipKept }}</dd></div>
+                        <div class="rounded-2xl bg-bv-surface/70 p-4"><dt class="text-sm text-secondary" i18n="One of the numbers on the page where you take over a person prepared for you in a group, after you saved">Preferences kept</dt><dd class="mt-1 text-2xl font-bold">{{ summary.preferencesKept }}</dd></div>
+                        <div class="rounded-2xl bg-bv-surface/70 p-4"><dt class="text-sm text-secondary" i18n="One of the numbers on the page where you take over a person prepared for you in a group, after you saved">Entries discarded</dt><dd class="mt-1 text-2xl font-bold">{{ summary.ownershipDiscarded + summary.preferencesDiscarded }}</dd></div>
+                        <div class="rounded-2xl bg-bv-surface/70 p-4"><dt class="text-sm text-secondary" i18n="One of the results on the page where you take over a person prepared for you in a group, after you saved: whether the games went into your collection">Private collection import</dt><dd class="mt-1 font-semibold">@if (summary.importedOwnership) {<ng-container i18n="Result on the page where you take over a person prepared for you in a group: the games went into your collection">Included</ng-container>} @else {<ng-container i18n="Result on the page where you take over a person prepared for you in a group: the games did not go into your collection">Not included</ng-container>}</dd></div>
                     </dl>
-                    <a appButton class="mt-6" [routerLink]="['/groups', route.snapshot.paramMap.get('groupId')]">Return to group</a>
+                    <a appButton class="mt-6" [routerLink]="['/groups', route.snapshot.paramMap.get('groupId')]" i18n="Button on the page where you take over a person prepared for you in a group, after you saved, to the group page">Return to group</a>
                 </section>
             } @else {
                 <section class="mt-6 rounded-3xl border border-bv-border bg-bv-surface p-6 shadow-sm" aria-labelledby="ownership-heading">
-                    <h2 id="ownership-heading" class="text-xl font-bold">Review recorded ownership</h2>
-                    <p class="mt-1 text-sm text-secondary">Keep only games that are yours. Every row shows the decision that will be saved.</p>
+                    <h2 id="ownership-heading" class="text-xl font-bold" i18n="Heading on the page where you take over a person prepared for you in a group">Review recorded ownership</h2>
+                    <p class="mt-1 text-sm text-secondary" i18n="Under Review recorded ownership on the page where you take over a person prepared for you in a group">Keep only games that are yours. Every row shows the decision that will be saved.</p>
                     @if (assertedOwnershipCount(groupPerson) === 0) {
-                        <p class="mt-4 rounded-2xl border border-dashed border-bv-border p-4 text-sm text-secondary" role="status">No ownership entries were recorded for this profile.</p>
+                        <p class="mt-4 rounded-2xl border border-dashed border-bv-border p-4 text-sm text-secondary" role="status" i18n="Shown on the page where you take over a person prepared for you in a group when the person owns no games">No ownership entries were recorded for this profile.</p>
                     } @else {
                         <div class="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2">
                             @for (ownership of groupPerson.ownership; track ownership.gameId) {
                                 @if (ownership.status === 'asserted') {
                                     <label class="flex items-start gap-3 rounded-2xl border p-3" [class.border-bv-primary]="selectedOwnership().has(ownership.gameId)" [class.bg-bv-primary-soft]="selectedOwnership().has(ownership.gameId)" [class.border-bv-border]="!selectedOwnership().has(ownership.gameId)">
                                         <input type="checkbox" class="mt-1" [checked]="selectedOwnership().has(ownership.gameId)" (change)="toggleOwnership(ownership.gameId)" />
-                                        <span class="min-w-0 flex-1"><span class="block font-medium">{{ gameTitle(ownership.gameId) }}</span><span class="mt-1 block text-xs text-secondary">{{ selectedOwnership().has(ownership.gameId) ? 'Keep this ownership' : 'Discard this ownership' }}</span></span>
+                                        <span class="min-w-0 flex-1"><span class="block font-medium">{{ gameTitle(ownership.gameId) }}</span><span class="mt-1 block text-xs text-secondary">@if (selectedOwnership().has(ownership.gameId)) {<ng-container i18n="Under a ticked game on the page where you take over a person prepared for you in a group">Keep this ownership</ng-container>} @else {<ng-container i18n="Under an unticked game on the page where you take over a person prepared for you in a group">Discard this ownership</ng-container>}</span></span>
                                     </label>
                                 }
                             }
@@ -54,16 +54,16 @@
                 </section>
 
                 <section class="mt-6 rounded-3xl border border-bv-border bg-bv-surface p-6 shadow-sm" aria-labelledby="preferences-heading">
-                    <h2 id="preferences-heading" class="text-xl font-bold">Review recorded preferences</h2>
-                    <p class="mt-1 text-sm text-secondary">Keep only preferences that belong to you.</p>
+                    <h2 id="preferences-heading" class="text-xl font-bold" i18n="Heading on the page where you take over a person prepared for you in a group">Review recorded preferences</h2>
+                    <p class="mt-1 text-sm text-secondary" i18n="Under Review recorded preferences on the page where you take over a person prepared for you in a group">Keep only preferences that belong to you.</p>
                     @if (groupPerson.preferences.length === 0) {
-                        <p class="mt-4 rounded-2xl border border-dashed border-bv-border p-4 text-sm text-secondary" role="status">No preferences were recorded for this profile.</p>
+                        <p class="mt-4 rounded-2xl border border-dashed border-bv-border p-4 text-sm text-secondary" role="status" i18n="Shown on the page where you take over a person prepared for you in a group when the person has no preferences">No preferences were recorded for this profile.</p>
                     } @else {
                         <div class="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2">
                             @for (preference of groupPerson.preferences; track preference.gameId) {
                                 <label class="flex items-start gap-3 rounded-2xl border p-3" [class.border-bv-primary]="selectedPreferences().has(preference.gameId)" [class.bg-bv-primary-soft]="selectedPreferences().has(preference.gameId)" [class.border-bv-border]="!selectedPreferences().has(preference.gameId)">
                                     <input type="checkbox" class="mt-1" [checked]="selectedPreferences().has(preference.gameId)" (change)="togglePreference(preference.gameId)" />
-                                    <span class="min-w-0 flex-1"><span class="block font-medium">{{ gameTitle(preference.gameId) }} <span class="text-xs text-secondary">({{ preference.preference }})</span></span><span class="mt-1 block text-xs text-secondary">{{ selectedPreferences().has(preference.gameId) ? 'Keep this preference' : 'Discard this preference' }}</span></span>
+                                    <span class="min-w-0 flex-1"><span class="block font-medium">{{ gameTitle(preference.gameId) }} <span class="text-xs text-secondary">({{ preferenceLabel(preference.preference) }})</span></span><span class="mt-1 block text-xs text-secondary">@if (selectedPreferences().has(preference.gameId)) {<ng-container i18n="Under a ticked preference on the page where you take over a person prepared for you in a group">Keep this preference</ng-container>} @else {<ng-container i18n="Under an unticked preference on the page where you take over a person prepared for you in a group">Discard this preference</ng-container>}</span></span>
                                 </label>
                             }
                         </div>
@@ -71,21 +71,27 @@
                 </section>
 
                 <section class="mt-6 rounded-3xl border border-bv-border bg-bv-surface p-6 shadow-sm" aria-labelledby="claim-summary-heading">
-                    <h2 id="claim-summary-heading" class="text-xl font-bold">Before you save</h2>
+                    <h2 id="claim-summary-heading" class="text-xl font-bold" i18n="Heading on the page where you take over a person prepared for you in a group">Before you save</h2>
                     <dl class="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2">
-                        <div class="rounded-2xl bg-bv-bg p-4"><dt class="text-sm text-secondary">Ownership kept / discarded</dt><dd class="mt-1 text-lg font-semibold">{{ ownershipKeptCount() }} / {{ ownershipDiscardedCount(groupPerson) }}</dd></div>
-                        <div class="rounded-2xl bg-bv-bg p-4"><dt class="text-sm text-secondary">Preferences kept / discarded</dt><dd class="mt-1 text-lg font-semibold">{{ preferencesKeptCount() }} / {{ preferencesDiscardedCount(groupPerson) }}</dd></div>
+                        <div class="rounded-2xl bg-bv-bg p-4"><dt class="text-sm text-secondary" i18n="One of the numbers on the page where you take over a person prepared for you in a group, followed by 3 / 1">Ownership kept / discarded</dt><dd class="mt-1 text-lg font-semibold">{{ ownershipKeptCount() }} / {{ ownershipDiscardedCount(groupPerson) }}</dd></div>
+                        <div class="rounded-2xl bg-bv-bg p-4"><dt class="text-sm text-secondary" i18n="One of the numbers on the page where you take over a person prepared for you in a group, followed by 3 / 1">Preferences kept / discarded</dt><dd class="mt-1 text-lg font-semibold">{{ preferencesKeptCount() }} / {{ preferencesDiscardedCount(groupPerson) }}</dd></div>
                     </dl>
                     <label class="mt-4 flex items-start gap-3">
                         <input type="checkbox" class="mt-1" [checked]="importOwnership()" (change)="importOwnership.set($any($event.target).checked)" />
-                        <span><span class="font-semibold">Also add the kept games to my private collection</span><span class="mt-1 block text-sm text-secondary">Optional. The group history remains linked either way, and this only imports the games you kept.</span></span>
+                        <span><span class="font-semibold" i18n="Checkbox on the page where you take over a person prepared for you in a group">Also add the kept games to my private collection</span><span class="mt-1 block text-sm text-secondary" i18n="Under the checkbox on the page where you take over a person prepared for you in a group">Optional. The group history remains linked either way, and this only imports the games you kept.</span></span>
                     </label>
                 </section>
 
                 @if (error()) { <p class="mt-4 rounded-2xl border border-bv-danger/30 bg-bv-danger/10 p-4 text-sm text-bv-danger" role="alert">{{ error() }}</p> }
                 <div class="mt-6 flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
-                    <button appButton variant="secondary" type="button" [disabled]="isSaving()" (click)="joinAsNewPerson()">No, join as new person</button>
-                    <button appButton type="button" [disabled]="isSaving()" (click)="claim()">{{ isSaving() ? 'Saving…' : 'Save my choices and claim history' }}</button>
+                    <button appButton variant="secondary" type="button" [disabled]="isSaving()" (click)="joinAsNewPerson()" i18n="Button on the page where you take over a person prepared for you in a group, when that person is not you">No, join as new person</button>
+                    <button appButton type="button" [disabled]="isSaving()" (click)="claim()">
+                        @if (isSaving()) {
+                            <ng-container i18n="Button on the page where you take over a person prepared for you in a group, while it saves">Saving…</ng-container>
+                        } @else {
+                            <ng-container i18n="Button on the page where you take over a person prepared for you in a group">Save my choices and claim history</ng-container>
+                        }
+                    </button>
                 </div>
             }
             }

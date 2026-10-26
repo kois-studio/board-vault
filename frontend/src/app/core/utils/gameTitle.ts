@@ -2,5 +2,5 @@ type TitledGame = { title?: string | null; titleTranslations?: { en?: string | n
 
 /** A game's English title, its stored title, or "Untitled game" when the catalogue has neither. */
 export function gameTitle(game: TitledGame): string {
-    return game.titleTranslations?.en || game.title || 'Untitled game'
+    return game.titleTranslations?.en || game.title || $localize`:Name shown for a game the catalogue has no title for:Untitled game`
 }
