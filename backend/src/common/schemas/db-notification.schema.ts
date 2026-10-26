@@ -1,6 +1,6 @@
 import { z } from 'zod'
 
-import { NotificationTypeEnum } from '../../modules/core/notifications/notifications-enum.type.js'
+import { GROUP_PERSON_CHANGES, NotificationTypeEnum } from '../../modules/core/notifications/notifications-enum.type.js'
 
 const id = z.number().int()
 
@@ -22,11 +22,21 @@ const DATA_BY_TYPE: Record<NotificationTypeEnum, z.ZodType> = {
     // {member} left {group}, or {account} removed them
     [NotificationTypeEnum.USER_LEFT_GROUP]: z.object({ account: id, group: id, member: id }),
     // {account} changed a game or preference you entered for {person} in {group} (ADR-0020)
-    [NotificationTypeEnum.GROUP_PERSON_CHANGED]: z.object({ account: id, group: id, person: id, game: id }),
+    [NotificationTypeEnum.GROUP_PERSON_CHANGED]: z.object({
+        account: id,
+        group: id,
+        person: id,
+        game: id,
+        change: z.enum(GROUP_PERSON_CHANGES).optional(),
+    }),
     [NotificationTypeEnum.GAME_PROPOSAL_APPROVED]: proposalData.extend({ createdGameId: id.optional() }),
     [NotificationTypeEnum.GAME_PROPOSAL_SUBMITTED]: proposalData.extend({ submittedBy: id }),
     [NotificationTypeEnum.GAME_PROPOSAL_REJECTED]: proposalData.extend({ reviewNotes: z.string() }),
-    [NotificationTypeEnum.GAME_PROPOSAL_DUPLICATE]: proposalData.extend({ duplicateOfGameId: id, duplicateOfTitle: z.string() }),
+    [NotificationTypeEnum.GAME_PROPOSAL_DUPLICATE]: proposalData.extend({
+        duplicateOfGameId: id,
+        duplicateOfTitle: z.string(),
+        reviewNotes: z.string().optional(),
+    }),
 }
 
 const KNOWN_TYPES = new Set<string>(Object.values(NotificationTypeEnum))

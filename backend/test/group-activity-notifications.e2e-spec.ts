@@ -18,7 +18,15 @@ const avatar = `'{"backgroundColor":"#2563EB","iconName":null,"emoji":"😎","ty
 const NAMES: Record<number, string> = { 2: 'olga', 3: 'pau', 4: 'rita', 5: 'tess', 6: 'uma', 7: 'vera' }
 const GAMES: Record<number, string> = { 101: 'Catan', 102: 'Azul', 103: 'Root', 104: 'Wingspan', 105: 'Carcassonne' }
 
-type Notification = { id: number; type: string; message: string; data: Record<string, unknown>; createdAt: string; isRead: boolean }
+type Notification = {
+    id: number
+    type: string
+    message: string
+    data: Record<string, unknown>
+    createdAt: string
+    isRead: boolean
+    context?: Record<string, unknown>
+}
 
 /**
  * What a group hears when someone's shelf changes or someone joins or leaves, through the API on a
@@ -169,6 +177,39 @@ describe('group activity notifications (e2e)', () => {
                 message: 'Paula added Catan to their shelf and removed Carcassonne and Wingspan.',
                 data: { added: [101], removed: [105, 104] },
             })
+        })
+
+        it('comes with what the app needs to word it in any language (ADR-0024)', async () => {
+            await add(3, 101)
+            await database.execute(
+                "INSERT INTO GameTranslation (gameId, languageCode, title, normalizedTitle) VALUES (101, 'es', 'Catán', 'catan')",
+            )
+
+            const english = (await shelf(2))[0]
+
+            expect(english?.context).toEqual({
+                accounts: [{ id: 3, name: 'Paula', deleted: false }],
+                groups: [{ id: 10, name: 'Fridays' }],
+                sessions: [],
+                people: [],
+                games: [{ id: 101, title: 'Catan', titleLanguage: 'en' }],
+            })
+
+            const inSpanish = (await server().get('/profile/users/2/notifications').set(as(2)).set('Accept-Language', 'es').expect(200))
+                .body as Array<Notification>
+
+            expect(inSpanish.find(notification => notification.type === 'shelf_changed')?.context?.games).toEqual([
+                { id: 101, title: 'Catán', titleLanguage: 'es' },
+            ])
+            await database.execute("DELETE FROM GameTranslation WHERE gameId = 101 AND languageCode = 'es'")
+        })
+
+        it('reads a deleted account as one, without its name', async () => {
+            await add(3, 101)
+            await database.execute('UPDATE Account SET isDeleted = 1 WHERE id = 3')
+
+            expect((await shelf(2))[0]?.context?.accounts).toEqual([{ id: 3, name: null, deleted: true }])
+            await database.execute('UPDATE Account SET isDeleted = 0 WHERE id = 3')
         })
 
         it('moves the updated notification to the top of the inbox', async () => {
