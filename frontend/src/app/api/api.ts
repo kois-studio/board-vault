@@ -3,6 +3,7 @@ import { Injectable } from '@angular/core'
 import { map } from 'rxjs'
 import * as z from 'zod/mini'
 import { environment } from '../../environments/environment'
+import type { Locale } from '../core/i18n/locales'
 import {
     adminApprovalResponseSchema,
     adminGameProposalSchema,
@@ -173,6 +174,7 @@ export class Api {
         requesBody: {
             displayName?: string
             avatar?: UserType['avatar']
+            locale?: Locale
         },
     ) {
         return this.http
