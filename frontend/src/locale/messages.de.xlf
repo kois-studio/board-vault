@@ -36,6 +36,15 @@
         <target>Es ist möglich, starke Passwörter zu erstellen, ohne Symbole, Zahlen oder Großbuchstaben zu verwenden.</target>
       </segment>
     </unit>
+    <unit id="1125545696015172640">
+      <notes>
+        <note category="description">Chip on a search result in the landing example: you own this game</note>
+      </notes>
+      <segment state="translated">
+        <source>On your shelf</source>
+        <target>In deinem Regal</target>
+      </segment>
+    </unit>
     <unit id="1171599222218766902">
       <notes>
         <note category="description">Name of the Accept button on a group invitation in the inbox</note>
@@ -96,6 +105,24 @@
         <target><ph id="0" equiv="picture" disp="this.alt()"/>: nicht verfügbar</target>
       </segment>
     </unit>
+    <unit id="1234692818081853895">
+      <notes>
+        <note category="description">Answer on the landing page to Do I need a group to use it?</note>
+      </notes>
+      <segment state="translated">
+        <source>No. Board Vault works as a personal collection manager on its own. Groups are there when you want to play with others.</source>
+        <target>Nein. Board Vault funktioniert auch allein als Verwaltung deiner Sammlung. Gruppen sind da, wenn du mit anderen spielen willst.</target>
+      </segment>
+    </unit>
+    <unit id="1235702505132058630">
+      <notes>
+        <note category="description">Heading of the fifth landing feature</note>
+      </notes>
+      <segment state="translated">
+        <source>Plan the night, keep the history</source>
+        <target>Plane den Abend, behalte den Verlauf</target>
+      </segment>
+    </unit>
     <unit id="1238181001688941218">
       <notes>
         <note category="description">Password warning in Clerk, the sign-in provider</note>
@@ -109,6 +136,15 @@
       <segment state="translated">
         <source>Your game proposal &quot;<ph id="0" equiv="title" disp="data[&apos;gameTitle&apos;]"/>&quot; is already in Board Vault as &quot;<ph id="1" equiv="existingTitle" disp="data[&apos;duplicateOfTitle&apos;]"/>&quot;.</source>
         <target>Dein Spielvorschlag „<ph id="0" equiv="title" disp="data[&apos;gameTitle&apos;]"/>“ ist schon als „<ph id="1" equiv="existingTitle" disp="data[&apos;duplicateOfTitle&apos;]"/>“ in Board Vault.</target>
+      </segment>
+    </unit>
+    <unit id="1292985735794176989">
+      <notes>
+        <note category="description">Answer on the landing page to Does it work on my phone?</note>
+      </notes>
+      <segment state="translated">
+        <source>Yes. It runs in any modern browser and you can install it to your home screen.</source>
+        <target>Ja. Es läuft in jedem aktuellen Browser, und du kannst es auf deinem Startbildschirm installieren.</target>
       </segment>
     </unit>
     <unit id="1316194950149848003">
@@ -175,6 +211,15 @@
         <target>Dieses Passwort erfüllt die Anforderungen der sicheren Registrierung nicht. Folge den Hinweisen oben und versuch es noch einmal.</target>
       </segment>
     </unit>
+    <unit id="1582685296946620334">
+      <notes>
+        <note category="description">Name of the example group on the landing page, a group of friends who play on Fridays</note>
+      </notes>
+      <segment state="translated">
+        <source>Friday Crew</source>
+        <target>Freitagsrunde</target>
+      </segment>
+    </unit>
     <unit id="1583195687933839267">
       <notes>
         <note category="description">Title of the sign-in panel from Clerk, the sign-in provider; the placeholder is Board Vault</note>
@@ -200,6 +245,15 @@
       <segment state="translated">
         <source>Use your existing Board Vault account to join the group that invited you.</source>
         <target>Nutze dein Board-Vault-Konto, um der Gruppe beizutreten, die dich eingeladen hat.</target>
+      </segment>
+    </unit>
+    <unit id="1616102757855967475">
+      <notes>
+        <note category="description">Filter button in the landing example: every game</note>
+      </notes>
+      <segment state="translated">
+        <source>All</source>
+        <target>Alle</target>
       </segment>
     </unit>
     <unit id="1617546397601140638">
@@ -242,6 +296,15 @@
       <segment state="translated">
         <source>Verification isn&apos;t supported in this environment. Please continue in a standard browser or contact support.</source>
         <target>Die Überprüfung wird in dieser Umgebung nicht unterstützt. Fahren Sie in einem üblichen Browser fort oder wenden Sie sich an den Support.</target>
+      </segment>
+    </unit>
+    <unit id="1835096012816040438">
+      <notes>
+        <note category="description">Answer on the landing page to Can friends without an account join in?</note>
+      </notes>
+      <segment state="translated">
+        <source>Yes. Add the people who come but never sign up, and keep their games and wins in the group’s history.</source>
+        <target>Ja. Füge die Leute hinzu, die mitspielen, sich aber nie anmelden, und behalte ihre Spiele und Siege im Verlauf der Gruppe.</target>
       </segment>
     </unit>
     <unit id="186236568870281953">
@@ -289,6 +352,15 @@
         <target>Über Board Vault</target>
       </segment>
     </unit>
+    <unit id="1968746440402555823">
+      <notes>
+        <note category="description">Answer on the landing page to Is it open source?</note>
+      </notes>
+      <segment state="translated">
+        <source>Yes. The code is public on GitHub under the MIT license.</source>
+        <target>Ja. Der Code ist öffentlich auf GitHub, unter der MIT-Lizenz.</target>
+      </segment>
+    </unit>
     <unit id="1991309224805970080">
       <notes>
         <note category="description">Title in Clerk, the sign-in provider, when a password appeared in a data breach</note>
@@ -325,6 +397,15 @@
         <target>Deine Einladungen konnten nicht geladen werden</target>
       </segment>
     </unit>
+    <unit id="2017823433923732184">
+      <notes>
+        <note category="description">Who owns a game in the landing example group; the placeholder is a list of names</note>
+      </notes>
+      <segment state="translated">
+        <source>Owned by <ph id="0" equiv="names" disp="names"/></source>
+        <target>Gehört <ph id="0" equiv="names" disp="names"/></target>
+      </segment>
+    </unit>
     <unit id="201855137823103381">
       <notes>
         <note category="description">Password warning in Clerk, the sign-in provider</note>
@@ -332,6 +413,15 @@
       <segment state="translated">
         <source>Common character sequences like &quot;abc&quot; are easy to guess.</source>
         <target>Häufige Zeichenfolgen wie &quot;abc&quot; sind leicht zu erraten.</target>
+      </segment>
+    </unit>
+    <unit id="202194909402761079">
+      <notes>
+        <note category="description">A game you want, in the landing example</note>
+      </notes>
+      <segment state="translated">
+        <source>On your wishlist</source>
+        <target>Auf deiner Wunschliste</target>
       </segment>
     </unit>
     <unit id="2031932285140054383">
@@ -418,6 +508,16 @@
         <target>Der Dienst für die sichere Anmeldung ist nicht erreichbar. Lade diese Seite neu, um es noch einmal zu versuchen.</target>
       </segment>
     </unit>
+    <unit id="2251647579667259226">
+      <notes>
+        <note category="description">The published title of the board game Ticket to Ride in this language</note>
+        <note category="meaning">game title</note>
+      </notes>
+      <segment state="translated">
+        <source>Ticket to Ride</source>
+        <target>Zug um Zug</target>
+      </segment>
+    </unit>
     <unit id="2270019012182179550">
       <notes>
         <note category="description">Browser tab title of the Home page</note>
@@ -463,6 +563,15 @@
         <target>Anmelden</target>
       </segment>
     </unit>
+    <unit id="234507628625197359">
+      <notes>
+        <note category="description">Heading of the games played at the previous game night, in the landing example</note>
+      </notes>
+      <segment state="translated">
+        <source>Last Friday</source>
+        <target>Letzten Freitag</target>
+      </segment>
+    </unit>
     <unit id="2354722487650755409">
       <notes>
         <note category="description">Hint under the password field on the invitation sign-up page</note>
@@ -470,6 +579,15 @@
       <segment state="translated">
         <source>Use at least 15 characters.</source>
         <target>Mindestens 15 Zeichen.</target>
+      </segment>
+    </unit>
+    <unit id="2358983192776008663">
+      <notes>
+        <note category="description">Small line under the landing page buttons</note>
+      </notes>
+      <segment state="translated">
+        <source>Free to use. Works in any browser.</source>
+        <target>Kostenlos. Läuft in jedem Browser.</target>
       </segment>
     </unit>
     <unit id="2369742814572661392">
@@ -499,6 +617,15 @@
         <target>So funktioniert’s</target>
       </segment>
     </unit>
+    <unit id="2418611027222489907">
+      <notes>
+        <note category="description">Answer on the landing page to Who can see my collection?</note>
+      </notes>
+      <segment state="translated">
+        <source>Only you, until you join a group. The people in your groups see the games you own and how you rated them, never your wishlist or your account.</source>
+        <target>Nur du, bis du einer Gruppe beitrittst. Die Leute in deinen Gruppen sehen die Spiele, die du hast, und wie du sie bewertet hast, nie deine Wunschliste oder dein Konto.</target>
+      </segment>
+    </unit>
     <unit id="2422073724818015702">
       <notes>
         <note category="description">Line at the bottom of the card that asks once about usage statistics; Settings → Privacy names the place in the app</note>
@@ -506,6 +633,15 @@
       <segment state="translated">
         <source>Change it anytime in <pc id="0" equivStart="START_LINK" equivEnd="CLOSE_LINK" type="link" dispStart="&lt;a routerLink=&quot;/settings/privacy&quot; class=&quot;font-medium text-bv-primary underline&quot;&gt;" dispEnd="&lt;/a&gt;">Settings → Privacy</pc>.</source>
         <target>Du kannst das jederzeit unter <pc id="0" equivStart="START_LINK" equivEnd="CLOSE_LINK" type="link" dispStart="&lt;a routerLink=&quot;/settings/privacy&quot; class=&quot;font-medium text-bv-primary underline&quot;&gt;" dispEnd="&lt;/a&gt;">Einstellungen → Datenschutz</pc> ändern.</target>
+      </segment>
+    </unit>
+    <unit id="242623158354490493">
+      <notes>
+        <note category="description">Text of the third landing feature</note>
+      </notes>
+      <segment state="translated">
+        <source>Give each game a rating after you play it, and keep a wishlist of the ones you want to get.</source>
+        <target>Bewerte jedes Spiel, nachdem du es gespielt hast, und führe eine Wunschliste mit denen, die du haben willst.</target>
       </segment>
     </unit>
     <unit id="2427460915092901296">
@@ -587,6 +723,15 @@
       <segment state="translated">
         <source>Keep it</source>
         <target>Behalten</target>
+      </segment>
+    </unit>
+    <unit id="2559754008210075307">
+      <notes>
+        <note category="description">Name of the player-count buttons in the landing example</note>
+      </notes>
+      <segment state="translated">
+        <source>Filter the example games by players</source>
+        <target>Beispielspiele nach Spielerzahl filtern</target>
       </segment>
     </unit>
     <unit id="2561326148159407958">
@@ -676,6 +821,15 @@
         <target>Du hast die Benachrichtigung gelöscht</target>
       </segment>
     </unit>
+    <unit id="2759471177662590223">
+      <notes>
+        <note category="description">Title of the landing example game night; Mia is a person in the example group</note>
+      </notes>
+      <segment state="translated">
+        <source>Game night at Mia’s</source>
+        <target>Spieleabend bei Mia</target>
+      </segment>
+    </unit>
     <unit id="2766969724475977787">
       <notes>
         <note category="description">Password advice in Clerk, the sign-in provider</note>
@@ -683,6 +837,15 @@
       <segment state="translated">
         <source>Use multiple words, but avoid common phrases.</source>
         <target>Mehrere Wörter verwenden, aber allgemeine Phrasen vermeiden.</target>
+      </segment>
+    </unit>
+    <unit id="2804366116178267633">
+      <notes>
+        <note category="description">Text of the fourth landing feature</note>
+      </notes>
+      <segment state="translated">
+        <source> Create a group and see everyone’s games in one place, who owns each one, and suggestions that fit the people coming. </source>
+        <target>Erstelle eine Gruppe und sieh an einem Ort alle Spiele, wem welches gehört, und Vorschläge, die zu den Leuten passen, die kommen.</target>
       </segment>
     </unit>
     <unit id="2806917038528218276">
@@ -784,6 +947,15 @@
         <target>Mit Einladung beitreten — Board Vault</target>
       </segment>
     </unit>
+    <unit id="3059382382764975917">
+      <notes>
+        <note category="description">Button on the landing page that scrolls to the features</note>
+      </notes>
+      <segment state="translated">
+        <source>See how it works</source>
+        <target>So funktioniert’s</target>
+      </segment>
+    </unit>
     <unit id="306733880709423201">
       <notes>
         <note category="description">Link in the avatar menu to the project repository</note>
@@ -844,6 +1016,24 @@
         <target><ph id="0" equiv="person" disp="actor"/> hat angegeben, dass <ph id="1" equiv="groupPerson" disp="person"/> <ph id="2" equiv="game" disp="game"/> hat, in <ph id="3" equiv="group" disp="group"/>.</target>
       </segment>
     </unit>
+    <unit id="3206338293571625434">
+      <notes>
+        <note category="description">Text next to the questions on the landing page</note>
+      </notes>
+      <segment state="translated">
+        <source> Your wishlist and your account are private. A group sees the games its members own and how they rated them, so the suggestions fit everyone. </source>
+        <target>Deine Wunschliste und dein Konto sind privat. Eine Gruppe sieht die Spiele ihrer Mitglieder und deren Bewertungen, damit die Vorschläge für alle passen.</target>
+      </segment>
+    </unit>
+    <unit id="3249513483374643425">
+      <notes>
+        <note category="description">Add a game to your shelf, a button in the landing example</note>
+      </notes>
+      <segment state="translated">
+        <source>Add</source>
+        <target>Hinzufügen</target>
+      </segment>
+    </unit>
     <unit id="3256590211420252677">
       <notes>
         <note category="description">Name of the list of languages in the header&apos;s language menu</note>
@@ -889,6 +1079,33 @@
         <target>Der Gruppe beitreten</target>
       </segment>
     </unit>
+    <unit id="3386246347342903734">
+      <notes>
+        <note category="description">Heading of the closing call to action on the landing page</note>
+      </notes>
+      <segment state="translated">
+        <source>Put your collection in order tonight.</source>
+        <target>Bring deine Sammlung noch heute Abend in Ordnung.</target>
+      </segment>
+    </unit>
+    <unit id="3398338842701230044">
+      <notes>
+        <note category="description">Small line above the main heading of the landing page</note>
+      </notes>
+      <segment state="translated">
+        <source>Board game collection manager</source>
+        <target>Verwaltung für deine Brettspielsammlung</target>
+      </segment>
+    </unit>
+    <unit id="3405859134000071474">
+      <notes>
+        <note category="description">Reason for a suggestion in the landing example</note>
+      </notes>
+      <segment state="translated">
+        <source>Fits all 5 coming</source>
+        <target>Passt für alle 5, die kommen</target>
+      </segment>
+    </unit>
     <unit id="3424516948436893066">
       <notes>
         <note category="description">Recommendation reason</note>
@@ -896,6 +1113,15 @@
       <segment state="translated">
         <source>Strong group rating</source>
         <target>In der Gruppe sehr gut bewertet</target>
+      </segment>
+    </unit>
+    <unit id="356000382298639525">
+      <notes>
+        <note category="description">Text of the second landing feature</note>
+      </notes>
+      <segment state="translated">
+        <source>Filter by how many people are playing, and sort by title or by play time.</source>
+        <target>Filtere danach, wie viele mitspielen, und sortiere nach Titel oder Spieldauer.</target>
       </segment>
     </unit>
     <unit id="3568097994808154139">
@@ -914,6 +1140,15 @@
       <segment state="translated">
         <source>Manage your Board Vault account and security settings.</source>
         <target>Verwalte dein Board-Vault-Konto und seine Sicherheit.</target>
+      </segment>
+    </unit>
+    <unit id="364756386265147483">
+      <notes>
+        <note category="description">Question on the landing page</note>
+      </notes>
+      <segment state="translated">
+        <source>Does it work on my phone?</source>
+        <target>Funktioniert es auf meinem Handy?</target>
       </segment>
     </unit>
     <unit id="3693351739760545097">
@@ -1067,6 +1302,15 @@
         <target>Die jüngsten Jahreszahlen sind leicht zu erraten.</target>
       </segment>
     </unit>
+    <unit id="3995378846861632522">
+      <notes>
+        <note category="description">Answer of someone not coming to the landing example game night</note>
+      </notes>
+      <segment state="translated">
+        <source>Can’t come</source>
+        <target>Kann nicht</target>
+      </segment>
+    </unit>
     <unit id="4050851435935072722">
       <notes>
         <note category="description">Password warning in Clerk, the sign-in provider</note>
@@ -1074,6 +1318,15 @@
       <segment state="translated">
         <source>There should not be any personal or page related data.</source>
         <target>Es sollten keine persönlichen oder Seiten relevanten Daten vorkommen.</target>
+      </segment>
+    </unit>
+    <unit id="4057932224780575479">
+      <notes>
+        <note category="description">Line under the closing heading on the landing page</note>
+      </notes>
+      <segment state="translated">
+        <source>Free account. Your first game is a search away.</source>
+        <target>Kostenloses Konto. Dein erstes Spiel ist nur eine Suche entfernt.</target>
       </segment>
     </unit>
     <unit id="4086606389696938932">
@@ -1092,6 +1345,15 @@
       <segment state="translated">
         <source><ph id="0" equiv="count" disp="count"/> selected attendee marked this as interesting</source>
         <target><ph id="0" equiv="count" disp="count"/> anwesende Person fand es interessant</target>
+      </segment>
+    </unit>
+    <unit id="411354769244562331">
+      <notes>
+        <note category="description">How many games the landing example shows after filtering</note>
+      </notes>
+      <segment state="translated">
+        <source>{VAR_PLURAL, plural, one {<ph id="0" equiv="INTERPOLATION"/> game} other {<ph id="1" equiv="INTERPOLATION"/> games}}</source>
+        <target>{VAR_PLURAL, plural, one {<ph id="0" equiv="INTERPOLATION"/> Spiel} other {<ph id="1" equiv="INTERPOLATION"/> Spiele}}</target>
       </segment>
     </unit>
     <unit id="413116577994876478">
@@ -1197,6 +1459,15 @@
       <segment state="translated">
         <source>Just now</source>
         <target>Gerade eben</target>
+      </segment>
+    </unit>
+    <unit id="4281014528431517406">
+      <notes>
+        <note category="description">Heading of the third landing feature</note>
+      </notes>
+      <segment state="translated">
+        <source>Rate what you play, wish for what’s next</source>
+        <target>Bewerte, was du spielst, wünsch dir, was als Nächstes kommt</target>
       </segment>
     </unit>
     <unit id="4287070028471913183">
@@ -1307,6 +1578,16 @@
         <target>Ihr Passwort erfüllt alle notwendigen Anforderungen.</target>
       </segment>
     </unit>
+    <unit id="475317156489631945">
+      <notes>
+        <note category="description">How many can play a game, one number</note>
+        <note category="meaning">player count, one</note>
+      </notes>
+      <segment state="translated">
+        <source><ph id="0" equiv="count" disp="min"/> player</source>
+        <target><ph id="0" equiv="count" disp="min"/> Person</target>
+      </segment>
+    </unit>
     <unit id="4757507927002475818">
       <notes>
         <note category="description">Shown in the inbox while invitations load</note>
@@ -1365,6 +1646,15 @@
       <segment state="translated">
         <source>Mobile navigation</source>
         <target>Mobile Navigation</target>
+      </segment>
+    </unit>
+    <unit id="4893176640275242151">
+      <notes>
+        <note category="description">Name of the line with the group&apos;s votes on a suggested game</note>
+      </notes>
+      <segment state="translated">
+        <source>What the group thinks</source>
+        <target>Was die Gruppe meint</target>
       </segment>
     </unit>
     <unit id="4895632873057636638">
@@ -1485,6 +1775,15 @@
         <target>Die Überprüfung konnte nicht geladen werden. Das kann an einem Netzwerkproblem oder an einer Content Security Policy liegen, die das Überprüfungsskript blockiert. Versuchen Sie es erneut oder wenden Sie sich an den Support.</target>
       </segment>
     </unit>
+    <unit id="5125783711124527112">
+      <notes>
+        <note category="description">Text of the first landing feature; Add is the button in the example next to it</note>
+      </notes>
+      <segment state="translated">
+        <source>Search the catalogue and tap Add. The box art, player count and play time come with it.</source>
+        <target>Such im Katalog und tipp auf Hinzufügen. Schachtelbild, Spielerzahl und Spieldauer sind gleich dabei.</target>
+      </segment>
+    </unit>
     <unit id="513045381948130029">
       <notes>
         <note category="description">Error from Clerk, the sign-in provider, when an invitation link was used or withdrawn</note>
@@ -1492,6 +1791,24 @@
       <segment state="translated">
         <source>This link is no longer valid or has already been used. Please start again or request a new link.</source>
         <target>Dieser Link ist nicht mehr gültig oder wurde bereits verwendet. Beginnen Sie von vorn oder fordern Sie einen neuen Link an.</target>
+      </segment>
+    </unit>
+    <unit id="5140281471826288799">
+      <notes>
+        <note category="description">How many people in the group want to play a suggested game</note>
+      </notes>
+      <segment state="translated">
+        <source>{VAR_PLURAL, plural, one {<ph id="0" equiv="INTERPOLATION"/> interested} other {<ph id="1" equiv="INTERPOLATION"/> interested}}</source>
+        <target>{VAR_PLURAL, plural, one {<ph id="0" equiv="INTERPOLATION"/> interessiert} other {<ph id="1" equiv="INTERPOLATION"/> interessiert}}</target>
+      </segment>
+    </unit>
+    <unit id="5146386254486648933">
+      <notes>
+        <note category="description">Reason for a suggestion in the landing example; Ana and Mia are people in the example group</note>
+      </notes>
+      <segment state="translated">
+        <source>Ana and Mia rated it 9</source>
+        <target>Ana und Mia haben es mit 9 bewertet</target>
       </segment>
     </unit>
     <unit id="5159913659351412884">
@@ -1566,6 +1883,15 @@
         <target>Fehler 404<ph id="0" equiv="LINE_BREAK" type="fmt" disp="&lt;br /&gt;"/> Seite nicht gefunden</target>
       </segment>
     </unit>
+    <unit id="5286388501365817146">
+      <notes>
+        <note category="description">Question on the landing page</note>
+      </notes>
+      <segment state="translated">
+        <source>Is it open source?</source>
+        <target>Ist es Open Source?</target>
+      </segment>
+    </unit>
     <unit id="5293165229453827063">
       <notes>
         <note category="description">Tab in Play, game suggestions for a group</note>
@@ -1626,6 +1952,15 @@
         <target>Kostenlos starten</target>
       </segment>
     </unit>
+    <unit id="5578874963527071333">
+      <notes>
+        <note category="description">Heading of the second landing feature</note>
+      </notes>
+      <segment state="translated">
+        <source>Find the right game fast</source>
+        <target>Finde schnell das richtige Spiel</target>
+      </segment>
+    </unit>
     <unit id="5601530442010506564">
       <notes>
         <note category="description">Button that closes the card that asks once about usage statistics</note>
@@ -1648,6 +1983,15 @@
       <segment state="translated">
         <source>This link has expired. Please start again or request a new link.</source>
         <target>Dieser Link ist abgelaufen. Beginnen Sie von vorn oder fordern Sie einen neuen Link an.</target>
+      </segment>
+    </unit>
+    <unit id="5651951128882735477">
+      <notes>
+        <note category="description">Short weekday of the landing example game night, Friday</note>
+      </notes>
+      <segment state="translated">
+        <source>Fri</source>
+        <target>Fr</target>
       </segment>
     </unit>
     <unit id="5673906746664423612">
@@ -1739,6 +2083,15 @@
       <segment state="translated">
         <source>Rating <ph id="0" equiv="rating" disp="this.parseReview(this.review())"/> out of 5</source>
         <target>Bewertung: <ph id="0" equiv="rating" disp="this.parseReview(this.review())"/> von 5</target>
+      </segment>
+    </unit>
+    <unit id="5847297895702798294">
+      <notes>
+        <note category="description">Reason for a suggestion in the landing example</note>
+      </notes>
+      <segment state="translated">
+        <source>Fits in your 2 hours</source>
+        <target>Passt in eure 2 Stunden</target>
       </segment>
     </unit>
     <unit id="5847310634737729000">
@@ -1846,6 +2199,15 @@
         <target>Einladung von <ph id="0" equiv="INTERPOLATION" disp="{{ invitation.fromAccount.displayName || invitation.fromAccount.username }}"/></target>
       </segment>
     </unit>
+    <unit id="6070190345865948824">
+      <notes>
+        <note category="description">How often you played a game, in the landing example</note>
+      </notes>
+      <segment state="translated">
+        <source>{VAR_PLURAL, plural, one {Played once} other {Played <ph id="0" equiv="INTERPOLATION"/> times}}</source>
+        <target>{VAR_PLURAL, plural, one {Einmal gespielt} other {<ph id="0" equiv="INTERPOLATION"/>-mal gespielt}}</target>
+      </segment>
+    </unit>
     <unit id="6099346861896174463">
       <notes>
         <note category="description">Button in the header that opens the language menu; the placeholder is the current language in itself, such as &quot;Español&quot;</note>
@@ -1862,6 +2224,15 @@
       <segment state="translated">
         <source>You have joined the group!</source>
         <target>Du bist der Gruppe beigetreten!</target>
+      </segment>
+    </unit>
+    <unit id="6112466836031834243">
+      <notes>
+        <note category="description">Question on the landing page</note>
+      </notes>
+      <segment state="translated">
+        <source>Can friends without an account join in?</source>
+        <target>Können Leute ohne Konto mitmachen?</target>
       </segment>
     </unit>
     <unit id="6123590976681789837">
@@ -1949,6 +2320,25 @@
       <segment state="translated">
         <source>Avoid predictable letter substitutions like &apos;@&apos; for &apos;a&apos;.</source>
         <target>Vorhersehbare Buchstabenersetzungen wie &apos;@&apos; für &apos;a&apos; vermeiden.</target>
+      </segment>
+    </unit>
+    <unit id="6363341208124688834">
+      <notes>
+        <note category="description">How many can play a game, one number</note>
+        <note category="meaning">player count, other</note>
+      </notes>
+      <segment state="translated">
+        <source><ph id="0" equiv="count" disp="min"/> players</source>
+        <target><ph id="0" equiv="count" disp="min"/> Personen</target>
+      </segment>
+    </unit>
+    <unit id="6369425269629738896">
+      <notes>
+        <note category="description">Main button of the landing page, opens sign-up</note>
+      </notes>
+      <segment state="translated">
+        <source>Create your free account</source>
+        <target>Kostenloses Konto erstellen</target>
       </segment>
     </unit>
     <unit id="6376922083892592201">
@@ -2174,6 +2564,15 @@
         <target>Hilfst du uns? 🎲</target>
       </segment>
     </unit>
+    <unit id="6910932422025459839">
+      <notes>
+        <note category="description">Filter button in the landing example: games for this many people</note>
+      </notes>
+      <segment state="translated">
+        <source>{VAR_PLURAL, plural, one {<ph id="0" equiv="INTERPOLATION"/> player} other {<ph id="1" equiv="INTERPOLATION"/> players}}</source>
+        <target>{VAR_PLURAL, plural, one {<ph id="0" equiv="INTERPOLATION"/> Person} other {<ph id="1" equiv="INTERPOLATION"/> Personen}}</target>
+      </segment>
+    </unit>
     <unit id="6930216235586087894">
       <notes>
         <note category="description">Recommendation reason, a rating out of 10</note>
@@ -2191,6 +2590,15 @@
       <segment state="translated">
         <source>Sign-in</source>
         <target>Anmeldung</target>
+      </segment>
+    </unit>
+    <unit id="6963942788569864999">
+      <notes>
+        <note category="description">Question on the landing page</note>
+      </notes>
+      <segment state="translated">
+        <source>Is Board Vault free?</source>
+        <target>Ist Board Vault kostenlos?</target>
       </segment>
     </unit>
     <unit id="7007703201160377234">
@@ -2283,6 +2691,15 @@
         <target>Dies ist ein sehr häufig verwendetes Passwort.</target>
       </segment>
     </unit>
+    <unit id="7216290397854564667">
+      <notes>
+        <note category="description">Name of the list of answers in the landing example game night</note>
+      </notes>
+      <segment state="translated">
+        <source>Who is coming</source>
+        <target>Wer kommt</target>
+      </segment>
+    </unit>
     <unit id="7233639534415316994">
       <notes>
         <note category="description">Recommendation reason</note>
@@ -2299,6 +2716,24 @@
       <segment state="translated">
         <source>Single words are easy to guess.</source>
         <target>Einzelne Wörter sind leicht zu erraten.</target>
+      </segment>
+    </unit>
+    <unit id="7288203349583372907">
+      <notes>
+        <note category="description">Badge with how well a suggested game fits, out of 100</note>
+      </notes>
+      <segment state="translated">
+        <source>Fit <ph id="0" equiv="score" disp="this.score()"/></source>
+        <target>Passung <ph id="0" equiv="score" disp="this.score()"/></target>
+      </segment>
+    </unit>
+    <unit id="7294155788021660432">
+      <notes>
+        <note category="description">Question on the landing page</note>
+      </notes>
+      <segment state="translated">
+        <source>Who can see my collection?</source>
+        <target>Wer kann meine Sammlung sehen?</target>
       </segment>
     </unit>
     <unit id="7306616487170771288">
@@ -2400,6 +2835,15 @@
         <target>Die Anwesenden haben keine Spiele.</target>
       </segment>
     </unit>
+    <unit id="7586590255303874471">
+      <notes>
+        <note category="description">Screen-reader name of the fit badge on a suggested game</note>
+      </notes>
+      <segment state="translated">
+        <source>Fit score <ph id="0" equiv="score" disp="this.score()"/> out of 100</source>
+        <target>Passung: <ph id="0" equiv="score" disp="this.score()"/> von 100</target>
+      </segment>
+    </unit>
     <unit id="7619560701830330401">
       <notes>
         <note category="description">Read by screen readers while something loads</note>
@@ -2482,6 +2926,15 @@
         <target>Posteingang, <ph id="0" equiv="count" disp="count"/> neuer Eintrag</target>
       </segment>
     </unit>
+    <unit id="7826848079555265267">
+      <notes>
+        <note category="description">Heading of the first landing feature</note>
+      </notes>
+      <segment state="translated">
+        <source>Add a game in seconds</source>
+        <target>Füge ein Spiel in Sekunden hinzu</target>
+      </segment>
+    </unit>
     <unit id="7844706011418789951">
       <notes>
         <note category="description">Item of the avatar menu for admins</note>
@@ -2491,6 +2944,15 @@
         <target>Verwaltung</target>
       </segment>
     </unit>
+    <unit id="7853727421705146371">
+      <notes>
+        <note category="description">Text of the fifth landing feature</note>
+      </notes>
+      <segment state="translated">
+        <source> Set a date and see who’s coming. Afterwards, record what you played and who won, so the next pick is easier. </source>
+        <target>Leg ein Datum fest und sieh, wer kommt. Danach trag ein, was ihr gespielt habt und wer gewonnen hat, damit die nächste Wahl leichter fällt.</target>
+      </segment>
+    </unit>
     <unit id="787163983066183218">
       <notes>
         <note category="description">Tab in Collection, the game catalogue</note>
@@ -2498,6 +2960,24 @@
       <segment state="translated">
         <source>Browse</source>
         <target>Entdecken</target>
+      </segment>
+    </unit>
+    <unit id="7871924721587190636">
+      <notes>
+        <note category="description">Size of the example group on the landing page</note>
+      </notes>
+      <segment state="translated">
+        <source>5 members · 23 games</source>
+        <target>5 Mitglieder · 23 Spiele</target>
+      </segment>
+    </unit>
+    <unit id="7878155326303883504">
+      <notes>
+        <note category="description">When the group last played the game, in the landing example suggestion</note>
+      </notes>
+      <segment state="translated">
+        <source>Last played 6 weeks ago</source>
+        <target>Zuletzt vor 6 Wochen gespielt</target>
       </segment>
     </unit>
     <unit id="7889671530504774232">
@@ -2647,6 +3127,15 @@
         <target>Bei Board Vault anmelden</target>
       </segment>
     </unit>
+    <unit id="8235739714710984923">
+      <notes>
+        <note category="description">How many can play a game, a range such as 2–4</note>
+      </notes>
+      <segment state="translated">
+        <source><ph id="0" equiv="min" disp="min"/>–<ph id="1" equiv="max" disp="max"/> players</source>
+        <target><ph id="0" equiv="min" disp="min"/>–<ph id="1" equiv="max" disp="max"/> Personen</target>
+      </segment>
+    </unit>
     <unit id="824130478942009314">
       <notes>
         <note category="description">Browser tab title of the Create a group page</note>
@@ -2654,6 +3143,15 @@
       <segment state="translated">
         <source>Create a group — Board Vault</source>
         <target>Gruppe erstellen — Board Vault</target>
+      </segment>
+    </unit>
+    <unit id="8251908569174605565">
+      <notes>
+        <note category="description">Someone has not answered yet, in the landing example game night</note>
+      </notes>
+      <segment state="translated">
+        <source>No answer</source>
+        <target>Keine Antwort</target>
       </segment>
     </unit>
     <unit id="8266579091925980255">
@@ -2712,6 +3210,15 @@
         <target>Dein privates Regal, deine Wunschliste, deine Rezensionen und die Spiele deiner Gruppen an einem Ort.</target>
       </segment>
     </unit>
+    <unit id="8389293487680016063">
+      <notes>
+        <note category="description">Question on the landing page</note>
+      </notes>
+      <segment state="translated">
+        <source>Do I need a group to use it?</source>
+        <target>Brauche ich eine Gruppe dafür?</target>
+      </segment>
+    </unit>
     <unit id="8411650238871966394">
       <notes>
         <note category="description">Tagline in the footer of the public pages</note>
@@ -2748,6 +3255,24 @@
         <target>Hilfst du uns? 🎲 Wir sind ein winziges Indie-Team. Wenn du das eingeschaltet lässt, können wir zählen, welche Seiten geöffnet werden – unter einem Pseudonym und in unserer eigenen Datenbank –, damit wir wissen, was wir als Nächstes verbessern. Keine Cookies, nichts wird geteilt. Du kannst das jederzeit unter Einstellungen → Datenschutz ändern.</target>
       </segment>
     </unit>
+    <unit id="8479252312260874856">
+      <notes>
+        <note category="description">How many people in the group said Not for us to a suggested game</note>
+      </notes>
+      <segment state="translated">
+        <source>{VAR_PLURAL, plural, other {<ph id="0" equiv="INTERPOLATION"/> passed}}</source>
+        <target>{VAR_PLURAL, plural, other {<ph id="0" equiv="INTERPOLATION"/> passen}}</target>
+      </segment>
+    </unit>
+    <unit id="8483051275583729367">
+      <notes>
+        <note category="description">Answer on the landing page to Is Board Vault free?</note>
+      </notes>
+      <segment state="translated">
+        <source>Yes. Create an account and start adding games.</source>
+        <target>Ja. Erstell ein Konto und füg deine Spiele hinzu.</target>
+      </segment>
+    </unit>
     <unit id="8487119295846165326">
       <notes>
         <note category="description">Ends the sentence Your password must contain, in Clerk, the sign-in provider</note>
@@ -2782,6 +3307,15 @@
       <segment state="translated">
         <source>Play — Board Vault</source>
         <target>Spielen — Board Vault</target>
+      </segment>
+    </unit>
+    <unit id="8626011843982871371">
+      <notes>
+        <note category="description">Name of your own shelf, in the landing example</note>
+      </notes>
+      <segment state="translated">
+        <source>My games</source>
+        <target>Meine Spiele</target>
       </segment>
     </unit>
     <unit id="8654642196646765162">
@@ -2847,6 +3381,15 @@
         <target>Demnächst</target>
       </segment>
     </unit>
+    <unit id="8739046962840362623">
+      <notes>
+        <note category="description">Who won a game, in the landing example</note>
+      </notes>
+      <segment state="translated">
+        <source><ph id="0" equiv="INTERPOLATION" disp="{{ play.winner }}"/> won</source>
+        <target><ph id="0" equiv="INTERPOLATION" disp="{{ play.winner }}"/> hat gewonnen</target>
+      </segment>
+    </unit>
     <unit id="8739336026258908775">
       <segment state="translated">
         <source><ph id="0" equiv="person" disp="actor"/> joined <ph id="1" equiv="group" disp="group"/>.</source>
@@ -2860,6 +3403,15 @@
       <segment state="translated">
         <source>Create a password</source>
         <target>Erstelle ein Passwort</target>
+      </segment>
+    </unit>
+    <unit id="8819122373991228583">
+      <notes>
+        <note category="description">Heading of the fourth landing feature</note>
+      </notes>
+      <segment state="translated">
+        <source>Share the shelf with your group</source>
+        <target>Teile dein Regal mit deiner Gruppe</target>
       </segment>
     </unit>
     <unit id="8851134952747107313">
@@ -2887,6 +3439,15 @@
       <segment state="translated">
         <source>Just counts under a pseudonym, in our own database. No cookies, no ads, nothing shared.</source>
         <target>Nur Zählungen unter einem Pseudonym, in unserer eigenen Datenbank. Keine Cookies, keine Werbung, nichts wird geteilt.</target>
+      </segment>
+    </unit>
+    <unit id="8894032101147847060">
+      <notes>
+        <note category="description">Main heading of the landing page</note>
+      </notes>
+      <segment state="translated">
+        <source> Every game you own, on one tidy shelf. </source>
+        <target>Alle deine Spiele, in einem aufgeräumten Regal.</target>
       </segment>
     </unit>
     <unit id="8905995985388209337">
@@ -2943,6 +3504,16 @@
         <target>Board Vault — Spieleabende, die bleiben</target>
       </segment>
     </unit>
+    <unit id="9022444498426613992">
+      <notes>
+        <note category="description">The published title of the board game Codenames in this language</note>
+        <note category="meaning">game title</note>
+      </notes>
+      <segment state="translated">
+        <source>Codenames</source>
+        <target>Codenames</target>
+      </segment>
+    </unit>
     <unit id="9029286143304711365">
       <notes>
         <note category="description">Tab in Collection, your ratings and reviews</note>
@@ -2952,6 +3523,24 @@
         <target>Rezensionen</target>
       </segment>
     </unit>
+    <unit id="9051495169044423604">
+      <notes>
+        <note category="description">Time of the landing example game night and how far away it is</note>
+      </notes>
+      <segment state="translated">
+        <source>19:30 · in 4 days</source>
+        <target>19:30 · in 4 Tagen</target>
+      </segment>
+    </unit>
+    <unit id="9059961017078706616">
+      <notes>
+        <note category="description">Badge on the best suggested game</note>
+      </notes>
+      <segment state="translated">
+        <source>Top pick</source>
+        <target>Top-Tipp</target>
+      </segment>
+    </unit>
     <unit id="9069807487293978018">
       <notes>
         <note category="description">Text on the card that asks once about usage statistics</note>
@@ -2959,6 +3548,15 @@
       <segment state="translated">
         <source> Board Vault is made by a tiny indie team. Leaving this on lets us count which pages get opened and where game nights get stuck, so we know what to fix next. </source>
         <target>Board Vault wird von einem winzigen Indie-Team gemacht. Wenn du das eingeschaltet lässt, können wir zählen, welche Seiten geöffnet werden und wo Spieleabende hängen bleiben – so wissen wir, was wir als Nächstes verbessern.</target>
+      </segment>
+    </unit>
+    <unit id="907136822175606758">
+      <notes>
+        <note category="description">Heading of the questions on the landing page</note>
+      </notes>
+      <segment state="translated">
+        <source>Questions</source>
+        <target>Fragen</target>
       </segment>
     </unit>
     <unit id="9109084729550896366">
@@ -2997,6 +3595,15 @@
         <target>mindestens <ph id="0" equiv="length" disp="length"/> Zeichen lang sein</target>
       </segment>
     </unit>
+    <unit id="9145391012395389952">
+      <notes>
+        <note category="description">Answer of someone coming to the landing example game night</note>
+      </notes>
+      <segment state="translated">
+        <source>Going</source>
+        <target>Kommt</target>
+      </segment>
+    </unit>
     <unit id="9174716236566498100">
       <segment state="translated">
         <source><ph id="0" equiv="person" disp="actor"/> removed <ph id="1" equiv="games" disp="removedList"/> from their shelf.</source>
@@ -3010,6 +3617,15 @@
       <segment state="translated">
         <source>Explore</source>
         <target>Entdecken</target>
+      </segment>
+    </unit>
+    <unit id="926163655842070473">
+      <notes>
+        <note category="description">Paragraph under the main heading of the landing page</note>
+      </notes>
+      <segment state="translated">
+        <source> Board Vault keeps your collection organised. Add a game in seconds, filter by players, rate what you’ve played, and share the shelf with the people you play with. </source>
+        <target>Board Vault hält deine Sammlung in Ordnung. Füge ein Spiel in Sekunden hinzu, filtere nach Spielerzahl, bewerte, was du gespielt hast, und teile dein Regal mit den Leuten, mit denen du spielst.</target>
       </segment>
     </unit>
     <unit id="950714964925956479">

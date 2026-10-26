@@ -208,6 +208,10 @@ are written without the prefix; the base address adds it.
   build's language (`$localize.locale`) with European conventions (`en-GB`
   for English). `isoDay` makes `YYYY-MM-DD` day keys, a data format. No
   component names a locale.
+- The landing (`/`) links its address in every offered language with
+  `<link rel="alternate" hreflang>`, and `x-default` to `/en/`
+  (`AppComponent.updateLanguageAlternates`); its canonical address is its own
+  language's. Every page stays `noindex` until registration opens (#157).
 - The language menu next to the inbox (signed out, next to the menu button)
   is [`layout/language-menu/`](../frontend/src/app/layout/language-menu/).
   Each language is a link to the same page under its prefix, a full page load,

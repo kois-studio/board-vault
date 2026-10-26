@@ -5,6 +5,7 @@ import { NavigationEnd, Router, RouterOutlet } from '@angular/router'
 import { filter } from 'rxjs'
 import { ToastComponent } from './components/toast/toast.component'
 import { InPageLinkDirective } from './components/ui/in-page-link/in-page-link.directive'
+import { OFFERED_LOCALES, SOURCE_LOCALE } from './core/i18n/locales'
 import { ThemeService } from './core/services/theme.service'
 import { UsageService } from './core/services/usage.service'
 
@@ -65,6 +66,29 @@ export class AppComponent {
             this.document.head.appendChild(canonical)
         }
         canonical.href = canonicalUrl
+        this.updateLanguageAlternates(path)
+    }
+
+    /**
+     * The landing's addresses in the other offered languages, for search engines (ADR-0024), with
+     * `x-default` on English. Only the landing has them: the app's pages are behind sign-in.
+     */
+    private updateLanguageAlternates(path: string): void {
+        for (const link of this.document.head.querySelectorAll('link[rel="alternate"][hreflang]')) link.remove()
+        if (path !== '/') return
+
+        const origin = this.getPublicSiteOrigin()
+        const alternates = [
+            ...OFFERED_LOCALES.map((locale) => ({ hreflang: locale, locale })),
+            { hreflang: 'x-default', locale: SOURCE_LOCALE },
+        ]
+        for (const { hreflang, locale } of alternates) {
+            const link = this.document.createElement('link')
+            link.rel = 'alternate'
+            link.hreflang = hreflang
+            link.href = `${origin}/${locale}/`
+            this.document.head.appendChild(link)
+        }
     }
 
     private getBasePath(): string {
