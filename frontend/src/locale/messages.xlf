@@ -11,6 +11,15 @@
         <source>Help improve Board Vault</source>
       </segment>
     </unit>
+    <unit id="1062104919522536322">
+      <notes>
+        <note category="location">src/app/core/i18n/clerk-localization.ts</note>
+        <note category="description">Password advice in Clerk, the sign-in provider</note>
+      </notes>
+      <segment>
+        <source>You can create strong passwords without using symbols, numbers, or uppercase letters.</source>
+      </segment>
+    </unit>
     <unit id="1171599222218766902">
       <notes>
         <note category="location">src/app/components/card-invitation/card-invitation.component.ts</note>
@@ -47,6 +56,15 @@
         <source><ph id="0" equiv="picture" disp="this.alt()"/> unavailable</source>
       </segment>
     </unit>
+    <unit id="1238181001688941218">
+      <notes>
+        <note category="location">src/app/core/i18n/clerk-localization.ts</note>
+        <note category="description">Password warning in Clerk, the sign-in provider</note>
+      </notes>
+      <segment>
+        <source>Repeated characters like &quot;aaa&quot; are easy to guess.</source>
+      </segment>
+    </unit>
     <unit id="1316194950149848003">
       <notes>
         <note category="location">src/app/app.component.ts</note>
@@ -73,6 +91,15 @@
       </notes>
       <segment>
         <source>Already have access? Sign in with your existing Board Vault account.</source>
+      </segment>
+    </unit>
+    <unit id="1402424875650013710">
+      <notes>
+        <note category="location">src/app/core/i18n/clerk-localization.ts</note>
+        <note category="description">Title in Clerk, the sign-in provider, when a password can no longer be trusted</note>
+      </notes>
+      <segment>
+        <source>Password untrusted</source>
       </segment>
     </unit>
     <unit id="1422491155254079742">
@@ -102,6 +129,15 @@
         <source>That password does not meet the secure sign-up requirements. Use the guidance above and try again.</source>
       </segment>
     </unit>
+    <unit id="1583195687933839267">
+      <notes>
+        <note category="location">src/app/core/i18n/clerk-localization.ts</note>
+        <note category="description">Title of the sign-in panel from Clerk, the sign-in provider; the placeholder is Board Vault</note>
+      </notes>
+      <segment>
+        <source>Continue to <ph id="0" equiv="applicationName" disp="applicationName"/></source>
+      </segment>
+    </unit>
     <unit id="1610683093877445085">
       <notes>
         <note category="location">src/app/pages/auth/register/register.component.html</note>
@@ -127,6 +163,15 @@
       </notes>
       <segment>
         <source>Collection</source>
+      </segment>
+    </unit>
+    <unit id="1696742461752095316">
+      <notes>
+        <note category="location">src/app/core/i18n/clerk-localization.ts</note>
+        <note category="description">Error from Clerk, the sign-in provider, about its check that a sign-in is not automated</note>
+      </notes>
+      <segment>
+        <source>Verification isn&apos;t supported in this environment. Please continue in a standard browser or contact support.</source>
       </segment>
     </unit>
     <unit id="186236568870281953">
@@ -165,6 +210,15 @@
         <source>About Board Vault</source>
       </segment>
     </unit>
+    <unit id="1991309224805970080">
+      <notes>
+        <note category="location">src/app/core/i18n/clerk-localization.ts</note>
+        <note category="description">Title in Clerk, the sign-in provider, when a password appeared in a data breach</note>
+      </notes>
+      <segment>
+        <source>Password compromised</source>
+      </segment>
+    </unit>
     <unit id="2001224549919062414">
       <notes>
         <note category="location">src/app/pages/auth/register/register.component.html</note>
@@ -174,6 +228,15 @@
         <source>Private beta</source>
       </segment>
     </unit>
+    <unit id="2005233829913860427">
+      <notes>
+        <note category="location">src/app/core/i18n/clerk-localization.ts</note>
+        <note category="description">Password advice in Clerk, the sign-in provider</note>
+      </notes>
+      <segment>
+        <source>Avoid repeated words and characters.</source>
+      </segment>
+    </unit>
     <unit id="2017633160626855825">
       <notes>
         <note category="location">src/app/core/services/data.service.ts</note>
@@ -181,6 +244,15 @@
       </notes>
       <segment>
         <source>Error retrieving user&apos;s invitations</source>
+      </segment>
+    </unit>
+    <unit id="201855137823103381">
+      <notes>
+        <note category="location">src/app/core/i18n/clerk-localization.ts</note>
+        <note category="description">Password warning in Clerk, the sign-in provider</note>
+      </notes>
+      <segment>
+        <source>Common character sequences like &quot;abc&quot; are easy to guess.</source>
       </segment>
     </unit>
     <unit id="2031932285140054383">
@@ -199,6 +271,15 @@
       </notes>
       <segment>
         <source>Notification marked as read</source>
+      </segment>
+    </unit>
+    <unit id="2096195057815684171">
+      <notes>
+        <note category="location">src/app/core/i18n/clerk-localization.ts</note>
+        <note category="description">Password warning in Clerk, the sign-in provider</note>
+      </notes>
+      <segment>
+        <source>Your password was exposed by a data breach on the Internet.</source>
       </segment>
     </unit>
     <unit id="2134897893235836867">
@@ -301,6 +382,15 @@
         <source>Use at least 15 characters.</source>
       </segment>
     </unit>
+    <unit id="2369742814572661392">
+      <notes>
+        <note category="location">src/app/core/i18n/clerk-localization.ts</note>
+        <note category="description">Shown by Clerk, the sign-in provider, while it checks that a sign-in is not automated</note>
+      </notes>
+      <segment>
+        <source>Loading…</source>
+      </segment>
+    </unit>
     <unit id="2404444981573781985">
       <notes>
         <note category="location">src/app/layout/footer/footer.component.html</note>
@@ -336,6 +426,15 @@
       </notes>
       <segment>
         <source>Securely sign in to your private Board Vault group workspace.</source>
+      </segment>
+    </unit>
+    <unit id="2454066008648121037">
+      <notes>
+        <note category="location">src/app/core/i18n/clerk-localization.ts</note>
+        <note category="description">Password advice in Clerk, the sign-in provider</note>
+      </notes>
+      <segment>
+        <source>Avoid dates and years that are associated with you.</source>
       </segment>
     </unit>
     <unit id="2485595059919735658">
@@ -428,6 +527,24 @@
         <source>We could not complete this invitation right now. Check the fields and security check, then try again.</source>
       </segment>
     </unit>
+    <unit id="2699961251557116579">
+      <notes>
+        <note category="location">src/app/core/i18n/clerk-localization.ts</note>
+        <note category="description">Password advice in Clerk, the sign-in provider</note>
+      </notes>
+      <segment>
+        <source>If you use this password elsewhere, you should change it.</source>
+      </segment>
+    </unit>
+    <unit id="2716706060230976579">
+      <notes>
+        <note category="location">src/app/core/i18n/clerk-localization.ts</note>
+        <note category="description">Ends the sentence Your password must contain, in Clerk, the sign-in provider</note>
+      </notes>
+      <segment>
+        <source>less than <ph id="0" equiv="length" disp="length"/> characters</source>
+      </segment>
+    </unit>
     <unit id="2721916889637246959">
       <notes>
         <note category="location">src/app/app.component.ts</note>
@@ -446,6 +563,15 @@
         <source>You have deleted the notification</source>
       </segment>
     </unit>
+    <unit id="2766969724475977787">
+      <notes>
+        <note category="location">src/app/core/i18n/clerk-localization.ts</note>
+        <note category="description">Password advice in Clerk, the sign-in provider</note>
+      </notes>
+      <segment>
+        <source>Use multiple words, but avoid common phrases.</source>
+      </segment>
+    </unit>
     <unit id="2806917038528218276">
       <notes>
         <note category="location">src/app/layout/footer/footer.component.html</note>
@@ -454,6 +580,15 @@
       </notes>
       <segment>
         <source>FAQ</source>
+      </segment>
+    </unit>
+    <unit id="2806986957690149156">
+      <notes>
+        <note category="location">src/app/core/i18n/clerk-localization.ts</note>
+        <note category="description">Error from Clerk, the sign-in provider, when adding an email address</note>
+      </notes>
+      <segment>
+        <source>Too many verifications are pending on this account. Remove an unverified email address, phone number, or wallet you no longer need, or wait a few minutes for an incomplete passkey setup to expire, then try again.</source>
       </segment>
     </unit>
     <unit id="281153916191694572">
@@ -620,6 +755,15 @@
         <source>Sign in with your email and password, or with a one-time email code.</source>
       </segment>
     </unit>
+    <unit id="3723717615538231637">
+      <notes>
+        <note category="location">src/app/core/i18n/clerk-localization.ts</note>
+        <note category="description">Password strength in Clerk, the sign-in provider</note>
+      </notes>
+      <segment>
+        <source>Your password works, but could be stronger. Try adding more characters.</source>
+      </segment>
+    </unit>
     <unit id="3736594653461707643">
       <notes>
         <note category="location">src/app/layout/auth-handoff/auth-handoff.component.html</note>
@@ -720,6 +864,24 @@
         <source>Continue with secure sign-in</source>
       </segment>
     </unit>
+    <unit id="3984435286175515755">
+      <notes>
+        <note category="location">src/app/core/i18n/clerk-localization.ts</note>
+        <note category="description">Password warning in Clerk, the sign-in provider</note>
+      </notes>
+      <segment>
+        <source>Recent years are easy to guess.</source>
+      </segment>
+    </unit>
+    <unit id="4050851435935072722">
+      <notes>
+        <note category="location">src/app/core/i18n/clerk-localization.ts</note>
+        <note category="description">Password warning in Clerk, the sign-in provider</note>
+      </notes>
+      <segment>
+        <source>There should not be any personal or page related data.</source>
+      </segment>
+    </unit>
     <unit id="4086606389696938932">
       <notes>
         <note category="location">src/app/layout/footer/footer.component.html</note>
@@ -765,6 +927,15 @@
         <source>You have been successfully logged out.</source>
       </segment>
     </unit>
+    <unit id="4169893731951791508">
+      <notes>
+        <note category="location">src/app/core/i18n/clerk-localization.ts</note>
+        <note category="description">Ends the sentence Your password must contain, in Clerk, the sign-in provider</note>
+      </notes>
+      <segment>
+        <source>a special character</source>
+      </segment>
+    </unit>
     <unit id="4189467467511250248">
       <notes>
         <note category="location">src/app/layout/inbox/inbox.component.html</note>
@@ -801,6 +972,15 @@
         <source>Your account was deleted.</source>
       </segment>
     </unit>
+    <unit id="4238262366376573097">
+      <notes>
+        <note category="location">src/app/core/i18n/clerk-localization.ts</note>
+        <note category="description">Shown by Clerk, the sign-in provider, while it checks that a sign-in is not automated</note>
+      </notes>
+      <segment>
+        <source>Please wait while we verify your request.</source>
+      </segment>
+    </unit>
     <unit id="4272436583644511364">
       <notes>
         <note category="location">src/app/core/i18n/format.ts</note>
@@ -808,6 +988,24 @@
       </notes>
       <segment>
         <source>Just now</source>
+      </segment>
+    </unit>
+    <unit id="4335187189634644598">
+      <notes>
+        <note category="location">src/app/core/i18n/clerk-localization.ts</note>
+        <note category="description">Password warning in Clerk, the sign-in provider</note>
+      </notes>
+      <segment>
+        <source>Common names and surnames are easy to guess.</source>
+      </segment>
+    </unit>
+    <unit id="4369542638350223376">
+      <notes>
+        <note category="location">src/app/core/i18n/clerk-localization.ts</note>
+        <note category="description">Error from Clerk, the sign-in provider, when signing in</note>
+      </notes>
+      <segment>
+        <source>Your password may be compromised. To protect your account, please continue with an alternative sign-in method. You will be required to reset your password after signing in.</source>
       </segment>
     </unit>
     <unit id="4394551357615209611">
@@ -855,6 +1053,15 @@
         <source>We could not finish setting up your sign-in</source>
       </segment>
     </unit>
+    <unit id="4718209215979466067">
+      <notes>
+        <note category="location">src/app/core/i18n/clerk-localization.ts</note>
+        <note category="description">Password strength in Clerk, the sign-in provider</note>
+      </notes>
+      <segment>
+        <source>Your password meets all the necessary requirements.</source>
+      </segment>
+    </unit>
     <unit id="4757507927002475818">
       <notes>
         <note category="location">src/app/layout/inbox/inbox.component.html</note>
@@ -889,6 +1096,15 @@
       </notes>
       <segment>
         <source>Mobile navigation</source>
+      </segment>
+    </unit>
+    <unit id="4895632873057636638">
+      <notes>
+        <note category="location">src/app/core/i18n/clerk-localization.ts</note>
+        <note category="description">Error from Clerk, the sign-in provider, about its check that a sign-in is not automated</note>
+      </notes>
+      <segment>
+        <source>Couldn&apos;t load verification. Please contact support if this persists.</source>
       </segment>
     </unit>
     <unit id="4930506384627295710">
@@ -928,6 +1144,24 @@
         <source><ph id="0" equiv="count" disp="failed"/> notifications could not be marked as read</source>
       </segment>
     </unit>
+    <unit id="5001944210139291575">
+      <notes>
+        <note category="location">src/app/core/i18n/clerk-localization.ts</note>
+        <note category="description">Password advice in Clerk, the sign-in provider</note>
+      </notes>
+      <segment>
+        <source>Add more words that are less common.</source>
+      </segment>
+    </unit>
+    <unit id="502282038360646907">
+      <notes>
+        <note category="location">src/app/core/i18n/clerk-localization.ts</note>
+        <note category="description">Error from Clerk, the sign-in provider, about its check that a sign-in is not automated</note>
+      </notes>
+      <segment>
+        <source>This sign-in needs an extra verification step that can&apos;t be shown here. Please try again or use a different sign-in method.</source>
+      </segment>
+    </unit>
     <unit id="5034473762587110175">
       <notes>
         <note category="location">src/app/layout/header/header.component.ts</note>
@@ -964,6 +1198,24 @@
         <source>Open secure sign-up</source>
       </segment>
     </unit>
+    <unit id="5121839105371523343">
+      <notes>
+        <note category="location">src/app/core/i18n/clerk-localization.ts</note>
+        <note category="description">Error from Clerk, the sign-in provider, about its check that a sign-in is not automated</note>
+      </notes>
+      <segment>
+        <source>Couldn&apos;t load verification. This may be caused by a network issue or a Content Security Policy that blocks the verification script. Please try again or contact support.</source>
+      </segment>
+    </unit>
+    <unit id="513045381948130029">
+      <notes>
+        <note category="location">src/app/core/i18n/clerk-localization.ts</note>
+        <note category="description">Error from Clerk, the sign-in provider, when an invitation link was used or withdrawn</note>
+      </notes>
+      <segment>
+        <source>This link is no longer valid or has already been used. Please start again or request a new link.</source>
+      </segment>
+    </unit>
     <unit id="5168805403362402794">
       <notes>
         <note category="location">src/app/layout/auth-handoff/auth-handoff.component.html</note>
@@ -973,6 +1225,15 @@
         <source>Your identity is confirmed. We are loading your groups and getting your private workspace ready.</source>
       </segment>
     </unit>
+    <unit id="5169688561656463232">
+      <notes>
+        <note category="location">src/app/core/i18n/clerk-localization.ts</note>
+        <note category="description">Start of a sentence in Clerk, the sign-in provider, completed by a list such as 8 or more characters</note>
+      </notes>
+      <segment>
+        <source>Your password must contain</source>
+      </segment>
+    </unit>
     <unit id="5182556936985589025">
       <notes>
         <note category="location">src/app/pages/auth/register/register.component.html</note>
@@ -980,6 +1241,15 @@
       </notes>
       <segment>
         <source>Choose a Board Vault username and password to join the group that invited you.</source>
+      </segment>
+    </unit>
+    <unit id="5197686608910315875">
+      <notes>
+        <note category="location">src/app/core/i18n/clerk-localization.ts</note>
+        <note category="description">Password advice in Clerk, the sign-in provider</note>
+      </notes>
+      <segment>
+        <source>Avoid recent years.</source>
       </segment>
     </unit>
     <unit id="5207635742003539443">
@@ -1019,6 +1289,33 @@
         <source>What to play</source>
       </segment>
     </unit>
+    <unit id="5353758016329326598">
+      <notes>
+        <note category="location">src/app/core/i18n/clerk-localization.ts</note>
+        <note category="description">Error from Clerk, the sign-in provider, when choosing a password</note>
+      </notes>
+      <segment>
+        <source>Password cannot match your email address, phone number or username. For account safety, please use a different password.</source>
+      </segment>
+    </unit>
+    <unit id="5418220498903662149">
+      <notes>
+        <note category="location">src/app/core/i18n/clerk-localization.ts</note>
+        <note category="description">Password warning in Clerk, the sign-in provider</note>
+      </notes>
+      <segment>
+        <source>Single names or surnames are easy to guess.</source>
+      </segment>
+    </unit>
+    <unit id="548035914615045180">
+      <notes>
+        <note category="location">src/app/core/i18n/clerk-localization.ts</note>
+        <note category="description">Password warning in Clerk, the sign-in provider</note>
+      </notes>
+      <segment>
+        <source>This is similar to a commonly used password.</source>
+      </segment>
+    </unit>
     <unit id="5492578273973439931">
       <notes>
         <note category="location">src/app/core/services/login.service.ts</note>
@@ -1047,6 +1344,15 @@
         <source>Got it</source>
       </segment>
     </unit>
+    <unit id="5621728713939769423">
+      <notes>
+        <note category="location">src/app/core/i18n/clerk-localization.ts</note>
+        <note category="description">Error from Clerk, the sign-in provider, when an invitation link is too old</note>
+      </notes>
+      <segment>
+        <source>This link has expired. Please start again or request a new link.</source>
+      </segment>
+    </unit>
     <unit id="5673906746664423612">
       <notes>
         <note category="location">src/app/layout/auth-handoff/auth-handoff.component.html</note>
@@ -1063,6 +1369,24 @@
       </notes>
       <segment>
         <source>Error deleting notification</source>
+      </segment>
+    </unit>
+    <unit id="5679842461476058145">
+      <notes>
+        <note category="location">src/app/core/i18n/clerk-localization.ts</note>
+        <note category="description">Ends the sentence Your password must contain, in Clerk, the sign-in provider</note>
+      </notes>
+      <segment>
+        <source>a number</source>
+      </segment>
+    </unit>
+    <unit id="571053090376584692">
+      <notes>
+        <note category="location">src/app/core/i18n/clerk-localization.ts</note>
+        <note category="description">Hint when adding an email address in the account panel from Clerk, the sign-in provider</note>
+      </notes>
+      <segment>
+        <source>You&apos;ll need to verify this email address before it can be added to your account.</source>
       </segment>
     </unit>
     <unit id="5729395938595388062">
@@ -1156,6 +1480,24 @@
         <source>We are still building the core experience, so new accounts are created by invitation only.</source>
       </segment>
     </unit>
+    <unit id="6023472757222269524">
+      <notes>
+        <note category="location">src/app/core/i18n/clerk-localization.ts</note>
+        <note category="description">Password advice in Clerk, the sign-in provider</note>
+      </notes>
+      <segment>
+        <source>Capitalize more than the first letter.</source>
+      </segment>
+    </unit>
+    <unit id="6036484491111823428">
+      <notes>
+        <note category="location">src/app/core/i18n/clerk-localization.ts</note>
+        <note category="description">Heading of the first page of the panel from Clerk, the sign-in provider, that manages the username, email address, and password</note>
+      </notes>
+      <segment>
+        <source>Sign-in details</source>
+      </segment>
+    </unit>
     <unit id="6041525304912058197">
       <notes>
         <note category="location">src/app/app.component.ts</note>
@@ -1190,6 +1532,24 @@
       </notes>
       <segment>
         <source>You have joined the group!</source>
+      </segment>
+    </unit>
+    <unit id="6123590976681789837">
+      <notes>
+        <note category="location">src/app/core/i18n/clerk-localization.ts</note>
+        <note category="description">Password warning in Clerk, the sign-in provider</note>
+      </notes>
+      <segment>
+        <source>Straight rows of keys on your keyboard are easy to guess.</source>
+      </segment>
+    </unit>
+    <unit id="6174219018857528884">
+      <notes>
+        <note category="location">src/app/core/i18n/clerk-localization.ts</note>
+        <note category="description">Password warning in Clerk, the sign-in provider</note>
+      </notes>
+      <segment>
+        <source>Dates are easy to guess.</source>
       </segment>
     </unit>
     <unit id="6205660505479571083">
@@ -1237,6 +1597,24 @@
         <source>Ask a friend or group organizer who already uses Board Vault to invite you. Once invited, use the secure Clerk sign-up link they provide.</source>
       </segment>
     </unit>
+    <unit id="6321267323966165564">
+      <notes>
+        <note category="location">src/app/core/i18n/clerk-localization.ts</note>
+        <note category="description">Password advice in Clerk, the sign-in provider</note>
+      </notes>
+      <segment>
+        <source>Avoid predictable letter substitutions like &apos;@&apos; for &apos;a&apos;.</source>
+      </segment>
+    </unit>
+    <unit id="6376922083892592201">
+      <notes>
+        <note category="location">src/app/core/i18n/clerk-localization.ts</note>
+        <note category="description">Password advice in Clerk, the sign-in provider</note>
+      </notes>
+      <segment>
+        <source>Capitalize some, but not all letters.</source>
+      </segment>
+    </unit>
     <unit id="6403112028413315560">
       <notes>
         <note category="location">src/app/layout/inbox/inbox.component.html</note>
@@ -1271,6 +1649,15 @@
       </notes>
       <segment>
         <source>Your Board Vault account is already registered.</source>
+      </segment>
+    </unit>
+    <unit id="6505214317212036405">
+      <notes>
+        <note category="location">src/app/core/i18n/clerk-localization.ts</note>
+        <note category="description">Password warning in Clerk, the sign-in provider</note>
+      </notes>
+      <segment>
+        <source>This is a frequently used password.</source>
       </segment>
     </unit>
     <unit id="6582558331846075943">
@@ -1312,8 +1699,9 @@
     </unit>
     <unit id="6650633628037596693">
       <notes>
+        <note category="location">src/app/core/i18n/clerk-localization.ts</note>
         <note category="location">src/app/layout/auth-handoff/auth-handoff.component.html</note>
-        <note category="description">Button that tries to finish sign-in again after an error</note>
+        <note category="description">Button from Clerk, the sign-in provider, after its check that a sign-in is not automated failed</note>
       </notes>
       <segment>
         <source>Try again</source>
@@ -1337,6 +1725,15 @@
         <source>Artwork unavailable</source>
       </segment>
     </unit>
+    <unit id="6680464724162231112">
+      <notes>
+        <note category="location">src/app/core/i18n/clerk-localization.ts</note>
+        <note category="description">Password warning in Clerk, the sign-in provider</note>
+      </notes>
+      <segment>
+        <source>This is a commonly used password.</source>
+      </segment>
+    </unit>
     <unit id="6692170698163862308">
       <notes>
         <note category="location">src/app/app.component.ts</note>
@@ -1353,6 +1750,15 @@
       </notes>
       <segment>
         <source>Error accepting invitation</source>
+      </segment>
+    </unit>
+    <unit id="6716126281248146214">
+      <notes>
+        <note category="location">src/app/core/i18n/clerk-localization.ts</note>
+        <note category="description">Error from Clerk, the sign-in provider, about its check that a sign-in is not automated</note>
+      </notes>
+      <segment>
+        <source>Verification couldn&apos;t start. Please contact support.</source>
       </segment>
     </unit>
     <unit id="6744211960979064014">
@@ -1419,6 +1825,16 @@
         <source>Lend us a hand? 🎲</source>
       </segment>
     </unit>
+    <unit id="6959910266115210305">
+      <notes>
+        <note category="location">src/app/core/i18n/clerk-localization.ts</note>
+        <note category="description">Name of the panel from Clerk, the sign-in provider, that manages the username, email address, and password</note>
+        <note category="meaning">Clerk account panel title</note>
+      </notes>
+      <segment>
+        <source>Sign-in</source>
+      </segment>
+    </unit>
     <unit id="7007703201160377234">
       <notes>
         <note category="location">src/app/pages/auth/register/register.component.html</note>
@@ -1426,6 +1842,24 @@
       </notes>
       <segment>
         <source>Already have an account? <pc id="0" equivStart="START_LINK" equivEnd="CLOSE_LINK" type="link" dispStart="&lt;a routerLink=&quot;/login&quot; class=&quot;underline&quot;&gt;" dispEnd="&lt;/a&gt;">Sign in</pc></source>
+      </segment>
+    </unit>
+    <unit id="7085036273592820424">
+      <notes>
+        <note category="location">src/app/core/i18n/clerk-localization.ts</note>
+        <note category="description">Password advice in Clerk, the sign-in provider</note>
+      </notes>
+      <segment>
+        <source>Avoid common character sequences.</source>
+      </segment>
+    </unit>
+    <unit id="7102237808273658201">
+      <notes>
+        <note category="location">src/app/core/i18n/clerk-localization.ts</note>
+        <note category="description">Title shown by Clerk, the sign-in provider, while it checks that a sign-in is not automated</note>
+      </notes>
+      <segment>
+        <source>Verifying your request</source>
       </segment>
     </unit>
     <unit id="7105490533744744390">
@@ -1473,6 +1907,24 @@
         <source>How to get access</source>
       </segment>
     </unit>
+    <unit id="7207149888715584322">
+      <notes>
+        <note category="location">src/app/core/i18n/clerk-localization.ts</note>
+        <note category="description">Password warning in Clerk, the sign-in provider</note>
+      </notes>
+      <segment>
+        <source>This is a heavily used password.</source>
+      </segment>
+    </unit>
+    <unit id="7279088663215707450">
+      <notes>
+        <note category="location">src/app/core/i18n/clerk-localization.ts</note>
+        <note category="description">Password warning in Clerk, the sign-in provider</note>
+      </notes>
+      <segment>
+        <source>Single words are easy to guess.</source>
+      </segment>
+    </unit>
     <unit id="7306616487170771288">
       <notes>
         <note category="location">src/app/pages/auth/login/login.component.html</note>
@@ -1489,6 +1941,24 @@
       </notes>
       <segment>
         <source>Board Vault home</source>
+      </segment>
+    </unit>
+    <unit id="7372277959950637369">
+      <notes>
+        <note category="location">src/app/core/i18n/clerk-localization.ts</note>
+        <note category="description">Hint under the email address field in Clerk, the sign-in provider</note>
+      </notes>
+      <segment>
+        <source>Example format: name@example.com</source>
+      </segment>
+    </unit>
+    <unit id="7375747030109081868">
+      <notes>
+        <note category="location">src/app/core/i18n/clerk-localization.ts</note>
+        <note category="description">Ends the sentence Your password must contain, in Clerk, the sign-in provider</note>
+      </notes>
+      <segment>
+        <source>a lowercase letter</source>
       </segment>
     </unit>
     <unit id="7384935012309989418">
@@ -1535,6 +2005,15 @@
       </notes>
       <segment>
         <source>Back to app</source>
+      </segment>
+    </unit>
+    <unit id="756147812205802406">
+      <notes>
+        <note category="location">src/app/core/i18n/clerk-localization.ts</note>
+        <note category="description">Error from Clerk, the sign-in provider, when changing a password</note>
+      </notes>
+      <segment>
+        <source>New password cannot be the same as the current password.</source>
       </segment>
     </unit>
     <unit id="7619560701830330401">
@@ -1637,6 +2116,15 @@
         <source>You’re all caught up.</source>
       </segment>
     </unit>
+    <unit id="7903843199053930">
+      <notes>
+        <note category="location">src/app/core/i18n/clerk-localization.ts</note>
+        <note category="description">Password advice in Clerk, the sign-in provider</note>
+      </notes>
+      <segment>
+        <source>Use longer keyboard patterns and change typing direction multiple times.</source>
+      </segment>
+    </unit>
     <unit id="7934833136974560675">
       <notes>
         <note category="location">src/app/layout/inbox/inbox.component.html</note>
@@ -1692,6 +2180,15 @@
         <source>Wishlist</source>
       </segment>
     </unit>
+    <unit id="8082437050234741884">
+      <notes>
+        <note category="location">src/app/core/i18n/clerk-localization.ts</note>
+        <note category="description">Password warning in Clerk, the sign-in provider</note>
+      </notes>
+      <segment>
+        <source>Short keyboard patterns are easy to guess.</source>
+      </segment>
+    </unit>
     <unit id="8116175184239166510">
       <notes>
         <note category="location">src/app/components/card-invitation/card-invitation.component.html</note>
@@ -1699,6 +2196,24 @@
       </notes>
       <segment>
         <source>Decline</source>
+      </segment>
+    </unit>
+    <unit id="8144330943405153313">
+      <notes>
+        <note category="location">src/app/core/i18n/clerk-localization.ts</note>
+        <note category="description">Error from Clerk, the sign-in provider</note>
+      </notes>
+      <segment>
+        <source>This action couldn&apos;t be completed. Please try again later or contact support if this persists.</source>
+      </segment>
+    </unit>
+    <unit id="8205762812117214148">
+      <notes>
+        <note category="location">src/app/core/i18n/clerk-localization.ts</note>
+        <note category="description">Error from Clerk, the sign-in provider, about its check that a sign-in is not automated</note>
+      </notes>
+      <segment>
+        <source>Verification didn&apos;t complete in time. Please try again.</source>
       </segment>
     </unit>
     <unit id="8218180595897396108">
@@ -1737,6 +2252,15 @@
       </notes>
       <segment>
         <source>Inbox, <ph id="0" equiv="count" disp="count"/> new</source>
+      </segment>
+    </unit>
+    <unit id="8344586071532675623">
+      <notes>
+        <note category="location">src/app/core/i18n/clerk-localization.ts</note>
+        <note category="description">Under the title of the panel from Clerk, the sign-in provider, that manages the username, email address, and password</note>
+      </notes>
+      <segment>
+        <source>Manage how you sign in to Board Vault.</source>
       </segment>
     </unit>
     <unit id="8348072798509355617">
@@ -1793,6 +2317,24 @@
         <source> Lend us a hand? 🎲 We&apos;re a tiny indie team. Leaving this on lets us count which pages get opened, under a pseudonym and in our own database, so we know what to fix next. No cookies, nothing shared. Change it anytime in Settings → Privacy. </source>
       </segment>
     </unit>
+    <unit id="8487119295846165326">
+      <notes>
+        <note category="location">src/app/core/i18n/clerk-localization.ts</note>
+        <note category="description">Ends the sentence Your password must contain, in Clerk, the sign-in provider</note>
+      </notes>
+      <segment>
+        <source>an uppercase letter</source>
+      </segment>
+    </unit>
+    <unit id="8506230638457254442">
+      <notes>
+        <note category="location">src/app/core/i18n/clerk-localization.ts</note>
+        <note category="description">Password advice in Clerk, the sign-in provider</note>
+      </notes>
+      <segment>
+        <source>Avoid years that are associated with you.</source>
+      </segment>
+    </unit>
     <unit id="8564202903947049539">
       <notes>
         <note category="location">src/app/layout/app-sections.ts</note>
@@ -1811,6 +2353,15 @@
         <source>Play — Board Vault</source>
       </segment>
     </unit>
+    <unit id="8654642196646765162">
+      <notes>
+        <note category="location">src/app/core/i18n/clerk-localization.ts</note>
+        <note category="description">Password strength in Clerk, the sign-in provider</note>
+      </notes>
+      <segment>
+        <source>Your password is not strong enough.</source>
+      </segment>
+    </unit>
     <unit id="8694180754500384388">
       <notes>
         <note category="location">src/app/app.component.ts</note>
@@ -1818,6 +2369,15 @@
       </notes>
       <segment>
         <source>A private workspace for recurring board-game groups to decide, play, and remember together.</source>
+      </segment>
+    </unit>
+    <unit id="8698855233880130185">
+      <notes>
+        <note category="location">src/app/core/i18n/clerk-localization.ts</note>
+        <note category="description">Password advice in Clerk, the sign-in provider</note>
+      </notes>
+      <segment>
+        <source>Avoid reversed spellings of common words.</source>
       </segment>
     </unit>
     <unit id="871235372571809921">
@@ -1840,8 +2400,9 @@
     </unit>
     <unit id="8779419494821652108">
       <notes>
+        <note category="location">src/app/core/i18n/clerk-localization.ts</note>
         <note category="location">src/app/pages/auth/register/register.component.html</note>
-        <note category="description">Field label on the invitation sign-up page</note>
+        <note category="description">Placeholder of the new password field in Clerk, the sign-in provider</note>
       </notes>
       <segment>
         <source>Create a password</source>
@@ -1892,6 +2453,15 @@
         <source>Error retrieving user&apos;s notifications</source>
       </segment>
     </unit>
+    <unit id="8957370839586560700">
+      <notes>
+        <note category="location">src/app/core/i18n/clerk-localization.ts</note>
+        <note category="description">Error from Clerk, the sign-in provider, about its check that a sign-in is not automated</note>
+      </notes>
+      <segment>
+        <source>Verification didn&apos;t complete. Please try again.</source>
+      </segment>
+    </unit>
     <unit id="9014138025274858717">
       <notes>
         <note category="location">src/app/app.component.ts</note>
@@ -1928,6 +2498,15 @@
         <source>No invitations waiting.</source>
       </segment>
     </unit>
+    <unit id="9115957101123254722">
+      <notes>
+        <note category="location">src/app/core/i18n/clerk-localization.ts</note>
+        <note category="description">Password warning in Clerk, the sign-in provider</note>
+      </notes>
+      <segment>
+        <source>Repeated character patterns like &quot;abcabcabc&quot; are easy to guess.</source>
+      </segment>
+    </unit>
     <unit id="9137951864770451001">
       <notes>
         <note category="location">src/app/components/card-invitation/card-invitation.component.html</note>
@@ -1935,6 +2514,15 @@
       </notes>
       <segment>
         <source>Accepting adds you to this private group’s shared games and future session plans.</source>
+      </segment>
+    </unit>
+    <unit id="9144060250307751763">
+      <notes>
+        <note category="location">src/app/core/i18n/clerk-localization.ts</note>
+        <note category="description">Ends the sentence Your password must contain, in Clerk, the sign-in provider</note>
+      </notes>
+      <segment>
+        <source><ph id="0" equiv="length" disp="length"/> or more characters</source>
       </segment>
     </unit>
     <unit id="9212705249340904752">

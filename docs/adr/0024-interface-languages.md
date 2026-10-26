@@ -155,7 +155,7 @@ Administration. Game titles are not vocabulary (ADR-0025).
 ### Clerk
 
 Clerk's components get the matching `@clerk/localizations` bundle (`esES`,
-`frFR`, `deDE`, `itIT`), loaded only by that language's build, merged with
+`frFR`, `deDE`, `itIT`), fetched only by pages in that language, merged with
 our own overrides, which are translated like any other message.
 
 ### Email stays English
@@ -213,3 +213,13 @@ hosting analytics, if it is ever asked.
   of the above.
 - **English without a prefix, other languages prefixed:** fewer redirects,
   but two kinds of address and a special case in every redirect rule.
+
+## Amendment (2026-10-26)
+
+Clerk's French and German bundles address the reader formally (`vous`,
+`Sie`), while Board Vault never does. Inside Clerk's panels we keep Clerk's
+wording for 1.0: rewriting about a hundred of its strings per language would
+fork its translations and have to follow every Clerk update. The text Board
+Vault adds there (its own names, and the strings Clerk leaves in English)
+follows Clerk's address, so each panel reads consistently. The native-speaker
+review (#189) checks these panels too; revisit if they read badly.

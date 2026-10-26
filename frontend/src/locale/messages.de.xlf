@@ -9,6 +9,15 @@
         <target>Board Vault verbessern helfen</target>
       </segment>
     </unit>
+    <unit id="1062104919522536322">
+      <notes>
+        <note category="description">Password advice in Clerk, the sign-in provider</note>
+      </notes>
+      <segment state="translated">
+        <source>You can create strong passwords without using symbols, numbers, or uppercase letters.</source>
+        <target>Es ist möglich, starke Passwörter zu erstellen, ohne Symbole, Zahlen oder Großbuchstaben zu verwenden.</target>
+      </segment>
+    </unit>
     <unit id="1171599222218766902">
       <notes>
         <note category="description">Name of the Accept button on a group invitation in the inbox</note>
@@ -45,6 +54,15 @@
         <target><ph id="0" equiv="picture" disp="this.alt()"/>: nicht verfügbar</target>
       </segment>
     </unit>
+    <unit id="1238181001688941218">
+      <notes>
+        <note category="description">Password warning in Clerk, the sign-in provider</note>
+      </notes>
+      <segment state="translated">
+        <source>Repeated characters like &quot;aaa&quot; are easy to guess.</source>
+        <target>Sich wiederholende Zeichen wie "aaa" sind leicht zu erraten.</target>
+      </segment>
+    </unit>
     <unit id="1316194950149848003">
       <notes>
         <note category="description">Search and link preview description of the Session page</note>
@@ -71,6 +89,15 @@
       <segment state="translated">
         <source>Already have access? Sign in with your existing Board Vault account.</source>
         <target>Du hast schon Zugang? Melde dich mit deinem Board-Vault-Konto an.</target>
+      </segment>
+    </unit>
+    <unit id="1402424875650013710">
+      <notes>
+        <note category="description">Title in Clerk, the sign-in provider, when a password can no longer be trusted</note>
+      </notes>
+      <segment state="translated">
+        <source>Password untrusted</source>
+        <target>Passwort nicht vertrauenswürdig</target>
       </segment>
     </unit>
     <unit id="1422491155254079742">
@@ -100,6 +127,15 @@
         <target>Dieses Passwort erfüllt die Anforderungen der sicheren Registrierung nicht. Folge den Hinweisen oben und versuch es noch einmal.</target>
       </segment>
     </unit>
+    <unit id="1583195687933839267">
+      <notes>
+        <note category="description">Title of the sign-in panel from Clerk, the sign-in provider; the placeholder is Board Vault</note>
+      </notes>
+      <segment state="translated">
+        <source>Continue to <ph id="0" equiv="applicationName" disp="applicationName"/></source>
+        <target>Weiter zu <ph id="0" equiv="applicationName" disp="applicationName"/></target>
+      </segment>
+    </unit>
     <unit id="1610683093877445085">
       <notes>
         <note category="description">Text on the invitation sign-up page for someone who already has an account</note>
@@ -125,6 +161,15 @@
       <segment state="translated">
         <source>Collection</source>
         <target>Sammlung</target>
+      </segment>
+    </unit>
+    <unit id="1696742461752095316">
+      <notes>
+        <note category="description">Error from Clerk, the sign-in provider, about its check that a sign-in is not automated</note>
+      </notes>
+      <segment state="translated">
+        <source>Verification isn&apos;t supported in this environment. Please continue in a standard browser or contact support.</source>
+        <target>Die Überprüfung wird in dieser Umgebung nicht unterstützt. Fahren Sie in einem üblichen Browser fort oder wenden Sie sich an den Support.</target>
       </segment>
     </unit>
     <unit id="186236568870281953">
@@ -163,6 +208,15 @@
         <target>Über Board Vault</target>
       </segment>
     </unit>
+    <unit id="1991309224805970080">
+      <notes>
+        <note category="description">Title in Clerk, the sign-in provider, when a password appeared in a data breach</note>
+      </notes>
+      <segment state="translated">
+        <source>Password compromised</source>
+        <target>Passwort kompromittiert</target>
+      </segment>
+    </unit>
     <unit id="2001224549919062414">
       <notes>
         <note category="description">Small heading of the access page while sign-up is by invitation only</note>
@@ -172,6 +226,15 @@
         <target>Private Beta</target>
       </segment>
     </unit>
+    <unit id="2005233829913860427">
+      <notes>
+        <note category="description">Password advice in Clerk, the sign-in provider</note>
+      </notes>
+      <segment state="translated">
+        <source>Avoid repeated words and characters.</source>
+        <target>Wort- und Zeichenwiederholungen vermeiden.</target>
+      </segment>
+    </unit>
     <unit id="2017633160626855825">
       <notes>
         <note category="description">Toast when the inbox could not load group invitations</note>
@@ -179,6 +242,15 @@
       <segment state="translated">
         <source>Error retrieving user&apos;s invitations</source>
         <target>Deine Einladungen konnten nicht geladen werden</target>
+      </segment>
+    </unit>
+    <unit id="201855137823103381">
+      <notes>
+        <note category="description">Password warning in Clerk, the sign-in provider</note>
+      </notes>
+      <segment state="translated">
+        <source>Common character sequences like &quot;abc&quot; are easy to guess.</source>
+        <target>Häufige Zeichenfolgen wie "abc" sind leicht zu erraten.</target>
       </segment>
     </unit>
     <unit id="2031932285140054383">
@@ -197,6 +269,15 @@
       <segment state="translated">
         <source>Notification marked as read</source>
         <target>Benachrichtigung als gelesen markiert</target>
+      </segment>
+    </unit>
+    <unit id="2096195057815684171">
+      <notes>
+        <note category="description">Password warning in Clerk, the sign-in provider</note>
+      </notes>
+      <segment state="translated">
+        <source>Your password was exposed by a data breach on the Internet.</source>
+        <target>Ihr Passwort wurde durch eine Datenpanne im Internet offengelegt.</target>
       </segment>
     </unit>
     <unit id="2134897893235836867">
@@ -298,6 +379,15 @@
         <target>Mindestens 15 Zeichen.</target>
       </segment>
     </unit>
+    <unit id="2369742814572661392">
+      <notes>
+        <note category="description">Shown by Clerk, the sign-in provider, while it checks that a sign-in is not automated</note>
+      </notes>
+      <segment state="translated">
+        <source>Loading…</source>
+        <target>Wird geladen…</target>
+      </segment>
+    </unit>
     <unit id="2404444981573781985">
       <notes>
         <note category="description">Footer link to the project repository</note>
@@ -332,6 +422,15 @@
       <segment state="translated">
         <source>Securely sign in to your private Board Vault group workspace.</source>
         <target>Melde dich sicher im privaten Bereich deiner Gruppe auf Board Vault an.</target>
+      </segment>
+    </unit>
+    <unit id="2454066008648121037">
+      <notes>
+        <note category="description">Password advice in Clerk, the sign-in provider</note>
+      </notes>
+      <segment state="translated">
+        <source>Avoid dates and years that are associated with you.</source>
+        <target>Daten, die mit persönlichen Daten in Verbindung gebracht werden können, vermeiden.</target>
       </segment>
     </unit>
     <unit id="2485595059919735658">
@@ -424,6 +523,24 @@
         <target>Wir konnten diese Einladung gerade nicht abschließen. Prüf die Felder und die Sicherheitsprüfung und versuch es dann noch einmal.</target>
       </segment>
     </unit>
+    <unit id="2699961251557116579">
+      <notes>
+        <note category="description">Password advice in Clerk, the sign-in provider</note>
+      </notes>
+      <segment state="translated">
+        <source>If you use this password elsewhere, you should change it.</source>
+        <target>Wenn Sie dieses Passwort an anderer Stelle verwenden, sollten Sie es ändern.</target>
+      </segment>
+    </unit>
+    <unit id="2716706060230976579">
+      <notes>
+        <note category="description">Ends the sentence Your password must contain, in Clerk, the sign-in provider</note>
+      </notes>
+      <segment state="translated">
+        <source>less than <ph id="0" equiv="length" disp="length"/> characters</source>
+        <target>weniger als <ph id="0" equiv="length" disp="length"/> Zeichen lang sein</target>
+      </segment>
+    </unit>
     <unit id="2721916889637246959">
       <notes>
         <note category="description">Browser tab title of the Sign in page</note>
@@ -442,6 +559,15 @@
         <target>Du hast die Benachrichtigung gelöscht</target>
       </segment>
     </unit>
+    <unit id="2766969724475977787">
+      <notes>
+        <note category="description">Password advice in Clerk, the sign-in provider</note>
+      </notes>
+      <segment state="translated">
+        <source>Use multiple words, but avoid common phrases.</source>
+        <target>Mehrere Wörter verwenden, aber allgemeine Phrasen vermeiden.</target>
+      </segment>
+    </unit>
     <unit id="2806917038528218276">
       <notes>
         <note category="description">Link to the questions section of the landing page, short for frequently asked questions</note>
@@ -449,6 +575,15 @@
       <segment state="translated">
         <source>FAQ</source>
         <target>FAQ</target>
+      </segment>
+    </unit>
+    <unit id="2806986957690149156">
+      <notes>
+        <note category="description">Error from Clerk, the sign-in provider, when adding an email address</note>
+      </notes>
+      <segment state="translated">
+        <source>Too many verifications are pending on this account. Remove an unverified email address, phone number, or wallet you no longer need, or wait a few minutes for an incomplete passkey setup to expire, then try again.</source>
+        <target>Für dieses Konto stehen zu viele Bestätigungen aus. Entfernen Sie eine nicht bestätigte E-Mail-Adresse, Telefonnummer oder Wallet, die Sie nicht mehr brauchen, oder warten Sie einige Minuten, bis ein halb eingerichteter Passkey abläuft, und versuchen Sie es dann erneut.</target>
       </segment>
     </unit>
     <unit id="281153916191694572">
@@ -613,6 +748,15 @@
         <target>Melde dich mit E-Mail und Passwort an oder mit einem Einmalcode per E-Mail.</target>
       </segment>
     </unit>
+    <unit id="3723717615538231637">
+      <notes>
+        <note category="description">Password strength in Clerk, the sign-in provider</note>
+      </notes>
+      <segment state="translated">
+        <source>Your password works, but could be stronger. Try adding more characters.</source>
+        <target>Ihr Passwort funktioniert, könnte aber besser sein. Versuchen Sie, mehr Zeichen hinzuzufügen.</target>
+      </segment>
+    </unit>
     <unit id="3736594653461707643">
       <notes>
         <note category="description">Small heading while someone joins a group from an invitation link</note>
@@ -713,6 +857,24 @@
         <target>Mit sicherer Anmeldung fortfahren</target>
       </segment>
     </unit>
+    <unit id="3984435286175515755">
+      <notes>
+        <note category="description">Password warning in Clerk, the sign-in provider</note>
+      </notes>
+      <segment state="translated">
+        <source>Recent years are easy to guess.</source>
+        <target>Die jüngsten Jahreszahlen sind leicht zu erraten.</target>
+      </segment>
+    </unit>
+    <unit id="4050851435935072722">
+      <notes>
+        <note category="description">Password warning in Clerk, the sign-in provider</note>
+      </notes>
+      <segment state="translated">
+        <source>There should not be any personal or page related data.</source>
+        <target>Es sollten keine persönlichen oder Seiten relevanten Daten vorkommen.</target>
+      </segment>
+    </unit>
     <unit id="4086606389696938932">
       <notes>
         <note category="description">Heading of the footer column of sign-in links</note>
@@ -758,6 +920,15 @@
         <target>Du hast dich abgemeldet.</target>
       </segment>
     </unit>
+    <unit id="4169893731951791508">
+      <notes>
+        <note category="description">Ends the sentence Your password must contain, in Clerk, the sign-in provider</note>
+      </notes>
+      <segment state="translated">
+        <source>a special character</source>
+        <target>ein Sonderzeichen enthalten</target>
+      </segment>
+    </unit>
     <unit id="4189467467511250248">
       <notes>
         <note category="description">Error in the inbox</note>
@@ -794,6 +965,15 @@
         <target>Dein Konto wurde gelöscht.</target>
       </segment>
     </unit>
+    <unit id="4238262366376573097">
+      <notes>
+        <note category="description">Shown by Clerk, the sign-in provider, while it checks that a sign-in is not automated</note>
+      </notes>
+      <segment state="translated">
+        <source>Please wait while we verify your request.</source>
+        <target>Bitte warten Sie, während wir Ihre Anfrage überprüfen.</target>
+      </segment>
+    </unit>
     <unit id="4272436583644511364">
       <notes>
         <note category="description">A moment ago, on a notification or a history line</note>
@@ -801,6 +981,24 @@
       <segment state="translated">
         <source>Just now</source>
         <target>Gerade eben</target>
+      </segment>
+    </unit>
+    <unit id="4335187189634644598">
+      <notes>
+        <note category="description">Password warning in Clerk, the sign-in provider</note>
+      </notes>
+      <segment state="translated">
+        <source>Common names and surnames are easy to guess.</source>
+        <target>Vornamen und Nachnamen sind leicht zu erraten.</target>
+      </segment>
+    </unit>
+    <unit id="4369542638350223376">
+      <notes>
+        <note category="description">Error from Clerk, the sign-in provider, when signing in</note>
+      </notes>
+      <segment state="translated">
+        <source>Your password may be compromised. To protect your account, please continue with an alternative sign-in method. You will be required to reset your password after signing in.</source>
+        <target>Ihr Passwort ist möglicherweise kompromittiert. Melden Sie sich zum Schutz Ihres Kontos mit einer anderen Methode an. Nach der Anmeldung müssen Sie Ihr Passwort zurücksetzen.</target>
       </segment>
     </unit>
     <unit id="4394551357615209611">
@@ -848,6 +1046,15 @@
         <target>Wir konnten deine Anmeldung nicht abschließen</target>
       </segment>
     </unit>
+    <unit id="4718209215979466067">
+      <notes>
+        <note category="description">Password strength in Clerk, the sign-in provider</note>
+      </notes>
+      <segment state="translated">
+        <source>Your password meets all the necessary requirements.</source>
+        <target>Ihr Passwort erfüllt alle notwendigen Anforderungen.</target>
+      </segment>
+    </unit>
     <unit id="4757507927002475818">
       <notes>
         <note category="description">Shown in the inbox while invitations load</note>
@@ -882,6 +1089,15 @@
       <segment state="translated">
         <source>Mobile navigation</source>
         <target>Mobile Navigation</target>
+      </segment>
+    </unit>
+    <unit id="4895632873057636638">
+      <notes>
+        <note category="description">Error from Clerk, the sign-in provider, about its check that a sign-in is not automated</note>
+      </notes>
+      <segment state="translated">
+        <source>Couldn&apos;t load verification. Please contact support if this persists.</source>
+        <target>Die Überprüfung konnte nicht geladen werden. Wenden Sie sich an den Support, wenn das Problem weiter besteht.</target>
       </segment>
     </unit>
     <unit id="4930506384627295710">
@@ -921,6 +1137,24 @@
         <target><ph id="0" equiv="count" disp="failed"/> Benachrichtigungen konnten nicht als gelesen markiert werden</target>
       </segment>
     </unit>
+    <unit id="5001944210139291575">
+      <notes>
+        <note category="description">Password advice in Clerk, the sign-in provider</note>
+      </notes>
+      <segment state="translated">
+        <source>Add more words that are less common.</source>
+        <target>Weitere Wörter, die weniger häufig vorkommen, hinzufügen.</target>
+      </segment>
+    </unit>
+    <unit id="502282038360646907">
+      <notes>
+        <note category="description">Error from Clerk, the sign-in provider, about its check that a sign-in is not automated</note>
+      </notes>
+      <segment state="translated">
+        <source>This sign-in needs an extra verification step that can&apos;t be shown here. Please try again or use a different sign-in method.</source>
+        <target>Diese Anmeldung erfordert einen zusätzlichen Überprüfungsschritt, der hier nicht angezeigt werden kann. Versuchen Sie es erneut oder nutzen Sie eine andere Anmeldemethode.</target>
+      </segment>
+    </unit>
     <unit id="5034473762587110175">
       <notes>
         <note category="description">Button on phones in the signed-out header that opens the links menu</note>
@@ -957,6 +1191,24 @@
         <target>Sichere Registrierung öffnen</target>
       </segment>
     </unit>
+    <unit id="5121839105371523343">
+      <notes>
+        <note category="description">Error from Clerk, the sign-in provider, about its check that a sign-in is not automated</note>
+      </notes>
+      <segment state="translated">
+        <source>Couldn&apos;t load verification. This may be caused by a network issue or a Content Security Policy that blocks the verification script. Please try again or contact support.</source>
+        <target>Die Überprüfung konnte nicht geladen werden. Das kann an einem Netzwerkproblem oder an einer Content Security Policy liegen, die das Überprüfungsskript blockiert. Versuchen Sie es erneut oder wenden Sie sich an den Support.</target>
+      </segment>
+    </unit>
+    <unit id="513045381948130029">
+      <notes>
+        <note category="description">Error from Clerk, the sign-in provider, when an invitation link was used or withdrawn</note>
+      </notes>
+      <segment state="translated">
+        <source>This link is no longer valid or has already been used. Please start again or request a new link.</source>
+        <target>Dieser Link ist nicht mehr gültig oder wurde bereits verwendet. Beginnen Sie von vorn oder fordern Sie einen neuen Link an.</target>
+      </segment>
+    </unit>
     <unit id="5168805403362402794">
       <notes>
         <note category="description">Text while sign-in finishes</note>
@@ -966,6 +1218,15 @@
         <target>Deine Identität ist bestätigt. Wir laden deine Gruppen und bereiten deinen privaten Bereich vor.</target>
       </segment>
     </unit>
+    <unit id="5169688561656463232">
+      <notes>
+        <note category="description">Start of a sentence in Clerk, the sign-in provider, completed by a list such as 8 or more characters</note>
+      </notes>
+      <segment state="translated">
+        <source>Your password must contain</source>
+        <target>Das Passwort muss</target>
+      </segment>
+    </unit>
     <unit id="5182556936985589025">
       <notes>
         <note category="description">Text on the invitation sign-up page for someone new</note>
@@ -973,6 +1234,15 @@
       <segment state="translated">
         <source>Choose a Board Vault username and password to join the group that invited you.</source>
         <target>Wähle einen Board-Vault-Benutzernamen und ein Passwort, um der Gruppe beizutreten, die dich eingeladen hat.</target>
+      </segment>
+    </unit>
+    <unit id="5197686608910315875">
+      <notes>
+        <note category="description">Password advice in Clerk, the sign-in provider</note>
+      </notes>
+      <segment state="translated">
+        <source>Avoid recent years.</source>
+        <target>Die jüngsten Jahreszahlen vermeiden.</target>
       </segment>
     </unit>
     <unit id="5207635742003539443">
@@ -1011,6 +1281,33 @@
         <target>Was spielen wir?</target>
       </segment>
     </unit>
+    <unit id="5353758016329326598">
+      <notes>
+        <note category="description">Error from Clerk, the sign-in provider, when choosing a password</note>
+      </notes>
+      <segment state="translated">
+        <source>Password cannot match your email address, phone number or username. For account safety, please use a different password.</source>
+        <target>Das Passwort darf nicht mit Ihrer E-Mail-Adresse, Telefonnummer oder Ihrem Benutzernamen übereinstimmen. Wählen Sie zur Sicherheit Ihres Kontos ein anderes Passwort.</target>
+      </segment>
+    </unit>
+    <unit id="5418220498903662149">
+      <notes>
+        <note category="description">Password warning in Clerk, the sign-in provider</note>
+      </notes>
+      <segment state="translated">
+        <source>Single names or surnames are easy to guess.</source>
+        <target>Einzelne Namen oder Nachnamen sind leicht zu erraten.</target>
+      </segment>
+    </unit>
+    <unit id="548035914615045180">
+      <notes>
+        <note category="description">Password warning in Clerk, the sign-in provider</note>
+      </notes>
+      <segment state="translated">
+        <source>This is similar to a commonly used password.</source>
+        <target>Dies weist Ähnlichkeit zu anderen oft verwendeten Passwörtern auf.</target>
+      </segment>
+    </unit>
     <unit id="5492578273973439931">
       <notes>
         <note category="description">Toast when the account could not be loaded right after signing in</note>
@@ -1038,6 +1335,15 @@
         <target>Verstanden</target>
       </segment>
     </unit>
+    <unit id="5621728713939769423">
+      <notes>
+        <note category="description">Error from Clerk, the sign-in provider, when an invitation link is too old</note>
+      </notes>
+      <segment state="translated">
+        <source>This link has expired. Please start again or request a new link.</source>
+        <target>Dieser Link ist abgelaufen. Beginnen Sie von vorn oder fordern Sie einen neuen Link an.</target>
+      </segment>
+    </unit>
     <unit id="5673906746664423612">
       <notes>
         <note category="description">Heading while someone joins a group from an invitation link</note>
@@ -1054,6 +1360,24 @@
       <segment state="translated">
         <source>Error deleting notification</source>
         <target>Die Benachrichtigung konnte nicht gelöscht werden</target>
+      </segment>
+    </unit>
+    <unit id="5679842461476058145">
+      <notes>
+        <note category="description">Ends the sentence Your password must contain, in Clerk, the sign-in provider</note>
+      </notes>
+      <segment state="translated">
+        <source>a number</source>
+        <target>eine Zahl enthalten</target>
+      </segment>
+    </unit>
+    <unit id="571053090376584692">
+      <notes>
+        <note category="description">Hint when adding an email address in the account panel from Clerk, the sign-in provider</note>
+      </notes>
+      <segment state="translated">
+        <source>You&apos;ll need to verify this email address before it can be added to your account.</source>
+        <target>Sie müssen diese E-Mail-Adresse verifizieren, bevor sie Ihrem Konto hinzugefügt werden kann.</target>
       </segment>
     </unit>
     <unit id="5729395938595388062">
@@ -1147,6 +1471,24 @@
         <target>Wir bauen noch am Kern, deshalb werden neue Konten nur auf Einladung erstellt.</target>
       </segment>
     </unit>
+    <unit id="6023472757222269524">
+      <notes>
+        <note category="description">Password advice in Clerk, the sign-in provider</note>
+      </notes>
+      <segment state="translated">
+        <source>Capitalize more than the first letter.</source>
+        <target>Nicht nur den ersten Buchstaben groß schreiben.</target>
+      </segment>
+    </unit>
+    <unit id="6036484491111823428">
+      <notes>
+        <note category="description">Heading of the first page of the panel from Clerk, the sign-in provider, that manages the username, email address, and password</note>
+      </notes>
+      <segment state="translated">
+        <source>Sign-in details</source>
+        <target>Anmeldedaten</target>
+      </segment>
+    </unit>
     <unit id="6041525304912058197">
       <notes>
         <note category="description">Search and link preview description of the Create a group page</note>
@@ -1181,6 +1523,24 @@
       <segment state="translated">
         <source>You have joined the group!</source>
         <target>Du bist der Gruppe beigetreten!</target>
+      </segment>
+    </unit>
+    <unit id="6123590976681789837">
+      <notes>
+        <note category="description">Password warning in Clerk, the sign-in provider</note>
+      </notes>
+      <segment state="translated">
+        <source>Straight rows of keys on your keyboard are easy to guess.</source>
+        <target>Gerade Linien von Tasten auf der Tastatur sind leicht zu erraten.</target>
+      </segment>
+    </unit>
+    <unit id="6174219018857528884">
+      <notes>
+        <note category="description">Password warning in Clerk, the sign-in provider</note>
+      </notes>
+      <segment state="translated">
+        <source>Dates are easy to guess.</source>
+        <target>Ein Datum ist leicht zu erraten.</target>
       </segment>
     </unit>
     <unit id="6205660505479571083">
@@ -1228,6 +1588,24 @@
         <target>Bitte eine Person, die Board Vault schon nutzt oder eine Gruppe organisiert, dich einzuladen. Danach nutzt du den sicheren Registrierungslink von Clerk, den du bekommst.</target>
       </segment>
     </unit>
+    <unit id="6321267323966165564">
+      <notes>
+        <note category="description">Password advice in Clerk, the sign-in provider</note>
+      </notes>
+      <segment state="translated">
+        <source>Avoid predictable letter substitutions like &apos;@&apos; for &apos;a&apos;.</source>
+        <target>Vorhersehbare Buchstabenersetzungen wie '@' für 'a' vermeiden.</target>
+      </segment>
+    </unit>
+    <unit id="6376922083892592201">
+      <notes>
+        <note category="description">Password advice in Clerk, the sign-in provider</note>
+      </notes>
+      <segment state="translated">
+        <source>Capitalize some, but not all letters.</source>
+        <target>Einige, aber nicht alle Buchstaben groß schreiben.</target>
+      </segment>
+    </unit>
     <unit id="6403112028413315560">
       <notes>
         <note category="description">Shown in the inbox while notifications load</note>
@@ -1262,6 +1640,15 @@
       <segment state="translated">
         <source>Your Board Vault account is already registered.</source>
         <target>Du hast schon ein Board-Vault-Konto.</target>
+      </segment>
+    </unit>
+    <unit id="6505214317212036405">
+      <notes>
+        <note category="description">Password warning in Clerk, the sign-in provider</note>
+      </notes>
+      <segment state="translated">
+        <source>This is a frequently used password.</source>
+        <target>Dies ist ein häufig verwendetes Passwort.</target>
       </segment>
     </unit>
     <unit id="6582558331846075943">
@@ -1302,7 +1689,7 @@
     </unit>
     <unit id="6650633628037596693">
       <notes>
-        <note category="description">Button that tries to finish sign-in again after an error</note>
+        <note category="description">Button from Clerk, the sign-in provider, after its check that a sign-in is not automated failed</note>
       </notes>
       <segment state="translated">
         <source>Try again</source>
@@ -1327,6 +1714,15 @@
         <target>Bild nicht verfügbar</target>
       </segment>
     </unit>
+    <unit id="6680464724162231112">
+      <notes>
+        <note category="description">Password warning in Clerk, the sign-in provider</note>
+      </notes>
+      <segment state="translated">
+        <source>This is a commonly used password.</source>
+        <target>Dies ist ein oft verwendetes Passwort.</target>
+      </segment>
+    </unit>
     <unit id="6692170698163862308">
       <notes>
         <note category="description">Browser tab title of the Groups page</note>
@@ -1343,6 +1739,15 @@
       <segment state="translated">
         <source>Error accepting invitation</source>
         <target>Die Einladung konnte nicht angenommen werden</target>
+      </segment>
+    </unit>
+    <unit id="6716126281248146214">
+      <notes>
+        <note category="description">Error from Clerk, the sign-in provider, about its check that a sign-in is not automated</note>
+      </notes>
+      <segment state="translated">
+        <source>Verification couldn&apos;t start. Please contact support.</source>
+        <target>Die Überprüfung konnte nicht gestartet werden. Wenden Sie sich an den Support.</target>
       </segment>
     </unit>
     <unit id="6744211960979064014">
@@ -1409,6 +1814,16 @@
         <target>Hilfst du uns? 🎲</target>
       </segment>
     </unit>
+    <unit id="6959910266115210305">
+      <notes>
+        <note category="description">Name of the panel from Clerk, the sign-in provider, that manages the username, email address, and password</note>
+        <note category="meaning">Clerk account panel title</note>
+      </notes>
+      <segment state="translated">
+        <source>Sign-in</source>
+        <target>Anmeldung</target>
+      </segment>
+    </unit>
     <unit id="7007703201160377234">
       <notes>
         <note category="description">Line at the bottom of the sign-up page with a link to the sign-in page</note>
@@ -1416,6 +1831,24 @@
       <segment state="translated">
         <source>Already have an account? <pc id="0" equivStart="START_LINK" equivEnd="CLOSE_LINK" type="link" dispStart="&lt;a routerLink=&quot;/login&quot; class=&quot;underline&quot;&gt;" dispEnd="&lt;/a&gt;">Sign in</pc></source>
         <target>Du hast schon ein Konto? <pc id="0" equivStart="START_LINK" equivEnd="CLOSE_LINK" type="link" dispStart="&lt;a routerLink=&quot;/login&quot; class=&quot;underline&quot;&gt;" dispEnd="&lt;/a&gt;">Anmelden</pc></target>
+      </segment>
+    </unit>
+    <unit id="7085036273592820424">
+      <notes>
+        <note category="description">Password advice in Clerk, the sign-in provider</note>
+      </notes>
+      <segment state="translated">
+        <source>Avoid common character sequences.</source>
+        <target>Häufige Zeichenfolgen vermeiden.</target>
+      </segment>
+    </unit>
+    <unit id="7102237808273658201">
+      <notes>
+        <note category="description">Title shown by Clerk, the sign-in provider, while it checks that a sign-in is not automated</note>
+      </notes>
+      <segment state="translated">
+        <source>Verifying your request</source>
+        <target>Ihre Anfrage wird überprüft</target>
       </segment>
     </unit>
     <unit id="7105490533744744390">
@@ -1463,6 +1896,24 @@
         <target>So bekommst du Zugang</target>
       </segment>
     </unit>
+    <unit id="7207149888715584322">
+      <notes>
+        <note category="description">Password warning in Clerk, the sign-in provider</note>
+      </notes>
+      <segment state="translated">
+        <source>This is a heavily used password.</source>
+        <target>Dies ist ein sehr häufig verwendetes Passwort.</target>
+      </segment>
+    </unit>
+    <unit id="7279088663215707450">
+      <notes>
+        <note category="description">Password warning in Clerk, the sign-in provider</note>
+      </notes>
+      <segment state="translated">
+        <source>Single words are easy to guess.</source>
+        <target>Einzelne Wörter sind leicht zu erraten.</target>
+      </segment>
+    </unit>
     <unit id="7306616487170771288">
       <notes>
         <note category="description">Line at the bottom of the sign-in page with a link to the access page</note>
@@ -1479,6 +1930,24 @@
       <segment state="translated">
         <source>Board Vault home</source>
         <target>Board Vault – Start</target>
+      </segment>
+    </unit>
+    <unit id="7372277959950637369">
+      <notes>
+        <note category="description">Hint under the email address field in Clerk, the sign-in provider</note>
+      </notes>
+      <segment state="translated">
+        <source>Example format: name@example.com</source>
+        <target>Beispielformat: name@beispiel.de</target>
+      </segment>
+    </unit>
+    <unit id="7375747030109081868">
+      <notes>
+        <note category="description">Ends the sentence Your password must contain, in Clerk, the sign-in provider</note>
+      </notes>
+      <segment state="translated">
+        <source>a lowercase letter</source>
+        <target>einen Kleinbuchstaben enthalten</target>
       </segment>
     </unit>
     <unit id="7384935012309989418">
@@ -1524,6 +1993,15 @@
       <segment state="translated">
         <source>Back to app</source>
         <target>Zurück zur App</target>
+      </segment>
+    </unit>
+    <unit id="756147812205802406">
+      <notes>
+        <note category="description">Error from Clerk, the sign-in provider, when changing a password</note>
+      </notes>
+      <segment state="translated">
+        <source>New password cannot be the same as the current password.</source>
+        <target>Das neue Passwort darf nicht mit dem aktuellen übereinstimmen.</target>
       </segment>
     </unit>
     <unit id="7619560701830330401">
@@ -1626,6 +2104,15 @@
         <target>Du bist auf dem neuesten Stand.</target>
       </segment>
     </unit>
+    <unit id="7903843199053930">
+      <notes>
+        <note category="description">Password advice in Clerk, the sign-in provider</note>
+      </notes>
+      <segment state="translated">
+        <source>Use longer keyboard patterns and change typing direction multiple times.</source>
+        <target>Längere Tastaturmuster in unterschiedlicher Tipprichtung verwenden.</target>
+      </segment>
+    </unit>
     <unit id="7934833136974560675">
       <notes>
         <note category="description">Button that loads a list again after an error</note>
@@ -1680,6 +2167,15 @@
         <target>Wunschliste</target>
       </segment>
     </unit>
+    <unit id="8082437050234741884">
+      <notes>
+        <note category="description">Password warning in Clerk, the sign-in provider</note>
+      </notes>
+      <segment state="translated">
+        <source>Short keyboard patterns are easy to guess.</source>
+        <target>Kurze Tastaturmuster sind leicht zu erraten.</target>
+      </segment>
+    </unit>
     <unit id="8116175184239166510">
       <notes>
         <note category="description">Button on a group invitation in the inbox</note>
@@ -1687,6 +2183,24 @@
       <segment state="translated">
         <source>Decline</source>
         <target>Ablehnen</target>
+      </segment>
+    </unit>
+    <unit id="8144330943405153313">
+      <notes>
+        <note category="description">Error from Clerk, the sign-in provider</note>
+      </notes>
+      <segment state="translated">
+        <source>This action couldn&apos;t be completed. Please try again later or contact support if this persists.</source>
+        <target>Diese Aktion konnte nicht abgeschlossen werden. Versuchen Sie es später erneut oder wenden Sie sich an den Support, wenn das Problem weiter besteht.</target>
+      </segment>
+    </unit>
+    <unit id="8205762812117214148">
+      <notes>
+        <note category="description">Error from Clerk, the sign-in provider, about its check that a sign-in is not automated</note>
+      </notes>
+      <segment state="translated">
+        <source>Verification didn&apos;t complete in time. Please try again.</source>
+        <target>Die Überprüfung wurde nicht rechtzeitig abgeschlossen. Versuchen Sie es erneut.</target>
       </segment>
     </unit>
     <unit id="8218180595897396108">
@@ -1725,6 +2239,15 @@
       <segment state="translated">
         <source>Inbox, <ph id="0" equiv="count" disp="count"/> new</source>
         <target>Posteingang, <ph id="0" equiv="count" disp="count"/> neue Einträge</target>
+      </segment>
+    </unit>
+    <unit id="8344586071532675623">
+      <notes>
+        <note category="description">Under the title of the panel from Clerk, the sign-in provider, that manages the username, email address, and password</note>
+      </notes>
+      <segment state="translated">
+        <source>Manage how you sign in to Board Vault.</source>
+        <target>Verwalten Sie, wie Sie sich bei Board Vault anmelden.</target>
       </segment>
     </unit>
     <unit id="8348072798509355617">
@@ -1781,6 +2304,24 @@
         <target>Hilfst du uns? 🎲 Wir sind ein winziges Indie-Team. Wenn du das eingeschaltet lässt, können wir zählen, welche Seiten geöffnet werden – unter einem Pseudonym und in unserer eigenen Datenbank –, damit wir wissen, was wir als Nächstes verbessern. Keine Cookies, nichts wird geteilt. Du kannst das jederzeit unter Einstellungen → Datenschutz ändern.</target>
       </segment>
     </unit>
+    <unit id="8487119295846165326">
+      <notes>
+        <note category="description">Ends the sentence Your password must contain, in Clerk, the sign-in provider</note>
+      </notes>
+      <segment state="translated">
+        <source>an uppercase letter</source>
+        <target>einen Großbuchstaben enthalten</target>
+      </segment>
+    </unit>
+    <unit id="8506230638457254442">
+      <notes>
+        <note category="description">Password advice in Clerk, the sign-in provider</note>
+      </notes>
+      <segment state="translated">
+        <source>Avoid years that are associated with you.</source>
+        <target>Jahre, die mit persönlichen Daten in Verbindung gebracht werden können, vermeiden.</target>
+      </segment>
+    </unit>
     <unit id="8564202903947049539">
       <notes>
         <note category="description">Main section of the app, with game nights</note>
@@ -1799,6 +2340,15 @@
         <target>Spielen — Board Vault</target>
       </segment>
     </unit>
+    <unit id="8654642196646765162">
+      <notes>
+        <note category="description">Password strength in Clerk, the sign-in provider</note>
+      </notes>
+      <segment state="translated">
+        <source>Your password is not strong enough.</source>
+        <target>Passwort nicht stark genug.</target>
+      </segment>
+    </unit>
     <unit id="8694180754500384388">
       <notes>
         <note category="description">Search and link preview description of the landing page</note>
@@ -1806,6 +2356,15 @@
       <segment state="translated">
         <source>A private workspace for recurring board-game groups to decide, play, and remember together.</source>
         <target>Ein privater Bereich für feste Brettspielgruppen, um gemeinsam zu entscheiden, zu spielen und sich zu erinnern.</target>
+      </segment>
+    </unit>
+    <unit id="8698855233880130185">
+      <notes>
+        <note category="description">Password advice in Clerk, the sign-in provider</note>
+      </notes>
+      <segment state="translated">
+        <source>Avoid reversed spellings of common words.</source>
+        <target>Umgekehrte Schreibweise von gebräuchlichen Wörtern vermeiden.</target>
       </segment>
     </unit>
     <unit id="871235372571809921">
@@ -1828,7 +2387,7 @@
     </unit>
     <unit id="8779419494821652108">
       <notes>
-        <note category="description">Field label on the invitation sign-up page</note>
+        <note category="description">Placeholder of the new password field in Clerk, the sign-in provider</note>
       </notes>
       <segment state="translated">
         <source>Create a password</source>
@@ -1880,6 +2439,15 @@
         <target>Deine Benachrichtigungen konnten nicht geladen werden</target>
       </segment>
     </unit>
+    <unit id="8957370839586560700">
+      <notes>
+        <note category="description">Error from Clerk, the sign-in provider, about its check that a sign-in is not automated</note>
+      </notes>
+      <segment state="translated">
+        <source>Verification didn&apos;t complete. Please try again.</source>
+        <target>Die Überprüfung wurde nicht abgeschlossen. Versuchen Sie es erneut.</target>
+      </segment>
+    </unit>
     <unit id="9014138025274858717">
       <notes>
         <note category="description">Browser tab title of the landing page</note>
@@ -1916,6 +2484,15 @@
         <target>Keine offenen Einladungen.</target>
       </segment>
     </unit>
+    <unit id="9115957101123254722">
+      <notes>
+        <note category="description">Password warning in Clerk, the sign-in provider</note>
+      </notes>
+      <segment state="translated">
+        <source>Repeated character patterns like &quot;abcabcabc&quot; are easy to guess.</source>
+        <target>Sich wiederholende Zeichenmuster wie "abcabcabc" sind leicht zu erraten.</target>
+      </segment>
+    </unit>
     <unit id="9137951864770451001">
       <notes>
         <note category="description">Text on a group invitation in the inbox</note>
@@ -1923,6 +2500,15 @@
       <segment state="translated">
         <source>Accepting adds you to this private group’s shared games and future session plans.</source>
         <target>Wenn du annimmst, bekommst du Zugang zu den gemeinsamen Spielen und geplanten Spieleabenden dieser privaten Gruppe.</target>
+      </segment>
+    </unit>
+    <unit id="9144060250307751763">
+      <notes>
+        <note category="description">Ends the sentence Your password must contain, in Clerk, the sign-in provider</note>
+      </notes>
+      <segment state="translated">
+        <source><ph id="0" equiv="length" disp="length"/> or more characters</source>
+        <target>mindestens <ph id="0" equiv="length" disp="length"/> Zeichen lang sein</target>
       </segment>
     </unit>
     <unit id="9212705249340904752">
