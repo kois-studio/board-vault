@@ -3,12 +3,27 @@ import { CardInvitationComponent } from '../../components/card-invitation/card-i
 import { CardNotificationComponent } from '../../components/card-notification/card-notification.component'
 import { ButtonComponent } from '../../components/ui/button/button.component'
 import { IconComponent } from '../../components/ui/icon/icon.component'
+import { intlLocale } from '../../core/i18n/format'
 import { SortByDatePipe } from '../../core/pipes/sortByDate.pipe'
 import { DataService } from '../../core/services/data.service'
 import { injectDisclosure } from '../../core/utils/disclosure'
 
 /** How often the inbox looks again while the page is in view. */
 export const INBOX_CHECK_MS = 60_000
+
+/** Read to screen readers when something new arrives in the inbox. */
+function inboxAnnouncement(count: number): string {
+    return new Intl.PluralRules(intlLocale()).select(count) === 'one'
+        ? $localize`:inbox arrival, one|Read to screen readers when the inbox has new things, one:Inbox: ${count}:count: new`
+        : $localize`:inbox arrival, other|Read to screen readers when the inbox has new things, more than one:Inbox: ${count}:count: new`
+}
+
+/** The inbox button's name while something is new. */
+function inboxLabel(count: number): string {
+    return new Intl.PluralRules(intlLocale()).select(count) === 'one'
+        ? $localize`:inbox button, one|Name of the inbox button in the header with new things, one:Inbox, ${count}:count: new`
+        : $localize`:inbox button, other|Name of the inbox button in the header with new things, more than one:Inbox, ${count}:count: new`
+}
 
 /** The bell in the header: pending group invitations and notifications, with one count. */
 @Component({
@@ -56,7 +71,7 @@ export class InboxComponent {
             if (this.dataService.inboxArrivals() === 0) return
             untracked(() => {
                 const count = this.count()
-                this.announcement.set(count === 1 ? 'Inbox: 1 new' : `Inbox: ${count} new`)
+                this.announcement.set(inboxAnnouncement(count))
             })
         })
     }
@@ -72,7 +87,7 @@ export class InboxComponent {
 
     public readonly triggerLabel = computed(() => {
         const count = this.count()
-        return count ? `Inbox, ${count} new` : 'Inbox'
+        return count ? inboxLabel(count) : $localize`:Name of the inbox button in the header when nothing is new:Inbox`
     })
 
     public markAllRead(): void {

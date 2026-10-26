@@ -81,71 +81,77 @@ export class AppComponent {
         const page = [
             {
                 match: /^\/$/,
-                title: 'Board Vault — Game night, remembered',
-                description: 'A private workspace for recurring board-game groups to decide, play, and remember together.',
+                title: $localize`:Browser tab title of the landing page:Board Vault — Game night, remembered`,
+                description: $localize`:Search and link preview description of the landing page:A private workspace for recurring board-game groups to decide, play, and remember together.`,
             },
             {
                 match: /^\/login$/,
-                title: 'Sign in — Board Vault',
-                description: 'Securely sign in to your private Board Vault group workspace.',
+                title: $localize`:Browser tab title of the Sign in page:Sign in — Board Vault`,
+                description: $localize`:Search and link preview description of the Sign in page:Securely sign in to your private Board Vault group workspace.`,
             },
             {
                 match: /^\/register$/,
-                title: 'Join by invitation — Board Vault',
-                description: 'Create your Board Vault account from a group invitation.',
+                title: $localize`:Browser tab title of the Join by invitation page:Join by invitation — Board Vault`,
+                description: $localize`:Search and link preview description of the Join by invitation page:Create your Board Vault account from a group invitation.`,
             },
             {
                 match: /^\/dashboard$/,
-                title: 'Home — Board Vault',
-                description: 'See what your group should do next, from one focused workspace.',
+                title: $localize`:Browser tab title of the Home page:Home — Board Vault`,
+                description: $localize`:Search and link preview description of the Home page:See what your group should do next, from one focused workspace.`,
             },
             {
                 match: /^\/submissions$/,
-                title: 'My submissions — Board Vault',
-                description: 'Propose games for the shared catalogue and follow their review.',
+                title: $localize`:Browser tab title of the My submissions page:My submissions — Board Vault`,
+                description: $localize`:Search and link preview description of the My submissions page:Propose games for the shared catalogue and follow their review.`,
             },
             {
                 match: /^\/create-group$/,
-                title: 'Create a group — Board Vault',
-                description: 'Start a private board-game group and invite the people you play with.',
+                title: $localize`:Browser tab title of the Create a group page:Create a group — Board Vault`,
+                description: $localize`:Search and link preview description of the Create a group page:Start a private board-game group and invite the people you play with.`,
             },
             {
                 match: /^\/groups(?:\/|$)/,
-                title: 'Groups — Board Vault',
-                description: 'Move between your private board-game groups and their shared history.',
+                title: $localize`:Browser tab title of the Groups page:Groups — Board Vault`,
+                description: $localize`:Search and link preview description of the Groups page:Move between your private board-game groups and their shared history.`,
             },
             {
                 match: /^\/collection(?:\/|$)/,
-                title: 'Collection — Board Vault',
-                description: 'Keep your private shelf, wishlist, reviews, and group game context together.',
+                title: $localize`:Browser tab title of the Collection page:Collection — Board Vault`,
+                description: $localize`:Search and link preview description of the Collection page:Keep your private shelf, wishlist, reviews, and group game context together.`,
             },
             {
                 match: /^\/games\//,
-                title: 'Game details — Board Vault',
-                description: 'Review a game in the context of your private collection and group history.',
+                title: $localize`:Browser tab title of the Game details page:Game details — Board Vault`,
+                description: $localize`:Search and link preview description of the Game details page:Review a game in the context of your private collection and group history.`,
             },
             {
                 match: /^\/play(?:\/|$)/,
-                title: 'Play — Board Vault',
-                description: 'Choose, plan, and remember the games your group plays together.',
+                title: $localize`:Browser tab title of the Play page:Play — Board Vault`,
+                description: $localize`:Search and link preview description of the Play page:Choose, plan, and remember the games your group plays together.`,
             },
             {
                 match: /^\/sessions\//,
-                title: 'Session — Board Vault',
-                description: 'Review a private group session, attendance, games, and memories.',
+                title: $localize`:Browser tab title of the Session page:Session — Board Vault`,
+                description: $localize`:Search and link preview description of the Session page:Review a private group session, attendance, games, and memories.`,
             },
             {
                 match: /^\/settings(?:\/|$)/,
-                title: 'Settings — Board Vault',
-                description: 'Manage your Board Vault account and security settings.',
+                title: $localize`:Browser tab title of the Settings page:Settings — Board Vault`,
+                description: $localize`:Search and link preview description of the Settings page:Manage your Board Vault account and security settings.`,
             },
             {
+                // Administration stays English (ADR-0024).
                 match: /^\/admin(?:\/|$)/,
                 title: 'Admin — Board Vault',
                 description: 'Operator tools for maintaining the Board Vault workspace.',
             },
         ].find((candidate) => candidate.match.test(path))
 
-        return page ?? { title: 'Page not found — Board Vault', description: 'That Board Vault page could not be found.' }
+        return (
+            page ?? {
+                title: $localize`:Browser tab title of the page shown for an address that does not exist:Page not found — Board Vault`,
+                description: $localize`:Search and link preview description of the page shown for an address that does not exist:That Board Vault page could not be found.`,
+            }
+        )
     }
 }

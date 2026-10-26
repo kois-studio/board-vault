@@ -20,6 +20,14 @@ export class CardInvitationComponent {
 
     constructor(private readonly dataService: DataService) {}
 
+    public acceptLabel(group: string): string {
+        return $localize`:Name of the Accept button on a group invitation in the inbox:Accept invitation to ${group}:group:`
+    }
+
+    public declineLabel(group: string): string {
+        return $localize`:Name of the Decline button on a group invitation in the inbox:Decline invitation to ${group}:group:`
+    }
+
     async acceptInvitation() {
         const invitation = this.invitation()
         if (!invitation || this.isLoading()) return
@@ -30,7 +38,7 @@ export class CardInvitationComponent {
             await firstValueFrom(this.dataService.acceptInvitation(invitation.id))
         } catch {
             this.actionError.set(
-                'We could not accept this invitation. It may have expired or the group may no longer be available. Try again or refresh your invitations.',
+                $localize`:Error on a group invitation in the inbox when accepting it failed:We could not accept this invitation. It may have expired or the group may no longer be available. Try again or refresh your invitations.`,
             )
         } finally {
             this.isLoading.set(false)
@@ -51,7 +59,9 @@ export class CardInvitationComponent {
         try {
             await firstValueFrom(this.dataService.rejectInvitation(invitation.id))
         } catch {
-            this.actionError.set('We could not decline this invitation right now. Try again or refresh your invitations.')
+            this.actionError.set(
+                $localize`:Error on a group invitation in the inbox when declining it failed:We could not decline this invitation right now. Try again or refresh your invitations.`,
+            )
         } finally {
             this.isLoading.set(false)
         }
