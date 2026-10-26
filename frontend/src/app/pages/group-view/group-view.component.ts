@@ -28,12 +28,14 @@ import { ImageBackgroundComponent } from '../../components/ui/image-background/i
 import { InPageLinkDirective } from '../../components/ui/in-page-link/in-page-link.directive'
 import { PageHeaderComponent } from '../../components/ui/page-header/page-header.component'
 import { LOADING_KEYS } from '../../core/enums/loading-keys-enum'
-import { CountPipe, PlayersPipe } from '../../core/pipes/count.pipe'
+import { formatNumber, intlLocale } from '../../core/i18n/format'
+import { PlayersPipe } from '../../core/pipes/count.pipe'
 import { CustomDatePipe } from '../../core/pipes/customDate.pipe'
 import { GameTitlePipe } from '../../core/pipes/game-title.pipe'
 import { DataService } from '../../core/services/data.service'
 import { LoadingService } from '../../core/services/loading.service'
-import { formatAttendeeSummary } from '../../core/utils/formatAttendeeSummary'
+import { attendeeNames, formatAttendeeSummary } from '../../core/utils/formatAttendeeSummary'
+import { gameTitle } from '../../core/utils/gameTitle'
 import { groupGameCount, groupPeopleCount } from '../../core/utils/groupCounts'
 import { formatWinners, historyWinnerNames, mergeHistoryParticipants } from '../../core/utils/historyParticipants'
 import { initialsAvatar } from '../../core/utils/initialsAvatar'
@@ -65,7 +67,6 @@ export function shouldShowFirstGroupSetup(input: {
     imports: [
         GameTitlePipe,
         GroupActivityFeedComponent,
-        CountPipe,
         PlayersPipe,
         RouterLink,
         ContainerWrapperComponent,
@@ -117,9 +118,13 @@ export class GroupViewComponent {
 
     // groupViewService
     public readonly groupData$ = this.groupViewService.groupData
+    public readonly pageTitle = computed(
+        () => this.groupData$()?.name ?? $localize`:Title of the group page while the group loads or is missing:Group home`,
+    )
     public readonly playerCount$ = this.groupViewService.playerCount
     public readonly PLAYER_COUNTS = [2, 3, 4, 5, 6]
     public readonly avgReviewsIndexComputed = this.groupViewService.avgReviewsIndexComputed
+    public readonly formatNumber = formatNumber
     public readonly totalUniqueGamesComputed = this.groupViewService.totalUniqueGamesComputed
     // Group pulse: everyone in the group, with or without an account, as on Home.
     public readonly groupPeopleCount = groupPeopleCount
@@ -475,12 +480,14 @@ export class GroupViewComponent {
         try {
             await firstValueFrom(this.api.createGroupPerson(groupId, displayName))
             this.newGroupPersonName.set('')
-            this.toastService.success(`${displayName} was added to the group.`)
+            this.toastService.success(
+                $localize`:Toast after adding a person without an account to a group:${displayName}:name: was added to the group.`,
+            )
             this.loadGroupPeople(groupId)
             // The library and the group's counts come from the groups overview.
             this.dataService.refreshUserGroups()
         } catch {
-            this.toastService.error('Could not add this person to the group.')
+            this.toastService.error($localize`:Toast when a person could not be added to a group:Could not add this person to the group.`)
         } finally {
             this.groupPersonMutationId.set(null)
         }
@@ -494,11 +501,17 @@ export class GroupViewComponent {
         try {
             const nextStatus = person.person.status === 'archived' ? 'active' : 'archived'
             await firstValueFrom(this.api.updateGroupPerson(groupId, person.person.id, { status: nextStatus }))
-            this.toastService.success(nextStatus === 'active' ? 'The group person was restored.' : 'The group person was archived.')
+            this.toastService.success(
+                nextStatus === 'active'
+                    ? $localize`:Toast after bringing back an archived person of a group:The group person was restored.`
+                    : $localize`:Toast after archiving a person of a group:The group person was archived.`,
+            )
             this.loadGroupPeople(groupId)
             this.dataService.refreshUserGroups()
         } catch {
-            this.toastService.error('Could not archive this group person.')
+            this.toastService.error(
+                $localize`:Toast when a person of a group could not be archived or restored:Could not archive this group person.`,
+            )
         } finally {
             this.groupPersonMutationId.set(null)
         }
@@ -517,9 +530,12 @@ export class GroupViewComponent {
 
     public getGroupPersonOwnershipSource(person: GroupPersonWorkspaceType, gameId: number): string | null {
         const source = person.ownership.find((ownership) => ownership.gameId === gameId)?.source
-        if (source === 'account_collection') return 'synced from linked collection'
-        if (source === 'claimed_import') return 'accepted during claim'
-        if (source === 'placeholder_setup') return 'entered by a member'
+        if (source === 'account_collection')
+            return $localize`:Where a game on a group person's list comes from, under the game in the group page's editor:synced from linked collection`
+        if (source === 'claimed_import')
+            return $localize`:Where a game on a group person's list comes from, under the game in the group page's editor:accepted during claim`
+        if (source === 'placeholder_setup')
+            return $localize`:Where a game on a group person's list comes from, under the game in the group page's editor:entered by a member`
         return null
     }
 
@@ -571,7 +587,9 @@ export class GroupViewComponent {
             this.loadGroupPeople(groupId)
             this.dataService.refreshUserGroups()
         } catch {
-            this.toastService.error('Could not update this person’s game ownership.')
+            this.toastService.error(
+                $localize`:Toast when whether a group person owns a game could not be saved:Could not update this person’s game ownership.`,
+            )
         } finally {
             this.groupPersonMutationId.set(null)
         }
@@ -579,14 +597,6 @@ export class GroupViewComponent {
 
     public getGroupPersonPreference(person: GroupPersonWorkspaceType, gameId: number): GroupPersonPreferenceType['preference'] | null {
         return person.preferences.find((preference) => preference.gameId === gameId)?.preference ?? null
-    }
-
-    public getGroupPersonPreferenceSource(person: GroupPersonWorkspaceType, gameId: number): string | null {
-        const source = person.preferences.find((preference) => preference.gameId === gameId)?.source
-        if (source === 'account_profile') return 'synced from account profile'
-        if (source === 'claimed_import') return 'accepted during claim'
-        if (source === 'placeholder_setup') return 'entered by a member'
-        return null
     }
 
     public async setGroupPersonPreference(person: GroupPersonWorkspaceType, gameId: number, event: Event): Promise<void> {
@@ -612,7 +622,9 @@ export class GroupViewComponent {
             }
             this.loadGroupPeople(groupId)
         } catch {
-            this.toastService.error('Could not update this person’s game preference.')
+            this.toastService.error(
+                $localize`:Toast when what a group person thinks of a game could not be saved:Could not update this person’s game preference.`,
+            )
         } finally {
             this.groupPersonMutationId.set(null)
         }
@@ -625,10 +637,10 @@ export class GroupViewComponent {
         this.groupPersonMutationId.set(-1)
         try {
             await firstValueFrom(this.api.joinGroupAsNewPerson(groupId))
-            this.toastService.success('You joined this group as a new person.')
+            this.toastService.success($localize`:Toast after adding yourself to a group's people:You joined this group as a new person.`)
             this.loadGroupPeople(groupId)
         } catch {
-            this.toastService.error('Could not add you as a group person.')
+            this.toastService.error($localize`:Toast when you could not be added to a group's people:Could not add you as a group person.`)
         } finally {
             this.groupPersonMutationId.set(null)
         }
@@ -640,19 +652,17 @@ export class GroupViewComponent {
     }
 
     public getInterestNames(entry: GroupAcquisitionEntryType): string {
-        const names = entry.interestedBy.map((member) => member.displayName || member.username)
-        if (names.length <= 3) return names.join(', ')
-        return `${names.slice(0, 3).join(', ')} + ${names.length - 3} more`
+        return attendeeNames(entry.interestedBy)
     }
 
     public getAcquisitionDecisionLabel(status: GroupAcquisitionEntryType['decisionStatus']): string {
         switch (status) {
             case 'planned':
-                return 'Plan to acquire'
+                return $localize`:Status of a game the group might buy, and the group owner's button that sets it:Plan to acquire`
             case 'not_now':
-                return 'Not now'
+                return $localize`:Status of a game the group might buy, and the group owner's button that sets it:Not now`
             default:
-                return 'Open for discussion'
+                return $localize`:Status of a game the group might buy, before the group owner decides:Open for discussion`
         }
     }
 
@@ -668,11 +678,18 @@ export class GroupViewComponent {
         })
         try {
             await firstValueFrom(this.api.updateGroupAcquisitionDecision(groupId, gameId, status))
-            this.toastService.success(`Acquisition decision updated: ${this.getAcquisitionDecisionLabel(status)}.`)
+            this.toastService.success(
+                $localize`:Toast after the group owner decides about a game the group might buy; the placeholder is the new status, such as Plan to acquire:Acquisition decision updated: ${this.getAcquisitionDecisionLabel(status)}:status:.`,
+            )
             this.loadAcquisitionBoard(groupId)
         } catch {
-            this.acquisitionDecisionErrors.update((errors) => ({ ...errors, [gameId]: 'Could not update this group decision. Try again.' }))
-            this.toastService.error('Could not update the group acquisition decision.')
+            this.acquisitionDecisionErrors.update((errors) => ({
+                ...errors,
+                [gameId]: $localize`:Error under a game the group might buy:Could not update this group decision. Try again.`,
+            }))
+            this.toastService.error(
+                $localize`:Toast when the decision about a game the group might buy could not be saved:Could not update the group acquisition decision.`,
+            )
         } finally {
             this.acquisitionDecisionMutationGameId.set(null)
         }
@@ -690,11 +707,18 @@ export class GroupViewComponent {
         })
         try {
             await firstValueFrom(this.api.addGroupAcquisitionInterest(groupId, gameId))
-            this.toastService.success('Your interest was added to the group shortlist.')
+            this.toastService.success(
+                $localize`:Toast after saying you are interested in a game the group might buy:Your interest was added to the group shortlist.`,
+            )
             this.loadAcquisitionBoard(groupId)
         } catch {
-            this.acquisitionMutationErrors.update((errors) => ({ ...errors, [gameId]: 'Could not add your interest. Try again.' }))
-            this.toastService.error('Could not add your interest to the group board.')
+            this.acquisitionMutationErrors.update((errors) => ({
+                ...errors,
+                [gameId]: $localize`:Error under a game the group might buy:Could not add your interest. Try again.`,
+            }))
+            this.toastService.error(
+                $localize`:Toast when your interest in a game the group might buy could not be saved:Could not add your interest to the group board.`,
+            )
         } finally {
             this.acquisitionMutationGameId.set(null)
         }
@@ -716,8 +740,13 @@ export class GroupViewComponent {
         } catch {
             // Keep the last known board visible: a failed removal is an
             // action-level error, not evidence that the board itself vanished.
-            this.acquisitionMutationErrors.update((errors) => ({ ...errors, [gameId]: 'Could not remove your interest. Try again.' }))
-            this.toastService.error('Could not remove your interest from the group board.')
+            this.acquisitionMutationErrors.update((errors) => ({
+                ...errors,
+                [gameId]: $localize`:Error under a game the group might buy:Could not remove your interest. Try again.`,
+            }))
+            this.toastService.error(
+                $localize`:Toast when your interest in a game the group might buy could not be removed:Could not remove your interest from the group board.`,
+            )
         } finally {
             this.acquisitionMutationGameId.set(null)
         }
@@ -770,8 +799,57 @@ export class GroupViewComponent {
 
     /** "3 wins · 7 games · 4 nights" */
     public standingSummary(standing: GroupStandingType): string {
-        const plural = (count: number, word: string) => `${count} ${word}${count === 1 ? '' : 's'}`
-        return [plural(standing.wins, 'win'), plural(standing.gamesPlayed, 'game'), plural(standing.sessions, 'night')].join(' · ')
+        const one = (count: number) => new Intl.PluralRules(intlLocale()).select(count) === 'one'
+        const { wins, gamesPlayed: games, sessions: nights } = standing
+        return [
+            one(wins)
+                ? $localize`:Part of a line in a group's standings, wins, one:${wins}:count: win`
+                : $localize`:Part of a line in a group's standings, wins, several:${wins}:count: wins`,
+            one(games)
+                ? $localize`:Part of a line in a group's standings, games played, one:${games}:count: game`
+                : $localize`:Part of a line in a group's standings, games played, several:${games}:count: games`,
+            one(nights)
+                ? $localize`:Part of a line in a group's standings, game nights, one:${nights}:count: night`
+                : $localize`:Part of a line in a group's standings, game nights, several:${nights}:count: nights`,
+        ].join(' · ')
+    }
+
+    /** The cover's description for screen readers. */
+    public coverAlt(game: Parameters<typeof gameTitle>[0]): string {
+        return $localize`:Description of a game's cover picture; the placeholder is the game title:${gameTitle(game)}:title: cover`
+    }
+
+    /** The name of a cover that opens the game's page. */
+    public viewGameLabel(game: Parameters<typeof gameTitle>[0]): string {
+        return $localize`:Name of a game's cover that opens its page; the placeholder is the game title:View ${gameTitle(game)}:title:`
+    }
+
+    /** Who brings what: a face that opens the person's games. */
+    public bringsLabel(name: string): string {
+        return $localize`:Name of a face under Who brings what on the group page, which opens the person's games:${name}:name:: games they bring`
+    }
+
+    /** The library's player filter. */
+    public gamesForLabel(count: number): string {
+        return new Intl.PluralRules(intlLocale()).select(count) === 'one'
+            ? $localize`:Button that shows only the games in the group's library for this many players, one:Games for ${count}:count: player`
+            : $localize`:Button that shows only the games in the group's library for this many players:Games for ${count}:count: players`
+    }
+
+    public ownedGamesLabel(name: string): string {
+        return $localize`:Name of the list of games a person of the group owns, on the group page:Games ${name}:name: owns`
+    }
+
+    public ownershipLabel(game: Parameters<typeof gameTitle>[0], name: string): string {
+        return $localize`:Name of the menu on the group page that says whether a person owns a game:${gameTitle(game)}:title: ownership for ${name}:name:`
+    }
+
+    public preferenceLabel(game: Parameters<typeof gameTitle>[0], name: string): string {
+        return $localize`:Name of the menu on the group page that says what a person thinks of a game:${gameTitle(game)}:title: preference for ${name}:name:`
+    }
+
+    public inviteLabel(name: string): string {
+        return $localize`:Link on a person without an account on the group page, to the group's settings to invite them:Invite ${name}:name:`
     }
 
     private loadAcquisitionBoard(groupId: number): void {
@@ -791,9 +869,14 @@ export class GroupViewComponent {
 
     /** The badge on a group person: no account, a member, or someone no longer in the group. */
     public groupPersonBadge(person: GroupPersonWorkspaceType['person']): string {
-        if (person.standing === 'deleted') return 'Deleted account'
-        if (person.standing === 'left') return person.kind === 'linked' ? 'Left the group' : 'Archived'
-        return person.kind === 'linked' ? 'Member' : 'No account yet'
+        if (person.standing === 'deleted') return $localize`:Name shown for someone who deleted their account:Deleted account`
+        if (person.standing === 'left')
+            return person.kind === 'linked'
+                ? $localize`:Note on someone in a group's history who left the group:Left the group`
+                : $localize`:Badge on a person of the group page that the group owner archived:Archived`
+        return person.kind === 'linked'
+            ? $localize`:Badge on a person of the group page who has an account:Member`
+            : $localize`:Badge on a person of the group page who has no account:No account yet`
     }
 
     public loadGroupPeople(groupId: number): void {

@@ -2,7 +2,7 @@ import { Component, inject, signal } from '@angular/core'
 import { ActivatedRoute, Router, RouterLink } from '@angular/router'
 import { firstValueFrom } from 'rxjs'
 import { Api } from '../../api/api'
-import type { GameCompleteType, GroupPersonWorkspaceType } from '../../api/api.types'
+import type { GameCompleteType, GroupPersonPreferenceType, GroupPersonWorkspaceType } from '../../api/api.types'
 import { ToastService } from '../../components/toast/toast.service'
 import { ButtonComponent } from '../../components/ui/button/button.component'
 
@@ -56,7 +56,21 @@ export class GroupPersonClaimComponent {
 
     public gameTitle(gameId: number): string {
         const game = this.games().find((candidate) => candidate.id === gameId)
-        return game?.title || `Game #${gameId}`
+        return game?.title || $localize`:Name shown for a game whose title is missing; the placeholder is its number:Game #${gameId}:id:`
+    }
+
+    /** The same words as the group page's preference menu. */
+    public preferenceLabel(preference: GroupPersonPreferenceType['preference']): string {
+        switch (preference) {
+            case 'favorite':
+                return $localize`:Choice of the menu that says what a person thinks of a game on the group page:Favorite`
+            case 'like':
+                return $localize`:Choice of the menu that says what a person thinks of a game on the group page:Likes`
+            case 'neutral':
+                return $localize`:Choice of the menu that says what a person thinks of a game on the group page:Neutral`
+            case 'avoid':
+                return $localize`:Choice of the menu that says what a person thinks of a game on the group page:Avoids`
+        }
     }
 
     public toggleOwnership(gameId: number): void {
@@ -92,10 +106,14 @@ export class GroupPersonClaimComponent {
                     importOwnershipToCollection: this.importOwnership(),
                 }),
             )
-            this.toastService.success('Your group history is now linked to your account.')
+            this.toastService.success(
+                $localize`:Toast after taking over a person prepared for you in a group:Your group history is now linked to your account.`,
+            )
             this.claimSummary.set(claimSummary)
         } catch {
-            this.error.set('This claim could not be completed. The invitation may have expired or already been used.')
+            this.error.set(
+                $localize`:Error when taking over a person prepared for you in a group fails:This claim could not be completed. The invitation may have expired or already been used.`,
+            )
         } finally {
             this.isSaving.set(false)
         }
@@ -108,10 +126,14 @@ export class GroupPersonClaimComponent {
         this.isSaving.set(true)
         try {
             await firstValueFrom(this.api.joinGroupAsNewPerson(groupId))
-            this.toastService.success('You joined the group as a new person.')
+            this.toastService.success(
+                $localize`:Toast after joining a group as a new person instead of taking over one prepared for you:You joined the group as a new person.`,
+            )
             await this.router.navigate(['/groups', groupId])
         } catch {
-            this.error.set('We could not add you as a new group person. Please try again.')
+            this.error.set(
+                $localize`:Error when joining a group as a new person fails:We could not add you as a new group person. Please try again.`,
+            )
         } finally {
             this.isSaving.set(false)
         }
@@ -121,7 +143,9 @@ export class GroupPersonClaimComponent {
         const groupId = Number.parseInt(this.route.snapshot.paramMap.get('groupId') || '', 10)
         const personId = Number.parseInt(this.route.snapshot.paramMap.get('personId') || '', 10)
         if (Number.isNaN(groupId) || Number.isNaN(personId)) {
-            this.error.set('This group person link is not valid.')
+            this.error.set(
+                $localize`:Error on the page where you take over a person prepared for you, when its link is broken:This group person link is not valid.`,
+            )
             this.isLoading.set(false)
             return
         }
@@ -133,7 +157,9 @@ export class GroupPersonClaimComponent {
             ])
             const candidate = peopleResponse.people.find((item) => item.person.id === personId)
             if (!candidate?.claimable || candidate.person.kind !== 'placeholder') {
-                this.error.set('This group person is not available for your account.')
+                this.error.set(
+                    $localize`:Error on the page where you take over a person prepared for you, when that person is not for you:This group person is not available for your account.`,
+                )
                 return
             }
 
@@ -142,7 +168,9 @@ export class GroupPersonClaimComponent {
             this.selectedOwnership.set(new Set(candidate.ownership.filter((item) => item.status === 'asserted').map((item) => item.gameId)))
             this.selectedPreferences.set(new Set(candidate.preferences.map((item) => item.gameId)))
         } catch {
-            this.error.set('We could not load the group person data. Please try again.')
+            this.error.set(
+                $localize`:Error on the page where you take over a person prepared for you, when it fails to load:We could not load the group person data. Please try again.`,
+            )
         } finally {
             this.isLoading.set(false)
         }

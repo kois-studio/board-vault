@@ -226,7 +226,7 @@ export class DataService {
                 error: () => {
                     this.userInvitationsError.set(true)
                     this.toastService.error(
-                        $localize`:Toast when the inbox could not load group invitations:Error retrieving user's invitations`,
+                        $localize`:Toast when the inbox could not load group invitations:Error retrieving user’s invitations`,
                     )
                 },
             })
@@ -253,7 +253,7 @@ export class DataService {
                 error: () => {
                     this.userNotificationsError.set(true)
                     this.toastService.error(
-                        $localize`:Toast when the inbox could not load notifications:Error retrieving user's notifications`,
+                        $localize`:Toast when the inbox could not load notifications:Error retrieving user’s notifications`,
                     )
                 },
             })
@@ -387,14 +387,16 @@ export class DataService {
                                     }))
                                 },
                                 error: () => {
-                                    this.toastService.error(`Error retrieving invited members for group: ${group.name}`)
+                                    this.toastService.error(
+                                        $localize`:Toast when the invitations of a group could not load; the placeholder is the group name:Error retrieving invited members for group: ${group.name}:group:`,
+                                    )
                                 },
                             })
                     }
                 },
                 error: () => {
                     this.userGroupsError.set(true)
-                    this.toastService.error("Error retrieving user's groups")
+                    this.toastService.error($localize`:Toast when your groups could not load:Error retrieving user’s groups`)
                 },
             })
     }
@@ -588,10 +590,10 @@ export class DataService {
                             : group
                     }),
                 )
-                this.toastService.success('Member removed from group')
+                this.toastService.success($localize`:Toast after the group owner removes a member:Member removed from group`)
             }),
             catchError((error) => {
-                this.toastService.error('Error removing member')
+                this.toastService.error($localize`:Toast when a member could not be removed from a group:Error removing member`)
                 return throwError(() => error)
             }),
         )
@@ -608,10 +610,10 @@ export class DataService {
                         ]),
                     ),
                 )
-                this.toastService.success('Invitation removed')
+                this.toastService.success($localize`:Toast after withdrawing a group invitation:Invitation removed`)
             }),
             catchError((error) => {
-                this.toastService.error('Error removing invitation')
+                this.toastService.error($localize`:Toast when a group invitation could not be withdrawn:Error removing invitation`)
                 return throwError(() => error)
             }),
         )
@@ -625,7 +627,7 @@ export class DataService {
                     ...index,
                     [groupId]: invitations,
                 }))
-                this.toastService.success('Invitation sent')
+                this.toastService.success($localize`:Toast after inviting someone with an account to a group:Invitation sent`)
             }),
             // Failures are explained inline by the page, which keeps what was typed.
         )
@@ -633,7 +635,7 @@ export class DataService {
 
     public inviteNewPersonToGroup(groupId: number, emailAddress: string, groupPersonId?: number | null) {
         return this.api.createClerkGroupInvitation(groupId, emailAddress, groupPersonId ?? undefined).pipe(
-            tap(() => this.toastService.success('Clerk invitation sent')),
+            tap(() => this.toastService.success($localize`:Toast after inviting someone to a group by email:Clerk invitation sent`)),
             // Failures are explained inline by the page, which keeps what was typed.
         )
     }
@@ -710,7 +712,9 @@ export class DataService {
             tap(() => {
                 this.userGroups.set([])
                 this._getUserGroups(currentUser.id)
-                this.toastService.success(`You have created the group ${groupName}`)
+                this.toastService.success(
+                    $localize`:Toast after creating a group; the placeholder is its name:You have created the group ${groupName}:group:`,
+                )
             }),
             // Failures are explained inline by the page, which keeps what was typed.
         )
@@ -728,15 +732,19 @@ export class DataService {
                 this.userGroups.update((groups) => groups.filter((group) => group.id !== groupId))
 
                 // 3.
-                this.toastService.success('You have left the group')
+                this.toastService.success($localize`:Toast after leaving a group:You have left the group`)
             }),
             catchError((error) => {
                 if (error.status === 404) {
-                    this.toastService.error('User or Group not found')
+                    this.toastService.error(
+                        $localize`:Toast when leaving a group fails because the group or your account was not found:User or Group not found`,
+                    )
                 } else if (error.status === 400) {
-                    this.toastService.error('You are the group creator, you cannot leave!')
+                    this.toastService.error(
+                        $localize`:Toast when the owner of a group tries to leave it:You are the group creator, you cannot leave!`,
+                    )
                 } else {
-                    this.toastService.error('Error leaving group')
+                    this.toastService.error($localize`:Toast when leaving a group fails:Error leaving group`)
                 }
                 return throwError(() => error)
             }),
@@ -755,13 +763,13 @@ export class DataService {
                 this.userGroups.update((groups) => groups.filter((group) => group.id !== groupId))
 
                 // 3.
-                this.toastService.success('You have deleted the group')
+                this.toastService.success($localize`:Toast after deleting a group:You have deleted the group`)
             }),
             catchError((error) => {
                 if (error.status === 404) {
-                    this.toastService.error('Group not found')
+                    this.toastService.error($localize`:Toast when deleting a group fails because it was not found:Group not found`)
                 } else {
-                    this.toastService.error('Error deleting group')
+                    this.toastService.error($localize`:Toast when deleting a group fails:Error deleting group`)
                 }
                 return throwError(() => error)
             }),

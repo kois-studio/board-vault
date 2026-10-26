@@ -1,7 +1,6 @@
 import { Component, computed, inject, input } from '@angular/core'
 import { RouterLink } from '@angular/router'
 import type { GroupWithMembersAndGames, InvitationWithAccountsData } from '../../api/api.types'
-import { CountPipe } from '../../core/pipes/count.pipe'
 import { DataService } from '../../core/services/data.service'
 import { groupGameCount, groupPeopleCount } from '../../core/utils/groupCounts'
 import { initialsAvatar } from '../../core/utils/initialsAvatar'
@@ -17,7 +16,7 @@ const AVATARS_SHOWN = 5
  * Its next night is not repeated here; Home shows it above.
  */
 @Component({
-    imports: [CountPipe, ImageProfileComponent, IconComponent, RouterLink],
+    imports: [ImageProfileComponent, IconComponent, RouterLink],
     selector: 'app-card-group',
     templateUrl: 'card-group.component.html',
 })
@@ -51,4 +50,9 @@ export class CardGroupComponent {
         () => this.group().createdBy === this.dataService.currentUser()?.id && this.peopleCount() < INVITE_NUDGE_BELOW,
     )
     public readonly pendingInvitations = computed(() => this.invitations()?.length ?? 0)
+
+    public readonly shortcutsLabel = computed(
+        () =>
+            $localize`:Name of the shortcuts on a group card on Home; the placeholder is the group name:${this.group().name}:group: shortcuts`,
+    )
 }

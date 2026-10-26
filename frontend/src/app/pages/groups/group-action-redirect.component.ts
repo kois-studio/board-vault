@@ -2,7 +2,8 @@ import { Component, inject, OnInit } from '@angular/core'
 import { ActivatedRoute, Router } from '@angular/router'
 
 @Component({
-    template: '<p class="p-6 text-center text-secondary" role="status">Returning to the group workspace…</p>',
+    template:
+        '<p class="p-6 text-center text-secondary" role="status" i18n="Shown for a moment while you are taken back to the group page">Returning to the group workspace…</p>',
 })
 export class GroupActionRedirectComponent implements OnInit {
     private readonly route = inject(ActivatedRoute)

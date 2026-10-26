@@ -2,9 +2,15 @@
     <div class="lg:flex lg:items-center lg:justify-between lg:gap-8">
         <div class="min-w-0">
             <div class="flex items-center justify-between gap-3 lg:justify-start">
-                <p class="text-xs font-bold uppercase tracking-[0.14em] text-bv-on-primary-soft">{{ isLive() ? 'Game night' : 'Next game night' }}</p>
+                <p class="text-xs font-bold uppercase tracking-[0.14em] text-bv-on-primary-soft">
+                    @if (isLive()) {
+                        <ng-container i18n="Label on the game night card on Home while the night is under way">Game night</ng-container>
+                    } @else {
+                        <ng-container i18n="Label on the game night card on Home">Next game night</ng-container>
+                    }
+                </p>
                 @if (isLive()) {
-                    <span class="rounded-full bg-bv-success px-2.5 py-0.5 text-xs font-bold text-bv-on-success">Happening now</span>
+                    <span class="rounded-full bg-bv-success px-2.5 py-0.5 text-xs font-bold text-bv-on-success" i18n="Status chip of a game night that is under way">Happening now</span>
                 } @else {
                     <span class="rounded-full bg-bv-primary px-2.5 py-0.5 text-xs font-bold text-bv-on-primary">{{ relative() }}</span>
                 }
@@ -15,9 +21,9 @@
             <p class="mt-1 text-sm text-secondary">
                 {{ groupName() }}
                 @if (summary(); as summary) {
-                    · {{ summary.going }} going
+                    · <ng-container i18n="How many people are going to a game night, on the game night card on Home">{summary.going, plural, one {{{ summary.going }} going} other {{{ summary.going }} going}}</ng-container>
                     @if (summary.waiting > 0) {
-                        · {{ summary.waiting }} {{ summary.waiting === 1 ? 'hasn’t' : 'haven’t' }} answered
+                        · <ng-container i18n="How many invited people have not answered a game night, on the game night card on Home">{summary.waiting, plural, one {{{ summary.waiting }} hasn’t answered} other {{{ summary.waiting }} haven’t answered}}</ng-container>
                     }
                 }
             </p>
@@ -29,7 +35,7 @@
                 </div>
             }
             @if (bringing()) {
-                <p class="mt-3 text-sm"><span class="font-semibold">You’re bringing:</span> {{ bringing() }}</p>
+                <p class="mt-3 text-sm" i18n="On the game night card on Home; the placeholder is the games you said you would bring, such as Azul, Wingspan"><span class="font-semibold">You’re bringing:</span> {{ bringing() }}</p>
             }
         </div>
 
@@ -38,19 +44,19 @@
                 <p class="text-xs text-secondary">{{ shortlistLine() }}</p>
                 <ng-container *ngTemplateOutlet="coverRow; context: { size: 'h-14 w-14' }" />
             }
-            <a appButton [routerLink]="['/sessions', night().id]">Open the night</a>
+            <a appButton [routerLink]="['/sessions', night().id]" i18n="Button on the game night card on Home">Open the night</a>
         </div>
     </div>
 
     <!-- Not invited: nothing to answer, so desktop has no row at all. -->
     <div class="mt-4 flex items-center gap-3 border-t border-bv-primary/25 pt-3" [class]="night().myRsvpStatus === null ? 'lg:hidden' : ''">
         <app-session-answer class="min-w-0 flex-1" [session]="night()" />
-        <a [routerLink]="['/sessions', night().id]" class="ml-auto shrink-0 text-sm font-semibold text-bv-primary hover:underline lg:hidden">Open<span class="sr-only"> the night</span> ›</a>
+        <a [routerLink]="['/sessions', night().id]" class="ml-auto shrink-0 text-sm font-semibold text-bv-primary hover:underline lg:hidden" i18n="Link on the game night card on Home, on phones; the hidden words are read only by screen readers">Open<span class="sr-only"> the night</span> ›</a>
     </div>
 </article>
 
 <ng-template #coverRow let-size="size">
-    <ul class="flex shrink-0 gap-1.5" aria-label="Shortlist">
+    <ul class="flex shrink-0 gap-1.5" aria-label="Shortlist" i18n-aria-label="Name of the covers of the shortlisted games on the game night card on Home">
         @for (game of covers(); track game.id) {
             <li class="relative flex items-center justify-center overflow-hidden rounded-lg bg-bv-surface-2 text-xs font-bold text-bv-text-muted" [class]="size" [title]="game.title">
                 <span aria-hidden="true">{{ game.title.slice(0, 2).toUpperCase() }}</span>
