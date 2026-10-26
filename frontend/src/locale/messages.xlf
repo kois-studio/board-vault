@@ -1,6 +1,24 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <xliff version="2.0" xmlns="urn:oasis:names:tc:xliff:document:2.0" srcLang="en">
   <file id="ngi18n" original="ng.template">
+    <unit id="1003341091816362100">
+      <notes>
+        <note category="location">src/app/core/i18n/recommendation-text.ts</note>
+        <note category="description">Recommendation reason</note>
+      </notes>
+      <segment>
+        <source>Fits <ph id="0" equiv="players" disp="players"/> players</source>
+      </segment>
+    </unit>
+    <unit id="1022072569342469305">
+      <notes>
+        <note category="location">src/app/core/i18n/recommendation-text.ts</note>
+        <note category="description">Recommendation reason</note>
+      </notes>
+      <segment>
+        <source><ph id="0" equiv="count" disp="count"/> selected participant passed on this before</source>
+      </segment>
+    </unit>
     <unit id="1200295485288897600">
       <notes>
         <note category="location">src/app/core/i18n/notification-text.ts</note>
@@ -11,6 +29,7 @@
     </unit>
     <unit id="1217286919775405184">
       <notes>
+        <note category="location">src/app/api/api.schemas.ts</note>
         <note category="location">src/app/core/i18n/notification-text.ts</note>
         <note category="description">A person whose account was deleted</note>
       </notes>
@@ -33,6 +52,15 @@
       </notes>
       <segment>
         <source>Your game proposal &quot;<ph id="0" equiv="title" disp="data[&apos;gameTitle&apos;]"/>&quot; is already in Board Vault as &quot;<ph id="1" equiv="existingTitle" disp="data[&apos;duplicateOfTitle&apos;]"/>&quot;.</source>
+      </segment>
+    </unit>
+    <unit id="1608510651942979529">
+      <notes>
+        <note category="location">src/app/core/i18n/recommendation-text.ts</note>
+        <note category="description">Recommendation reason</note>
+      </notes>
+      <segment>
+        <source>Builds on the group’s shared shelf</source>
       </segment>
     </unit>
     <unit id="1630988887703018223">
@@ -77,6 +105,15 @@
         <source><ph id="0" equiv="person" disp="actor"/> planned a game night in <ph id="1" equiv="group" disp="group"/> for <ph id="2" equiv="date" disp="when"/>. Can you make it?</source>
       </segment>
     </unit>
+    <unit id="2435997106501281068">
+      <notes>
+        <note category="location">src/app/core/i18n/recommendation-text.ts</note>
+        <note category="description">No game can be recommended</note>
+      </notes>
+      <segment>
+        <source>No suitable titled games were found for the selected attendees and filters.</source>
+      </segment>
+    </unit>
     <unit id="246838105482205685">
       <notes>
         <note category="location">src/app/components/card-notification/card-notification.component.html</note>
@@ -94,6 +131,15 @@
         <source><ph id="0" equiv="person" disp="actor"/> added <ph id="1" equiv="games" disp="addedList"/> to their shelf and removed <ph id="2" equiv="otherGames" disp="removedList"/>.</source>
       </segment>
     </unit>
+    <unit id="2814590485100631296">
+      <notes>
+        <note category="location">src/app/core/i18n/recommendation-text.ts</note>
+        <note category="description">Recommendation reason</note>
+      </notes>
+      <segment>
+        <source>No selected-attendee rating yet</source>
+      </segment>
+    </unit>
     <unit id="2871617273892961858">
       <notes>
         <note category="location">src/app/components/card-notification/card-notification.component.ts</note>
@@ -101,6 +147,15 @@
       </notes>
       <segment>
         <source>Open the game</source>
+      </segment>
+    </unit>
+    <unit id="3092077784471830251">
+      <notes>
+        <note category="location">src/app/core/i18n/recommendation-text.ts</note>
+        <note category="description">Recommendation reason</note>
+      </notes>
+      <segment>
+        <source>Fits <ph id="0" equiv="players" disp="players"/> player</source>
       </segment>
     </unit>
     <unit id="30921813512214027">
@@ -129,6 +184,24 @@
         <source><ph id="0" equiv="person" disp="actor"/> said <ph id="1" equiv="groupPerson" disp="person"/> has <ph id="2" equiv="game" disp="game"/>, in <ph id="3" equiv="group" disp="group"/>.</source>
       </segment>
     </unit>
+    <unit id="3424516948436893066">
+      <notes>
+        <note category="location">src/app/core/i18n/recommendation-text.ts</note>
+        <note category="description">Recommendation reason</note>
+      </notes>
+      <segment>
+        <source>Strong group rating</source>
+      </segment>
+    </unit>
+    <unit id="37600627724821423">
+      <notes>
+        <note category="location">src/app/core/i18n/recommendation-text.ts</note>
+        <note category="description">Recommendation reason</note>
+      </notes>
+      <segment>
+        <source>The preferences of the people coming favor this game</source>
+      </segment>
+    </unit>
     <unit id="3841095492114279113">
       <notes>
         <note category="location">src/app/core/i18n/notification-text.ts</note>
@@ -144,6 +217,15 @@
       </notes>
       <segment>
         <source>Open the game night</source>
+      </segment>
+    </unit>
+    <unit id="4096101151032067454">
+      <notes>
+        <note category="location">src/app/core/i18n/recommendation-text.ts</note>
+        <note category="description">Recommendation reason</note>
+      </notes>
+      <segment>
+        <source><ph id="0" equiv="count" disp="count"/> selected attendee marked this as interesting</source>
       </segment>
     </unit>
     <unit id="425959220948419245">
@@ -163,6 +245,15 @@
         <source>Just now</source>
       </segment>
     </unit>
+    <unit id="4287070028471913183">
+      <notes>
+        <note category="location">src/app/core/i18n/recommendation-text.ts</note>
+        <note category="description">Recommendation reason</note>
+      </notes>
+      <segment>
+        <source>Owned by <ph id="0" equiv="owners" disp="owners"/> of <ph id="1" equiv="people" disp="attendees"/> selected people</source>
+      </segment>
+    </unit>
     <unit id="4669216542007588508">
       <notes>
         <note category="location">src/app/components/card-notification/card-notification.component.ts</note>
@@ -170,6 +261,15 @@
       </notes>
       <segment>
         <source>Answer</source>
+      </segment>
+    </unit>
+    <unit id="4682764955670501888">
+      <notes>
+        <note category="location">src/app/core/i18n/recommendation-text.ts</note>
+        <note category="description">Recommendation reason</note>
+      </notes>
+      <segment>
+        <source>Estimated duration: <ph id="0" equiv="minutes" disp="values[&apos;minutes&apos;] ?? 0"/> minutes</source>
       </segment>
     </unit>
     <unit id="4715165630183338203">
@@ -198,6 +298,33 @@
         <source><ph id="0" equiv="person" disp="actor"/> cancelled the <ph id="1" equiv="group" disp="group"/> game night of <ph id="2" equiv="date" disp="when"/>.</source>
       </segment>
     </unit>
+    <unit id="4834637535368761490">
+      <notes>
+        <note category="location">src/app/core/i18n/recommendation-text.ts</note>
+        <note category="description">Recommendation reason</note>
+      </notes>
+      <segment>
+        <source>Not played by this group yet</source>
+      </segment>
+    </unit>
+    <unit id="4913790515929049330">
+      <notes>
+        <note category="location">src/app/core/i18n/recommendation-text.ts</note>
+        <note category="description">Recommendation reason</note>
+      </notes>
+      <segment>
+        <source>Duration is not available</source>
+      </segment>
+    </unit>
+    <unit id="5159913659351412884">
+      <notes>
+        <note category="location">src/app/core/i18n/recommendation-text.ts</note>
+        <note category="description">Recommendation reason</note>
+      </notes>
+      <segment>
+        <source>Previously played by this group</source>
+      </segment>
+    </unit>
     <unit id="5376159775932580099">
       <notes>
         <note category="location">src/app/core/i18n/notification-text.ts</note>
@@ -214,6 +341,15 @@
         <source><ph id="0" equiv="person" disp="member"/> left <ph id="1" equiv="group" disp="group"/>.</source>
       </segment>
     </unit>
+    <unit id="5715583810853284797">
+      <notes>
+        <note category="location">src/app/core/i18n/recommendation-text.ts</note>
+        <note category="description">Recommendation reason</note>
+      </notes>
+      <segment>
+        <source><ph id="0" equiv="count" disp="count"/> selected participants passed on this before</source>
+      </segment>
+    </unit>
     <unit id="5772919894493102247">
       <notes>
         <note category="location">src/app/components/card-notification/card-notification.component.ts</note>
@@ -223,12 +359,30 @@
         <source>See the game night</source>
       </segment>
     </unit>
+    <unit id="6024427301478848927">
+      <notes>
+        <note category="location">src/app/core/i18n/recommendation-text.ts</note>
+        <note category="description">No game can be recommended</note>
+      </notes>
+      <segment>
+        <source>No games are available from the selected group people.</source>
+      </segment>
+    </unit>
     <unit id="6033490387027844807">
       <notes>
         <note category="location">src/app/core/i18n/notification-text.ts</note>
       </notes>
       <segment>
         <source><ph id="0" equiv="person" disp="actor"/> marked <ph id="1" equiv="game" disp="game"/> as unsure for <ph id="2" equiv="groupPerson" disp="person"/>, in <ph id="3" equiv="group" disp="group"/>.</source>
+      </segment>
+    </unit>
+    <unit id="6200674115821929527">
+      <notes>
+        <note category="location">src/app/core/i18n/recommendation-text.ts</note>
+        <note category="description">Recommendation reason</note>
+      </notes>
+      <segment>
+        <source>Owned by <ph id="0" equiv="owners" disp="owners"/> of <ph id="1" equiv="people" disp="attendees"/> selected attendees</source>
       </segment>
     </unit>
     <unit id="6303882608616595614">
@@ -247,6 +401,15 @@
         <source><ph id="0" equiv="person" disp="actor"/> removed <ph id="1" equiv="game" disp="game"/> from <ph id="2" equiv="groupPerson" disp="person"/>&apos;s games in <ph id="3" equiv="group" disp="group"/>.</source>
       </segment>
     </unit>
+    <unit id="6930216235586087894">
+      <notes>
+        <note category="location">src/app/core/i18n/recommendation-text.ts</note>
+        <note category="description">Recommendation reason, a rating out of 10</note>
+      </notes>
+      <segment>
+        <source>Selected-attendee rating: <ph id="0" equiv="rating" disp="formatNumber(values[&apos;rating&apos;] ?? 0, { minimumFractionDigits: 1, maximumFractionDigits: 1 })"/>/10</source>
+      </segment>
+    </unit>
     <unit id="7154237322367136444">
       <notes>
         <note category="location">src/app/core/i18n/notification-text.ts</note>
@@ -254,6 +417,33 @@
       </notes>
       <segment>
         <source><ph id="0" equiv="count" disp="rest"/> other games</source>
+      </segment>
+    </unit>
+    <unit id="7233639534415316994">
+      <notes>
+        <note category="location">src/app/core/i18n/recommendation-text.ts</note>
+        <note category="description">Recommendation reason</note>
+      </notes>
+      <segment>
+        <source>Some selected people have marked this game to avoid</source>
+      </segment>
+    </unit>
+    <unit id="7569659352704234282">
+      <notes>
+        <note category="location">src/app/core/i18n/recommendation-text.ts</note>
+        <note category="description">No game can be recommended</note>
+      </notes>
+      <segment>
+        <source>No games are owned by the selected attendees.</source>
+      </segment>
+    </unit>
+    <unit id="7775401295627092008">
+      <notes>
+        <note category="location">src/app/core/i18n/recommendation-text.ts</note>
+        <note category="description">No game can be recommended</note>
+      </notes>
+      <segment>
+        <source>No games for <ph id="0" equiv="players" disp="players"/> players fit within <ph id="1" equiv="minutes" disp="values[&apos;minutes&apos;] ?? 0"/> minutes.</source>
       </segment>
     </unit>
     <unit id="7899674800818281248">
@@ -281,6 +471,15 @@
         <source><ph id="0" equiv="remover" disp="actor"/> removed <ph id="1" equiv="removedPerson" disp="member"/> from <ph id="2" equiv="group" disp="group"/>.</source>
       </segment>
     </unit>
+    <unit id="8206579759218160395">
+      <notes>
+        <note category="location">src/app/core/i18n/recommendation-text.ts</note>
+        <note category="description">No game can be recommended</note>
+      </notes>
+      <segment>
+        <source>No games owned by the selected attendees support <ph id="0" equiv="players" disp="players"/> players.</source>
+      </segment>
+    </unit>
     <unit id="8353091657473641191">
       <notes>
         <note category="location">src/app/components/card-notification/card-notification.component.ts</note>
@@ -288,6 +487,15 @@
       </notes>
       <segment>
         <source>Open the group</source>
+      </segment>
+    </unit>
+    <unit id="8668172233266414658">
+      <notes>
+        <note category="location">src/app/core/i18n/recommendation-text.ts</note>
+        <note category="description">Recommendation reason</note>
+      </notes>
+      <segment>
+        <source><ph id="0" equiv="count" disp="count"/> selected attendees marked this as interesting</source>
       </segment>
     </unit>
     <unit id="8715838975991436163">

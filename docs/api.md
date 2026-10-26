@@ -41,7 +41,12 @@ language (`en`, `es`, `fr`, `de`, `it`; [ADR-0024](adr/0024-interface-languages.
 for any other value, English without one), and handlers take it with
 `@RequestLocale()`. The API returns facts (ids, codes, numbers, dates) and
 the frontend writes the sentences; a response whose content depends on the
-language must include it in its cache key.
+language must include it in its cache key. Where a response already had
+English for people (notification `message`, recommendation `reasons` and
+`noResultReason`), it keeps it for older clients and adds the facts beside
+it: the inbox's `context`, `reasonCodes`, and `noResultReasonCode`. A
+deleted account is still named `"Deleted account"`, which the app shows in
+the page's language.
 
 ## Collections
 

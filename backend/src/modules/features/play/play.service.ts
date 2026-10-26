@@ -10,9 +10,12 @@ import { MeetsService } from '../../core/meets/meets.service.js'
 import { UsersService } from '../../core/users/users.service.js'
 
 import { buildHistoryRecords } from './history-records.js'
+import { englishNoResultReason, englishReason } from './recommendation-reasons.js'
 
 import type {
     HistoryRecordDto,
+    NoResultReasonDto,
+    RecommendationReasonDto,
     RecommendationDto,
     RecommendationFeedbackBody,
     ParticipantRecommendationFeedbackBody,
@@ -100,11 +103,7 @@ export class PlayService {
             .sort((a, b) => b.score - a.score || a.gameData.id - b.gameData.id)
             .slice(0, 10)
 
-        let noResultReason: string | null = null
-
-        if (recommendations.length === 0) {
-            noResultReason = await this._getNoResultReason(body)
-        }
+        const noResultReasonCode = recommendations.length === 0 ? await this._getNoResultReason(body) : null
 
         return {
             groupId: body.groupId,
@@ -112,7 +111,8 @@ export class PlayService {
             availableMinutes: body.availableMinutes ?? null,
             decisionLens,
             recommendations,
-            noResultReason,
+            noResultReason: noResultReasonCode && englishNoResultReason(noResultReasonCode),
+            noResultReasonCode,
         }
     }
 
@@ -191,7 +191,8 @@ export class PlayService {
             availableMinutes: body.availableMinutes ?? null,
             decisionLens,
             recommendations,
-            noResultReason: recommendations.length === 0 ? 'No games are available from the selected group people.' : null,
+            noResultReason: recommendations.length === 0 ? englishNoResultReason({ code: 'no_people_games' }) : null,
+            noResultReasonCode: recommendations.length === 0 ? { code: 'no_people_games' } : null,
         }
     }
 
@@ -233,7 +234,7 @@ export class PlayService {
         return { success: true }
     }
 
-    private async _getNoResultReason(body: RecommendationRequestBody): Promise<string> {
+    private async _getNoResultReason(body: RecommendationRequestBody): Promise<NoResultReasonDto> {
         const counts = await this.databaseService.recommendations.getRecommendationCandidateCounts(
             body.attendeeIds,
             body.attendeeIds.length,
@@ -245,16 +246,16 @@ export class PlayService {
         const durationFitCount = Number(row?.[2] ?? 0)
 
         if (ownedGameCount === 0) {
-            return 'No games are owned by the selected attendees.'
+            return { code: 'no_owned_games' }
         }
         if (playerFitCount === 0) {
-            return `No games owned by the selected attendees support ${body.attendeeIds.length} players.`
+            return { code: 'no_player_fit', values: { players: body.attendeeIds.length } }
         }
         if (body.availableMinutes !== undefined && durationFitCount === 0) {
-            return `No games for ${body.attendeeIds.length} players fit within ${body.availableMinutes} minutes.`
+            return { code: 'no_duration_fit', values: { players: body.attendeeIds.length, minutes: body.availableMinutes } }
         }
 
-        return 'No suitable titled games were found for the selected attendees and filters.'
+        return { code: 'no_titled_games' }
     }
 
     private _mapRecommendation(
@@ -293,33 +294,39 @@ export class PlayService {
         const ratingScore = averageReview === null ? 0 : Math.round(20 * (averageReview / 10))
         // The names of the people coming are not the owners or the people with preferences, so the
         // reasons give counts only.
-        const selectedLabel = participantNames.length > 0 ? 'selected people' : 'selected attendees'
-        const reasons = [`Owned by ${attendeeOwnerCount} of ${attendeeCount} ${selectedLabel}`, `Fits ${attendeeCount} players`]
+        const reasonCodes: Array<RecommendationReasonDto> = [
+            {
+                code: 'owned_by',
+                values: { owners: attendeeOwnerCount, attendees: attendeeCount, people: participantNames.length > 0 ? 1 : 0 },
+            },
+            { code: 'fits_players', values: { players: attendeeCount } },
+        ]
 
         if (availableMinutes !== undefined) {
-            reasons.push(gameAvgDuration > 0 ? `Estimated duration: ${gameAvgDuration} minutes` : 'Duration is not available')
-        }
-        reasons.push(
-            averageReview === null ? 'No selected-attendee rating yet' : `Selected-attendee rating: ${averageReview.toFixed(1)}/10`,
-        )
-        if (feedback.interestedCount > 0) {
-            reasons.push(
-                `${feedback.interestedCount} selected attendee${feedback.interestedCount === 1 ? '' : 's'} marked this as interesting`,
+            reasonCodes.push(
+                gameAvgDuration > 0 ? { code: 'duration', values: { minutes: gameAvgDuration } } : { code: 'duration_unknown' },
             )
         }
+        reasonCodes.push(
+            averageReview === null ? { code: 'no_rating' } : { code: 'rating', values: { rating: Math.round(averageReview * 10) / 10 } },
+        )
+        if (feedback.interestedCount > 0) {
+            reasonCodes.push({ code: 'interested', values: { count: feedback.interestedCount } })
+        }
         if (feedback.notForUsCount > 0) {
-            reasons.push(`${feedback.notForUsCount} selected participant${feedback.notForUsCount === 1 ? '' : 's'} passed on this before`)
+            reasonCodes.push({ code: 'passed_before', values: { count: feedback.notForUsCount } })
         }
         if (participantPreferenceScore > 0) {
-            reasons.push('The preferences of the people coming favor this game')
+            reasonCodes.push({ code: 'preferences_favor' })
         } else if (participantPreferenceScore < 0) {
-            reasons.push(`Some selected people have marked this game to avoid`)
+            reasonCodes.push({ code: 'marked_avoid' })
         }
         if (decisionLens === 'fresh') {
-            reasons.push(lastPlayedAt === null ? 'Not played by this group yet' : 'Previously played by this group')
+            reasonCodes.push({ code: lastPlayedAt === null ? 'not_played_yet' : 'played_before' })
         } else if (decisionLens === 'favorite') {
-            reasons.push(averageReview !== null && averageReview >= 7 ? 'Strong group rating' : 'Builds on the group’s shared shelf')
+            reasonCodes.push({ code: averageReview !== null && averageReview >= 7 ? 'strong_rating' : 'shared_shelf' })
         }
+        const reasons = reasonCodes.map(englishReason)
 
         return {
             gameData: {
@@ -340,6 +347,7 @@ export class PlayService {
             ),
             explanation: {
                 reasons,
+                reasonCodes,
                 attendeeOwnerCount,
                 attendeeCount,
                 averageReview,
