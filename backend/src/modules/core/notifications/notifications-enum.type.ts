@@ -13,6 +13,10 @@ export enum NotificationTypeEnum {
     GAME_PROPOSAL_DUPLICATE = 'game_proposal_duplicate',
 }
 
+/** What someone changed in another member's entry for a group person (ADR-0020). */
+export const GROUP_PERSON_CHANGES = ['owned', 'not_owned', 'unsure', 'preference', 'preference_removed'] as const
+export type GroupPersonChange = (typeof GROUP_PERSON_CHANGES)[number]
+
 type SessionNotificationData = {
     account: number
     meeting: number
@@ -58,6 +62,8 @@ export type NotificationDataMap = {
         group: number
         person: number
         game: number
+        /** What changed; rows written before it was stored only have it in their message. */
+        change?: GroupPersonChange
     }
     // Your game proposal "{gameTitle}" was approved
     [NotificationTypeEnum.GAME_PROPOSAL_APPROVED]: {
@@ -83,5 +89,6 @@ export type NotificationDataMap = {
         proposalId: number
         duplicateOfGameId: number
         duplicateOfTitle: string
+        reviewNotes?: string
     }
 }

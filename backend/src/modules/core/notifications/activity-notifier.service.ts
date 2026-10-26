@@ -5,7 +5,7 @@ import { shortName } from '../../../common/utils/display-name.js'
 import { parseStoredDate } from '../../../common/utils/stored-date.js'
 import { DatabaseService } from '../../common/database/database.service.js'
 
-import { NotificationTypeEnum } from './notifications-enum.type.js'
+import { type GroupPersonChange, NotificationTypeEnum } from './notifications-enum.type.js'
 import { isEmptyShelfChange, type ShelfChange } from './shelf-notification.js'
 
 type SessionChange = 'active' | 'completed' | 'cancelled'
@@ -158,7 +158,7 @@ export class ActivityNotifier {
         enteredByAccountId: number
         groupPersonId: number
         gameId: number
-        change: 'owned' | 'not_owned' | 'unsure' | 'preference' | 'preference_removed'
+        change: GroupPersonChange
     }): Promise<void> {
         if (change.enteredByAccountId === change.actorAccountId) return
         await this.guard('group_person_changed', async () => {
@@ -186,6 +186,7 @@ export class ActivityNotifier {
                 group: change.groupId,
                 person: change.groupPersonId,
                 game: change.gameId,
+                change: change.change,
             })
         })
     }
@@ -203,7 +204,7 @@ export class ActivityNotifier {
         actorAccountId: number,
         type: NotificationTypeEnum,
         message: string,
-        data: Record<string, number>,
+        data: Record<string, number | string>,
     ): Promise<void> {
         const notifications = this.addressed(recipients, [actorAccountId], type, message, data)
 
@@ -217,7 +218,7 @@ export class ActivityNotifier {
         leftOut: Array<number>,
         type: NotificationTypeEnum,
         message: string,
-        data: Record<string, number>,
+        data: Record<string, number | string>,
     ) {
         return [...new Set(recipients)]
             .filter(accountId => !leftOut.includes(accountId))

@@ -10,6 +10,7 @@ import { ActivityNotifier } from '../../core/notifications/activity-notifier.ser
 import { NotificationsService } from '../../core/notifications/notifications.service.js'
 import { UsersService } from '../../core/users/users.service.js'
 
+import type { Locale } from '../../../common/i18n/locale.js'
 import type { SuccessDto } from '../../../common/types/auth.type.js'
 import type { CreateGameProposalBody, GameProposalDto } from '../../../common/types/game-proposal.type.js'
 import type { NotificationDto } from '../../../common/types/notification.type.js'
@@ -43,8 +44,8 @@ export class ProfileService {
     }
 
     @LogFeature(new Logger('ProfileService'))
-    async getNotificationsByAccountId(accountId: number): Promise<Array<NotificationDto>> {
-        return this.notificationsService.getNotificationsByAccountId(accountId)
+    async getNotificationsByAccountId(accountId: number, locale: Locale): Promise<Array<NotificationDto>> {
+        return this.notificationsService.getInbox(accountId, locale)
     }
 
     @LogFeature(new Logger('ProfileService'))
@@ -75,6 +76,7 @@ export class ProfileService {
 
         // Membership creation and invitation consumption must commit together.
         const { joined } = await this.databaseService.invitations.acceptInvitationAtomically(invitationId, userId, invitationData.groupId)
+
         // Someone who was already in the group is not news to it.
         if (joined) await this.activityNotifier.memberJoined(invitationData.groupId, userId)
 

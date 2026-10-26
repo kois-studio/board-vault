@@ -156,6 +156,22 @@ describe('CardNotificationComponent', () => {
         expect(opened).toHaveBeenCalledTimes(1)
     })
 
+    it('names both buttons after the notification they act on', () => {
+        const fixture = render(notification('user_joined_group', { account: 5, group: 9 }))
+        const text = fixture.componentInstance.text()
+        const labels = [...fixture.nativeElement.querySelectorAll('button')].map((button: HTMLElement) => button.getAttribute('aria-label'))
+
+        expect(text).not.toBe('')
+        expect(labels).toEqual([`Mark as read: ${text}`, `Delete notification: ${text}`])
+    })
+
+    it('offers only Delete, still named, on a read notification', () => {
+        const fixture = render({ ...notification('user_joined_group', { account: 5, group: 9 }), isRead: true })
+        const labels = [...fixture.nativeElement.querySelectorAll('button')].map((button: HTMLElement) => button.getAttribute('aria-label'))
+
+        expect(labels).toEqual([`Delete notification: ${fixture.componentInstance.text()}`])
+    })
+
     it('keeps a long name without spaces inside the card', () => {
         const fixture = render({
             ...notification('user_joined_group', { account: 5, group: 9 }),

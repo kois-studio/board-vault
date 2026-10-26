@@ -338,7 +338,13 @@ describe('proposing a game (e2e)', () => {
 
             expect(notification).toEqual({
                 accountId: 2,
-                data: { gameTitle: 'Los colonos de Catan', proposalId, duplicateOfGameId: catanId, duplicateOfTitle: 'Catan' },
+                data: {
+                    gameTitle: 'Los colonos de Catan',
+                    proposalId,
+                    duplicateOfGameId: catanId,
+                    duplicateOfTitle: 'Catan',
+                    reviewNotes: 'Listed under its English title.',
+                },
             })
         })
 
