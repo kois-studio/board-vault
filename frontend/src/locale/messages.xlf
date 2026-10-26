@@ -5395,7 +5395,7 @@
       <notes>
         <note category="location">src/app/core/utils/gameTitle.ts</note>
         <note category="location">src/app/pages/group-person/group-person-page.component.ts</note>
-        <note category="description">Name shown for a game the catalogue has no title for</note>
+        <note category="description">Shown for a game the catalogue has no title for</note>
       </notes>
       <segment>
         <source>Untitled game</source>

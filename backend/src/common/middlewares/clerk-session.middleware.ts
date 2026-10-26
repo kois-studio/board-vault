@@ -3,10 +3,12 @@ import { Injectable, type NestMiddleware } from '@nestjs/common'
 import { ClerkIdentityService } from '../../modules/common/auth/clerk-identity.service.js'
 import { ClerkTokenVerifier } from '../../modules/common/auth/clerk-token-verifier.js'
 
+import type { Locale } from '../i18n/locale.js'
 import type { AuthenticatedUser } from '../types/auth.type.js'
 import type { NextFunction, Request, Response } from 'express'
 
 export type AuthenticatedRequest = Request & {
+    locale?: Locale
     user?: AuthenticatedUser
     authError?: unknown
 }
@@ -38,7 +40,7 @@ export class ClerkSessionMiddleware implements NestMiddleware {
             const clerkUserId = await this.tokenVerifier.verify(token)
 
             if (clerkUserId) {
-                const account = await this.clerkIdentityService.resolveAccount(clerkUserId)
+                const account = await this.clerkIdentityService.resolveAccount(clerkUserId, request.locale)
 
                 request.user = {
                     userId: account.id,

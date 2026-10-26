@@ -7,9 +7,14 @@ import { ToastService } from '../../toast/toast.service'
 import { ButtonComponent } from '../../ui/button/button.component'
 import { DialogDirective } from '../../ui/dialog/dialog.directive'
 import { IconComponent } from '../../ui/icon/icon.component'
+import {
+    NameTranslationFieldsComponent,
+    nameTranslationsForm,
+    nameTranslationsPayload,
+} from '../../ui/name-translation-fields/name-translation-fields.component'
 
 @Component({
-    imports: [ReactiveFormsModule, ButtonComponent, DialogDirective, IconComponent],
+    imports: [ReactiveFormsModule, ButtonComponent, DialogDirective, IconComponent, NameTranslationFieldsComponent],
     selector: 'app-modal-add-category',
     templateUrl: './modal-add-category.component.html',
 })
@@ -34,6 +39,7 @@ export class ModalAddCategoryComponent {
     // --------------------------------------------------------------------------
     public addCategoryForm = new FormGroup({
         name: new FormControl('', [Validators.required, Validators.minLength(2), Validators.maxLength(50)]),
+        translations: nameTranslationsForm(),
     })
 
     // --------------------------------------------------------------------------
@@ -60,7 +66,7 @@ export class ModalAddCategoryComponent {
         this.isLoading.set(true)
 
         // Call API to create category
-        this.api.createAdminTagCategory(formValue.name).subscribe({
+        this.api.createAdminTagCategory(formValue.name, nameTranslationsPayload(this.addCategoryForm.controls.translations)).subscribe({
             next: (newCategory: TagCategoryType) => {
                 this.isLoading.set(false)
                 this.toastService.success('Category created successfully!')

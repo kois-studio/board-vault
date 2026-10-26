@@ -65,6 +65,8 @@ describe('group activity notifications (e2e)', () => {
                 INSERT INTO Game (id, imageUrl) VALUES ${games.map(([id]) => `(${id}, '')`).join(', ')};
                 INSERT INTO GameTranslation (gameId, languageCode, title, normalizedTitle) VALUES
                     ${games.map(([id, title]) => `(${id}, 'en', '${title}', '${title.toLowerCase()}')`).join(', ')};
+                INSERT INTO GameEdition (gameId, languageCode, title, normalizedTitle, isPrimary)
+                SELECT gameId, languageCode, title, normalizedTitle, 1 FROM GameTranslation;
             `,
             encoding: 'utf8',
         })
@@ -181,9 +183,10 @@ describe('group activity notifications (e2e)', () => {
 
         it('comes with what the app needs to word it in any language (ADR-0024)', async () => {
             await add(3, 101)
-            await database.execute(
+            await database.batch([
                 "INSERT INTO GameTranslation (gameId, languageCode, title, normalizedTitle) VALUES (101, 'es', 'Catán', 'catan')",
-            )
+                "INSERT INTO GameEdition (gameId, languageCode, title, normalizedTitle) VALUES (101, 'es', 'Catán', 'catan')",
+            ])
 
             const english = (await shelf(2))[0]
 
@@ -201,7 +204,10 @@ describe('group activity notifications (e2e)', () => {
             expect(inSpanish.find(notification => notification.type === 'shelf_changed')?.context?.games).toEqual([
                 { id: 101, title: 'Catán', titleLanguage: 'es' },
             ])
-            await database.execute("DELETE FROM GameTranslation WHERE gameId = 101 AND languageCode = 'es'")
+            await database.batch([
+                "DELETE FROM GameTranslation WHERE gameId = 101 AND languageCode = 'es'",
+                "DELETE FROM GameEdition WHERE gameId = 101 AND languageCode = 'es'",
+            ])
         })
 
         it('reads a deleted account as one, without its name', async () => {

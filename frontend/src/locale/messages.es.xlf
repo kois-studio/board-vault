@@ -1667,7 +1667,7 @@
       </notes>
       <segment state="translated">
         <source>Keep it</source>
-        <target>Conservar</target>
+        <target>Mantenerla</target>
       </segment>
     </unit>
     <unit id="2559754008210075307">
@@ -5325,7 +5325,7 @@
     </unit>
     <unit id="6133379702600868150">
       <notes>
-        <note category="description">Name shown for a game the catalogue has no title for</note>
+        <note category="description">Shown for a game the catalogue has no title for</note>
       </notes>
       <segment state="translated">
         <source>Untitled game</source>

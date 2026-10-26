@@ -39,8 +39,8 @@ try {
     }
 
     const migration = await client.execute('SELECT MAX(version) AS version FROM SchemaMigrations')
-    if (String(migration.rows[0]?.version ?? '') !== '0025') {
-        throw new Error('The target database must be migrated through 0025 before seeding the collection fixture.')
+    if (String(migration.rows[0]?.version ?? '') !== '0028') {
+        throw new Error('The target database must be migrated through 0028 before seeding the collection fixture.')
     }
 
     transaction = await client.transaction('write')
@@ -52,6 +52,10 @@ try {
             },
             {
                 sql: 'INSERT OR IGNORE INTO GameTranslation (gameId, languageCode, title, normalizedTitle) VALUES (?, \'en\', ?, ?)',
+                args: [game.id, game.title, game.title.toLowerCase().replace(/\s+/g, '-')],
+            },
+            {
+                sql: 'INSERT OR IGNORE INTO GameEdition (gameId, languageCode, title, normalizedTitle, isPrimary) VALUES (?, \'en\', ?, ?, 1)',
                 args: [game.id, game.title, game.title.toLowerCase().replace(/\s+/g, '-')],
             },
         ]),

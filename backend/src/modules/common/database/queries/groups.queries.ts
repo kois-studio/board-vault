@@ -353,15 +353,16 @@ export class GroupQueries {
                     g.gameAvgDuration,
                     g.minPlayers,
                     g.maxPlayers,
-                    COALESCE(gt_en.title, gt_es.title) AS title,
+                    COALESCE(gt_pr.title, gt_en.title, gt_es.title) AS title,
                     COALESCE(gt_en.title, '') AS titleEn,
                     COALESCE(gt_es.title, '') AS titleEs
                 FROM Game g
-                LEFT JOIN GameTranslation gt_en ON gt_en.gameId = g.id AND gt_en.languageCode = 'en'
-                LEFT JOIN GameTranslation gt_es ON gt_es.gameId = g.id AND gt_es.languageCode = 'es'
-                WHERE COALESCE(gt_en.title, gt_es.title) IS NOT NULL
-                  AND (? = '' OR lower(COALESCE(gt_en.normalizedTitle, gt_es.normalizedTitle, '')) LIKE ? ${LIKE_ESCAPE})
-                ORDER BY lower(COALESCE(gt_en.title, gt_es.title)), g.id ASC
+                LEFT JOIN GameEdition gt_en ON gt_en.gameId = g.id AND gt_en.languageCode = 'en'
+                LEFT JOIN GameEdition gt_es ON gt_es.gameId = g.id AND gt_es.languageCode = 'es'
+                LEFT JOIN GameEdition gt_pr ON gt_pr.gameId = g.id AND gt_pr.isPrimary = 1
+                WHERE gt_pr.title IS NOT NULL
+                  AND (? = '' OR lower(gt_pr.normalizedTitle) LIKE ? ${LIKE_ESCAPE})
+                ORDER BY lower(gt_pr.title), g.id ASC
                 LIMIT ?
             `,
             args: [normalizedSearch, containsPattern(normalizedSearch), Math.min(Math.max(limit, 1), 100)],
@@ -751,8 +752,8 @@ export class GroupQueries {
                        g.id, g.imageUrl, g.gameAvgDuration, g.minPlayers, g.maxPlayers, en.title, es.title, g.retailPriceCents
                 FROM owners
                 LEFT JOIN Game g ON g.id = owners.gameId
-                LEFT JOIN GameTranslation en ON en.gameId = g.id AND en.languageCode = 'en'
-                LEFT JOIN GameTranslation es ON es.gameId = g.id AND es.languageCode = 'es'
+                LEFT JOIN GameEdition en ON en.gameId = g.id AND en.languageCode = 'en'
+                LEFT JOIN GameEdition es ON es.gameId = g.id AND es.languageCode = 'es'
                 ORDER BY owners.accountId IS NULL, owners.displayName COLLATE NOCASE, owners.accountId, owners.groupPersonId,
                          COALESCE(en.title, es.title) COLLATE NOCASE
             `,
@@ -798,8 +799,8 @@ export class GroupQueries {
             )`
         const gameColumns = `g.id, g.imageUrl, g.gameAvgDuration, g.minPlayers, g.maxPlayers, gt_en.title, gt_es.title`
         const gameTitles = `
-            LEFT JOIN GameTranslation gt_en ON gt_en.gameId = g.id AND gt_en.languageCode = 'en'
-            LEFT JOIN GameTranslation gt_es ON gt_es.gameId = g.id AND gt_es.languageCode = 'es'`
+            LEFT JOIN GameEdition gt_en ON gt_en.gameId = g.id AND gt_en.languageCode = 'en'
+            LEFT JOIN GameEdition gt_es ON gt_es.gameId = g.id AND gt_es.languageCode = 'es'`
 
         const [totals, standings, mostPlayed, neverPlayed] = await Promise.all([
             this.database.execute({
@@ -931,8 +932,8 @@ export class GroupQueries {
                 FROM GroupGameInterest ggi
                 INNER JOIN Game g ON g.id = ggi.gameId
                 INNER JOIN Account a ON a.id = ggi.accountId
-                LEFT JOIN GameTranslation gt_en ON gt_en.gameId = g.id AND gt_en.languageCode = 'en'
-                LEFT JOIN GameTranslation gt_es ON gt_es.gameId = g.id AND gt_es.languageCode = 'es'
+                LEFT JOIN GameEdition gt_en ON gt_en.gameId = g.id AND gt_en.languageCode = 'en'
+                LEFT JOIN GameEdition gt_es ON gt_es.gameId = g.id AND gt_es.languageCode = 'es'
                 LEFT JOIN GroupAcquisitionDecision gad ON gad.groupId = ggi.groupId AND gad.gameId = ggi.gameId
                 LEFT JOIN Account decisionAccount ON decisionAccount.id = gad.decidedBy AND decisionAccount.isDeleted = 0
                 WHERE ggi.groupId = ?

@@ -1,4 +1,5 @@
 import * as z from 'zod/mini'
+import { SUPPORTED_LOCALES } from '../core/i18n/locales'
 import { noResultText, reasonsText } from '../core/i18n/recommendation-text'
 import { resolveArtworkUrl } from '../core/utils/artworkUrl'
 import { shortName } from '../core/utils/shortName'
@@ -34,6 +35,7 @@ import type {
     MeetAttendeeStatusType,
     MeetType,
     MeetWithAttendeesAndGamesType,
+    NameTranslationsType,
     NotificationType,
     PrivacySettingsStateType,
     RecommendationSignalsType,
@@ -114,11 +116,20 @@ const paginationSchema = z.object({
     itemsPerPage: z.number(),
 })
 
+/** Absent from an API older than the translations, which reads as "none yet". */
+const nameTranslationsSchema: z.ZodMiniType<NameTranslationsType> = z._default(
+    z.optional(
+        z.object({ es: z.optional(z.string()), fr: z.optional(z.string()), de: z.optional(z.string()), it: z.optional(z.string()) }),
+    ),
+    {},
+)
+
 export const tagCategorySchema: z.ZodMiniType<TagCategoryType> = z.object({
     id: z.number(),
     name: z.string(),
     tags: z.array(z.number()),
     gameCount: z.number(),
+    translations: nameTranslationsSchema,
 })
 
 export const tagSchema: z.ZodMiniType<TagType> = z.object({
@@ -126,6 +137,7 @@ export const tagSchema: z.ZodMiniType<TagType> = z.object({
     name: z.string(),
     categoryId: z.number(),
     gameCount: z.number(),
+    translations: nameTranslationsSchema,
 })
 
 export const adminTagCategoriesSchema = z.array(tagCategorySchema)
@@ -242,6 +254,7 @@ export const userSchema: z.ZodMiniType<UserType> = z.object({
     ...publicUserSchema.shape,
     email: z.email(),
     createdAt: z.string(),
+    locale: z.optional(z.nullable(z.enum(SUPPORTED_LOCALES))),
 })
 
 const groupSchema: z.ZodMiniType<GroupType> = z.object({

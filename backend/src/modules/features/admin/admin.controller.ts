@@ -62,14 +62,14 @@ export class AdminController {
     @ApiOperation({ summary: 'Create a new tag category', deprecated: false })
     @ApiResponse({ status: 200, type: TagCategoryWithTagsDto, description: 'New tag category created' })
     async createTagCategory(@Body() tagCategoryDto: CreateTagCategoryDto) {
-        return this.adminService.createTagCategory(tagCategoryDto.name)
+        return this.adminService.createTagCategory(tagCategoryDto.name, tagCategoryDto.translations)
     }
 
     @Put('/tag-categories/:id')
     @ApiOperation({ summary: 'Update a tag category', deprecated: false })
     @ApiResponse({ status: 200, type: TagCategoryWithTagsDto, description: 'Tag category updated' })
     async updateTagCategory(@Param('id', ParseIntPipe) id: number, @Body() tagCategoryDto: CreateTagCategoryDto) {
-        return this.adminService.updateTagCategory(id, tagCategoryDto.name)
+        return this.adminService.updateTagCategory(id, tagCategoryDto.name, tagCategoryDto.translations)
     }
 
     @Delete('/tag-categories/:id')
@@ -94,14 +94,14 @@ export class AdminController {
     @ApiOperation({ summary: 'Create a new tag', deprecated: false })
     @ApiResponse({ status: 200, type: CreateTagDto, description: 'New tag created' })
     async createTag(@Body() tagDto: CreateTagDto) {
-        return this.adminService.createTag(tagDto.name, tagDto.categoryId)
+        return this.adminService.createTag(tagDto.name, tagDto.categoryId, tagDto.translations)
     }
 
     @Put('/tags/:id')
     @ApiOperation({ summary: 'Update a tag', deprecated: false })
     @ApiResponse({ status: 200, type: CreateTagDto, description: 'Tag updated' })
     async updateTag(@Param('id', ParseIntPipe) id: number, @Body() tagDto: CreateTagDto) {
-        return this.adminService.updateTag(id, tagDto.name, tagDto.categoryId)
+        return this.adminService.updateTag(id, tagDto.name, tagDto.categoryId, tagDto.translations)
     }
 
     @Delete('/tags/:id')

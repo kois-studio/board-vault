@@ -84,7 +84,7 @@ try {
                    (SELECT COUNT(*) FROM MeetGame) || '|' ||
                    (SELECT COUNT(*) FROM MeetAccountGame);
             SELECT (SELECT name FROM UserGroup WHERE id = 20) || '|' ||
-                   (SELECT title FROM GameTranslation WHERE gameId = 10 AND languageCode = 'en') || '|' ||
+                   (SELECT title FROM GameEdition WHERE gameId = 10 AND isPrimary = 1) || '|' ||
                    (SELECT expiresAt FROM Invitation WHERE id = 40);
             SELECT CASE WHEN (SELECT notes FROM Meet WHERE id = 30) IS NULL THEN 'notes:ok' ELSE 'notes:unexpected' END;
             SELECT (SELECT COUNT(*) FROM SchemaMigrations) || '|' || (SELECT MAX(version) FROM SchemaMigrations);
@@ -97,14 +97,14 @@ try {
     }
 
     const lines = restored.stdout.trim().split('\n').map(line => line.trim()).filter(Boolean)
-    const expected = ['ok', '2|2|2|1|2', 'Fixture Group|Fixture Game|2026-01-31 10:00:00', 'notes:ok', '25|0025', 'credentials:dropped']
+    const expected = ['ok', '2|2|2|1|2', 'Fixture Group|Fixture Game|2026-01-31 10:00:00', 'notes:ok', '28|0028', 'credentials:dropped']
     if (lines.join('\n') !== expected.join('\n')) {
         throw new Error(`Restored database assertions failed. Expected:\n${expected.join('\n')}\nReceived:\n${lines.join('\n')}`)
     }
 
     console.log('Synthetic SQLite backup/restore rehearsal: ok')
     console.log('Representative accounts, group membership, session attendance, played games, translations, and invitation history survived the copy.')
-    console.log('Pending migrations 0006–0025 applied successfully to the restored database; integrity and foreign-key checks passed.')
+    console.log('Pending migrations 0006–0028 applied successfully to the restored database; integrity and foreign-key checks passed.')
 } finally {
     await rm(temporaryDirectory, { recursive: true, force: true })
 }

@@ -190,6 +190,7 @@ describe('DatabaseService logging', () => {
                 .mockResolvedValueOnce({ rowsAffected: 1 })
                 .mockResolvedValueOnce({ rowsAffected: 1 })
                 .mockResolvedValueOnce({ rowsAffected: 1 })
+                .mockResolvedValueOnce({ rowsAffected: 1 })
                 .mockResolvedValueOnce({ rows: [[4, null]] })
                 .mockResolvedValueOnce({ rowsAffected: 1 }),
             commit: vi.fn().mockResolvedValue(undefined),
@@ -228,24 +229,28 @@ describe('DatabaseService logging', () => {
             expect.objectContaining({ sql: expect.stringContaining('INSERT INTO Game') }),
         )
         expect(transaction.execute).toHaveBeenNthCalledWith(2, expect.objectContaining({ sql: expect.stringContaining('GameTranslation') }))
-        expect(transaction.execute).toHaveBeenNthCalledWith(3, {
+        expect(transaction.execute).toHaveBeenNthCalledWith(
+            3,
+            expect.objectContaining({ sql: expect.stringContaining('INTO GameEdition') }),
+        )
+        expect(transaction.execute).toHaveBeenNthCalledWith(4, {
             sql: 'INSERT OR IGNORE INTO GameTag (gameId, tagId) VALUES (?, ?)',
             args: [88, 2],
         })
         expect(transaction.execute).toHaveBeenNthCalledWith(
-            4,
+            5,
             expect.objectContaining({ sql: expect.stringContaining("status = 'approved'") }),
         )
         expect(transaction.execute).toHaveBeenNthCalledWith(
-            5,
+            6,
             expect.objectContaining({ sql: expect.stringContaining('SELECT submittedBy, addTo FROM GameProposal') }),
         )
         expect(transaction.execute).toHaveBeenNthCalledWith(
-            6,
+            7,
             expect.objectContaining({ sql: expect.stringContaining('INSERT INTO Notification') }),
         )
         expect(transaction.execute).toHaveBeenNthCalledWith(
-            6,
+            7,
             expect.objectContaining({
                 args: [
                     4,
@@ -266,6 +271,7 @@ describe('DatabaseService logging', () => {
             execute: vi
                 .fn()
                 .mockResolvedValueOnce({ lastInsertRowid: 88 })
+                .mockResolvedValueOnce({ rowsAffected: 1 })
                 .mockResolvedValueOnce({ rowsAffected: 1 })
                 .mockResolvedValueOnce({ rowsAffected: 1 })
                 .mockResolvedValueOnce({ rowsAffected: 1 })
@@ -894,7 +900,7 @@ describe('DatabaseService logging', () => {
         ).rejects.toThrow('User not found')
 
         expect(execute).toHaveBeenCalledWith({
-            sql: 'SELECT id, email, username, avatar, displayName, created_at, isDeleted, isAdmin, clerkUserId FROM Account WHERE lower(username) = lower(?) AND isDeleted = 0',
+            sql: 'SELECT id, email, username, avatar, displayName, created_at, isDeleted, isAdmin, clerkUserId, locale FROM Account WHERE lower(username) = lower(?) AND isDeleted = 0',
             args: ['former-member'],
         })
         expect(execute).toHaveBeenCalledTimes(1)
