@@ -2,6 +2,7 @@ import { execFileSync } from 'node:child_process'
 import { readFileSync, rmSync } from 'node:fs'
 import { resolve } from 'node:path'
 
+import { createClient } from '@libsql/client'
 import { INestApplication } from '@nestjs/common'
 import { Test, TestingModule } from '@nestjs/testing'
 import request from 'supertest'
@@ -45,6 +46,10 @@ describe('browsing the catalogue with filters (e2e)', () => {
                     (3, 'en', 'Love Letter', 'love-letter'), (3, 'es', 'Love Letter', 'love-letter'),
                     (4, 'en', 'Twilight Imperium', 'twilight-imperium'), (4, 'es', 'Twilight Imperium', 'twilight-imperium'),
                     (5, 'en', 'Codenames', 'codenames'), (5, 'es', 'Código Secreto', 'codigo-secreto');
+                INSERT INTO GameEdition (gameId, languageCode, title, normalizedTitle, isPrimary)
+                SELECT gameId, languageCode, title, normalizedTitle,
+                       ROW_NUMBER() OVER (PARTITION BY gameId ORDER BY languageCode = 'en' DESC, languageCode) = 1
+                FROM GameTranslation ORDER BY gameId, languageCode;
 
                 INSERT INTO TagCategory (id, name) VALUES (1, 'Genre'), (2, 'Mechanic');
                 INSERT INTO Tag (id, name, categoryId) VALUES (1, 'Abstract', 1), (2, 'Strategy', 1), (3, 'Trading', 2), (4, 'Unused', 2);
@@ -121,6 +126,37 @@ describe('browsing the catalogue with filters (e2e)', () => {
     it('finds a game by any of its titles', async () => {
         expect((await browse('search=colonos')).titles).toEqual(['Catan'])
         expect((await browse('search=c%C3%B3digo')).titles).toEqual(['Codenames'])
+    })
+
+    it('shows and sorts a game whose only edition is not English, and finds it by that title', async () => {
+        const database = createClient({ url: `file:${testDatabasePath}` })
+
+        await database.batch([
+            "INSERT INTO Game (id, imageUrl, gameAvgDuration, minPlayers, maxPlayers) VALUES (6, 'https://example.test/barenpark.jpg', 30, 2, 4)",
+            "INSERT INTO GameTranslation (gameId, languageCode, title, normalizedTitle) VALUES (6, 'de', 'Bärenpark', 'barenpark')",
+            "INSERT INTO GameEdition (gameId, languageCode, title, normalizedTitle, isPrimary) VALUES (6, 'de', 'Bärenpark', 'barenpark', 1)",
+        ])
+
+        try {
+            const response = await request(app.getHttpServer()).get('/collection/users/1/browse/games').set(asPlayer).expect(200)
+            const games = response.body.games as Array<{ titleTranslations: Record<string, string> }>
+
+            expect(games.map(game => game.titleTranslations.de || game.titleTranslations.en)).toEqual([
+                'Azul',
+                'Bärenpark',
+                'Catan',
+                'Codenames',
+                'Love Letter',
+                'Twilight Imperium',
+            ])
+            expect(games[1]?.titleTranslations.de).toBe('Bärenpark')
+            expect((await browse('search=barenpark')).totalItems).toBe(1)
+            // A Spanish edition title finds the game for an English reader.
+            expect((await browse('search=colonos')).titles).toEqual(['Catan'])
+        } finally {
+            await database.execute('DELETE FROM Game WHERE id = 6')
+            database.close()
+        }
     })
 
     it('keeps the games that play with the given number of people', async () => {

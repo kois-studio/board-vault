@@ -59,8 +59,8 @@ const gameResult = await client.execute({
     sql: `
         SELECT g.id, COALESCE(gt_en.title, gt_es.title) AS title
         FROM Game g
-        LEFT JOIN GameTranslation gt_en ON gt_en.gameId = g.id AND gt_en.languageCode = 'en'
-        LEFT JOIN GameTranslation gt_es ON gt_es.gameId = g.id AND gt_es.languageCode = 'es'
+        LEFT JOIN GameEdition gt_en ON gt_en.gameId = g.id AND gt_en.languageCode = 'en'
+        LEFT JOIN GameEdition gt_es ON gt_es.gameId = g.id AND gt_es.languageCode = 'es'
         WHERE g.id = ?
     `,
     args: [gameId],
@@ -71,8 +71,8 @@ if (gameResult.rows.length !== 1) {
 }
 
 const migrationResult = await client.execute("SELECT MAX(version) AS version FROM SchemaMigrations")
-if (String(migrationResult.rows[0]?.version ?? '') !== '0027') {
-    throw new Error('The target database must be migrated through 0027 before seeding the social fixture.')
+if (String(migrationResult.rows[0]?.version ?? '') !== '0028') {
+    throw new Error('The target database must be migrated through 0028 before seeding the social fixture.')
 }
 
 let transaction

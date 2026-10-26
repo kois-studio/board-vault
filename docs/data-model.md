@@ -10,7 +10,7 @@ The database is SQLite through libSQL: a local file in development, Turso in
 production. The schema is
 [`database/schema/schema.sql`](../database/schema/schema.sql) (the 0001–0005
 baseline) plus the numbered files in
-[`database/migrations/`](../database/migrations/). Current version: **0027**.
+[`database/migrations/`](../database/migrations/). Current version: **0028**.
 All SQL lives in the per-domain query classes in
 [`database/queries/`](../backend/src/modules/common/database/queries/).
 
@@ -54,7 +54,8 @@ sessions they created, and more.
 | `Account` | A person who signs in: `email`, `username`, `displayName`, `avatar`, `isAdmin`, `isDeleted`, `clerkUserId` (unique), and `locale`, the interface language they chose or signed up in (NULL until then; the API validates it, ADR-0024). No credentials (ADR-0012). `email` and `username` are copies of Clerk's, kept in step by webhook and `POST /auth/sync-from-clerk`; usernames match case-insensitively (ADR-0017). | — |
 | `Game` | Catalogue game: artwork address, duration, player counts. `imageUrl` is `/artwork/<id>-<hash>.webp` for stored artwork, or empty for none. `retailPriceCents` is the recommended retail price in euro cents (NULL when unknown); collection-worth estimates read it, never `OwnedGame.purchasePrice` (ADR-0016). | — |
 | `GameArtwork` | Board Vault's copy of a game's artwork (ADR-0015): compressed WebP bytes, size, the hash in its address, and the address it was copied from (NULL for an upload). | `Game` (cascade) |
-| `GameTranslation` | Title per language (`en`, `es`) and a normalized title for search. | `Game` (cascade) |
+| `GameEdition` | One published version of a game in one language (ADR-0025): `languageCode` (any BCP 47 code), `title`, `normalizedTitle` for search, and `isPrimary`, the edition the game is best known by. Unique indexes allow one edition per (`gameId`, `languageCode`) and one primary per game; a first edition becomes primary, and deleting the primary promotes English, else the first by language code. The API reads every title from here. | `Game` (cascade) |
+| `GameTranslation` | Legacy title per language (`en`, `es`). The API still writes it with every `GameEdition` change, so a rollback can read it again, until a later migration drops it. | `Game` (cascade) |
 | `TagCategory`, `Tag`, `GameTag` | Catalogue tagging. | `TagCategory` → `Tag` (cascade); `Game`, `Tag` (cascade) |
 | `TagTranslation`, `TagCategoryTranslation` | A tag's or category's name in another interface language (`es`, `fr`, `de`, `it`; ADR-0024). English stays in `name`; a language without a row shows the English. | `Tag`, `TagCategory` (cascade) |
 | `GameProposal` | A user's request to add a game; admins approve, reject, or mark as duplicate. Approval creates the game with exactly the reviewed values: players and length must come from the proposal or the admin, never a default. A rejection's `reviewNotes` is the reason the proposer reads; a duplicate names the existing game in the proposer's notification (`duplicateOfGameId` in its data). `addTo` (`shelf`, `wishlist`, or NULL) is where the approved game goes for the proposer, added in the approval transaction. | submitter `Account` (cascade); reviewer `Account`, created `Game` (set null) |

@@ -48,7 +48,7 @@ export class GamesService {
 
     // #region methods
 
-    /** One page of catalogue game ids for Browse, and how many games match in total. */
+    /** One page of catalogue game ids for Browse, sorted by the title in the reader's `locale` (else the primary edition), and how many games match in total. */
     async browseCatalogue(
         filters: CatalogueFilters & { sort: BrowseSort; page: number; pageSize: number; locale: Locale },
     ): Promise<{ gameIds: Array<number>; total: number }> {
