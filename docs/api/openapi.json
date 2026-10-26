@@ -6056,6 +6056,135 @@
           "keys"
         ]
       },
+      "NotificationAccountDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number",
+            "example": 7
+          },
+          "name": {
+            "type": "object",
+            "example": "Ana",
+            "nullable": true,
+            "description": "Null for a deleted account; the app writes \"Deleted account\"."
+          },
+          "deleted": {
+            "type": "boolean",
+            "example": false
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "deleted"
+        ]
+      },
+      "NotificationNamedDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number",
+            "example": 3
+          },
+          "name": {
+            "type": "string",
+            "example": "Thursday Crew"
+          }
+        },
+        "required": [
+          "id",
+          "name"
+        ]
+      },
+      "NotificationSessionDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number",
+            "example": 41
+          },
+          "date": {
+            "type": "string",
+            "example": "2026-10-09T17:00:00.000Z"
+          },
+          "timezone": {
+            "type": "string",
+            "example": "Europe/Madrid"
+          }
+        },
+        "required": [
+          "id",
+          "date",
+          "timezone"
+        ]
+      },
+      "NotificationGameDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number",
+            "example": 12
+          },
+          "title": {
+            "type": "string",
+            "example": "Ciudadelas"
+          },
+          "titleLanguage": {
+            "type": "string",
+            "example": "es",
+            "description": "The language of the title."
+          }
+        },
+        "required": [
+          "id",
+          "title",
+          "titleLanguage"
+        ]
+      },
+      "NotificationContextDto": {
+        "type": "object",
+        "properties": {
+          "accounts": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/NotificationAccountDto"
+            }
+          },
+          "groups": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/NotificationNamedDto"
+            }
+          },
+          "sessions": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/NotificationSessionDto"
+            }
+          },
+          "people": {
+            "description": "Group people.",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/NotificationNamedDto"
+            }
+          },
+          "games": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/NotificationGameDto"
+            }
+          }
+        },
+        "required": [
+          "accounts",
+          "groups",
+          "sessions",
+          "people",
+          "games"
+        ]
+      },
       "NotificationDto": {
         "type": "object",
         "properties": {
@@ -6086,6 +6215,14 @@
           "isRead": {
             "type": "boolean",
             "example": true
+          },
+          "context": {
+            "description": "Only on inbox reads.",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/NotificationContextDto"
+              }
+            ]
           }
         },
         "required": [
@@ -9821,6 +9958,42 @@
           "attendeeIds"
         ]
       },
+      "RecommendationReasonDto": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string",
+            "enum": [
+              "owned_by",
+              "fits_players",
+              "duration",
+              "duration_unknown",
+              "rating",
+              "no_rating",
+              "interested",
+              "passed_before",
+              "preferences_favor",
+              "marked_avoid",
+              "not_played_yet",
+              "played_before",
+              "strong_rating",
+              "shared_shelf"
+            ],
+            "example": "owned_by"
+          },
+          "values": {
+            "type": "object",
+            "example": {
+              "owners": 2,
+              "attendees": 3
+            },
+            "description": "The numbers the reason needs: owners and attendees (owned_by; people is 1 when they are group people), players (fits_players), minutes (duration), rating (rating), count (interested, passed_before)."
+          }
+        },
+        "required": [
+          "code"
+        ]
+      },
       "RecommendationExplanationDto": {
         "type": "object",
         "properties": {
@@ -9832,6 +10005,13 @@
             "type": "array",
             "items": {
               "type": "string"
+            }
+          },
+          "reasonCodes": {
+            "description": "The same reasons, as codes; `reasons` is their English.",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/RecommendationReasonDto"
             }
           },
           "attendeeOwnerCount": {
@@ -9865,6 +10045,7 @@
         },
         "required": [
           "reasons",
+          "reasonCodes",
           "attendeeOwnerCount",
           "attendeeCount",
           "averageReview",
@@ -9891,6 +10072,32 @@
           "gameData",
           "score",
           "explanation"
+        ]
+      },
+      "NoResultReasonDto": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string",
+            "enum": [
+              "no_owned_games",
+              "no_player_fit",
+              "no_duration_fit",
+              "no_titled_games",
+              "no_people_games"
+            ],
+            "example": "no_player_fit"
+          },
+          "values": {
+            "type": "object",
+            "example": {
+              "players": 5
+            },
+            "description": "players (no_player_fit, no_duration_fit), minutes (no_duration_fit)."
+          }
+        },
+        "required": [
+          "code"
         ]
       },
       "RecommendationsDto": {
@@ -9945,6 +10152,16 @@
             "type": "object",
             "example": "No owned games match the selected attendees and filters.",
             "nullable": true
+          },
+          "noResultReasonCode": {
+            "nullable": true,
+            "description": "The same reason, as a code; `noResultReason` is its English.",
+            "type": "object",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/NoResultReasonDto"
+              }
+            ]
           }
         },
         "required": [
@@ -9953,7 +10170,8 @@
           "availableMinutes",
           "decisionLens",
           "recommendations",
-          "noResultReason"
+          "noResultReason",
+          "noResultReasonCode"
         ]
       },
       "ParticipantRecommendationRequestBody": {
