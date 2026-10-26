@@ -19,6 +19,7 @@ import { WishlistToggleComponent } from '../../../components/wishlist-toggle/wis
 import { CustomDatePipe } from '../../../core/pipes/customDate.pipe'
 import { GameTitlePipe } from '../../../core/pipes/game-title.pipe'
 import { DataService } from '../../../core/services/data.service'
+import { gameTitleLanguage, otherGameTitles } from '../../../core/utils/gameTitle'
 import { mergeHistoryParticipants } from '../../../core/utils/historyParticipants'
 
 /** Nights listed before "Show all" on the game page. */
@@ -93,6 +94,8 @@ export class GameViewPageComponent {
             .sort((a, b) => new Date(b.meetData.meetDate).getTime() - new Date(a.meetData.meetDate).getTime())
     })
     public readonly showAllPlays = signal(false)
+    protected readonly titleLanguage = gameTitleLanguage
+    protected readonly otherTitles = otherGameTitles
     /** The latest nights, or all of them once asked for. */
     public readonly visiblePlaysComputed = computed(() =>
         this.showAllPlays() ? this.userHistoryFilteredComputed() : this.userHistoryFilteredComputed().slice(0, PLAYS_SHOWN),

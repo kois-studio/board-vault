@@ -51,9 +51,10 @@ export const CATALOGUE_QUALITY: Record<CatalogueQualityIssue, string> = {
     'no-price': 'g.retailPriceCents IS NULL',
 }
 
+/** `readerTitle` is the title in the reader's language, else English (ADR-0025). */
 const CATALOGUE_ORDER: Record<BrowseSort, string> = {
-    title: 't.title COLLATE NOCASE ASC, g.id ASC',
-    shortest: 'g.gameAvgDuration IS NULL, g.gameAvgDuration ASC, t.title COLLATE NOCASE ASC, g.id ASC',
+    title: 'readerTitle COLLATE NOCASE ASC, g.id ASC',
+    shortest: 'g.gameAvgDuration IS NULL, g.gameAvgDuration ASC, readerTitle COLLATE NOCASE ASC, g.id ASC',
     newest: 'g.id DESC',
 }
 
@@ -277,18 +278,19 @@ export class GameQueries {
     }
 
     /** One page of catalogue game ids, filtered and sorted for Browse. */
-    browseCatalogue(filters: CatalogueFilters & { sort: BrowseSort; skip: number; take: number }) {
+    browseCatalogue(filters: CatalogueFilters & { sort: BrowseSort; skip: number; take: number; locale: Locale }) {
         const { where, args } = this.catalogueWhere(filters)
 
         return this.database.execute({
             sql: `
-                SELECT g.id FROM Game g
+                SELECT g.id, COALESCE(reader.title, t.title) AS readerTitle FROM Game g
                 JOIN GameTranslation t ON t.gameId = g.id AND t.languageCode = 'en'
+                LEFT JOIN GameTranslation reader ON reader.gameId = g.id AND reader.languageCode = ?
                 ${where}
                 ORDER BY ${CATALOGUE_ORDER[filters.sort]}
                 LIMIT ? OFFSET ?
             `,
-            args: [...args, filters.take, filters.skip],
+            args: [filters.locale, ...args, filters.take, filters.skip],
         })
     }
 

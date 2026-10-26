@@ -50,6 +50,8 @@ still named `"Deleted account"`, which the app shows in the page's language.
 `PUT /users/:userId` with `locale` saves the person's choice, returned on
 their own profile (`GET /profile/users/:userId`) and on no nested user
 response.
+Browse sorts by the title in the reader's language, else the English one, so
+the order matches what the page shows (ADR-0025).
 
 Tag and tag category names are vocabulary, so they follow the reader's
 language: `GET /collection/tags` and a game page's `tags` name them in

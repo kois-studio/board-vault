@@ -50,7 +50,7 @@ export class GamesService {
 
     /** One page of catalogue game ids for Browse, and how many games match in total. */
     async browseCatalogue(
-        filters: CatalogueFilters & { sort: BrowseSort; page: number; pageSize: number },
+        filters: CatalogueFilters & { sort: BrowseSort; page: number; pageSize: number; locale: Locale },
     ): Promise<{ gameIds: Array<number>; total: number }> {
         const [page, count] = await Promise.all([
             this.databaseService.games.browseCatalogue({ ...filters, skip: (filters.page - 1) * filters.pageSize, take: filters.pageSize }),

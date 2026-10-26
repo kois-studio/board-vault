@@ -46,7 +46,7 @@ export class CollectionService {
     }
 
     @LogFeature(new Logger('CollectionService'))
-    async browseCatalogue(userId: number, query: BrowseGamesQuery): Promise<BrowseGamesResultDto> {
+    async browseCatalogue(userId: number, query: BrowseGamesQuery, locale: Locale): Promise<BrowseGamesResultDto> {
         const search = this.gameTranslationService.normalizeTitle(query.search)
 
         // Punctuation alone, such as `%%`, normalizes to nothing: a search with no match, not the whole catalogue.
@@ -63,6 +63,7 @@ export class CollectionService {
             sort: query.sort,
             page: query.page,
             pageSize: query.limit,
+            locale,
         })
         const [games, translations] = await Promise.all([
             this.gamesService.getGamesByIds(gameIds),
