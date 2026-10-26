@@ -45,6 +45,25 @@ describe('clerkLocalization', () => {
         expect(at(bundle, 'userProfile.navbar.title')).not.toBe('Sign-in')
     })
 
+    it('only writes keys Clerk’s own English has, so a renamed key after an upgrade fails here', async () => {
+        const { enUS } = await import('@clerk/localizations/en-US')
+        const leaves = (tree: unknown, prefix = ''): string[] =>
+            Object.entries(tree as Tree).flatMap(([key, value]) =>
+                value !== null && typeof value === 'object'
+                    ? leaves(value, `${prefix}${key}.`)
+                    : value === undefined
+                      ? []
+                      : [`${prefix}${key}`],
+            )
+        // Italian leaves most of what we fill to us, so what it has beyond Clerk's bundle is our fills; English is our names.
+        const bundle = new Set(leaves(await CLERK_BUNDLES.it()))
+        const fills = leaves(await clerkLocalization('it')).filter((path) => !bundle.has(path))
+        const ours = [...fills, ...leaves(await clerkLocalization('en'))]
+
+        expect(fills.length).toBeGreaterThan(50)
+        expect(ours.filter((path) => typeof at(enUS, path) !== 'string')).toEqual([])
+    })
+
     it('never replaces a translation Clerk has with our fill', async () => {
         const bundle = await CLERK_BUNDLES.fr()
         const french = await clerkLocalization('fr')
