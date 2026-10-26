@@ -38,6 +38,15 @@
         <source>You can create strong passwords without using symbols, numbers, or uppercase letters.</source>
       </segment>
     </unit>
+    <unit id="1125545696015172640">
+      <notes>
+        <note category="location">src/app/pages/landing/landing.component.html</note>
+        <note category="description">Chip on a search result in the landing example: you own this game</note>
+      </notes>
+      <segment>
+        <source>On your shelf</source>
+      </segment>
+    </unit>
     <unit id="1171599222218766902">
       <notes>
         <note category="location">src/app/components/card-invitation/card-invitation.component.ts</note>
@@ -101,6 +110,24 @@
         <source><ph id="0" equiv="picture" disp="this.alt()"/> unavailable</source>
       </segment>
     </unit>
+    <unit id="1234692818081853895">
+      <notes>
+        <note category="location">src/app/pages/landing/landing.component.ts</note>
+        <note category="description">Answer on the landing page to Do I need a group to use it?</note>
+      </notes>
+      <segment>
+        <source>No. Board Vault works as a personal collection manager on its own. Groups are there when you want to play with others.</source>
+      </segment>
+    </unit>
+    <unit id="1235702505132058630">
+      <notes>
+        <note category="location">src/app/pages/landing/landing.component.html</note>
+        <note category="description">Heading of the fifth landing feature</note>
+      </notes>
+      <segment>
+        <source>Plan the night, keep the history</source>
+      </segment>
+    </unit>
     <unit id="1238181001688941218">
       <notes>
         <note category="location">src/app/core/i18n/clerk-localization.ts</note>
@@ -116,6 +143,15 @@
       </notes>
       <segment>
         <source>Your game proposal &quot;<ph id="0" equiv="title" disp="data[&apos;gameTitle&apos;]"/>&quot; is already in Board Vault as &quot;<ph id="1" equiv="existingTitle" disp="data[&apos;duplicateOfTitle&apos;]"/>&quot;.</source>
+      </segment>
+    </unit>
+    <unit id="1292985735794176989">
+      <notes>
+        <note category="location">src/app/pages/landing/landing.component.ts</note>
+        <note category="description">Answer on the landing page to Does it work on my phone?</note>
+      </notes>
+      <segment>
+        <source>Yes. It runs in any modern browser and you can install it to your home screen.</source>
       </segment>
     </unit>
     <unit id="1316194950149848003">
@@ -182,6 +218,15 @@
         <source>That password does not meet the secure sign-up requirements. Use the guidance above and try again.</source>
       </segment>
     </unit>
+    <unit id="1582685296946620334">
+      <notes>
+        <note category="location">src/app/pages/landing/landing.fixtures.ts</note>
+        <note category="description">Name of the example group on the landing page, a group of friends who play on Fridays</note>
+      </notes>
+      <segment>
+        <source>Friday Crew</source>
+      </segment>
+    </unit>
     <unit id="1583195687933839267">
       <notes>
         <note category="location">src/app/core/i18n/clerk-localization.ts</note>
@@ -207,6 +252,15 @@
       </notes>
       <segment>
         <source>Use your existing Board Vault account to join the group that invited you.</source>
+      </segment>
+    </unit>
+    <unit id="1616102757855967475">
+      <notes>
+        <note category="location">src/app/pages/landing/landing.component.html</note>
+        <note category="description">Filter button in the landing example: every game</note>
+      </notes>
+      <segment>
+        <source>All</source>
       </segment>
     </unit>
     <unit id="1617546397601140638">
@@ -251,6 +305,15 @@
       </notes>
       <segment>
         <source>Verification isn&apos;t supported in this environment. Please continue in a standard browser or contact support.</source>
+      </segment>
+    </unit>
+    <unit id="1835096012816040438">
+      <notes>
+        <note category="location">src/app/pages/landing/landing.component.ts</note>
+        <note category="description">Answer on the landing page to Can friends without an account join in?</note>
+      </notes>
+      <segment>
+        <source>Yes. Add the people who come but never sign up, and keep their games and wins in the group’s history.</source>
       </segment>
     </unit>
     <unit id="186236568870281953">
@@ -298,6 +361,15 @@
         <source>About Board Vault</source>
       </segment>
     </unit>
+    <unit id="1968746440402555823">
+      <notes>
+        <note category="location">src/app/pages/landing/landing.component.ts</note>
+        <note category="description">Answer on the landing page to Is it open source?</note>
+      </notes>
+      <segment>
+        <source>Yes. The code is public on GitHub under the MIT license.</source>
+      </segment>
+    </unit>
     <unit id="1991309224805970080">
       <notes>
         <note category="location">src/app/core/i18n/clerk-localization.ts</note>
@@ -334,6 +406,15 @@
         <source>Error retrieving user&apos;s invitations</source>
       </segment>
     </unit>
+    <unit id="2017823433923732184">
+      <notes>
+        <note category="location">src/app/pages/landing/landing.component.ts</note>
+        <note category="description">Who owns a game in the landing example group; the placeholder is a list of names</note>
+      </notes>
+      <segment>
+        <source>Owned by <ph id="0" equiv="names" disp="names"/></source>
+      </segment>
+    </unit>
     <unit id="201855137823103381">
       <notes>
         <note category="location">src/app/core/i18n/clerk-localization.ts</note>
@@ -341,6 +422,15 @@
       </notes>
       <segment>
         <source>Common character sequences like &quot;abc&quot; are easy to guess.</source>
+      </segment>
+    </unit>
+    <unit id="202194909402761079">
+      <notes>
+        <note category="location">src/app/pages/landing/landing.component.html</note>
+        <note category="description">A game you want, in the landing example</note>
+      </notes>
+      <segment>
+        <source>On your wishlist</source>
       </segment>
     </unit>
     <unit id="2031932285140054383">
@@ -431,6 +521,16 @@
         <source> The secure sign-in service could not be reached. Refresh this page to try again. </source>
       </segment>
     </unit>
+    <unit id="2251647579667259226">
+      <notes>
+        <note category="location">src/app/pages/landing/landing.fixtures.ts</note>
+        <note category="description">The published title of the board game Ticket to Ride in this language</note>
+        <note category="meaning">game title</note>
+      </notes>
+      <segment>
+        <source>Ticket to Ride</source>
+      </segment>
+    </unit>
     <unit id="2270019012182179550">
       <notes>
         <note category="location">src/app/app.component.ts</note>
@@ -477,6 +577,15 @@
         <source>Log in</source>
       </segment>
     </unit>
+    <unit id="234507628625197359">
+      <notes>
+        <note category="location">src/app/pages/landing/landing.component.html</note>
+        <note category="description">Heading of the games played at the previous game night, in the landing example</note>
+      </notes>
+      <segment>
+        <source>Last Friday</source>
+      </segment>
+    </unit>
     <unit id="2354722487650755409">
       <notes>
         <note category="location">src/app/pages/auth/register/register.component.html</note>
@@ -484,6 +593,15 @@
       </notes>
       <segment>
         <source>Use at least 15 characters.</source>
+      </segment>
+    </unit>
+    <unit id="2358983192776008663">
+      <notes>
+        <note category="location">src/app/pages/landing/landing.component.html</note>
+        <note category="description">Small line under the landing page buttons</note>
+      </notes>
+      <segment>
+        <source>Free to use. Works in any browser.</source>
       </segment>
     </unit>
     <unit id="2369742814572661392">
@@ -514,6 +632,15 @@
         <source>How it works</source>
       </segment>
     </unit>
+    <unit id="2418611027222489907">
+      <notes>
+        <note category="location">src/app/pages/landing/landing.component.ts</note>
+        <note category="description">Answer on the landing page to Who can see my collection?</note>
+      </notes>
+      <segment>
+        <source>Only you, until you join a group. The people in your groups see the games you own and how you rated them, never your wishlist or your account.</source>
+      </segment>
+    </unit>
     <unit id="2422073724818015702">
       <notes>
         <note category="location">src/app/layout/usage-notice/usage-notice.component.html</note>
@@ -521,6 +648,15 @@
       </notes>
       <segment>
         <source>Change it anytime in <pc id="0" equivStart="START_LINK" equivEnd="CLOSE_LINK" type="link" dispStart="&lt;a routerLink=&quot;/settings/privacy&quot; class=&quot;font-medium text-bv-primary underline&quot;&gt;" dispEnd="&lt;/a&gt;">Settings → Privacy</pc>.</source>
+      </segment>
+    </unit>
+    <unit id="242623158354490493">
+      <notes>
+        <note category="location">src/app/pages/landing/landing.component.html</note>
+        <note category="description">Text of the third landing feature</note>
+      </notes>
+      <segment>
+        <source>Give each game a rating after you play it, and keep a wishlist of the ones you want to get.</source>
       </segment>
     </unit>
     <unit id="2427460915092901296">
@@ -602,6 +738,15 @@
       </notes>
       <segment>
         <source>Keep it</source>
+      </segment>
+    </unit>
+    <unit id="2559754008210075307">
+      <notes>
+        <note category="location">src/app/pages/landing/landing.component.html</note>
+        <note category="description">Name of the player-count buttons in the landing example</note>
+      </notes>
+      <segment>
+        <source>Filter the example games by players</source>
       </segment>
     </unit>
     <unit id="2561326148159407958">
@@ -693,6 +838,15 @@
         <source>You have deleted the notification</source>
       </segment>
     </unit>
+    <unit id="2759471177662590223">
+      <notes>
+        <note category="location">src/app/pages/landing/landing.fixtures.ts</note>
+        <note category="description">Title of the landing example game night; Mia is a person in the example group</note>
+      </notes>
+      <segment>
+        <source>Game night at Mia’s</source>
+      </segment>
+    </unit>
     <unit id="2766969724475977787">
       <notes>
         <note category="location">src/app/core/i18n/clerk-localization.ts</note>
@@ -700,6 +854,15 @@
       </notes>
       <segment>
         <source>Use multiple words, but avoid common phrases.</source>
+      </segment>
+    </unit>
+    <unit id="2804366116178267633">
+      <notes>
+        <note category="location">src/app/pages/landing/landing.component.html</note>
+        <note category="description">Text of the fourth landing feature</note>
+      </notes>
+      <segment>
+        <source> Create a group and see everyone’s games in one place, who owns each one, and suggestions that fit the people coming. </source>
       </segment>
     </unit>
     <unit id="2806917038528218276">
@@ -804,6 +967,15 @@
         <source>Join by invitation — Board Vault</source>
       </segment>
     </unit>
+    <unit id="3059382382764975917">
+      <notes>
+        <note category="location">src/app/pages/landing/landing.component.html</note>
+        <note category="description">Button on the landing page that scrolls to the features</note>
+      </notes>
+      <segment>
+        <source>See how it works</source>
+      </segment>
+    </unit>
     <unit id="306733880709423201">
       <notes>
         <note category="location">src/app/layout/profile-menu/profile-menu.component.html</note>
@@ -866,6 +1038,24 @@
         <source><ph id="0" equiv="person" disp="actor"/> said <ph id="1" equiv="groupPerson" disp="person"/> has <ph id="2" equiv="game" disp="game"/>, in <ph id="3" equiv="group" disp="group"/>.</source>
       </segment>
     </unit>
+    <unit id="3206338293571625434">
+      <notes>
+        <note category="location">src/app/pages/landing/landing.component.html</note>
+        <note category="description">Text next to the questions on the landing page</note>
+      </notes>
+      <segment>
+        <source> Your wishlist and your account are private. A group sees the games its members own and how they rated them, so the suggestions fit everyone. </source>
+      </segment>
+    </unit>
+    <unit id="3249513483374643425">
+      <notes>
+        <note category="location">src/app/pages/landing/landing.component.html</note>
+        <note category="description">Add a game to your shelf, a button in the landing example</note>
+      </notes>
+      <segment>
+        <source>Add</source>
+      </segment>
+    </unit>
     <unit id="3256590211420252677">
       <notes>
         <note category="location">src/app/layout/language-menu/language-menu.component.ts</note>
@@ -911,6 +1101,33 @@
         <source>Join the group</source>
       </segment>
     </unit>
+    <unit id="3386246347342903734">
+      <notes>
+        <note category="location">src/app/pages/landing/landing.component.html</note>
+        <note category="description">Heading of the closing call to action on the landing page</note>
+      </notes>
+      <segment>
+        <source>Put your collection in order tonight.</source>
+      </segment>
+    </unit>
+    <unit id="3398338842701230044">
+      <notes>
+        <note category="location">src/app/pages/landing/landing.component.html</note>
+        <note category="description">Small line above the main heading of the landing page</note>
+      </notes>
+      <segment>
+        <source>Board game collection manager</source>
+      </segment>
+    </unit>
+    <unit id="3405859134000071474">
+      <notes>
+        <note category="location">src/app/pages/landing/landing.fixtures.ts</note>
+        <note category="description">Reason for a suggestion in the landing example</note>
+      </notes>
+      <segment>
+        <source>Fits all 5 coming</source>
+      </segment>
+    </unit>
     <unit id="3424516948436893066">
       <notes>
         <note category="location">src/app/core/i18n/recommendation-text.ts</note>
@@ -918,6 +1135,15 @@
       </notes>
       <segment>
         <source>Strong group rating</source>
+      </segment>
+    </unit>
+    <unit id="356000382298639525">
+      <notes>
+        <note category="location">src/app/pages/landing/landing.component.html</note>
+        <note category="description">Text of the second landing feature</note>
+      </notes>
+      <segment>
+        <source>Filter by how many people are playing, and sort by title or by play time.</source>
       </segment>
     </unit>
     <unit id="3568097994808154139">
@@ -936,6 +1162,15 @@
       </notes>
       <segment>
         <source>Manage your Board Vault account and security settings.</source>
+      </segment>
+    </unit>
+    <unit id="364756386265147483">
+      <notes>
+        <note category="location">src/app/pages/landing/landing.component.ts</note>
+        <note category="description">Question on the landing page</note>
+      </notes>
+      <segment>
+        <source>Does it work on my phone?</source>
       </segment>
     </unit>
     <unit id="3693351739760545097">
@@ -1091,6 +1326,15 @@
         <source>Recent years are easy to guess.</source>
       </segment>
     </unit>
+    <unit id="3995378846861632522">
+      <notes>
+        <note category="location">src/app/pages/landing/landing.component.ts</note>
+        <note category="description">Answer of someone not coming to the landing example game night</note>
+      </notes>
+      <segment>
+        <source>Can’t come</source>
+      </segment>
+    </unit>
     <unit id="4050851435935072722">
       <notes>
         <note category="location">src/app/core/i18n/clerk-localization.ts</note>
@@ -1098,6 +1342,15 @@
       </notes>
       <segment>
         <source>There should not be any personal or page related data.</source>
+      </segment>
+    </unit>
+    <unit id="4057932224780575479">
+      <notes>
+        <note category="location">src/app/pages/landing/landing.component.html</note>
+        <note category="description">Line under the closing heading on the landing page</note>
+      </notes>
+      <segment>
+        <source>Free account. Your first game is a search away.</source>
       </segment>
     </unit>
     <unit id="4086606389696938932">
@@ -1116,6 +1369,15 @@
       </notes>
       <segment>
         <source><ph id="0" equiv="count" disp="count"/> selected attendee marked this as interesting</source>
+      </segment>
+    </unit>
+    <unit id="411354769244562331">
+      <notes>
+        <note category="location">src/app/pages/landing/landing.component.html</note>
+        <note category="description">How many games the landing example shows after filtering</note>
+      </notes>
+      <segment>
+        <source>{VAR_PLURAL, plural, one {<ph id="0" equiv="INTERPOLATION"/> game} other {<ph id="1" equiv="INTERPOLATION"/> games}}</source>
       </segment>
     </unit>
     <unit id="413116577994876478">
@@ -1223,6 +1485,15 @@
       </notes>
       <segment>
         <source>Just now</source>
+      </segment>
+    </unit>
+    <unit id="4281014528431517406">
+      <notes>
+        <note category="location">src/app/pages/landing/landing.component.html</note>
+        <note category="description">Heading of the third landing feature</note>
+      </notes>
+      <segment>
+        <source>Rate what you play, wish for what’s next</source>
       </segment>
     </unit>
     <unit id="4287070028471913183">
@@ -1333,6 +1604,16 @@
         <source>Your password meets all the necessary requirements.</source>
       </segment>
     </unit>
+    <unit id="475317156489631945">
+      <notes>
+        <note category="location">src/app/core/utils/plural.ts</note>
+        <note category="description">How many can play a game, one number</note>
+        <note category="meaning">player count, one</note>
+      </notes>
+      <segment>
+        <source><ph id="0" equiv="count" disp="min"/> player</source>
+      </segment>
+    </unit>
     <unit id="4757507927002475818">
       <notes>
         <note category="location">src/app/layout/inbox/inbox.component.html</note>
@@ -1393,6 +1674,15 @@
       </notes>
       <segment>
         <source>Mobile navigation</source>
+      </segment>
+    </unit>
+    <unit id="4893176640275242151">
+      <notes>
+        <note category="location">src/app/components/recommendation-card/recommendation-card.component.html</note>
+        <note category="description">Name of the line with the group&apos;s votes on a suggested game</note>
+      </notes>
+      <segment>
+        <source>What the group thinks</source>
       </segment>
     </unit>
     <unit id="4895632873057636638">
@@ -1513,6 +1803,15 @@
         <source>Couldn&apos;t load verification. This may be caused by a network issue or a Content Security Policy that blocks the verification script. Please try again or contact support.</source>
       </segment>
     </unit>
+    <unit id="5125783711124527112">
+      <notes>
+        <note category="location">src/app/pages/landing/landing.component.html</note>
+        <note category="description">Text of the first landing feature; Add is the button in the example next to it</note>
+      </notes>
+      <segment>
+        <source>Search the catalogue and tap Add. The box art, player count and play time come with it.</source>
+      </segment>
+    </unit>
     <unit id="513045381948130029">
       <notes>
         <note category="location">src/app/core/i18n/clerk-localization.ts</note>
@@ -1520,6 +1819,24 @@
       </notes>
       <segment>
         <source>This link is no longer valid or has already been used. Please start again or request a new link.</source>
+      </segment>
+    </unit>
+    <unit id="5140281471826288799">
+      <notes>
+        <note category="location">src/app/components/recommendation-card/recommendation-card.component.html</note>
+        <note category="description">How many people in the group want to play a suggested game</note>
+      </notes>
+      <segment>
+        <source>{VAR_PLURAL, plural, one {<ph id="0" equiv="INTERPOLATION"/> interested} other {<ph id="1" equiv="INTERPOLATION"/> interested}}</source>
+      </segment>
+    </unit>
+    <unit id="5146386254486648933">
+      <notes>
+        <note category="location">src/app/pages/landing/landing.fixtures.ts</note>
+        <note category="description">Reason for a suggestion in the landing example; Ana and Mia are people in the example group</note>
+      </notes>
+      <segment>
+        <source>Ana and Mia rated it 9</source>
       </segment>
     </unit>
     <unit id="5159913659351412884">
@@ -1595,6 +1912,15 @@
         <source>Error 404<ph id="0" equiv="LINE_BREAK" type="fmt" disp="&lt;br /&gt;"/> Page not found</source>
       </segment>
     </unit>
+    <unit id="5286388501365817146">
+      <notes>
+        <note category="location">src/app/pages/landing/landing.component.ts</note>
+        <note category="description">Question on the landing page</note>
+      </notes>
+      <segment>
+        <source>Is it open source?</source>
+      </segment>
+    </unit>
     <unit id="5293165229453827063">
       <notes>
         <note category="location">src/app/layout/app-sections.ts</note>
@@ -1658,6 +1984,15 @@
         <source>Start free</source>
       </segment>
     </unit>
+    <unit id="5578874963527071333">
+      <notes>
+        <note category="location">src/app/pages/landing/landing.component.html</note>
+        <note category="description">Heading of the second landing feature</note>
+      </notes>
+      <segment>
+        <source>Find the right game fast</source>
+      </segment>
+    </unit>
     <unit id="5601530442010506564">
       <notes>
         <note category="location">src/app/layout/usage-notice/usage-notice.component.html</note>
@@ -1682,6 +2017,15 @@
       </notes>
       <segment>
         <source>This link has expired. Please start again or request a new link.</source>
+      </segment>
+    </unit>
+    <unit id="5651951128882735477">
+      <notes>
+        <note category="location">src/app/pages/landing/landing.fixtures.ts</note>
+        <note category="description">Short weekday of the landing example game night, Friday</note>
+      </notes>
+      <segment>
+        <source>Fri</source>
       </segment>
     </unit>
     <unit id="5673906746664423612">
@@ -1773,6 +2117,15 @@
       </notes>
       <segment>
         <source>Rating <ph id="0" equiv="rating" disp="this.parseReview(this.review())"/> out of 5</source>
+      </segment>
+    </unit>
+    <unit id="5847297895702798294">
+      <notes>
+        <note category="location">src/app/pages/landing/landing.fixtures.ts</note>
+        <note category="description">Reason for a suggestion in the landing example</note>
+      </notes>
+      <segment>
+        <source>Fits in your 2 hours</source>
       </segment>
     </unit>
     <unit id="5847310634737729000">
@@ -1882,6 +2235,15 @@
         <source>Invited by <ph id="0" equiv="INTERPOLATION" disp="{{ invitation.fromAccount.displayName || invitation.fromAccount.username }}"/></source>
       </segment>
     </unit>
+    <unit id="6070190345865948824">
+      <notes>
+        <note category="location">src/app/pages/landing/landing.component.html</note>
+        <note category="description">How often you played a game, in the landing example</note>
+      </notes>
+      <segment>
+        <source>{VAR_PLURAL, plural, one {Played once} other {Played <ph id="0" equiv="INTERPOLATION"/> times}}</source>
+      </segment>
+    </unit>
     <unit id="6099346861896174463">
       <notes>
         <note category="location">src/app/layout/language-menu/language-menu.component.ts</note>
@@ -1898,6 +2260,15 @@
       </notes>
       <segment>
         <source>You have joined the group!</source>
+      </segment>
+    </unit>
+    <unit id="6112466836031834243">
+      <notes>
+        <note category="location">src/app/pages/landing/landing.component.ts</note>
+        <note category="description">Question on the landing page</note>
+      </notes>
+      <segment>
+        <source>Can friends without an account join in?</source>
       </segment>
     </unit>
     <unit id="6123590976681789837">
@@ -1989,6 +2360,25 @@
         <source>Avoid predictable letter substitutions like &apos;@&apos; for &apos;a&apos;.</source>
       </segment>
     </unit>
+    <unit id="6363341208124688834">
+      <notes>
+        <note category="location">src/app/core/utils/plural.ts</note>
+        <note category="description">How many can play a game, one number</note>
+        <note category="meaning">player count, other</note>
+      </notes>
+      <segment>
+        <source><ph id="0" equiv="count" disp="min"/> players</source>
+      </segment>
+    </unit>
+    <unit id="6369425269629738896">
+      <notes>
+        <note category="location">src/app/pages/landing/landing.component.html</note>
+        <note category="description">Main button of the landing page, opens sign-up</note>
+      </notes>
+      <segment>
+        <source>Create your free account</source>
+      </segment>
+    </unit>
     <unit id="6376922083892592201">
       <notes>
         <note category="location">src/app/core/i18n/clerk-localization.ts</note>
@@ -2064,6 +2454,7 @@
       <notes>
         <note category="location">src/app/layout/footer/footer.component.html</note>
         <note category="location">src/app/layout/header/header.component.ts</note>
+        <note category="location">src/app/pages/landing/landing.component.html</note>
         <note category="description">Link to a section of the landing page</note>
       </notes>
       <segment>
@@ -2216,6 +2607,15 @@
         <source>Lend us a hand? 🎲</source>
       </segment>
     </unit>
+    <unit id="6910932422025459839">
+      <notes>
+        <note category="location">src/app/pages/landing/landing.component.html</note>
+        <note category="description">Filter button in the landing example: games for this many people</note>
+      </notes>
+      <segment>
+        <source>{VAR_PLURAL, plural, one {<ph id="0" equiv="INTERPOLATION"/> player} other {<ph id="1" equiv="INTERPOLATION"/> players}}</source>
+      </segment>
+    </unit>
     <unit id="6930216235586087894">
       <notes>
         <note category="location">src/app/core/i18n/recommendation-text.ts</note>
@@ -2233,6 +2633,15 @@
       </notes>
       <segment>
         <source>Sign-in</source>
+      </segment>
+    </unit>
+    <unit id="6963942788569864999">
+      <notes>
+        <note category="location">src/app/pages/landing/landing.component.ts</note>
+        <note category="description">Question on the landing page</note>
+      </notes>
+      <segment>
+        <source>Is Board Vault free?</source>
       </segment>
     </unit>
     <unit id="7007703201160377234">
@@ -2325,6 +2734,15 @@
         <source>This is a heavily used password.</source>
       </segment>
     </unit>
+    <unit id="7216290397854564667">
+      <notes>
+        <note category="location">src/app/pages/landing/landing.component.html</note>
+        <note category="description">Name of the list of answers in the landing example game night</note>
+      </notes>
+      <segment>
+        <source>Who is coming</source>
+      </segment>
+    </unit>
     <unit id="7233639534415316994">
       <notes>
         <note category="location">src/app/core/i18n/recommendation-text.ts</note>
@@ -2341,6 +2759,24 @@
       </notes>
       <segment>
         <source>Single words are easy to guess.</source>
+      </segment>
+    </unit>
+    <unit id="7288203349583372907">
+      <notes>
+        <note category="location">src/app/components/recommendation-card/recommendation-card.component.ts</note>
+        <note category="description">Badge with how well a suggested game fits, out of 100</note>
+      </notes>
+      <segment>
+        <source>Fit <ph id="0" equiv="score" disp="this.score()"/></source>
+      </segment>
+    </unit>
+    <unit id="7294155788021660432">
+      <notes>
+        <note category="location">src/app/pages/landing/landing.component.ts</note>
+        <note category="description">Question on the landing page</note>
+      </notes>
+      <segment>
+        <source>Who can see my collection?</source>
       </segment>
     </unit>
     <unit id="7306616487170771288">
@@ -2443,6 +2879,15 @@
         <source>No games are owned by the selected attendees.</source>
       </segment>
     </unit>
+    <unit id="7586590255303874471">
+      <notes>
+        <note category="location">src/app/components/recommendation-card/recommendation-card.component.ts</note>
+        <note category="description">Screen-reader name of the fit badge on a suggested game</note>
+      </notes>
+      <segment>
+        <source>Fit score <ph id="0" equiv="score" disp="this.score()"/> out of 100</source>
+      </segment>
+    </unit>
     <unit id="7619560701830330401">
       <notes>
         <note category="location">src/app/components/ui/spinner/spinner.component.ts</note>
@@ -2525,6 +2970,15 @@
         <source>Inbox, <ph id="0" equiv="count" disp="count"/> new</source>
       </segment>
     </unit>
+    <unit id="7826848079555265267">
+      <notes>
+        <note category="location">src/app/pages/landing/landing.component.html</note>
+        <note category="description">Heading of the first landing feature</note>
+      </notes>
+      <segment>
+        <source>Add a game in seconds</source>
+      </segment>
+    </unit>
     <unit id="7844706011418789951">
       <notes>
         <note category="location">src/app/layout/profile-menu/profile-menu.component.html</note>
@@ -2534,6 +2988,15 @@
         <source>Administration</source>
       </segment>
     </unit>
+    <unit id="7853727421705146371">
+      <notes>
+        <note category="location">src/app/pages/landing/landing.component.html</note>
+        <note category="description">Text of the fifth landing feature</note>
+      </notes>
+      <segment>
+        <source> Set a date and see who’s coming. Afterwards, record what you played and who won, so the next pick is easier. </source>
+      </segment>
+    </unit>
     <unit id="787163983066183218">
       <notes>
         <note category="location">src/app/layout/app-sections.ts</note>
@@ -2541,6 +3004,24 @@
       </notes>
       <segment>
         <source>Browse</source>
+      </segment>
+    </unit>
+    <unit id="7871924721587190636">
+      <notes>
+        <note category="location">src/app/pages/landing/landing.component.html</note>
+        <note category="description">Size of the example group on the landing page</note>
+      </notes>
+      <segment>
+        <source>5 members · 23 games</source>
+      </segment>
+    </unit>
+    <unit id="7878155326303883504">
+      <notes>
+        <note category="location">src/app/pages/landing/landing.fixtures.ts</note>
+        <note category="description">When the group last played the game, in the landing example suggestion</note>
+      </notes>
+      <segment>
+        <source>Last played 6 weeks ago</source>
       </segment>
     </unit>
     <unit id="7889671530504774232">
@@ -2695,6 +3176,15 @@
         <source>Sign in to Board Vault</source>
       </segment>
     </unit>
+    <unit id="8235739714710984923">
+      <notes>
+        <note category="location">src/app/core/utils/plural.ts</note>
+        <note category="description">How many can play a game, a range such as 2–4</note>
+      </notes>
+      <segment>
+        <source><ph id="0" equiv="min" disp="min"/>–<ph id="1" equiv="max" disp="max"/> players</source>
+      </segment>
+    </unit>
     <unit id="824130478942009314">
       <notes>
         <note category="location">src/app/app.component.ts</note>
@@ -2702,6 +3192,15 @@
       </notes>
       <segment>
         <source>Create a group — Board Vault</source>
+      </segment>
+    </unit>
+    <unit id="8251908569174605565">
+      <notes>
+        <note category="location">src/app/pages/landing/landing.component.ts</note>
+        <note category="description">Someone has not answered yet, in the landing example game night</note>
+      </notes>
+      <segment>
+        <source>No answer</source>
       </segment>
     </unit>
     <unit id="8266579091925980255">
@@ -2760,6 +3259,15 @@
         <source>Keep your private shelf, wishlist, reviews, and group game context together.</source>
       </segment>
     </unit>
+    <unit id="8389293487680016063">
+      <notes>
+        <note category="location">src/app/pages/landing/landing.component.ts</note>
+        <note category="description">Question on the landing page</note>
+      </notes>
+      <segment>
+        <source>Do I need a group to use it?</source>
+      </segment>
+    </unit>
     <unit id="8411650238871966394">
       <notes>
         <note category="location">src/app/layout/footer/footer.component.html</note>
@@ -2796,6 +3304,24 @@
         <source> Lend us a hand? 🎲 We&apos;re a tiny indie team. Leaving this on lets us count which pages get opened, under a pseudonym and in our own database, so we know what to fix next. No cookies, nothing shared. Change it anytime in Settings → Privacy. </source>
       </segment>
     </unit>
+    <unit id="8479252312260874856">
+      <notes>
+        <note category="location">src/app/components/recommendation-card/recommendation-card.component.html</note>
+        <note category="description">How many people in the group said Not for us to a suggested game</note>
+      </notes>
+      <segment>
+        <source>{VAR_PLURAL, plural, other {<ph id="0" equiv="INTERPOLATION"/> passed}}</source>
+      </segment>
+    </unit>
+    <unit id="8483051275583729367">
+      <notes>
+        <note category="location">src/app/pages/landing/landing.component.ts</note>
+        <note category="description">Answer on the landing page to Is Board Vault free?</note>
+      </notes>
+      <segment>
+        <source>Yes. Create an account and start adding games.</source>
+      </segment>
+    </unit>
     <unit id="8487119295846165326">
       <notes>
         <note category="location">src/app/core/i18n/clerk-localization.ts</note>
@@ -2830,6 +3356,15 @@
       </notes>
       <segment>
         <source>Play — Board Vault</source>
+      </segment>
+    </unit>
+    <unit id="8626011843982871371">
+      <notes>
+        <note category="location">src/app/pages/landing/landing.component.html</note>
+        <note category="description">Name of your own shelf, in the landing example</note>
+      </notes>
+      <segment>
+        <source>My games</source>
       </segment>
     </unit>
     <unit id="8654642196646765162">
@@ -2895,6 +3430,15 @@
         <source>Upcoming</source>
       </segment>
     </unit>
+    <unit id="8739046962840362623">
+      <notes>
+        <note category="location">src/app/pages/landing/landing.component.html</note>
+        <note category="description">Who won a game, in the landing example</note>
+      </notes>
+      <segment>
+        <source><ph id="0" equiv="INTERPOLATION" disp="{{ play.winner }}"/> won</source>
+      </segment>
+    </unit>
     <unit id="8739336026258908775">
       <notes>
         <note category="location">src/app/core/i18n/notification-text.ts</note>
@@ -2911,6 +3455,15 @@
       </notes>
       <segment>
         <source>Create a password</source>
+      </segment>
+    </unit>
+    <unit id="8819122373991228583">
+      <notes>
+        <note category="location">src/app/pages/landing/landing.component.html</note>
+        <note category="description">Heading of the fourth landing feature</note>
+      </notes>
+      <segment>
+        <source>Share the shelf with your group</source>
       </segment>
     </unit>
     <unit id="8851134952747107313">
@@ -2938,6 +3491,15 @@
       </notes>
       <segment>
         <source>Just counts under a pseudonym, in our own database. No cookies, no ads, nothing shared.</source>
+      </segment>
+    </unit>
+    <unit id="8894032101147847060">
+      <notes>
+        <note category="location">src/app/pages/landing/landing.component.html</note>
+        <note category="description">Main heading of the landing page</note>
+      </notes>
+      <segment>
+        <source> Every game you own, on one tidy shelf. </source>
       </segment>
     </unit>
     <unit id="8905995985388209337">
@@ -2994,6 +3556,16 @@
         <source>Board Vault — Game night, remembered</source>
       </segment>
     </unit>
+    <unit id="9022444498426613992">
+      <notes>
+        <note category="location">src/app/pages/landing/landing.fixtures.ts</note>
+        <note category="description">The published title of the board game Codenames in this language</note>
+        <note category="meaning">game title</note>
+      </notes>
+      <segment>
+        <source>Codenames</source>
+      </segment>
+    </unit>
     <unit id="9029286143304711365">
       <notes>
         <note category="location">src/app/layout/app-sections.ts</note>
@@ -3003,6 +3575,24 @@
         <source>Reviews</source>
       </segment>
     </unit>
+    <unit id="9051495169044423604">
+      <notes>
+        <note category="location">src/app/pages/landing/landing.fixtures.ts</note>
+        <note category="description">Time of the landing example game night and how far away it is</note>
+      </notes>
+      <segment>
+        <source>19:30 · in 4 days</source>
+      </segment>
+    </unit>
+    <unit id="9059961017078706616">
+      <notes>
+        <note category="location">src/app/components/recommendation-card/recommendation-card.component.html</note>
+        <note category="description">Badge on the best suggested game</note>
+      </notes>
+      <segment>
+        <source>Top pick</source>
+      </segment>
+    </unit>
     <unit id="9069807487293978018">
       <notes>
         <note category="location">src/app/layout/usage-notice/usage-notice.component.html</note>
@@ -3010,6 +3600,15 @@
       </notes>
       <segment>
         <source> Board Vault is made by a tiny indie team. Leaving this on lets us count which pages get opened and where game nights get stuck, so we know what to fix next. </source>
+      </segment>
+    </unit>
+    <unit id="907136822175606758">
+      <notes>
+        <note category="location">src/app/pages/landing/landing.component.html</note>
+        <note category="description">Heading of the questions on the landing page</note>
+      </notes>
+      <segment>
+        <source>Questions</source>
       </segment>
     </unit>
     <unit id="9109084729550896366">
@@ -3048,6 +3647,15 @@
         <source><ph id="0" equiv="length" disp="length"/> or more characters</source>
       </segment>
     </unit>
+    <unit id="9145391012395389952">
+      <notes>
+        <note category="location">src/app/pages/landing/landing.component.ts</note>
+        <note category="description">Answer of someone coming to the landing example game night</note>
+      </notes>
+      <segment>
+        <source>Going</source>
+      </segment>
+    </unit>
     <unit id="9174716236566498100">
       <notes>
         <note category="location">src/app/core/i18n/notification-text.ts</note>
@@ -3063,6 +3671,15 @@
       </notes>
       <segment>
         <source>Explore</source>
+      </segment>
+    </unit>
+    <unit id="926163655842070473">
+      <notes>
+        <note category="location">src/app/pages/landing/landing.component.html</note>
+        <note category="description">Paragraph under the main heading of the landing page</note>
+      </notes>
+      <segment>
+        <source> Board Vault keeps your collection organised. Add a game in seconds, filter by players, rate what you’ve played, and share the shelf with the people you play with. </source>
       </segment>
     </unit>
     <unit id="950714964925956479">
