@@ -67,7 +67,7 @@ export class UsageNoticeComponent {
             this.usageAnalytics.set((await firstValueFrom(this.api.updatePrivacySettings({ usageAnalytics }))).usageAnalytics)
             return true
         } catch {
-            this.toastService.error('Could not save your choice. Try again.')
+            this.toastService.error($localize`:Toast when saving the usage statistics choice failed:Could not save your choice. Try again.`)
             return false
         } finally {
             this.saving.set(false)

@@ -208,8 +208,18 @@ are written without the prefix; the base address adds it.
   build's language (`$localize.locale`) with European conventions (`en-GB`
   for English). `isoDay` makes `YYYY-MM-DD` day keys, a data format. No
   component names a locale.
+- The language menu next to the inbox (signed out, next to the menu button)
+  is [`layout/language-menu/`](../frontend/src/app/layout/language-menu/).
+  Each language is a link to the same page under its prefix, a full page load,
+  and following it writes the `bv_lang` cookie. In production it lists the
+  offered languages and the page's own; locally and in Vercel previews
+  (`previewLocales` in the runtime config) it lists every supported language.
+  It shows only under a prefix and when there is more than one language to
+  choose, so today's production English pages have no menu.
 - `npm start` serves English at the root; `npm run start:es` (and `:fr`,
-  `:de`, `:it`) serves one other language.
+  `:de`, `:it`) serves one other language. The development servers have no
+  prefix, so they show no language menu; use `npm run build` and
+  `node scripts/serve-dist.mjs` to try it.
 
 How to mark text, translate it, and which words to use:
 [i18n.md](i18n.md).

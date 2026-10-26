@@ -4,7 +4,7 @@
     <div class="container mx-auto flex max-w-6xl items-center gap-3 px-4">
         <p>&copy; {{ date }} Board Vault</p>
         <span aria-hidden="true">·</span>
-        <a href="https://github.com/kois-studio/board-vault" target="_blank" rel="noopener" class="inline-flex items-center gap-1.5 transition hover:text-bv-primary"><app-github-mark [size]="14" />Source code on GitHub</a>
+        <a href="https://github.com/kois-studio/board-vault" target="_blank" rel="noopener" class="inline-flex items-center gap-1.5 transition hover:text-bv-primary"><app-github-mark [size]="14" /><ng-container i18n="Footer link to the project repository">Source code on GitHub</ng-container></a>
     </div>
 </footer>
 } @else {
@@ -15,26 +15,26 @@
                 <app-logo class="text-bv-primary" [size]="24" />
                 <span class="text-xl font-bold text-bv-text">Board Vault</span>
             </div>
-            <p class="mt-4 max-w-sm leading-7">A tidy home for your board game collection, and for the people you play with.</p>
+            <p class="mt-4 max-w-sm leading-7" i18n="Tagline in the footer of the public pages">A tidy home for your board game collection, and for the people you play with.</p>
         </div>
 
         <div>
-            <h2 class="text-sm font-semibold uppercase tracking-wider text-bv-text-muted">Explore</h2>
+            <h2 class="text-sm font-semibold uppercase tracking-wider text-bv-text-muted" i18n="Heading of the footer column of links to the landing page">Explore</h2>
             <ul class="mt-4 space-y-3">
-                <li><a routerLink="/" fragment="features" class="transition hover:text-bv-primary">Features</a></li>
-                <li><a routerLink="/" fragment="how-it-works" class="transition hover:text-bv-primary">How it works</a></li>
-                <li><a routerLink="/" fragment="questions" class="transition hover:text-bv-primary">FAQ</a></li>
-                <li><a href="https://github.com/kois-studio/board-vault" target="_blank" rel="noopener" class="inline-flex items-center gap-1.5 transition hover:text-bv-primary"><app-github-mark [size]="14" />Source code on GitHub</a></li>
+                <li><a routerLink="/" fragment="features" class="transition hover:text-bv-primary" i18n="Link to a section of the landing page">Features</a></li>
+                <li><a routerLink="/" fragment="how-it-works" class="transition hover:text-bv-primary" i18n="Link to a section of the landing page">How it works</a></li>
+                <li><a routerLink="/" fragment="questions" class="transition hover:text-bv-primary" i18n="Link to the questions section of the landing page, short for frequently asked questions">FAQ</a></li>
+                <li><a href="https://github.com/kois-studio/board-vault" target="_blank" rel="noopener" class="inline-flex items-center gap-1.5 transition hover:text-bv-primary"><app-github-mark [size]="14" /><ng-container i18n="Footer link to the project repository">Source code on GitHub</ng-container></a></li>
             </ul>
         </div>
 
         <div>
-            <h2 class="text-sm font-semibold uppercase tracking-wider text-bv-text-muted">Account</h2>
+            <h2 class="text-sm font-semibold uppercase tracking-wider text-bv-text-muted" i18n="Heading of the footer column of sign-in links">Account</h2>
             <ul class="mt-4 space-y-3">
-                <li><a routerLink="/login" class="transition hover:text-bv-primary">Sign in</a></li>
-                <li><a routerLink="/register" class="transition hover:text-bv-primary">Create an account</a></li>
+                <li><a routerLink="/login" class="transition hover:text-bv-primary" i18n="Footer link to the sign-in page">Sign in</a></li>
+                <li><a routerLink="/register" class="transition hover:text-bv-primary" i18n="Footer link to the sign-up page">Create an account</a></li>
             </ul>
-            <p class="mt-6 text-sm">Board Vault is an early product; privacy, terms, and support content will be added before public launch.</p>
+            <p class="mt-6 text-sm" i18n="Note in the footer of the public pages">Board Vault is an early product; privacy, terms, and support content will be added before public launch.</p>
         </div>
     </div>
 </footer>

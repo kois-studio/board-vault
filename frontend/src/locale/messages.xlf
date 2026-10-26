@@ -19,6 +19,34 @@
         <source><ph id="0" equiv="count" disp="count"/> selected participant passed on this before</source>
       </segment>
     </unit>
+    <unit id="1023159118123911874">
+      <notes>
+        <note category="location">src/app/layout/usage-notice/usage-notice.component.html</note>
+        <note category="location">src/app/pages/auth/register/register.component.html</note>
+        <note category="description">Label of the usage statistics switch on the invitation sign-up page; the same switch is in Settings, Privacy</note>
+      </notes>
+      <segment>
+        <source>Help improve Board Vault</source>
+      </segment>
+    </unit>
+    <unit id="1171599222218766902">
+      <notes>
+        <note category="location">src/app/components/card-invitation/card-invitation.component.ts</note>
+        <note category="description">Name of the Accept button on a group invitation in the inbox</note>
+      </notes>
+      <segment>
+        <source>Accept invitation to <ph id="0" equiv="group" disp="group"/></source>
+      </segment>
+    </unit>
+    <unit id="1188193109474903303">
+      <notes>
+        <note category="location">src/app/components/card-invitation/card-invitation.component.html</note>
+        <note category="description">Button on a group invitation in the inbox while it is being accepted or declined</note>
+      </notes>
+      <segment>
+        <source>Working…</source>
+      </segment>
+    </unit>
     <unit id="1200295485288897600">
       <notes>
         <note category="location">src/app/core/i18n/notification-text.ts</note>
@@ -37,6 +65,15 @@
         <source>Deleted account</source>
       </segment>
     </unit>
+    <unit id="1225085275995545699">
+      <notes>
+        <note category="location">src/app/components/ui/image-background/image-background.component.ts</note>
+        <note category="description">Description of a game&apos;s picture when no other is given</note>
+      </notes>
+      <segment>
+        <source>Game artwork</source>
+      </segment>
+    </unit>
     <unit id="1227732393340087049">
       <notes>
         <note category="location">src/app/core/i18n/notification-text.ts</note>
@@ -44,6 +81,15 @@
       </notes>
       <segment>
         <source>a game</source>
+      </segment>
+    </unit>
+    <unit id="1234332817837554846">
+      <notes>
+        <note category="location">src/app/components/ui/image-background/image-background.component.ts</note>
+        <note category="description">Name of the placeholder shown when a picture does not load; the placeholder is what the picture shows, such as Game artwork</note>
+      </notes>
+      <segment>
+        <source><ph id="0" equiv="picture" disp="this.alt()"/> unavailable</source>
       </segment>
     </unit>
     <unit id="1289605213459398820">
@@ -54,6 +100,61 @@
         <source>Your game proposal &quot;<ph id="0" equiv="title" disp="data[&apos;gameTitle&apos;]"/>&quot; is already in Board Vault as &quot;<ph id="1" equiv="existingTitle" disp="data[&apos;duplicateOfTitle&apos;]"/>&quot;.</source>
       </segment>
     </unit>
+    <unit id="1316194950149848003">
+      <notes>
+        <note category="location">src/app/app.component.ts</note>
+        <note category="description">Search and link preview description of the Session page</note>
+      </notes>
+      <segment>
+        <source>Review a private group session, attendance, games, and memories.</source>
+      </segment>
+    </unit>
+    <unit id="1335927323467464219">
+      <notes>
+        <note category="location">src/app/layout/inbox/inbox.component.ts</note>
+        <note category="description">Read to screen readers when the inbox has new things, more than one</note>
+        <note category="meaning">inbox arrival, other</note>
+      </notes>
+      <segment>
+        <source>Inbox: <ph id="0" equiv="count" disp="count"/> new</source>
+      </segment>
+    </unit>
+    <unit id="1338351316035322168">
+      <notes>
+        <note category="location">src/app/pages/auth/register/register.component.html</note>
+        <note category="description">Note at the bottom of the access page while sign-up is by invitation only</note>
+      </notes>
+      <segment>
+        <source>Already have access? Sign in with your existing Board Vault account.</source>
+      </segment>
+    </unit>
+    <unit id="1422491155254079742">
+      <notes>
+        <note category="location">src/app/pages/auth/login/login.component.html</note>
+        <note category="description">Title of the box on the sign-in page that opens the sign-in window</note>
+      </notes>
+      <segment>
+        <source>Use secure sign-in</source>
+      </segment>
+    </unit>
+    <unit id="1525462353445570720">
+      <notes>
+        <note category="location">src/app/layout/auth-handoff/auth-handoff.component.html</note>
+        <note category="description">Help under an error when finishing sign-in failed</note>
+      </notes>
+      <segment>
+        <source>If you were invited by a group owner, use the invitation link again after signing out.</source>
+      </segment>
+    </unit>
+    <unit id="154867606131482974">
+      <notes>
+        <note category="location">src/app/pages/auth/register/register.component.ts</note>
+        <note category="description">Error on the invitation sign-up page when the password is too weak</note>
+      </notes>
+      <segment>
+        <source>That password does not meet the secure sign-up requirements. Use the guidance above and try again.</source>
+      </segment>
+    </unit>
     <unit id="1608510651942979529">
       <notes>
         <note category="location">src/app/core/i18n/recommendation-text.ts</note>
@@ -61,6 +162,24 @@
       </notes>
       <segment>
         <source>Builds on the group’s shared shelf</source>
+      </segment>
+    </unit>
+    <unit id="1610683093877445085">
+      <notes>
+        <note category="location">src/app/pages/auth/register/register.component.html</note>
+        <note category="description">Text on the invitation sign-up page for someone who already has an account</note>
+      </notes>
+      <segment>
+        <source>Use your existing Board Vault account to join the group that invited you.</source>
+      </segment>
+    </unit>
+    <unit id="1617546397601140638">
+      <notes>
+        <note category="location">src/app/layout/profile-menu/profile-menu.component.html</note>
+        <note category="description">Count next to Administration in the avatar menu, of game proposals waiting for review; the words are read only by screen readers</note>
+      </notes>
+      <segment>
+        <source>{VAR_PLURAL, plural, one {<ph id="0" equiv="INTERPOLATION"/><pc id="1" equivStart="START_TAG_SPAN" equivEnd="CLOSE_TAG_SPAN" type="other"> proposal waiting</pc>} other {<ph id="2" equiv="INTERPOLATION"/><pc id="3" equivStart="START_TAG_SPAN" equivEnd="CLOSE_TAG_SPAN" type="other"> proposals waiting</pc>}}</source>
       </segment>
     </unit>
     <unit id="1630988887703018223">
@@ -80,6 +199,33 @@
         <source><ph id="0" equiv="person" disp="actor"/> changed how much <ph id="1" equiv="groupPerson" disp="person"/> likes <ph id="2" equiv="game" disp="game"/>, in <ph id="3" equiv="group" disp="group"/>.</source>
       </segment>
     </unit>
+    <unit id="16823705783062999">
+      <notes>
+        <note category="location">src/app/layout/app-sections.ts</note>
+        <note category="description">Main section of the app, with your games</note>
+      </notes>
+      <segment>
+        <source>Collection</source>
+      </segment>
+    </unit>
+    <unit id="186236568870281953">
+      <notes>
+        <note category="location">src/app/layout/app-sections.ts</note>
+        <note category="description">Tab in Play, the game nights already played</note>
+      </notes>
+      <segment>
+        <source>History</source>
+      </segment>
+    </unit>
+    <unit id="1866051814759945403">
+      <notes>
+        <note category="location">src/app/layout/app-sections.ts</note>
+        <note category="description">Tab in Collection, the games you own</note>
+      </notes>
+      <segment>
+        <source>My Games</source>
+      </segment>
+    </unit>
     <unit id="1939361038776839397">
       <notes>
         <note category="location">src/app/components/card-notification/card-notification.component.ts</note>
@@ -87,6 +233,60 @@
       </notes>
       <segment>
         <source>Open the existing game</source>
+      </segment>
+    </unit>
+    <unit id="1944646529420508970">
+      <notes>
+        <note category="location">src/app/app.component.ts</note>
+        <note category="description">Search and link preview description of the Play page</note>
+      </notes>
+      <segment>
+        <source>Choose, plan, and remember the games your group plays together.</source>
+      </segment>
+    </unit>
+    <unit id="1945748499180847679">
+      <notes>
+        <note category="location">src/app/layout/profile-menu/profile-menu.component.html</note>
+        <note category="description">Link in the avatar menu to the landing page</note>
+      </notes>
+      <segment>
+        <source>About Board Vault</source>
+      </segment>
+    </unit>
+    <unit id="2001224549919062414">
+      <notes>
+        <note category="location">src/app/pages/auth/register/register.component.html</note>
+        <note category="description">Small heading of the access page while sign-up is by invitation only</note>
+      </notes>
+      <segment>
+        <source>Private beta</source>
+      </segment>
+    </unit>
+    <unit id="2017633160626855825">
+      <notes>
+        <note category="location">src/app/core/services/data.service.ts</note>
+        <note category="description">Toast when the inbox could not load group invitations</note>
+      </notes>
+      <segment>
+        <source>Error retrieving user&apos;s invitations</source>
+      </segment>
+    </unit>
+    <unit id="2031932285140054383">
+      <notes>
+        <note category="location">src/app/app.component.ts</note>
+        <note category="description">Search and link preview description of the Join by invitation page</note>
+      </notes>
+      <segment>
+        <source>Create your Board Vault account from a group invitation.</source>
+      </segment>
+    </unit>
+    <unit id="2039576617926281033">
+      <notes>
+        <note category="location">src/app/core/services/data.service.ts</note>
+        <note category="description">Toast after marking a notification as read</note>
+      </notes>
+      <segment>
+        <source>Notification marked as read</source>
       </segment>
     </unit>
     <unit id="2057533260886728415">
@@ -103,6 +303,143 @@
       </notes>
       <segment>
         <source><ph id="0" equiv="person" disp="actor"/> planned a game night in <ph id="1" equiv="group" disp="group"/> for <ph id="2" equiv="date" disp="when"/>. Can you make it?</source>
+      </segment>
+    </unit>
+    <unit id="2134897893235836867">
+      <notes>
+        <note category="location">src/app/pages/auth/register/register.component.html</note>
+        <note category="description">Heading of the sign-up page when the sign-up service is down</note>
+      </notes>
+      <segment>
+        <source>We are reconnecting the sign-up service</source>
+      </segment>
+    </unit>
+    <unit id="2150820554747308947">
+      <notes>
+        <note category="location">src/app/app.component.ts</note>
+        <note category="description">Search and link preview description of the page shown for an address that does not exist</note>
+      </notes>
+      <segment>
+        <source>That Board Vault page could not be found.</source>
+      </segment>
+    </unit>
+    <unit id="2154348577741476081">
+      <notes>
+        <note category="location">src/app/pages/auth/register/register.component.html</note>
+        <note category="description">Small heading of the sign-up page</note>
+      </notes>
+      <segment>
+        <source>Create your shelf</source>
+      </segment>
+    </unit>
+    <unit id="2179376959569917010">
+      <notes>
+        <note category="location">src/app/pages/auth/login/login.component.html</note>
+        <note category="description">Error on the sign-in page, seen only by developers</note>
+      </notes>
+      <segment>
+        <source> Sign-in is not configured for this environment. Set <pc id="0" equivStart="START_TAG_CODE" equivEnd="CLOSE_TAG_CODE" type="other" dispStart="&lt;code&gt;" dispEnd="&lt;/code&gt;">CLERK_PUBLISHABLE_KEY</pc> and restart the app. </source>
+      </segment>
+    </unit>
+    <unit id="2190081233855588477">
+      <notes>
+        <note category="location">src/app/pages/auth/login/login.component.html</note>
+        <note category="description">Error on the sign-in page when the sign-in service does not load</note>
+      </notes>
+      <segment>
+        <source> The secure sign-in service could not be reached. Refresh this page to try again. </source>
+      </segment>
+    </unit>
+    <unit id="2270019012182179550">
+      <notes>
+        <note category="location">src/app/app.component.ts</note>
+        <note category="description">Browser tab title of the Home page</note>
+      </notes>
+      <segment>
+        <source>Home — Board Vault</source>
+      </segment>
+    </unit>
+    <unit id="2308975396733519902">
+      <notes>
+        <note category="location">src/app/layout/footer/footer.component.html</note>
+        <note category="description">Footer link to the sign-up page</note>
+      </notes>
+      <segment>
+        <source>Create an account</source>
+      </segment>
+    </unit>
+    <unit id="2309890458671719225">
+      <notes>
+        <note category="location">src/app/components/skeletons/skeleton-history/skeleton-history.component.html</note>
+        <note category="description">Read by screen readers while the game night history loads</note>
+      </notes>
+      <segment>
+        <source>Loading history</source>
+      </segment>
+    </unit>
+    <unit id="232589881577123682">
+      <notes>
+        <note category="location">src/app/layout/inbox/inbox.component.html</note>
+        <note category="description">Heading of the invitations list in the inbox</note>
+      </notes>
+      <segment>
+        <source>Group invitations</source>
+      </segment>
+    </unit>
+    <unit id="2336550011721758066">
+      <notes>
+        <note category="location">src/app/layout/header/header.component.html</note>
+        <note category="location">src/app/layout/header/header.component.ts</note>
+        <note category="description">Button in the signed-out header that opens sign-in</note>
+      </notes>
+      <segment>
+        <source>Log in</source>
+      </segment>
+    </unit>
+    <unit id="2354722487650755409">
+      <notes>
+        <note category="location">src/app/pages/auth/register/register.component.html</note>
+        <note category="description">Hint under the password field on the invitation sign-up page</note>
+      </notes>
+      <segment>
+        <source>Use at least 15 characters.</source>
+      </segment>
+    </unit>
+    <unit id="2404444981573781985">
+      <notes>
+        <note category="location">src/app/layout/footer/footer.component.html</note>
+        <note category="description">Footer link to the project repository</note>
+      </notes>
+      <segment>
+        <source>Source code on GitHub</source>
+      </segment>
+    </unit>
+    <unit id="2407860499554401189">
+      <notes>
+        <note category="location">src/app/layout/footer/footer.component.html</note>
+        <note category="location">src/app/layout/header/header.component.ts</note>
+        <note category="description">Link to a section of the landing page</note>
+      </notes>
+      <segment>
+        <source>How it works</source>
+      </segment>
+    </unit>
+    <unit id="2422073724818015702">
+      <notes>
+        <note category="location">src/app/layout/usage-notice/usage-notice.component.html</note>
+        <note category="description">Line at the bottom of the card that asks once about usage statistics; Settings → Privacy names the place in the app</note>
+      </notes>
+      <segment>
+        <source>Change it anytime in <pc id="0" equivStart="START_LINK" equivEnd="CLOSE_LINK" type="link" dispStart="&lt;a routerLink=&quot;/settings/privacy&quot; class=&quot;font-medium text-bv-primary underline&quot;&gt;" dispEnd="&lt;/a&gt;">Settings → Privacy</pc>.</source>
+      </segment>
+    </unit>
+    <unit id="2427460915092901296">
+      <notes>
+        <note category="location">src/app/app.component.ts</note>
+        <note category="description">Search and link preview description of the Sign in page</note>
+      </notes>
+      <segment>
+        <source>Securely sign in to your private Board Vault group workspace.</source>
       </segment>
     </unit>
     <unit id="2435997106501281068">
@@ -123,12 +460,139 @@
         <source>Unread: </source>
       </segment>
     </unit>
+    <unit id="2485595059919735658">
+      <notes>
+        <note category="location">src/app/pages/auth/register/register.component.html</note>
+        <note category="description">Button on the invitation sign-up page for someone who already has an account</note>
+      </notes>
+      <segment>
+        <source>Continue to the group</source>
+      </segment>
+    </unit>
+    <unit id="2514247984958115884">
+      <notes>
+        <note category="location">src/app/components/card-invitation/card-invitation.component.html</note>
+        <note category="description">Button under an error on a group invitation in the inbox</note>
+      </notes>
+      <segment>
+        <source>Refresh invitations</source>
+      </segment>
+    </unit>
+    <unit id="2521053447392428699">
+      <notes>
+        <note category="location">src/app/core/services/login.service.ts</note>
+        <note category="description">Error when finishing sign-in failed</note>
+      </notes>
+      <segment>
+        <source>We could not finish connecting this sign-in to Board Vault. Try again, or sign out and use your invitation link.</source>
+      </segment>
+    </unit>
+    <unit id="2535852132159535435">
+      <notes>
+        <note category="location">src/app/components/ui/star-rating/star-rating.component.ts</note>
+        <note category="description">Name of the five rating stars; the placeholder is what is rated, usually a game title</note>
+      </notes>
+      <segment>
+        <source>Your rating for <ph id="0" equiv="subject" disp="this.label()"/></source>
+      </segment>
+    </unit>
+    <unit id="2548428183744005636">
+      <notes>
+        <note category="location">src/app/components/card-invitation/card-invitation.component.html</note>
+        <note category="description">Button on a group invitation in the inbox that keeps it instead of declining</note>
+      </notes>
+      <segment>
+        <source>Keep it</source>
+      </segment>
+    </unit>
+    <unit id="2561326148159407958">
+      <notes>
+        <note category="location">src/app/pages/auth/register/register.component.html</note>
+        <note category="description">Field error on the invitation sign-up page</note>
+      </notes>
+      <segment>
+        <source>Passwords must match.</source>
+      </segment>
+    </unit>
+    <unit id="257886432852959192">
+      <notes>
+        <note category="location">src/app/pages/errors/page-not-found/page-not-found.component.html</note>
+        <note category="description">Text on the page shown for an address that does not exist</note>
+      </notes>
+      <segment>
+        <source> Oops, are you lost? <ph id="0" equiv="LINE_BREAK" type="fmt" disp="&lt;br/&gt;"/> The page you are looking for might have been removed or its name changed. </source>
+      </segment>
+    </unit>
+    <unit id="2588359477760622631">
+      <notes>
+        <note category="location">src/app/layout/usage-notice/usage-notice.component.ts</note>
+        <note category="description">Toast when saving the usage statistics choice failed</note>
+      </notes>
+      <segment>
+        <source>Could not save your choice. Try again.</source>
+      </segment>
+    </unit>
+    <unit id="259281458488620365">
+      <notes>
+        <note category="location">src/app/app.component.ts</note>
+        <note category="description">Browser tab title of the Collection page</note>
+      </notes>
+      <segment>
+        <source>Collection — Board Vault</source>
+      </segment>
+    </unit>
+    <unit id="2651093893318942646">
+      <notes>
+        <note category="location">src/app/pages/auth/register/register.component.ts</note>
+        <note category="description">Error on the invitation sign-up page for any other failure</note>
+      </notes>
+      <segment>
+        <source>We could not complete this invitation right now. Check the fields and security check, then try again.</source>
+      </segment>
+    </unit>
     <unit id="2687104801645892688">
       <notes>
         <note category="location">src/app/core/i18n/notification-text.ts</note>
       </notes>
       <segment>
         <source><ph id="0" equiv="person" disp="actor"/> added <ph id="1" equiv="games" disp="addedList"/> to their shelf and removed <ph id="2" equiv="otherGames" disp="removedList"/>.</source>
+      </segment>
+    </unit>
+    <unit id="2721916889637246959">
+      <notes>
+        <note category="location">src/app/app.component.ts</note>
+        <note category="description">Browser tab title of the Sign in page</note>
+      </notes>
+      <segment>
+        <source>Sign in — Board Vault</source>
+      </segment>
+    </unit>
+    <unit id="2754237322863948261">
+      <notes>
+        <note category="location">src/app/core/services/data.service.ts</note>
+        <note category="description">Toast after deleting a notification</note>
+      </notes>
+      <segment>
+        <source>You have deleted the notification</source>
+      </segment>
+    </unit>
+    <unit id="2806917038528218276">
+      <notes>
+        <note category="location">src/app/layout/footer/footer.component.html</note>
+        <note category="location">src/app/layout/header/header.component.ts</note>
+        <note category="description">Link to the questions section of the landing page, short for frequently asked questions</note>
+      </notes>
+      <segment>
+        <source>FAQ</source>
+      </segment>
+    </unit>
+    <unit id="281153916191694572">
+      <notes>
+        <note category="location">src/app/layout/profile-menu/profile-menu.component.html</note>
+        <note category="description">Link at the top of the avatar menu to the signed-in person&apos;s own page</note>
+      </notes>
+      <segment>
+        <source>Your page</source>
       </segment>
     </unit>
     <unit id="2814590485100631296">
@@ -140,6 +604,15 @@
         <source>No selected-attendee rating yet</source>
       </segment>
     </unit>
+    <unit id="2821179408673282599">
+      <notes>
+        <note category="location">src/app/layout/app-sections.ts</note>
+        <note category="description">Main section of the app, with your groups</note>
+      </notes>
+      <segment>
+        <source>Home</source>
+      </segment>
+    </unit>
     <unit id="2871617273892961858">
       <notes>
         <note category="location">src/app/components/card-notification/card-notification.component.ts</note>
@@ -147,6 +620,62 @@
       </notes>
       <segment>
         <source>Open the game</source>
+      </segment>
+    </unit>
+    <unit id="293984633040548807">
+      <notes>
+        <note category="location">src/app/components/ui/theme-switch/theme-switch.component.html</note>
+        <note category="location">src/app/layout/profile-menu/profile-menu.component.html</note>
+        <note category="description">Label of the light, dark, or system theme switch in the avatar menu</note>
+      </notes>
+      <segment>
+        <source>Color scheme</source>
+      </segment>
+    </unit>
+    <unit id="2949848596707725099">
+      <notes>
+        <note category="location">src/app/layout/auth-handoff/auth-handoff.component.html</note>
+        <note category="location">src/app/layout/profile-menu/profile-menu.component.html</note>
+        <note category="description">Button at the bottom of the avatar menu</note>
+      </notes>
+      <segment>
+        <source>Sign out</source>
+      </segment>
+    </unit>
+    <unit id="29832309535656200">
+      <notes>
+        <note category="location">src/app/components/ui/theme-switch/theme-switch.component.ts</note>
+        <note category="description">Option of the theme switch that follows the device</note>
+      </notes>
+      <segment>
+        <source>System</source>
+      </segment>
+    </unit>
+    <unit id="2992514546647310147">
+      <notes>
+        <note category="location">src/app/pages/auth/login/login.component.html</note>
+        <note category="description">Hint on the sign-in page; Forgot password? is the link in the sign-in window, which is translated separately</note>
+      </notes>
+      <segment>
+        <source>Forgot your password? Choose “Forgot password?” in the sign-in window.</source>
+      </segment>
+    </unit>
+    <unit id="3022911217122211328">
+      <notes>
+        <note category="location">src/app/app.component.ts</note>
+        <note category="description">Browser tab title of the Join by invitation page</note>
+      </notes>
+      <segment>
+        <source>Join by invitation — Board Vault</source>
+      </segment>
+    </unit>
+    <unit id="306733880709423201">
+      <notes>
+        <note category="location">src/app/layout/profile-menu/profile-menu.component.html</note>
+        <note category="description">Link in the avatar menu to the project repository</note>
+      </notes>
+      <segment>
+        <source>Source code</source>
       </segment>
     </unit>
     <unit id="3092077784471830251">
@@ -167,6 +696,24 @@
         <source>Rate what you played</source>
       </segment>
     </unit>
+    <unit id="3146348002114324720">
+      <notes>
+        <note category="location">src/app/pages/auth/register/register.component.html</note>
+        <note category="description">Button on the invitation sign-up page while it joins the group</note>
+      </notes>
+      <segment>
+        <source>Joining…</source>
+      </segment>
+    </unit>
+    <unit id="3183680813439010723">
+      <notes>
+        <note category="location">src/app/pages/auth/register/register.component.ts</note>
+        <note category="description">Error on the invitation sign-up page when the invitation is no longer valid</note>
+      </notes>
+      <segment>
+        <source>We could not complete this invitation. The link may have expired, been used already, or the group may no longer be available. Ask the group owner for a fresh invitation and try again.</source>
+      </segment>
+    </unit>
     <unit id="318898779291119217">
       <notes>
         <note category="location">src/app/components/card-notification/card-notification.component.ts</note>
@@ -184,6 +731,51 @@
         <source><ph id="0" equiv="person" disp="actor"/> said <ph id="1" equiv="groupPerson" disp="person"/> has <ph id="2" equiv="game" disp="game"/>, in <ph id="3" equiv="group" disp="group"/>.</source>
       </segment>
     </unit>
+    <unit id="3256590211420252677">
+      <notes>
+        <note category="location">src/app/layout/language-menu/language-menu.component.ts</note>
+        <note category="description">Name of the list of languages in the header&apos;s language menu</note>
+      </notes>
+      <segment>
+        <source>Choose a language</source>
+      </segment>
+    </unit>
+    <unit id="3269668325192817246">
+      <notes>
+        <note category="location">src/app/layout/auth-handoff/auth-handoff.component.html</note>
+        <note category="description">Text while someone joins a group from an invitation link</note>
+      </notes>
+      <segment>
+        <source>Your invitation is confirmed. We are adding you to the shared games and session history.</source>
+      </segment>
+    </unit>
+    <unit id="3292157637371198074">
+      <notes>
+        <note category="location">src/app/components/ui/star-rating/star-rating.component.ts</note>
+        <note category="description">Name of one rating star; the placeholders are the stars it gives, such as 2.5, and what is rated, usually a game title</note>
+      </notes>
+      <segment>
+        <source>Rate <ph id="0" equiv="stars" disp="formatNumber(star / 2)"/> out of 5 stars for <ph id="1" equiv="subject" disp="this.label()"/></source>
+      </segment>
+    </unit>
+    <unit id="3305597575023131643">
+      <notes>
+        <note category="location">src/app/layout/auth-handoff/auth-handoff.component.html</note>
+        <note category="description">Heading while sign-in finishes</note>
+      </notes>
+      <segment>
+        <source>Connecting you to your Board Vault</source>
+      </segment>
+    </unit>
+    <unit id="335857619216190644">
+      <notes>
+        <note category="location">src/app/pages/auth/register/register.component.html</note>
+        <note category="description">Button on the invitation sign-up page that creates the account and joins the group</note>
+      </notes>
+      <segment>
+        <source>Join the group</source>
+      </segment>
+    </unit>
     <unit id="3424516948436893066">
       <notes>
         <note category="location">src/app/core/i18n/recommendation-text.ts</note>
@@ -191,6 +783,51 @@
       </notes>
       <segment>
         <source>Strong group rating</source>
+      </segment>
+    </unit>
+    <unit id="3568097994808154139">
+      <notes>
+        <note category="location">src/app/pages/auth/register/register.component.html</note>
+        <note category="description">Shown on the invitation sign-up page while the sign-up service loads</note>
+      </notes>
+      <segment>
+        <source>The secure sign-up service is still loading. Refresh this page to continue.</source>
+      </segment>
+    </unit>
+    <unit id="3646645416321057827">
+      <notes>
+        <note category="location">src/app/app.component.ts</note>
+        <note category="description">Search and link preview description of the Settings page</note>
+      </notes>
+      <segment>
+        <source>Manage your Board Vault account and security settings.</source>
+      </segment>
+    </unit>
+    <unit id="3693351739760545097">
+      <notes>
+        <note category="location">src/app/pages/auth/login/login.component.html</note>
+        <note category="description">Text in the box on the sign-in page</note>
+      </notes>
+      <segment>
+        <source>Sign in with your email and password, or with a one-time email code.</source>
+      </segment>
+    </unit>
+    <unit id="3736594653461707643">
+      <notes>
+        <note category="location">src/app/layout/auth-handoff/auth-handoff.component.html</note>
+        <note category="description">Small heading while someone joins a group from an invitation link</note>
+      </notes>
+      <segment>
+        <source>Joining your group</source>
+      </segment>
+    </unit>
+    <unit id="3743886829964190111">
+      <notes>
+        <note category="location">src/app/layout/auth-handoff/auth-handoff.component.html</note>
+        <note category="description">Heading when joining a group from an invitation link failed</note>
+      </notes>
+      <segment>
+        <source>We could not finish joining this group</source>
       </segment>
     </unit>
     <unit id="37600627724821423">
@@ -202,12 +839,94 @@
         <source>The preferences of the people coming favor this game</source>
       </segment>
     </unit>
+    <unit id="3763652096020820194">
+      <notes>
+        <note category="location">src/app/core/services/data.service.ts</note>
+        <note category="description">Toast when declining a group invitation failed</note>
+      </notes>
+      <segment>
+        <source>Error declining invitation</source>
+      </segment>
+    </unit>
     <unit id="3841095492114279113">
       <notes>
         <note category="location">src/app/core/i18n/notification-text.ts</note>
       </notes>
       <segment>
         <source>Your game proposal &quot;<ph id="0" equiv="title" disp="data[&apos;gameTitle&apos;]"/>&quot; was rejected: <ph id="1" equiv="reason" disp="data[&apos;reviewNotes&apos;]"/></source>
+      </segment>
+    </unit>
+    <unit id="3848463043339307213">
+      <notes>
+        <note category="location">src/app/pages/auth/register/register.component.html</note>
+        <note category="description">Small heading of the invitation sign-up page</note>
+      </notes>
+      <segment>
+        <source>You are invited</source>
+      </segment>
+    </unit>
+    <unit id="386110646990661320">
+      <notes>
+        <note category="location">src/app/components/card-invitation/card-invitation.component.ts</note>
+        <note category="description">Name of the Decline button on a group invitation in the inbox</note>
+      </notes>
+      <segment>
+        <source>Decline invitation to <ph id="0" equiv="group" disp="group"/></source>
+      </segment>
+    </unit>
+    <unit id="3876641005141272845">
+      <notes>
+        <note category="location">src/app/core/interceptors/auth.interceptor.ts</note>
+        <note category="description">Toast when the sign-in session ended</note>
+      </notes>
+      <segment>
+        <source>Your session has expired. Please log in again.</source>
+      </segment>
+    </unit>
+    <unit id="3882986981396129723">
+      <notes>
+        <note category="location">src/app/components/card-invitation/card-invitation.component.html</note>
+        <note category="description">Button on a group invitation in the inbox that confirms declining it</note>
+      </notes>
+      <segment>
+        <source>Yes, decline</source>
+      </segment>
+    </unit>
+    <unit id="3892161059518616136">
+      <notes>
+        <note category="location">src/app/components/ui/theme-switch/theme-switch.component.ts</note>
+        <note category="description">Option of the theme switch, the dark colors</note>
+      </notes>
+      <segment>
+        <source>Dark</source>
+      </segment>
+    </unit>
+    <unit id="3902518469664841036">
+      <notes>
+        <note category="location">src/app/layout/inbox/inbox.component.ts</note>
+        <note category="description">Read to screen readers when the inbox has new things, one</note>
+        <note category="meaning">inbox arrival, one</note>
+      </notes>
+      <segment>
+        <source>Inbox: <ph id="0" equiv="count" disp="count"/> new</source>
+      </segment>
+    </unit>
+    <unit id="3906374096707451187">
+      <notes>
+        <note category="location">src/app/app.component.html</note>
+        <note category="description">Link that appears on the first Tab press and jumps past the header</note>
+      </notes>
+      <segment>
+        <source> Skip to main content </source>
+      </segment>
+    </unit>
+    <unit id="3944411679288375240">
+      <notes>
+        <note category="location">src/app/pages/auth/login/login.component.html</note>
+        <note category="description">Button on the sign-in page that opens the sign-in window</note>
+      </notes>
+      <segment>
+        <source>Continue with secure sign-in</source>
       </segment>
     </unit>
     <unit id="3965292610786650718">
@@ -219,6 +938,15 @@
         <source>Open the game night</source>
       </segment>
     </unit>
+    <unit id="4086606389696938932">
+      <notes>
+        <note category="location">src/app/layout/footer/footer.component.html</note>
+        <note category="description">Heading of the footer column of sign-in links</note>
+      </notes>
+      <segment>
+        <source>Account</source>
+      </segment>
+    </unit>
     <unit id="4096101151032067454">
       <notes>
         <note category="location">src/app/core/i18n/recommendation-text.ts</note>
@@ -226,6 +954,78 @@
       </notes>
       <segment>
         <source><ph id="0" equiv="count" disp="count"/> selected attendee marked this as interesting</source>
+      </segment>
+    </unit>
+    <unit id="413116577994876478">
+      <notes>
+        <note category="location">src/app/components/ui/theme-switch/theme-switch.component.ts</note>
+        <note category="description">Option of the theme switch, the light colors</note>
+      </notes>
+      <segment>
+        <source>Light</source>
+      </segment>
+    </unit>
+    <unit id="413249134650595008">
+      <notes>
+        <note category="location">src/app/components/card-invitation/card-invitation.component.ts</note>
+        <note category="description">Error on a group invitation in the inbox when accepting it failed</note>
+      </notes>
+      <segment>
+        <source>We could not accept this invitation. It may have expired or the group may no longer be available. Try again or refresh your invitations.</source>
+      </segment>
+    </unit>
+    <unit id="4146411457225714951">
+      <notes>
+        <note category="location">src/app/components/card-invitation/card-invitation.component.html</note>
+        <note category="description">Line on a group invitation in the inbox; the placeholder is a date</note>
+      </notes>
+      <segment>
+        <source>Expires <ph id="0" equiv="INTERPOLATION" disp="{{ invitation.expiresAt | customDate: false }}"/></source>
+      </segment>
+    </unit>
+    <unit id="4163254967855624491">
+      <notes>
+        <note category="location">src/app/core/services/login.service.ts</note>
+        <note category="description">Toast after signing out</note>
+      </notes>
+      <segment>
+        <source>You have been successfully logged out.</source>
+      </segment>
+    </unit>
+    <unit id="4189467467511250248">
+      <notes>
+        <note category="location">src/app/layout/inbox/inbox.component.html</note>
+        <note category="description">Error in the inbox</note>
+      </notes>
+      <segment>
+        <source>Invitations could not be loaded.</source>
+      </segment>
+    </unit>
+    <unit id="4194367887536857130">
+      <notes>
+        <note category="location">src/app/pages/auth/register/register.component.html</note>
+        <note category="description">Heading of the sign-up page</note>
+      </notes>
+      <segment>
+        <source>Create your Board Vault account</source>
+      </segment>
+    </unit>
+    <unit id="4200317694838753109">
+      <notes>
+        <note category="location">src/app/pages/auth/login/login.component.html</note>
+        <note category="description">Small heading of the sign-in page</note>
+      </notes>
+      <segment>
+        <source>Welcome back</source>
+      </segment>
+    </unit>
+    <unit id="4227851058489820512">
+      <notes>
+        <note category="location">src/app/core/services/login.service.ts</note>
+        <note category="description">Toast after someone deleted their account</note>
+      </notes>
+      <segment>
+        <source>Your account was deleted.</source>
       </segment>
     </unit>
     <unit id="425959220948419245">
@@ -254,6 +1054,42 @@
         <source>Owned by <ph id="0" equiv="owners" disp="owners"/> of <ph id="1" equiv="people" disp="attendees"/> selected people</source>
       </segment>
     </unit>
+    <unit id="4394551357615209611">
+      <notes>
+        <note category="location">src/app/layout/section-tabs/section-tabs.component.html</note>
+        <note category="description">Name of the tabs bar inside Collection or Play</note>
+      </notes>
+      <segment>
+        <source>Subsection navigation</source>
+      </segment>
+    </unit>
+    <unit id="4419487360460921547">
+      <notes>
+        <note category="location">src/app/components/ui/review-display/review-display.component.ts</note>
+        <note category="description">Name of the empty stars of a game with no rating</note>
+      </notes>
+      <segment>
+        <source>Not rated yet</source>
+      </segment>
+    </unit>
+    <unit id="4423631371614311212">
+      <notes>
+        <note category="location">src/app/core/services/data.service.ts</note>
+        <note category="description">Toast after Mark all read in the inbox</note>
+      </notes>
+      <segment>
+        <source>All notifications marked as read</source>
+      </segment>
+    </unit>
+    <unit id="4495457554525951237">
+      <notes>
+        <note category="location">src/app/pages/auth/register/register.component.html</note>
+        <note category="description">Text on the access page while sign-up is by invitation only</note>
+      </notes>
+      <segment>
+        <source> Board Vault helps a group of friends organize its games, choose what to play, and remember every session. </source>
+      </segment>
+    </unit>
     <unit id="4669216542007588508">
       <notes>
         <note category="location">src/app/components/card-notification/card-notification.component.ts</note>
@@ -272,6 +1108,15 @@
         <source>Estimated duration: <ph id="0" equiv="minutes" disp="values[&apos;minutes&apos;] ?? 0"/> minutes</source>
       </segment>
     </unit>
+    <unit id="4707281579410073038">
+      <notes>
+        <note category="location">src/app/layout/auth-handoff/auth-handoff.component.html</note>
+        <note category="description">Heading when finishing sign-in failed</note>
+      </notes>
+      <segment>
+        <source>We could not finish setting up your sign-in</source>
+      </segment>
+    </unit>
     <unit id="4715165630183338203">
       <notes>
         <note category="location">src/app/core/i18n/notification-text.ts</note>
@@ -279,6 +1124,15 @@
       </notes>
       <segment>
         <source>one other game</source>
+      </segment>
+    </unit>
+    <unit id="4757507927002475818">
+      <notes>
+        <note category="location">src/app/layout/inbox/inbox.component.html</note>
+        <note category="description">Shown in the inbox while invitations load</note>
+      </notes>
+      <segment>
+        <source>Loading invitations…</source>
       </segment>
     </unit>
     <unit id="4758695142998179909">
@@ -298,6 +1152,15 @@
         <source><ph id="0" equiv="person" disp="actor"/> cancelled the <ph id="1" equiv="group" disp="group"/> game night of <ph id="2" equiv="date" disp="when"/>.</source>
       </segment>
     </unit>
+    <unit id="4809830440227489945">
+      <notes>
+        <note category="location">src/app/components/card-invitation/card-invitation.component.html</note>
+        <note category="description">Question on a group invitation in the inbox before declining it</note>
+      </notes>
+      <segment>
+        <source>Decline this invitation?</source>
+      </segment>
+    </unit>
     <unit id="4834637535368761490">
       <notes>
         <note category="location">src/app/core/i18n/recommendation-text.ts</note>
@@ -305,6 +1168,24 @@
       </notes>
       <segment>
         <source>Not played by this group yet</source>
+      </segment>
+    </unit>
+    <unit id="4862663633740506261">
+      <notes>
+        <note category="location">src/app/layout/auth-handoff/auth-handoff.component.html</note>
+        <note category="description">Note while sign-in or joining a group finishes</note>
+      </notes>
+      <segment>
+        <source>This usually takes a moment. Please keep this tab open.</source>
+      </segment>
+    </unit>
+    <unit id="4879288031259259008">
+      <notes>
+        <note category="location">src/app/layout/header/header.component.html</note>
+        <note category="description">Name of the links menu that opens on phones in the signed-out header</note>
+      </notes>
+      <segment>
+        <source>Mobile navigation</source>
       </segment>
     </unit>
     <unit id="4913790515929049330">
@@ -316,6 +1197,79 @@
         <source>Duration is not available</source>
       </segment>
     </unit>
+    <unit id="4930506384627295710">
+      <notes>
+        <note category="location">src/app/layout/profile-menu/profile-menu.component.html</note>
+        <note category="description">Item of the avatar menu</note>
+      </notes>
+      <segment>
+        <source>Settings</source>
+      </segment>
+    </unit>
+    <unit id="4945999461216663813">
+      <notes>
+        <note category="location">src/app/layout/usage-notice/usage-notice.component.html</note>
+        <note category="description">Thanks on the card that asks once about usage statistics after turning statistics on</note>
+      </notes>
+      <segment>
+        <source>Thank you, that really helps! 🙌</source>
+      </segment>
+    </unit>
+    <unit id="4953883075448493084">
+      <notes>
+        <note category="location">src/app/layout/inbox/inbox.component.html</note>
+        <note category="description">Error in the inbox</note>
+      </notes>
+      <segment>
+        <source>Notifications could not be loaded.</source>
+      </segment>
+    </unit>
+    <unit id="5000950882619340704">
+      <notes>
+        <note category="location">src/app/core/services/data.service.ts</note>
+        <note category="description">Toast after Mark all read in the inbox when some failed, more than one</note>
+        <note category="meaning">mark all read failed, other</note>
+      </notes>
+      <segment>
+        <source><ph id="0" equiv="count" disp="failed"/> notifications could not be marked as read</source>
+      </segment>
+    </unit>
+    <unit id="5034473762587110175">
+      <notes>
+        <note category="location">src/app/layout/header/header.component.ts</note>
+        <note category="description">Button on phones in the signed-out header that opens the links menu</note>
+      </notes>
+      <segment>
+        <source>Open navigation</source>
+      </segment>
+    </unit>
+    <unit id="5072920679902574920">
+      <notes>
+        <note category="location">src/app/pages/auth/register/register.component.html</note>
+        <note category="description">Heading of the invitation sign-up page</note>
+      </notes>
+      <segment>
+        <source>Join your Board Vault group</source>
+      </segment>
+    </unit>
+    <unit id="5080087328793619996">
+      <notes>
+        <note category="location">src/app/app.component.ts</note>
+        <note category="description">Browser tab title of the Settings page</note>
+      </notes>
+      <segment>
+        <source>Settings — Board Vault</source>
+      </segment>
+    </unit>
+    <unit id="5084001775448984862">
+      <notes>
+        <note category="location">src/app/pages/auth/register/register.component.html</note>
+        <note category="description">Button on the sign-up page that opens the sign-up window</note>
+      </notes>
+      <segment>
+        <source>Open secure sign-up</source>
+      </segment>
+    </unit>
     <unit id="5159913659351412884">
       <notes>
         <note category="location">src/app/core/i18n/recommendation-text.ts</note>
@@ -323,6 +1277,61 @@
       </notes>
       <segment>
         <source>Previously played by this group</source>
+      </segment>
+    </unit>
+    <unit id="5168805403362402794">
+      <notes>
+        <note category="location">src/app/layout/auth-handoff/auth-handoff.component.html</note>
+        <note category="description">Text while sign-in finishes</note>
+      </notes>
+      <segment>
+        <source>Your identity is confirmed. We are loading your groups and getting your private workspace ready.</source>
+      </segment>
+    </unit>
+    <unit id="5182556936985589025">
+      <notes>
+        <note category="location">src/app/pages/auth/register/register.component.html</note>
+        <note category="description">Text on the invitation sign-up page for someone new</note>
+      </notes>
+      <segment>
+        <source>Choose a Board Vault username and password to join the group that invited you.</source>
+      </segment>
+    </unit>
+    <unit id="5207635742003539443">
+      <notes>
+        <note category="location">src/app/layout/footer/footer.component.html</note>
+        <note category="location">src/app/pages/auth/register/register.component.html</note>
+        <note category="description">Footer link to the sign-in page</note>
+      </notes>
+      <segment>
+        <source>Sign in</source>
+      </segment>
+    </unit>
+    <unit id="5229677678874555342">
+      <notes>
+        <note category="location">src/app/core/services/data.service.ts</note>
+        <note category="description">Toast when marking a notification as read failed</note>
+      </notes>
+      <segment>
+        <source>Error updating notification</source>
+      </segment>
+    </unit>
+    <unit id="5236245839134098768">
+      <notes>
+        <note category="location">src/app/pages/errors/page-not-found/page-not-found.component.html</note>
+        <note category="description">Heading of the page shown for an address that does not exist</note>
+      </notes>
+      <segment>
+        <source>Error 404<ph id="0" equiv="LINE_BREAK" type="fmt" disp="&lt;br /&gt;"/> Page not found</source>
+      </segment>
+    </unit>
+    <unit id="5293165229453827063">
+      <notes>
+        <note category="location">src/app/layout/app-sections.ts</note>
+        <note category="description">Tab in Play, game suggestions for a group</note>
+      </notes>
+      <segment>
+        <source>What to play</source>
       </segment>
     </unit>
     <unit id="5376159775932580099">
@@ -333,12 +1342,58 @@
         <source>The <ph id="0" equiv="group" disp="group"/> game night of <ph id="1" equiv="date" disp="when"/> is finished. Rate what you played.</source>
       </segment>
     </unit>
+    <unit id="5492578273973439931">
+      <notes>
+        <note category="location">src/app/core/services/login.service.ts</note>
+        <note category="description">Toast when the account could not be loaded right after signing in</note>
+      </notes>
+      <segment>
+        <source>Failed to load essential user information. Please log in again.</source>
+      </segment>
+    </unit>
+    <unit id="5503986945608542117">
+      <notes>
+        <note category="location">src/app/layout/header/header.component.html</note>
+        <note category="location">src/app/layout/header/header.component.ts</note>
+        <note category="description">Call to action in the signed-out header that creates an account</note>
+      </notes>
+      <segment>
+        <source>Start free</source>
+      </segment>
+    </unit>
+    <unit id="5601530442010506564">
+      <notes>
+        <note category="location">src/app/layout/usage-notice/usage-notice.component.html</note>
+        <note category="description">Button that closes the card that asks once about usage statistics</note>
+      </notes>
+      <segment>
+        <source>Got it</source>
+      </segment>
+    </unit>
     <unit id="5611022416689146666">
       <notes>
         <note category="location">src/app/core/i18n/notification-text.ts</note>
       </notes>
       <segment>
         <source><ph id="0" equiv="person" disp="member"/> left <ph id="1" equiv="group" disp="group"/>.</source>
+      </segment>
+    </unit>
+    <unit id="5673906746664423612">
+      <notes>
+        <note category="location">src/app/layout/auth-handoff/auth-handoff.component.html</note>
+        <note category="description">Heading while someone joins a group from an invitation link</note>
+      </notes>
+      <segment>
+        <source>Connecting you to your Board Vault group</source>
+      </segment>
+    </unit>
+    <unit id="5677837656801597684">
+      <notes>
+        <note category="location">src/app/core/services/data.service.ts</note>
+        <note category="description">Toast when deleting a notification failed</note>
+      </notes>
+      <segment>
+        <source>Error deleting notification</source>
       </segment>
     </unit>
     <unit id="5715583810853284797">
@@ -350,6 +1405,25 @@
         <source><ph id="0" equiv="count" disp="count"/> selected participants passed on this before</source>
       </segment>
     </unit>
+    <unit id="5729395938595388062">
+      <notes>
+        <note category="location">src/app/layout/profile-menu/profile-menu.component.ts</note>
+        <note category="description">Name of the avatar button in the header</note>
+      </notes>
+      <segment>
+        <source>Account menu</source>
+      </segment>
+    </unit>
+    <unit id="574725216372962499">
+      <notes>
+        <note category="location">src/app/layout/profile-menu/profile-menu.component.ts</note>
+        <note category="description">Name of the avatar button in the header for an admin, with game proposals waiting for review, more than one</note>
+        <note category="meaning">account menu, other</note>
+      </notes>
+      <segment>
+        <source>Account menu, <ph id="0" equiv="count" disp="count"/> game proposals waiting</source>
+      </segment>
+    </unit>
     <unit id="5772919894493102247">
       <notes>
         <note category="location">src/app/components/card-notification/card-notification.component.ts</note>
@@ -357,6 +1431,78 @@
       </notes>
       <segment>
         <source>See the game night</source>
+      </segment>
+    </unit>
+    <unit id="5821029406705497005">
+      <notes>
+        <note category="location">src/app/layout/inbox/inbox.component.html</note>
+        <note category="description">Button in the inbox that marks every notification as read</note>
+      </notes>
+      <segment>
+        <source> Mark all read </source>
+      </segment>
+    </unit>
+    <unit id="5836279243069136253">
+      <notes>
+        <note category="location">src/app/components/ui/review-display/review-display.component.ts</note>
+        <note category="description">Name of the stars showing a rating; the placeholder is the rating out of 5, such as 3.50</note>
+      </notes>
+      <segment>
+        <source>Rating <ph id="0" equiv="rating" disp="this.parseReview(this.review())"/> out of 5</source>
+      </segment>
+    </unit>
+    <unit id="5847310634737729000">
+      <notes>
+        <note category="location">src/app/layout/header/header.component.ts</note>
+        <note category="description">Button on phones in the signed-out header that closes the links menu</note>
+      </notes>
+      <segment>
+        <source>Close navigation</source>
+      </segment>
+    </unit>
+    <unit id="5850698978356573024">
+      <notes>
+        <note category="location">src/app/pages/auth/register/register.component.html</note>
+        <note category="description">Field label on the invitation sign-up page</note>
+      </notes>
+      <segment>
+        <source>Confirm your password</source>
+      </segment>
+    </unit>
+    <unit id="5851560788527570644">
+      <notes>
+        <note category="location">src/app/layout/inbox/inbox.component.html</note>
+        <note category="description">Heading of the notifications list in the inbox</note>
+      </notes>
+      <segment>
+        <source>Notifications</source>
+      </segment>
+    </unit>
+    <unit id="5869913314404545561">
+      <notes>
+        <note category="location">src/app/app.component.ts</note>
+        <note category="description">Browser tab title of the page shown for an address that does not exist</note>
+      </notes>
+      <segment>
+        <source>Page not found — Board Vault</source>
+      </segment>
+    </unit>
+    <unit id="5978166085424028670">
+      <notes>
+        <note category="location">src/app/pages/auth/register/register.component.html</note>
+        <note category="description">Heading of the access page while sign-up is by invitation only</note>
+      </notes>
+      <segment>
+        <source>Board Vault is still invite-only</source>
+      </segment>
+    </unit>
+    <unit id="6003918591551761898">
+      <notes>
+        <note category="location">src/app/pages/auth/register/register.component.html</note>
+        <note category="description">Text on the access page while sign-up is by invitation only</note>
+      </notes>
+      <segment>
+        <source>We are still building the core experience, so new accounts are created by invitation only.</source>
       </segment>
     </unit>
     <unit id="6024427301478848927">
@@ -376,6 +1522,42 @@
         <source><ph id="0" equiv="person" disp="actor"/> marked <ph id="1" equiv="game" disp="game"/> as unsure for <ph id="2" equiv="groupPerson" disp="person"/>, in <ph id="3" equiv="group" disp="group"/>.</source>
       </segment>
     </unit>
+    <unit id="6041525304912058197">
+      <notes>
+        <note category="location">src/app/app.component.ts</note>
+        <note category="description">Search and link preview description of the Create a group page</note>
+      </notes>
+      <segment>
+        <source>Start a private board-game group and invite the people you play with.</source>
+      </segment>
+    </unit>
+    <unit id="6060616222319815628">
+      <notes>
+        <note category="location">src/app/components/card-invitation/card-invitation.component.html</note>
+        <note category="description">Line on a group invitation in the inbox; the placeholder is the name of the person who sent it</note>
+      </notes>
+      <segment>
+        <source>Invited by <ph id="0" equiv="INTERPOLATION" disp="{{ invitation.fromAccount.displayName || invitation.fromAccount.username }}"/></source>
+      </segment>
+    </unit>
+    <unit id="6099346861896174463">
+      <notes>
+        <note category="location">src/app/layout/language-menu/language-menu.component.ts</note>
+        <note category="description">Button in the header that opens the language menu; the placeholder is the current language in itself, such as &quot;Español&quot;</note>
+      </notes>
+      <segment>
+        <source>Language: <ph id="0" equiv="language" disp="LOCALE_NAMES[this.current]"/></source>
+      </segment>
+    </unit>
+    <unit id="6102144840014276827">
+      <notes>
+        <note category="location">src/app/core/services/data.service.ts</note>
+        <note category="description">Toast after accepting a group invitation</note>
+      </notes>
+      <segment>
+        <source>You have joined the group!</source>
+      </segment>
+    </unit>
     <unit id="6200674115821929527">
       <notes>
         <note category="location">src/app/core/i18n/recommendation-text.ts</note>
@@ -383,6 +1565,51 @@
       </notes>
       <segment>
         <source>Owned by <ph id="0" equiv="owners" disp="owners"/> of <ph id="1" equiv="people" disp="attendees"/> selected attendees</source>
+      </segment>
+    </unit>
+    <unit id="6205660505479571083">
+      <notes>
+        <note category="location">src/app/pages/auth/login/login.component.html</note>
+        <note category="description">Shown on the sign-in page while the sign-in service loads</note>
+      </notes>
+      <segment>
+        <source>Loading secure sign-in…</source>
+      </segment>
+    </unit>
+    <unit id="6266867565509022026">
+      <notes>
+        <note category="location">src/app/pages/errors/page-not-found/page-not-found.component.html</note>
+        <note category="description">Button on the page shown for an address that does not exist</note>
+      </notes>
+      <segment>
+        <source>Go back home</source>
+      </segment>
+    </unit>
+    <unit id="6272066987885914576">
+      <notes>
+        <note category="location">src/app/pages/auth/register/register.component.html</note>
+        <note category="description">Text on the sign-up page; Clerk is the sign-in service</note>
+      </notes>
+      <segment>
+        <source>Set up your identity securely with Clerk.</source>
+      </segment>
+    </unit>
+    <unit id="6287427255130148032">
+      <notes>
+        <note category="location">src/app/core/services/data.service.ts</note>
+        <note category="description">Toast when a notification was already deleted elsewhere</note>
+      </notes>
+      <segment>
+        <source>Notification not found</source>
+      </segment>
+    </unit>
+    <unit id="6288431611067126915">
+      <notes>
+        <note category="location">src/app/pages/auth/register/register.component.html</note>
+        <note category="description">Text in the box on the access page while sign-up is by invitation only; Clerk is the sign-in service</note>
+      </notes>
+      <segment>
+        <source>Ask a friend or group organizer who already uses Board Vault to invite you. Once invited, use the secure Clerk sign-up link they provide.</source>
       </segment>
     </unit>
     <unit id="6303882608616595614">
@@ -393,12 +1620,194 @@
         <source>New game proposal: &quot;<ph id="0" equiv="title" disp="data[&apos;gameTitle&apos;]"/>&quot;</source>
       </segment>
     </unit>
+    <unit id="6403112028413315560">
+      <notes>
+        <note category="location">src/app/layout/inbox/inbox.component.html</note>
+        <note category="description">Shown in the inbox while notifications load</note>
+      </notes>
+      <segment>
+        <source>Loading notifications…</source>
+      </segment>
+    </unit>
+    <unit id="6410061944418845662">
+      <notes>
+        <note category="location">src/app/app.component.ts</note>
+        <note category="description">Browser tab title of the Game details page</note>
+      </notes>
+      <segment>
+        <source>Game details — Board Vault</source>
+      </segment>
+    </unit>
+    <unit id="6416477889465671000">
+      <notes>
+        <note category="location">src/app/pages/auth/register/register.component.html</note>
+        <note category="description">Text on the sign-up page when the sign-up service is down</note>
+      </notes>
+      <segment>
+        <source>Your account has not been created. Please try again shortly or ask your group owner to send a fresh invitation.</source>
+      </segment>
+    </unit>
+    <unit id="6498062783927960685">
+      <notes>
+        <note category="location">src/app/pages/auth/register/register.component.html</note>
+        <note category="description">Title of the box on the invitation sign-up page for someone who already has an account</note>
+      </notes>
+      <segment>
+        <source>Your Board Vault account is already registered.</source>
+      </segment>
+    </unit>
     <unit id="6558378588786598467">
       <notes>
         <note category="location">src/app/core/i18n/notification-text.ts</note>
       </notes>
       <segment>
         <source><ph id="0" equiv="person" disp="actor"/> removed <ph id="1" equiv="game" disp="game"/> from <ph id="2" equiv="groupPerson" disp="person"/>&apos;s games in <ph id="3" equiv="group" disp="group"/>.</source>
+      </segment>
+    </unit>
+    <unit id="6582558331846075943">
+      <notes>
+        <note category="location">src/app/pages/auth/login/login.component.html</note>
+        <note category="description">Text under the heading of the sign-in page</note>
+      </notes>
+      <segment>
+        <source>Return to the groups, games, and sessions you are building with your friends.</source>
+      </segment>
+    </unit>
+    <unit id="6599364831830861985">
+      <notes>
+        <note category="location">src/app/layout/footer/footer.component.html</note>
+        <note category="location">src/app/layout/header/header.component.ts</note>
+        <note category="description">Link to a section of the landing page</note>
+      </notes>
+      <segment>
+        <source>Features</source>
+      </segment>
+    </unit>
+    <unit id="6602855542242739725">
+      <notes>
+        <note category="location">src/app/pages/auth/register/register.component.ts</note>
+        <note category="description">Error on the invitation sign-up page when the security check failed</note>
+      </notes>
+      <segment>
+        <source>The security check could not be completed. Complete it and try again.</source>
+      </segment>
+    </unit>
+    <unit id="6615119373735355067">
+      <notes>
+        <note category="location">src/app/app.component.ts</note>
+        <note category="description">Search and link preview description of the My submissions page</note>
+      </notes>
+      <segment>
+        <source>Propose games for the shared catalogue and follow their review.</source>
+      </segment>
+    </unit>
+    <unit id="6650633628037596693">
+      <notes>
+        <note category="location">src/app/layout/auth-handoff/auth-handoff.component.html</note>
+        <note category="description">Button that tries to finish sign-in again after an error</note>
+      </notes>
+      <segment>
+        <source>Try again</source>
+      </segment>
+    </unit>
+    <unit id="6652598177678258129">
+      <notes>
+        <note category="location">src/app/components/card-invitation/card-invitation.component.ts</note>
+        <note category="description">Error on a group invitation in the inbox when declining it failed</note>
+      </notes>
+      <segment>
+        <source>We could not decline this invitation right now. Try again or refresh your invitations.</source>
+      </segment>
+    </unit>
+    <unit id="6678473138806353308">
+      <notes>
+        <note category="location">src/app/components/ui/image-background/image-background.component.html</note>
+        <note category="description">Shown in place of a game&apos;s picture that does not load</note>
+      </notes>
+      <segment>
+        <source>Artwork unavailable</source>
+      </segment>
+    </unit>
+    <unit id="6692170698163862308">
+      <notes>
+        <note category="location">src/app/app.component.ts</note>
+        <note category="description">Browser tab title of the Groups page</note>
+      </notes>
+      <segment>
+        <source>Groups — Board Vault</source>
+      </segment>
+    </unit>
+    <unit id="670007955983746939">
+      <notes>
+        <note category="location">src/app/core/services/data.service.ts</note>
+        <note category="description">Toast when accepting a group invitation failed</note>
+      </notes>
+      <segment>
+        <source>Error accepting invitation</source>
+      </segment>
+    </unit>
+    <unit id="6744211960979064014">
+      <notes>
+        <note category="location">src/app/pages/auth/register/register.component.html</note>
+        <note category="description">Field error on the invitation sign-up page</note>
+      </notes>
+      <segment>
+        <source>Use 4–64 characters for your username.</source>
+      </segment>
+    </unit>
+    <unit id="6769713385277467769">
+      <notes>
+        <note category="location">src/app/core/services/data.service.ts</note>
+        <note category="description">Toast after Mark all read in the inbox when some failed, one</note>
+        <note category="meaning">mark all read failed, one</note>
+      </notes>
+      <segment>
+        <source><ph id="0" equiv="count" disp="failed"/> notification could not be marked as read</source>
+      </segment>
+    </unit>
+    <unit id="6796282918533611083">
+      <notes>
+        <note category="location">src/app/layout/sidebar-layout/sidebar-layout.component.ts</note>
+        <note category="description">Name of the menu of an area such as Settings; the placeholder is the area&apos;s name</note>
+      </notes>
+      <segment>
+        <source><ph id="0" equiv="area" disp="this.title()"/> sections</source>
+      </segment>
+    </unit>
+    <unit id="6801535761978393212">
+      <notes>
+        <note category="location">src/app/pages/auth/register/register.component.html</note>
+        <note category="description">Button on the access page while sign-up is by invitation only that goes to the landing page</note>
+      </notes>
+      <segment>
+        <source>Back to home</source>
+      </segment>
+    </unit>
+    <unit id="6818417212441598328">
+      <notes>
+        <note category="location">src/app/app.component.ts</note>
+        <note category="description">Search and link preview description of the Game details page</note>
+      </notes>
+      <segment>
+        <source>Review a game in the context of your private collection and group history.</source>
+      </segment>
+    </unit>
+    <unit id="6837138223026715835">
+      <notes>
+        <note category="location">src/app/layout/profile-menu/profile-menu.component.html</note>
+        <note category="description">Count next to My submissions in the avatar menu; the words are read only by screen readers</note>
+      </notes>
+      <segment>
+        <source>{VAR_PLURAL, plural, one {<ph id="0" equiv="INTERPOLATION"/><pc id="1" equivStart="START_TAG_SPAN" equivEnd="CLOSE_TAG_SPAN" type="other"> submitted</pc>} other {<ph id="2" equiv="INTERPOLATION"/><pc id="3" equivStart="START_TAG_SPAN" equivEnd="CLOSE_TAG_SPAN" type="other"> submitted</pc>}}</source>
+      </segment>
+    </unit>
+    <unit id="6898946761266708133">
+      <notes>
+        <note category="location">src/app/layout/usage-notice/usage-notice.component.html</note>
+        <note category="description">Heading of the card that asks once about usage statistics</note>
+      </notes>
+      <segment>
+        <source>Lend us a hand? 🎲</source>
       </segment>
     </unit>
     <unit id="6930216235586087894">
@@ -408,6 +1817,60 @@
       </notes>
       <segment>
         <source>Selected-attendee rating: <ph id="0" equiv="rating" disp="formatNumber(values[&apos;rating&apos;] ?? 0, { minimumFractionDigits: 1, maximumFractionDigits: 1 })"/>/10</source>
+      </segment>
+    </unit>
+    <unit id="7007703201160377234">
+      <notes>
+        <note category="location">src/app/pages/auth/register/register.component.html</note>
+        <note category="description">Line at the bottom of the sign-up page with a link to the sign-in page</note>
+      </notes>
+      <segment>
+        <source>Already have an account? <pc id="0" equivStart="START_LINK" equivEnd="CLOSE_LINK" type="link" dispStart="&lt;a routerLink=&quot;/login&quot; class=&quot;underline&quot;&gt;" dispEnd="&lt;/a&gt;">Sign in</pc></source>
+      </segment>
+    </unit>
+    <unit id="7105490533744744390">
+      <notes>
+        <note category="location">src/app/core/services/data.service.ts</note>
+        <note category="description">Toast after declining a group invitation</note>
+      </notes>
+      <segment>
+        <source>Invitation declined</source>
+      </segment>
+    </unit>
+    <unit id="711220733019729012">
+      <notes>
+        <note category="location">src/app/app.component.ts</note>
+        <note category="description">Search and link preview description of the Home page</note>
+      </notes>
+      <segment>
+        <source>See what your group should do next, from one focused workspace.</source>
+      </segment>
+    </unit>
+    <unit id="7118870479552816190">
+      <notes>
+        <note category="location">src/app/components/card-invitation/card-invitation.component.html</note>
+        <note category="description">Name of the question on a group invitation in the inbox that confirms declining it</note>
+      </notes>
+      <segment>
+        <source>Confirm invitation decline</source>
+      </segment>
+    </unit>
+    <unit id="7129009234443727881">
+      <notes>
+        <note category="location">src/app/layout/usage-notice/usage-notice.component.html</note>
+        <note category="description">Answer on the card that asks once about usage statistics after turning statistics off</note>
+      </notes>
+      <segment>
+        <source>No problem, thanks for playing anyway!</source>
+      </segment>
+    </unit>
+    <unit id="7152215099434266008">
+      <notes>
+        <note category="location">src/app/pages/auth/register/register.component.html</note>
+        <note category="description">Title of the box on the access page while sign-up is by invitation only</note>
+      </notes>
+      <segment>
+        <source>How to get access</source>
       </segment>
     </unit>
     <unit id="7154237322367136444">
@@ -428,6 +1891,70 @@
         <source>Some selected people have marked this game to avoid</source>
       </segment>
     </unit>
+    <unit id="7306616487170771288">
+      <notes>
+        <note category="location">src/app/pages/auth/login/login.component.html</note>
+        <note category="description">Line at the bottom of the sign-in page with a link to the access page</note>
+      </notes>
+      <segment>
+        <source> Need access? <pc id="0" equivStart="START_LINK" equivEnd="CLOSE_LINK" type="link" dispStart="&lt;a routerLink=&quot;/register&quot; class=&quot;font-medium text-bv-primary underline&quot;&gt;" dispEnd="&lt;/a&gt;">View private-beta access</pc></source>
+      </segment>
+    </unit>
+    <unit id="7310158085069615304">
+      <notes>
+        <note category="location">src/app/layout/header/header.component.html</note>
+        <note category="description">Link on the logo in the header, to Home or the landing page</note>
+      </notes>
+      <segment>
+        <source>Board Vault home</source>
+      </segment>
+    </unit>
+    <unit id="7384935012309989418">
+      <notes>
+        <note category="location">src/app/layout/bottom-tabs/bottom-tabs.component.html</note>
+        <note category="location">src/app/layout/header/header.component.html</note>
+        <note category="description">Name of the main sections bar at the bottom on phones</note>
+      </notes>
+      <segment>
+        <source>Section navigation</source>
+      </segment>
+    </unit>
+    <unit id="7387635272539030076">
+      <notes>
+        <note category="location">src/app/layout/sidebar-layout/sidebar-layout.component.ts</note>
+        <note category="description">Read by screen readers after a count in the Settings menu</note>
+      </notes>
+      <segment>
+        <source>new</source>
+      </segment>
+    </unit>
+    <unit id="7434447101665682282">
+      <notes>
+        <note category="location">src/app/app.component.ts</note>
+        <note category="description">Search and link preview description of the Groups page</note>
+      </notes>
+      <segment>
+        <source>Move between your private board-game groups and their shared history.</source>
+      </segment>
+    </unit>
+    <unit id="7455956774102417623">
+      <notes>
+        <note category="location">src/app/pages/auth/register/register.component.html</note>
+        <note category="description">Field label on the invitation sign-up page</note>
+      </notes>
+      <segment>
+        <source>Choose a username</source>
+      </segment>
+    </unit>
+    <unit id="751762870379263730">
+      <notes>
+        <note category="location">src/app/layout/sidebar-layout/sidebar-layout.component.html</note>
+        <note category="description">Link at the bottom of the Settings menu back to Home</note>
+      </notes>
+      <segment>
+        <source>Back to app</source>
+      </segment>
+    </unit>
     <unit id="7569659352704234282">
       <notes>
         <note category="location">src/app/core/i18n/recommendation-text.ts</note>
@@ -437,6 +1964,51 @@
         <source>No games are owned by the selected attendees.</source>
       </segment>
     </unit>
+    <unit id="7619560701830330401">
+      <notes>
+        <note category="location">src/app/components/ui/spinner/spinner.component.ts</note>
+        <note category="description">Read by screen readers while something loads</note>
+      </notes>
+      <segment>
+        <source>Loading</source>
+      </segment>
+    </unit>
+    <unit id="7630179682844831599">
+      <notes>
+        <note category="location">src/app/app.component.ts</note>
+        <note category="description">Browser tab title of the Session page</note>
+      </notes>
+      <segment>
+        <source>Session — Board Vault</source>
+      </segment>
+    </unit>
+    <unit id="7636378792229629378">
+      <notes>
+        <note category="location">src/app/layout/header/header.component.html</note>
+        <note category="description">Name of the landing page links in the signed-out header</note>
+      </notes>
+      <segment>
+        <source>Primary navigation</source>
+      </segment>
+    </unit>
+    <unit id="7647510484935085361">
+      <notes>
+        <note category="location">src/app/pages/auth/register/register.component.html</note>
+        <note category="description">Button under an error on the invitation sign-up page, back to the access page</note>
+      </notes>
+      <segment>
+        <source>Return to private-beta access</source>
+      </segment>
+    </unit>
+    <unit id="7699707220451182317">
+      <notes>
+        <note category="location">src/app/pages/auth/register/register.component.html</note>
+        <note category="description">Text in the box on the invitation sign-up page for someone who already has an account</note>
+      </notes>
+      <segment>
+        <source>Continue with this secure invitation link and we’ll add you to the group. No new password is needed.</source>
+      </segment>
+    </unit>
     <unit id="7775401295627092008">
       <notes>
         <note category="location">src/app/core/i18n/recommendation-text.ts</note>
@@ -444,6 +2016,61 @@
       </notes>
       <segment>
         <source>No games for <ph id="0" equiv="players" disp="players"/> players fit within <ph id="1" equiv="minutes" disp="values[&apos;minutes&apos;] ?? 0"/> minutes.</source>
+      </segment>
+    </unit>
+    <unit id="7786483200692238826">
+      <notes>
+        <note category="location">src/app/layout/footer/footer.component.html</note>
+        <note category="description">Note in the footer of the public pages</note>
+      </notes>
+      <segment>
+        <source>Board Vault is an early product; privacy, terms, and support content will be added before public launch.</source>
+      </segment>
+    </unit>
+    <unit id="7794280213228432643">
+      <notes>
+        <note category="location">src/app/pages/auth/register/register.component.html</note>
+        <note category="description">Button on the sign-up page when the sign-up service is down</note>
+      </notes>
+      <segment>
+        <source>Try secure sign-up again</source>
+      </segment>
+    </unit>
+    <unit id="7819311160219446286">
+      <notes>
+        <note category="location">src/app/layout/inbox/inbox.component.ts</note>
+        <note category="description">Name of the inbox button in the header with new things, one</note>
+        <note category="meaning">inbox button, one</note>
+      </notes>
+      <segment>
+        <source>Inbox, <ph id="0" equiv="count" disp="count"/> new</source>
+      </segment>
+    </unit>
+    <unit id="7844706011418789951">
+      <notes>
+        <note category="location">src/app/layout/profile-menu/profile-menu.component.html</note>
+        <note category="description">Item of the avatar menu for admins</note>
+      </notes>
+      <segment>
+        <source>Administration</source>
+      </segment>
+    </unit>
+    <unit id="787163983066183218">
+      <notes>
+        <note category="location">src/app/layout/app-sections.ts</note>
+        <note category="description">Tab in Collection, the game catalogue</note>
+      </notes>
+      <segment>
+        <source>Browse</source>
+      </segment>
+    </unit>
+    <unit id="7889671530504774232">
+      <notes>
+        <note category="location">src/app/layout/inbox/inbox.component.html</note>
+        <note category="description">Empty state of the notifications list in the inbox</note>
+      </notes>
+      <segment>
+        <source>You’re all caught up.</source>
       </segment>
     </unit>
     <unit id="7899674800818281248">
@@ -463,6 +2090,70 @@
         <source><ph id="0" equiv="person" disp="actor"/> removed what <ph id="1" equiv="groupPerson" disp="person"/> thinks of <ph id="2" equiv="game" disp="game"/>, in <ph id="3" equiv="group" disp="group"/>.</source>
       </segment>
     </unit>
+    <unit id="7934833136974560675">
+      <notes>
+        <note category="location">src/app/layout/inbox/inbox.component.html</note>
+        <note category="description">Button that loads a list again after an error</note>
+      </notes>
+      <segment>
+        <source>Retry</source>
+      </segment>
+    </unit>
+    <unit id="799485662157076328">
+      <notes>
+        <note category="location">src/app/layout/inbox/inbox.component.html</note>
+        <note category="location">src/app/layout/inbox/inbox.component.ts</note>
+        <note category="description">Heading of the inbox panel</note>
+      </notes>
+      <segment>
+        <source>Inbox</source>
+      </segment>
+    </unit>
+    <unit id="8025228332068674164">
+      <notes>
+        <note category="location">src/app/layout/auth-handoff/auth-handoff.component.html</note>
+        <note category="description">Small heading while sign-in finishes</note>
+      </notes>
+      <segment>
+        <source>Secure sign-in</source>
+      </segment>
+    </unit>
+    <unit id="8049452186746342791">
+      <notes>
+        <note category="location">src/app/layout/profile-menu/profile-menu.component.html</note>
+        <note category="description">Item of the avatar menu that lists the game proposals someone sent</note>
+      </notes>
+      <segment>
+        <source>My submissions</source>
+      </segment>
+    </unit>
+    <unit id="8053410100631770875">
+      <notes>
+        <note category="location">src/app/pages/auth/register/register.component.html</note>
+        <note category="description">Note at the bottom of the invitation sign-up page</note>
+      </notes>
+      <segment>
+        <source>This link is private and expires. Do not share it publicly.</source>
+      </segment>
+    </unit>
+    <unit id="8064022845715284898">
+      <notes>
+        <note category="location">src/app/layout/app-sections.ts</note>
+        <note category="description">Tab in Collection, games you want</note>
+      </notes>
+      <segment>
+        <source>Wishlist</source>
+      </segment>
+    </unit>
+    <unit id="8116175184239166510">
+      <notes>
+        <note category="location">src/app/components/card-invitation/card-invitation.component.html</note>
+        <note category="description">Button on a group invitation in the inbox</note>
+      </notes>
+      <segment>
+        <source>Decline</source>
+      </segment>
+    </unit>
     <unit id="8144023736490335972">
       <notes>
         <note category="location">src/app/core/i18n/notification-text.ts</note>
@@ -480,6 +2171,53 @@
         <source>No games owned by the selected attendees support <ph id="0" equiv="players" disp="players"/> players.</source>
       </segment>
     </unit>
+    <unit id="8218180595897396108">
+      <notes>
+        <note category="location">src/app/pages/auth/login/login.component.html</note>
+        <note category="description">Heading of the sign-in page</note>
+      </notes>
+      <segment>
+        <source>Sign in to Board Vault</source>
+      </segment>
+    </unit>
+    <unit id="824130478942009314">
+      <notes>
+        <note category="location">src/app/app.component.ts</note>
+        <note category="description">Browser tab title of the Create a group page</note>
+      </notes>
+      <segment>
+        <source>Create a group — Board Vault</source>
+      </segment>
+    </unit>
+    <unit id="8266579091925980255">
+      <notes>
+        <note category="location">src/app/layout/profile-menu/profile-menu.component.ts</note>
+        <note category="description">Name of the avatar button in the header for an admin, with game proposals waiting for review, one</note>
+        <note category="meaning">account menu, one</note>
+      </notes>
+      <segment>
+        <source>Account menu, <ph id="0" equiv="count" disp="count"/> game proposal waiting</source>
+      </segment>
+    </unit>
+    <unit id="8344394793747735234">
+      <notes>
+        <note category="location">src/app/layout/inbox/inbox.component.ts</note>
+        <note category="description">Name of the inbox button in the header with new things, more than one</note>
+        <note category="meaning">inbox button, other</note>
+      </notes>
+      <segment>
+        <source>Inbox, <ph id="0" equiv="count" disp="count"/> new</source>
+      </segment>
+    </unit>
+    <unit id="8348072798509355617">
+      <notes>
+        <note category="location">src/app/components/toast/toast.component.html</note>
+        <note category="description">Button on a toast message that closes it</note>
+      </notes>
+      <segment>
+        <source>Dismiss notification</source>
+      </segment>
+    </unit>
     <unit id="8353091657473641191">
       <notes>
         <note category="location">src/app/components/card-notification/card-notification.component.ts</note>
@@ -487,6 +2225,69 @@
       </notes>
       <segment>
         <source>Open the group</source>
+      </segment>
+    </unit>
+    <unit id="8375894054300753424">
+      <notes>
+        <note category="location">src/app/app.component.ts</note>
+        <note category="description">Search and link preview description of the Collection page</note>
+      </notes>
+      <segment>
+        <source>Keep your private shelf, wishlist, reviews, and group game context together.</source>
+      </segment>
+    </unit>
+    <unit id="8411650238871966394">
+      <notes>
+        <note category="location">src/app/layout/footer/footer.component.html</note>
+        <note category="description">Tagline in the footer of the public pages</note>
+      </notes>
+      <segment>
+        <source>A tidy home for your board game collection, and for the people you play with.</source>
+      </segment>
+    </unit>
+    <unit id="8431469809481222374">
+      <notes>
+        <note category="location">src/app/app.component.ts</note>
+        <note category="description">Browser tab title of the My submissions page</note>
+      </notes>
+      <segment>
+        <source>My submissions — Board Vault</source>
+      </segment>
+    </unit>
+    <unit id="8435038262958370080">
+      <notes>
+        <note category="location">src/app/core/services/login.service.ts</note>
+        <note category="description">Error when joining a group from an invitation link failed</note>
+      </notes>
+      <segment>
+        <source>We could not finish joining this group. The invitation may have expired, already been used, or the group may no longer be available. Try again, or sign out and ask the group owner for a fresh invitation.</source>
+      </segment>
+    </unit>
+    <unit id="8469235912331273979">
+      <notes>
+        <note category="location">src/app/pages/auth/register/register.component.html</note>
+        <note category="description">Text under the usage statistics switch on the invitation sign-up page; Settings → Privacy names the place in the app</note>
+      </notes>
+      <segment>
+        <source> Lend us a hand? 🎲 We&apos;re a tiny indie team. Leaving this on lets us count which pages get opened, under a pseudonym and in our own database, so we know what to fix next. No cookies, nothing shared. Change it anytime in Settings → Privacy. </source>
+      </segment>
+    </unit>
+    <unit id="8564202903947049539">
+      <notes>
+        <note category="location">src/app/layout/app-sections.ts</note>
+        <note category="description">Main section of the app, with game nights</note>
+      </notes>
+      <segment>
+        <source>Play</source>
+      </segment>
+    </unit>
+    <unit id="8609256983948872272">
+      <notes>
+        <note category="location">src/app/app.component.ts</note>
+        <note category="description">Browser tab title of the Play page</note>
+      </notes>
+      <segment>
+        <source>Play — Board Vault</source>
       </segment>
     </unit>
     <unit id="8668172233266414658">
@@ -498,6 +2299,24 @@
         <source><ph id="0" equiv="count" disp="count"/> selected attendees marked this as interesting</source>
       </segment>
     </unit>
+    <unit id="8694180754500384388">
+      <notes>
+        <note category="location">src/app/app.component.ts</note>
+        <note category="description">Search and link preview description of the landing page</note>
+      </notes>
+      <segment>
+        <source>A private workspace for recurring board-game groups to decide, play, and remember together.</source>
+      </segment>
+    </unit>
+    <unit id="871235372571809921">
+      <notes>
+        <note category="location">src/app/layout/auth-handoff/auth-handoff.component.html</note>
+        <note category="description">Help under an error when joining a group from an invitation link failed</note>
+      </notes>
+      <segment>
+        <source>Ask the group owner for a fresh invitation if this link has expired or the group is no longer available.</source>
+      </segment>
+    </unit>
     <unit id="8715838975991436163">
       <notes>
         <note category="location">src/app/components/card-notification/card-notification.component.ts</note>
@@ -507,12 +2326,75 @@
         <source>See your proposals</source>
       </segment>
     </unit>
+    <unit id="8725224299321680590">
+      <notes>
+        <note category="location">src/app/layout/app-sections.ts</note>
+        <note category="description">Tab in Play, the planned game nights</note>
+      </notes>
+      <segment>
+        <source>Upcoming</source>
+      </segment>
+    </unit>
     <unit id="8739336026258908775">
       <notes>
         <note category="location">src/app/core/i18n/notification-text.ts</note>
       </notes>
       <segment>
         <source><ph id="0" equiv="person" disp="actor"/> joined <ph id="1" equiv="group" disp="group"/>.</source>
+      </segment>
+    </unit>
+    <unit id="8779419494821652108">
+      <notes>
+        <note category="location">src/app/pages/auth/register/register.component.html</note>
+        <note category="description">Field label on the invitation sign-up page</note>
+      </notes>
+      <segment>
+        <source>Create a password</source>
+      </segment>
+    </unit>
+    <unit id="8851134952747107313">
+      <notes>
+        <note category="location">src/app/layout/auth-handoff/auth-handoff.component.html</note>
+        <note category="description">Small heading above an error after signing in or following an invitation link</note>
+      </notes>
+      <segment>
+        <source>One more step needed</source>
+      </segment>
+    </unit>
+    <unit id="8865777077981814555">
+      <notes>
+        <note category="location">src/app/pages/auth/register/register.component.html</note>
+        <note category="description">Small heading of the sign-up page when the sign-up service is down</note>
+      </notes>
+      <segment>
+        <source>Secure sign-up unavailable</source>
+      </segment>
+    </unit>
+    <unit id="88693668940044224">
+      <notes>
+        <note category="location">src/app/layout/usage-notice/usage-notice.component.html</note>
+        <note category="description">Text on the card that asks once about usage statistics</note>
+      </notes>
+      <segment>
+        <source>Just counts under a pseudonym, in our own database. No cookies, no ads, nothing shared.</source>
+      </segment>
+    </unit>
+    <unit id="8905995985388209337">
+      <notes>
+        <note category="location">src/app/components/card-invitation/card-invitation.component.html</note>
+        <note category="description">Button on a group invitation in the inbox</note>
+      </notes>
+      <segment>
+        <source>Accept</source>
+      </segment>
+    </unit>
+    <unit id="8924579998153942223">
+      <notes>
+        <note category="location">src/app/core/services/data.service.ts</note>
+        <note category="description">Toast when the inbox could not load notifications</note>
+      </notes>
+      <segment>
+        <source>Error retrieving user&apos;s notifications</source>
       </segment>
     </unit>
     <unit id="8938331027934073927">
@@ -533,12 +2415,75 @@
         <source>See their games</source>
       </segment>
     </unit>
+    <unit id="9014138025274858717">
+      <notes>
+        <note category="location">src/app/app.component.ts</note>
+        <note category="description">Browser tab title of the landing page</note>
+      </notes>
+      <segment>
+        <source>Board Vault — Game night, remembered</source>
+      </segment>
+    </unit>
+    <unit id="9029286143304711365">
+      <notes>
+        <note category="location">src/app/layout/app-sections.ts</note>
+        <note category="description">Tab in Collection, your ratings and reviews</note>
+      </notes>
+      <segment>
+        <source>Reviews</source>
+      </segment>
+    </unit>
+    <unit id="9069807487293978018">
+      <notes>
+        <note category="location">src/app/layout/usage-notice/usage-notice.component.html</note>
+        <note category="description">Text on the card that asks once about usage statistics</note>
+      </notes>
+      <segment>
+        <source> Board Vault is made by a tiny indie team. Leaving this on lets us count which pages get opened and where game nights get stuck, so we know what to fix next. </source>
+      </segment>
+    </unit>
+    <unit id="9109084729550896366">
+      <notes>
+        <note category="location">src/app/layout/inbox/inbox.component.html</note>
+        <note category="description">Empty state of the invitations list in the inbox</note>
+      </notes>
+      <segment>
+        <source>No invitations waiting.</source>
+      </segment>
+    </unit>
+    <unit id="9137951864770451001">
+      <notes>
+        <note category="location">src/app/components/card-invitation/card-invitation.component.html</note>
+        <note category="description">Text on a group invitation in the inbox</note>
+      </notes>
+      <segment>
+        <source>Accepting adds you to this private group’s shared games and future session plans.</source>
+      </segment>
+    </unit>
     <unit id="9174716236566498100">
       <notes>
         <note category="location">src/app/core/i18n/notification-text.ts</note>
       </notes>
       <segment>
         <source><ph id="0" equiv="person" disp="actor"/> removed <ph id="1" equiv="games" disp="removedList"/> from their shelf.</source>
+      </segment>
+    </unit>
+    <unit id="9212705249340904752">
+      <notes>
+        <note category="location">src/app/layout/footer/footer.component.html</note>
+        <note category="description">Heading of the footer column of links to the landing page</note>
+      </notes>
+      <segment>
+        <source>Explore</source>
+      </segment>
+    </unit>
+    <unit id="950714964925956479">
+      <notes>
+        <note category="location">src/app/pages/auth/register/register.component.ts</note>
+        <note category="description">Error on the invitation sign-up page when the username is taken</note>
+      </notes>
+      <segment>
+        <source>That username is unavailable. Choose a different username and try again.</source>
       </segment>
     </unit>
   </file>

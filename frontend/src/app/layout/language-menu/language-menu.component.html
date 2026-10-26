@@ -1,0 +1,33 @@
+<div class="relative">
+    <button
+        #trigger
+        type="button"
+        class="flex h-11 min-w-11 cursor-pointer items-center justify-center gap-1 rounded-full px-2 text-bv-text-muted hover:bg-bv-surface-2 hover:text-bv-text focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-bv-primary"
+        [attr.aria-label]="triggerLabel"
+        aria-controls="language-menu"
+        [attr.aria-expanded]="disclosure.isOpen()"
+        (click)="disclosure.toggle()"
+    >
+        <app-icon name="languages" [size]="20" aria-hidden="true" />
+        <span class="text-xs font-semibold uppercase" aria-hidden="true">{{ current }}</span>
+    </button>
+
+    @if (disclosure.isOpen()) {
+    <div id="language-menu" class="absolute right-0 z-50 mt-2 w-56 overflow-hidden rounded-xl border border-bv-border bg-bv-surface text-bv-text shadow-xl">
+        <ul class="p-1.5" [attr.aria-label]="listLabel">
+            @for (link of links(); track link.locale) {
+            <li>
+                @if (link.locale === current) {
+                <span class="app-menu-item font-semibold text-bv-primary" aria-current="true" [attr.lang]="link.locale">
+                    {{ link.name }}
+                    <app-icon name="check" [size]="18" class="ml-auto" aria-hidden="true" />
+                </span>
+                } @else {
+                <a class="app-menu-item" [href]="link.href" [attr.hreflang]="link.locale" [attr.lang]="link.locale" (click)="choose(link.locale)">{{ link.name }}</a>
+                }
+            </li>
+            }
+        </ul>
+    </div>
+    }
+</div>

@@ -8,6 +8,6 @@ import { IconComponent } from '../icon/icon.component'
 })
 export class SpinnerComponent {
     readonly size = input<'small' | 'medium' | 'large'>('small')
-    readonly label = input<string | null>('Loading')
+    readonly label = input<string | null>($localize`:Read by screen readers while something loads:Loading`)
     readonly text = input<string | null>(null)
 }
