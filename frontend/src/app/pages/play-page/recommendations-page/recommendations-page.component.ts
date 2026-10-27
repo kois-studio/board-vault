@@ -481,7 +481,7 @@ export class RecommendationsPageComponent {
         const person = this.groupPeople().find((candidate) => candidate.person.id === accountId)
         if (person) return person.person.displayName
         const member = group.members.find((candidate) => candidate.id === accountId)
-        return member?.displayName || member?.username || 'Member'
+        return member?.displayName || member?.username || $localize`:Stand-in name for a group member whose name is unknown:Member`
     }
 
     public getGroupPersonGameCount(person: GroupPersonWorkspaceType): number {

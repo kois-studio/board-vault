@@ -1,11 +1,11 @@
-<h2 class="pb-2 text-2xl font-bold tracking-wide">Appearance</h2>
-<p class="pb-8 text-bv-text-muted">Choose how Board Vault looks. Except for the language, your choices are saved on this device.</p>
+<h2 class="pb-2 text-2xl font-bold tracking-wide" i18n="Heading of the Appearance settings">Appearance</h2>
+<p class="pb-8 text-bv-text-muted" i18n="Subtitle of the Appearance settings">Choose how Board Vault looks. Except for the language, your choices are saved on this device.</p>
 
 <div class="space-y-10">
     @if (languages.length) {
     <fieldset class="min-w-0">
         <legend class="pb-1 font-semibold" i18n="Heading of the language choice in the Appearance settings">Language</legend>
-        <p class="pb-3 text-sm text-bv-text-muted" i18n="Hint under the language heading in the Appearance settings">The language of Board Vault's menus and messages. Saved on your account.</p>
+        <p class="pb-3 text-sm text-bv-text-muted" i18n="Hint under the language heading in the Appearance settings">The language of Board Vault’s menus and messages. Saved on your account.</p>
         <div class="grid gap-4 sm:grid-cols-3">
             @for (option of languages; track option.locale) {
             <label [class]="optionClass(currentLanguage === option.locale)">
@@ -30,7 +30,7 @@
     }
 
     <fieldset class="min-w-0">
-        <legend class="pb-3 font-semibold">Color scheme</legend>
+        <legend class="pb-3 font-semibold" i18n="Heading of the light or dark choice in the Appearance settings">Color scheme</legend>
         <div class="grid gap-4 sm:grid-cols-3">
             @for (option of schemes; track option.value) {
             <label [class]="optionClass(preference() === option.value)">
@@ -66,8 +66,8 @@
     </fieldset>
 
     <fieldset class="min-w-0">
-        <legend class="pb-1 font-semibold">Theme</legend>
-        <p class="pb-3 text-sm text-bv-text-muted">Changes the background and main color. Player colors stay the same in every theme.</p>
+        <legend class="pb-1 font-semibold" i18n="Heading of the color theme choice in the Appearance settings">Theme</legend>
+        <p class="pb-3 text-sm text-bv-text-muted" i18n="Hint under the Theme heading in the Appearance settings">Changes the background and main color. Player colors stay the same in every theme.</p>
         <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
             @for (option of palettes; track option.value) {
             <label [class]="optionClass(palette() === option.value)">
@@ -96,8 +96,8 @@
     </fieldset>
 
     <fieldset class="min-w-0">
-        <legend class="pb-1 font-semibold">Text size</legend>
-        <p class="pb-3 text-sm text-bv-text-muted">Makes text, buttons and icons bigger across Board Vault.</p>
+        <legend class="pb-1 font-semibold" i18n="Heading of the text size choice in the Appearance settings">Text size</legend>
+        <p class="pb-3 text-sm text-bv-text-muted" i18n="Hint under the Text size heading in the Appearance settings">Makes text, buttons and icons bigger across Board Vault.</p>
         <div class="grid gap-4 sm:grid-cols-3">
             @for (option of textSizes; track option.value) {
             <label [class]="optionClass(textSize() === option.value)">
