@@ -4,6 +4,7 @@ import { fakeDatabase } from '../../../../test/fake-database.js'
 
 import { GroupPeopleService } from './group-people.service.js'
 
+import type { GameTranslationService } from '../game-translation/game-translation.service.js'
 import type { ActivityNotifier } from '../notifications/activity-notifier.service.js'
 import type { Mock } from 'vitest'
 
@@ -35,8 +36,16 @@ describe('GroupPeopleService participant boundaries', () => {
             shelfChanged: vi.fn().mockResolvedValue(undefined),
         }
 
+        const gameTranslationService = {
+            getTranslationsByGameIds: vi.fn().mockResolvedValue(new Map([[42, { en: 'Catan', es: 'Catán' }]])),
+        }
+
         return {
-            service: new GroupPeopleService(fakeDatabase(databaseService), activityNotifier as unknown as ActivityNotifier),
+            service: new GroupPeopleService(
+                fakeDatabase(databaseService),
+                activityNotifier as unknown as ActivityNotifier,
+                gameTranslationService as unknown as GameTranslationService,
+            ),
             databaseService,
             activityNotifier,
         }
@@ -53,11 +62,11 @@ describe('GroupPeopleService participant boundaries', () => {
         ])
     })
 
-    it('returns a group-scoped catalog for ownership assertions without exposing private collections', async () => {
+    it('returns a group-scoped catalog with every edition, so the app can filter it on any title', async () => {
         const { service, databaseService } = createService()
 
         await expect(service.getCatalog(7, 12, 'es', 'catan')).resolves.toEqual([
-            expect.objectContaining({ id: 42, title: 'Catán', titleLanguage: 'es', titleTranslations: { es: 'Catán' } }),
+            expect.objectContaining({ id: 42, title: 'Catán', titleLanguage: 'es', titleTranslations: { en: 'Catan', es: 'Catán' } }),
         ])
         expect(databaseService.getGroupPersonGameCatalog).toHaveBeenCalledWith('catan', 'es')
     })
