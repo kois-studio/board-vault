@@ -9,6 +9,7 @@ import {
     readShelfChange,
     type ShelfChange,
 } from '../../../core/notifications/shelf-notification.js'
+import { resolvedTitleSql } from '../resolved-title.js'
 
 import type { CreateNotificationBody, UpdateNotificationBody } from '../../../../common/types/notification.type.js'
 import type { DatabaseService } from '../database.service.js'
@@ -161,13 +162,13 @@ export class NotificationQueries {
         const titles = new Map<number, string>()
 
         if (gameIds.length === 0) return titles
+        // The stored message is English for older clients (the inbox writes its own from `context`), so the English edition, else the primary one.
+        const resolved = resolvedTitleSql('g.id', 'en')
         const rows = (
             await transaction.execute({
                 sql: `
-                    SELECT g.id, COALESCE(gt_en.title, gt_es.title)
+                    SELECT g.id, ${resolved.title}
                     FROM Game g
-                    LEFT JOIN GameTranslation gt_en ON gt_en.gameId = g.id AND gt_en.languageCode = 'en'
-                    LEFT JOIN GameTranslation gt_es ON gt_es.gameId = g.id AND gt_es.languageCode = 'es'
                     WHERE g.id IN (${placeholders(gameIds)})
                 `,
                 args: gameIds,
@@ -222,6 +223,52 @@ export class NotificationQueries {
                 LIMIT ?
             `,
             args: [accountId, INBOX_LIMIT],
+        })
+    }
+
+    // What an inbox needs to word its notifications (ADR-0024): read when the inbox is read, so a
+    // name or a date is always the current one and a deleted account reads as one.
+    private static placeholders = (ids: Array<number>) => ids.map(() => '?').join(', ')
+
+    getContextAccounts(accountIds: Array<number>) {
+        return this.database.execute({
+            sql: `SELECT id, COALESCE(NULLIF(TRIM(displayName), ''), username) AS name, isDeleted FROM Account WHERE id IN (${NotificationQueries.placeholders(accountIds)})`,
+            args: accountIds,
+        })
+    }
+
+    getContextGroups(groupIds: Array<number>) {
+        return this.database.execute({
+            sql: `SELECT id, name FROM UserGroup WHERE id IN (${NotificationQueries.placeholders(groupIds)})`,
+            args: groupIds,
+        })
+    }
+
+    getContextSessions(sessionIds: Array<number>) {
+        return this.database.execute({
+            sql: `SELECT id, meetDate, timezone FROM Meet WHERE id IN (${NotificationQueries.placeholders(sessionIds)})`,
+            args: sessionIds,
+        })
+    }
+
+    getContextPeople(groupPersonIds: Array<number>) {
+        return this.database.execute({
+            sql: `SELECT id, displayName FROM GroupPerson WHERE id IN (${NotificationQueries.placeholders(groupPersonIds)})`,
+            args: groupPersonIds,
+        })
+    }
+
+    /** Each game's title in the reader's language, else the primary edition, with the language it is in. */
+    getContextGames(gameIds: Array<number>, locale: string) {
+        const resolved = resolvedTitleSql('g.id', locale)
+
+        return this.database.execute({
+            sql: `
+                SELECT g.id, ${resolved.title} AS title, ${resolved.language} AS language
+                FROM Game g
+                WHERE g.id IN (${NotificationQueries.placeholders(gameIds)})
+            `,
+            args: gameIds,
         })
     }
 

@@ -1,5 +1,6 @@
 import type { UserType } from '../../api/api.types'
 import type { RecommendationGroupSignal } from '../../components/recommendation-card/recommendation-card.component'
+import { intlLocale } from '../../core/i18n/format'
 
 /**
  * Friday Crew: the example group the landing page samples are filled with.
@@ -17,7 +18,7 @@ function person(key: string, name: string, backgroundColor: string): ExamplePers
     }
 }
 
-export const EXAMPLE_GROUP = 'Friday Crew'
+export const EXAMPLE_GROUP = $localize`:Name of the example group on the landing page, a group of friends who play on Fridays:Friday Crew`
 
 export const EXAMPLE_PEOPLE: Array<ExamplePerson> = [
     person('ana', 'Ana', '#8A2C7A'),
@@ -39,9 +40,22 @@ export const EXAMPLE_GAMES = {
     uno: game('uno', 'UNO', 30, 2, 10),
     dobble: game('dobble', 'Dobble', 15, 2, 8),
     clank: game('clank', 'Clank!', 60, 2, 4),
-    ticketToRide: game('ticket-to-ride', 'Ticket to Ride', 60, 2, 5),
+    // The titles a group in each language knows the box by (ADR-0025).
+    ticketToRide: game(
+        'ticket-to-ride',
+        $localize`:game title|The published title of the board game Ticket to Ride in this language:Ticket to Ride`,
+        60,
+        2,
+        5,
+    ),
     azul: game('azul', 'Azul', 45, 2, 4),
-    codenames: game('codenames', 'Codenames', 15, 2, 8),
+    codenames: game(
+        'codenames',
+        $localize`:game title|The published title of the board game Codenames in this language:Codenames`,
+        15,
+        2,
+        8,
+    ),
     jenga: game('jenga', 'Jenga', 20, 1, 8),
     dixit: game('dixit', 'Dixit', 30, 3, 6),
     sevenWonders: game('7-wonders', '7 Wonders', 30, 3, 7),
@@ -101,9 +115,17 @@ export type ExampleRecommendation = {
 export const EXAMPLE_RECOMMENDATION: ExampleRecommendation = {
     game: games.carcassonne,
     score: 92,
-    historyLabel: 'Last played 6 weeks ago',
-    reasons: ['Fits all 5 coming', 'Ana and Mia rated it 9', 'Fits in your 2 hours'],
-    signal: { interestedCount: 3, interestedNames: 'Leo, Sam, Jon', notForUsCount: 0 },
+    historyLabel: $localize`:When the group last played the game, in the landing example suggestion:Last played 6 weeks ago`,
+    reasons: [
+        $localize`:Reason for a suggestion in the landing example:Fits all 5 coming`,
+        $localize`:Reason for a suggestion in the landing example; Ana and Mia are people in the example group:Ana and Mia rated it 9`,
+        $localize`:Reason for a suggestion in the landing example:Fits in your 2 hours`,
+    ],
+    signal: {
+        interestedCount: 3,
+        interestedNames: new Intl.ListFormat(intlLocale(), { style: 'narrow', type: 'unit' }).format(['Leo', 'Sam', 'Jon']),
+        notForUsCount: 0,
+    },
 }
 
 /** Plan: next Friday's game night, and what the crew played last Friday. */
@@ -115,10 +137,10 @@ export const EXAMPLE_NIGHT: {
     rsvps: Array<{ person: ExamplePerson; answer: 'going' | 'not-going' | 'no-answer' }>
     lastNight: Array<{ game: ExampleGame; winner: string }>
 } = {
-    weekday: 'Fri',
+    weekday: $localize`:Short weekday of the landing example game night, Friday:Fri`,
     day: '16',
-    title: 'Game night at Mia’s',
-    meta: '19:30 · in 4 days',
+    title: $localize`:Title of the landing example game night; Mia is a person in the example group:Game night at Mia’s`,
+    meta: $localize`:Time of the landing example game night and how far away it is:19:30 · in 4 days`,
     rsvps: [
         { person: ana, answer: 'going' },
         { person: mia, answer: 'going' },

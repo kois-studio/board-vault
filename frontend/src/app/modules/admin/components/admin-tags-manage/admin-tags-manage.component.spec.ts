@@ -13,15 +13,15 @@ describe('AdminTagsManageComponent', () => {
         api = {
             getAdminTagCategories: vi.fn().mockReturnValue(
                 of([
-                    { id: 2, name: 'Players', tags: [2, 3], gameCount: 3 },
-                    { id: 1, name: 'Genre', tags: [1], gameCount: 1 },
+                    { id: 2, name: 'Players', tags: [2, 3], gameCount: 3, translations: {} },
+                    { id: 1, name: 'Genre', tags: [1], gameCount: 1, translations: {} },
                 ]),
             ),
             getAdminTags: vi.fn().mockReturnValue(
                 of([
-                    { id: 1, name: 'Abstract', categoryId: 1, gameCount: 1 },
-                    { id: 2, name: 'Two-Player', categoryId: 2, gameCount: 2 },
-                    { id: 3, name: '2 players', categoryId: 2, gameCount: 0 },
+                    { id: 1, name: 'Abstract', categoryId: 1, gameCount: 1, translations: {} },
+                    { id: 2, name: 'Two-Player', categoryId: 2, gameCount: 2, translations: {} },
+                    { id: 3, name: '2 players', categoryId: 2, gameCount: 0, translations: {} },
                 ]),
             ),
             mergeAdminTag: vi.fn().mockReturnValue(of({ gamesMoved: 2 })),
@@ -58,7 +58,7 @@ describe('AdminTagsManageComponent', () => {
         const component = fixture.componentInstance
         const element = fixture.nativeElement as HTMLElement
 
-        component.onMergeTag({ id: 2, name: 'Two-Player', categoryId: 2, gameCount: 2 })
+        component.onMergeTag({ id: 2, name: 'Two-Player', categoryId: 2, gameCount: 2, translations: {} })
         component.setMergeInto('3')
         fixture.detectChanges()
 

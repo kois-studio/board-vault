@@ -4,7 +4,7 @@
 // runs Clerk's bundle. The key is fake: its frontend API is on `.invalid`, so Clerk's next request fails at once.
 import { createReadStream, existsSync, statSync } from 'node:fs'
 import { createServer } from 'node:http'
-import { extname, join, normalize, resolve } from 'node:path'
+import { extname, join, posix, resolve, sep } from 'node:path'
 import { createGzip } from 'node:zlib'
 
 import { localeOfPath, localeRedirect } from '../src/app/core/i18n/locales.ts'
@@ -28,6 +28,7 @@ const types = {
 const runtimeConfig = `globalThis.__BOARD_VAULT_RUNTIME_CONFIG__ = ${JSON.stringify({
     clerkPublishableKey: `pk_test_${Buffer.from('clerk.board-vault.invalid$').toString('base64')}`,
     selfRegistrationEnabled: false,
+    previewLocales: true,
 })};\n`
 
 if (!existsSync(join(root, 'en/index.html'))) {
@@ -36,7 +37,8 @@ if (!existsSync(join(root, 'en/index.html'))) {
 }
 
 createServer((request, response) => {
-    const path = normalize(decodeURIComponent(new URL(request.url ?? '/', 'http://localhost').pathname))
+    // A URL path, so POSIX on every system: Windows' normalize() would turn /es/login into \es\login.
+    const path = posix.normalize(decodeURIComponent(new URL(request.url ?? '/', 'http://localhost').pathname))
     if (path === '/runtime-config.js') {
         response.writeHead(200, { 'Content-Type': 'text/javascript' })
         response.end(runtimeConfig)
@@ -52,7 +54,9 @@ createServer((request, response) => {
     const candidate = join(root, path)
     const locale = localeOfPath(path)
     const fallback = locale ? join(root, locale, 'index.html') : null
-    const file = candidate.startsWith(root) && existsSync(candidate) && statSync(candidate).isFile() ? candidate : fallback
+    // Inside the build only: a decoded `%5C` is a separator on Windows, and `root` is also a prefix of `browser-x`.
+    const inside = candidate.startsWith(root + sep)
+    const file = inside && existsSync(candidate) && statSync(candidate).isFile() ? candidate : fallback
     if (!file) {
         response.writeHead(404)
         response.end()

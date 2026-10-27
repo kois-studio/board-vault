@@ -12,7 +12,8 @@ import { formatDateTime } from '../../../core/i18n/format'
 import { CustomDatePipe } from '../../../core/pipes/customDate.pipe'
 import { DataService } from '../../../core/services/data.service'
 import { LoadingService } from '../../../core/services/loading.service'
-import { formatAttendeeSummary } from '../../../core/utils/formatAttendeeSummary'
+import { attendeeNames, formatAttendeeSummary } from '../../../core/utils/formatAttendeeSummary'
+import { gameTitle } from '../../../core/utils/gameTitle'
 import {
     formatWinners,
     type HistoryParticipant,
@@ -106,7 +107,7 @@ export class HistoryPageComponent {
                 gamesPlayed += game.playCount ?? 1
                 const current = gameCounts.get(game.gameData.id)
                 gameCounts.set(game.gameData.id, {
-                    title: game.gameData.titleTranslations.en || game.gameData.title || 'Untitled game',
+                    title: gameTitle(game.gameData),
                     count: (current?.count ?? 0) + 1,
                 })
             }
@@ -214,7 +215,7 @@ export class HistoryPageComponent {
     }
 
     public getPlayedBySummary(players: Array<{ displayName: string; username: string }>): string {
-        return formatAttendeeSummary(players).replace(/^With /, '')
+        return attendeeNames(players)
     }
 
     public retryHistory(): void {
@@ -234,8 +235,8 @@ export class HistoryPageComponent {
         })
     }
 
-    public getGameTitle(game: { titleTranslations: { en: string }; title?: string }): string {
-        return game.titleTranslations.en || game.title || 'Untitled game'
+    public getGameTitle(game: Parameters<typeof gameTitle>[0]): string {
+        return gameTitle(game)
     }
 
     /** First letters of the first two words: "Love Letter" is "LL". */

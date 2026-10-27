@@ -42,6 +42,10 @@ describe('group collection worth (e2e)', () => {
                     (1, '', 75, 3, 4, 4495), (2, '', 45, 2, 4, 3999), (3, '', 25, 2, 5, NULL);
                 INSERT INTO GameTranslation (gameId, languageCode, title, normalizedTitle) VALUES
                     (1, 'en', 'Catan', 'catan'), (2, 'en', 'Azul', 'azul'), (3, 'en', 'Hanabi', 'hanabi');
+                INSERT INTO GameEdition (gameId, languageCode, title, normalizedTitle, isPrimary)
+                SELECT gameId, languageCode, title, normalizedTitle,
+                       ROW_NUMBER() OVER (PARTITION BY gameId ORDER BY languageCode = 'en' DESC, languageCode) = 1
+                FROM GameTranslation ORDER BY gameId, languageCode;
                 INSERT INTO UserGroup (id, name, createdBy) VALUES (10, 'Thursdays', 1);
                 INSERT INTO GroupMembership (accountId, groupId) VALUES (1, 10), (2, 10), (3, 10);
                 -- Ana paid 5 euros for her second-hand Catan: that never shows.

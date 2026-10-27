@@ -2,16 +2,15 @@ import { Component, computed, effect, input, model, signal } from '@angular/core
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms'
 import type { TagCategoryType, TagType } from '../../../../api/api.types'
 import { IconComponent } from '../../../../components/ui/icon/icon.component'
+import { AdminGameEditionsComponent } from '../admin-game-editions/admin-game-editions.component'
+import { type EditionRow, editionsValidator } from '../admin-game-editions/edition-rows'
 
 export type TagGroup = { id: number; name: string; tags: Array<TagType> }
-
-const TITLE_MAX_LENGTH = 200
 
 /** The catalogue fields of one game, as an admin approves or edits them. */
 export function createGameFieldsForm() {
     return new FormGroup({
-        titleEn: new FormControl('', { nonNullable: true, validators: [Validators.required, Validators.maxLength(TITLE_MAX_LENGTH)] }),
-        titleEs: new FormControl('', { nonNullable: true, validators: [Validators.maxLength(TITLE_MAX_LENGTH)] }),
+        editions: new FormControl<ReadonlyArray<EditionRow>>([], { nonNullable: true, validators: [editionsValidator] }),
         imageUrl: new FormControl('', {
             nonNullable: true,
             validators: [Validators.pattern(/^https?:\/\/.+/), Validators.maxLength(2048)],
@@ -51,12 +50,12 @@ export function groupTags(tags: Array<TagType>, categories: Array<TagCategoryTyp
 }
 
 /**
- * Titles, artwork with a live preview, players, length and a tag picker by category. The parent owns the form
+ * Editions, artwork with a live preview, players, length and a tag picker by category. The parent owns the form
  * and the actions; categories holding a chosen tag start open.
  */
 @Component({
     selector: 'app-admin-game-fields',
-    imports: [IconComponent, ReactiveFormsModule],
+    imports: [AdminGameEditionsComponent, IconComponent, ReactiveFormsModule],
     templateUrl: './admin-game-fields.component.html',
 })
 export class AdminGameFieldsComponent {
@@ -115,18 +114,6 @@ export class AdminGameFieldsComponent {
     public get playersOrLengthOutOfRange(): boolean {
         const { minPlayers, maxPlayers, gameAvgDuration } = this.form().controls
         return [minPlayers, maxPlayers, gameAvgDuration].some((control) => control.hasError('min') || control.hasError('max'))
-    }
-
-    /** Required shows once the field was left; too long shows at once, as a form can load that way. */
-    public get showTitleEnError(): boolean {
-        const control = this.form().controls.titleEn
-        return control.invalid && (control.touched || control.hasError('maxlength'))
-    }
-
-    public titleError(field: 'titleEn' | 'titleEs'): string {
-        const control = this.form().controls[field]
-        if (control.hasError('required')) return 'The English title is required.'
-        return `Keep the title to ${TITLE_MAX_LENGTH} characters.`
     }
 
     public isTagSelected(tagId: number): boolean {

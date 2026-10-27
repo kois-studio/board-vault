@@ -32,7 +32,7 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
             if (error instanceof HttpErrorResponse && error.status === 401) {
                 // The API rejected the Clerk session (expired, revoked, or not linked).
                 logService.error('AuthInterceptor: Received 401. Logging out.', error)
-                toastService.warning('Your session has expired. Please log in again.')
+                toastService.warning($localize`:Toast when the sign-in session ended:Your session has expired. Please log in again.`)
                 loginService.handleAuthErrorAndLogout()
                 router.navigate(['/login'], {
                     queryParams: { reason: 'session_expired' },

@@ -1,24 +1,24 @@
 <div class="overflow-x-clip">
     <!-- Hero: the promise is the collection; groups and game nights come next. -->
     <section class="mx-auto flex max-w-6xl flex-col gap-7 px-4 pb-8 pt-12 lg:pb-12 lg:pt-28">
-        <p class="text-sm font-bold uppercase tracking-[0.12em] text-bv-primary">Board game collection manager</p>
-        <h1 class="max-w-[11em] text-[clamp(2.75rem,7.4vw,6.5rem)] font-extrabold leading-[0.96] tracking-[-0.045em] text-balance text-bv-text">
+        <p class="text-sm font-bold uppercase tracking-[0.12em] text-bv-primary" i18n="Small line above the main heading of the landing page">Board game collection manager</p>
+        <h1 class="max-w-[11em] text-[clamp(2.75rem,7.4vw,6.5rem)] font-extrabold leading-[0.96] tracking-[-0.045em] text-balance text-bv-text" i18n="Main heading of the landing page">
             Every game you own, on one tidy shelf.
         </h1>
         <div class="flex flex-wrap items-end justify-between gap-x-12 gap-y-6">
-            <p class="max-w-[32em] text-[clamp(1.125rem,1.6vw,1.3125rem)] leading-relaxed text-bv-text-muted">
+            <p class="max-w-[32em] text-[clamp(1.125rem,1.6vw,1.3125rem)] leading-relaxed text-bv-text-muted" i18n="Paragraph under the main heading of the landing page">
                 Board Vault keeps your collection organised. Add a game in seconds, filter by players, rate what you’ve played, and share the shelf with the people you
                 play with.
             </p>
             <div class="flex flex-col gap-3">
                 <div class="flex flex-wrap gap-3">
                     <a appButton size="large" routerLink="/register" class="min-h-14">
-                        Create your free account
+                        <ng-container i18n="Main button of the landing page, opens sign-up">Create your free account</ng-container>
                         <app-icon name="arrow-right" [size]="18" />
                     </a>
-                    <a appButton size="large" variant="secondary" appInPageLink="features" class="min-h-14">See how it works</a>
+                    <a appButton size="large" variant="secondary" appInPageLink="features" class="min-h-14" i18n="Button on the landing page that scrolls to the features">See how it works</a>
                 </div>
-                <p class="text-sm text-bv-text-muted">Free to use. Works in any browser.</p>
+                <p class="text-sm text-bv-text-muted" i18n="Small line under the landing page buttons">Free to use. Works in any browser.</p>
             </div>
         </div>
     </section>
@@ -37,14 +37,14 @@
     </div>
 
     <!-- What it does: five rows, each with a small sample filled with the example group. -->
-    <section id="features" class="mx-auto max-w-6xl scroll-mt-4 px-4 py-[clamp(3rem,7vw,6rem)]" aria-label="Features">
+    <section id="features" class="mx-auto max-w-6xl scroll-mt-4 px-4 py-[clamp(3rem,7vw,6rem)]" i18n-aria-label="Name of the landing page section that shows what Board Vault does" aria-label="Features">
         <div class="flex flex-col gap-[clamp(4rem,9vw,7.5rem)]">
             <!-- 01 Add -->
             <div class="grid grid-cols-[repeat(auto-fit,minmax(min(100%,25rem),1fr))] items-center gap-[clamp(2rem,6vw,5rem)]">
                 <div class="flex max-w-[30rem] flex-col gap-3.5">
                     <span class="text-[0.9375rem] font-extrabold text-bv-primary">01</span>
-                    <h2 class="text-[clamp(1.75rem,3.4vw,2.5rem)] font-extrabold leading-[1.1] tracking-[-0.025em] text-balance text-bv-text">Add a game in seconds</h2>
-                    <p class="text-lg leading-relaxed text-bv-text-muted">Search the catalogue and tap Add. The box art, player count and play time come with it.</p>
+                    <h2 class="text-[clamp(1.75rem,3.4vw,2.5rem)] font-extrabold leading-[1.1] tracking-[-0.025em] text-balance text-bv-text" i18n="Heading of the first landing feature">Add a game in seconds</h2>
+                    <p class="text-lg leading-relaxed text-bv-text-muted" i18n="Text of the first landing feature; Add is the button in the example next to it">Search the catalogue and tap Add. The box art, player count and play time come with it.</p>
                 </div>
                 <div class="rounded-2xl border border-bv-border bg-bv-surface p-5 shadow-sm">
                     <div class="flex h-12 items-center gap-2.5 rounded-lg border-2 border-bv-primary px-3.5 text-bv-text">
@@ -60,9 +60,9 @@
                                 <p class="text-[0.8125rem] text-bv-text-muted">{{ result | players: 'short' }} · {{ result.minutes }} min</p>
                             </div>
                             @if (result.owned) {
-                            <span class="rounded-full bg-bv-primary-soft px-3 py-1 text-[0.8125rem] font-semibold text-bv-on-primary-soft">On your shelf</span>
+                            <span class="rounded-full bg-bv-primary-soft px-3 py-1 text-[0.8125rem] font-semibold text-bv-on-primary-soft" i18n="Chip on a search result in the landing example: you own this game">On your shelf</span>
                             } @else {
-                            <span class="rounded-lg border border-bv-border px-3 py-1.5 text-sm font-semibold text-bv-text">Add</span>
+                            <span class="rounded-lg border border-bv-border px-3 py-1.5 text-sm font-semibold text-bv-text" i18n="Add a game to your shelf, a button in the landing example">Add</span>
                             }
                         </li>
                         }
@@ -74,18 +74,22 @@
             <div class="grid grid-cols-[repeat(auto-fit,minmax(min(100%,25rem),1fr))] items-center gap-[clamp(2rem,6vw,5rem)]">
                 <div class="flex max-w-[30rem] flex-col gap-3.5 lg:order-2">
                     <span class="text-[0.9375rem] font-extrabold text-bv-primary">02</span>
-                    <h2 class="text-[clamp(1.75rem,3.4vw,2.5rem)] font-extrabold leading-[1.1] tracking-[-0.025em] text-balance text-bv-text">Find the right game fast</h2>
-                    <p class="text-lg leading-relaxed text-bv-text-muted">Filter by how many people are playing, and sort by title or by play time.</p>
+                    <h2 class="text-[clamp(1.75rem,3.4vw,2.5rem)] font-extrabold leading-[1.1] tracking-[-0.025em] text-balance text-bv-text" i18n="Heading of the second landing feature">Find the right game fast</h2>
+                    <p class="text-lg leading-relaxed text-bv-text-muted" i18n="Text of the second landing feature">Filter by how many people are playing, and sort by title or by play time.</p>
                 </div>
                 <div class="rounded-2xl border border-bv-border bg-bv-surface p-5 shadow-bv-lift lg:order-1">
                     <div class="flex items-baseline justify-between gap-3">
-                        <p class="text-xl font-bold text-bv-text">My games</p>
-                        <p class="text-sm text-bv-text-muted" aria-live="polite">{{ shelf().length }} {{ shelf().length === 1 ? 'game' : 'games' }}</p>
+                        <p class="text-xl font-bold text-bv-text" i18n="Name of your own shelf, in the landing example">My games</p>
+                        <p class="text-sm text-bv-text-muted" aria-live="polite" i18n="How many games the landing example shows after filtering">{shelf().length, plural, one {{{ shelf().length }} game} other {{{ shelf().length }} games}}</p>
                     </div>
-                    <div class="mt-3.5 flex flex-wrap gap-2" role="group" aria-label="Filter the example games by players">
+                    <div class="mt-3.5 flex flex-wrap gap-2" role="group" i18n-aria-label="Name of the player-count buttons in the landing example" aria-label="Filter the example games by players">
                         @for (count of playerFilters; track count) {
                         <button type="button" class="app-chip" [attr.aria-pressed]="players() === count" (click)="players.set(count)">
-                            {{ count === null ? 'All' : count + ' players' }}
+                            @if (count === null) {
+                            <ng-container i18n="Filter button in the landing example: every game">All</ng-container>
+                            } @else {
+                            <ng-container i18n="Filter button in the landing example: games for this many people">{count, plural, one {{{ count }} player} other {{{ count }} players}}</ng-container>
+                            }
                         </button>
                         }
                     </div>
@@ -105,8 +109,8 @@
             <div class="grid grid-cols-[repeat(auto-fit,minmax(min(100%,25rem),1fr))] items-center gap-[clamp(2rem,6vw,5rem)]">
                 <div class="flex max-w-[30rem] flex-col gap-3.5">
                     <span class="text-[0.9375rem] font-extrabold text-bv-primary">03</span>
-                    <h2 class="text-[clamp(1.75rem,3.4vw,2.5rem)] font-extrabold leading-[1.1] tracking-[-0.025em] text-balance text-bv-text">Rate what you play, wish for what’s next</h2>
-                    <p class="text-lg leading-relaxed text-bv-text-muted">Give each game a rating after you play it, and keep a wishlist of the ones you want to get.</p>
+                    <h2 class="text-[clamp(1.75rem,3.4vw,2.5rem)] font-extrabold leading-[1.1] tracking-[-0.025em] text-balance text-bv-text" i18n="Heading of the third landing feature">Rate what you play, wish for what’s next</h2>
+                    <p class="text-lg leading-relaxed text-bv-text-muted" i18n="Text of the third landing feature">Give each game a rating after you play it, and keep a wishlist of the ones you want to get.</p>
                 </div>
                 <ul class="divide-y divide-bv-border rounded-2xl border border-bv-border bg-bv-surface px-5 py-2 shadow-sm">
                     @for (item of ratings; track item.game.id) {
@@ -114,7 +118,7 @@
                         <img class="size-12 shrink-0 rounded-lg" [src]="item.game.imageUrl" alt="" width="48" height="48" />
                         <div class="min-w-0 flex-1">
                             <p class="truncate text-[0.9375rem] font-bold text-bv-text">{{ item.game.title }}</p>
-                            <p class="text-[0.8125rem] text-bv-text-muted">Played {{ item.plays === 1 ? 'once' : item.plays + ' times' }}</p>
+                            <p class="text-[0.8125rem] text-bv-text-muted" i18n="How often you played a game, in the landing example">{item.plays, plural, one {Played once} other {Played {{ item.plays }} times}}</p>
                         </div>
                         <review-display class="text-sm" [review]="item.rating" />
                     </li>
@@ -123,9 +127,9 @@
                         <img class="size-12 shrink-0 rounded-lg" [src]="wish.imageUrl" alt="" width="48" height="48" />
                         <div class="min-w-0 flex-1">
                             <p class="truncate text-[0.9375rem] font-bold text-bv-text">{{ wish.title }}</p>
-                            <p class="text-[0.8125rem] text-bv-text-muted">On your wishlist</p>
+                            <p class="text-[0.8125rem] text-bv-text-muted" i18n="A game you want, in the landing example">On your wishlist</p>
                         </div>
-                        <app-icon name="heart" [size]="20" fill="currentColor" className="text-bv-danger" label="On your wishlist" />
+                        <app-icon name="heart" [size]="20" fill="currentColor" className="text-bv-danger" i18n-label="A game you want, in the landing example" label="On your wishlist" />
                     </li>
                 </ul>
             </div>
@@ -134,8 +138,8 @@
             <div id="how-it-works" class="grid scroll-mt-4 grid-cols-[repeat(auto-fit,minmax(min(100%,25rem),1fr))] items-center gap-[clamp(2rem,6vw,5rem)]">
                 <div class="flex max-w-[30rem] flex-col gap-3.5 lg:order-2">
                     <span class="text-[0.9375rem] font-extrabold text-bv-primary">04</span>
-                    <h2 class="text-[clamp(1.75rem,3.4vw,2.5rem)] font-extrabold leading-[1.1] tracking-[-0.025em] text-balance text-bv-text">Share the shelf with your group</h2>
-                    <p class="text-lg leading-relaxed text-bv-text-muted">
+                    <h2 class="text-[clamp(1.75rem,3.4vw,2.5rem)] font-extrabold leading-[1.1] tracking-[-0.025em] text-balance text-bv-text" i18n="Heading of the fourth landing feature">Share the shelf with your group</h2>
+                    <p class="text-lg leading-relaxed text-bv-text-muted" i18n="Text of the fourth landing feature">
                         Create a group and see everyone’s games in one place, who owns each one, and suggestions that fit the people coming.
                     </p>
                 </div>
@@ -143,7 +147,7 @@
                     <div class="rounded-2xl border border-bv-border bg-bv-surface p-5 shadow-sm">
                         <div class="flex items-baseline justify-between gap-3">
                             <p class="font-bold text-bv-text">{{ group }}</p>
-                            <p class="text-[0.8125rem] text-bv-text-muted">5 members · 23 games</p>
+                            <p class="text-[0.8125rem] text-bv-text-muted" i18n="Size of the example group on the landing page">5 members · 23 games</p>
                         </div>
                         <ul class="mt-3.5 grid grid-cols-4 gap-2.5">
                             @for (item of groupShelf; track item.id) {
@@ -154,7 +158,7 @@
                                     <app-image-profile size="small" class="rounded-full ring-2 ring-bv-surface" [avatar]="owner.avatar" />
                                     }
                                 </span>
-                                <span class="sr-only">Owned by {{ item.owners.map((owner) => owner.name).join(' and ') }}</span>
+                                <span class="sr-only">{{ ownedBy(item.owners) }}</span>
                             </li>
                             }
                         </ul>
@@ -180,8 +184,8 @@
             <div class="grid grid-cols-[repeat(auto-fit,minmax(min(100%,25rem),1fr))] items-center gap-[clamp(2rem,6vw,5rem)]">
                 <div class="flex max-w-[30rem] flex-col gap-3.5">
                     <span class="text-[0.9375rem] font-extrabold text-bv-primary">05</span>
-                    <h2 class="text-[clamp(1.75rem,3.4vw,2.5rem)] font-extrabold leading-[1.1] tracking-[-0.025em] text-balance text-bv-text">Plan the night, keep the history</h2>
-                    <p class="text-lg leading-relaxed text-bv-text-muted">
+                    <h2 class="text-[clamp(1.75rem,3.4vw,2.5rem)] font-extrabold leading-[1.1] tracking-[-0.025em] text-balance text-bv-text" i18n="Heading of the fifth landing feature">Plan the night, keep the history</h2>
+                    <p class="text-lg leading-relaxed text-bv-text-muted" i18n="Text of the fifth landing feature">
                         Set a date and see who’s coming. Afterwards, record what you played and who won, so the next pick is easier.
                     </p>
                 </div>
@@ -196,7 +200,7 @@
                             <p class="text-sm text-bv-text-muted">{{ night.meta }}</p>
                         </div>
                     </div>
-                    <ul class="mt-4 flex flex-wrap gap-2" aria-label="Who is coming">
+                    <ul class="mt-4 flex flex-wrap gap-2" i18n-aria-label="Name of the list of answers in the landing example game night" aria-label="Who is coming">
                         @for (rsvp of night.rsvps; track rsvp.person.key) {
                         @let label = rsvpLabels[rsvp.answer];
                         <li class="flex items-center gap-2 rounded-full bg-bv-surface-2 py-1 pl-1 pr-3 text-sm">
@@ -206,13 +210,13 @@
                         </li>
                         }
                     </ul>
-                    <p class="mt-5 border-t border-bv-border pt-4 text-[0.8125rem] font-bold uppercase tracking-wider text-bv-text-muted">Last Friday</p>
+                    <p class="mt-5 border-t border-bv-border pt-4 text-[0.8125rem] font-bold uppercase tracking-wider text-bv-text-muted" i18n="Heading of the games played at the previous game night, in the landing example">Last Friday</p>
                     <ul class="mt-2 grid gap-2">
                         @for (play of night.lastNight; track play.game.id) {
                         <li class="flex items-center gap-3">
                             <img class="size-9 shrink-0 rounded-md" [src]="play.game.imageUrl" alt="" width="36" height="36" />
                             <span class="flex-1 font-medium text-bv-text">{{ play.game.title }}</span>
-                            <span class="rounded-full bg-bv-accent px-2.5 py-0.5 text-xs font-bold text-bv-on-accent">{{ play.winner }} won</span>
+                            <span class="rounded-full bg-bv-accent px-2.5 py-0.5 text-xs font-bold text-bv-on-accent" i18n="Who won a game, in the landing example">{{ play.winner }} won</span>
                         </li>
                         }
                     </ul>
@@ -225,8 +229,8 @@
     <section id="questions" class="mx-auto max-w-6xl scroll-mt-4 px-4 py-[clamp(3rem,7vw,6rem)]">
         <div class="grid grid-cols-[repeat(auto-fit,minmax(min(100%,21.25rem),1fr))] gap-[clamp(2rem,6vw,5rem)]">
             <div class="flex max-w-[26rem] flex-col gap-3.5">
-                <h2 class="text-[clamp(1.75rem,3.4vw,2.5rem)] font-extrabold leading-[1.1] tracking-[-0.025em] text-bv-text">Questions</h2>
-                <p class="leading-relaxed text-bv-text-muted">
+                <h2 class="text-[clamp(1.75rem,3.4vw,2.5rem)] font-extrabold leading-[1.1] tracking-[-0.025em] text-bv-text" i18n="Heading of the questions on the landing page">Questions</h2>
+                <p class="leading-relaxed text-bv-text-muted" i18n="Text next to the questions on the landing page">
                     Your wishlist and your account are private. A group sees the games its members own and how they rated them, so the suggestions fit everyone.
                 </p>
             </div>
@@ -250,10 +254,10 @@
     <section class="mx-auto max-w-6xl px-4 pb-[clamp(1rem,4vw,2rem)] pt-[clamp(1.5rem,4vw,3rem)]">
         <div class="flex flex-wrap items-end justify-between gap-8 rounded-[1.25rem] bg-bv-primary p-[clamp(2.25rem,6vw,4.5rem)] text-bv-on-primary">
             <div class="max-w-xl">
-                <h2 class="max-w-[14em] text-[clamp(1.875rem,4vw,3rem)] font-extrabold leading-[1.05] tracking-[-0.03em] text-balance">Put your collection in order tonight.</h2>
-                <p class="mt-3 text-lg text-bv-on-primary/80">Free account. Your first game is a search away.</p>
+                <h2 class="max-w-[14em] text-[clamp(1.875rem,4vw,3rem)] font-extrabold leading-[1.05] tracking-[-0.03em] text-balance" i18n="Heading of the closing call to action on the landing page">Put your collection in order tonight.</h2>
+                <p class="mt-3 text-lg text-bv-on-primary/80" i18n="Line under the closing heading on the landing page">Free account. Your first game is a search away.</p>
             </div>
-            <a appButton variant="accent" size="large" routerLink="/register" class="min-h-[3.375rem]">Create your free account</a>
+            <a appButton variant="accent" size="large" routerLink="/register" class="min-h-[3.375rem]" i18n="Main button of the landing page, opens sign-up">Create your free account</a>
         </div>
     </section>
 </div>

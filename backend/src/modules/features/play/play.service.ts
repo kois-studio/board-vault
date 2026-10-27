@@ -1,6 +1,7 @@
 import { BadRequestException, ForbiddenException, Injectable, Logger, NotFoundException } from '@nestjs/common'
 
 import { LogFeature } from '../../../common/decorators/logger.decorator.js'
+import { titleFieldsFromRow } from '../../../common/utils/game-title.js'
 import { toIsoDate } from '../../../common/utils/stored-date.js'
 import { DatabaseService } from '../../common/database/database.service.js'
 import { GameTranslationService } from '../../core/game-translation/game-translation.service.js'
@@ -10,9 +11,12 @@ import { MeetsService } from '../../core/meets/meets.service.js'
 import { UsersService } from '../../core/users/users.service.js'
 
 import { buildHistoryRecords } from './history-records.js'
+import { englishNoResultReason, englishReason } from './recommendation-reasons.js'
 
 import type {
     HistoryRecordDto,
+    NoResultReasonDto,
+    RecommendationReasonDto,
     RecommendationDto,
     RecommendationFeedbackBody,
     ParticipantRecommendationFeedbackBody,
@@ -23,6 +27,7 @@ import type {
     RecommendationSignalsDto,
     RecommendationsDto,
 } from './play.types.js'
+import type { Locale } from '../../../common/i18n/locale.js'
 import type { AccountMeetDto } from '../../../common/types/meet.type.js'
 import type { AvatarDto, UserPublicDto } from '../../../common/types/user.type.js'
 
@@ -38,7 +43,7 @@ export class PlayService {
     ) {}
 
     @LogFeature(new Logger('PlayService'))
-    async getRecommendations(actorAccountId: number, body: RecommendationRequestBody): Promise<RecommendationsDto> {
+    async getRecommendations(actorAccountId: number, body: RecommendationRequestBody, locale: Locale): Promise<RecommendationsDto> {
         const group = await this.databaseService.groups.getGroupById(body.groupId)
 
         if (group.rows.length === 0) {
@@ -59,6 +64,7 @@ export class PlayService {
             body.groupId,
             body.attendeeIds,
             body.attendeeIds.length,
+            locale,
             body.availableMinutes,
         )
         const decisionLens = body.decisionLens ?? 'balanced'
@@ -100,11 +106,7 @@ export class PlayService {
             .sort((a, b) => b.score - a.score || a.gameData.id - b.gameData.id)
             .slice(0, 10)
 
-        let noResultReason: string | null = null
-
-        if (recommendations.length === 0) {
-            noResultReason = await this._getNoResultReason(body)
-        }
+        const noResultReasonCode = recommendations.length === 0 ? await this._getNoResultReason(body) : null
 
         return {
             groupId: body.groupId,
@@ -112,11 +114,16 @@ export class PlayService {
             availableMinutes: body.availableMinutes ?? null,
             decisionLens,
             recommendations,
-            noResultReason,
+            noResultReason: noResultReasonCode && englishNoResultReason(noResultReasonCode),
+            noResultReasonCode,
         }
     }
 
-    async getParticipantRecommendations(actorAccountId: number, body: ParticipantRecommendationRequestBody): Promise<RecommendationsDto> {
+    async getParticipantRecommendations(
+        actorAccountId: number,
+        body: ParticipantRecommendationRequestBody,
+        locale: Locale,
+    ): Promise<RecommendationsDto> {
         const group = await this.databaseService.groups.getGroupById(body.groupId)
 
         if (group.rows.length === 0) {
@@ -141,6 +148,7 @@ export class PlayService {
             body.groupId,
             body.groupPersonIds,
             body.groupPersonIds.length,
+            locale,
             body.availableMinutes,
         )
         const feedbackByGame = new Map<number, { interestedCount: number; notForUsCount: number }>()
@@ -191,7 +199,8 @@ export class PlayService {
             availableMinutes: body.availableMinutes ?? null,
             decisionLens,
             recommendations,
-            noResultReason: recommendations.length === 0 ? 'No games are available from the selected group people.' : null,
+            noResultReason: recommendations.length === 0 ? englishNoResultReason({ code: 'no_people_games' }) : null,
+            noResultReasonCode: recommendations.length === 0 ? { code: 'no_people_games' } : null,
         }
     }
 
@@ -233,7 +242,7 @@ export class PlayService {
         return { success: true }
     }
 
-    private async _getNoResultReason(body: RecommendationRequestBody): Promise<string> {
+    private async _getNoResultReason(body: RecommendationRequestBody): Promise<NoResultReasonDto> {
         const counts = await this.databaseService.recommendations.getRecommendationCandidateCounts(
             body.attendeeIds,
             body.attendeeIds.length,
@@ -245,16 +254,16 @@ export class PlayService {
         const durationFitCount = Number(row?.[2] ?? 0)
 
         if (ownedGameCount === 0) {
-            return 'No games are owned by the selected attendees.'
+            return { code: 'no_owned_games' }
         }
         if (playerFitCount === 0) {
-            return `No games owned by the selected attendees support ${body.attendeeIds.length} players.`
+            return { code: 'no_player_fit', values: { players: body.attendeeIds.length } }
         }
         if (body.availableMinutes !== undefined && durationFitCount === 0) {
-            return `No games for ${body.attendeeIds.length} players fit within ${body.availableMinutes} minutes.`
+            return { code: 'no_duration_fit', values: { players: body.attendeeIds.length, minutes: body.availableMinutes } }
         }
 
-        return 'No suitable titled games were found for the selected attendees and filters.'
+        return { code: 'no_titled_games' }
     }
 
     private _mapRecommendation(
@@ -270,8 +279,6 @@ export class PlayService {
         const gameAvgDuration = row[2] === null || row[2] === undefined ? 0 : Number(row[2])
         const minPlayers = row[3] === null || row[3] === undefined ? 0 : Number(row[3])
         const maxPlayers = row[4] === null || row[4] === undefined ? 0 : Number(row[4])
-        const titleEn = String(row[5] ?? row[6])
-        const titleEs = String(row[6] ?? row[5])
         const attendeeOwnerCount = Number(row[7])
         const averageReview = row[8] === null || row[8] === undefined ? null : Number(row[8])
         const lastPlayedAt = row[9] === null || row[9] === undefined ? null : toIsoDate(String(row[9]))
@@ -293,43 +300,48 @@ export class PlayService {
         const ratingScore = averageReview === null ? 0 : Math.round(20 * (averageReview / 10))
         // The names of the people coming are not the owners or the people with preferences, so the
         // reasons give counts only.
-        const selectedLabel = participantNames.length > 0 ? 'selected people' : 'selected attendees'
-        const reasons = [`Owned by ${attendeeOwnerCount} of ${attendeeCount} ${selectedLabel}`, `Fits ${attendeeCount} players`]
+        const reasonCodes: Array<RecommendationReasonDto> = [
+            {
+                code: 'owned_by',
+                values: { owners: attendeeOwnerCount, attendees: attendeeCount, people: participantNames.length > 0 ? 1 : 0 },
+            },
+            { code: 'fits_players', values: { players: attendeeCount } },
+        ]
 
         if (availableMinutes !== undefined) {
-            reasons.push(gameAvgDuration > 0 ? `Estimated duration: ${gameAvgDuration} minutes` : 'Duration is not available')
-        }
-        reasons.push(
-            averageReview === null ? 'No selected-attendee rating yet' : `Selected-attendee rating: ${averageReview.toFixed(1)}/10`,
-        )
-        if (feedback.interestedCount > 0) {
-            reasons.push(
-                `${feedback.interestedCount} selected attendee${feedback.interestedCount === 1 ? '' : 's'} marked this as interesting`,
+            reasonCodes.push(
+                gameAvgDuration > 0 ? { code: 'duration', values: { minutes: gameAvgDuration } } : { code: 'duration_unknown' },
             )
         }
+        reasonCodes.push(
+            averageReview === null ? { code: 'no_rating' } : { code: 'rating', values: { rating: Math.round(averageReview * 10) / 10 } },
+        )
+        if (feedback.interestedCount > 0) {
+            reasonCodes.push({ code: 'interested', values: { count: feedback.interestedCount } })
+        }
         if (feedback.notForUsCount > 0) {
-            reasons.push(`${feedback.notForUsCount} selected participant${feedback.notForUsCount === 1 ? '' : 's'} passed on this before`)
+            reasonCodes.push({ code: 'passed_before', values: { count: feedback.notForUsCount } })
         }
         if (participantPreferenceScore > 0) {
-            reasons.push('The preferences of the people coming favor this game')
+            reasonCodes.push({ code: 'preferences_favor' })
         } else if (participantPreferenceScore < 0) {
-            reasons.push(`Some selected people have marked this game to avoid`)
+            reasonCodes.push({ code: 'marked_avoid' })
         }
         if (decisionLens === 'fresh') {
-            reasons.push(lastPlayedAt === null ? 'Not played by this group yet' : 'Previously played by this group')
+            reasonCodes.push({ code: lastPlayedAt === null ? 'not_played_yet' : 'played_before' })
         } else if (decisionLens === 'favorite') {
-            reasons.push(averageReview !== null && averageReview >= 7 ? 'Strong group rating' : 'Builds on the group’s shared shelf')
+            reasonCodes.push({ code: averageReview !== null && averageReview >= 7 ? 'strong_rating' : 'shared_shelf' })
         }
+        const reasons = reasonCodes.map(englishReason)
 
         return {
             gameData: {
                 id: gameId,
-                title: titleEn,
                 imageUrl: String(row[1]),
                 gameAvgDuration,
                 minPlayers,
                 maxPlayers,
-                titleTranslations: { en: titleEn, es: titleEs },
+                ...titleFieldsFromRow(row[5], row[6]),
             },
             score: Math.max(
                 0,
@@ -340,6 +352,7 @@ export class PlayService {
             ),
             explanation: {
                 reasons,
+                reasonCodes,
                 attendeeOwnerCount,
                 attendeeCount,
                 averageReview,
@@ -486,7 +499,7 @@ export class PlayService {
     }
 
     @LogFeature(new Logger('PlayService'))
-    async getUserGamesHistory(userId: number): Promise<Array<HistoryRecordDto>> {
+    async getUserGamesHistory(userId: number, locale: Locale): Promise<Array<HistoryRecordDto>> {
         const meetIds = await this.databaseService.sessions.getDistinctCompletedMeetIdsForAccountHistory(userId)
         const meets = (await this.meetsService.getMeetsByIdsForAccount(meetIds, userId)).filter(meet => meet.status === 'completed')
 
@@ -495,6 +508,7 @@ export class PlayService {
             gamesService: this.gamesService,
             gameTranslationService: this.gameTranslationService,
             usersService: this.usersService,
+            locale,
             meetAccountGamesService: this.meetAccountGamesService,
         })
     }

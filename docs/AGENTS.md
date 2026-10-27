@@ -14,6 +14,7 @@ and Upstash.
 | Add or change an API route or DTO | [how-to/add-endpoint.md](how-to/add-endpoint.md), [api.md](api.md) |
 | Change the database schema | [how-to/add-migration.md](how-to/add-migration.md), [data-model.md](data-model.md) |
 | Add a page or change a frontend flow | [how-to/add-page.md](how-to/add-page.md), [design-system.md](design-system.md), [ux-flows.md](ux-flows.md) |
+| Add or change text people read, a plural, a date, or a number; translate; add a language | [i18n.md](i18n.md) (mark it, add all four translations in the same PR, use the glossary) |
 | Add a button or a button-like link | [design-system.md#buttons-and-links](design-system.md#buttons-and-links) (`appButton` on a native `<button>` or `<a>`) |
 | Pick a colour, or style light and dark mode | [design-system.md#colour-the-ciruela-palette](design-system.md#colour-the-ciruela-palette) (`bv-*` tokens only, no Tailwind palette colours) |
 | Explain a feature with a (?), add a wishlist heart, a toggle chip, or offer Undo | [design-system.md#shared-controls](design-system.md#shared-controls) (`<app-info-popover>`, `<app-wishlist-toggle>`, `.app-chip`, toast actions) |
@@ -26,7 +27,8 @@ and Upstash.
 | Make a durable decision | [adr/README.md](adr/README.md) |
 | Pick up or file work | [GitHub Issues](https://github.com/kois-studio/board-vault/issues) (`gh issue list`) |
 
-Product terms are in [glossary.md](glossary.md). Product boundaries live in the
+Product terms are in [glossary.md](glossary.md); their translations are in
+[i18n.md#glossary](i18n.md#glossary). Product boundaries live in the
 private `kois-context` repository when you have access; it is never needed to
 run the app.
 

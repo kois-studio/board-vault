@@ -17,6 +17,8 @@ operating procedures are not kept here.
 - [API contract](api.md) and [OpenAPI snapshot](api/openapi.json)
 - [Environments](environments.md): every environment and variable
 - [User flows](ux-flows.md), [design system](design-system.md), [glossary](glossary.md)
+- [Translating the interface](i18n.md): marking text, plurals, dates, the
+  translation glossary, and tone per language
 
 ## How to
 

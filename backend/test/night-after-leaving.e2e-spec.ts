@@ -57,6 +57,10 @@ describe('a night after someone declines, is uninvited or leaves the group (e2e)
                     (31, 10, 2, 'linked', 'active', 'Paula', 1), (32, 10, 3, 'linked', 'active', 'Rita', 1);
                 INSERT INTO Game (id, imageUrl, gameAvgDuration, minPlayers, maxPlayers) VALUES (1, '', 45, 2, 4), (2, '', 90, 3, 4);
                 INSERT INTO GameTranslation (gameId, languageCode, title, normalizedTitle) VALUES (1, 'en', 'Azul', 'azul'), (2, 'en', 'Catan', 'catan');
+                INSERT INTO GameEdition (gameId, languageCode, title, normalizedTitle, isPrimary)
+                SELECT gameId, languageCode, title, normalizedTitle,
+                       ROW_NUMBER() OVER (PARTITION BY gameId ORDER BY languageCode = 'en' DESC, languageCode) = 1
+                FROM GameTranslation ORDER BY gameId, languageCode;
                 INSERT INTO OwnedGame (accountId, gameId) VALUES (3, 1), (4, 2);
                 INSERT INTO Meet (id, groupId, createdBy, meetDate, isConfirmed, status, timezone) VALUES
                     ${night(60)}, ${night(61)}, ${night(62)}, ${night(63, 'active', '2026-10-15T18:00:00.000Z')}, ${night(64)}, ${night(65)};

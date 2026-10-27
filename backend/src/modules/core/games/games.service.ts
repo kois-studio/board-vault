@@ -1,6 +1,7 @@
 import { ResultSet } from '@libsql/client'
 import { Injectable, Logger, NotFoundException } from '@nestjs/common'
 
+import { compareNames } from '../../../common/i18n/locale.js'
 import { safeErrorName } from '../../../common/logging/structured-log.js'
 import { gamesSchema } from '../../../common/schemas/index.js'
 import { GameDto } from '../../../common/types/game.type.js'
@@ -8,6 +9,7 @@ import { CatalogueTagDto } from '../../../common/types/tag.type.js'
 import { CacheService } from '../../common/cache/cache.service.js'
 import { DatabaseService } from '../../common/database/database.service.js'
 
+import type { Locale } from '../../../common/i18n/locale.js'
 import type { BrowseSort } from '../../../common/types/game.type.js'
 import type { CatalogueFilters } from '../../common/database/queries/games.queries.js'
 
@@ -46,9 +48,9 @@ export class GamesService {
 
     // #region methods
 
-    /** One page of catalogue game ids for Browse, and how many games match in total. */
+    /** One page of catalogue game ids for Browse, sorted by the title in the reader's `locale` (else the primary edition), and how many games match in total. */
     async browseCatalogue(
-        filters: CatalogueFilters & { sort: BrowseSort; page: number; pageSize: number },
+        filters: CatalogueFilters & { sort: BrowseSort; page: number; pageSize: number; locale: Locale },
     ): Promise<{ gameIds: Array<number>; total: number }> {
         const [page, count] = await Promise.all([
             this.databaseService.games.browseCatalogue({ ...filters, skip: (filters.page - 1) * filters.pageSize, take: filters.pageSize }),
@@ -58,15 +60,19 @@ export class GamesService {
         return { gameIds: page.rows.map(row => Number(row[0])), total: Number(count.rows[0]?.[0] ?? 0) }
     }
 
-    async getCatalogueTags(): Promise<Array<CatalogueTagDto>> {
-        const resultSet = await this.databaseService.games.getCatalogueTags()
+    /** Tags used by catalogue games, named in `locale` and sorted the way it sorts: by category, then name. */
+    async getCatalogueTags(locale: Locale): Promise<Array<CatalogueTagDto>> {
+        const resultSet = await this.databaseService.games.getCatalogueTags(locale)
+        const compare = compareNames(locale)
 
-        return resultSet.rows.map(row => ({
-            id: Number(row[0]),
-            name: String(row[1]),
-            categoryName: String(row[2]),
-            gameCount: Number(row[3]),
-        }))
+        return resultSet.rows
+            .map(row => ({
+                id: Number(row['id']),
+                name: String(row['name']),
+                categoryName: String(row['categoryName']),
+                gameCount: Number(row['gameCount']),
+            }))
+            .sort((a, b) => compare(a.categoryName, b.categoryName) || compare(a.name, b.name))
     }
 
     /** Many games in one query, keyed by id. Missing ids are left out. */

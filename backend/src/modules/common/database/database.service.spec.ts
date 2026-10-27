@@ -60,7 +60,7 @@ describe('DatabaseService logging', () => {
 
         ;(service as unknown as { tursoClient: { execute: typeof execute } }).tursoClient = { execute }
 
-        await service.recommendations.getRecommendationCandidates(7, [1, 2], 2, 120)
+        await service.recommendations.getRecommendationCandidates(7, [1, 2], 2, 'es', 120)
 
         const [{ sql, args }] = execute.mock.calls[0] as [{ sql: string; args: Array<number> }]
 
@@ -75,8 +75,8 @@ describe('DatabaseService logging', () => {
 
         ;(service as unknown as { tursoClient: { execute: typeof execute } }).tursoClient = { execute }
 
-        await service.recommendations.getRecommendationCandidates(7, [1, 2], 2)
-        await service.recommendations.getGroupPersonRecommendationCandidates(7, [3, 4], 2, 90)
+        await service.recommendations.getRecommendationCandidates(7, [1, 2], 2, 'es')
+        await service.recommendations.getGroupPersonRecommendationCandidates(7, [3, 4], 2, 'es', 90)
 
         const [[accounts], [people]] = execute.mock.calls as [
             [{ sql: string; args: Array<number> }],
@@ -190,6 +190,7 @@ describe('DatabaseService logging', () => {
                 .mockResolvedValueOnce({ rowsAffected: 1 })
                 .mockResolvedValueOnce({ rowsAffected: 1 })
                 .mockResolvedValueOnce({ rowsAffected: 1 })
+                .mockResolvedValueOnce({ rowsAffected: 1 })
                 .mockResolvedValueOnce({ rows: [[4, null]] })
                 .mockResolvedValueOnce({ rowsAffected: 1 }),
             commit: vi.fn().mockResolvedValue(undefined),
@@ -211,7 +212,7 @@ describe('DatabaseService logging', () => {
                 gameAvgDuration: 60,
                 minPlayers: 3,
                 maxPlayers: 4,
-                translations: [{ languageCode: 'en', title: 'Catan', normalizedTitle: 'catan' }],
+                editions: [{ languageCode: 'en', title: 'Catan', normalizedTitle: 'catan', isPrimary: true }],
                 tagIds: [2],
                 reviewNotes: 'Ready for the shelf',
                 notification: {
@@ -228,24 +229,28 @@ describe('DatabaseService logging', () => {
             expect.objectContaining({ sql: expect.stringContaining('INSERT INTO Game') }),
         )
         expect(transaction.execute).toHaveBeenNthCalledWith(2, expect.objectContaining({ sql: expect.stringContaining('GameTranslation') }))
-        expect(transaction.execute).toHaveBeenNthCalledWith(3, {
+        expect(transaction.execute).toHaveBeenNthCalledWith(
+            3,
+            expect.objectContaining({ sql: expect.stringContaining('INTO GameEdition') }),
+        )
+        expect(transaction.execute).toHaveBeenNthCalledWith(4, {
             sql: 'INSERT OR IGNORE INTO GameTag (gameId, tagId) VALUES (?, ?)',
             args: [88, 2],
         })
         expect(transaction.execute).toHaveBeenNthCalledWith(
-            4,
+            5,
             expect.objectContaining({ sql: expect.stringContaining("status = 'approved'") }),
         )
         expect(transaction.execute).toHaveBeenNthCalledWith(
-            5,
+            6,
             expect.objectContaining({ sql: expect.stringContaining('SELECT submittedBy, addTo FROM GameProposal') }),
         )
         expect(transaction.execute).toHaveBeenNthCalledWith(
-            6,
+            7,
             expect.objectContaining({ sql: expect.stringContaining('INSERT INTO Notification') }),
         )
         expect(transaction.execute).toHaveBeenNthCalledWith(
-            6,
+            7,
             expect.objectContaining({
                 args: [
                     4,
@@ -266,6 +271,7 @@ describe('DatabaseService logging', () => {
             execute: vi
                 .fn()
                 .mockResolvedValueOnce({ lastInsertRowid: 88 })
+                .mockResolvedValueOnce({ rowsAffected: 1 })
                 .mockResolvedValueOnce({ rowsAffected: 1 })
                 .mockResolvedValueOnce({ rowsAffected: 1 })
                 .mockResolvedValueOnce({ rowsAffected: 1 })
@@ -290,7 +296,7 @@ describe('DatabaseService logging', () => {
                 gameAvgDuration: 60,
                 minPlayers: 3,
                 maxPlayers: 4,
-                translations: [{ languageCode: 'en', title: 'Catan', normalizedTitle: 'catan' }],
+                editions: [{ languageCode: 'en', title: 'Catan', normalizedTitle: 'catan', isPrimary: true }],
                 tagIds: [2],
                 notification: {
                     accountId: 4,
@@ -317,7 +323,7 @@ describe('DatabaseService logging', () => {
                 gameAvgDuration: 60,
                 minPlayers: 3,
                 maxPlayers: 4,
-                translations: [{ languageCode: 'en', title: 'Catan', normalizedTitle: 'catan' }],
+                editions: [{ languageCode: 'en', title: 'Catan', normalizedTitle: 'catan', isPrimary: true }],
                 tagIds: [],
                 notification: {
                     accountId: 4,
@@ -403,6 +409,8 @@ describe('DatabaseService logging', () => {
             service.games.createGameProposal({
                 submittedBy: 5,
                 title: 'Azul',
+                titleLanguage: 'en',
+                otherTitles: [],
                 addTo: 'shelf',
                 adminNotification: {
                     type: 'game_proposal_submitted',
@@ -412,7 +420,7 @@ describe('DatabaseService logging', () => {
             }),
         ).resolves.toEqual({ proposalId: 31 })
 
-        expect(transaction.execute.mock.calls[0]![0].args).toEqual([5, 'Azul', null, null, null, null, null, null, 'shelf'])
+        expect(transaction.execute.mock.calls[0]![0].args).toEqual([5, 'Azul', null, null, null, null, null, null, 'shelf', 'en', null])
         expect(transaction.execute.mock.calls[1]![0]).toEqual({
             sql: expect.stringContaining('WHERE isAdmin = 1 AND isDeleted = 0 AND id != ?'),
             args: ['game_proposal_submitted', 'New game proposal: "Azul"', '{"gameTitle":"Azul","submittedBy":5,"proposalId":31}', 5],
@@ -520,8 +528,8 @@ describe('DatabaseService logging', () => {
 
         expect(transactionFactory).toHaveBeenCalledWith('write')
         expect(execute).toHaveBeenNthCalledWith(1, {
-            sql: 'INSERT OR IGNORE INTO OwnedGame (accountId, gameId) VALUES (?, ?)',
-            args: [1, 42],
+            sql: 'INSERT OR IGNORE INTO OwnedGame (accountId, gameId, editionId) VALUES (?, ?, ?)',
+            args: [1, 42, null],
         })
         expect(execute).toHaveBeenCalledWith({
             sql: 'SELECT 1 FROM WishlistedGame WHERE accountId = ? AND gameId = ?',
@@ -894,7 +902,7 @@ describe('DatabaseService logging', () => {
         ).rejects.toThrow('User not found')
 
         expect(execute).toHaveBeenCalledWith({
-            sql: 'SELECT id, email, username, avatar, displayName, created_at, isDeleted, isAdmin, clerkUserId FROM Account WHERE lower(username) = lower(?) AND isDeleted = 0',
+            sql: 'SELECT id, email, username, avatar, displayName, created_at, isDeleted, isAdmin, clerkUserId, locale FROM Account WHERE lower(username) = lower(?) AND isDeleted = 0',
             args: ['former-member'],
         })
         expect(execute).toHaveBeenCalledTimes(1)

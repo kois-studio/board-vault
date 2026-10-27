@@ -71,16 +71,16 @@ describe('admin tag categories (e2e)', () => {
         const response = await request(app.getHttpServer()).get('/admin/tag-categories').set(asAdmin).expect(200)
 
         expect(response.body).toEqual([
-            { id: 1, name: 'Genre', tags: [1, 2], gameCount: 2 },
-            { id: 2, name: 'Mechanic', tags: [3], gameCount: 1 },
-            { id: 3, name: 'Empty', tags: [], gameCount: 0 },
+            { id: 1, name: 'Genre', tags: [1, 2], gameCount: 2, translations: {} },
+            { id: 2, name: 'Mechanic', tags: [3], gameCount: 1, translations: {} },
+            { id: 3, name: 'Empty', tags: [], gameCount: 0, translations: {} },
         ])
     })
 
     it('returns the same shape when creating and renaming a category', async () => {
         const created = await request(app.getHttpServer()).post('/admin/tag-categories').set(asAdmin).send({ name: 'Theme' }).expect(201)
 
-        expect(created.body).toEqual({ id: expect.any(Number), name: 'Theme', tags: [], gameCount: 0 })
+        expect(created.body).toEqual({ id: expect.any(Number), name: 'Theme', tags: [], gameCount: 0, translations: {} })
 
         const renamed = await request(app.getHttpServer())
             .put('/admin/tag-categories/2')
@@ -88,7 +88,83 @@ describe('admin tag categories (e2e)', () => {
             .send({ name: 'Mechanism' })
             .expect(200)
 
-        expect(renamed.body).toEqual({ id: 2, name: 'Mechanism', tags: [3], gameCount: 1 })
+        expect(renamed.body).toEqual({ id: 2, name: 'Mechanism', tags: [3], gameCount: 1, translations: {} })
+    })
+
+    it('saves a category’s names in other languages, and an empty name removes one', async () => {
+        const created = await request(app.getHttpServer())
+            .post('/admin/tag-categories')
+            .set(asAdmin)
+            .send({ name: 'Players', translations: { es: 'Personas', de: 'Spielerzahl' } })
+            .expect(201)
+
+        expect(created.body.translations).toEqual({ es: 'Personas', de: 'Spielerzahl' })
+
+        const updated = await request(app.getHttpServer())
+            .put(`/admin/tag-categories/${created.body.id}`)
+            .set(asAdmin)
+            .send({ name: 'Players', translations: { es: 'Número de jugadores', de: '' } })
+            .expect(200)
+
+        // A language left out (fr, it) is untouched; an empty one is removed.
+        expect(updated.body.translations).toEqual({ es: 'Número de jugadores' })
+    })
+
+    it('creates and renames a tag with what Administration sends', async () => {
+        const created = await request(app.getHttpServer())
+            .post('/admin/tags')
+            .set(asAdmin)
+            .send({ name: 'Bluffing', categoryId: 2 })
+            .expect(201)
+
+        expect(created.body).toEqual({ id: expect.any(Number), name: 'Bluffing', categoryId: 2, gameCount: 0, translations: {} })
+        await request(app.getHttpServer())
+            .put(`/admin/tags/${created.body.id}`)
+            .set(asAdmin)
+            .send({ name: 'Bluff', categoryId: 2 })
+            .expect(200)
+    })
+
+    it('saves a tag’s names in other languages', async () => {
+        const created = await request(app.getHttpServer())
+            .post('/admin/tags')
+            .set(asAdmin)
+            .send({ name: 'Cooperative', categoryId: 1, translations: { es: 'Cooperativo', it: 'Cooperativo' } })
+            .expect(201)
+
+        expect(created.body).toEqual({
+            id: expect.any(Number),
+            name: 'Cooperative',
+            categoryId: 1,
+            gameCount: 0,
+            translations: { es: 'Cooperativo', it: 'Cooperativo' },
+        })
+
+        const renamed = await request(app.getHttpServer())
+            .put(`/admin/tags/${created.body.id}`)
+            .set(asAdmin)
+            .send({ name: 'Co-operative', categoryId: 1 })
+            .expect(200)
+
+        // Renaming in English keeps the other languages.
+        expect(renamed.body.translations).toEqual({ es: 'Cooperativo', it: 'Cooperativo' })
+
+        const all = await request(app.getHttpServer()).get('/admin/tags').set(asAdmin).expect(200)
+
+        expect(all.body.find((tag: { id: number }) => tag.id === created.body.id).translations).toEqual({
+            es: 'Cooperativo',
+            it: 'Cooperativo',
+        })
+    })
+
+    it('refuses a language that is not an interface language, or a name that is too long', async () => {
+        for (const translations of [{ pt: 'Cooperativo' }, { es: 'x'.repeat(101) }, { es: 3 }]) {
+            await request(app.getHttpServer())
+                .post('/admin/tags')
+                .set(asAdmin)
+                .send({ name: 'Bad', categoryId: 1, translations })
+                .expect(400)
+        }
     })
 
     it('answers 404 when renaming a category that does not exist', async () => {

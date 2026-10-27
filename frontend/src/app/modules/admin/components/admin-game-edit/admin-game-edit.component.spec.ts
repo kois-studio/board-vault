@@ -6,6 +6,7 @@ import { Api } from '../../../../api/api'
 import type { AdminGameType } from '../../../../api/api.types'
 import { ToastService } from '../../../../components/toast/toast.service'
 import { LogService } from '../../../../core/services/log.service'
+import { rowsFromEditions } from '../admin-game-editions/edition-rows'
 import { AdminGamesManageService } from '../admin-games-manage/admin-games-manage.service'
 import { AdminGameEditComponent } from './admin-game-edit.component'
 
@@ -17,9 +18,12 @@ describe('AdminGameEditComponent', () => {
         gameAvgDuration: 90,
         minPlayers: 3,
         maxPlayers: 4,
-        translations: { en: 'Catan', es: 'Catan' },
+        editions: [
+            { id: 7, languageCode: 'en', title: 'Catan', isPrimary: true },
+            { id: 8, languageCode: 'es', title: 'Catan', isPrimary: false },
+        ],
         tags: [{ id: 4, name: 'Strategy', categoryName: 'Genre' }],
-        issues: ['no-artwork', 'no-spanish'],
+        issues: ['no-artwork', 'no-tags'],
         artworkSource: null,
         retailPrice: null,
     }
@@ -36,7 +40,7 @@ describe('AdminGameEditComponent', () => {
                 ]),
             ),
             getAdminTagCategories: vi.fn().mockReturnValue(of([{ id: 1, name: 'Genre', tags: [4, 5], gameCount: 1 }])),
-            updateAdminGame: vi.fn().mockReturnValue(of({ ...catan, imageUrl: 'https://example.test/catan.jpg', issues: ['no-spanish'] })),
+            updateAdminGame: vi.fn().mockReturnValue(of({ ...catan, imageUrl: 'https://example.test/catan.jpg', issues: ['no-tags'] })),
         }
         toast = { success: vi.fn(), error: vi.fn() }
         TestBed.configureTestingModule({
@@ -62,17 +66,31 @@ describe('AdminGameEditComponent', () => {
         const element = fixture.nativeElement as HTMLElement
 
         expect(element.textContent).toContain('No artwork')
-        expect(component.form.getRawValue()).toEqual(
-            expect.objectContaining({ titleEn: 'Catan', titleEs: 'Catan', minPlayers: 3, maxPlayers: 4, gameAvgDuration: 90 }),
-        )
+        expect(component.form.getRawValue()).toEqual(expect.objectContaining({ minPlayers: 3, maxPlayers: 4, gameAvgDuration: 90 }))
+        expect(
+            component.form.getRawValue().editions.map(({ languageCode, title, isPrimary }) => ({ languageCode, title, isPrimary })),
+        ).toEqual([
+            { languageCode: 'en', title: 'Catan', isPrimary: true },
+            { languageCode: 'es', title: 'Catan', isPrimary: false },
+        ])
 
         // A price typed with too many decimals is sent to the cent.
-        component.form.patchValue({ imageUrl: 'https://example.test/catan.jpg', titleEs: 'Los colonos de Catán', retailPrice: 44.949 })
+        component.form.patchValue({
+            imageUrl: 'https://example.test/catan.jpg',
+            editions: rowsFromEditions([
+                { languageCode: 'en', title: ' Catan ', isPrimary: true },
+                { languageCode: 'es', title: 'Los colonos de Catán', isPrimary: false },
+            ]),
+            retailPrice: 44.949,
+        })
         component.selectedTagIds.set(new Set([4, 5]))
         await component.save()
 
         expect(api['updateAdminGame']).toHaveBeenCalledWith(2, {
-            translations: { en: 'Catan', es: 'Los colonos de Catán' },
+            editions: [
+                { languageCode: 'en', title: 'Catan', isPrimary: true },
+                { languageCode: 'es', title: 'Los colonos de Catán', isPrimary: false },
+            ],
             imageUrl: 'https://example.test/catan.jpg',
             minPlayers: 3,
             maxPlayers: 4,
@@ -83,7 +101,7 @@ describe('AdminGameEditComponent', () => {
         expect(toast.success).toHaveBeenCalledWith('Saved.')
     })
 
-    it('says why Save is off when a price, a number or a title is out of range', async () => {
+    it('says why Save is off when a price or a number is out of range', async () => {
         const fixture = await render()
         const component = fixture.componentInstance
         const element = fixture.nativeElement as HTMLElement
@@ -100,36 +118,53 @@ describe('AdminGameEditComponent', () => {
         expect(priceHint()?.textContent).toContain('It only estimates what collections are worth')
         expect(element.textContent).toContain('Players go from 1 to 100, and the length from 1 to 1,440 minutes.')
         expect(element.textContent).not.toContain('are required')
-
-        component.form.patchValue({ maxPlayers: 4 })
-        const title = element.querySelector<HTMLInputElement>('#titleEn')
-        const typeTitle = (value: string) => {
-            if (!title) throw new Error('No English title field')
-            title.value = value
-            title.dispatchEvent(new Event('input'))
-            title.dispatchEvent(new Event('blur'))
-            fixture.detectChanges()
-        }
-
-        typeTitle('x'.repeat(201))
-        expect(element.querySelector('#titleEn-error')?.textContent).toContain('Keep the title to 200 characters.')
-        expect(title?.getAttribute('aria-describedby')).toBe('titleEn-error')
-
-        typeTitle('')
-        expect(element.querySelector('#titleEn-error')?.textContent).toContain('The English title is required.')
     })
 
-    it('says at once when a game loads with a title that is too long, and puts range problems before missing values', async () => {
-        const longTitle = 'x'.repeat(201)
-        const fixture = await render({ ...catan, title: longTitle, translations: { en: longTitle, es: '' } })
+    it('edits the editions in the form: a title, another language, who is primary, and a removal', async () => {
+        const fixture = await render()
+        const component = fixture.componentInstance
+        const element = fixture.nativeElement as HTMLElement
+        const titles = () => [
+            ...element.querySelectorAll<HTMLInputElement>('app-admin-game-editions input[type="text"][aria-label^="Title"]'),
+        ]
+
+        expect(titles().map((input) => input.value)).toEqual(['Catan', 'Catan'])
+
+        // An empty title says why Save is off.
+        const second = titles()[1] as HTMLInputElement
+        second.value = ''
+        second.dispatchEvent(new Event('input'))
+        fixture.detectChanges()
+        expect(element.querySelector('#editions-error')?.textContent).toContain('Every edition needs a title.')
+        expect(component.form.invalid).toBe(true)
+
+        // Choosing the second as primary and removing the first leaves one primary edition.
+        element.querySelectorAll<HTMLInputElement>('input[type="radio"]')[1]?.click()
+        fixture.detectChanges()
+        element.querySelector<HTMLButtonElement>('button[aria-label^="Remove edition"]')?.click()
+        fixture.detectChanges()
+        expect(component.form.getRawValue().editions).toEqual([expect.objectContaining({ languageCode: 'es', isPrimary: true })])
+
+        // Adding a row picks an interface language the game has no edition in.
+        ;[...element.querySelectorAll<HTMLButtonElement>('button')].find((button) => button.textContent?.includes('Add edition'))?.click()
+        fixture.detectChanges()
+        expect(component.form.getRawValue().editions.map((row) => row.languageCode)).toEqual(['es', 'en'])
+    })
+
+    it('loads a game whose primary edition is not English', async () => {
+        const fixture = await render({
+            ...catan,
+            title: 'Die Siedler von Catan',
+            editions: [
+                { id: 9, languageCode: 'de', title: 'Die Siedler von Catan', isPrimary: true },
+                { id: 7, languageCode: 'pt-BR', title: 'Catan', isPrimary: false },
+            ],
+        })
         const element = fixture.nativeElement as HTMLElement
 
-        expect(element.querySelector('#titleEn-error')?.textContent).toContain('Keep the title to 200 characters.')
-
-        fixture.componentInstance.form.patchValue({ minPlayers: 0, gameAvgDuration: null })
-        fixture.detectChanges()
-        expect(element.textContent).toContain('Players go from 1 to 100')
-        expect(element.textContent).not.toContain('are required')
+        expect(element.querySelectorAll<HTMLInputElement>('input[type="radio"]')[0]?.checked).toBe(true)
+        // pt-BR is not an interface language, so its code shows in the "Other" field.
+        expect(element.querySelector<HTMLInputElement>('input[aria-label="Language code"]')?.value).toBe('pt-BR')
     })
 
     it('does not save more minimum than maximum players, and shows the server’s reason for a 400', async () => {
@@ -153,15 +188,15 @@ describe('AdminGameEditComponent', () => {
         await fixture.whenStable()
         const component = fixture.componentInstance
         const stored = 'http://localhost:3000/artwork/2-0123456789abcdef.webp'
-        api['uploadGameArtwork'] = vi.fn().mockReturnValue(of({ ...catan, imageUrl: stored, artworkSource: null, issues: ['no-spanish'] }))
+        api['uploadGameArtwork'] = vi.fn().mockReturnValue(of({ ...catan, imageUrl: stored, artworkSource: null, issues: ['no-tags'] }))
         const photo = new File(['photo'], 'catan.jpg', { type: 'image/jpeg' })
         const input = { files: [photo], value: 'C:\\fakepath\\catan.jpg' } as unknown as HTMLInputElement
 
-        component.form.patchValue({ titleEs: 'Los colonos de Catán' })
+        component.form.patchValue({ retailPrice: 12 })
         await component.uploadArtwork(input)
 
         expect(api['uploadGameArtwork']).toHaveBeenCalledWith(2, photo)
-        expect(component.form.getRawValue()).toEqual(expect.objectContaining({ imageUrl: stored, titleEs: 'Los colonos de Catán' }))
+        expect(component.form.getRawValue()).toEqual(expect.objectContaining({ imageUrl: stored, retailPrice: 12 }))
         expect(input.value).toBe('')
         expect(toast.success).toHaveBeenCalledWith('Artwork updated.')
     })

@@ -7,9 +7,15 @@ import { ToastService } from '../../toast/toast.service'
 import { ButtonComponent } from '../../ui/button/button.component'
 import { DialogDirective } from '../../ui/dialog/dialog.directive'
 import { IconComponent } from '../../ui/icon/icon.component'
+import {
+    NameTranslationFieldsComponent,
+    nameTranslationsForm,
+    nameTranslationsPayload,
+    nameTranslationsValue,
+} from '../../ui/name-translation-fields/name-translation-fields.component'
 
 @Component({
-    imports: [ReactiveFormsModule, ButtonComponent, DialogDirective, IconComponent],
+    imports: [ReactiveFormsModule, ButtonComponent, DialogDirective, IconComponent, NameTranslationFieldsComponent],
     selector: 'app-modal-edit-tag',
     templateUrl: './modal-edit-tag.component.html',
 })
@@ -41,6 +47,7 @@ export class ModalEditTagComponent {
     public editTagForm = new FormGroup({
         name: new FormControl('', [Validators.required, Validators.minLength(2), Validators.maxLength(50)]),
         categoryId: new FormControl<number | null>(null, [Validators.required]),
+        translations: nameTranslationsForm(),
     })
 
     // --------------------------------------------------------------------------
@@ -52,6 +59,7 @@ export class ModalEditTagComponent {
         this.editTagForm.setValue({
             name: tag.name,
             categoryId: tag.categoryId,
+            translations: nameTranslationsValue(tag.translations),
         })
         this.isVisible.set(true)
     }
@@ -84,6 +92,7 @@ export class ModalEditTagComponent {
             .updateAdminTag(tag.id, {
                 name: formValue.name,
                 categoryId: formValue.categoryId,
+                translations: nameTranslationsPayload(this.editTagForm.controls.translations),
             })
             .subscribe({
                 next: (updatedTag: TagType) => {

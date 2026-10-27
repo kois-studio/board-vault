@@ -110,4 +110,24 @@ describe('ProfileMenuComponent', () => {
         expect(admin?.textContent).toContain('3 proposals waiting')
         expect(admin?.innerHTML).not.toContain('danger')
     })
+
+    it('counts one waiting proposal in the singular, and names the button plainly for everyone else', () => {
+        expect(trigger().getAttribute('aria-label')).toBe('Account menu')
+
+        isAdmin.set(true)
+        pending.set(1)
+        fixture.detectChanges()
+
+        expect(trigger().getAttribute('aria-label')).toBe('Account menu, 1 game proposal waiting')
+        open()
+        expect(element().querySelector('a[href="/admin"]')?.textContent?.replace(/\s+/g, ' ')).toContain('1 proposal waiting')
+    })
+
+    it('says how many games someone submitted, to screen readers', () => {
+        dataService.userProposalStats.set({ totalProposals: 2 })
+        open()
+
+        expect(element().querySelector('a[href="/submissions"]')?.textContent?.replace(/\s+/g, ' ')).toContain('2 submitted')
+        dataService.userProposalStats.set({ totalProposals: 0 })
+    })
 })

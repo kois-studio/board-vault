@@ -57,6 +57,17 @@ describe('InboxComponent', () => {
         expect(trigger().getAttribute('aria-label')).toBe('Inbox, 3 new')
     })
 
+    it('names the bell for one new thing, and plainly when nothing is new', () => {
+        dataService.userInvitations.set([])
+        dataService.userNotifications.set([notification(1, false), notification(2, true)])
+        fixture.detectChanges()
+        expect(trigger().getAttribute('aria-label')).toBe('Inbox, 1 new')
+
+        dataService.userNotifications.set([notification(2, true)])
+        fixture.detectChanges()
+        expect(trigger().getAttribute('aria-label')).toBe('Inbox')
+    })
+
     it('opens a panel with both lists and marks everything read', () => {
         dataService.userInvitations.set([])
         fixture.detectChanges()
@@ -130,5 +141,10 @@ describe('InboxComponent', () => {
         dataService.inboxArrivals.update((count) => count + 1)
         fixture.detectChanges()
         expect(status()).toBe('Inbox: 3 new')
+
+        dataService.userNotifications.set([notification(1, false), notification(2, true)])
+        dataService.inboxArrivals.update((count) => count + 1)
+        fixture.detectChanges()
+        expect(status()).toBe('Inbox: 1 new')
     })
 })

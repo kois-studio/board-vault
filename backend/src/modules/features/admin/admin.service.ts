@@ -1,9 +1,12 @@
 import { BadRequestException, Injectable, Logger, NotFoundException } from '@nestjs/common'
 
 import { LogFeature } from '../../../common/decorators/logger.decorator.js'
+import { validateEditions, type EditionInput } from '../../../common/i18n/edition-language.js'
+import { isSupportedLocale } from '../../../common/i18n/locale.js'
 import { structuredLog } from '../../../common/logging/structured-log.js'
 import {
     AdminGameDto,
+    AdminGameEditionDto,
     AdminGamesQuery,
     AdminOverviewDto,
     CATALOGUE_QUALITY_ISSUES,
@@ -17,7 +20,6 @@ import {
     ProposalStatusCountsDto,
 } from '../../../common/types/admin.type.js'
 import { GameProposalCompleteDto } from '../../../common/types/game-proposal.type.js'
-import { SupportedLanguage } from '../../../common/types/game-translation.type.js'
 import { TagDto, GameTagWithCategoryDto } from '../../../common/types/tag.type.js'
 import { ArtworkService } from '../../../modules/core/artwork/artwork.service.js'
 import { GameProposalService } from '../../../modules/core/game-proposal/game-proposal.service.js'
@@ -32,6 +34,7 @@ import { CacheService } from '../../common/cache/cache.service.js'
 import { DatabaseService } from '../../common/database/database.service.js'
 
 import type { TagCategoryWithTagsDto } from '../../../common/types/tag-category.type.js'
+import type { NameTranslations } from '../../../common/types/tag.type.js'
 
 const ADMIN_OVERVIEW_CACHE_KEY = 'admin:overview'
 
@@ -60,21 +63,58 @@ export class AdminService {
 
     @LogFeature(new Logger('AdminService'))
     async getAdminTagCategories(): Promise<TagCategoryWithTagsDto[]> {
-        return this.tagCategoryService.getTagCategoriesWithTags()
+        const [categories, translations] = await Promise.all([
+            this.tagCategoryService.getTagCategoriesWithTags(),
+            this.nameTranslations('TagCategoryTranslation'),
+        ])
+
+        return categories.map(category => ({ ...category, translations: translations.get(category.id) ?? {} }))
     }
 
     // #endregion
 
-    async createTagCategory(name: string): Promise<TagCategoryWithTagsDto> {
+    async createTagCategory(name: string, translations: NameTranslations = {}): Promise<TagCategoryWithTagsDto> {
         const category = await this.tagCategoryService.createTagCategory(name)
 
-        return this.tagCategoryService.getTagCategoryWithTags(category.id)
+        await this.databaseService.games.setNameTranslations('TagCategoryTranslation', category.id, translations)
+
+        return this.adminTagCategory(category.id)
     }
 
-    async updateTagCategory(id: number, name: string): Promise<TagCategoryWithTagsDto> {
+    async updateTagCategory(id: number, name: string, translations: NameTranslations = {}): Promise<TagCategoryWithTagsDto> {
         await this.tagCategoryService.updateTagCategory(id, name)
+        await this.databaseService.games.setNameTranslations('TagCategoryTranslation', id, translations)
 
-        return this.tagCategoryService.getTagCategoryWithTags(id)
+        return this.adminTagCategory(id)
+    }
+
+    private async adminTagCategory(id: number): Promise<TagCategoryWithTagsDto> {
+        const [category, translations] = await Promise.all([
+            this.tagCategoryService.getTagCategoryWithTags(id),
+            this.nameTranslations('TagCategoryTranslation'),
+        ])
+
+        return { ...category, translations: translations.get(id) ?? {} }
+    }
+
+    /** Names in the other languages by tag (or category) id. */
+    private async nameTranslations(table: 'TagTranslation' | 'TagCategoryTranslation'): Promise<Map<number, NameTranslations>> {
+        const resultSet =
+            table === 'TagTranslation'
+                ? await this.databaseService.games.getTagTranslations()
+                : await this.databaseService.games.getTagCategoryTranslations()
+        const byId = new Map<number, NameTranslations>()
+
+        for (const row of resultSet.rows) {
+            const locale = String(row['locale'])
+
+            if (!isSupportedLocale(locale) || locale === 'en') continue
+            const id = Number(row['id'])
+
+            byId.set(id, { ...byId.get(id), [locale]: String(row['name']) })
+        }
+
+        return byId
     }
 
     async deleteTagCategory(id: number): Promise<{ success: boolean }> {
@@ -85,7 +125,7 @@ export class AdminService {
 
     @LogFeature(new Logger('AdminService'))
     async getAdminTags(): Promise<TagDto[]> {
-        const tags = await this.tagService.getTags()
+        const [tags, translations] = await Promise.all([this.tagService.getTags(), this.nameTranslations('TagTranslation')])
 
         return Promise.all(
             tags.map(async tag => {
@@ -94,6 +134,7 @@ export class AdminService {
                 return {
                     ...tag,
                     gameCount,
+                    translations: translations.get(tag.id) ?? {},
                 }
             }),
         )
@@ -101,24 +142,29 @@ export class AdminService {
 
     // #endregion
 
-    async createTag(name: string, categoryId: number): Promise<TagDto> {
+    async createTag(name: string, categoryId: number, translations: NameTranslations = {}): Promise<TagDto> {
         const tag = await this.tagService.createTag(name, categoryId)
-        const gameCount = await this.gameTagsService.getGameCountByTagId(tag.id)
 
-        return {
-            ...tag,
-            gameCount,
-        }
+        await this.databaseService.games.setNameTranslations('TagTranslation', tag.id, translations)
+
+        return this.adminTag(tag)
     }
 
-    async updateTag(id: number, name: string, categoryId: number): Promise<TagDto> {
+    async updateTag(id: number, name: string, categoryId: number, translations: NameTranslations = {}): Promise<TagDto> {
         const tag = await this.tagService.updateTag(id, name, categoryId)
-        const gameCount = await this.gameTagsService.getGameCountByTagId(tag.id)
 
-        return {
-            ...tag,
-            gameCount,
-        }
+        await this.databaseService.games.setNameTranslations('TagTranslation', id, translations)
+
+        return this.adminTag(tag)
+    }
+
+    private async adminTag(tag: TagDto): Promise<TagDto> {
+        const [gameCount, translations] = await Promise.all([
+            this.gameTagsService.getGameCountByTagId(tag.id),
+            this.nameTranslations('TagTranslation'),
+        ])
+
+        return { ...tag, gameCount, translations: translations.get(tag.id) ?? {} }
     }
 
     async deleteTag(id: number): Promise<{ success: boolean }> {
@@ -208,19 +254,7 @@ export class AdminService {
         if (body.gameAvgDuration !== undefined) game.gameAvgDuration = body.gameAvgDuration
         if (body.retailPrice !== undefined) game.retailPriceCents = toCents(body.retailPrice)
 
-        const translations: Partial<Record<SupportedLanguage, { title: string; normalizedTitle: string } | null>> = {}
-
-        for (const languageCode of ['en', 'es'] as const) {
-            const title = body.translations?.[languageCode]
-
-            if (title === undefined) continue
-            const trimmed = title.trim()
-
-            if (!trimmed && languageCode === 'en') throw new BadRequestException('The English title cannot be empty.')
-            translations[languageCode] = trimmed
-                ? { title: trimmed, normalizedTitle: this.gameTranslationService.normalizeTitle(trimmed) }
-                : null
-        }
+        const editions = body.editions ? this.withNormalizedTitles(validateEditions(body.editions)) : undefined
 
         // Copied before the transaction: a download can take seconds and must not hold the write lock.
         const artwork = await this.artworkService.resolveChange(body.imageUrl, current.imageUrl)
@@ -229,7 +263,7 @@ export class AdminService {
             gameId,
             game,
             artwork: artwork.kind === 'keep' ? undefined : artwork.kind === 'remove' ? null : artwork.artwork,
-            translations,
+            editions,
             tagIds,
         })
 
@@ -243,7 +277,7 @@ export class AdminService {
         const fields = [
             ...Object.keys(game),
             ...(artwork.kind === 'keep' ? [] : ['artwork']),
-            ...Object.keys(translations).map(language => `title.${language}`),
+            ...(editions ? ['editions'] : []),
             ...(tagIds ? ['tags'] : []),
         ]
 
@@ -273,9 +307,31 @@ export class AdminService {
         if (unknown.length > 0) throw new BadRequestException(`Unknown tag ids: ${unknown.join(', ')}.`)
     }
 
+    private withNormalizedTitles(editions: Array<EditionInput>) {
+        return editions.map(edition => ({ ...edition, normalizedTitle: this.gameTranslationService.normalizeTitle(edition.title) }))
+    }
+
     private async toAdminGames(rows: Array<Record<string, unknown>>): Promise<Array<AdminGameDto>> {
         const gameIds = rows.map(row => Number(row['id']))
-        const tagRows = await this.databaseService.games.getTagsOfGames(gameIds)
+        const [tagRows, editionRows] = await Promise.all([
+            this.databaseService.games.getTagsOfGames(gameIds),
+            this.databaseService.games.getEditionsOfGames(gameIds),
+        ])
+        const editionsByGame = new Map<number, Array<AdminGameEditionDto>>()
+
+        for (const row of editionRows.rows) {
+            const gameId = Number(row['gameId'])
+
+            editionsByGame.set(gameId, [
+                ...(editionsByGame.get(gameId) ?? []),
+                {
+                    id: Number(row['id']),
+                    languageCode: String(row['languageCode']),
+                    title: String(row['title']),
+                    isPrimary: Number(row['isPrimary']) === 1,
+                },
+            ])
+        }
         const tagsByGame = new Map<number, Array<GameTagWithCategoryDto>>()
 
         for (const row of tagRows.rows) {
@@ -289,16 +345,15 @@ export class AdminService {
 
         return rows.map(row => {
             const id = Number(row['id'])
-            const titleEn = String(row['titleEn'] ?? '')
 
             return {
                 id,
-                title: titleEn,
+                title: String(row['title'] ?? ''),
                 imageUrl: String(row['imageUrl'] ?? ''),
                 gameAvgDuration: Number(row['gameAvgDuration']),
                 minPlayers: Number(row['minPlayers']),
                 maxPlayers: Number(row['maxPlayers']),
-                translations: { en: titleEn, es: String(row['titleEs'] ?? '') },
+                editions: editionsByGame.get(id) ?? [],
                 tags: tagsByGame.get(id) ?? [],
                 issues: CATALOGUE_QUALITY_ISSUES.filter(issue => Number(row[issue]) === 1),
                 artworkSource: row['artworkSource'] ? String(row['artworkSource']) : null,
@@ -459,19 +514,22 @@ export class AdminService {
             maxPlayers: maxPlayers!,
         }
 
-        const titles: Record<SupportedLanguage, string | undefined> = {
-            en: approvalData.translations?.en?.trim() || proposal.title,
-            es: approvalData.translations?.es?.trim() || undefined,
-        }
-        const translations = Object.entries(titles)
-            .filter((entry): entry is [SupportedLanguage, string] => Boolean(entry[1]))
-            .map(([languageCode, title]) => ({ languageCode, title, normalizedTitle: this.gameTranslationService.normalizeTitle(title) }))
+        // Exactly the reviewed editions, or the proposal's own: its title in its language as the primary
+        // edition, plus the other titles it listed.
+        const editions = this.withNormalizedTitles(
+            validateEditions(
+                approvalData.editions ?? [
+                    { languageCode: proposal.titleLanguage, title: proposal.title, isPrimary: true },
+                    ...proposal.otherTitles.map(other => ({ ...other, isPrimary: false })),
+                ],
+            ),
+        )
 
         const { createdGameId, addedToShelfOf } = await this.databaseService.games.approveGameProposalAtomically({
             proposalId,
             reviewerId,
             ...gameData,
-            translations,
+            editions,
             tagIds,
             reviewNotes: approvalData.reviewNotes,
             notification: {
@@ -543,8 +601,8 @@ export class AdminService {
 
         // Throws 404 when the game does not exist.
         await this.gameService.getGameById(body.duplicateOfGameId)
-        const titles = await this.gameTranslationService.getGameTranslations(body.duplicateOfGameId)
-        const duplicateOfTitle = titles.en || titles.es || 'a game in the catalogue'
+        const duplicate = await this.databaseService.games.getEditionsOfGames([body.duplicateOfGameId])
+        const duplicateOfTitle = String(duplicate.rows[0]?.['title'] ?? '') || 'a game in the catalogue'
         const reviewNotes = body.reviewNotes?.trim() || null
 
         await this.databaseService.games.closeGameProposalAtomically({
@@ -561,6 +619,7 @@ export class AdminService {
                     proposalId: proposal.id,
                     duplicateOfGameId: body.duplicateOfGameId,
                     duplicateOfTitle,
+                    ...(reviewNotes ? { reviewNotes } : {}),
                 },
             },
         })

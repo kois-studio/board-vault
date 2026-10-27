@@ -12,10 +12,7 @@ function createService(database: unknown, collectionActivity = { invalidateForAc
         {} as never,
         {} as never,
         {} as never,
-        {} as never,
-        {} as never,
         { getGameOwnedByAccountIdAndGameId: vi.fn() } as never,
-        {} as never,
         {} as never,
         collectionActivity as never,
         fakeDatabase(database as object),
@@ -35,7 +32,7 @@ describe('CollectionService', () => {
 
         await expect(service.addGameToUserCollection(1, 42)).resolves.toEqual({ success: true })
 
-        expect(addGameToCollection).toHaveBeenCalledWith(1, 42)
+        expect(addGameToCollection).toHaveBeenCalledWith(1, 42, null)
         expect(invalidateForAccount).toHaveBeenCalledWith(1)
         expect(notifier.shelfChanged).toHaveBeenCalledWith(1, { added: [42] })
     })
@@ -72,10 +69,7 @@ describe('CollectionService', () => {
             {} as never,
             {} as never,
             {} as never,
-            {} as never,
-            {} as never,
             { getGameOwnedByAccountIdAndGameId } as never,
-            {} as never,
             {} as never,
             { invalidateForAccount } as never,
             fakeDatabase({ updateGameOwnershipAndLogActivity }),

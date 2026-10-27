@@ -38,7 +38,7 @@ describe('group history sentences', () => {
             describeActivity(
                 entry('person_game_set', { person: pedro, game: catan, data: { status: 'rejected', previousStatus: 'asserted' } }),
             ),
-        ).toBe("Rita removed Catan from Pedro's games")
+        ).toBe('Rita removed Catan from Pedro’s games')
         expect(describeActivity(entry('person_preference_set', { person: pedro, game: catan, data: { preference: 'avoid' } }))).toBe(
             'Rita said Pedro would rather not play Catan',
         )

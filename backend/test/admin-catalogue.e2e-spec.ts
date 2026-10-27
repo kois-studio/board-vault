@@ -36,8 +36,7 @@ describe('admin catalogue (e2e)', () => {
                     (1, 'admin@example.test', 'admin', ${avatar}, 'Admin', 'user_admin', 1, 0),
                     (2, 'player@example.test', 'player', ${avatar}, 'Player', 'user_player', 0, 0);
 
-                -- Azul is complete; Catan has no artwork and the same Spanish title; Hanabi has no Spanish
-                -- title and no tags, and was approved from a proposal without players or length.
+                -- Azul is complete; Catan has no artwork; Hanabi has no tags, and was approved from a proposal without players or length.
                 -- The game without a title has no retail price either.
                 INSERT INTO Game (id, imageUrl, gameAvgDuration, minPlayers, maxPlayers, retailPriceCents) VALUES
                     (1, 'https://example.test/azul.jpg', 45, 2, 4, 3999),
@@ -48,6 +47,10 @@ describe('admin catalogue (e2e)', () => {
                     (1, 'en', 'Azul', 'azul'), (1, 'es', 'Azul (edición)', 'azul (edicion)'),
                     (2, 'en', 'Catan', 'catan'), (2, 'es', 'Catan', 'catan'),
                     (3, 'en', 'Hanabi', 'hanabi');
+                INSERT INTO GameEdition (gameId, languageCode, title, normalizedTitle, isPrimary)
+                SELECT gameId, languageCode, title, normalizedTitle,
+                       ROW_NUMBER() OVER (PARTITION BY gameId ORDER BY languageCode = 'en' DESC, languageCode) = 1
+                FROM GameTranslation ORDER BY gameId, languageCode;
                 INSERT INTO GameProposal (submittedBy, status, title, createdGameId, reviewedBy, reviewedAt, submittedAt) VALUES
                     (2, 'approved', 'Hanabi', 3, 1, datetime('now', '-2 days'), datetime('now', '-3 days')),
                     (2, 'rejected', 'Monopoly', NULL, 1, datetime('now', '-40 days'), datetime('now', '-41 days')),
@@ -103,14 +106,17 @@ describe('admin catalogue (e2e)', () => {
         expect(response.body.pagination).toEqual({ currentPage: 1, totalPages: 1, totalItems: 4, itemsPerPage: 10 })
         // A game without any title sorts first, so it is easy to find.
         expect(response.body.games.map((game: { title: string; issues: string[] }) => [game.title, game.issues])).toEqual([
-            ['', ['no-title', 'no-spanish', 'no-tags', 'no-price']],
+            ['', ['no-title', 'no-tags', 'no-price']],
             ['Azul', []],
-            ['Catan', ['no-artwork', 'no-spanish']],
-            ['Hanabi', ['no-spanish', 'no-tags']],
+            ['Catan', ['no-artwork']],
+            ['Hanabi', ['no-tags']],
         ])
         expect(response.body.games[1]).toEqual(
             expect.objectContaining({
-                translations: { en: 'Azul', es: 'Azul (edición)' },
+                editions: [
+                    { id: expect.any(Number), languageCode: 'en', title: 'Azul', isPrimary: true },
+                    { id: expect.any(Number), languageCode: 'es', title: 'Azul (edición)', isPrimary: false },
+                ],
                 tags: [
                     { id: 1, name: 'Abstract', categoryName: 'Genre' },
                     { id: 3, name: '2 players', categoryName: 'Players' },
@@ -125,7 +131,7 @@ describe('admin catalogue (e2e)', () => {
 
         expect(response.body).toEqual({
             proposals: { pending: 2, oldestPendingAt: '2026-09-01 10:00:00' },
-            catalogueIssues: { 'no-title': 1, 'no-artwork': 1, 'no-spanish': 3, 'no-tags': 2, 'no-price': 1 },
+            catalogueIssues: { 'no-title': 1, 'no-artwork': 1, 'no-primary': 0, 'no-tags': 2, 'no-price': 1 },
             tags: { unused: 0, emptyCategories: 0 },
             catalogue: {
                 games: 4,
@@ -157,7 +163,7 @@ describe('admin catalogue (e2e)', () => {
         expect(await titlesFor({ length: 'long' })).toEqual(['Catan'])
         expect(await titlesFor({ tags: '3,4' })).toEqual(['Catan'])
         expect(await titlesFor({ issue: 'no-artwork' })).toEqual(['Catan'])
-        expect(await titlesFor({ issue: 'no-spanish' })).toEqual(['', 'Catan', 'Hanabi'])
+        expect(await titlesFor({ issue: 'no-primary' })).toEqual([])
         expect(await titlesFor({ issue: 'no-tags' })).toEqual(['', 'Hanabi'])
         expect(await titlesFor({ issue: 'no-price' })).toEqual([''])
         await request(app.getHttpServer()).get('/admin/games').query({ issue: 'nonsense' }).set(asAdmin).expect(400)
@@ -181,12 +187,15 @@ describe('admin catalogue (e2e)', () => {
         await request(app.getHttpServer()).post('/admin/tags/2/merge').set(asPlayer).send({ intoTagId: 3 }).expect(403)
     })
 
-    it('saves titles, artwork, players, length and tags together', async () => {
+    it('saves editions, artwork, players, length and tags together', async () => {
         const response = await request(app.getHttpServer())
             .patch('/admin/games/3')
             .set(asAdmin)
             .send({
-                translations: { en: 'Hanabi', es: 'Hanabi (ES)' },
+                editions: [
+                    { languageCode: 'en', title: 'Hanabi', isPrimary: true },
+                    { languageCode: 'ES', title: 'Hanabi (ES)', isPrimary: false },
+                ],
                 imageUrl: '',
                 minPlayers: 2,
                 maxPlayers: 5,
@@ -203,32 +212,106 @@ describe('admin catalogue (e2e)', () => {
                 minPlayers: 2,
                 maxPlayers: 5,
                 gameAvgDuration: 25,
-                translations: { en: 'Hanabi', es: 'Hanabi (ES)' },
+                editions: [
+                    { id: expect.any(Number), languageCode: 'en', title: 'Hanabi', isPrimary: true },
+                    { id: expect.any(Number), languageCode: 'es', title: 'Hanabi (ES)', isPrimary: false },
+                ],
                 issues: ['no-artwork'],
             }),
         )
         expect(response.body.tags.map((tag: { id: number }) => tag.id)).toEqual([1, 4])
     })
 
-    it('removes the Spanish title when it is sent empty, and leaves unsent fields alone', async () => {
+    it('gives a game a German edition, makes it primary, and keeps the other edition ids', async () => {
+        const before = await request(app.getHttpServer()).get('/admin/games/1').set(asAdmin).expect(200)
+        const english = before.body.editions.find((edition: { languageCode: string }) => edition.languageCode === 'en')
+
+        const response = await request(app.getHttpServer())
+            .patch('/admin/games/1')
+            .set(asAdmin)
+            .send({
+                editions: [
+                    { languageCode: 'en', title: 'Azul', isPrimary: false },
+                    { languageCode: 'de', title: 'Azul (Deutsch)', isPrimary: true },
+                    { languageCode: 'es', title: 'Azul (edición)', isPrimary: false },
+                ],
+            })
+            .expect(200)
+
+        // The primary edition is first, then by language code; the English edition keeps its id.
+        expect(response.body.title).toBe('Azul (Deutsch)')
+        expect(response.body.editions).toEqual([
+            { id: expect.any(Number), languageCode: 'de', title: 'Azul (Deutsch)', isPrimary: true },
+            { id: english.id, languageCode: 'en', title: 'Azul', isPrimary: false },
+            { id: expect.any(Number), languageCode: 'es', title: 'Azul (edición)', isPrimary: false },
+        ])
+        // The legacy translations follow, and Browse's search finds the new title.
+        const translations = await database.execute(
+            'SELECT languageCode, title FROM GameTranslation WHERE gameId = 1 ORDER BY languageCode',
+        )
+
+        expect(translations.rows.map(row => [row.languageCode, row.title])).toEqual([
+            ['de', 'Azul (Deutsch)'],
+            ['en', 'Azul'],
+            ['es', 'Azul (edición)'],
+        ])
+        expect(await titlesFor({ search: 'deutsch' })).toEqual(['Azul (Deutsch)'])
+    })
+
+    it('removes the editions left out, and leaves unsent fields alone', async () => {
         await request(app.getHttpServer())
             .patch('/admin/games/1')
             .set(asAdmin)
-            .send({ translations: { es: '' } })
+            .send({ editions: [{ languageCode: 'de', title: 'Azul (Deutsch)', isPrimary: true }] })
             .expect(200)
 
         const game = await request(app.getHttpServer()).get('/admin/games/1').set(asAdmin).expect(200)
 
-        expect(game.body).toEqual(expect.objectContaining({ translations: { en: 'Azul', es: '' }, minPlayers: 2, maxPlayers: 4 }))
+        expect(game.body.editions).toEqual([{ id: expect.any(Number), languageCode: 'de', title: 'Azul (Deutsch)', isPrimary: true }])
+        expect(game.body).toEqual(expect.objectContaining({ minPlayers: 2, maxPlayers: 4 }))
         expect(game.body.tags).toHaveLength(3)
+        const translations = await database.execute('SELECT languageCode FROM GameTranslation WHERE gameId = 1')
+
+        expect(translations.rows.map(row => row.languageCode)).toEqual(['de'])
+    })
+
+    it('finds games whose editions have no primary one', async () => {
+        await database.execute("INSERT INTO Game (id, imageUrl, gameAvgDuration, minPlayers, maxPlayers) VALUES (5, '', 30, 2, 2)")
+        await database.execute(
+            "INSERT INTO GameEdition (gameId, languageCode, title, normalizedTitle) VALUES (5, 'fr', 'Sans primaire', 'sans primaire')",
+        )
+
+        try {
+            expect(await titlesFor({ issue: 'no-primary' })).toEqual([''])
+            expect(await titlesFor({ issue: 'no-title' })).toEqual([''])
+            const game = await request(app.getHttpServer()).get('/admin/games/5').set(asAdmin).expect(200)
+
+            expect(game.body.issues).toContain('no-primary')
+            expect(game.body.editions).toEqual([{ id: expect.any(Number), languageCode: 'fr', title: 'Sans primaire', isPrimary: false }])
+            // Saving a primary edition repairs it.
+            await request(app.getHttpServer())
+                .patch('/admin/games/5')
+                .set(asAdmin)
+                .send({ editions: [{ languageCode: 'fr', title: 'Sans primaire', isPrimary: true }] })
+                .expect(200)
+            expect(await titlesFor({ issue: 'no-primary' })).toEqual([])
+        } finally {
+            await database.execute('DELETE FROM Game WHERE id = 5')
+        }
     })
 
     it('rejects invalid changes and saves none of them', async () => {
+        const edition = { languageCode: 'en', title: 'Catan', isPrimary: true }
         const invalid = [
             { minPlayers: 5 }, // more than Catan's 4
             { tagIds: [1, 999] },
-            { translations: { en: '  ' } },
-            { translations: { fr: 'Catane' } },
+            { editions: [] },
+            { editions: [{ ...edition, isPrimary: false }] }, // no primary
+            { editions: [edition, { languageCode: 'es', title: 'Catan', isPrimary: true }] }, // two primaries
+            { editions: [edition, { languageCode: 'EN', title: 'Catan 2', isPrimary: false }] }, // one language twice
+            { editions: [{ ...edition, title: '  ' }] },
+            { editions: [{ ...edition, languageCode: 'english' }] },
+            { translations: { en: 'Catan' } },
             { gameAvgDuration: 0 },
             { imageUrl: 'x'.repeat(2049) },
         ]
@@ -240,7 +323,8 @@ describe('admin catalogue (e2e)', () => {
 
         const catan = await request(app.getHttpServer()).get('/admin/games/2').set(asAdmin).expect(200)
 
-        expect(catan.body).toEqual(expect.objectContaining({ minPlayers: 3, maxPlayers: 4, translations: { en: 'Catan', es: 'Catan' } }))
+        expect(catan.body).toEqual(expect.objectContaining({ minPlayers: 3, maxPlayers: 4 }))
+        expect(catan.body.editions.map((entry: { languageCode: string }) => entry.languageCode)).toEqual(['en', 'es'])
     })
 
     it('merges a tag into another in one step, keeping each game once', async () => {

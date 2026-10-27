@@ -3,6 +3,7 @@ import { Injectable } from '@angular/core'
 import { map } from 'rxjs'
 import * as z from 'zod/mini'
 import { environment } from '../../environments/environment'
+import type { Locale } from '../core/i18n/locales'
 import {
     adminApprovalResponseSchema,
     adminGameProposalSchema,
@@ -21,6 +22,7 @@ import {
     clerkSyncResultSchema,
     createdGroupSchema,
     gameCompleteSchema,
+    gameEditionsSchema,
     gameOwnedSchema,
     gameProposalSchema,
     gameResultsUpdatedSchema,
@@ -91,6 +93,7 @@ import type {
     CreateGameProposalType,
     CreatePlaySessionRequest,
     GameCompleteType,
+    GameEditionType,
     GameOwnedType,
     GameProposalType,
     GameResultsUpdatedType,
@@ -110,6 +113,7 @@ import type {
     InvitationWithExtraData,
     MeetType,
     MeetWithAttendeesAndGamesType,
+    NameTranslationsType,
     NotificationType,
     PrivacySettingsStateType,
     PrivacySettingsType,
@@ -172,6 +176,7 @@ export class Api {
         requesBody: {
             displayName?: string
             avatar?: UserType['avatar']
+            locale?: Locale
         },
     ) {
         return this.http
@@ -419,15 +424,15 @@ export class Api {
             .pipe(map((response) => adminTagCategoriesSchema.parse(response)))
     }
 
-    createAdminTagCategory(name: string) {
+    createAdminTagCategory(name: string, translations?: NameTranslationsType) {
         return this.http
-            .post<TagCategoryType>(`${this.url}/admin/tag-categories`, { name })
+            .post<TagCategoryType>(`${this.url}/admin/tag-categories`, { name, translations })
             .pipe(map((response) => tagCategorySchema.parse(response)))
     }
 
-    updateAdminTagCategory(id: number, name: string) {
+    updateAdminTagCategory(id: number, name: string, translations?: NameTranslationsType) {
         return this.http
-            .put<TagCategoryType>(`${this.url}/admin/tag-categories/${id}`, { name })
+            .put<TagCategoryType>(`${this.url}/admin/tag-categories/${id}`, { name, translations })
             .pipe(map((response) => tagCategorySchema.parse(response)))
     }
 
@@ -441,11 +446,11 @@ export class Api {
         return this.http.get<Array<TagType>>(`${this.url}/admin/tags`).pipe(map((response) => adminTagsSchema.parse(response)))
     }
 
-    createAdminTag(payload: { name: string; categoryId: number }) {
+    createAdminTag(payload: { name: string; categoryId: number; translations?: NameTranslationsType }) {
         return this.http.post<TagType>(`${this.url}/admin/tags`, payload).pipe(map((response) => tagSchema.parse(response)))
     }
 
-    updateAdminTag(id: number, payload: { name: string; categoryId: number }) {
+    updateAdminTag(id: number, payload: { name: string; categoryId: number; translations?: NameTranslationsType }) {
         return this.http.put<TagType>(`${this.url}/admin/tags/${id}`, payload).pipe(map((response) => tagSchema.parse(response)))
     }
 
@@ -532,9 +537,27 @@ export class Api {
             .pipe(map((response) => gameViewSchema.parse(response)))
     }
 
-    addGameToUserCollection(userId: number, gameId: number) {
+    /** `editionId` says which edition the person owns; it must be an edition of the game (ADR-0025). */
+    addGameToUserCollection(userId: number, gameId: number, editionId?: number | null) {
         return this.http
-            .post<{ success: true }>(`${this.url}/collection/users/${userId}/games/${gameId}`, {})
+            .post<{ success: true }>(
+                `${this.url}/collection/users/${userId}/games/${gameId}`,
+                editionId === undefined || editionId === null ? {} : { editionId },
+            )
+            .pipe(map((response) => successSchema.parse(response)))
+    }
+
+    /** A game's editions, the primary one first, to choose which one a copy is. */
+    getGameEditions(gameId: number) {
+        return this.http
+            .get<Array<GameEditionType>>(`${this.url}/collection/games/${gameId}/editions`)
+            .pipe(map((response) => gameEditionsSchema.parse(response)))
+    }
+
+    /** Says which edition a copy on the shelf is, or clears it with null. */
+    setOwnedEdition(userId: number, gameId: number, editionId: number | null) {
+        return this.http
+            .patch<{ success: true }>(`${this.url}/collection/users/${userId}/games/${gameId}/edition`, { editionId })
             .pipe(map((response) => successSchema.parse(response)))
     }
 

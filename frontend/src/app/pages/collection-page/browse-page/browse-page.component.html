@@ -211,8 +211,8 @@
                             class="mt-2 w-full rounded-lg border px-3 py-2 text-sm font-semibold transition disabled:cursor-default"
                             [class]="game.isInCollection || collectionState()[game.id] === 'saved' ? 'border-bv-success/30 bg-bv-success/10 text-bv-success' : 'border-bv-border bg-bv-surface hover:border-bv-primary hover:bg-bv-primary-soft'"
                             [disabled]="game.isInCollection || !!collectionState()[game.id]"
-                            [attr.aria-label]="game.isInCollection ? game.titleTranslations.en + ' is already in your collection' : 'Add ' + game.titleTranslations.en + ' to your collection'"
-                            (click)="addGameToCollection(game.id)"
+                            [attr.aria-label]="game.isInCollection ? (game | gameTitle) + ' is already in your collection' : 'Add ' + (game | gameTitle) + ' to your collection'"
+                            (click)="addGameToCollection(game)"
                         >
                             @if (game.isInCollection || collectionState()[game.id] === 'saved') {
                                 In your games ✓

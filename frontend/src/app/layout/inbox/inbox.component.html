@@ -24,9 +24,9 @@
         class="fixed inset-x-2 top-16 z-50 max-h-[calc(100dvh-5rem)] overflow-y-auto rounded-xl border border-bv-border bg-bv-surface text-bv-text shadow-xl sm:absolute sm:inset-x-auto sm:right-0 sm:top-full sm:mt-2 sm:w-[26rem] sm:max-h-[70vh]"
     >
         <div class="flex items-center justify-between gap-3 border-b border-bv-border px-4 py-3">
-            <h2 id="inbox-heading" class="text-lg font-bold">Inbox</h2>
+            <h2 id="inbox-heading" class="text-lg font-bold" i18n="Heading of the inbox panel">Inbox</h2>
             @if (unreadCount()) {
-            <button type="button" class="min-h-11 rounded-lg px-2 text-sm font-semibold text-bv-primary hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-bv-primary" (click)="markAllRead()">
+            <button type="button" class="min-h-11 rounded-lg px-2 text-sm font-semibold text-bv-primary hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-bv-primary" (click)="markAllRead()" i18n="Button in the inbox that marks every notification as read">
                 Mark all read
             </button>
             }
@@ -35,17 +35,17 @@
         <div class="grid gap-5 p-4">
             <section aria-labelledby="inbox-invitations-heading">
                 <h3 id="inbox-invitations-heading" class="flex items-center gap-2 pb-2 text-sm font-semibold text-bv-text-muted">
-                    <app-icon name="mail" [size]="16" /> Group invitations
+                    <app-icon name="mail" [size]="16" /> <ng-container i18n="Heading of the invitations list in the inbox">Group invitations</ng-container>
                 </h3>
                 @if (invitationsLoading()) {
-                <p class="text-sm text-bv-text-muted" role="status">Loading invitations…</p>
+                <p class="text-sm text-bv-text-muted" role="status" i18n="Shown in the inbox while invitations load">Loading invitations…</p>
                 } @else if (invitationsError()) {
                 <div role="alert" class="text-sm">
-                    <p class="text-bv-danger">Invitations could not be loaded.</p>
-                    <button appButton variant="secondary" size="small" type="button" class="mt-2" (click)="retryInvitations()">Retry</button>
+                    <p class="text-bv-danger" i18n="Error in the inbox">Invitations could not be loaded.</p>
+                    <button appButton variant="secondary" size="small" type="button" class="mt-2" (click)="retryInvitations()" i18n="Button that loads a list again after an error">Retry</button>
                 </div>
                 } @else if (invitations().length === 0) {
-                <p class="text-sm text-bv-text-muted">No invitations waiting.</p>
+                <p class="text-sm text-bv-text-muted" i18n="Empty state of the invitations list in the inbox">No invitations waiting.</p>
                 } @else {
                 <ul class="grid gap-3">
                     @for (invitation of invitations(); track invitation.id) {
@@ -57,17 +57,17 @@
 
             <section aria-labelledby="inbox-notifications-heading">
                 <h3 id="inbox-notifications-heading" class="flex items-center gap-2 pb-2 text-sm font-semibold text-bv-text-muted">
-                    <app-icon name="bell" [size]="16" /> Notifications
+                    <app-icon name="bell" [size]="16" /> <ng-container i18n="Heading of the notifications list in the inbox">Notifications</ng-container>
                 </h3>
                 @if (notificationsLoading()) {
-                <p class="text-sm text-bv-text-muted" role="status">Loading notifications…</p>
+                <p class="text-sm text-bv-text-muted" role="status" i18n="Shown in the inbox while notifications load">Loading notifications…</p>
                 } @else if (notificationsError()) {
                 <div role="alert" class="text-sm">
-                    <p class="text-bv-danger">Notifications could not be loaded.</p>
-                    <button appButton variant="secondary" size="small" type="button" class="mt-2" (click)="retryNotifications()">Retry</button>
+                    <p class="text-bv-danger" i18n="Error in the inbox">Notifications could not be loaded.</p>
+                    <button appButton variant="secondary" size="small" type="button" class="mt-2" (click)="retryNotifications()" i18n="Button that loads a list again after an error">Retry</button>
                 </div>
                 } @else if (notifications().length === 0) {
-                <p class="text-sm text-bv-text-muted">You’re all caught up.</p>
+                <p class="text-sm text-bv-text-muted" i18n="Empty state of the notifications list in the inbox">You’re all caught up.</p>
                 } @else {
                 <ul class="grid gap-2">
                     @for (notification of notifications() | sortByDate; track notification.id) {

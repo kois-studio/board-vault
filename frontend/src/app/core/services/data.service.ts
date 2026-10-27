@@ -32,6 +32,7 @@ import type {
 } from '../../api/api.types'
 import { ToastService } from '../../components/toast/toast.service'
 import { LOADING_KEYS } from '../enums/loading-keys-enum'
+import { intlLocale } from '../i18n/format'
 import { rsvpToast } from '../utils/rsvp'
 import { LoadingService } from './loading.service'
 import { LogService } from './log.service'
@@ -224,7 +225,9 @@ export class DataService {
                 },
                 error: () => {
                     this.userInvitationsError.set(true)
-                    this.toastService.error("Error retrieving user's invitations")
+                    this.toastService.error(
+                        $localize`:Toast when the inbox could not load group invitations:Error retrieving user’s invitations`,
+                    )
                 },
             })
     }
@@ -249,7 +252,9 @@ export class DataService {
                 },
                 error: () => {
                     this.userNotificationsError.set(true)
-                    this.toastService.error("Error retrieving user's notifications")
+                    this.toastService.error(
+                        $localize`:Toast when the inbox could not load notifications:Error retrieving user’s notifications`,
+                    )
                 },
             })
     }
@@ -382,14 +387,16 @@ export class DataService {
                                     }))
                                 },
                                 error: () => {
-                                    this.toastService.error(`Error retrieving invited members for group: ${group.name}`)
+                                    this.toastService.error(
+                                        $localize`:Toast when the invitations of a group could not load; the placeholder is the group name:Error retrieving invited members for group: ${group.name}:group:`,
+                                    )
                                 },
                             })
                     }
                 },
                 error: () => {
                     this.userGroupsError.set(true)
-                    this.toastService.error("Error retrieving user's groups")
+                    this.toastService.error($localize`:Toast when your groups could not load:Error retrieving user’s groups`)
                 },
             })
     }
@@ -583,10 +590,10 @@ export class DataService {
                             : group
                     }),
                 )
-                this.toastService.success('Member removed from group')
+                this.toastService.success($localize`:Toast after the group owner removes a member:Member removed from group`)
             }),
             catchError((error) => {
-                this.toastService.error('Error removing member')
+                this.toastService.error($localize`:Toast when a member could not be removed from a group:Error removing member`)
                 return throwError(() => error)
             }),
         )
@@ -603,10 +610,10 @@ export class DataService {
                         ]),
                     ),
                 )
-                this.toastService.success('Invitation removed')
+                this.toastService.success($localize`:Toast after withdrawing a group invitation:Invitation removed`)
             }),
             catchError((error) => {
-                this.toastService.error('Error removing invitation')
+                this.toastService.error($localize`:Toast when a group invitation could not be withdrawn:Error removing invitation`)
                 return throwError(() => error)
             }),
         )
@@ -620,7 +627,7 @@ export class DataService {
                     ...index,
                     [groupId]: invitations,
                 }))
-                this.toastService.success('Invitation sent')
+                this.toastService.success($localize`:Toast after inviting someone with an account to a group:Invitation sent`)
             }),
             // Failures are explained inline by the page, which keeps what was typed.
         )
@@ -628,7 +635,7 @@ export class DataService {
 
     public inviteNewPersonToGroup(groupId: number, emailAddress: string, groupPersonId?: number | null) {
         return this.api.createClerkGroupInvitation(groupId, emailAddress, groupPersonId ?? undefined).pipe(
-            tap(() => this.toastService.success('Clerk invitation sent')),
+            tap(() => this.toastService.success($localize`:Toast after inviting someone to a group by email:Clerk invitation sent`)),
             // Failures are explained inline by the page, which keeps what was typed.
         )
     }
@@ -705,7 +712,9 @@ export class DataService {
             tap(() => {
                 this.userGroups.set([])
                 this._getUserGroups(currentUser.id)
-                this.toastService.success(`You have created the group ${groupName}`)
+                this.toastService.success(
+                    $localize`:Toast after creating a group; the placeholder is its name:You have created the group ${groupName}:group:`,
+                )
             }),
             // Failures are explained inline by the page, which keeps what was typed.
         )
@@ -723,15 +732,19 @@ export class DataService {
                 this.userGroups.update((groups) => groups.filter((group) => group.id !== groupId))
 
                 // 3.
-                this.toastService.success('You have left the group')
+                this.toastService.success($localize`:Toast after leaving a group:You have left the group`)
             }),
             catchError((error) => {
                 if (error.status === 404) {
-                    this.toastService.error('User or Group not found')
+                    this.toastService.error(
+                        $localize`:Toast when leaving a group fails because the group or your account was not found:User or Group not found`,
+                    )
                 } else if (error.status === 400) {
-                    this.toastService.error('You are the group creator, you cannot leave!')
+                    this.toastService.error(
+                        $localize`:Toast when the owner of a group tries to leave it:You are the group creator, you cannot leave!`,
+                    )
                 } else {
-                    this.toastService.error('Error leaving group')
+                    this.toastService.error($localize`:Toast when leaving a group fails:Error leaving group`)
                 }
                 return throwError(() => error)
             }),
@@ -750,13 +763,13 @@ export class DataService {
                 this.userGroups.update((groups) => groups.filter((group) => group.id !== groupId))
 
                 // 3.
-                this.toastService.success('You have deleted the group')
+                this.toastService.success($localize`:Toast after deleting a group:You have deleted the group`)
             }),
             catchError((error) => {
                 if (error.status === 404) {
-                    this.toastService.error('Group not found')
+                    this.toastService.error($localize`:Toast when deleting a group fails because it was not found:Group not found`)
                 } else {
-                    this.toastService.error('Error deleting group')
+                    this.toastService.error($localize`:Toast when deleting a group fails:Error deleting group`)
                 }
                 return throwError(() => error)
             }),
@@ -774,10 +787,10 @@ export class DataService {
                 this.userInvitations.update((invitations) => invitations.filter((invitation) => invitation.id !== invitationId))
                 this.userGroups.set([])
                 this._getUserGroups(currentUser.id)
-                this.toastService.success('You have joined the group!')
+                this.toastService.success($localize`:Toast after accepting a group invitation:You have joined the group!`)
             }),
             catchError((error) => {
-                this.toastService.error('Error accepting invitation')
+                this.toastService.error($localize`:Toast when accepting a group invitation failed:Error accepting invitation`)
                 return throwError(() => error)
             }),
         )
@@ -787,10 +800,10 @@ export class DataService {
         return this.api.rejectInvitation(invitationId).pipe(
             tap(() => {
                 this.userInvitations.update((invitations) => invitations.filter((invitation) => invitation.id !== invitationId))
-                this.toastService.success('Invitation declined')
+                this.toastService.success($localize`:Toast after declining a group invitation:Invitation declined`)
             }),
             catchError((error) => {
-                this.toastService.error('Error declining invitation')
+                this.toastService.error($localize`:Toast when declining a group invitation failed:Error declining invitation`)
                 return throwError(() => error)
             }),
         )
@@ -807,13 +820,15 @@ export class DataService {
                 this.userNotifications.update((notifications) => notifications.filter((notification) => notification.id !== notificationId))
 
                 // 3.
-                this.toastService.success('You have deleted the notification')
+                this.toastService.success($localize`:Toast after deleting a notification:You have deleted the notification`)
             },
             error: (error) => {
                 if (error.status === 404) {
-                    return this.toastService.error('Notification not found')
+                    return this.toastService.error(
+                        $localize`:Toast when a notification was already deleted elsewhere:Notification not found`,
+                    )
                 }
-                this.toastService.error('Error deleting notification')
+                this.toastService.error($localize`:Toast when deleting a notification failed:Error deleting notification`)
             },
         })
     }
@@ -829,13 +844,15 @@ export class DataService {
                     ),
                 )
 
-                if (announce) this.toastService.success('Notification marked as read')
+                if (announce) this.toastService.success($localize`:Toast after marking a notification as read:Notification marked as read`)
             },
             error: (error) => {
                 if (error.status === 404) {
-                    return this.toastService.error('Notification not found')
+                    return this.toastService.error(
+                        $localize`:Toast when a notification was already deleted elsewhere:Notification not found`,
+                    )
                 }
-                this.toastService.error('Error updating notification')
+                this.toastService.error($localize`:Toast when marking a notification as read failed:Error updating notification`)
             },
         })
     }
@@ -861,10 +878,12 @@ export class DataService {
                     .filter((notification) => !gone.has(notification.id))
                     .map((notification) => (read.has(notification.id) ? { ...notification, isRead: true } : notification)),
             )
-            if (failed === 0) this.toastService.success('All notifications marked as read')
+            if (failed === 0) this.toastService.success($localize`:Toast after Mark all read in the inbox:All notifications marked as read`)
             else
                 this.toastService.error(
-                    failed === 1 ? '1 notification could not be marked as read' : `${failed} notifications could not be marked as read`,
+                    new Intl.PluralRules(intlLocale()).select(failed) === 'one'
+                        ? $localize`:mark all read failed, one|Toast after Mark all read in the inbox when some failed, one:${failed}:count: notification could not be marked as read`
+                        : $localize`:mark all read failed, other|Toast after Mark all read in the inbox when some failed, more than one:${failed}:count: notifications could not be marked as read`,
                 )
         })
     }

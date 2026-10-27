@@ -2840,7 +2840,7 @@
             "name": "search",
             "required": false,
             "in": "query",
-            "description": "Title search, across supported translations.",
+            "description": "Title search, across every edition.",
             "schema": {
               "example": "catan",
               "type": "string"
@@ -2910,13 +2910,13 @@
             "name": "issue",
             "required": false,
             "in": "query",
-            "description": "Only games with this data problem: no English title; no artwork; no Spanish title or one equal to the English; no tags; or no retail price.",
+            "description": "Only games with this data problem: no edition; editions but none primary; no artwork; no tags; or no retail price.",
             "schema": {
               "type": "string",
               "enum": [
                 "no-title",
                 "no-artwork",
-                "no-spanish",
+                "no-primary",
                 "no-tags",
                 "no-price"
               ]
@@ -3418,13 +3418,13 @@
         ],
         "responses": {
           "200": {
-            "description": "List of all games owned by the user",
+            "description": "List of all games owned by the user, each titled after the edition the user owns when they said which",
             "content": {
               "application/json": {
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/GameCompleteDto"
+                    "$ref": "#/components/schemas/OwnedGameCompleteDto"
                   }
                 }
               }
@@ -3507,6 +3507,16 @@
             }
           }
         ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AddGameToCollectionBody"
+              }
+            }
+          }
+        },
         "responses": {
           "200": {
             "description": "Game added to the user's collection",
@@ -3568,6 +3578,67 @@
           }
         ],
         "summary": "Remove a game from a user's collection",
+        "tags": [
+          "collection"
+        ]
+      }
+    },
+    "/collection/users/{userId}/games/{gameId}/edition": {
+      "patch": {
+        "deprecated": false,
+        "operationId": "CollectionController_setOwnedEdition",
+        "parameters": [
+          {
+            "name": "userId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "gameId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SetOwnedEditionBody"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "The edition of the copy was saved",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "The edition belongs to another game"
+          },
+          "404": {
+            "description": "The user does not own the game"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Say which edition of a game on the shelf the user owns, or clear it",
         "tags": [
           "collection"
         ]
@@ -3804,6 +3875,46 @@
         ]
       }
     },
+    "/collection/games/{gameId}/editions": {
+      "get": {
+        "deprecated": false,
+        "operationId": "CollectionController_getGameEditions",
+        "parameters": [
+          {
+            "name": "gameId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Every edition of the game",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/GameEditionChoiceDto"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "The editions of a game, the primary one first, to choose which one a copy is",
+        "tags": [
+          "collection"
+        ]
+      }
+    },
     "/collection/tags": {
       "get": {
         "deprecated": false,
@@ -3952,7 +4063,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/GameDto"
+                    "$ref": "#/components/schemas/GameCompleteDto"
                   }
                 }
               }
@@ -5974,6 +6085,19 @@
           "isAdmin": {
             "type": "boolean",
             "example": false
+          },
+          "locale": {
+            "type": "string",
+            "enum": [
+              "en",
+              "es",
+              "fr",
+              "de",
+              "it"
+            ],
+            "nullable": true,
+            "example": "es",
+            "description": "The interface language the person chose (ADR-0024); null until they choose one."
           }
         },
         "required": [
@@ -5984,7 +6108,8 @@
           "displayName",
           "avatar",
           "isDeleted",
-          "isAdmin"
+          "isAdmin",
+          "locale"
         ]
       },
       "UpdateUserBody": {
@@ -5996,6 +6121,17 @@
           },
           "avatar": {
             "$ref": "#/components/schemas/AvatarDto"
+          },
+          "locale": {
+            "type": "string",
+            "enum": [
+              "en",
+              "es",
+              "fr",
+              "de",
+              "it"
+            ],
+            "example": "es"
           }
         }
       },
@@ -6056,6 +6192,135 @@
           "keys"
         ]
       },
+      "NotificationAccountDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number",
+            "example": 7
+          },
+          "name": {
+            "type": "object",
+            "example": "Ana",
+            "nullable": true,
+            "description": "Null for a deleted account; the app writes \"Deleted account\"."
+          },
+          "deleted": {
+            "type": "boolean",
+            "example": false
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "deleted"
+        ]
+      },
+      "NotificationNamedDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number",
+            "example": 3
+          },
+          "name": {
+            "type": "string",
+            "example": "Thursday Crew"
+          }
+        },
+        "required": [
+          "id",
+          "name"
+        ]
+      },
+      "NotificationSessionDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number",
+            "example": 41
+          },
+          "date": {
+            "type": "string",
+            "example": "2026-10-09T17:00:00.000Z"
+          },
+          "timezone": {
+            "type": "string",
+            "example": "Europe/Madrid"
+          }
+        },
+        "required": [
+          "id",
+          "date",
+          "timezone"
+        ]
+      },
+      "NotificationGameDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number",
+            "example": 12
+          },
+          "title": {
+            "type": "string",
+            "example": "Ciudadelas"
+          },
+          "titleLanguage": {
+            "type": "string",
+            "example": "es",
+            "description": "The language of the title."
+          }
+        },
+        "required": [
+          "id",
+          "title",
+          "titleLanguage"
+        ]
+      },
+      "NotificationContextDto": {
+        "type": "object",
+        "properties": {
+          "accounts": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/NotificationAccountDto"
+            }
+          },
+          "groups": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/NotificationNamedDto"
+            }
+          },
+          "sessions": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/NotificationSessionDto"
+            }
+          },
+          "people": {
+            "description": "Group people.",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/NotificationNamedDto"
+            }
+          },
+          "games": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/NotificationGameDto"
+            }
+          }
+        },
+        "required": [
+          "accounts",
+          "groups",
+          "sessions",
+          "people",
+          "games"
+        ]
+      },
       "NotificationDto": {
         "type": "object",
         "properties": {
@@ -6086,6 +6351,14 @@
           "isRead": {
             "type": "boolean",
             "example": true
+          },
+          "context": {
+            "description": "Only on inbox reads.",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/NotificationContextDto"
+              }
+            ]
           }
         },
         "required": [
@@ -6330,6 +6603,18 @@
           "updatedAt": {
             "type": "string",
             "example": "2026-09-25 12:00:00"
+          },
+          "copyTitle": {
+            "type": "object",
+            "example": "Codenames",
+            "nullable": true,
+            "description": "For a game from a linked account's shelf: the title of the edition that copy is, when its owner said which (ADR-0025). Null: the game's own title applies."
+          },
+          "copyTitleLanguage": {
+            "type": "object",
+            "example": "en",
+            "nullable": true,
+            "description": "The language of `copyTitle`."
           }
         },
         "required": [
@@ -6339,7 +6624,9 @@
           "enteredByAccountId",
           "confirmedByAccountId",
           "createdAt",
-          "updatedAt"
+          "updatedAt",
+          "copyTitle",
+          "copyTitleLanguage"
         ]
       },
       "GroupPersonGamePreferenceDto": {
@@ -6462,13 +6749,21 @@
           },
           "title": {
             "type": "string",
-            "example": "Game Title"
+            "example": "Código Secreto",
+            "description": "The title the reader sees (ADR-0025): the edition in the reader's interface language, else the game's primary edition. Empty for a game with no edition."
+          },
+          "titleLanguage": {
+            "type": "string",
+            "example": "es",
+            "description": "The language of `title`."
           },
           "titleTranslations": {
             "type": "object",
             "example": {
-              "en": "Game Title"
-            }
+              "en": "Codenames",
+              "es": "Código Secreto"
+            },
+            "description": "Every known edition title by language code, for \"also known as\" and search. Some endpoints list only the shown one."
           }
         },
         "required": [
@@ -6477,6 +6772,8 @@
           "gameAvgDuration",
           "minPlayers",
           "maxPlayers",
+          "title",
+          "titleLanguage",
           "titleTranslations"
         ]
       },
@@ -6845,11 +7142,18 @@
             "example": "Catan",
             "nullable": true,
             "description": "Null when the game is no longer in the catalogue."
+          },
+          "titleLanguage": {
+            "type": "string",
+            "example": "es",
+            "nullable": true,
+            "description": "The language of `title`; null when the game is gone."
           }
         },
         "required": [
           "id",
-          "title"
+          "title",
+          "titleLanguage"
         ]
       },
       "GroupActivityDto": {
@@ -7738,12 +8042,26 @@
             "example": null,
             "nullable": true,
             "description": "The group person bringing the game, when the organizer named one."
+          },
+          "copyTitle": {
+            "type": "object",
+            "example": "Codenames",
+            "nullable": true,
+            "description": "The title of the edition the bringer's copy is, when they said which (ADR-0025). Null: the game's own title applies."
+          },
+          "copyTitleLanguage": {
+            "type": "object",
+            "example": "en",
+            "nullable": true,
+            "description": "The language of `copyTitle`."
           }
         },
         "required": [
           "gameId",
           "accountId",
-          "groupPersonId"
+          "groupPersonId",
+          "copyTitle",
+          "copyTitleLanguage"
         ]
       },
       "MeetWithAttendeesAndGames": {
@@ -8190,6 +8508,27 @@
           "months"
         ]
       },
+      "NameTranslationsDto": {
+        "type": "object",
+        "properties": {
+          "es": {
+            "type": "string",
+            "example": "Cooperativo"
+          },
+          "fr": {
+            "type": "string",
+            "example": "Coopératif"
+          },
+          "de": {
+            "type": "string",
+            "example": "Kooperativ"
+          },
+          "it": {
+            "type": "string",
+            "example": "Cooperativo"
+          }
+        }
+      },
       "TagCategoryWithTagsDto": {
         "type": "object",
         "properties": {
@@ -8200,6 +8539,14 @@
           "name": {
             "type": "string",
             "example": "Action"
+          },
+          "translations": {
+            "description": "The name in the other interface languages",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/NameTranslationsDto"
+              }
+            ]
           },
           "tags": {
             "example": [
@@ -8232,6 +8579,14 @@
           "name": {
             "type": "string",
             "example": "Action"
+          },
+          "translations": {
+            "description": "The name in the other interface languages",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/NameTranslationsDto"
+              }
+            ]
           }
         },
         "required": [
@@ -8256,6 +8611,14 @@
           "gameCount": {
             "type": "number",
             "example": 10
+          },
+          "translations": {
+            "description": "The name in the other interface languages",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/NameTranslationsDto"
+              }
+            ]
           }
         },
         "required": [
@@ -8276,15 +8639,18 @@
             "type": "number",
             "example": 1
           },
-          "gameCount": {
-            "type": "number",
-            "example": 10
+          "translations": {
+            "description": "The name in the other interface languages",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/NameTranslationsDto"
+              }
+            ]
           }
         },
         "required": [
           "name",
-          "categoryId",
-          "gameCount"
+          "categoryId"
         ]
       },
       "MergeTagBody": {
@@ -8343,7 +8709,7 @@
             "type": "number",
             "example": 4
           },
-          "no-spanish": {
+          "no-primary": {
             "type": "number",
             "example": 12
           },
@@ -8355,7 +8721,7 @@
         "required": [
           "no-title",
           "no-artwork",
-          "no-spanish",
+          "no-primary",
           "no-tags"
         ]
       },
@@ -8524,18 +8890,47 @@
           "name": {
             "type": "string",
             "example": "Strategy",
-            "description": "Tag name"
+            "description": "Tag name, in the reader's language where it has one (admin game lists: English)"
           },
           "categoryName": {
             "type": "string",
             "example": "Game Type",
-            "description": "Category name"
+            "description": "Category name, in the reader's language where it has one (admin game lists: English)"
           }
         },
         "required": [
           "id",
           "name",
           "categoryName"
+        ]
+      },
+      "AdminGameEditionDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number",
+            "example": 7,
+            "description": "Stable across edits, so other records can point at the edition."
+          },
+          "languageCode": {
+            "type": "string",
+            "example": "es",
+            "description": "BCP 47 language of the edition."
+          },
+          "title": {
+            "type": "string",
+            "example": "Los colonos de Catán"
+          },
+          "isPrimary": {
+            "type": "boolean",
+            "example": false
+          }
+        },
+        "required": [
+          "id",
+          "languageCode",
+          "title",
+          "isPrimary"
         ]
       },
       "AdminGameDto": {
@@ -8565,14 +8960,6 @@
             "example": 4,
             "description": "The maximum number of players that can play the game."
           },
-          "translations": {
-            "type": "object",
-            "example": {
-              "en": "Catan",
-              "es": "Catan"
-            },
-            "description": "Game title translations for supported languages"
-          },
           "tags": {
             "description": "Tags assigned to this game with their categories",
             "type": "array",
@@ -8583,7 +8970,14 @@
           "title": {
             "type": "string",
             "example": "Catan",
-            "description": "The English title (empty only for a game without one)."
+            "description": "The primary edition's title (empty only for a game without editions)."
+          },
+          "editions": {
+            "description": "Every edition: the primary one first, then by language code.",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AdminGameEditionDto"
+            }
           },
           "issues": {
             "type": "array",
@@ -8593,7 +8987,7 @@
               "enum": [
                 "no-title",
                 "no-artwork",
-                "no-spanish",
+                "no-primary",
                 "no-tags",
                 "no-price"
               ]
@@ -8618,9 +9012,9 @@
           "gameAvgDuration",
           "minPlayers",
           "maxPlayers",
-          "translations",
           "tags",
           "title",
+          "editions",
           "issues",
           "artworkSource",
           "retailPrice"
@@ -8677,25 +9071,38 @@
           "pagination"
         ]
       },
-      "AdminGameTitlesBody": {
+      "AdminEditionBody": {
         "type": "object",
         "properties": {
-          "en": {
+          "languageCode": {
             "type": "string",
-            "example": "Catan"
+            "example": "de",
+            "description": "A language code: two or three letters and an optional region (\"pt-BR\"). Canonicalized."
           },
-          "es": {
+          "title": {
             "type": "string",
-            "example": "Los colonos de Catán",
-            "description": "Empty removes the Spanish title."
+            "example": "Die Siedler von Catan"
+          },
+          "isPrimary": {
+            "type": "boolean",
+            "example": true
           }
-        }
+        },
+        "required": [
+          "languageCode",
+          "title",
+          "isPrimary"
+        ]
       },
       "UpdateAdminGameBody": {
         "type": "object",
         "properties": {
-          "translations": {
-            "$ref": "#/components/schemas/AdminGameTitlesBody"
+          "editions": {
+            "description": "The game's whole set of editions; replaces the current ones. At least one, one edition per language, exactly one primary. Editions whose language is kept keep their id.",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AdminEditionBody"
+            }
           },
           "imageUrl": {
             "type": "string",
@@ -8742,6 +9149,24 @@
           }
         }
       },
+      "ProposalOtherTitleDto": {
+        "type": "object",
+        "properties": {
+          "languageCode": {
+            "type": "string",
+            "example": "es",
+            "description": "BCP 47 language of the title."
+          },
+          "title": {
+            "type": "string",
+            "example": "Los colonos de Catán"
+          }
+        },
+        "required": [
+          "languageCode",
+          "title"
+        ]
+      },
       "GameProposalCompleteDto": {
         "type": "object",
         "properties": {
@@ -8769,6 +9194,18 @@
             "type": "string",
             "example": "Catan",
             "description": "Game title"
+          },
+          "titleLanguage": {
+            "type": "string",
+            "example": "en",
+            "description": "The language of `title`. Proposals made before languages were recorded read as English."
+          },
+          "otherTitles": {
+            "description": "The game's title in other languages, when the proposer knew them.",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ProposalOtherTitleDto"
+            }
           },
           "imageUrl": {
             "type": "object",
@@ -8861,6 +9298,8 @@
           "submittedBy",
           "status",
           "title",
+          "titleLanguage",
+          "otherTitles",
           "imageUrl",
           "gameAvgDuration",
           "minPlayers",
@@ -8937,19 +9376,6 @@
           "statusCounts"
         ]
       },
-      "ProposalTranslationsBody": {
-        "type": "object",
-        "properties": {
-          "en": {
-            "type": "string",
-            "example": "Catan"
-          },
-          "es": {
-            "type": "string",
-            "example": "Los colonos de Catán"
-          }
-        }
-      },
       "ApproveGameProposalBody": {
         "type": "object",
         "properties": {
@@ -8985,13 +9411,12 @@
             "example": 4,
             "description": "Maximum players; overrides the proposal. Required when the proposal has none."
           },
-          "translations": {
-            "description": "Title per language. English defaults to the proposed title.",
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/ProposalTranslationsBody"
-              }
-            ]
+          "editions": {
+            "description": "The game's editions, as in a game update. Left out: the proposal's title in its language as the primary edition, plus its other titles.",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AdminEditionBody"
+            }
           },
           "tagIds": {
             "example": [
@@ -9037,6 +9462,70 @@
           "duplicateOfGameId"
         ]
       },
+      "OwnedGameCompleteDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number",
+            "example": 12345
+          },
+          "imageUrl": {
+            "type": "string",
+            "example": "/artwork/12-0123456789abcdef.webp",
+            "description": "Artwork served by this API (a path to resolve against the API address), or empty for none."
+          },
+          "gameAvgDuration": {
+            "type": "number",
+            "example": 120,
+            "description": "The average duration of the game in minutes."
+          },
+          "minPlayers": {
+            "type": "number",
+            "example": 3,
+            "description": "The minimum number of players required to play the game."
+          },
+          "maxPlayers": {
+            "type": "number",
+            "example": 4,
+            "description": "The maximum number of players that can play the game."
+          },
+          "title": {
+            "type": "string",
+            "example": "Código Secreto",
+            "description": "The title the reader sees (ADR-0025): the edition in the reader's interface language, else the game's primary edition. Empty for a game with no edition."
+          },
+          "titleLanguage": {
+            "type": "string",
+            "example": "es",
+            "description": "The language of `title`."
+          },
+          "titleTranslations": {
+            "type": "object",
+            "example": {
+              "en": "Codenames",
+              "es": "Código Secreto"
+            },
+            "description": "Every known edition title by language code, for \"also known as\" and search. Some endpoints list only the shown one."
+          },
+          "ownedEditionId": {
+            "type": "object",
+            "example": 7,
+            "nullable": true,
+            "description": "The edition this copy is, or null when the owner has not said."
+          }
+        },
+        "required": [
+          "id",
+          "imageUrl",
+          "gameAvgDuration",
+          "minPlayers",
+          "maxPlayers",
+          "title",
+          "titleLanguage",
+          "titleTranslations",
+          "ownedEditionId"
+        ]
+      },
       "GameOwnershipDto": {
         "type": "object",
         "properties": {
@@ -9054,12 +9543,31 @@
             "type": "object",
             "example": "Bought for the group",
             "nullable": true
+          },
+          "editionId": {
+            "type": "object",
+            "example": 7,
+            "nullable": true,
+            "description": "The edition this copy is, or null when the owner has not said."
+          },
+          "title": {
+            "type": "string",
+            "example": "Codenames",
+            "description": "The title of this copy: its edition's when `editionId` is set, else the title the reader sees."
+          },
+          "titleLanguage": {
+            "type": "string",
+            "example": "en",
+            "description": "The language of `title`."
           }
         },
         "required": [
           "purchaseDate",
           "purchasePrice",
-          "purchaseNotes"
+          "purchaseNotes",
+          "editionId",
+          "title",
+          "titleLanguage"
         ]
       },
       "GameViewTagDto": {
@@ -9146,6 +9654,36 @@
           "avgGlobalRating"
         ]
       },
+      "GameEditionChoiceDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number",
+            "example": 7,
+            "description": "The edition id, to send as `editionId` when adding the game to a shelf."
+          },
+          "languageCode": {
+            "type": "string",
+            "example": "es",
+            "description": "BCP 47 language of the edition."
+          },
+          "title": {
+            "type": "string",
+            "example": "Código Secreto"
+          },
+          "isPrimary": {
+            "type": "boolean",
+            "example": false,
+            "description": "The edition the game is best known by."
+          }
+        },
+        "required": [
+          "id",
+          "languageCode",
+          "title",
+          "isPrimary"
+        ]
+      },
       "GameViewDto": {
         "type": "object",
         "properties": {
@@ -9179,6 +9717,13 @@
           "ratingData": {
             "$ref": "#/components/schemas/GameViewRatingDto"
           },
+          "editions": {
+            "description": "Every edition of the game, the primary one first, to choose which one a copy is.",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/GameEditionChoiceDto"
+            }
+          },
           "similarGames": {
             "description": "Up to four games sharing the most tags with this one; empty when none shares a tag.",
             "type": "array",
@@ -9193,7 +9738,32 @@
           "tags",
           "wishlistedGameData",
           "ratingData",
+          "editions",
           "similarGames"
+        ]
+      },
+      "AddGameToCollectionBody": {
+        "type": "object",
+        "properties": {
+          "editionId": {
+            "type": "number",
+            "example": 7,
+            "description": "The edition of the game the person owns. It must be an edition of that game. Leave out when the game has one edition or the person does not say."
+          }
+        }
+      },
+      "SetOwnedEditionBody": {
+        "type": "object",
+        "properties": {
+          "editionId": {
+            "type": "object",
+            "example": 7,
+            "nullable": true,
+            "description": "The edition this copy is, or null for \"not said\"."
+          }
+        },
+        "required": [
+          "editionId"
         ]
       },
       "UpdateGameOwnedDto": {
@@ -9243,6 +9813,12 @@
             "type": "object",
             "example": "I got this as a gift from my friend.",
             "description": "Any notes about the purchase."
+          },
+          "editionId": {
+            "type": "object",
+            "example": 7,
+            "nullable": true,
+            "description": "The edition of the game this copy is (ADR-0025), or null when the owner has not said."
           }
         },
         "required": [
@@ -9250,7 +9826,8 @@
           "gameId",
           "purchasePrice",
           "purchaseDate",
-          "purchaseNotes"
+          "purchaseNotes",
+          "editionId"
         ]
       },
       "WishlistResponseDto": {
@@ -9295,12 +9872,12 @@
           "name": {
             "type": "string",
             "example": "Strategy",
-            "description": "Tag name"
+            "description": "Tag name, in the reader's language where it has one (admin game lists: English)"
           },
           "categoryName": {
             "type": "string",
             "example": "Game Type",
-            "description": "Category name"
+            "description": "Category name, in the reader's language where it has one (admin game lists: English)"
           },
           "gameCount": {
             "type": "number",
@@ -9821,6 +10398,42 @@
           "attendeeIds"
         ]
       },
+      "RecommendationReasonDto": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string",
+            "enum": [
+              "owned_by",
+              "fits_players",
+              "duration",
+              "duration_unknown",
+              "rating",
+              "no_rating",
+              "interested",
+              "passed_before",
+              "preferences_favor",
+              "marked_avoid",
+              "not_played_yet",
+              "played_before",
+              "strong_rating",
+              "shared_shelf"
+            ],
+            "example": "owned_by"
+          },
+          "values": {
+            "type": "object",
+            "example": {
+              "owners": 2,
+              "attendees": 3
+            },
+            "description": "The numbers the reason needs: owners and attendees (owned_by; people is 1 when they are group people), players (fits_players), minutes (duration), rating (rating), count (interested, passed_before)."
+          }
+        },
+        "required": [
+          "code"
+        ]
+      },
       "RecommendationExplanationDto": {
         "type": "object",
         "properties": {
@@ -9832,6 +10445,13 @@
             "type": "array",
             "items": {
               "type": "string"
+            }
+          },
+          "reasonCodes": {
+            "description": "The same reasons, as codes; `reasons` is their English.",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/RecommendationReasonDto"
             }
           },
           "attendeeOwnerCount": {
@@ -9865,6 +10485,7 @@
         },
         "required": [
           "reasons",
+          "reasonCodes",
           "attendeeOwnerCount",
           "attendeeCount",
           "averageReview",
@@ -9891,6 +10512,32 @@
           "gameData",
           "score",
           "explanation"
+        ]
+      },
+      "NoResultReasonDto": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string",
+            "enum": [
+              "no_owned_games",
+              "no_player_fit",
+              "no_duration_fit",
+              "no_titled_games",
+              "no_people_games"
+            ],
+            "example": "no_player_fit"
+          },
+          "values": {
+            "type": "object",
+            "example": {
+              "players": 5
+            },
+            "description": "players (no_player_fit, no_duration_fit), minutes (no_duration_fit)."
+          }
+        },
+        "required": [
+          "code"
         ]
       },
       "RecommendationsDto": {
@@ -9945,6 +10592,16 @@
             "type": "object",
             "example": "No owned games match the selected attendees and filters.",
             "nullable": true
+          },
+          "noResultReasonCode": {
+            "nullable": true,
+            "description": "The same reason, as a code; `noResultReason` is its English.",
+            "type": "object",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/NoResultReasonDto"
+              }
+            ]
           }
         },
         "required": [
@@ -9953,7 +10610,8 @@
           "availableMinutes",
           "decisionLens",
           "recommendations",
-          "noResultReason"
+          "noResultReason",
+          "noResultReasonCode"
         ]
       },
       "ParticipantRecommendationRequestBody": {
@@ -10251,6 +10909,19 @@
                 "$ref": "#/components/schemas/AvatarDto"
               }
             ]
+          },
+          "locale": {
+            "type": "string",
+            "enum": [
+              "en",
+              "es",
+              "fr",
+              "de",
+              "it"
+            ],
+            "nullable": true,
+            "example": "es",
+            "description": "The interface language the person chose (ADR-0024); null until they choose one."
           }
         },
         "required": [
@@ -10259,7 +10930,8 @@
           "createdAt",
           "username",
           "displayName",
-          "avatar"
+          "avatar",
+          "locale"
         ]
       },
       "InvitationWithExtraData": {
@@ -10352,6 +11024,18 @@
             "example": "Catan",
             "description": "Game title"
           },
+          "titleLanguage": {
+            "type": "string",
+            "example": "en",
+            "description": "The language of `title`. Proposals made before languages were recorded read as English."
+          },
+          "otherTitles": {
+            "description": "The game's title in other languages, when the proposer knew them.",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ProposalOtherTitleDto"
+            }
+          },
           "imageUrl": {
             "type": "object",
             "example": "https://www.example.com/image.jpg",
@@ -10432,6 +11116,8 @@
           "submittedBy",
           "status",
           "title",
+          "titleLanguage",
+          "otherTitles",
           "imageUrl",
           "gameAvgDuration",
           "minPlayers",
@@ -10502,6 +11188,18 @@
             "type": "string",
             "example": "Catan",
             "description": "Game title"
+          },
+          "titleLanguage": {
+            "type": "string",
+            "example": "de",
+            "description": "The language of `title`, such as \"de\" or \"pt-BR\". Default: the reader's interface language (Accept-Language)."
+          },
+          "otherTitles": {
+            "description": "The game's title in other languages: at most 10, one per language, none in the language of `title`.",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ProposalOtherTitleDto"
+            }
           },
           "imageUrl": {
             "type": "string",

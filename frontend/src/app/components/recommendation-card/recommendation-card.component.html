@@ -17,9 +17,9 @@
             </h3>
             <span class="flex shrink-0 gap-1">
                 @if (isTopPick()) {
-                <app-badge tone="accent" text="Top pick" />
+                <app-badge tone="accent" i18n-text="Badge on the best suggested game" text="Top pick" />
                 }
-                <app-badge [text]="'Fit ' + score()" [attr.aria-label]="'Fit score ' + score() + ' out of 100'" />
+                <app-badge [text]="fitText()" [attr.aria-label]="fitLabel()" />
             </span>
         </div>
         <p class="mt-1 text-sm text-bv-text-muted">{{ minutes() }} min · {{ { minPlayers: minPlayers(), maxPlayers: maxPlayers() } | players }} · {{ historyLabel() }}</p>
@@ -30,9 +30,9 @@
         </ul>
         @if (signal(); as signal) {
         @if (signal.interestedCount > 0 || signal.notForUsCount > 0) {
-        <p class="mt-2 text-sm wrap-anywhere" aria-label="What the group thinks">
+        <p class="mt-2 text-sm wrap-anywhere" i18n-aria-label="Name of the line with the group's votes on a suggested game" aria-label="What the group thinks">
             @if (signal.interestedCount > 0) {
-            <span class="font-medium text-bv-success">{{ signal.interestedCount }} interested</span>
+            <span class="font-medium text-bv-success" i18n="How many people in the group want to play a suggested game">{signal.interestedCount, plural, one {{{ signal.interestedCount }} interested} other {{{ signal.interestedCount }} interested}}</span>
             @if (signal.interestedNames) {
             <span class="text-bv-text-muted"> ({{ signal.interestedNames }})</span>
             }
@@ -41,7 +41,7 @@
             <span class="text-bv-text-muted"> · </span>
             }
             @if (signal.notForUsCount > 0) {
-            <span class="text-bv-text-muted">{{ signal.notForUsCount }} passed</span>
+            <span class="text-bv-text-muted" i18n="How many people in the group said Not for us to a suggested game">{signal.notForUsCount, plural, other {{{ signal.notForUsCount }} passed}}</span>
             }
         </p>
         }

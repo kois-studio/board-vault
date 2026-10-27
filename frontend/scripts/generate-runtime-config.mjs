@@ -14,6 +14,10 @@ if (existsSync(backendEnvFile)) {
 
 const publishableKey = process.env.CLERK_PUBLISHABLE_KEY?.trim() ?? ''
 const selfRegistrationEnabled = process.env.BOARD_VAULT_SELF_REGISTRATION_ENABLED === 'true'
+// The language menu lists languages still being translated everywhere but in production (ADR-0024):
+// on a local machine and in Vercel previews. A Vercel build that does not say which environment it is
+// counts as production.
+const previewLocales = !process.env.VERCEL || process.env.VERCEL_ENV === 'preview'
 
 if (!publishableKey) {
     // Clerk is the only sign-in method, so the app builds but nobody can sign in.
@@ -23,6 +27,7 @@ if (!publishableKey) {
 const runtimeConfig = {
     clerkPublishableKey: publishableKey,
     selfRegistrationEnabled,
+    previewLocales,
 }
 
 await writeFile(

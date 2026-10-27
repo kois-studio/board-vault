@@ -15,18 +15,28 @@ import {
 } from '@nestjs/common'
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger'
 
+import { RequestLocale } from '../../../common/decorators/request-locale.decorator.js'
 import { AuthGuard } from '../../../common/guards/auth.guard.js'
 import { UserOwnershipGuard } from '../../../common/guards/ownership.guard.js'
 import { RateLimit, RateLimitGuard } from '../../../common/guards/rate-limit.guard.js'
 import { SuccessDto } from '../../../common/types/auth.type.js'
 import { CollectionActivityDto } from '../../../common/types/collection-activity.type.js'
-import { GameOwnedDto, UpdateGameOwnedDto } from '../../../common/types/game-owned.type.js'
+import { AddGameToCollectionBody, GameOwnedDto, SetOwnedEditionBody, UpdateGameOwnedDto } from '../../../common/types/game-owned.type.js'
 import { CreateGameReviewBody, GameReviewWithGameDataDto } from '../../../common/types/game-review.type.js'
-import { BrowseGamesQuery, BrowseGamesResultDto, GameCompleteDto, GameDto, GameViewDto } from '../../../common/types/game.type.js'
+import {
+    BrowseGamesQuery,
+    BrowseGamesResultDto,
+    GameCompleteDto,
+    GameEditionChoiceDto,
+    GameViewDto,
+    OwnedGameCompleteDto,
+} from '../../../common/types/game.type.js'
 import { CatalogueTagDto } from '../../../common/types/tag.type.js'
 import { WishlistResponseDto } from '../../../common/types/wishlisted-game.type.js'
 
 import { CollectionService } from './collection.service.js'
+
+import type { Locale } from '../../../common/i18n/locale.js'
 
 /** Enough to enter a whole collection in one sitting, game by game. */
 export const SHELF_CHANGES_PER_HOUR = 300
@@ -42,17 +52,25 @@ export class CollectionController {
     @UseGuards(UserOwnershipGuard)
     @Get('/users/:userId/games')
     @ApiOperation({ summary: 'Get all games owned by a user', deprecated: false })
-    @ApiResponse({ status: 200, type: [GameCompleteDto], description: 'List of all games owned by the user' })
-    async getGamesOwnedByUser(@Param('userId', ParseIntPipe) userId: number) {
-        return this.collectionService.getGamesOwnedByUser(userId)
+    @ApiResponse({
+        status: 200,
+        type: [OwnedGameCompleteDto],
+        description: 'List of all games owned by the user, each titled after the edition the user owns when they said which',
+    })
+    async getGamesOwnedByUser(@Param('userId', ParseIntPipe) userId: number, @RequestLocale() locale: Locale) {
+        return this.collectionService.getGamesOwnedByUser(userId, locale)
     }
 
     @UseGuards(UserOwnershipGuard)
     @Get('/users/:userId/games/:gameId')
     @ApiOperation({ summary: 'Game view for a user (not owned necessarily)', deprecated: false })
     @ApiResponse({ status: 200, type: GameViewDto, description: 'Game view for the user' })
-    async getGameViewByUserId(@Param('userId', ParseIntPipe) userId: number, @Param('gameId', ParseIntPipe) gameId: number) {
-        return this.collectionService.getGameViewByUserId(userId, gameId)
+    async getGameViewByUserId(
+        @Param('userId', ParseIntPipe) userId: number,
+        @Param('gameId', ParseIntPipe) gameId: number,
+        @RequestLocale() locale: Locale,
+    ) {
+        return this.collectionService.getGameViewByUserId(userId, gameId, locale)
     }
 
     // Adding and removing share this budget (one route path): a safety net under the inbox rule that
@@ -62,8 +80,26 @@ export class CollectionController {
     @Post('/users/:userId/games/:gameId')
     @ApiOperation({ summary: "Add a game to a user's collection", deprecated: false })
     @ApiResponse({ status: 200, type: SuccessDto, description: "Game added to the user's collection" })
-    async addGameToUserCollection(@Param('userId', ParseIntPipe) userId: number, @Param('gameId', ParseIntPipe) gameId: number) {
-        return this.collectionService.addGameToUserCollection(userId, gameId)
+    async addGameToUserCollection(
+        @Param('userId', ParseIntPipe) userId: number,
+        @Param('gameId', ParseIntPipe) gameId: number,
+        @Body() body: AddGameToCollectionBody,
+    ) {
+        return this.collectionService.addGameToUserCollection(userId, gameId, body)
+    }
+
+    @UseGuards(UserOwnershipGuard)
+    @Patch('/users/:userId/games/:gameId/edition')
+    @ApiOperation({ summary: 'Say which edition of a game on the shelf the user owns, or clear it', deprecated: false })
+    @ApiResponse({ status: 200, type: SuccessDto, description: 'The edition of the copy was saved' })
+    @ApiResponse({ status: 400, description: 'The edition belongs to another game' })
+    @ApiResponse({ status: 404, description: 'The user does not own the game' })
+    async setOwnedEdition(
+        @Param('userId', ParseIntPipe) userId: number,
+        @Param('gameId', ParseIntPipe) gameId: number,
+        @Body() body: SetOwnedEditionBody,
+    ) {
+        return this.collectionService.setOwnedEdition(userId, gameId, body.editionId)
     }
 
     @UseGuards(UserOwnershipGuard, RateLimitGuard)
@@ -104,23 +140,34 @@ export class CollectionController {
     @Get('/users/:userId/browse/games')
     @ApiOperation({ summary: 'Browse the catalogue with filters', deprecated: false })
     @ApiResponse({ status: 200, type: BrowseGamesResultDto, description: 'One page of catalogue games matching the filters' })
-    async browseCatalogue(@Param('userId', ParseIntPipe) userId: number, @Query() query: BrowseGamesQuery) {
-        return this.collectionService.browseCatalogue(userId, query)
+    async browseCatalogue(
+        @Param('userId', ParseIntPipe) userId: number,
+        @Query() query: BrowseGamesQuery,
+        @RequestLocale() locale: Locale,
+    ) {
+        return this.collectionService.browseCatalogue(userId, query, locale)
+    }
+
+    @Get('/games/:gameId/editions')
+    @ApiOperation({ summary: 'The editions of a game, the primary one first, to choose which one a copy is', deprecated: false })
+    @ApiResponse({ status: 200, type: [GameEditionChoiceDto], description: 'Every edition of the game' })
+    async getGameEditions(@Param('gameId', ParseIntPipe) gameId: number) {
+        return this.collectionService.getGameEditions(gameId)
     }
 
     @Get('/tags')
     @ApiOperation({ summary: 'Tags used by catalogue games, for the Browse filters', deprecated: false })
     @ApiResponse({ status: 200, type: [CatalogueTagDto], description: 'Tags with their category and game count' })
-    async getCatalogueTags() {
-        return this.collectionService.getCatalogueTags()
+    async getCatalogueTags(@RequestLocale() locale: Locale) {
+        return this.collectionService.getCatalogueTags(locale)
     }
 
     @UseGuards(UserOwnershipGuard)
     @Get('/users/:userId/reviews')
     @ApiOperation({ summary: 'Get all reviews of a user', deprecated: false })
     @ApiResponse({ status: 200, type: [GameReviewWithGameDataDto], description: 'List of all reviews of the user' })
-    async getReviewsOfUser(@Param('userId', ParseIntPipe) userId: number) {
-        return this.collectionService.getReviewsOfUser(userId)
+    async getReviewsOfUser(@Param('userId', ParseIntPipe) userId: number, @RequestLocale() locale: Locale) {
+        return this.collectionService.getReviewsOfUser(userId, locale)
     }
 
     @UseGuards(UserOwnershipGuard)
@@ -139,16 +186,16 @@ export class CollectionController {
     @UseGuards(UserOwnershipGuard)
     @Get('/users/:userId/wishlist')
     @ApiOperation({ summary: 'Get all wishlist of a user', deprecated: false })
-    @ApiResponse({ status: 200, type: [GameDto], description: 'List of all wishlist of the user' })
-    async getUserWishlist(@Param('userId', ParseIntPipe) userId: number) {
-        return this.collectionService.getUserWishlist(userId)
+    @ApiResponse({ status: 200, type: [GameCompleteDto], description: 'List of all wishlist of the user' })
+    async getUserWishlist(@Param('userId', ParseIntPipe) userId: number, @RequestLocale() locale: Locale) {
+        return this.collectionService.getUserWishlist(userId, locale)
     }
 
     @UseGuards(UserOwnershipGuard)
     @Get('/users/:userId/recent-activity')
     @ApiOperation({ summary: "Get all recent activity of a user's collection", deprecated: false })
     @ApiResponse({ status: 200, type: [CollectionActivityDto], description: 'List of all recent activity of the user' })
-    async getUserCollectionActivities(@Param('userId', ParseIntPipe) userId: number) {
-        return this.collectionService.getUserCollectionActivities(userId)
+    async getUserCollectionActivities(@Param('userId', ParseIntPipe) userId: number, @RequestLocale() locale: Locale) {
+        return this.collectionService.getUserCollectionActivities(userId, locale)
     }
 }

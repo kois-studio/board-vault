@@ -27,6 +27,7 @@ import { CountPipe } from '../../../core/pipes/count.pipe'
 import { CustomDatePipe } from '../../../core/pipes/customDate.pipe'
 import { DataService } from '../../../core/services/data.service'
 import { LoadingService } from '../../../core/services/loading.service'
+import { gameTitle } from '../../../core/utils/gameTitle'
 import { canTakePart } from '../../../core/utils/groupPeople'
 import { sessionDateParts, upcomingState } from '../../../core/utils/sessionTiming'
 
@@ -432,8 +433,7 @@ export class RecommendationsPageComponent {
     }
 
     public getGameTitle(recommendation: RecommendationType): string {
-        const titles = recommendation.gameData.titleTranslations
-        return titles.en || titles.es || recommendation.gameData.title || 'Untitled game'
+        return gameTitle(recommendation.gameData)
     }
 
     private initialsAvatar(name: string): UserType['avatar'] {

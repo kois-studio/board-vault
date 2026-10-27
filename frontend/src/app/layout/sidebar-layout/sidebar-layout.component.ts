@@ -1,4 +1,4 @@
-import { Component, DestroyRef, DOCUMENT, inject, input, OnInit, signal } from '@angular/core'
+import { Component, computed, DestroyRef, DOCUMENT, inject, input, OnInit, signal } from '@angular/core'
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
 import { ActivatedRoute, NavigationEnd, Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router'
 import { filter } from 'rxjs'
@@ -43,6 +43,12 @@ export class SidebarLayoutComponent implements OnInit {
     /** The area's own route, for the mobile back link. */
     readonly basePath = input.required<string>()
     readonly groups = input.required<Array<SidebarGroup>>()
+
+    public readonly navigationLabel = computed(
+        () => $localize`:Name of the menu of an area such as Settings; the placeholder is the area's name:${this.title()}:area: sections`,
+    )
+    /** Read after a count in the menu when the item does not say what it counts. */
+    public readonly newLabel = $localize`:Read by screen readers after a count in the Settings menu:new`
 
     /** True while a section is open in the outlet. */
     public readonly hasSection = signal(false)

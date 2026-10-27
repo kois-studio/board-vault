@@ -1,4 +1,5 @@
 import type { HistoryPersonDto, HistoryRecordDto, HistoryUserDto } from './play.types.js'
+import type { Locale } from '../../../common/i18n/locale.js'
 import type { GroupPersonStanding } from '../../../common/types/group-person.type.js'
 import type { MeetDto } from '../../../common/types/meet.type.js'
 import type { DatabaseService } from '../../common/database/database.service.js'
@@ -12,6 +13,8 @@ export type HistoryRecordSources = {
     gamesService: GamesService
     gameTranslationService: GameTranslationService
     usersService: UsersService
+    /** The reader's interface language, for the titles of the games. */
+    locale: Locale
     meetAccountGamesService?: MeetAccountGamesService
 }
 
@@ -28,7 +31,7 @@ export async function buildHistoryRecords(meets: Array<MeetDto>, sources: Histor
         return []
     }
 
-    const { databaseService, gamesService, gameTranslationService, usersService } = sources
+    const { databaseService, gamesService, gameTranslationService, usersService, locale } = sources
     const details = await databaseService.sessions.getHistoryDetailsByMeetIds(meets.map(meet => meet.id))
     const sessions = meets.map(meet => {
         const gameIds = details.playedGameIds.get(meet.id) ?? []
@@ -56,9 +59,8 @@ export async function buildHistoryRecords(meets: Array<MeetDto>, sources: Histor
     const groupIds = [...new Set(meets.map(meet => meet.groupId))]
     const gameIds = sessions.flatMap(session => session.gameIds)
     const accountIds = sessions.flatMap(session => [...session.attendedByIds, ...[...session.accountParticipants.values()].flat()])
-    const [games, translations, users, peopleByGroup, accountStandings] = await Promise.all([
-        gamesService.getGamesByIds(gameIds),
-        gameTranslationService.getTranslationsByGameIds(gameIds),
+    const [games, users, peopleByGroup, accountStandings] = await Promise.all([
+        gamesService.getGamesByIds(gameIds).then(found => gameTranslationService.withTitles([...found.values()], locale)),
         usersService.getPublicUsersByIds(accountIds),
         Promise.all(
             groupIds.map(async groupId => [groupId, peopleById(await databaseService.groups.getGroupPeople(groupId, true))] as const),
@@ -79,6 +81,7 @@ export async function buildHistoryRecords(meets: Array<MeetDto>, sources: Histor
         for (const [id, user] of await usersService.getPublicUsersByIds(missingAccountIds)) users.set(id, user)
     }
 
+    const gamesById = new Map(games.map(game => [game.id, game]))
     const toPeople = (groupId: number, ids: Array<number>) =>
         ids
             .map(id => peopleByGroup.get(groupId)?.get(id))
@@ -96,12 +99,12 @@ export async function buildHistoryRecords(meets: Array<MeetDto>, sources: Histor
     return sessions.map(session => ({
         meetData: session.meet,
         gamesPlayed: session.gameIds
-            .filter(gameId => games.has(gameId))
+            .filter(gameId => gamesById.has(gameId))
             .map(gameId => ({
                 ...((session.playCounts.find(play => play.gameId === gameId)?.count ?? 1) > 1
                     ? { playCount: session.playCounts.find(play => play.gameId === gameId)?.count }
                     : {}),
-                gameData: { ...games.get(gameId)!, titleTranslations: translations.get(gameId) ?? { en: '', es: '' } },
+                gameData: gamesById.get(gameId)!,
                 playedBy: toUsers(session.meet.groupId, session.accountParticipants.get(gameId) ?? []),
                 playedByPeople: toPeople(
                     session.meet.groupId,

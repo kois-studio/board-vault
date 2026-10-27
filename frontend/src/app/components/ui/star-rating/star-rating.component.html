@@ -1,9 +1,9 @@
-<div class="flex items-center gap-0.5" role="group" [attr.aria-label]="'Your rating for ' + label()">
+<div class="flex items-center gap-0.5" role="group" [attr.aria-label]="groupLabel()">
     @for (star of STARS; track star) {
         <button
             type="button"
             class="cursor-pointer p-0.5 disabled:cursor-not-allowed disabled:opacity-60 motion-safe:transition-transform motion-safe:hover:scale-110"
-            [attr.aria-label]="'Rate ' + star / 2 + ' out of 5 stars for ' + label()"
+            [attr.aria-label]="starLabel(star)"
             [attr.aria-pressed]="value() === star"
             [disabled]="disabled()"
             (click)="rated.emit(star)"

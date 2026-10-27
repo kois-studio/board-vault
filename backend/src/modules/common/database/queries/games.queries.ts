@@ -1,15 +1,17 @@
 import { BadRequestException, NotFoundException } from '@nestjs/common'
 
 import { containsPattern, LIKE_ESCAPE } from '../like-pattern.js'
+import { resolvedTitleSql } from '../resolved-title.js'
 
 import { gameArtworkStatements, type StoredArtwork } from './artwork.queries.js'
 
+import type { Locale } from '../../../../common/i18n/locale.js'
 import type { CatalogueQualityIssue } from '../../../../common/types/admin.type.js'
-import type { SupportedLanguage } from '../../../../common/types/game-translation.type.js'
 import type { BrowseSort, GameLength } from '../../../../common/types/game.type.js'
 import type { CreateNotificationBody } from '../../../../common/types/notification.type.js'
+import type { NameTranslations } from '../../../../common/types/tag.type.js'
 import type { DatabaseService } from '../database.service.js'
-import type { InValue } from '@libsql/client'
+import type { InStatement, InValue } from '@libsql/client'
 
 export type CatalogueFilters = {
     /** Normalized title fragment; empty matches every game. */
@@ -22,6 +24,12 @@ export type CatalogueFilters = {
     hideOwnedBy?: number
 }
 
+/** A tag's and its category's names in `:locale`, joined as `tagName` and `categoryName` (null when not translated). */
+const LOCALIZED_TAG_NAMES = `
+    LEFT JOIN TagTranslation tagName ON tagName.tagId = tag.id AND tagName.locale = :locale
+    LEFT JOIN TagCategoryTranslation categoryName ON categoryName.categoryId = category.id AND categoryName.locale = :locale
+`
+
 /** Average length in minutes. The ranges meet without overlapping. */
 const CATALOGUE_LENGTH: Record<GameLength, string> = {
     short: 'g.gameAvgDuration < 30',
@@ -32,20 +40,62 @@ const CATALOGUE_LENGTH: Record<GameLength, string> = {
 
 /** Catalogue data problems, as SQL over `Game g`. */
 export const CATALOGUE_QUALITY: Record<CatalogueQualityIssue, string> = {
-    'no-title': "NOT EXISTS (SELECT 1 FROM GameTranslation en WHERE en.gameId = g.id AND en.languageCode = 'en')",
+    'no-title': 'NOT EXISTS (SELECT 1 FROM GameEdition e WHERE e.gameId = g.id)',
     'no-artwork': "g.imageUrl = ''",
-    'no-spanish': `NOT EXISTS (
-        SELECT 1 FROM GameTranslation es
-        WHERE es.gameId = g.id AND es.languageCode = 'es'
-          AND es.title <> COALESCE((SELECT en.title FROM GameTranslation en WHERE en.gameId = g.id AND en.languageCode = 'en'), '')
-    )`,
+    'no-primary': `EXISTS (SELECT 1 FROM GameEdition e WHERE e.gameId = g.id)
+        AND NOT EXISTS (SELECT 1 FROM GameEdition p WHERE p.gameId = g.id AND p.isPrimary = 1)`,
     'no-tags': 'NOT EXISTS (SELECT 1 FROM GameTag gt WHERE gt.gameId = g.id)',
     'no-price': 'g.retailPriceCents IS NULL',
 }
 
+/** Browse's title: the reader's-language edition (`reader`), else the primary one (`t`). */
+const CATALOGUE_TITLE_JOINS = `
+    JOIN GameEdition t ON t.gameId = g.id AND t.isPrimary = 1
+    LEFT JOIN GameEdition reader ON reader.gameId = g.id AND reader.languageCode = ?`
+
+/**
+ * Upserts a game's edition in one language. Without `isPrimary`, a game's first edition becomes its primary
+ * one and an existing edition keeps its flag; with it, the flag is set as given (clear the game's other
+ * primary first). An existing edition keeps its id either way.
+ */
+export function gameEditionUpsert(
+    gameId: number,
+    languageCode: string,
+    title: string,
+    normalizedTitle: string,
+    isPrimary?: boolean,
+): InStatement {
+    if (isPrimary !== undefined) {
+        return {
+            sql: `
+                INSERT INTO GameEdition (gameId, languageCode, title, normalizedTitle, isPrimary) VALUES (?, ?, ?, ?, ?)
+                ON CONFLICT (gameId, languageCode) DO UPDATE
+                SET title = excluded.title, normalizedTitle = excluded.normalizedTitle, isPrimary = excluded.isPrimary`,
+            args: [gameId, languageCode, title, normalizedTitle, isPrimary ? 1 : 0],
+        }
+    }
+
+    return {
+        sql: `
+            INSERT INTO GameEdition (gameId, languageCode, title, normalizedTitle, isPrimary)
+            SELECT ?, ?, ?, ?, NOT EXISTS (SELECT 1 FROM GameEdition WHERE gameId = ? AND isPrimary = 1)
+            WHERE true
+            ON CONFLICT (gameId, languageCode) DO UPDATE SET title = excluded.title, normalizedTitle = excluded.normalizedTitle`,
+        args: [gameId, languageCode, title, normalizedTitle, gameId],
+    }
+}
+
+/** The legacy GameTranslation row, still written until a later migration drops the table. */
+function gameTranslationUpsert(gameId: number, languageCode: string, title: string, normalizedTitle: string): InStatement {
+    return {
+        sql: 'INSERT OR REPLACE INTO GameTranslation (gameId, languageCode, title, normalizedTitle) VALUES (?, ?, ?, ?)',
+        args: [gameId, languageCode, title, normalizedTitle],
+    }
+}
+
 const CATALOGUE_ORDER: Record<BrowseSort, string> = {
-    title: 't.title COLLATE NOCASE ASC, g.id ASC',
-    shortest: 'g.gameAvgDuration IS NULL, g.gameAvgDuration ASC, t.title COLLATE NOCASE ASC, g.id ASC',
+    title: 'COALESCE(reader.title, t.title) COLLATE NOCASE ASC, g.id ASC',
+    shortest: 'g.gameAvgDuration IS NULL, g.gameAvgDuration ASC, COALESCE(reader.title, t.title) COLLATE NOCASE ASC, g.id ASC',
     newest: 'g.id DESC',
 }
 
@@ -70,7 +120,8 @@ export class GameQueries {
         gameAvgDuration: number
         minPlayers: number
         maxPlayers: number
-        translations: Array<{ languageCode: SupportedLanguage; title: string; normalizedTitle: string }>
+        /** The game's editions, exactly one primary. */
+        editions: Array<{ languageCode: string; title: string; normalizedTitle: string; isPrimary: boolean }>
         tagIds: number[]
         reviewNotes?: string
         notification: CreateNotificationBody
@@ -88,11 +139,13 @@ export class GameQueries {
                 for (const statement of gameArtworkStatements(createdGameId, input.artwork)) await transaction.execute(statement)
             }
 
-            for (const translation of input.translations) {
-                await transaction.execute({
-                    sql: 'INSERT OR REPLACE INTO GameTranslation (gameId, languageCode, title, normalizedTitle) VALUES (?, ?, ?, ?)',
-                    args: [createdGameId, translation.languageCode, translation.title, translation.normalizedTitle],
-                })
+            for (const edition of input.editions) {
+                for (const statement of [
+                    gameTranslationUpsert(createdGameId, edition.languageCode, edition.title, edition.normalizedTitle),
+                    gameEditionUpsert(createdGameId, edition.languageCode, edition.title, edition.normalizedTitle, edition.isPrimary),
+                ]) {
+                    await transaction.execute(statement)
+                }
             }
 
             for (const tagId of input.tagIds) {
@@ -240,47 +293,67 @@ export class GameQueries {
         })
     }
 
+    /** Each game's title for a reader (their language, else the primary edition) and the title's language. */
+    getResolvedTitlesByGameIds(gameIds: Array<number>, locale: string) {
+        const resolved = resolvedTitleSql('g.id', locale)
+
+        return this.database.execute({
+            sql: `SELECT g.id, ${resolved.title} AS title, ${resolved.language} AS titleLanguage FROM Game g WHERE g.id IN (${gameIds.map(() => '?').join(', ')})`,
+            args: gameIds,
+        })
+    }
+
     getGameTranslationsByGameIds(gameIds: Array<number>) {
         return this.database.execute({
-            sql: `SELECT * FROM GameTranslation WHERE gameId IN (${gameIds.map(() => '?').join(', ')})`,
+            sql: `SELECT gameId, languageCode, title, normalizedTitle FROM GameEdition WHERE gameId IN (${gameIds.map(() => '?').join(', ')})`,
             args: gameIds,
         })
     }
 
     getGameTranslations(gameId: number) {
         return this.database.execute({
-            sql: 'SELECT * FROM GameTranslation WHERE gameId = ?',
+            sql: 'SELECT gameId, languageCode, title, normalizedTitle FROM GameEdition WHERE gameId = ?',
             args: [gameId],
         })
     }
 
+    /** Adds a title; fails when the game already has one in that language. Writes the edition and the legacy translation together. */
     createGameTranslation(gameId: number, languageCode: string, title: string, normalizedTitle: string) {
-        return this.database.execute({
-            sql: 'INSERT INTO GameTranslation (gameId, languageCode, title, normalizedTitle) VALUES (?, ?, ?, ?)',
-            args: [gameId, languageCode, title, normalizedTitle],
-        })
+        return this.database.batch([
+            {
+                sql: 'INSERT INTO GameTranslation (gameId, languageCode, title, normalizedTitle) VALUES (?, ?, ?, ?)',
+                args: [gameId, languageCode, title, normalizedTitle],
+            },
+            {
+                sql: `
+                    INSERT INTO GameEdition (gameId, languageCode, title, normalizedTitle, isPrimary)
+                    SELECT ?, ?, ?, ?, NOT EXISTS (SELECT 1 FROM GameEdition WHERE gameId = ? AND isPrimary = 1)`,
+                args: [gameId, languageCode, title, normalizedTitle, gameId],
+            },
+        ])
     }
 
+    /** Sets a game's title in one language, on its edition and on the legacy translation, in one batch. */
     upsertGameTranslation(gameId: number, languageCode: string, title: string, normalizedTitle: string) {
-        return this.database.execute({
-            sql: 'INSERT OR REPLACE INTO GameTranslation (gameId, languageCode, title, normalizedTitle) VALUES (?, ?, ?, ?)',
-            args: [gameId, languageCode, title, normalizedTitle],
-        })
+        return this.database.batch([
+            gameTranslationUpsert(gameId, languageCode, title, normalizedTitle),
+            gameEditionUpsert(gameId, languageCode, title, normalizedTitle),
+        ])
     }
 
     /** One page of catalogue game ids, filtered and sorted for Browse. */
-    browseCatalogue(filters: CatalogueFilters & { sort: BrowseSort; skip: number; take: number }) {
+    browseCatalogue(filters: CatalogueFilters & { sort: BrowseSort; skip: number; take: number; locale: Locale }) {
         const { where, args } = this.catalogueWhere(filters)
 
         return this.database.execute({
             sql: `
                 SELECT g.id FROM Game g
-                JOIN GameTranslation t ON t.gameId = g.id AND t.languageCode = 'en'
+                ${CATALOGUE_TITLE_JOINS}
                 ${where}
                 ORDER BY ${CATALOGUE_ORDER[filters.sort]}
                 LIMIT ? OFFSET ?
             `,
-            args: [...args, filters.take, filters.skip],
+            args: [filters.locale, ...args, filters.take, filters.skip],
         })
     }
 
@@ -290,23 +363,67 @@ export class GameQueries {
         return this.database.execute({
             sql: `
                 SELECT COUNT(*) AS total FROM Game g
-                JOIN GameTranslation t ON t.gameId = g.id AND t.languageCode = 'en'
+                JOIN GameEdition t ON t.gameId = g.id AND t.isPrimary = 1
                 ${where}
             `,
             args,
         })
     }
 
-    /** Tags used by at least one game, with their category and how many games have them. */
-    getCatalogueTags() {
-        return this.database.execute(`
-            SELECT tag.id, tag.name, category.name AS categoryName, COUNT(gameTag.gameId) AS gameCount
-            FROM Tag tag
-            JOIN TagCategory category ON category.id = tag.categoryId
-            JOIN GameTag gameTag ON gameTag.tagId = tag.id
-            GROUP BY tag.id
-            ORDER BY category.name, tag.name
-        `)
+    /** Tags used by at least one game, with their category and how many games have them; names in `locale`, else English. */
+    getCatalogueTags(locale: Locale) {
+        return this.database.execute({
+            sql: `
+                SELECT tag.id, COALESCE(tagName.name, tag.name) AS name, COALESCE(categoryName.name, category.name) AS categoryName,
+                    COUNT(gameTag.gameId) AS gameCount
+                FROM Tag tag
+                JOIN TagCategory category ON category.id = tag.categoryId
+                JOIN GameTag gameTag ON gameTag.tagId = tag.id
+                ${LOCALIZED_TAG_NAMES}
+                GROUP BY tag.id
+            `,
+            args: { locale },
+        })
+    }
+
+    /** One game's tags with their category; names in `locale`, else English. */
+    getGameTagNames(gameId: number, locale: Locale) {
+        return this.database.execute({
+            sql: `
+                SELECT COALESCE(tagName.name, tag.name) AS name, COALESCE(categoryName.name, category.name) AS categoryName
+                FROM GameTag gameTag
+                JOIN Tag tag ON tag.id = gameTag.tagId
+                JOIN TagCategory category ON category.id = tag.categoryId
+                ${LOCALIZED_TAG_NAMES}
+                WHERE gameTag.gameId = :gameId
+            `,
+            args: { gameId, locale },
+        })
+    }
+
+    /** Every tag's names in the other languages, for Administration. */
+    getTagTranslations() {
+        return this.database.execute('SELECT tagId AS id, locale, name FROM TagTranslation')
+    }
+
+    /** Every tag category's names in the other languages, for Administration. */
+    getTagCategoryTranslations() {
+        return this.database.execute('SELECT categoryId AS id, locale, name FROM TagCategoryTranslation')
+    }
+
+    /** Sets a tag's (or category's) name in the given languages; an empty name removes that language. */
+    setNameTranslations(table: 'TagTranslation' | 'TagCategoryTranslation', id: number, names: NameTranslations) {
+        const key = table === 'TagTranslation' ? 'tagId' : 'categoryId'
+        const statements = Object.entries(names).map(([locale, name]) =>
+            name
+                ? {
+                      sql: `INSERT INTO ${table} (${key}, locale, name) VALUES (?, ?, ?) ON CONFLICT (${key}, locale) DO UPDATE SET name = excluded.name`,
+                      args: [id, locale, name],
+                  }
+                : { sql: `DELETE FROM ${table} WHERE ${key} = ? AND locale = ?`, args: [id, locale] },
+        )
+
+        return statements.length > 0 ? this.database.batch(statements) : Promise.resolve([])
     }
 
     private catalogueWhere(filters: CatalogueFilters): { where: string; args: Array<InValue> } {
@@ -314,8 +431,8 @@ export class GameQueries {
         const args: Array<InValue> = []
 
         if (filters.search) {
-            // Any translation matches, so a Spanish title finds the game too.
-            conditions.push(`EXISTS (SELECT 1 FROM GameTranslation s WHERE s.gameId = g.id AND s.normalizedTitle LIKE ? ${LIKE_ESCAPE})`)
+            // Any edition matches, so a Spanish title finds the game too.
+            conditions.push(`EXISTS (SELECT 1 FROM GameEdition s WHERE s.gameId = g.id AND s.normalizedTitle LIKE ? ${LIKE_ESCAPE})`)
             args.push(containsPattern(filters.search))
         }
         if (filters.players !== undefined) {
@@ -364,7 +481,7 @@ export class GameQueries {
         // Main query for fetching games with pagination
         // Using DISTINCT to avoid duplicates when a game has translations in multiple languages
         const sql = `
-            SELECT DISTINCT gameId FROM GameTranslation 
+            SELECT DISTINCT gameId FROM GameEdition 
             ${whereClause}
             ORDER BY gameId ASC
             LIMIT ? OFFSET ?
@@ -404,7 +521,7 @@ export class GameQueries {
         // Query for counting total games matching criteria
         // Using COUNT(DISTINCT gameId) to count unique games, not translations
         const sql = `
-            SELECT COUNT(DISTINCT gameId) as total FROM GameTranslation
+            SELECT COUNT(DISTINCT gameId) as total FROM GameEdition
             ${whereClause}
         `
 
@@ -584,6 +701,8 @@ export class GameQueries {
     async createGameProposal(proposalData: {
         submittedBy: number
         title: string
+        titleLanguage: string
+        otherTitles: Array<{ languageCode: string; title: string }>
         imageUrl?: string
         gameAvgDuration?: number
         minPlayers?: number
@@ -593,8 +712,20 @@ export class GameQueries {
         addTo: 'shelf' | 'wishlist' | null
         adminNotification: { type: string; message: string; data: Record<string, unknown> }
     }): Promise<{ proposalId: number }> {
-        const { submittedBy, title, imageUrl, gameAvgDuration, minPlayers, maxPlayers, proposedTags, notes, addTo, adminNotification } =
-            proposalData
+        const {
+            submittedBy,
+            title,
+            titleLanguage,
+            otherTitles,
+            imageUrl,
+            gameAvgDuration,
+            minPlayers,
+            maxPlayers,
+            proposedTags,
+            notes,
+            addTo,
+            adminNotification,
+        } = proposalData
         const transaction = await this.database.transaction('write')
 
         try {
@@ -602,8 +733,8 @@ export class GameQueries {
                 sql: `
                     INSERT INTO GameProposal (
                         submittedBy, title, imageUrl, gameAvgDuration,
-                        minPlayers, maxPlayers, proposedTags, notes, addTo
-                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+                        minPlayers, maxPlayers, proposedTags, notes, addTo, titleLanguage, otherTitles
+                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                 `,
                 args: [
                     submittedBy,
@@ -615,6 +746,8 @@ export class GameQueries {
                     proposedTags || null,
                     notes || null,
                     addTo,
+                    titleLanguage,
+                    otherTitles.length > 0 ? JSON.stringify(otherTitles) : null,
                 ],
             })
             const proposalId = Number(inserted.lastInsertRowid)
@@ -709,23 +842,22 @@ export class GameQueries {
 
     // #region Admin catalogue
 
-    /** One page of the catalogue for admins: Browse's filters plus one data-quality issue, by English title. */
+    /** One page of the catalogue for admins: Browse's filters plus one data-quality issue, by primary edition title. */
     browseAdminCatalogue(filters: CatalogueFilters & { issue?: CatalogueQualityIssue; gameId?: number; skip: number; take: number }) {
         const { where, args } = this.adminCatalogueWhere(filters)
 
         return this.database.execute({
             sql: `
                 SELECT g.id, g.imageUrl, g.gameAvgDuration, g.minPlayers, g.maxPlayers,
-                       COALESCE(en.title, '') AS titleEn, COALESCE(es.title, '') AS titleEs, art.sourceUrl AS artworkSource, g.retailPriceCents,
+                       COALESCE(pr.title, '') AS title, art.sourceUrl AS artworkSource, g.retailPriceCents,
                        ${Object.entries(CATALOGUE_QUALITY)
                            .map(([issue, condition]) => `CASE WHEN ${condition} THEN 1 ELSE 0 END AS "${issue}"`)
                            .join(',\n                       ')}
                 FROM Game g
-                LEFT JOIN GameTranslation en ON en.gameId = g.id AND en.languageCode = 'en'
-                LEFT JOIN GameTranslation es ON es.gameId = g.id AND es.languageCode = 'es'
+                LEFT JOIN GameEdition pr ON pr.gameId = g.id AND pr.isPrimary = 1
                 LEFT JOIN GameArtwork art ON art.gameId = g.id
                 ${where}
-                ORDER BY COALESCE(en.title, es.title, '') COLLATE NOCASE ASC, g.id ASC
+                ORDER BY COALESCE(pr.title, '') COLLATE NOCASE ASC, g.id ASC
                 LIMIT ? OFFSET ?
             `,
             args: [...args, filters.take, filters.skip],
@@ -755,13 +887,29 @@ export class GameQueries {
         })
     }
 
-    /** Saves an admin's changes to one game in one transaction. `es: null` removes the Spanish title. */
+    /** The editions of several games at once: the primary one first, then by language code. */
+    getEditionsOfGames(gameIds: Array<number>) {
+        if (gameIds.length === 0) return Promise.resolve({ rows: [] as Array<Record<string, unknown>> })
+
+        return this.database.execute({
+            sql: `
+                SELECT id, gameId, languageCode, title, isPrimary
+                FROM GameEdition
+                WHERE gameId IN (${gameIds.map(() => '?').join(', ')})
+                ORDER BY gameId, isPrimary DESC, languageCode
+            `,
+            args: gameIds,
+        })
+    }
+
+    /** Saves an admin's changes to one game in one transaction. */
     async updateGameAtomically(input: {
         gameId: number
         game: Partial<Record<'gameAvgDuration' | 'minPlayers' | 'maxPlayers' | 'retailPriceCents', number | null>>
         /** New artwork, already copied; null removes it; undefined leaves it. */
         artwork?: StoredArtwork | null
-        translations: Partial<Record<SupportedLanguage, { title: string; normalizedTitle: string } | null>>
+        /** The whole new set of editions, exactly one primary; undefined leaves them. */
+        editions?: Array<{ languageCode: string; title: string; normalizedTitle: string; isPrimary: boolean }>
         tagIds?: Array<number>
     }): Promise<void> {
         const transaction = await this.database.transaction('write')
@@ -780,15 +928,32 @@ export class GameQueries {
                 for (const statement of gameArtworkStatements(input.gameId, input.artwork)) await transaction.execute(statement)
             }
 
-            for (const [languageCode, translation] of Object.entries(input.translations)) {
-                await transaction.execute(
-                    translation
-                        ? {
-                              sql: 'INSERT OR REPLACE INTO GameTranslation (gameId, languageCode, title, normalizedTitle) VALUES (?, ?, ?, ?)',
-                              args: [input.gameId, languageCode, translation.title, translation.normalizedTitle],
-                          }
-                        : { sql: 'DELETE FROM GameTranslation WHERE gameId = ? AND languageCode = ?', args: [input.gameId, languageCode] },
-                )
+            if (input.editions) {
+                const languages = input.editions.map(edition => edition.languageCode)
+                const gone = `languageCode NOT IN (${languages.map(() => '?').join(', ')})`
+
+                // Editions keep their id when their language stays, so records that point at them are not lost.
+                for (const statement of [
+                    // A copy of a removed edition goes back to "not said"; explicit, so it never depends on foreign keys being enforced.
+                    {
+                        sql: `UPDATE OwnedGame SET editionId = NULL WHERE editionId IN (SELECT id FROM GameEdition WHERE gameId = ? AND ${gone})`,
+                        args: [input.gameId, ...languages],
+                    },
+                    { sql: `DELETE FROM GameTranslation WHERE gameId = ? AND ${gone}`, args: [input.gameId, ...languages] },
+                    { sql: `DELETE FROM GameEdition WHERE gameId = ? AND ${gone}`, args: [input.gameId, ...languages] },
+                    { sql: 'UPDATE GameEdition SET isPrimary = 0 WHERE gameId = ?', args: [input.gameId] },
+                ]) {
+                    await transaction.execute(statement)
+                }
+
+                for (const edition of input.editions) {
+                    for (const statement of [
+                        gameTranslationUpsert(input.gameId, edition.languageCode, edition.title, edition.normalizedTitle),
+                        gameEditionUpsert(input.gameId, edition.languageCode, edition.title, edition.normalizedTitle, edition.isPrimary),
+                    ]) {
+                        await transaction.execute(statement)
+                    }
+                }
             }
 
             if (input.tagIds) {
@@ -858,7 +1023,7 @@ export class GameQueries {
         const issueCounts = Object.entries(CATALOGUE_QUALITY)
             .map(([issue, condition]) => `(SELECT COUNT(*) FROM Game g WHERE ${condition}) AS "${issue}"`)
             .join(',\n                    ')
-        const englishTitle = "(SELECT title FROM GameTranslation t WHERE t.gameId = g.id AND t.languageCode = 'en') AS title"
+        const primaryTitle = '(SELECT title FROM GameEdition t WHERE t.gameId = g.id AND t.isPrimary = 1) AS title'
 
         return Promise.all([
             this.database.execute(`
@@ -872,7 +1037,7 @@ export class GameQueries {
                     (SELECT COUNT(*) FROM GameProposal WHERE status = 'approved' AND reviewedAt >= datetime('now', '-30 days')) AS approvedLast30Days
             `),
             this.database.execute(`
-                SELECT g.id AS gameId, ${englishTitle}, COUNT(*) AS count
+                SELECT g.id AS gameId, ${primaryTitle}, COUNT(*) AS count
                 FROM OwnedGame o
                 JOIN Account a ON a.id = o.accountId AND a.isDeleted = 0
                 JOIN Game g ON g.id = o.gameId
@@ -881,7 +1046,7 @@ export class GameQueries {
                 LIMIT 5
             `),
             this.database.execute(`
-                SELECT g.id AS gameId, ${englishTitle}, COUNT(*) AS count
+                SELECT g.id AS gameId, ${primaryTitle}, COUNT(*) AS count
                 FROM WishlistedGame w
                 JOIN Account a ON a.id = w.accountId AND a.isDeleted = 0
                 JOIN Game g ON g.id = w.gameId

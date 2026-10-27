@@ -4,22 +4,42 @@
             <div class="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-bv-warning/10 text-3xl text-bv-warning" aria-hidden="true">
                 <app-icon name="refresh" [size]="30" />
             </div>
-            <p class="mt-6 text-sm font-semibold uppercase tracking-[0.2em] text-bv-warning">One more step needed</p>
-            <h1 id="auth-handoff-title" class="mt-3 text-3xl font-bold tracking-tight text-bv-text">{{ isInvitationFlow() ? 'We could not finish joining this group' : 'We could not finish setting up your sign-in' }}</h1>
+            <p class="mt-6 text-sm font-semibold uppercase tracking-[0.2em] text-bv-warning" i18n="Small heading above an error after signing in or following an invitation link">One more step needed</p>
+            @if (isInvitationFlow()) {
+            <h1 id="auth-handoff-title" class="mt-3 text-3xl font-bold tracking-tight text-bv-text" i18n="Heading when joining a group from an invitation link failed">We could not finish joining this group</h1>
+            } @else {
+            <h1 id="auth-handoff-title" class="mt-3 text-3xl font-bold tracking-tight text-bv-text" i18n="Heading when finishing sign-in failed">We could not finish setting up your sign-in</h1>
+            }
             <p class="mt-5 leading-7 text-bv-text-muted" role="alert">{{ error() }}</p>
             <div class="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
-                <button appButton type="button" (click)="retry()">Try again</button>
-                <button appButton type="button" variant="secondary" (click)="signOut()">Sign out</button>
+                <button appButton type="button" (click)="retry()" i18n="Button that tries to finish sign-in again after an error">Try again</button>
+                <button appButton type="button" variant="secondary" (click)="signOut()" i18n="Button at the bottom of the avatar menu">Sign out</button>
             </div>
-            <p class="mt-6 text-sm text-bv-text-muted">{{ isInvitationFlow() ? 'Ask the group owner for a fresh invitation if this link has expired or the group is no longer available.' : 'If you were invited by a group owner, use the invitation link again after signing out.' }}</p>
+            @if (isInvitationFlow()) {
+            <p class="mt-6 text-sm text-bv-text-muted" i18n="Help under an error when joining a group from an invitation link failed">Ask the group owner for a fresh invitation if this link has expired or the group is no longer available.</p>
+            } @else {
+            <p class="mt-6 text-sm text-bv-text-muted" i18n="Help under an error when finishing sign-in failed">If you were invited by a group owner, use the invitation link again after signing out.</p>
+            }
         } @else {
             <div class="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-bv-primary-soft text-bv-on-primary-soft" aria-hidden="true">
                 <app-spinner size="medium" />
             </div>
-            <p class="mt-6 text-sm font-semibold uppercase tracking-[0.2em] text-bv-primary" role="status" aria-live="polite">{{ isInvitationFlow() ? 'Joining your group' : 'Secure sign-in' }}</p>
-            <h1 id="auth-handoff-title" class="mt-3 text-3xl font-bold tracking-tight text-bv-text">{{ isInvitationFlow() ? 'Connecting you to your Board Vault group' : 'Connecting you to your Board Vault' }}</h1>
-            <p class="mt-5 leading-7 text-bv-text-muted">{{ isInvitationFlow() ? 'Your invitation is confirmed. We are adding you to the shared games and session history.' : 'Your identity is confirmed. We are loading your groups and getting your private workspace ready.' }}</p>
-            <p class="mt-6 text-sm text-bv-text-muted">This usually takes a moment. Please keep this tab open.</p>
+            @if (isInvitationFlow()) {
+            <p class="mt-6 text-sm font-semibold uppercase tracking-[0.2em] text-bv-primary" role="status" aria-live="polite" i18n="Small heading while someone joins a group from an invitation link">Joining your group</p>
+            } @else {
+            <p class="mt-6 text-sm font-semibold uppercase tracking-[0.2em] text-bv-primary" role="status" aria-live="polite" i18n="Small heading while sign-in finishes">Secure sign-in</p>
+            }
+            @if (isInvitationFlow()) {
+            <h1 id="auth-handoff-title" class="mt-3 text-3xl font-bold tracking-tight text-bv-text" i18n="Heading while someone joins a group from an invitation link">Connecting you to your Board Vault group</h1>
+            } @else {
+            <h1 id="auth-handoff-title" class="mt-3 text-3xl font-bold tracking-tight text-bv-text" i18n="Heading while sign-in finishes">Connecting you to your Board Vault</h1>
+            }
+            @if (isInvitationFlow()) {
+            <p class="mt-5 leading-7 text-bv-text-muted" i18n="Text while someone joins a group from an invitation link">Your invitation is confirmed. We are adding you to the shared games and session history.</p>
+            } @else {
+            <p class="mt-5 leading-7 text-bv-text-muted" i18n="Text while sign-in finishes">Your identity is confirmed. We are loading your groups and getting your private workspace ready.</p>
+            }
+            <p class="mt-6 text-sm text-bv-text-muted" i18n="Note while sign-in or joining a group finishes">This usually takes a moment. Please keep this tab open.</p>
         }
     </section>
 </main>

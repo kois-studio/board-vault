@@ -2,6 +2,7 @@ import { execFileSync } from 'node:child_process'
 import { readFileSync, rmSync } from 'node:fs'
 import { resolve } from 'node:path'
 
+import { createClient } from '@libsql/client'
 import { INestApplication } from '@nestjs/common'
 import { Test, TestingModule } from '@nestjs/testing'
 import request from 'supertest'
@@ -45,10 +46,17 @@ describe('browsing the catalogue with filters (e2e)', () => {
                     (3, 'en', 'Love Letter', 'love-letter'), (3, 'es', 'Love Letter', 'love-letter'),
                     (4, 'en', 'Twilight Imperium', 'twilight-imperium'), (4, 'es', 'Twilight Imperium', 'twilight-imperium'),
                     (5, 'en', 'Codenames', 'codenames'), (5, 'es', 'Código Secreto', 'codigo-secreto');
+                INSERT INTO GameEdition (gameId, languageCode, title, normalizedTitle, isPrimary)
+                SELECT gameId, languageCode, title, normalizedTitle,
+                       ROW_NUMBER() OVER (PARTITION BY gameId ORDER BY languageCode = 'en' DESC, languageCode) = 1
+                FROM GameTranslation ORDER BY gameId, languageCode;
 
                 INSERT INTO TagCategory (id, name) VALUES (1, 'Genre'), (2, 'Mechanic');
                 INSERT INTO Tag (id, name, categoryId) VALUES (1, 'Abstract', 1), (2, 'Strategy', 1), (3, 'Trading', 2), (4, 'Unused', 2);
                 INSERT INTO GameTag (gameId, tagId) VALUES (1, 1), (2, 2), (2, 3), (4, 2);
+                -- Spanish for some: "Trading" and "Mechanic" have none, so they stay English.
+                INSERT INTO TagTranslation (tagId, locale, name) VALUES (1, 'es', 'Abstracto'), (2, 'es', 'Estrategia'), (2, 'fr', 'Stratégie');
+                INSERT INTO TagCategoryTranslation (categoryId, locale, name) VALUES (1, 'es', 'Género');
 
                 INSERT INTO OwnedGame (accountId, gameId) VALUES (1, 2);
             `,
@@ -94,6 +102,23 @@ describe('browsing the catalogue with filters (e2e)', () => {
         })
     })
 
+    it('sorts by the title in the reader’s language, else the English one', async () => {
+        const response = await request(app.getHttpServer())
+            .get('/collection/users/1/browse/games?sort=title')
+            .set(asPlayer)
+            .set('Accept-Language', 'es')
+            .expect(200)
+
+        // Codenames is Código Secreto and Catan is Los colonos de Catán in Spanish.
+        expect(response.body.games.map((game: { titleTranslations: { en: string } }) => game.titleTranslations.en)).toEqual([
+            'Azul',
+            'Codenames',
+            'Catan',
+            'Love Letter',
+            'Twilight Imperium',
+        ])
+    })
+
     it('pages through the filtered order', async () => {
         expect(await browse('limit=2&page=2')).toEqual({ titles: ['Codenames', 'Love Letter'], totalItems: 5, totalPages: 3 })
     })
@@ -101,6 +126,37 @@ describe('browsing the catalogue with filters (e2e)', () => {
     it('finds a game by any of its titles', async () => {
         expect((await browse('search=colonos')).titles).toEqual(['Catan'])
         expect((await browse('search=c%C3%B3digo')).titles).toEqual(['Codenames'])
+    })
+
+    it('shows and sorts a game whose only edition is not English, and finds it by that title', async () => {
+        const database = createClient({ url: `file:${testDatabasePath}` })
+
+        await database.batch([
+            "INSERT INTO Game (id, imageUrl, gameAvgDuration, minPlayers, maxPlayers) VALUES (6, 'https://example.test/barenpark.jpg', 30, 2, 4)",
+            "INSERT INTO GameTranslation (gameId, languageCode, title, normalizedTitle) VALUES (6, 'de', 'Bärenpark', 'barenpark')",
+            "INSERT INTO GameEdition (gameId, languageCode, title, normalizedTitle, isPrimary) VALUES (6, 'de', 'Bärenpark', 'barenpark', 1)",
+        ])
+
+        try {
+            const response = await request(app.getHttpServer()).get('/collection/users/1/browse/games').set(asPlayer).expect(200)
+            const games = response.body.games as Array<{ titleTranslations: Record<string, string> }>
+
+            expect(games.map(game => game.titleTranslations.de || game.titleTranslations.en)).toEqual([
+                'Azul',
+                'Bärenpark',
+                'Catan',
+                'Codenames',
+                'Love Letter',
+                'Twilight Imperium',
+            ])
+            expect(games[1]?.titleTranslations.de).toBe('Bärenpark')
+            expect((await browse('search=barenpark')).totalItems).toBe(1)
+            // A Spanish edition title finds the game for an English reader.
+            expect((await browse('search=colonos')).titles).toEqual(['Catan'])
+        } finally {
+            await database.execute('DELETE FROM Game WHERE id = 6')
+            database.close()
+        }
     })
 
     it('keeps the games that play with the given number of people', async () => {
@@ -146,6 +202,36 @@ describe('browsing the catalogue with filters (e2e)', () => {
             { id: 1, name: 'Abstract', categoryName: 'Genre', gameCount: 1 },
             { id: 2, name: 'Strategy', categoryName: 'Genre', gameCount: 2 },
             { id: 3, name: 'Trading', categoryName: 'Mechanic', gameCount: 1 },
+        ])
+    })
+
+    it('names tags in the reader’s language, falling back to English, sorted as that language sorts', async () => {
+        const response = await request(app.getHttpServer()).get('/collection/tags').set(asPlayer).set('Accept-Language', 'es').expect(200)
+
+        expect(response.body).toEqual([
+            { id: 1, name: 'Abstracto', categoryName: 'Género', gameCount: 1 },
+            { id: 2, name: 'Estrategia', categoryName: 'Género', gameCount: 2 },
+            { id: 3, name: 'Trading', categoryName: 'Mechanic', gameCount: 1 },
+        ])
+    })
+
+    it('shows a game’s tags in the reader’s language on its page', async () => {
+        const tags = async (language: string) =>
+            (
+                await request(app.getHttpServer())
+                    .get('/collection/users/1/games/2')
+                    .set(asPlayer)
+                    .set('Accept-Language', language)
+                    .expect(200)
+            ).body.tags
+
+        expect(await tags('en')).toEqual([
+            { tag: 'Strategy', category: 'Genre' },
+            { tag: 'Trading', category: 'Mechanic' },
+        ])
+        expect(await tags('fr')).toEqual([
+            { tag: 'Stratégie', category: 'Genre' },
+            { tag: 'Trading', category: 'Mechanic' },
         ])
     })
 })

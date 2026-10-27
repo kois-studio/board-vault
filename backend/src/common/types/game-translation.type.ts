@@ -7,7 +7,7 @@ export class GameTranslationDto {
     gameId: number
 
     @ApiProperty({ example: 'en' })
-    languageCode: SupportedLanguage
+    languageCode: string
 
     @ApiProperty({ example: 'Game Title' })
     title: string

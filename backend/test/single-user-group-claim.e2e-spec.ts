@@ -65,6 +65,10 @@ describe('single-user group claim workflow (e2e)', () => {
             VALUES
                 (10, 'en', 'Game Ten', 'game ten'),
                 (11, 'en', 'Game Eleven', 'game eleven');
+            INSERT INTO GameEdition (gameId, languageCode, title, normalizedTitle, isPrimary)
+            SELECT gameId, languageCode, title, normalizedTitle,
+                   ROW_NUMBER() OVER (PARTITION BY gameId ORDER BY languageCode = 'en' DESC, languageCode) = 1
+            FROM GameTranslation ORDER BY gameId, languageCode;
         `
 
         execFileSync('sqlite3', [testDatabasePath], { input: fixture, encoding: 'utf8' })

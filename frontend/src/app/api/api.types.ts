@@ -1,3 +1,5 @@
+import type { Locale } from '../core/i18n/locales'
+
 // #region User
 
 export type UserType = {
@@ -13,6 +15,8 @@ export type UserType = {
         initials: string
     }
     createdAt: string
+    /** The interface language the person chose (ADR-0024); null until they choose one. Only on their own profile. */
+    locale?: Locale | null
 }
 
 export type PublicUserType = Pick<UserType, 'id' | 'username' | 'displayName' | 'avatar'>
@@ -21,26 +25,40 @@ export type PublicUserType = Pick<UserType, 'id' | 'username' | 'displayName' | 
 
 export type GameType = {
     id: number
+    /** The title for this reader (ADR-0025); `titleLanguage` says which language it is in. */
     title?: string
+    titleLanguage?: string
     imageUrl: string
     gameAvgDuration: number
     minPlayers: number
     maxPlayers: number
 }
 
-type SupportedLanguage = 'en' | 'es'
-
 export type GameCompleteType = GameType & {
-    titleTranslations: Record<SupportedLanguage, string>
+    /** Every known edition title by language code. */
+    titleTranslations: Record<string, string>
 }
 
-export type GameWithTagsAndTranslationsType = GameType & {
-    translations: Record<SupportedLanguage, string>
+export type GameWithTagsType = GameType & {
     tags: Array<{
         id: number
         name: string
         categoryName: string
     }>
+}
+
+/** A game on someone's shelf: `title` is the edition they own when they said which (ADR-0025). */
+export type OwnedGameCompleteType = GameCompleteType & {
+    /** The edition this copy is; null when the owner has not said. */
+    ownedEditionId: number | null
+}
+
+/** One published edition of a game, for choosing which one a copy is (ADR-0025). */
+export type GameEditionType = {
+    id: number
+    languageCode: string
+    title: string
+    isPrimary: boolean
 }
 
 export type GameViewType = {
@@ -49,7 +67,14 @@ export type GameViewType = {
         purchaseDate: string | null
         purchasePrice: number | null
         purchaseNotes: string | null
+        /** The edition this copy is; null when you have not said. */
+        editionId: number | null
+        /** The title of this copy: its edition's when `editionId` is set, else the title the page shows. */
+        title: string
+        titleLanguage: string
     }
+    /** Every edition of the game, the primary one first. */
+    editions: Array<GameEditionType>
     tags: Array<{
         tag: string
         category: string
@@ -73,6 +98,7 @@ export type GameOwnedType = {
     purchaseDate: string | null
     purchasePrice: number | null
     purchaseNotes: string | null
+    editionId: number | null
 }
 
 export type UpdateGameOwnedType = {
@@ -143,6 +169,9 @@ export type GroupPersonOwnershipType = {
     confirmedByAccountId: number | null
     createdAt: string
     updatedAt: string
+    /** For a game from a linked account's shelf: the title of the edition that copy is; null when not said. */
+    copyTitle: string | null
+    copyTitleLanguage: string | null
 }
 
 export type GroupPersonPreferenceType = {
@@ -214,12 +243,12 @@ export type GroupActivityType = {
     actor: GroupActivityNameType
     meetId: number | null
     person: GroupActivityNameType | null
-    game: { id: number; title: string | null } | null
+    game: { id: number; title: string | null; titleLanguage?: string | null } | null
     subject: GroupActivityNameType | null
     data: Record<string, unknown>
     accounts: Array<GroupActivityNameType>
     people: Array<GroupActivityNameType>
-    games: Array<{ id: number; title: string | null }>
+    games: Array<{ id: number; title: string | null; titleLanguage?: string | null }>
 }
 
 export type GroupActivityPageType = {
@@ -301,6 +330,16 @@ export type NotificationType = {
     createdAt: string
     isRead: boolean
     data?: Record<string, unknown>
+    /** What `data` points at, sent with the inbox so the app can word it (ADR-0024). */
+    context?: NotificationContextType
+}
+
+export type NotificationContextType = {
+    accounts: Array<{ id: number; name: string | null; deleted: boolean }>
+    groups: Array<{ id: number; name: string }>
+    sessions: Array<{ id: number; date: string; timezone: string }>
+    people: Array<{ id: number; name: string }>
+    games: Array<{ id: number; title: string; titleLanguage: string }>
 }
 
 export const NotificationTypeEnum = {
@@ -457,7 +496,14 @@ export type UpdateSessionShortlistRequest = {
 
 export type MeetGameVotesType = { gameId: number; accountIds: Array<number> }
 
-export type MeetGameBringerType = { gameId: number; accountId: number | null; groupPersonId: number | null }
+export type MeetGameBringerType = {
+    gameId: number
+    accountId: number | null
+    groupPersonId: number | null
+    /** The title of the edition the bringer's copy is; null when they have not said (the game's own title applies). */
+    copyTitle: string | null
+    copyTitleLanguage: string | null
+}
 
 export type SessionGameBringersUpdatedType = { sessionId: number; gameBringers: Array<MeetGameBringerType> }
 
@@ -556,11 +602,28 @@ export type BrowseGamesResultType = {
 }
 
 /** A catalogue data problem, as the admin Games filter names it. */
-export type CatalogueIssue = 'no-title' | 'no-artwork' | 'no-spanish' | 'no-tags' | 'no-price'
+export type CatalogueIssue = 'no-title' | 'no-artwork' | 'no-primary' | 'no-tags' | 'no-price'
 
-export type AdminGameType = GameWithTagsAndTranslationsType & {
-    /** The English title. */
+/** One edition of a game as Administration lists it (ADR-0025). */
+export type AdminGameEditionType = {
+    id: number
+    /** BCP 47 language, such as `de` or `pt-BR`. */
+    languageCode: string
     title: string
+    isPrimary: boolean
+}
+
+/** An edition to save. */
+export type AdminEditionBodyType = { languageCode: string; title: string; isPrimary: boolean }
+
+/** A title of a proposed game in another language. */
+export type ProposalOtherTitleType = { languageCode: string; title: string }
+
+export type AdminGameType = GameWithTagsType & {
+    /** The primary edition's title; empty for a game without editions. */
+    title: string
+    /** The primary edition first, then by language code. */
+    editions: Array<AdminGameEditionType>
     issues: Array<CatalogueIssue>
     /** Where the stored artwork was copied from; null for an upload or no artwork. */
     artworkSource: string | null
@@ -599,9 +662,9 @@ export type AdminOverviewType = {
     }>
 }
 
-/** The fields sent are saved together; an empty Spanish title removes it. */
+/** The fields sent are saved together; `editions` is the whole new set. */
 export type UpdateAdminGameType = {
-    translations?: Partial<Record<SupportedLanguage, string>>
+    editions?: Array<AdminEditionBodyType>
     imageUrl?: string
     minPlayers?: number
     maxPlayers?: number
@@ -705,11 +768,15 @@ export type CollectionActivityWithGameDataType = CollectionActivityType & {
 // --------------------------------------------------------------------------
 // #region admin
 // --------------------------------------------------------------------------
+/** A tag's or category's name in the languages other than English (ADR-0024); English is `name`. */
+export type NameTranslationsType = Partial<Record<'es' | 'fr' | 'de' | 'it', string>>
+
 export type TagCategoryType = {
     id: number
     name: string
     tags: Array<TagType['id']>
     gameCount: number
+    translations: NameTranslationsType
 }
 
 export type TagType = {
@@ -717,6 +784,7 @@ export type TagType = {
     name: string
     categoryId: TagCategoryType['id']
     gameCount: number
+    translations: NameTranslationsType
 }
 
 // #region Game Proposal
@@ -726,6 +794,10 @@ export type GameProposalType = {
     submittedBy: number
     status: 'pending' | 'approved' | 'rejected' | 'duplicate'
     title: string
+    /** The language of `title`. */
+    titleLanguage: string
+    /** The title in other languages, when the proposer knew them. */
+    otherTitles: Array<ProposalOtherTitleType>
     imageUrl: string | null
     gameAvgDuration: number | null
     minPlayers: number | null
@@ -743,6 +815,9 @@ export type GameProposalType = {
 
 export type CreateGameProposalType = {
     title: string
+    /** Language of `title`; the server uses the page language when left out. */
+    titleLanguage?: string
+    otherTitles?: Array<ProposalOtherTitleType>
     imageUrl?: string
     gameAvgDuration?: number
     minPlayers?: number
@@ -776,7 +851,8 @@ export type ApproveGameProposalType = {
     gameAvgDuration?: number
     minPlayers?: number
     maxPlayers?: number
-    translations?: Partial<Record<SupportedLanguage, string>>
+    /** The game's editions; left out, the proposal's own title and other titles. */
+    editions?: Array<AdminEditionBodyType>
     tagIds?: number[]
 }
 

@@ -1,5 +1,6 @@
 import { CommonModule } from '@angular/common'
 import { Component, input } from '@angular/core'
+import { formatNumber } from '../../../core/i18n/format'
 import { IconComponent } from '../icon/icon.component'
 
 @Component({
@@ -26,7 +27,7 @@ export class ReviewDisplayComponent {
     }
 
     public parseReview(review: number): string {
-        return (review / 2).toFixed(2)
+        return formatNumber(review / 2, { minimumFractionDigits: 2, maximumFractionDigits: 2 })
     }
 
     public get hasRating(): boolean {
@@ -34,6 +35,8 @@ export class ReviewDisplayComponent {
     }
 
     public get ratingLabel(): string {
-        return this.hasRating ? `Rating ${this.parseReview(this.review())} out of 5` : 'Not rated yet'
+        return this.hasRating
+            ? $localize`:Name of the stars showing a rating; the placeholder is the rating out of 5, such as 3.50:Rating ${this.parseReview(this.review())}:rating: out of 5`
+            : $localize`:Name of the empty stars of a game with no rating:Not rated yet`
     }
 }

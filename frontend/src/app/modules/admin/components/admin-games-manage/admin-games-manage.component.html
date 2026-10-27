@@ -6,7 +6,7 @@
         <div class="grid gap-3 sm:grid-cols-[minmax(0,1fr)_8rem_minmax(0,14rem)]">
             <div>
                 <label for="admin-games-search" class="sr-only">Search by title</label>
-                <input id="admin-games-search" type="search" class="app-input" [formControl]="searchControl" placeholder="Search by English or Spanish title" />
+                <input id="admin-games-search" type="search" class="app-input" [formControl]="searchControl" placeholder="Search by title in any language" />
             </div>
             <div>
                 <label for="admin-games-players" class="sr-only">Players</label>
@@ -108,8 +108,8 @@
                                     {{ game | players }} · {{ game.gameAvgDuration }} min · {{ game.tags.length | count: 'tag' }}
                                 </span>
                             </span>
-                            <span class="hidden truncate text-sm text-bv-text-muted sm:block" [attr.aria-label]="'Spanish title: ' + (game.translations.es || 'none')">
-                                {{ game.translations.es || '—' }}
+                            <span class="hidden truncate text-sm text-bv-text-muted sm:block" [attr.aria-label]="'Other editions: ' + (otherEditions(game) || 'none')">
+                                {{ otherEditions(game) || '—' }}
                             </span>
                             <span class="hidden text-sm text-bv-text-muted sm:block">
                                 {{ game | players: 'short' }} · {{ game.gameAvgDuration }}′<br />

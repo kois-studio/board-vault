@@ -18,9 +18,9 @@ export class ThemeSwitchComponent {
     public readonly preference = this.theme.preference
 
     public readonly options: Array<{ value: ThemePreference; label: string; icon: string }> = [
-        { value: 'system', label: 'System', icon: 'monitor' },
-        { value: 'light', label: 'Light', icon: 'sun' },
-        { value: 'dark', label: 'Dark', icon: 'moon' },
+        { value: 'system', label: $localize`:Option of the theme switch that follows the device:System`, icon: 'monitor' },
+        { value: 'light', label: $localize`:Option of the theme switch, the light colors:Light`, icon: 'sun' },
+        { value: 'dark', label: $localize`:Option of the theme switch, the dark colors:Dark`, icon: 'moon' },
     ]
 
     public choose(preference: ThemePreference): void {

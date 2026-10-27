@@ -24,10 +24,11 @@ try {
         await transaction.execute({ sql: "INSERT INTO GroupPerson (groupId, accountId, kind, status, displayName, createdByAccountId) SELECT ?, ?, 'linked', 'active', ?, ? WHERE NOT EXISTS (SELECT 1 FROM GroupPerson WHERE groupId = ? AND accountId = ?)", args: [groupId, account.id, account.id === owner ? 'Fixture organizer' : 'Fixture member', owner, groupId, account.id] })
     }
     await transaction.execute({ sql: "INSERT INTO GroupPerson (groupId, kind, status, displayName, createdByAccountId) SELECT ?, 'placeholder', 'active', 'Fixture guest', ? WHERE NOT EXISTS (SELECT 1 FROM GroupPerson WHERE groupId = ? AND displayName = 'Fixture guest')", args: [groupId, owner, groupId] })
-    const existing = await transaction.execute("SELECT gameId FROM GameTranslation WHERE languageCode = 'en' AND normalizedTitle = 'borrowed-fixture'")
+    const existing = await transaction.execute("SELECT gameId FROM GameEdition WHERE languageCode = 'en' AND normalizedTitle = 'borrowed-fixture'")
     if (!existing.rows.length) {
         const game = await transaction.execute("INSERT INTO Game (imageUrl, gameAvgDuration, minPlayers, maxPlayers) VALUES ('', 15, 1, 8)")
         await transaction.execute({ sql: "INSERT INTO GameTranslation (gameId, languageCode, title, normalizedTitle) VALUES (?, 'en', 'Borrowed Fixture', 'borrowed-fixture')", args: [Number(game.lastInsertRowid)] })
+        await transaction.execute({ sql: "INSERT INTO GameEdition (gameId, languageCode, title, normalizedTitle, isPrimary) VALUES (?, 'en', 'Borrowed Fixture', 'borrowed-fixture', 1)", args: [Number(game.lastInsertRowid)] })
     }
     await transaction.commit()
     console.log(JSON.stringify({ groupId, groupName: 'Everyday fixture', gameTitle: 'Borrowed Fixture' }))

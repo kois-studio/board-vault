@@ -1,7 +1,6 @@
 import { Component, computed, inject, input } from '@angular/core'
 import { RouterLink } from '@angular/router'
 import type { GroupWithMembersAndGames, InvitationWithAccountsData } from '../../api/api.types'
-import { CountPipe } from '../../core/pipes/count.pipe'
 import { DataService } from '../../core/services/data.service'
 import { groupGameCount, groupPeopleCount } from '../../core/utils/groupCounts'
 import { initialsAvatar } from '../../core/utils/initialsAvatar'
@@ -28,7 +27,7 @@ const ACTIVITY_CLASSES: Record<GroupActivity['tone'], string> = {
  * with one, Home's next night above already says it.
  */
 @Component({
-    imports: [CountPipe, ImageProfileComponent, IconComponent, RouterLink],
+    imports: [ImageProfileComponent, IconComponent, RouterLink],
     selector: 'app-card-group',
     templateUrl: 'card-group.component.html',
 })
@@ -44,6 +43,11 @@ export class CardGroupComponent {
         const activity = this.activity()
         return activity ? ACTIVITY_CLASSES[activity.tone] : ''
     })
+
+    /** Names the list of faces after the group, so screen readers can tell stacked cards apart. */
+    public readonly peopleLabel = computed(
+        () => $localize`:Name of the list of faces on a group card on Home:People in ${this.group().name}:group:`,
+    )
 
     /** Members plus people without an account. */
     public readonly peopleCount = computed(() => groupPeopleCount(this.group()))
@@ -69,4 +73,9 @@ export class CardGroupComponent {
         () => this.group().createdBy === this.dataService.currentUser()?.id && this.peopleCount() < INVITE_NUDGE_BELOW,
     )
     public readonly pendingInvitations = computed(() => this.invitations()?.length ?? 0)
+
+    public readonly shortcutsLabel = computed(
+        () =>
+            $localize`:Name of the shortcuts on a group card on Home; the placeholder is the group name:${this.group().name}:group: shortcuts`,
+    )
 }

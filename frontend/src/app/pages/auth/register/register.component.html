@@ -5,112 +5,120 @@
                 <div class="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-bv-success/10 text-3xl text-bv-success" aria-hidden="true">
                     <app-icon name="mail" [size]="30" />
                 </div>
-                <p class="mt-6 text-sm font-semibold uppercase tracking-[0.2em] text-bv-success">You are invited</p>
-                <h1 class="mt-3 text-4xl font-bold tracking-tight text-bv-text">Join your Board Vault group</h1>
+                <p class="mt-6 text-sm font-semibold uppercase tracking-[0.2em] text-bv-success" i18n="Small heading of the invitation sign-up page">You are invited</p>
+                <h1 class="mt-3 text-4xl font-bold tracking-tight text-bv-text" i18n="Heading of the invitation sign-up page">Join your Board Vault group</h1>
                 @if (isInvitationSignIn()) {
-                    <p class="mt-5 text-lg leading-8 text-bv-text-muted">Use your existing Board Vault account to join the group that invited you.</p>
+                    <p class="mt-5 text-lg leading-8 text-bv-text-muted" i18n="Text on the invitation sign-up page for someone who already has an account">Use your existing Board Vault account to join the group that invited you.</p>
                 } @else {
-                    <p class="mt-5 text-lg leading-8 text-bv-text-muted">Choose a Board Vault username and password to join the group that invited you.</p>
+                    <p class="mt-5 text-lg leading-8 text-bv-text-muted" i18n="Text on the invitation sign-up page for someone new">Choose a Board Vault username and password to join the group that invited you.</p>
                 }
                 @if (clerkIsAvailable()) {
                     @if (isInvitationSignIn()) {
                         <div class="mt-8 rounded-2xl border border-bv-primary/30 bg-bv-primary-soft p-5 text-left" role="status">
-                            <p class="font-semibold text-bv-text">Your Board Vault account is already registered.</p>
-                            <p class="mt-2 text-sm leading-6 text-bv-text-muted">Continue with this secure invitation link and we’ll add you to the group. No new password is needed.</p>
+                            <p class="font-semibold text-bv-text" i18n="Title of the box on the invitation sign-up page for someone who already has an account">Your Board Vault account is already registered.</p>
+                            <p class="mt-2 text-sm leading-6 text-bv-text-muted" i18n="Text in the box on the invitation sign-up page for someone who already has an account">Continue with this secure invitation link and we’ll add you to the group. No new password is needed.</p>
                             <button appButton type="button" class="mt-5 w-full" [disabled]="isInvitationSubmitting()" (click)="completeInvitationSignUp()">
-                                {{ isInvitationSubmitting() ? 'Joining…' : 'Continue to the group' }}
+                                @if (isInvitationSubmitting()) {
+                                <ng-container i18n="Button on the invitation sign-up page while it joins the group">Joining…</ng-container>
+                                } @else {
+                                <ng-container i18n="Button on the invitation sign-up page for someone who already has an account">Continue to the group</ng-container>
+                                }
                             </button>
                         </div>
                     } @else {
                         <form class="mt-8 space-y-4 text-left" [formGroup]="invitationForm" (ngSubmit)="completeInvitationSignUp()">
                             <div>
-                                <label for="invitation-username" class="mb-2 block text-sm font-medium">Choose a username</label>
+                                <label for="invitation-username" class="mb-2 block text-sm font-medium" i18n="Field label on the invitation sign-up page">Choose a username</label>
                                 <input id="invitation-username" type="text" autocomplete="username" class="app-input" formControlName="username" />
                                 @if (invitationForm.controls.username.invalid && invitationForm.controls.username.touched) {
-                                    <p class="mt-1 text-xs text-bv-danger">Use 4–64 characters for your username.</p>
+                                    <p class="mt-1 text-xs text-bv-danger" i18n="Field error on the invitation sign-up page">Use 4–64 characters for your username.</p>
                                 }
                             </div>
                             <div>
-                                <label for="invitation-password" class="mb-2 block text-sm font-medium">Create a password</label>
+                                <label for="invitation-password" class="mb-2 block text-sm font-medium" i18n="Field label on the invitation sign-up page">Create a password</label>
                                 <input id="invitation-password" type="password" autocomplete="new-password" class="app-input" formControlName="password" />
-                                <p class="mt-1 text-xs text-bv-text-muted">Use at least 15 characters.</p>
+                                <p class="mt-1 text-xs text-bv-text-muted" i18n="Hint under the password field on the invitation sign-up page">Use at least 15 characters.</p>
                             </div>
                             <div>
-                                <label for="invitation-confirm-password" class="mb-2 block text-sm font-medium">Confirm your password</label>
+                                <label for="invitation-confirm-password" class="mb-2 block text-sm font-medium" i18n="Field label on the invitation sign-up page">Confirm your password</label>
                                 <input id="invitation-confirm-password" type="password" autocomplete="new-password" class="app-input" formControlName="confirmPassword" />
                                 @if (invitationForm.controls.confirmPassword.touched && !invitationPasswordsMatch) {
-                                    <p class="mt-1 text-xs text-bv-danger">Passwords must match.</p>
+                                    <p class="mt-1 text-xs text-bv-danger" i18n="Field error on the invitation sign-up page">Passwords must match.</p>
                                 }
                             </div>
                             <div class="rounded-2xl border border-bv-primary/30 bg-bv-primary-soft p-4">
                                 <div class="flex items-center justify-between gap-4">
-                                    <span id="invitation-usage" class="font-medium text-bv-text">Help improve Board Vault</span>
+                                    <span id="invitation-usage" class="font-medium text-bv-text" i18n="Label of the usage statistics switch on the invitation sign-up page; the same switch is in Settings, Privacy">Help improve Board Vault</span>
                                     <app-switch [checked]="usageAnalytics()" labelledBy="invitation-usage" (toggled)="usageAnalytics.set($event)" />
                                 </div>
-                                <p class="mt-2 text-sm leading-6 text-bv-text-muted">
+                                <p class="mt-2 text-sm leading-6 text-bv-text-muted" i18n="Text under the usage statistics switch on the invitation sign-up page; Settings → Privacy names the place in the app">
                                     Lend us a hand? 🎲 We're a tiny indie team. Leaving this on lets us count which pages get opened, under a pseudonym and in our own
                                     database, so we know what to fix next. No cookies, nothing shared. Change it anytime in Settings → Privacy.
                                 </p>
                             </div>
                             <div id="clerk-captcha" aria-live="polite"></div>
                             <button appButton type="submit" class="w-full" [disabled]="isInvitationSubmitting()">
-                                {{ isInvitationSubmitting() ? 'Joining…' : 'Join the group' }}
+                                @if (isInvitationSubmitting()) {
+                                <ng-container i18n="Button on the invitation sign-up page while it joins the group">Joining…</ng-container>
+                                } @else {
+                                <ng-container i18n="Button on the invitation sign-up page that creates the account and joins the group">Join the group</ng-container>
+                                }
                             </button>
                         </form>
                     }
                 } @else {
-                    <p class="mt-8 rounded-lg border border-bv-warning/30 bg-bv-warning/10 p-4 text-sm text-bv-warning">The secure sign-up service is still loading. Refresh this page to continue.</p>
+                    <p class="mt-8 rounded-lg border border-bv-warning/30 bg-bv-warning/10 p-4 text-sm text-bv-warning" i18n="Shown on the invitation sign-up page while the sign-up service loads">The secure sign-up service is still loading. Refresh this page to continue.</p>
                 }
                 @if (invitationError()) {
                     <div class="mt-4 rounded-lg border border-bv-danger/30 bg-bv-danger/10 p-4 text-left text-sm text-bv-danger" role="alert">
                         <p>{{ invitationError() }}</p>
-                        <button type="button" class="mt-3 font-semibold underline" (click)="returnToPrivateBeta()">Return to private-beta access</button>
+                        <button type="button" class="mt-3 font-semibold underline" (click)="returnToPrivateBeta()" i18n="Button under an error on the invitation sign-up page, back to the access page">Return to private-beta access</button>
                     </div>
                 }
-                <p class="mt-6 text-sm text-bv-text-muted">This link is private and expires. Do not share it publicly.</p>
+                <p class="mt-6 text-sm text-bv-text-muted" i18n="Note at the bottom of the invitation sign-up page">This link is private and expires. Do not share it publicly.</p>
             </div>
         } @else if (!selfRegistrationEnabled()) {
             <div class="text-center">
                 <div class="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-bv-primary-soft text-3xl text-bv-on-primary-soft" aria-hidden="true">
                     <app-icon name="users" [size]="30" />
                 </div>
-                <p class="mt-6 text-sm font-semibold uppercase tracking-[0.2em] text-bv-primary">Private beta</p>
-                <h1 class="mt-3 text-4xl font-bold tracking-tight text-bv-text">Board Vault is still invite-only</h1>
-                <p class="mt-5 text-lg leading-8 text-bv-text-muted">
+                <p class="mt-6 text-sm font-semibold uppercase tracking-[0.2em] text-bv-primary" i18n="Small heading of the access page while sign-up is by invitation only">Private beta</p>
+                <h1 class="mt-3 text-4xl font-bold tracking-tight text-bv-text" i18n="Heading of the access page while sign-up is by invitation only">Board Vault is still invite-only</h1>
+                <p class="mt-5 text-lg leading-8 text-bv-text-muted" i18n="Text on the access page while sign-up is by invitation only">
                     Board Vault helps a group of friends organize its games, choose what to play, and remember every session.
                 </p>
-                <p class="mt-4 text-bv-text-muted">We are still building the core experience, so new accounts are created by invitation only.</p>
+                <p class="mt-4 text-bv-text-muted" i18n="Text on the access page while sign-up is by invitation only">We are still building the core experience, so new accounts are created by invitation only.</p>
                 <div class="mt-6 rounded-2xl border border-bv-primary/30 bg-bv-primary-soft p-5 text-left">
-                    <p class="font-semibold text-bv-text">How to get access</p>
-                    <p class="mt-2 text-sm leading-6 text-bv-text-muted">Ask a friend or group organizer who already uses Board Vault to invite you. Once invited, use the secure Clerk sign-up link they provide.</p>
+                    <p class="font-semibold text-bv-text" i18n="Title of the box on the access page while sign-up is by invitation only">How to get access</p>
+                    <p class="mt-2 text-sm leading-6 text-bv-text-muted" i18n="Text in the box on the access page while sign-up is by invitation only; Clerk is the sign-in service">Ask a friend or group organizer who already uses Board Vault to invite you. Once invited, use the secure Clerk sign-up link they provide.</p>
                 </div>
                 <div class="mt-8 flex flex-col gap-3 sm:flex-row sm:justify-center">
-                    <a appButton routerLink="/login" class="text-center">Sign in</a>
-                    <a appButton variant="secondary" routerLink="/" class="text-center">Back to home</a>
+                    <a appButton routerLink="/login" class="text-center" i18n="Button that goes to the sign-in page">Sign in</a>
+                    <a appButton variant="secondary" routerLink="/" class="text-center" i18n="Button on the access page while sign-up is by invitation only that goes to the landing page">Back to home</a>
                 </div>
-                <p class="mt-8 text-sm text-bv-text-muted">Already have access? Sign in with your existing Board Vault account.</p>
+                <p class="mt-8 text-sm text-bv-text-muted" i18n="Note at the bottom of the access page while sign-up is by invitation only">Already have access? Sign in with your existing Board Vault account.</p>
             </div>
         } @else if (clerkIsAvailable()) {
             <div class="text-center">
-                <p class="text-sm font-semibold uppercase tracking-[0.2em] text-bv-primary">Create your shelf</p>
-                <h1 class="mt-3 text-4xl font-bold tracking-tight text-bv-text">Create your Board Vault account</h1>
-                <p class="mt-5 text-bv-text-muted">Set up your identity securely with Clerk.</p>
-                <button appButton type="button" class="mt-8" (click)="openClerkSignUp()">Open secure sign-up</button>
-                <p class="mt-6 text-sm text-bv-text-muted">Already have an account? <a routerLink="/login" class="underline">Sign in</a></p>
+                <p class="text-sm font-semibold uppercase tracking-[0.2em] text-bv-primary" i18n="Small heading of the sign-up page">Create your shelf</p>
+                <h1 class="mt-3 text-4xl font-bold tracking-tight text-bv-text" i18n="Heading of the sign-up page">Create your Board Vault account</h1>
+                <p class="mt-5 text-bv-text-muted" i18n="Text on the sign-up page; Clerk is the sign-in service">Set up your identity securely with Clerk.</p>
+                <button appButton type="button" class="mt-8" (click)="openClerkSignUp()" i18n="Button on the sign-up page that opens the sign-up window">Open secure sign-up</button>
+                <p class="mt-6 text-sm text-bv-text-muted" i18n="Line at the bottom of the sign-up page with a link to the sign-in page">Already have an account? <a routerLink="/login" class="underline">Sign in</a></p>
             </div>
         } @else {
             <div class="text-center">
                 <div class="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-bv-warning/10 text-3xl text-bv-warning" aria-hidden="true">
                     <app-icon name="shield-alert" [size]="30" />
                 </div>
-                <p class="mt-6 text-sm font-semibold uppercase tracking-[0.2em] text-bv-warning">Secure sign-up unavailable</p>
-                <h1 class="mt-3 text-4xl font-bold tracking-tight text-bv-text">We are reconnecting the sign-up service</h1>
-                <p class="mt-5 text-bv-text-muted">Your account has not been created. Please try again shortly or ask your group owner to send a fresh invitation.</p>
+                <p class="mt-6 text-sm font-semibold uppercase tracking-[0.2em] text-bv-warning" i18n="Small heading of the sign-up page when the sign-up service is down">Secure sign-up unavailable</p>
+                <h1 class="mt-3 text-4xl font-bold tracking-tight text-bv-text" i18n="Heading of the sign-up page when the sign-up service is down">We are reconnecting the sign-up service</h1>
+                <p class="mt-5 text-bv-text-muted" i18n="Text on the sign-up page when the sign-up service is down">Your account has not been created. Please try again shortly or ask your group owner to send a fresh invitation.</p>
                 <div class="mt-8 flex flex-col gap-3 sm:flex-row sm:justify-center">
                     @if (clerkIsConfigured()) {
-                        <button appButton type="button" (click)="openClerkSignUp()">Try secure sign-up again</button>
+                        <button appButton type="button" (click)="openClerkSignUp()" i18n="Button on the sign-up page when the sign-up service is down">Try secure sign-up again</button>
                     }
-                    <a appButton variant="secondary" routerLink="/login" class="text-center">Sign in</a>
+                    <a appButton variant="secondary" routerLink="/login" class="text-center" i18n="Button that goes to the sign-in page">Sign in</a>
                 </div>
             </div>
         }

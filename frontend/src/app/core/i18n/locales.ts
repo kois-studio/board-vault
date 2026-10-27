@@ -13,8 +13,35 @@ export type Locale = (typeof SUPPORTED_LOCALES)[number]
 export const SOURCE_LOCALE: Locale = 'en'
 export const OFFERED_LOCALES: ReadonlyArray<Locale> = ['en']
 
+/** Each language by its own name, as the language menu lists it: never translated. */
+export const LOCALE_NAMES: Record<Locale, string> = {
+    en: 'English',
+    es: 'Español',
+    fr: 'Français',
+    de: 'Deutsch',
+    it: 'Italiano',
+}
+
 /** The cookie an explicit language choice writes. It holds only the language code. */
 export const LOCALE_COOKIE = 'bv_lang'
+
+/** The cookie for a choice: the whole site, a year, sent on top-level navigations only. */
+export function localeCookie(locale: Locale, secure: boolean): string {
+    return `${LOCALE_COOKIE}=${locale}; Path=/; Max-Age=31536000; SameSite=Lax${secure ? '; Secure' : ''}`
+}
+
+/**
+ * The languages the menu lists, in SUPPORTED_LOCALES order: the offered ones and the one the page is in (so
+ * someone who typed an unfinished language's address can leave it), or every supported language in preview.
+ */
+export function menuLocales(current: Locale, preview: boolean, offered: ReadonlyArray<Locale> = OFFERED_LOCALES): Array<Locale> {
+    return SUPPORTED_LOCALES.filter((locale) => preview || locale === current || offered.includes(locale))
+}
+
+/** The same page in another language: `/groups/12?tab=x` → `/es/groups/12?tab=x`, from a router URL. */
+export function localizedUrl(locale: Locale, routerUrl: string): string {
+    return `/${locale}${routerUrl.startsWith('/') ? routerUrl : `/${routerUrl}`}`
+}
 
 export function isSupportedLocale(value: unknown): value is Locale {
     return typeof value === 'string' && (SUPPORTED_LOCALES as ReadonlyArray<string>).includes(value)

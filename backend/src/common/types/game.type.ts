@@ -4,8 +4,6 @@ import { ArrayMaxSize, IsArray, IsBoolean, IsIn, IsInt, IsOptional, IsString, Ma
 
 import { GameTagWithCategoryDto } from './tag.type.js'
 
-import type { SupportedLanguage } from './game-translation.type.js'
-
 /**
  * base Game as it comes from db
  */
@@ -30,20 +28,45 @@ export class GameDto {
 }
 
 export class GameCompleteDto extends GameDto {
-    @ApiProperty({ example: 'Game Title', required: false })
-    title?: string
+    @ApiProperty({
+        example: 'Código Secreto',
+        description:
+            "The title the reader sees (ADR-0025): the edition in the reader's interface language, else the game's primary edition. Empty for a game with no edition.",
+    })
+    title: string
 
-    @ApiProperty({ example: { en: 'Game Title' } })
-    titleTranslations: Record<SupportedLanguage, string>
+    @ApiProperty({ example: 'es', description: 'The language of `title`.' })
+    titleLanguage: string
+
+    @ApiProperty({
+        example: { en: 'Codenames', es: 'Código Secreto' },
+        description: 'Every known edition title by language code, for "also known as" and search. Some endpoints list only the shown one.',
+    })
+    titleTranslations: Record<string, string>
 }
 
-export class GameWithTagsAndTranslationsDto extends GameDto {
-    @ApiProperty({
-        example: { en: 'Catan', es: 'Catan' },
-        description: 'Game title translations for supported languages',
-    })
-    translations: Record<SupportedLanguage, string>
+/** One published edition of a game, for choosing which one someone owns (ADR-0025). */
+export class GameEditionChoiceDto {
+    @ApiProperty({ example: 7, description: 'The edition id, to send as `editionId` when adding the game to a shelf.' })
+    id: number
 
+    @ApiProperty({ example: 'es', description: 'BCP 47 language of the edition.' })
+    languageCode: string
+
+    @ApiProperty({ example: 'Código Secreto' })
+    title: string
+
+    @ApiProperty({ example: false, description: 'The edition the game is best known by.' })
+    isPrimary: boolean
+}
+
+/** A game on someone's shelf: its title is the one on their own edition when they said which (ADR-0025 rule 1). */
+export class OwnedGameCompleteDto extends GameCompleteDto {
+    @ApiProperty({ example: 7, nullable: true, description: 'The edition this copy is, or null when the owner has not said.' })
+    ownedEditionId: number | null
+}
+
+export class GameWithTagsDto extends GameDto {
     @ApiProperty({
         type: [GameTagWithCategoryDto],
         description: 'Tags assigned to this game with their categories',
@@ -82,6 +105,18 @@ export class GameOwnershipDto {
 
     @ApiProperty({ example: 'Bought for the group', nullable: true })
     purchaseNotes: string | null
+
+    @ApiProperty({ example: 7, nullable: true, description: 'The edition this copy is, or null when the owner has not said.' })
+    editionId: number | null
+
+    @ApiProperty({
+        example: 'Codenames',
+        description: "The title of this copy: its edition's when `editionId` is set, else the title the reader sees.",
+    })
+    title: string
+
+    @ApiProperty({ example: 'en', description: 'The language of `title`.' })
+    titleLanguage: string
 }
 
 export class GameViewTagDto {
@@ -203,6 +238,12 @@ export class GameViewDto {
 
     @ApiProperty({ type: GameViewRatingDto })
     ratingData: GameViewRatingDto
+
+    @ApiProperty({
+        type: [GameEditionChoiceDto],
+        description: 'Every edition of the game, the primary one first, to choose which one a copy is.',
+    })
+    editions: Array<GameEditionChoiceDto>
 
     @ApiProperty({
         type: [GameCompleteDto],

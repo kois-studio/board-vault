@@ -52,7 +52,9 @@ describe('UsageNoticeComponent', () => {
 
         expect(updatePrivacySettings).toHaveBeenCalledWith({ usageAnalytics: false })
         expect(toggle?.getAttribute('aria-checked')).toBe('false')
-        expect(element.textContent).toContain('No problem, thanks for playing anyway!')
+        expect(element.querySelector('[aria-live="polite"]')?.textContent?.replace(/\s+/g, ' ').trim()).toBe(
+            'No problem, thanks for playing anyway! Change it anytime in Settings → Privacy.',
+        )
     })
 
     it('"Got it" keeps the switch as it is and closes the card', async () => {

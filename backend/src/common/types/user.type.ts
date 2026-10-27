@@ -15,9 +15,12 @@ import {
     ValidateNested,
 } from 'class-validator'
 
+import { SUPPORTED_LOCALES } from '../i18n/locale.js'
 import { DISPLAY_NAME_MAX_LENGTH } from '../utils/display-name.js'
 
 import { GameCompleteDto } from './game.type.js'
+
+import type { Locale } from '../i18n/locale.js'
 
 // Initials are only shown, and so only required, on an initials avatar. Icon
 // and emoji avatars may keep empty initials, and the API must accept back the
@@ -89,13 +92,21 @@ export class UserGetDto {
 
     @ApiProperty({ example: false })
     isAdmin: boolean
+
+    @ApiProperty({
+        enum: SUPPORTED_LOCALES,
+        nullable: true,
+        example: 'es',
+        description: 'The interface language the person chose (ADR-0024); null until they choose one.',
+    })
+    locale: Locale | null
 }
 
 /**
  * Authenticated self-profile response. Account state and administrator flags
  * belong to dedicated auth/admin contracts, not the ordinary profile payload.
  */
-export class UserSelfDto extends PickType(UserGetDto, ['id', 'email', 'username', 'displayName', 'avatar', 'createdAt']) {}
+export class UserSelfDto extends PickType(UserGetDto, ['id', 'email', 'username', 'displayName', 'avatar', 'createdAt', 'locale']) {}
 
 /**
  * Public identity used when a user is nested in another user's response.
@@ -120,6 +131,11 @@ export class UpdateUserBody {
     @ValidateNested()
     @Type(() => AvatarDto)
     avatar?: AvatarDto
+
+    @ApiProperty({ enum: SUPPORTED_LOCALES, required: false, example: 'es' })
+    @IsOptional()
+    @IsIn(SUPPORTED_LOCALES)
+    locale?: Locale
 }
 
 /**

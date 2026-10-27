@@ -1,6 +1,7 @@
 import { BadRequestException, NotFoundException } from '@nestjs/common'
 
 import { containsPattern, LIKE_ESCAPE } from '../like-pattern.js'
+import { resolvedTitleSql } from '../resolved-title.js'
 
 import { activityStatements, recordInTransaction } from './group-activity.queries.js'
 import { deleteGroupRows, departGroup } from './group-lifecycle.js'
@@ -342,8 +343,9 @@ export class GroupQueries {
         })
     }
 
-    getGroupPersonGameCatalog(search: string, limit = 100) {
+    getGroupPersonGameCatalog(search: string, locale: string, limit = 100) {
         const normalizedSearch = search.trim().toLowerCase()
+        const resolved = resolvedTitleSql('g.id', locale)
 
         return this.database.execute({
             sql: `
@@ -353,15 +355,12 @@ export class GroupQueries {
                     g.gameAvgDuration,
                     g.minPlayers,
                     g.maxPlayers,
-                    COALESCE(gt_en.title, gt_es.title) AS title,
-                    COALESCE(gt_en.title, '') AS titleEn,
-                    COALESCE(gt_es.title, '') AS titleEs
+                    ${resolved.title} AS title,
+                    ${resolved.language} AS titleLanguage
                 FROM Game g
-                LEFT JOIN GameTranslation gt_en ON gt_en.gameId = g.id AND gt_en.languageCode = 'en'
-                LEFT JOIN GameTranslation gt_es ON gt_es.gameId = g.id AND gt_es.languageCode = 'es'
-                WHERE COALESCE(gt_en.title, gt_es.title) IS NOT NULL
-                  AND (? = '' OR lower(COALESCE(gt_en.normalizedTitle, gt_es.normalizedTitle, '')) LIKE ? ${LIKE_ESCAPE})
-                ORDER BY lower(COALESCE(gt_en.title, gt_es.title)), g.id ASC
+                WHERE ${resolved.title} IS NOT NULL
+                  AND (? = '' OR EXISTS (SELECT 1 FROM GameEdition s WHERE s.gameId = g.id AND lower(s.normalizedTitle) LIKE ? ${LIKE_ESCAPE}))
+                ORDER BY lower(${resolved.title}), g.id ASC
                 LIMIT ?
             `,
             args: [normalizedSearch, containsPattern(normalizedSearch), Math.min(Math.max(limit, 1), 100)],
@@ -625,15 +624,16 @@ export class GroupQueries {
         return this.database.execute({
             sql: `
                 SELECT o.gameId, o.status, o.source, o.enteredByAccountId,
-                       o.confirmedByAccountId, o.createdAt, o.updatedAt
+                       o.confirmedByAccountId, o.createdAt, o.updatedAt, NULL, NULL
                 FROM GroupPersonGameOwnership o
                 INNER JOIN GroupPerson gp ON gp.id = o.groupPersonId AND gp.groupId = ?
                 WHERE o.groupPersonId = ?
                 UNION ALL
                 SELECT og.gameId, 'asserted', 'account_collection', gp.accountId,
-                       NULL, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP
+                       NULL, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, oe.title, oe.languageCode
                 FROM GroupPerson gp
                 INNER JOIN OwnedGame og ON og.accountId = gp.accountId
+                LEFT JOIN GameEdition oe ON oe.id = og.editionId AND oe.gameId = og.gameId
                 WHERE gp.id = ? AND gp.groupId = ? AND gp.kind = 'linked'
                   AND NOT EXISTS (
                       SELECT 1
@@ -731,7 +731,9 @@ export class GroupQueries {
      * without an account, as the group's counts define them. One row per person and game; a person
      * with no games has one row with no game.
      */
-    getGroupCollection(groupId: number) {
+    getGroupCollection(groupId: number, locale: string) {
+        const resolved = resolvedTitleSql('g.id', locale)
+
         return this.database.execute({
             sql: `
                 WITH owners AS (
@@ -748,13 +750,11 @@ export class GroupQueries {
                     WHERE gp.groupId = ? AND gp.kind = 'placeholder' AND gp.status = 'active'
                 )
                 SELECT owners.accountId, owners.groupPersonId, owners.displayName, owners.avatar,
-                       g.id, g.imageUrl, g.gameAvgDuration, g.minPlayers, g.maxPlayers, en.title, es.title, g.retailPriceCents
+                       g.id, g.imageUrl, g.gameAvgDuration, g.minPlayers, g.maxPlayers, ${resolved.title}, ${resolved.language}, g.retailPriceCents
                 FROM owners
                 LEFT JOIN Game g ON g.id = owners.gameId
-                LEFT JOIN GameTranslation en ON en.gameId = g.id AND en.languageCode = 'en'
-                LEFT JOIN GameTranslation es ON es.gameId = g.id AND es.languageCode = 'es'
                 ORDER BY owners.accountId IS NULL, owners.displayName COLLATE NOCASE, owners.accountId, owners.groupPersonId,
-                         COALESCE(en.title, es.title) COLLATE NOCASE
+                         ${resolved.title} COLLATE NOCASE
             `,
             args: [groupId, groupId],
         })
@@ -764,7 +764,8 @@ export class GroupQueries {
      * Standings, play counts and never-played games from the group's completed
      * game nights: four reads for the whole group, however many people it has.
      */
-    async getGroupInsights(groupId: number) {
+    async getGroupInsights(groupId: number, locale: string) {
+        const resolved = resolvedTitleSql('g.id', locale)
         // Who played what, once per person: a group person linked to an account counts as the account.
         const completedPlays = `
             WITH completed AS (SELECT id FROM Meet WHERE groupId = ? AND status = 'completed'),
@@ -796,10 +797,7 @@ export class GroupQueries {
                 LEFT JOIN GroupPerson gp ON gp.id = json_extract(r.value, '$.groupPersonId')
                 WHERE json_extract(r.value, '$.isWinner') = 1
             )`
-        const gameColumns = `g.id, g.imageUrl, g.gameAvgDuration, g.minPlayers, g.maxPlayers, gt_en.title, gt_es.title`
-        const gameTitles = `
-            LEFT JOIN GameTranslation gt_en ON gt_en.gameId = g.id AND gt_en.languageCode = 'en'
-            LEFT JOIN GameTranslation gt_es ON gt_es.gameId = g.id AND gt_es.languageCode = 'es'`
+        const gameColumns = `g.id, g.imageUrl, g.gameAvgDuration, g.minPlayers, g.maxPlayers, ${resolved.title}, ${resolved.language}`
 
         const [totals, standings, mostPlayed, neverPlayed] = await Promise.all([
             this.database.execute({
@@ -842,7 +840,6 @@ export class GroupQueries {
                     FROM MeetGame mg
                     JOIN Meet m ON m.id = mg.meetId AND m.groupId = ? AND m.status = 'completed'
                     JOIN Game g ON g.id = mg.gameId
-                    ${gameTitles}
                     WHERE mg.gameStatus = 'played'
                     GROUP BY g.id
                     ORDER BY sessions DESC, lastPlayedAt DESC
@@ -864,14 +861,13 @@ export class GroupQueries {
                     SELECT ${gameColumns}, COUNT(*) OVER () AS total
                     FROM shelf s
                     JOIN Game g ON g.id = s.gameId
-                    ${gameTitles}
                     WHERE NOT EXISTS (
                         SELECT 1
                         FROM MeetGame mg
                         JOIN Meet m ON m.id = mg.meetId AND m.groupId = ? AND m.status = 'completed'
                         WHERE mg.gameId = s.gameId AND mg.gameStatus = 'played'
                     )
-                    ORDER BY COALESCE(gt_en.title, gt_es.title) COLLATE NOCASE
+                    ORDER BY ${resolved.title} COLLATE NOCASE
                     LIMIT 12`,
                 args: [groupId, groupId, groupId],
             }),
@@ -880,7 +876,9 @@ export class GroupQueries {
         return { totals, standings, mostPlayed, neverPlayed }
     }
 
-    getGroupAcquisitionBoard(groupId: number) {
+    getGroupAcquisitionBoard(groupId: number, locale: string) {
+        const resolved = resolvedTitleSql('g.id', locale)
+
         return this.database.execute({
             sql: `
                 SELECT
@@ -889,8 +887,8 @@ export class GroupQueries {
                     g.gameAvgDuration,
                     g.minPlayers,
                     g.maxPlayers,
-                    gt_en.title,
-                    gt_es.title,
+                    ${resolved.title},
+                    ${resolved.language},
                     (
                         SELECT MIN(ggi_first.createdAt)
                         FROM GroupGameInterest ggi_first
@@ -931,8 +929,6 @@ export class GroupQueries {
                 FROM GroupGameInterest ggi
                 INNER JOIN Game g ON g.id = ggi.gameId
                 INNER JOIN Account a ON a.id = ggi.accountId
-                LEFT JOIN GameTranslation gt_en ON gt_en.gameId = g.id AND gt_en.languageCode = 'en'
-                LEFT JOIN GameTranslation gt_es ON gt_es.gameId = g.id AND gt_es.languageCode = 'es'
                 LEFT JOIN GroupAcquisitionDecision gad ON gad.groupId = ggi.groupId AND gad.gameId = ggi.gameId
                 LEFT JOIN Account decisionAccount ON decisionAccount.id = gad.decidedBy AND decisionAccount.isDeleted = 0
                 WHERE ggi.groupId = ?

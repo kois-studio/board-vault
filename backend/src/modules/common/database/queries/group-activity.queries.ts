@@ -1,3 +1,5 @@
+import { resolvedTitleSql } from '../resolved-title.js'
+
 import { PERSON_STANDING } from './groups.queries.js'
 
 import type { GroupActivityEntry } from '../../../../common/types/group-activity.type.js'
@@ -101,14 +103,14 @@ export class GroupActivityQueries {
         })
     }
 
-    /** Game titles, English first, as the rest of the app shows them. */
-    getGameTitles(gameIds: Array<number>) {
+    /** Game titles as the reader sees them (their language, else the primary edition), with the title's language. */
+    getGameTitles(gameIds: Array<number>, locale: string) {
+        const resolved = resolvedTitleSql('g.id', locale)
+
         return this.database.execute({
             sql: `
-                SELECT g.id, COALESCE(gt_en.title, gt_es.title) AS title
+                SELECT g.id, ${resolved.title} AS title, ${resolved.language} AS titleLanguage
                 FROM Game g
-                LEFT JOIN GameTranslation gt_en ON gt_en.gameId = g.id AND gt_en.languageCode = 'en'
-                LEFT JOIN GameTranslation gt_es ON gt_es.gameId = g.id AND gt_es.languageCode = 'es'
                 WHERE g.id IN (${gameIds.map(() => '?').join(', ')})
             `,
             args: gameIds,

@@ -3,6 +3,7 @@
         <a
             [routerLink]="isAuthenticated() ? '/dashboard' : '/'"
             aria-label="Board Vault home"
+            i18n-aria-label="Link on the logo in the header, to Home or the landing page"
             class="flex min-h-11 shrink-0 items-center gap-2 rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-bv-primary"
         >
             <app-logo class="text-bv-primary" [size]="28" />
@@ -10,7 +11,7 @@
         </a>
 
         @if (isAuthenticated()) {
-        <nav aria-label="Section navigation" class="hidden h-full lg:block">
+        <nav aria-label="Section navigation" i18n-aria-label="Name of the main sections bar in the header on a computer" class="hidden h-full lg:block">
             <ul class="flex h-full items-stretch gap-1">
                 @for (section of sections; track section.path) {
                 <li class="flex">
@@ -28,33 +29,41 @@
         </nav>
 
         <div class="ml-auto flex items-center gap-2">
+            @if (languages.length) {
+            <app-language-menu [locales]="languages" />
+            }
             <app-inbox />
             <app-profile-menu />
         </div>
         } @else if (!clerkIsSignedIn()) {
         <div class="ml-auto hidden items-center gap-6 lg:flex">
-            <nav aria-label="Primary navigation" class="flex items-center gap-6">
+            <nav aria-label="Primary navigation" i18n-aria-label="Name of the landing page links in the signed-out header" class="flex items-center gap-6">
                 @for (item of publicAnchors; track item.fragment) {
                 <a routerLink="/" [fragment]="item.fragment" class="font-medium text-bv-text-muted hover:text-bv-text">{{ item.label }}</a>
                 }
             </nav>
             @if (clerkIsAvailable() && selfRegistrationEnabled()) {
-            <button type="button" class="cursor-pointer font-medium" (click)="openClerkSignIn()">Log in</button>
-            <button appButton type="button" (click)="openClerkSignUp()">Start free</button>
+            <button type="button" class="cursor-pointer font-medium" (click)="openClerkSignIn()" i18n="Button in the signed-out header that opens sign-in">Log in</button>
+            <button appButton type="button" (click)="openClerkSignUp()" i18n="Call to action in the signed-out header that creates an account">Start free</button>
             } @else if (clerkIsAvailable()) {
-            <button type="button" class="cursor-pointer font-medium" (click)="openClerkSignIn()">Log in</button>
-            <a appButton routerLink="/register">Start free</a>
+            <button type="button" class="cursor-pointer font-medium" (click)="openClerkSignIn()" i18n="Button in the signed-out header that opens sign-in">Log in</button>
+            <a appButton routerLink="/register" i18n="Call to action in the signed-out header that creates an account">Start free</a>
             } @else {
-            <a routerLink="/login" class="font-medium">Log in</a>
-            <a appButton routerLink="/register">Start free</a>
+            <a routerLink="/login" class="font-medium" i18n="Button in the signed-out header that opens sign-in">Log in</a>
+            <a appButton routerLink="/register" i18n="Call to action in the signed-out header that creates an account">Start free</a>
             }
         </div>
+        @if (languages.length) {
+        <app-language-menu class="ml-auto lg:ml-0" [locales]="languages" />
+        }
         <button
             type="button"
-            class="ml-auto flex h-11 w-11 items-center justify-center rounded-lg text-bv-text-muted hover:bg-bv-surface-2 lg:hidden"
+            [class.ml-auto]="!languages.length"
+            [class.-ml-4]="languages.length"
+            class="flex h-11 w-11 items-center justify-center rounded-lg text-bv-text-muted hover:bg-bv-surface-2 lg:hidden"
             [attr.aria-expanded]="isMobileNavigationOpen()"
             aria-controls="mobile-navigation"
-            [attr.aria-label]="isMobileNavigationOpen() ? 'Close navigation' : 'Open navigation'"
+            [attr.aria-label]="isMobileNavigationOpen() ? closeNavigationLabel : openNavigationLabel"
             (click)="toggleMobileNavigation()"
         >
             <app-icon [name]="isMobileNavigationOpen() ? 'x' : 'menu'" [size]="22" />
@@ -63,7 +72,7 @@
     </div>
 
     @if (isMobileNavigationOpen() && !isAuthenticated()) {
-    <nav id="mobile-navigation" class="border-t border-bv-border px-4 py-3 lg:hidden" aria-label="Mobile navigation">
+    <nav id="mobile-navigation" class="border-t border-bv-border px-4 py-3 lg:hidden" aria-label="Mobile navigation" i18n-aria-label="Name of the links menu that opens on phones in the signed-out header">
         <div class="grid grid-cols-2 gap-2 sm:grid-cols-5">
             @for (item of mobilePublicNavigation; track item.path) {
             <a

@@ -47,6 +47,10 @@ describe('game artwork (e2e)', () => {
                     (2, '', 90, 3, 4);
                 INSERT INTO GameTranslation (gameId, languageCode, title, normalizedTitle) VALUES
                     (1, 'en', 'Azul', 'azul'), (2, 'en', 'Catan', 'catan');
+                INSERT INTO GameEdition (gameId, languageCode, title, normalizedTitle, isPrimary)
+                SELECT gameId, languageCode, title, normalizedTitle,
+                       ROW_NUMBER() OVER (PARTITION BY gameId ORDER BY languageCode = 'en' DESC, languageCode) = 1
+                FROM GameTranslation ORDER BY gameId, languageCode;
             `,
             encoding: 'utf8',
         })

@@ -13,6 +13,34 @@ operational details.
 
 ### Added
 
+- Your language choice is saved on your account: choose it in the language
+  menu or in Settings → Appearance, and Board Vault opens in it when you sign
+  in on another device.
+- Games now store their titles as editions, one per language. Nothing
+  changes on screen yet.
+- Administration edits a game's editions: a language, a title and a primary
+  mark for each, in any language, instead of the fixed English and Spanish
+  titles. The Games filter finds games with editions but no primary one
+  instead of games without a Spanish title.
+- A game proposal says which language its title is in (the page's language
+  until changed) and can list the game's titles in other languages. Approving
+  it creates those editions, with the proposed title's language as primary.
+- Say which edition you own: adding a game that has several editions asks
+  which one (the page's language preselected, else the original), and the
+  game page shows and changes it. My Games, who brings a game to a night and
+  a person's linked games then show the title on your own box.
+- Game titles in groups, history and recommendations follow the page's
+  language, and a game that only has an edition in another language shows
+  that one.
+- Tag and tag category names in Spanish, French, German, and Italian, edited
+  in Administration → Tags; Browse filters and game pages show them in the
+  page's language.
+- The landing page in Spanish, French, German, and Italian, with links
+  between its languages for search engines. The example games use each
+  language's edition title (Código Secreto, Zug um Zug).
+- Home and the group pages (group, settings, new group, a person of the
+  group, taking over a person, the group's history) in Spanish, French,
+  German, and Italian, with counts that agree in every language.
 - Home always offers recording and planning. With several groups each has a
   corner pin that appears on hover; pinned groups lead.
 - Recording keeps its group context, offers Today/Yesterday and same-day
@@ -256,6 +284,11 @@ operational details.
 
 ### Fixed
 
+- Game titles on Home and the group pages show in the page's language, and
+  a few Spanish, French, German, and Italian texts there read more naturally
+  and without gendered forms.
+- Administration can create and rename tags: the API refused them, asking
+  for a game count that only it can know.
 - Correcting a session no longer lists a removed game as "shortlisted but not
   played", and on finished nights keeps people taken out as absent instead of
   erasing their invitation.

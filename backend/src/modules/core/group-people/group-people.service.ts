@@ -1,9 +1,12 @@
 import { ForbiddenException, Injectable, NotFoundException } from '@nestjs/common'
 
+import { titleFieldsFromRow } from '../../../common/utils/game-title.js'
 import { DatabaseService } from '../../common/database/database.service.js'
+import { GameTranslationService } from '../game-translation/game-translation.service.js'
 import { normalizeTitle } from '../game-translation/normalize-title.js'
 import { ActivityNotifier } from '../notifications/activity-notifier.service.js'
 
+import type { Locale } from '../../../common/i18n/locale.js'
 import type { GameCompleteDto } from '../../../common/types/game.type.js'
 import type { GroupActivityType } from '../../../common/types/group-activity.type.js'
 import type {
@@ -25,6 +28,7 @@ export class GroupPeopleService {
     constructor(
         private readonly databaseService: DatabaseService,
         private readonly activityNotifier: ActivityNotifier,
+        private readonly gameTranslationService: GameTranslationService,
     ) {}
 
     async getWorkspace(actorAccountId: number, groupId: number, includeArchived = false): Promise<Array<GroupPersonWorkspaceDto>> {
@@ -54,24 +58,31 @@ export class GroupPeopleService {
         )
     }
 
-    async getCatalog(actorAccountId: number, groupId: number, search = ''): Promise<Array<GameCompleteDto>> {
+    async getCatalog(actorAccountId: number, groupId: number, locale: Locale, search = ''): Promise<Array<GameCompleteDto>> {
         await this.assertGroupMember(actorAccountId, groupId)
         // Stored titles are normalized, so the search is too: "love letter" finds Love Letter.
         const normalizedSearch = normalizeTitle(search)
 
         // Punctuation alone normalizes to nothing: a search with no match, not the whole catalogue.
         if (normalizedSearch === '' && search.trim() !== '') return []
-        const result = await this.databaseService.groups.getGroupPersonGameCatalog(normalizedSearch)
+        const result = await this.databaseService.groups.getGroupPersonGameCatalog(normalizedSearch, locale)
 
-        return result.rows.map(row => ({
-            id: Number(row[0]),
-            imageUrl: String(row[1]),
-            gameAvgDuration: Number(row[2]),
-            minPlayers: Number(row[3]),
-            maxPlayers: Number(row[4]),
-            title: String(row[5]),
-            titleTranslations: { en: String(row[6] ?? ''), es: String(row[7] ?? '') },
-        }))
+        // The people editor and the log-session wizard filter this list on any title, so it carries every edition.
+        const editions = await this.gameTranslationService.getTranslationsByGameIds(result.rows.map(row => Number(row[0])))
+
+        return result.rows.map(row => {
+            const title = titleFieldsFromRow(row[5], row[6])
+
+            return {
+                id: Number(row[0]),
+                imageUrl: String(row[1]),
+                gameAvgDuration: Number(row[2]),
+                minPlayers: Number(row[3]),
+                maxPlayers: Number(row[4]),
+                ...title,
+                titleTranslations: { ...title.titleTranslations, ...editions.get(Number(row[0])) },
+            }
+        })
     }
 
     async create(actorAccountId: number, groupId: number, body: CreateGroupPersonBody): Promise<GroupPersonDto> {
@@ -328,6 +339,8 @@ export class GroupPeopleService {
             confirmedByAccountId: row[4] === null ? null : Number(row[4]),
             createdAt: String(row[5]),
             updatedAt: String(row[6]),
+            copyTitle: row[7] === null ? null : String(row[7]),
+            copyTitleLanguage: row[8] === null ? null : String(row[8]),
         }))
     }
 

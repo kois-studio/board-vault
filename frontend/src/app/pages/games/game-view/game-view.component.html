@@ -16,7 +16,7 @@
       <section class="grid grid-cols-1 gap-8 md:grid-cols-[minmax(0,320px)_1fr] lg:gap-12" aria-labelledby="game-title">
         <div class="relative mx-auto aspect-square w-full max-w-xs rounded-2xl border border-bv-border bg-bv-surface p-3 shadow-sm md:max-w-none">
           <div class="h-full w-full overflow-hidden rounded-xl">
-            <image-background class="h-full" [src]="game.gameData.imageUrl" [alt]="game.gameData.titleTranslations.en + ' cover'" loading="eager" />
+            <image-background class="h-full" [src]="game.gameData.imageUrl" [alt]="(game.gameData | gameTitle) + ' cover'" loading="eager" />
           </div>
           @if (!game.ownedGameData) {
             <app-wishlist-toggle class="absolute right-5 top-5" [game]="game.gameData" (changed)="onWishlistChanged($event)" />
@@ -24,9 +24,10 @@
         </div>
 
         <div class="min-w-0">
-          <h1 id="game-title" class="text-3xl font-bold tracking-tight md:text-4xl">{{ game.gameData | gameTitle }}</h1>
-          @if (game.gameData.titleTranslations.es && game.gameData.titleTranslations.es !== game.gameData.titleTranslations.en) {
-            <p class="mt-1 text-secondary">{{ game.gameData.titleTranslations.es }}</p>
+          <h1 id="game-title" class="text-3xl font-bold tracking-tight md:text-4xl" [attr.lang]="titleLanguage(game.gameData)">{{ game.gameData | gameTitle }}</h1>
+          <!-- Its titles in other editions, such as Codenames under Código Secreto (ADR-0025). -->
+          @for (other of otherTitles(game.gameData); track other.lang) {
+            <p class="mt-1 text-secondary" [attr.lang]="other.lang">{{ other.title }}</p>
           }
 
           <ul class="mt-4 flex flex-wrap gap-2 text-sm" aria-label="Game facts">
@@ -92,6 +93,18 @@
                 <app-icon name="circle-check" [size]="16" aria-hidden="true" /> In your games
               </span>
               <button appButton variant="secondary" size="small" (click)="removeFromCollection()" [loading]="PREVENT_SPAM.isLoadingRemoveFromCollection">Remove</button>
+              <!-- Which edition your copy is, for a game that has several (ADR-0025). -->
+              @if (game.editions.length > 1) {
+                <p class="flex w-full flex-wrap items-center gap-x-2 gap-y-1 text-sm text-secondary">
+                  <span i18n="Label before the title of the edition of a game you own, on the game page">Your copy:</span>
+                  @if (game.ownedGameData.editionId !== null) {
+                    <span class="font-medium text-bv-text" [attr.lang]="game.ownedGameData.titleLanguage">{{ game.ownedGameData.title }}</span>
+                  } @else {
+                    <span class="font-medium text-bv-text" i18n="Shown on the game page when you have not said which edition of the game you own">Edition not set</span>
+                  }
+                  <button type="button" class="font-medium text-bv-primary underline-offset-2 hover:underline" [disabled]="PREVENT_SPAM.isLoadingChangeEdition" (click)="changeEdition()" i18n="Button on the game page that asks again which edition of the game you own">Change edition</button>
+                </p>
+              }
             } @else {
               <button appButton icon="plus-lg" (click)="addToCollection()" [loading]="PREVENT_SPAM.isLoadingAddToCollection">I own this game</button>
             }

@@ -9,7 +9,9 @@ import { DialogDirective } from '../../../../components/ui/dialog/dialog.directi
 import { IconComponent } from '../../../../components/ui/icon/icon.component'
 import { ImageBackgroundComponent } from '../../../../components/ui/image-background/image-background.component'
 import { SpinnerComponent } from '../../../../components/ui/spinner/spinner.component'
+import { languageName } from '../../../../core/i18n/language-names'
 import { LogService } from '../../../../core/services/log.service'
+import { rowsFromProposal, toEditionsBody } from '../admin-game-editions/edition-rows'
 import {
     AdminGameFieldsComponent,
     createGameFieldsForm,
@@ -86,9 +88,8 @@ export class AdminProposalReviewComponent implements OnInit {
             this.selectedTagIds.set(preselected)
             this.tagGroups.set(groupTags(tags, categories))
             this.form.reset({
-                titleEn: proposal.title,
-                // Spanish starts as a copy: most titles are the same in both.
-                titleEs: proposal.title,
+                // The proposal's title in its language is primary, then the other titles it listed.
+                editions: rowsFromProposal(proposal),
                 imageUrl: proposal.imageUrl ?? '',
                 minPlayers: proposal.minPlayers,
                 maxPlayers: proposal.maxPlayers,
@@ -120,7 +121,7 @@ export class AdminProposalReviewComponent implements OnInit {
         const value = this.form.getRawValue()
         this.isSubmitting.set(true)
         const createdGameId = await this.proposalsService.approveProposal(proposal.id, {
-            translations: { en: value.titleEn.trim(), es: value.titleEs.trim() },
+            editions: toEditionsBody(value.editions),
             imageUrl: value.imageUrl.trim(),
             minPlayers: value.minPlayers ?? undefined,
             maxPlayers: value.maxPlayers ?? undefined,
@@ -200,8 +201,12 @@ export class AdminProposalReviewComponent implements OnInit {
         }
     }
 
+    public languageName(code: string): string {
+        return languageName(code)
+    }
+
     public gameTitle(game: AdminGameType): string {
-        return game.title || game.translations.es || `Game ${game.id}`
+        return game.title || game.editions[0]?.title || `Game ${game.id}`
     }
 
     public addToText(addTo: AdminGameProposalType['addTo']): string {

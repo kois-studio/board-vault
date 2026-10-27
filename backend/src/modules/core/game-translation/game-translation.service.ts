@@ -7,9 +7,11 @@ import { DatabaseService } from '../../common/database/database.service.js'
 import { gameTranslationsSchema } from './game-translation.schema.js'
 import { normalizeTitle } from './normalize-title.js'
 
+import type { Locale } from '../../../common/i18n/locale.js'
 import type { SuccessDto } from '../../../common/types/auth.type.js'
-import type { GameTranslationDto, SupportedLanguage } from '../../../common/types/game-translation.type.js'
+import type { GameTranslationDto } from '../../../common/types/game-translation.type.js'
 import type { BrowseGamesPaginationDto } from '../../../common/types/game.type.js'
+import type { GameTitleFields } from '../../../common/utils/game-title.js'
 
 @Injectable()
 export class GameTranslationService {
@@ -24,7 +26,7 @@ export class GameTranslationService {
     private _parseResultSet(resultSet: ResultSet): Array<GameTranslationDto> {
         const gameTranslations = resultSet.rows.map(row => ({
             gameId: Number(row[0]),
-            languageCode: String(row[1]) as SupportedLanguage,
+            languageCode: String(row[1]),
             title: String(row[2]),
             normalizedTitle: String(row[3]),
         }))
@@ -52,7 +54,7 @@ export class GameTranslationService {
     }
 
     /** Translations for many games in one query, keyed by game id. */
-    async getTranslationsByGameIds(gameIds: Array<number>): Promise<Map<number, Record<SupportedLanguage, string>>> {
+    async getTranslationsByGameIds(gameIds: Array<number>): Promise<Map<number, Record<string, string>>> {
         const uniqueIds = [...new Set(gameIds)]
 
         if (uniqueIds.length === 0) {
@@ -69,21 +71,44 @@ export class GameTranslationService {
         )
     }
 
-    private _reduceGameTranslations(gameTranslations: Array<GameTranslationDto>): Record<SupportedLanguage, string> {
-        return gameTranslations.reduce(
-            (acc, translation) => {
-                acc[translation.languageCode] = translation.title
-                return acc
-            },
-            { en: '', es: '' } as Record<SupportedLanguage, string>,
+    /** Each game's title for a reader (ADR-0025: their language, else the primary edition) and the language it is in. */
+    async getResolvedTitles(gameIds: Array<number>, locale: Locale): Promise<Map<number, { title: string; titleLanguage: string }>> {
+        const uniqueIds = [...new Set(gameIds)]
+
+        if (uniqueIds.length === 0) return new Map()
+        const result = await this.databaseService.games.getResolvedTitlesByGameIds(uniqueIds, locale)
+
+        return new Map(
+            result.rows.map(row => [
+                Number(row[0]),
+                { title: row[1] === null ? '' : String(row[1]), titleLanguage: row[2] === null ? 'en' : String(row[2]) },
+            ]),
         )
+    }
+
+    /** The games with `title` and `titleLanguage` resolved for the reader and every edition in `titleTranslations`. */
+    async withTitles<T extends { id: number }>(games: Array<T>, locale: Locale): Promise<Array<T & GameTitleFields>> {
+        const ids = games.map(game => game.id)
+        const [translations, resolved] = await Promise.all([this.getTranslationsByGameIds(ids), this.getResolvedTitles(ids, locale)])
+
+        return games.map(game => ({
+            ...game,
+            title: resolved.get(game.id)?.title ?? '',
+            titleLanguage: resolved.get(game.id)?.titleLanguage ?? 'en',
+            titleTranslations: translations.get(game.id) ?? {},
+        }))
+    }
+
+    /** One title per edition, keyed by its language code. */
+    private _reduceGameTranslations(gameTranslations: Array<GameTranslationDto>): Record<string, string> {
+        return Object.fromEntries(gameTranslations.map(translation => [translation.languageCode, translation.title]))
     }
 
     // --------------------------------------------------------------------------
     //        Methods
     // --------------------------------------------------------------------------
 
-    async getGameTranslations(gameId: number): Promise<Record<SupportedLanguage, string>> {
+    async getGameTranslations(gameId: number): Promise<Record<string, string>> {
         this.LOGGER.log('Getting translations for game')
 
         // Step 1: Try to get them from cache

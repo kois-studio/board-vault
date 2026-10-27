@@ -1,7 +1,7 @@
 <div
     class="flex h-full w-full items-center justify-center overflow-hidden rounded bg-bv-surface-2"
     [attr.role]="src() && !hasError() ? null : 'img'"
-    [attr.aria-label]="src() && !hasError() ? null : alt() + ' unavailable'"
+    [attr.aria-label]="src() && !hasError() ? null : unavailableLabel()"
 >
     @if (src() && !hasError()) {
         <img
@@ -13,6 +13,6 @@
             (error)="handleImageError()"
         />
     } @else {
-        <span class="px-2 text-center text-xs text-bv-text-muted">Artwork unavailable</span>
+        <span class="px-2 text-center text-xs text-bv-text-muted" i18n="Shown in place of a game's picture that does not load">Artwork unavailable</span>
     }
 </div>

@@ -1,4 +1,6 @@
 import * as z from 'zod/mini'
+import { SUPPORTED_LOCALES } from '../core/i18n/locales'
+import { noResultText, reasonsText } from '../core/i18n/recommendation-text'
 import { resolveArtworkUrl } from '../core/utils/artworkUrl'
 import { shortName } from '../core/utils/shortName'
 import type {
@@ -15,6 +17,7 @@ import type {
     CollectionActivityWithGameDataType,
     CreatedGroupType,
     GameCompleteType,
+    GameEditionType,
     GameOwnedType,
     GameProposalType,
     GameResultsUpdatedType,
@@ -33,7 +36,9 @@ import type {
     MeetAttendeeStatusType,
     MeetType,
     MeetWithAttendeesAndGamesType,
+    NameTranslationsType,
     NotificationType,
+    OwnedGameCompleteType,
     PrivacySettingsStateType,
     RecommendationSignalsType,
     RecommendationsType,
@@ -57,7 +62,16 @@ import type {
 } from './api.types'
 
 /** A person's name, cut to the shared limit so it reads the same everywhere (see shortName). */
-const displayNameSchema = z.pipe(z.string(), z.transform(shortName))
+/** What the API calls a deleted account wherever it still appears (ADR-0018). */
+const DELETED_ACCOUNT_NAME = 'Deleted account'
+
+/** Names are cut once, here; a deleted account reads in the page's language. */
+const displayNameSchema = z.pipe(
+    z.string(),
+    z.transform((name) =>
+        name === DELETED_ACCOUNT_NAME ? $localize`:A person whose account was deleted:Deleted account` : shortName(name),
+    ),
+)
 
 /** A game's artwork: stored artwork arrives as a path on the API and leaves here as a full address. */
 const artworkUrlSchema = z.pipe(
@@ -72,22 +86,37 @@ export const clerkAuthStatusSchema = z.object({
     clerkUserId: z.string(),
 })
 
-export const gameCompleteSchema: z.ZodMiniType<GameCompleteType> = z.object({
+const gameCompleteObject = z.object({
     id: z.number(),
     title: z.optional(z.string()),
+    titleLanguage: z.optional(z.string()),
     imageUrl: artworkUrlSchema,
     gameAvgDuration: z.number(),
     minPlayers: z.number(),
     maxPlayers: z.number(),
-    titleTranslations: z.object({
-        en: z.string(),
-        es: z.string(),
-    }),
+    titleTranslations: z.record(z.string(), z.string()),
 })
+
+export const gameCompleteSchema: z.ZodMiniType<GameCompleteType> = gameCompleteObject
+
+/** Shelf entries say which edition the copy is; the wishlist's entries do not, which reads as "not said". */
+const ownedGameCompleteSchema: z.ZodMiniType<OwnedGameCompleteType> = z.extend(gameCompleteObject, {
+    ownedEditionId: z._default(z.nullable(z.number()), null),
+})
+
+export const gameEditionSchema: z.ZodMiniType<GameEditionType> = z.object({
+    id: z.number(),
+    languageCode: z.string(),
+    title: z.string(),
+    isPrimary: z.boolean(),
+})
+
+export const gameEditionsSchema = z.array(gameEditionSchema)
 
 const gameSchema: z.ZodMiniType<GameType> = z.object({
     id: z.number(),
     title: z.optional(z.string()),
+    titleLanguage: z.optional(z.string()),
     imageUrl: artworkUrlSchema,
     gameAvgDuration: z.number(),
     minPlayers: z.number(),
@@ -95,7 +124,7 @@ const gameSchema: z.ZodMiniType<GameType> = z.object({
 })
 
 export const gamesSchema = z.array(gameSchema)
-export const userGamesSchema = z.array(gameCompleteSchema)
+export const userGamesSchema = z.array(ownedGameCompleteSchema)
 
 const paginationSchema = z.object({
     currentPage: z.number(),
@@ -104,11 +133,20 @@ const paginationSchema = z.object({
     itemsPerPage: z.number(),
 })
 
+/** Absent from an API older than the translations, which reads as "none yet". */
+const nameTranslationsSchema: z.ZodMiniType<NameTranslationsType> = z._default(
+    z.optional(
+        z.object({ es: z.optional(z.string()), fr: z.optional(z.string()), de: z.optional(z.string()), it: z.optional(z.string()) }),
+    ),
+    {},
+)
+
 export const tagCategorySchema: z.ZodMiniType<TagCategoryType> = z.object({
     id: z.number(),
     name: z.string(),
     tags: z.array(z.number()),
     gameCount: z.number(),
+    translations: nameTranslationsSchema,
 })
 
 export const tagSchema: z.ZodMiniType<TagType> = z.object({
@@ -116,6 +154,7 @@ export const tagSchema: z.ZodMiniType<TagType> = z.object({
     name: z.string(),
     categoryId: z.number(),
     gameCount: z.number(),
+    translations: nameTranslationsSchema,
 })
 
 export const adminTagCategoriesSchema = z.array(tagCategorySchema)
@@ -132,9 +171,9 @@ export const adminGameSchema: z.ZodMiniType<AdminGameType> = z.object({
     gameAvgDuration: z.number(),
     minPlayers: z.number(),
     maxPlayers: z.number(),
-    translations: z.object({ en: z.string(), es: z.string() }),
+    editions: z.array(z.object({ id: z.number(), languageCode: z.string(), title: z.string(), isPrimary: z.boolean() })),
     tags: z.array(z.object({ id: z.number(), name: z.string(), categoryName: z.string() })),
-    issues: z.array(z.enum(['no-title', 'no-artwork', 'no-spanish', 'no-tags', 'no-price'])),
+    issues: z.array(z.enum(['no-title', 'no-artwork', 'no-primary', 'no-tags', 'no-price'])),
     artworkSource: z.nullable(z.string()),
     retailPrice: z.nullable(z.number()),
 })
@@ -151,7 +190,7 @@ export const adminOverviewSchema: z.ZodMiniType<AdminOverviewType> = z.object({
     catalogueIssues: z.object({
         'no-title': z.number(),
         'no-artwork': z.number(),
-        'no-spanish': z.number(),
+        'no-primary': z.number(),
         'no-tags': z.number(),
         'no-price': z.number(),
     }),
@@ -187,6 +226,7 @@ export const gameOwnedSchema: z.ZodMiniType<GameOwnedType> = z.object({
     purchaseDate: z.nullable(z.string()),
     purchasePrice: z.nullable(z.number()),
     purchaseNotes: z.nullable(z.string()),
+    editionId: z._default(z.nullable(z.number()), null),
 })
 
 const gameViewRatingSchema = z.object({
@@ -202,8 +242,12 @@ export const gameViewSchema: z.ZodMiniType<GameViewType> = z.object({
             purchaseDate: z.nullable(z.string()),
             purchasePrice: z.nullable(z.number()),
             purchaseNotes: z.nullable(z.string()),
+            editionId: z.nullable(z.number()),
+            title: z.string(),
+            titleLanguage: z.string(),
         }),
     ),
+    editions: z.array(gameEditionSchema),
     tags: z.array(z.object({ tag: z.string(), category: z.string() })),
     wishlistedGameData: z.nullable(z.object({ dateAdded: z.string(), notes: z.string() })),
     ratingData: gameViewRatingSchema,
@@ -232,6 +276,7 @@ export const userSchema: z.ZodMiniType<UserType> = z.object({
     ...publicUserSchema.shape,
     email: z.email(),
     createdAt: z.string(),
+    locale: z.optional(z.nullable(z.enum(SUPPORTED_LOCALES))),
 })
 
 const groupSchema: z.ZodMiniType<GroupType> = z.object({
@@ -301,7 +346,11 @@ const groupActivityNameSchema = z.object({
     name: z.string(),
     standing: z.enum(['member', 'left', 'deleted']),
 })
-const groupActivityGameSchema = z.object({ id: z.number(), title: z.nullable(z.string()) })
+const groupActivityGameSchema = z.object({
+    id: z.number(),
+    title: z.nullable(z.string()),
+    titleLanguage: z.optional(z.nullable(z.string())),
+})
 
 export const groupActivityPageSchema: z.ZodMiniType<GroupActivityPageType> = z.object({
     entries: z.array(
@@ -376,6 +425,8 @@ const gameProposalShape = z.object({
     submittedBy: z.number(),
     status: z.enum(['pending', 'approved', 'rejected', 'duplicate']),
     title: z.string(),
+    titleLanguage: z.string(),
+    otherTitles: z.array(z.object({ languageCode: z.string(), title: z.string() })),
     imageUrl: z.nullable(z.string()),
     gameAvgDuration: z.nullable(z.number()),
     minPlayers: z.nullable(z.number()),
@@ -474,6 +525,8 @@ const groupPersonOwnershipSchema = z.object({
     confirmedByAccountId: z.nullable(z.number()),
     createdAt: z.string(),
     updatedAt: z.string(),
+    copyTitle: z._default(z.nullable(z.string()), null),
+    copyTitleLanguage: z._default(z.nullable(z.string()), null),
 })
 
 const groupPersonPreferenceSchema = z.object({
@@ -561,7 +614,13 @@ export const meetSchema: z.ZodMiniType<MeetType> = meetFields
 
 const gameVotesSchema = z.object({ gameId: z.number(), accountIds: z.array(z.number()) })
 
-const gameBringerSchema = z.object({ gameId: z.number(), accountId: z.nullable(z.number()), groupPersonId: z.nullable(z.number()) })
+const gameBringerSchema = z.object({
+    gameId: z.number(),
+    accountId: z.nullable(z.number()),
+    groupPersonId: z.nullable(z.number()),
+    copyTitle: z._default(z.nullable(z.string()), null),
+    copyTitleLanguage: z._default(z.nullable(z.string()), null),
+})
 
 export const meetDetailsSchema: z.ZodMiniType<MeetWithAttendeesAndGamesType> = z.extend(meetFields, {
     attendees: z.array(z.number()),
@@ -676,6 +735,15 @@ export const userNotificationsSchema: z.ZodMiniType<Array<NotificationType>> = z
         createdAt: z.string(),
         isRead: z.boolean(),
         data: z.optional(z.record(z.string(), z.unknown())),
+        context: z.optional(
+            z.object({
+                accounts: z.array(z.object({ id: z.number(), name: z.nullable(z.string()), deleted: z.boolean() })),
+                groups: z.array(z.object({ id: z.number(), name: z.string() })),
+                sessions: z.array(z.object({ id: z.number(), date: z.string(), timezone: z.string() })),
+                people: z.array(z.object({ id: z.number(), name: z.string() })),
+                games: z.array(z.object({ id: z.number(), title: z.string(), titleLanguage: z.string() })),
+            }),
+        ),
     }),
 )
 
@@ -742,29 +810,44 @@ export const sessionPlayedGamesUpdatedSchema: z.ZodMiniType<SessionPlayedGamesUp
     ),
 })
 
-export const recommendationsSchema: z.ZodMiniType<RecommendationsType> = z.object({
-    groupId: z.number(),
-    attendeeIds: z.array(z.number()),
-    participantIds: z.optional(z.array(z.number())),
-    availableMinutes: z.nullable(z.number()),
-    decisionLens: z.enum(['balanced', 'fresh', 'favorite']),
-    recommendations: z.array(
-        z.object({
-            gameData: gameCompleteSchema,
-            score: z.number(),
-            explanation: z.object({
-                reasons: z.array(z.string()),
-                attendeeOwnerCount: z.number(),
-                attendeeCount: z.number(),
-                averageReview: z.nullable(z.number()),
-                lastPlayedAt: z.nullable(z.string()),
-                interestedCount: z.number(),
-                notForUsCount: z.number(),
+const reasonCodeSchema = z.object({ code: z.string(), values: z.optional(z.record(z.string(), z.number())) })
+
+/** Reasons arrive as codes and leave here as sentences in the page's language (ADR-0024). */
+export const recommendationsSchema: z.ZodMiniType<RecommendationsType> = z.pipe(
+    z.object({
+        groupId: z.number(),
+        attendeeIds: z.array(z.number()),
+        participantIds: z.optional(z.array(z.number())),
+        availableMinutes: z.nullable(z.number()),
+        decisionLens: z.enum(['balanced', 'fresh', 'favorite']),
+        recommendations: z.array(
+            z.object({
+                gameData: gameCompleteSchema,
+                score: z.number(),
+                explanation: z.object({
+                    reasons: z.array(z.string()),
+                    reasonCodes: z.optional(z.array(reasonCodeSchema)),
+                    attendeeOwnerCount: z.number(),
+                    attendeeCount: z.number(),
+                    averageReview: z.nullable(z.number()),
+                    lastPlayedAt: z.nullable(z.string()),
+                    interestedCount: z.number(),
+                    notForUsCount: z.number(),
+                }),
             }),
-        }),
-    ),
-    noResultReason: z.nullable(z.string()),
-})
+        ),
+        noResultReason: z.nullable(z.string()),
+        noResultReasonCode: z.optional(z.nullable(reasonCodeSchema)),
+    }),
+    z.transform(({ noResultReasonCode, ...result }) => ({
+        ...result,
+        recommendations: result.recommendations.map(({ explanation: { reasonCodes, ...explanation }, ...recommendation }) => ({
+            ...recommendation,
+            explanation: { ...explanation, reasons: reasonsText(explanation.reasons, reasonCodes) },
+        })),
+        noResultReason: (noResultReasonCode && noResultText(noResultReasonCode)) || result.noResultReason,
+    })),
+)
 
 export const recommendationSignalsSchema: z.ZodMiniType<RecommendationSignalsType> = z.object({
     groupId: z.number(),

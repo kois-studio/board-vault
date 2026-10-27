@@ -59,6 +59,10 @@ describe('leaving a group and deleting an account (e2e)', () => {
                 VALUES (10, '', 60, 2, 4), (11, '', 45, 2, 5);
                 INSERT INTO GameTranslation (gameId, languageCode, title, normalizedTitle)
                 VALUES (10, 'en', 'Catan', 'catan'), (11, 'en', 'Carcassonne', 'carcassonne');
+                INSERT INTO GameEdition (gameId, languageCode, title, normalizedTitle, isPrimary)
+                SELECT gameId, languageCode, title, normalizedTitle,
+                       ROW_NUMBER() OVER (PARTITION BY gameId ORDER BY languageCode = 'en' DESC, languageCode) = 1
+                FROM GameTranslation ORDER BY gameId, languageCode;
                 INSERT INTO OwnedGame (accountId, gameId) VALUES (2, 10), (1, 11);
                 INSERT INTO WishlistedGame (accountId, gameId) VALUES (2, 11);
                 INSERT INTO GameReview (accountId, gameId, review) VALUES (2, 10, 9);

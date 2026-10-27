@@ -12,7 +12,9 @@ import { ContainerWrapperComponent } from '../../components/ui/container-wrapper
 import { IconComponent } from '../../components/ui/icon/icon.component'
 import { ImageBackgroundComponent } from '../../components/ui/image-background/image-background.component'
 import { SpinnerComponent } from '../../components/ui/spinner/spinner.component'
+import { GameTitlePipe } from '../../core/pipes/game-title.pipe'
 import { DataService } from '../../core/services/data.service'
+import { gameTitleLanguage } from '../../core/utils/gameTitle'
 import { initialsAvatar } from '../../core/utils/initialsAvatar'
 
 /**
@@ -27,6 +29,7 @@ import { initialsAvatar } from '../../core/utils/initialsAvatar'
         ButtonComponent,
         ContainerWrapperComponent,
         CurrencyPipe,
+        GameTitlePipe,
         IconComponent,
         ImageBackgroundComponent,
         ImageProfileComponent,
@@ -39,6 +42,8 @@ export class GroupPersonPageComponent {
     private readonly api = inject(Api)
     private readonly dataService = inject(DataService)
     private readonly params = toSignal(inject(ActivatedRoute).paramMap, { requireSync: true })
+
+    protected readonly titleLanguage = gameTitleLanguage
 
     public readonly groupId = computed(() => Number(this.params().get('groupId')))
     private readonly accountId = computed(() => (this.params().has('accountId') ? Number(this.params().get('accountId')) : null))

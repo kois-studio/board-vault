@@ -16,7 +16,7 @@
         <div class="md:sticky md:top-6" [class.hidden]="hasSection()" [class.md:block]="hasSection()">
             <ng-content select="[sidebarHeader]" />
 
-            <nav [attr.aria-label]="title() + ' sections'" class="grid gap-6">
+            <nav [attr.aria-label]="navigationLabel()" class="grid gap-6">
                 @for (group of groups(); track $index) {
                 <div class="rounded-xl border border-bv-border bg-bv-surface p-2 md:border-0 md:bg-transparent md:p-0">
                     @if (group.label) {
@@ -43,7 +43,7 @@
                                 <span class="min-w-0 flex-1 truncate">{{ item.label }}</span>
                                 @if (item.badge) {
                                 <span class="rounded-full bg-bv-primary px-2 py-0.5 text-xs font-semibold text-bv-on-primary">
-                                    {{ item.badge }}<span class="sr-only"> {{ item.badgeLabel ?? 'new' }}</span>
+                                    {{ item.badge }}<span class="sr-only"> {{ item.badgeLabel ?? newLabel }}</span>
                                 </span>
                                 }
                                 <app-icon name="chevron-right" [size]="16" className="md:hidden" />
@@ -61,7 +61,7 @@
                     class="flex min-h-11 items-center gap-3 rounded-lg px-3 py-2 text-bv-text-muted hover:bg-bv-surface-2 hover:text-bv-text focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-bv-primary"
                 >
                     <app-icon name="arrow-left" [size]="18" />
-                    <span>Back to app</span>
+                    <span i18n="Link at the bottom of the Settings menu back to Home">Back to app</span>
                 </a>
             </div>
         </div>

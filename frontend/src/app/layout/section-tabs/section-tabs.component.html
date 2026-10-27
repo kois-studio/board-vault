@@ -1,6 +1,6 @@
 @if (subsections(); as subsections) {
 <div class="border-b border-bv-border bg-bv-surface">
-    <nav class="container mx-auto flex max-w-6xl items-center gap-1 overflow-x-auto px-4 md:gap-2" aria-label="Subsection navigation">
+    <nav class="container mx-auto flex max-w-6xl items-center gap-1 overflow-x-auto px-4 md:gap-2" aria-label="Subsection navigation" i18n-aria-label="Name of the tabs bar inside Collection or Play">
         @for (subsection of subsections; track subsection.path) {
         <a
             [routerLink]="subsection.path"

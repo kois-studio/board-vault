@@ -6,6 +6,7 @@ import { ButtonComponent } from '../../components/ui/button/button.component'
 import { IconComponent } from '../../components/ui/icon/icon.component'
 import { InPageLinkDirective } from '../../components/ui/in-page-link/in-page-link.directive'
 import { ReviewDisplayComponent } from '../../components/ui/review-display/review-display.component'
+import { intlLocale } from '../../core/i18n/format'
 import { PlayersPipe } from '../../core/pipes/count.pipe'
 import {
     EXAMPLE_COVERS,
@@ -17,6 +18,7 @@ import {
     EXAMPLE_SEARCH,
     EXAMPLE_SHELF,
     EXAMPLE_WISH,
+    type ExamplePerson,
 } from './landing.fixtures'
 
 /** The rotation of each cover in the row under the hero, from the cover set; odd ones also sit a little lower. */
@@ -58,26 +60,47 @@ export class LandingComponent {
     })
 
     public readonly rsvpLabels = {
-        going: { text: 'Going', tone: 'text-bv-success' },
-        'no-answer': { text: 'No answer', tone: 'text-bv-warning' },
-        'not-going': { text: 'Can’t come', tone: 'text-bv-danger' },
+        going: { text: $localize`:Answer of someone coming to the landing example game night:Going`, tone: 'text-bv-success' },
+        'no-answer': {
+            text: $localize`:Someone has not answered yet, in the landing example game night:No answer`,
+            tone: 'text-bv-warning',
+        },
+        'not-going': {
+            text: $localize`:Answer of someone not coming to the landing example game night:Can’t come`,
+            tone: 'text-bv-danger',
+        },
     } as const
 
+    /** "Owned by Ana and Mia", for screen readers on the example group's covers. */
+    public ownedBy(owners: ReadonlyArray<ExamplePerson>): string {
+        const names = new Intl.ListFormat(intlLocale(), { style: 'long', type: 'conjunction' }).format(owners.map((owner) => owner.name))
+        return $localize`:Who owns a game in the landing example group; the placeholder is a list of names:Owned by ${names}:names:`
+    }
+
     public readonly questions = [
-        { q: 'Is Board Vault free?', a: 'Yes. Create an account and start adding games.' },
         {
-            q: 'Do I need a group to use it?',
-            a: 'No. Board Vault works as a personal collection manager on its own. Groups are there when you want to play with others.',
+            q: $localize`:Question on the landing page:Is Board Vault free?`,
+            a: $localize`:Answer on the landing page to Is Board Vault free?:Yes. Create an account and start adding games.`,
         },
         {
-            q: 'Who can see my collection?',
-            a: 'Only you, until you join a group. The people in your groups see the games you own and how you rated them, never your wishlist or your account.',
+            q: $localize`:Question on the landing page:Do I need a group to use it?`,
+            a: $localize`:Answer on the landing page to Do I need a group to use it?:No. Board Vault works as a personal collection manager on its own. Groups are there when you want to play with others.`,
         },
-        { q: 'Does it work on my phone?', a: 'Yes. It runs in any modern browser and you can install it to your home screen.' },
         {
-            q: 'Can friends without an account join in?',
-            a: 'Yes. Add the people who come but never sign up, and keep their games and wins in the group’s history.',
+            q: $localize`:Question on the landing page:Who can see my collection?`,
+            a: $localize`:Answer on the landing page to Who can see my collection?:Only you, until you join a group. The people in your groups see the games you own and how you rated them, never your wishlist or your account.`,
         },
-        { q: 'Is it open source?', a: 'Yes. The code is public on GitHub under the MIT license.' },
+        {
+            q: $localize`:Question on the landing page:Does it work on my phone?`,
+            a: $localize`:Answer on the landing page to Does it work on my phone?:Yes. It runs in any modern browser and you can install it to your home screen.`,
+        },
+        {
+            q: $localize`:Question on the landing page:Can friends without an account join in?`,
+            a: $localize`:Answer on the landing page to Can friends without an account join in?:Yes. Add the people who come but never sign up, and keep their games and wins in the group’s history.`,
+        },
+        {
+            q: $localize`:Question on the landing page:Is it open source?`,
+            a: $localize`:Answer on the landing page to Is it open source?:Yes. The code is public on GitHub under the MIT license.`,
+        },
     ]
 }

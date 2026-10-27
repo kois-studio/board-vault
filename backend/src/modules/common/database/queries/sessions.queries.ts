@@ -328,12 +328,31 @@ export class SessionQueries {
         return result.rows.map(row => Number(row[0]))
     }
 
-    /** Who brings each shortlisted game (#115); games nobody has claimed are left out. */
-    async getMeetGameBringers(meetId: number): Promise<Array<{ gameId: number; accountId: number | null; groupPersonId: number | null }>> {
+    /**
+     * Who brings each shortlisted game (#115); games nobody has claimed are left out. `copyTitle` and `copyTitleLanguage` are
+     * the title of the edition the bringer's copy is (ADR-0025 rule 1), null when they have not said or the bringer has no account.
+     */
+    async getMeetGameBringers(meetId: number): Promise<
+        Array<{
+            gameId: number
+            accountId: number | null
+            groupPersonId: number | null
+            copyTitle: string | null
+            copyTitleLanguage: string | null
+        }>
+    > {
+        const copyEdition = (column: string) => `(
+            SELECT oe.${column}
+            FROM OwnedGame og
+            JOIN GameEdition oe ON oe.id = og.editionId AND oe.gameId = mg.gameId
+            WHERE og.gameId = mg.gameId
+              AND og.accountId = COALESCE(mg.broughtByAccountId, (SELECT gp.accountId FROM GroupPerson gp WHERE gp.id = mg.broughtByPersonId))
+        )`
         const result = await this.database.execute({
             sql: `
-                SELECT gameId, broughtByAccountId, broughtByPersonId FROM MeetGame
-                WHERE meetId = ? AND gameStatus = 'planned' AND (broughtByAccountId IS NOT NULL OR broughtByPersonId IS NOT NULL)
+                SELECT mg.gameId, mg.broughtByAccountId, mg.broughtByPersonId, ${copyEdition('title')}, ${copyEdition('languageCode')}
+                FROM MeetGame mg
+                WHERE mg.meetId = ? AND mg.gameStatus = 'planned' AND (mg.broughtByAccountId IS NOT NULL OR mg.broughtByPersonId IS NOT NULL)
             `,
             args: [meetId],
         })
@@ -342,6 +361,8 @@ export class SessionQueries {
             gameId: Number(row[0]),
             accountId: row[1] === null ? null : Number(row[1]),
             groupPersonId: row[2] === null ? null : Number(row[2]),
+            copyTitle: row[3] === null ? null : String(row[3]),
+            copyTitleLanguage: row[4] === null ? null : String(row[4]),
         }))
     }
 

@@ -2,7 +2,9 @@ import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger'
 import { Transform, Type } from 'class-transformer'
 import {
     ArrayMaxSize,
+    ArrayMinSize,
     IsArray,
+    IsBoolean,
     IsIn,
     IsInt,
     IsNotEmpty,
@@ -15,20 +17,21 @@ import {
     ValidateNested,
 } from 'class-validator'
 
+import { EDITION_TITLE_MAX_LENGTH } from '../i18n/edition-language.js'
 import { IsArtworkUrl } from '../validators/is-artwork-url.js'
 
 import { GameProposalCompleteDto } from './game-proposal.type.js'
-import { GAME_LENGTHS, GameWithTagsAndTranslationsDto, BrowseGamesPaginationDto } from './game.type.js'
+import { GAME_LENGTHS, GameWithTagsDto, BrowseGamesPaginationDto } from './game.type.js'
 
 import type { GameLength } from './game.type.js'
 
 const ADMIN_PAGE_SIZE_MAX = 100
 
-export const CATALOGUE_QUALITY_ISSUES = ['no-title', 'no-artwork', 'no-spanish', 'no-tags', 'no-price'] as const
+export const CATALOGUE_QUALITY_ISSUES = ['no-title', 'no-artwork', 'no-primary', 'no-tags', 'no-price'] as const
 export type CatalogueQualityIssue = (typeof CATALOGUE_QUALITY_ISSUES)[number]
 
 export class AdminGamesQuery {
-    @ApiPropertyOptional({ type: String, example: 'catan', description: 'Title search, across supported translations.' })
+    @ApiPropertyOptional({ type: String, example: 'catan', description: 'Title search, across every edition.' })
     @IsOptional()
     @IsString()
     @MaxLength(100)
@@ -73,8 +76,7 @@ export class AdminGamesQuery {
 
     @ApiPropertyOptional({
         enum: CATALOGUE_QUALITY_ISSUES,
-        description:
-            'Only games with this data problem: no English title; no artwork; no Spanish title or one equal to the English; no tags; or no retail price.',
+        description: 'Only games with this data problem: no edition; editions but none primary; no artwork; no tags; or no retail price.',
     })
     @IsOptional()
     @IsIn(CATALOGUE_QUALITY_ISSUES)
@@ -82,9 +84,12 @@ export class AdminGamesQuery {
 }
 
 /** One game as the admin catalogue lists it. */
-export class AdminGameDto extends GameWithTagsAndTranslationsDto {
-    @ApiProperty({ example: 'Catan', description: 'The English title (empty only for a game without one).' })
+export class AdminGameDto extends GameWithTagsDto {
+    @ApiProperty({ example: 'Catan', description: "The primary edition's title (empty only for a game without editions)." })
     title: string
+
+    @ApiProperty({ type: () => [AdminGameEditionDto], description: 'Every edition: the primary one first, then by language code.' })
+    editions: Array<AdminGameEditionDto>
 
     @ApiProperty({
         enum: CATALOGUE_QUALITY_ISSUES,
@@ -110,29 +115,52 @@ export class AdminGameDto extends GameWithTagsAndTranslationsDto {
     retailPrice: number | null
 }
 
-/** Titles to save; an empty Spanish title removes it. */
-export class AdminGameTitlesBody {
-    @ApiPropertyOptional({ example: 'Catan' })
-    @IsOptional()
-    @IsString()
-    @IsNotEmpty()
-    @MaxLength(200)
-    en?: string
+/** One edition of a game as Administration lists it. */
+export class AdminGameEditionDto {
+    @ApiProperty({ example: 7, description: 'Stable across edits, so other records can point at the edition.' })
+    id: number
 
-    @ApiPropertyOptional({ example: 'Los colonos de Catán', description: 'Empty removes the Spanish title.' })
-    @IsOptional()
+    @ApiProperty({ example: 'es', description: 'BCP 47 language of the edition.' })
+    languageCode: string
+
+    @ApiProperty({ example: 'Los colonos de Catán' })
+    title: string
+
+    @ApiProperty({ example: false })
+    isPrimary: boolean
+}
+
+/** An edition to save. */
+export class AdminEditionBody {
+    @ApiProperty({ example: 'de', description: 'A language code: two or three letters and an optional region ("pt-BR"). Canonicalized.' })
     @IsString()
-    @MaxLength(200)
-    es?: string
+    @MaxLength(16)
+    languageCode: string
+
+    @ApiProperty({ example: 'Die Siedler von Catan' })
+    @IsString()
+    @MaxLength(EDITION_TITLE_MAX_LENGTH)
+    title: string
+
+    @ApiProperty({ example: true })
+    @IsBoolean()
+    isPrimary: boolean
 }
 
 /** Changes to one catalogue game. Every field is optional; the ones sent are saved together. */
 export class UpdateAdminGameBody {
-    @ApiPropertyOptional({ type: AdminGameTitlesBody })
+    @ApiPropertyOptional({
+        type: [AdminEditionBody],
+        description:
+            "The game's whole set of editions; replaces the current ones. At least one, one edition per language, exactly one primary. Editions whose language is kept keep their id.",
+    })
     @IsOptional()
-    @ValidateNested()
-    @Type(() => AdminGameTitlesBody)
-    translations?: AdminGameTitlesBody
+    @IsArray()
+    @ArrayMinSize(1)
+    @ArrayMaxSize(50)
+    @ValidateNested({ each: true })
+    @Type(() => AdminEditionBody)
+    editions?: AdminEditionBody[]
 
     @ApiPropertyOptional({
         example: 'https://www.example.com/catan.jpg',
@@ -209,7 +237,7 @@ class OverviewCatalogueIssuesDto {
     'no-artwork': number
 
     @ApiProperty({ example: 12 })
-    'no-spanish': number
+    'no-primary': number
 
     @ApiProperty({ example: 2 })
     'no-tags': number
@@ -333,21 +361,6 @@ export class DuplicateGameProposalBody {
     reviewNotes?: string
 }
 
-/** Title per supported language; any other key is rejected. */
-export class ProposalTranslationsBody {
-    @ApiPropertyOptional({ example: 'Catan' })
-    @IsOptional()
-    @IsString()
-    @MaxLength(200)
-    en?: string
-
-    @ApiPropertyOptional({ example: 'Los colonos de Catán' })
-    @IsOptional()
-    @IsString()
-    @MaxLength(200)
-    es?: string
-}
-
 export class AdminGamesResponseDto {
     @ApiProperty({
         description: 'One page of the catalogue, by English title',
@@ -425,14 +438,18 @@ export class ApproveGameProposalBody {
     maxPlayers?: number
 
     @ApiProperty({
-        type: ProposalTranslationsBody,
+        type: [AdminEditionBody],
         required: false,
-        description: 'Title per language. English defaults to the proposed title.',
+        description:
+            "The game's editions, as in a game update. Left out: the proposal's title in its language as the primary edition, plus its other titles.",
     })
     @IsOptional()
-    @ValidateNested()
-    @Type(() => ProposalTranslationsBody)
-    translations?: ProposalTranslationsBody
+    @IsArray()
+    @ArrayMinSize(1)
+    @ArrayMaxSize(50)
+    @ValidateNested({ each: true })
+    @Type(() => AdminEditionBody)
+    editions?: AdminEditionBody[]
 
     @ApiProperty({
         example: [1, 2, 3],

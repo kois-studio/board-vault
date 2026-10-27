@@ -1,4 +1,15 @@
-import { chooseLocale, localeOfPath, localeRedirect, matchAcceptLanguage, readCookie } from './locales'
+import {
+    chooseLocale,
+    LOCALE_NAMES,
+    localeCookie,
+    localeOfPath,
+    localeRedirect,
+    localizedUrl,
+    matchAcceptLanguage,
+    menuLocales,
+    readCookie,
+    SUPPORTED_LOCALES,
+} from './locales'
 
 describe('interface languages', () => {
     it('reads the language of a path', () => {
@@ -45,5 +56,31 @@ describe('interface languages', () => {
         )
         expect(localeRedirect(new URL('https://board-vault.com/es/dashboard'), null, null)).toBeNull()
         expect(localeRedirect(new URL('https://board-vault.com/favicon.ico'), null, null)).toBeNull()
+    })
+
+    it('lists the offered languages and the current one, or every language in preview', () => {
+        expect(menuLocales('en', false, ['en'])).toEqual(['en'])
+        expect(menuLocales('fr', false, ['en'])).toEqual(['en', 'fr'])
+        expect(menuLocales('en', false, ['es', 'en'])).toEqual(['en', 'es'])
+        expect(menuLocales('es', false, ['en', 'es'])).toEqual(['en', 'es'])
+        expect(menuLocales('en', true, ['en'])).toEqual(['en', 'es', 'fr', 'de', 'it'])
+    })
+
+    it('names every language in itself', () => {
+        expect(SUPPORTED_LOCALES.map((locale) => LOCALE_NAMES[locale])).toEqual(['English', 'Español', 'Français', 'Deutsch', 'Italiano'])
+    })
+
+    it('moves the same page, query and fragment to another language', () => {
+        expect(localizedUrl('es', '/')).toBe('/es/')
+        expect(localizedUrl('de', '/groups/12?tab=games#library')).toBe('/de/groups/12?tab=games#library')
+        expect(localizedUrl('it', 'dashboard')).toBe('/it/dashboard')
+        expect(localizedUrl('fr', '')).toBe('/fr/')
+        expect(localizedUrl('es', '?next=%2Fdashboard')).toBe('/es/?next=%2Fdashboard')
+    })
+
+    it('remembers a choice for a year on the whole site, and only over HTTPS when the page is', () => {
+        expect(localeCookie('es', true)).toBe('bv_lang=es; Path=/; Max-Age=31536000; SameSite=Lax; Secure')
+        expect(localeCookie('fr', false)).toBe('bv_lang=fr; Path=/; Max-Age=31536000; SameSite=Lax')
+        expect(chooseLocale(localeCookie('es', true).split(';')[0] ?? null, 'en', ['en', 'es'])).toBe('es')
     })
 })
