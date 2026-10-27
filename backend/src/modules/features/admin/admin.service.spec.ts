@@ -7,7 +7,17 @@ import type { Mock } from 'vitest'
 
 describe('AdminService', () => {
     describe('approveGameProposal', () => {
-        const proposal = { id: 3, title: 'Azul', submittedBy: 7, imageUrl: null, gameAvgDuration: null, minPlayers: null, maxPlayers: null }
+        const proposal = {
+            id: 3,
+            title: 'Azul',
+            titleLanguage: 'en',
+            otherTitles: [] as Array<{ languageCode: string; title: string }>,
+            submittedBy: 7,
+            imageUrl: null,
+            gameAvgDuration: null,
+            minPlayers: null,
+            maxPlayers: null,
+        }
 
         // The proposal has no players or length, so the reviewer must supply them.
         const reviewed = { minPlayers: 2, maxPlayers: 4, gameAvgDuration: 45 }
@@ -99,7 +109,10 @@ describe('AdminService', () => {
 
             await serviceWith(approveGameProposalAtomically).approveGameProposal(3, 1, {
                 ...reviewed,
-                translations: { en: '  ', es: 'Azul (ES)' },
+                editions: [
+                    { languageCode: 'en', title: ' Azul ', isPrimary: true },
+                    { languageCode: 'es', title: 'Azul (ES)', isPrimary: false },
+                ],
                 tagIds: [5, 6, 5],
             })
 
@@ -109,12 +122,41 @@ describe('AdminService', () => {
                     maxPlayers: 4,
                     gameAvgDuration: 45,
                     tagIds: [5, 6],
-                    translations: [
-                        { languageCode: 'en', title: 'Azul', normalizedTitle: 'azul' },
-                        { languageCode: 'es', title: 'Azul (ES)', normalizedTitle: 'azul (es)' },
+                    editions: [
+                        { languageCode: 'en', title: 'Azul', normalizedTitle: 'azul', isPrimary: true },
+                        { languageCode: 'es', title: 'Azul (ES)', normalizedTitle: 'azul (es)', isPrimary: false },
                     ],
                 }),
             )
+        })
+
+        it("creates the proposal's own editions when none are reviewed: its title's language is primary", async () => {
+            const approveGameProposalAtomically = vi.fn().mockResolvedValue({ createdGameId: 40 })
+            const service = serviceWith(approveGameProposalAtomically)
+
+            await service.approveGameProposal(3, 1, reviewed)
+            expect(approveGameProposalAtomically).toHaveBeenLastCalledWith(
+                expect.objectContaining({ editions: [{ languageCode: 'en', title: 'Azul', normalizedTitle: 'azul', isPrimary: true }] }),
+            )
+        })
+
+        it.each([
+            ['no primary edition', [{ languageCode: 'en', title: 'Azul', isPrimary: false }], 'Exactly one edition'],
+            [
+                'two primary editions',
+                [
+                    { languageCode: 'en', title: 'Azul', isPrimary: true },
+                    { languageCode: 'es', title: 'Azul', isPrimary: true },
+                ],
+                'Exactly one edition',
+            ],
+        ])('refuses %s', async (_name, editions, message) => {
+            const approveGameProposalAtomically = vi.fn()
+
+            await expect(serviceWith(approveGameProposalAtomically).approveGameProposal(3, 1, { ...reviewed, editions })).rejects.toThrow(
+                message,
+            )
+            expect(approveGameProposalAtomically).not.toHaveBeenCalled()
         })
 
         it("tells the proposer's groups when the approved game goes onto their shelf, and only then", async () => {

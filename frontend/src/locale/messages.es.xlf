@@ -829,6 +829,24 @@
         <target>No hay acceso al portapapeles; usa «Abrir enlace».</target>
       </segment>
     </unit>
+    <unit id="1790637555628658675">
+      <notes>
+        <note category="description">Name of the field where a language code is typed</note>
+      </notes>
+      <segment state="translated">
+        <source>Language code</source>
+        <target>Código de idioma</target>
+      </segment>
+    </unit>
+    <unit id="180215682275041064">
+      <notes>
+        <note category="description">Label of the button that removes a row of other titles; the language name follows</note>
+      </notes>
+      <segment state="translated">
+        <source>Remove the title in <ph id="0" equiv="language" disp="row.languageCode ? languageName(row.languageCode) : &apos;…&apos;"/></source>
+        <target>Quitar el título en <ph id="0" equiv="language" disp="row.languageCode ? languageName(row.languageCode) : &apos;…&apos;"/></target>
+      </segment>
+    </unit>
     <unit id="1815859193587155677">
       <notes>
         <note category="description">Shown on the group page when a person without an account was prepared for you; the placeholder is that person&apos;s name</note>
@@ -1955,6 +1973,15 @@
         <target>Hay demasiadas verificaciones pendientes en esta cuenta. Quita un correo electrónico, un número de teléfono o una cartera sin verificar que ya no necesites, o espera unos minutos a que caduque una clave de acceso a medio configurar, y vuelve a intentarlo.</target>
       </segment>
     </unit>
+    <unit id="2808459010951137562">
+      <notes>
+        <note category="description">Button that adds a row for a title in another language</note>
+      </notes>
+      <segment state="translated">
+        <source>Add a title</source>
+        <target>Añadir un título</target>
+      </segment>
+    </unit>
     <unit id="281153916191694572">
       <notes>
         <note category="description">Link at the top of the avatar menu to the signed-in person&apos;s own page</note>
@@ -2762,6 +2789,15 @@
         <target>No se ha podido copiar el enlace; usa «Abrir enlace».</target>
       </segment>
     </unit>
+    <unit id="3695816730555625996">
+      <notes>
+        <note category="description">Label of the language selector under the game title in the propose-a-game form</note>
+      </notes>
+      <segment state="translated">
+        <source>Language of the title</source>
+        <target>Idioma del título</target>
+      </segment>
+    </unit>
     <unit id="3713544072979636035">
       <notes>
         <note category="description">Question in the dialog that leaves a group; the placeholder is the group name</note>
@@ -3181,6 +3217,16 @@
       <segment state="translated">
         <source>There should not be any personal or page related data.</source>
         <target>No debe contener datos personales ni relacionados con la página.</target>
+      </segment>
+    </unit>
+    <unit id="4057862988487622358">
+      <notes>
+        <note category="description">Last option of a language list, to type any other language code</note>
+        <note category="meaning">language option</note>
+      </notes>
+      <segment state="translated">
+        <source>Other…</source>
+        <target>Otro…</target>
       </segment>
     </unit>
     <unit id="4057932224780575479">
@@ -3905,6 +3951,15 @@
       <segment state="translated">
         <source><ph id="0" equiv="person" disp="actor"/> cancelled the <ph id="1" equiv="group" disp="group"/> game night of <ph id="2" equiv="date" disp="when"/>.</source>
         <target><ph id="0" equiv="person" disp="actor"/> ha cancelado la noche de juegos de <ph id="1" equiv="group" disp="group"/> del <ph id="2" equiv="date" disp="when"/>.</target>
+      </segment>
+    </unit>
+    <unit id="4785969012495884701">
+      <notes>
+        <note category="description">Error under the other titles when a language code is not valid</note>
+      </notes>
+      <segment state="translated">
+        <source>Use a language code such as de or pt-BR.</source>
+        <target>Usa un código de idioma como de o pt-BR.</target>
       </segment>
     </unit>
     <unit id="4792646961216411565">
@@ -5207,6 +5262,15 @@
       <segment state="translated">
         <source>We are still building the core experience, so new accounts are created by invitation only.</source>
         <target>Todavía estamos construyendo lo esencial, así que las cuentas nuevas solo se crean con invitación.</target>
+      </segment>
+    </unit>
+    <unit id="6005496837258976067">
+      <notes>
+        <note category="description">Screen reader name of a language selector in the list of other titles</note>
+      </notes>
+      <segment state="translated">
+        <source>Language of this title</source>
+        <target>Idioma de este título</target>
       </segment>
     </unit>
     <unit id="6023472757222269524">
@@ -7236,6 +7300,15 @@
         <target>Inicio de sesión seguro</target>
       </segment>
     </unit>
+    <unit id="8027999063674702321">
+      <notes>
+        <note category="description">Error under the other titles when two titles share a language</note>
+      </notes>
+      <segment state="translated">
+        <source>Each language can have only one title.</source>
+        <target>Cada idioma solo puede tener un título.</target>
+      </segment>
+    </unit>
     <unit id="8049452186746342791">
       <notes>
         <note category="description">Item of the avatar menu that lists the game proposals someone sent</note>
@@ -7324,6 +7397,15 @@
       <segment state="translated">
         <source>User or Group not found</source>
         <target>No se ha encontrado la cuenta o el grupo</target>
+      </segment>
+    </unit>
+    <unit id="8113665790726732827">
+      <notes>
+        <note category="description">Heading of the optional list of the game&apos;s titles in other languages in the propose-a-game form</note>
+      </notes>
+      <segment state="translated">
+        <source>Other known titles</source>
+        <target>Otros títulos conocidos</target>
       </segment>
     </unit>
     <unit id="8116175184239166510">
@@ -7639,6 +7721,15 @@
       <segment state="translated">
         <source>A tidy home for your board game collection, and for the people you play with.</source>
         <target>Un hogar ordenado para tu colección de juegos de mesa y para la gente con la que juegas.</target>
+      </segment>
+    </unit>
+    <unit id="8420640184883196687">
+      <notes>
+        <note category="description">Hint under the heading of the optional list of titles in other languages</note>
+      </notes>
+      <segment state="translated">
+        <source>Optional. The same game under its name in other languages, if you know them.</source>
+        <target>Opcional. El mismo juego con su nombre en otros idiomas, si los conoces.</target>
       </segment>
     </unit>
     <unit id="8431469809481222374">
@@ -8336,6 +8427,15 @@
       <segment state="translated">
         <source>Ask the group owner to invite the rest of your table.</source>
         <target>Pide a quien gestiona el grupo que invite al resto de tu mesa.</target>
+      </segment>
+    </unit>
+    <unit id="9195472737674660999">
+      <notes>
+        <note category="description">Screen reader name of a title field in the list of other titles</note>
+      </notes>
+      <segment state="translated">
+        <source>Title in this language</source>
+        <target>Título en este idioma</target>
       </segment>
     </unit>
     <unit id="9202989475789662593">

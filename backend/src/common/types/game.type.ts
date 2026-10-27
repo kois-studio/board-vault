@@ -4,8 +4,6 @@ import { ArrayMaxSize, IsArray, IsBoolean, IsIn, IsInt, IsOptional, IsString, Ma
 
 import { GameTagWithCategoryDto } from './tag.type.js'
 
-import type { SupportedLanguage } from './game-translation.type.js'
-
 /**
  * base Game as it comes from db
  */
@@ -47,13 +45,7 @@ export class GameCompleteDto extends GameDto {
     titleTranslations: Record<string, string>
 }
 
-export class GameWithTagsAndTranslationsDto extends GameDto {
-    @ApiProperty({
-        example: { en: 'Catan', es: 'Catan' },
-        description: 'Game title translations for supported languages',
-    })
-    translations: Record<SupportedLanguage, string>
-
+export class GameWithTagsDto extends GameDto {
     @ApiProperty({
         type: [GameTagWithCategoryDto],
         description: 'Tags assigned to this game with their categories',

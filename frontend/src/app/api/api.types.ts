@@ -34,15 +34,12 @@ export type GameType = {
     maxPlayers: number
 }
 
-type SupportedLanguage = 'en' | 'es'
-
 export type GameCompleteType = GameType & {
     /** Every known edition title by language code. */
     titleTranslations: Record<string, string>
 }
 
-export type GameWithTagsAndTranslationsType = GameType & {
-    translations: Record<SupportedLanguage, string>
+export type GameWithTagsType = GameType & {
     tags: Array<{
         id: number
         name: string
@@ -573,11 +570,28 @@ export type BrowseGamesResultType = {
 }
 
 /** A catalogue data problem, as the admin Games filter names it. */
-export type CatalogueIssue = 'no-title' | 'no-artwork' | 'no-spanish' | 'no-tags' | 'no-price'
+export type CatalogueIssue = 'no-title' | 'no-artwork' | 'no-primary' | 'no-tags' | 'no-price'
 
-export type AdminGameType = GameWithTagsAndTranslationsType & {
-    /** The English title. */
+/** One edition of a game as Administration lists it (ADR-0025). */
+export type AdminGameEditionType = {
+    id: number
+    /** BCP 47 language, such as `de` or `pt-BR`. */
+    languageCode: string
     title: string
+    isPrimary: boolean
+}
+
+/** An edition to save. */
+export type AdminEditionBodyType = { languageCode: string; title: string; isPrimary: boolean }
+
+/** A title of a proposed game in another language. */
+export type ProposalOtherTitleType = { languageCode: string; title: string }
+
+export type AdminGameType = GameWithTagsType & {
+    /** The primary edition's title; empty for a game without editions. */
+    title: string
+    /** The primary edition first, then by language code. */
+    editions: Array<AdminGameEditionType>
     issues: Array<CatalogueIssue>
     /** Where the stored artwork was copied from; null for an upload or no artwork. */
     artworkSource: string | null
@@ -616,9 +630,9 @@ export type AdminOverviewType = {
     }>
 }
 
-/** The fields sent are saved together; an empty Spanish title removes it. */
+/** The fields sent are saved together; `editions` is the whole new set. */
 export type UpdateAdminGameType = {
-    translations?: Partial<Record<SupportedLanguage, string>>
+    editions?: Array<AdminEditionBodyType>
     imageUrl?: string
     minPlayers?: number
     maxPlayers?: number
@@ -748,6 +762,10 @@ export type GameProposalType = {
     submittedBy: number
     status: 'pending' | 'approved' | 'rejected' | 'duplicate'
     title: string
+    /** The language of `title`. */
+    titleLanguage: string
+    /** The title in other languages, when the proposer knew them. */
+    otherTitles: Array<ProposalOtherTitleType>
     imageUrl: string | null
     gameAvgDuration: number | null
     minPlayers: number | null
@@ -765,6 +783,9 @@ export type GameProposalType = {
 
 export type CreateGameProposalType = {
     title: string
+    /** Language of `title`; the server uses the page language when left out. */
+    titleLanguage?: string
+    otherTitles?: Array<ProposalOtherTitleType>
     imageUrl?: string
     gameAvgDuration?: number
     minPlayers?: number
@@ -798,7 +819,8 @@ export type ApproveGameProposalType = {
     gameAvgDuration?: number
     minPlayers?: number
     maxPlayers?: number
-    translations?: Partial<Record<SupportedLanguage, string>>
+    /** The game's editions; left out, the proposal's own title and other titles. */
+    editions?: Array<AdminEditionBodyType>
     tagIds?: number[]
 }
 

@@ -5,6 +5,8 @@ export const gameProposalSchema = z.object({
     submittedBy: z.number().int().nonnegative(),
     status: z.enum(['pending', 'approved', 'rejected', 'duplicate']),
     title: z.string(),
+    titleLanguage: z.string(),
+    otherTitles: z.array(z.object({ languageCode: z.string(), title: z.string() })),
     imageUrl: z.string().nullable(),
     gameAvgDuration: z.number().int().nonnegative().nullable(),
     minPlayers: z.number().int().nonnegative().nullable(),

@@ -844,6 +844,24 @@
         <source>Clipboard access is unavailable; use Open link.</source>
       </segment>
     </unit>
+    <unit id="1790637555628658675">
+      <notes>
+        <note category="location">src/app/components/forms/form-game-submission/form-game-submission.component.ts</note>
+        <note category="description">Name of the field where a language code is typed</note>
+      </notes>
+      <segment>
+        <source>Language code</source>
+      </segment>
+    </unit>
+    <unit id="180215682275041064">
+      <notes>
+        <note category="location">src/app/components/forms/form-game-submission/form-game-submission.component.ts</note>
+        <note category="description">Label of the button that removes a row of other titles; the language name follows</note>
+      </notes>
+      <segment>
+        <source>Remove the title in <ph id="0" equiv="language" disp="row.languageCode ? languageName(row.languageCode) : &apos;…&apos;"/></source>
+      </segment>
+    </unit>
     <unit id="1815859193587155677">
       <notes>
         <note category="location">src/app/pages/group-view/group-view.component.html</note>
@@ -1986,6 +2004,15 @@
         <source>Too many verifications are pending on this account. Remove an unverified email address, phone number, or wallet you no longer need, or wait a few minutes for an incomplete passkey setup to expire, then try again.</source>
       </segment>
     </unit>
+    <unit id="2808459010951137562">
+      <notes>
+        <note category="location">src/app/components/forms/form-game-submission/form-game-submission.component.html</note>
+        <note category="description">Button that adds a row for a title in another language</note>
+      </notes>
+      <segment>
+        <source>Add a title</source>
+      </segment>
+    </unit>
     <unit id="281153916191694572">
       <notes>
         <note category="location">src/app/layout/profile-menu/profile-menu.component.html</note>
@@ -2803,6 +2830,15 @@
         <source>The link could not be copied; use Open link.</source>
       </segment>
     </unit>
+    <unit id="3695816730555625996">
+      <notes>
+        <note category="location">src/app/components/forms/form-game-submission/form-game-submission.component.html</note>
+        <note category="description">Label of the language selector under the game title in the propose-a-game form</note>
+      </notes>
+      <segment>
+        <source>Language of the title</source>
+      </segment>
+    </unit>
     <unit id="3713544072979636035">
       <notes>
         <note category="location">src/app/pages/group-view/group-view.component.html</note>
@@ -3225,6 +3261,16 @@
       </notes>
       <segment>
         <source>There should not be any personal or page related data.</source>
+      </segment>
+    </unit>
+    <unit id="4057862988487622358">
+      <notes>
+        <note category="location">src/app/components/forms/form-game-submission/form-game-submission.component.ts</note>
+        <note category="description">Last option of a language list, to type any other language code</note>
+        <note category="meaning">language option</note>
+      </notes>
+      <segment>
+        <source>Other…</source>
       </segment>
     </unit>
     <unit id="4057932224780575479">
@@ -3958,6 +4004,15 @@
       </notes>
       <segment>
         <source><ph id="0" equiv="person" disp="actor"/> cancelled the <ph id="1" equiv="group" disp="group"/> game night of <ph id="2" equiv="date" disp="when"/>.</source>
+      </segment>
+    </unit>
+    <unit id="4785969012495884701">
+      <notes>
+        <note category="location">src/app/components/forms/form-game-submission/form-game-submission.component.html</note>
+        <note category="description">Error under the other titles when a language code is not valid</note>
+      </notes>
+      <segment>
+        <source>Use a language code such as de or pt-BR.</source>
       </segment>
     </unit>
     <unit id="4792646961216411565">
@@ -5273,6 +5328,15 @@
       </notes>
       <segment>
         <source>We are still building the core experience, so new accounts are created by invitation only.</source>
+      </segment>
+    </unit>
+    <unit id="6005496837258976067">
+      <notes>
+        <note category="location">src/app/components/forms/form-game-submission/form-game-submission.component.html</note>
+        <note category="description">Screen reader name of a language selector in the list of other titles</note>
+      </notes>
+      <segment>
+        <source>Language of this title</source>
       </segment>
     </unit>
     <unit id="6023472757222269524">
@@ -7324,6 +7388,15 @@
         <source>Secure sign-in</source>
       </segment>
     </unit>
+    <unit id="8027999063674702321">
+      <notes>
+        <note category="location">src/app/components/forms/form-game-submission/form-game-submission.component.html</note>
+        <note category="description">Error under the other titles when two titles share a language</note>
+      </notes>
+      <segment>
+        <source>Each language can have only one title.</source>
+      </segment>
+    </unit>
     <unit id="8049452186746342791">
       <notes>
         <note category="location">src/app/layout/profile-menu/profile-menu.component.html</note>
@@ -7412,6 +7485,15 @@
       </notes>
       <segment>
         <source>User or Group not found</source>
+      </segment>
+    </unit>
+    <unit id="8113665790726732827">
+      <notes>
+        <note category="location">src/app/components/forms/form-game-submission/form-game-submission.component.html</note>
+        <note category="description">Heading of the optional list of the game&apos;s titles in other languages in the propose-a-game form</note>
+      </notes>
+      <segment>
+        <source>Other known titles</source>
       </segment>
     </unit>
     <unit id="8116175184239166510">
@@ -7729,6 +7811,15 @@
       </notes>
       <segment>
         <source>A tidy home for your board game collection, and for the people you play with.</source>
+      </segment>
+    </unit>
+    <unit id="8420640184883196687">
+      <notes>
+        <note category="location">src/app/components/forms/form-game-submission/form-game-submission.component.html</note>
+        <note category="description">Hint under the heading of the optional list of titles in other languages</note>
+      </notes>
+      <segment>
+        <source>Optional. The same game under its name in other languages, if you know them.</source>
       </segment>
     </unit>
     <unit id="8431469809481222374">
@@ -8432,6 +8523,15 @@
       </notes>
       <segment>
         <source>Ask the group owner to invite the rest of your table.</source>
+      </segment>
+    </unit>
+    <unit id="9195472737674660999">
+      <notes>
+        <note category="location">src/app/components/forms/form-game-submission/form-game-submission.component.html</note>
+        <note category="description">Screen reader name of a title field in the list of other titles</note>
+      </notes>
+      <segment>
+        <source>Title in this language</source>
       </segment>
     </unit>
     <unit id="9202989475789662593">

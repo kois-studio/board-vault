@@ -64,7 +64,29 @@ knows, for "Also known as" and search; endpoints that read a game from a
 joined row list only the shown edition in it. The group's history names games
 the same way (`games[].title`, `titleLanguage`), and the shared SQL for the rule
 is `resolvedTitleSql` (`backend/src/modules/common/database/resolved-title.ts`).
-Administration keeps its own `titleEn` and `titleEs`.
+Administration (`/admin/games`) is not resolved per reader: an `AdminGameDto`
+has `title`, the primary edition's title (empty for a game with no edition),
+and `editions`, every edition as `{ id, languageCode, title, isPrimary }`, the
+primary one first, then by language code. `PATCH /admin/games/:id` takes
+`editions`, the game's whole new set of `{ languageCode, title, isPrimary }`:
+at least one, titles trimmed and not empty (200 characters), language codes
+unique and exactly one primary, else 400. A language code is two or three
+letters and an optional region, canonicalized (`pt-br` becomes `pt-BR`); an
+edition may be in any language, not only an interface language. Editions whose
+language stays keep their `id`; the ones left out are deleted, and the legacy
+`GameTranslation` rows follow. The admin `issue` filter and the overview's
+`catalogueIssues` count `no-title` (no edition), `no-artwork`, `no-primary`
+(editions but none primary), `no-tags`, and `no-price`; the catalogue search
+matches any edition's title.
+
+A proposal (`POST /profile/users/:userId/proposals`) says which language its
+`title` is in with `titleLanguage` (default: `request.locale`) and may list
+`otherTitles`, up to ten `{ languageCode, title }` in other languages, none in
+the title's language and one per language. Proposals read back `titleLanguage`
+(`en` for proposals made before it was recorded) and `otherTitles` (`[]`).
+Approving a proposal takes the same `editions` as a game update; left out, the
+game gets the proposal's title in its language as the primary edition, plus
+its other titles.
 
 Tag and tag category names are vocabulary, so they follow the reader's
 language: `GET /collection/tags` and a game page's `tags` name them in
