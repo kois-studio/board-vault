@@ -5156,7 +5156,7 @@
       </notes>
       <segment state="translated">
         <source><pc id="0" equivStart="START_TAG_APP_ICON" equivEnd="CLOSE_TAG_APP_ICON" type="other" dispStart="&lt;app-icon name=&quot;thumbs-up&quot; [size]=&quot;14&quot; aria-hidden=&quot;true&quot; /&gt;" dispEnd="&lt;app-icon name=&quot;thumbs-down&quot; [size]=&quot;14&quot; aria-hidden=&quot;true&quot; /&gt;"/> Interested and <pc id="1" equivStart="START_TAG_APP_ICON_1" equivEnd="CLOSE_TAG_APP_ICON" type="other" dispStart="&lt;app-icon name=&quot;thumbs-down&quot; [size]=&quot;14&quot; aria-hidden=&quot;true&quot; /&gt;" dispEnd="&lt;app-icon name=&quot;thumbs-down&quot; [size]=&quot;14&quot; aria-hidden=&quot;true&quot; /&gt;"/> Not for us are shared with <ph id="2" equiv="INTERPOLATION" disp="{{ selectedGroup()?.name }}"/> and shape the next suggestions. </source>
-        <target><pc id="0" equivStart="START_TAG_APP_ICON" equivEnd="CLOSE_TAG_APP_ICON" type="other" dispStart="&lt;app-icon name=&quot;thumbs-up&quot; [size]=&quot;14&quot; aria-hidden=&quot;true&quot; /&gt;" dispEnd="&lt;app-icon name=&quot;thumbs-down&quot; [size]=&quot;14&quot; aria-hidden=&quot;true&quot; /&gt;"/> Ci interessa e <pc id="1" equivStart="START_TAG_APP_ICON_1" equivEnd="CLOSE_TAG_APP_ICON" type="other" dispStart="&lt;app-icon name=&quot;thumbs-down&quot; [size]=&quot;14&quot; aria-hidden=&quot;true&quot; /&gt;" dispEnd="&lt;app-icon name=&quot;thumbs-down&quot; [size]=&quot;14&quot; aria-hidden=&quot;true&quot; /&gt;"/> Non fa per noi sono condivisi con <ph id="2" equiv="INTERPOLATION" disp="{{ selectedGroup()?.name }}"/> e orientano i prossimi suggerimenti. </target>
+        <target><pc id="0" equivStart="START_TAG_APP_ICON" equivEnd="CLOSE_TAG_APP_ICON" type="other" dispStart="&lt;app-icon name=&quot;thumbs-up&quot; [size]=&quot;14&quot; aria-hidden=&quot;true&quot; /&gt;" dispEnd="&lt;app-icon name=&quot;thumbs-down&quot; [size]=&quot;14&quot; aria-hidden=&quot;true&quot; /&gt;"/> Mi interessa e <pc id="1" equivStart="START_TAG_APP_ICON_1" equivEnd="CLOSE_TAG_APP_ICON" type="other" dispStart="&lt;app-icon name=&quot;thumbs-down&quot; [size]=&quot;14&quot; aria-hidden=&quot;true&quot; /&gt;" dispEnd="&lt;app-icon name=&quot;thumbs-down&quot; [size]=&quot;14&quot; aria-hidden=&quot;true&quot; /&gt;"/> Non fa per noi sono condivisi con <ph id="2" equiv="INTERPOLATION" disp="{{ selectedGroup()?.name }}"/> e orientano i prossimi suggerimenti. </target>
       </segment>
     </unit>
     <unit id="3948662579507719766">
@@ -6779,7 +6779,7 @@
       </notes>
       <segment state="translated">
         <source>Hasn’t answered</source>
-        <target>Non ha risposto</target>
+        <target>Nessuna risposta</target>
       </segment>
     </unit>
     <unit id="4893176640275242151">
@@ -8633,7 +8633,7 @@
       </notes>
       <segment state="translated">
         <source>Still shortlisted</source>
-        <target>Ancora preselezionati</target>
+        <target>Ancora in preselezione</target>
       </segment>
     </unit>
     <unit id="6001725418904188373">
@@ -11630,7 +11630,7 @@
       </notes>
       <segment state="translated">
         <source>Interested</source>
-        <target>Ci interessa</target>
+        <target>Mi interessa</target>
       </segment>
     </unit>
     <unit id="7762962488467282613">
@@ -11901,7 +11901,7 @@
       </notes>
       <segment state="translated">
         <source>Could not save your rating.</source>
-        <target>Non è stato possibile salvare la tua valutazione.</target>
+        <target>Non è stato possibile salvare il tuo voto.</target>
       </segment>
     </unit>
     <unit id="7884742361510661371">
@@ -12106,7 +12106,7 @@
       </notes>
       <segment state="translated">
         <source>For example: we finally finished the campaign and everyone wants a rematch.</source>
-        <target>Per esempio: abbiamo finalmente finito la campagna e tutti vogliono la rivincita.</target>
+        <target>Per esempio: abbiamo finalmente finito la campagna e tutto il gruppo vuole la rivincita.</target>
       </segment>
     </unit>
     <unit id="7993075846461665643">
@@ -12907,7 +12907,7 @@
       </notes>
       <segment state="translated">
         <source>Planned</source>
-        <target>In programma</target>
+        <target>Prevista</target>
       </segment>
     </unit>
     <unit id="8451961759523973606">
@@ -13186,7 +13186,7 @@
       </notes>
       <segment state="translated">
         <source>Your own rating, kept for every night you play it.</source>
-        <target>La tua valutazione, conservata per ogni serata in cui ci giochi.</target>
+        <target>Il tuo voto, conservato per ogni serata in cui ci giochi.</target>
       </segment>
     </unit>
     <unit id="8594356370099397513">

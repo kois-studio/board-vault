@@ -3784,7 +3784,7 @@
       </notes>
       <segment state="translated">
         <source>There</source>
-        <target>Da</target>
+        <target>War dabei</target>
       </segment>
     </unit>
     <unit id="3216448677786204093">
@@ -5156,7 +5156,7 @@
       </notes>
       <segment state="translated">
         <source><pc id="0" equivStart="START_TAG_APP_ICON" equivEnd="CLOSE_TAG_APP_ICON" type="other" dispStart="&lt;app-icon name=&quot;thumbs-up&quot; [size]=&quot;14&quot; aria-hidden=&quot;true&quot; /&gt;" dispEnd="&lt;app-icon name=&quot;thumbs-down&quot; [size]=&quot;14&quot; aria-hidden=&quot;true&quot; /&gt;"/> Interested and <pc id="1" equivStart="START_TAG_APP_ICON_1" equivEnd="CLOSE_TAG_APP_ICON" type="other" dispStart="&lt;app-icon name=&quot;thumbs-down&quot; [size]=&quot;14&quot; aria-hidden=&quot;true&quot; /&gt;" dispEnd="&lt;app-icon name=&quot;thumbs-down&quot; [size]=&quot;14&quot; aria-hidden=&quot;true&quot; /&gt;"/> Not for us are shared with <ph id="2" equiv="INTERPOLATION" disp="{{ selectedGroup()?.name }}"/> and shape the next suggestions. </source>
-        <target><pc id="0" equivStart="START_TAG_APP_ICON" equivEnd="CLOSE_TAG_APP_ICON" type="other" dispStart="&lt;app-icon name=&quot;thumbs-up&quot; [size]=&quot;14&quot; aria-hidden=&quot;true&quot; /&gt;" dispEnd="&lt;app-icon name=&quot;thumbs-down&quot; [size]=&quot;14&quot; aria-hidden=&quot;true&quot; /&gt;"/> Interessiert und <pc id="1" equivStart="START_TAG_APP_ICON_1" equivEnd="CLOSE_TAG_APP_ICON" type="other" dispStart="&lt;app-icon name=&quot;thumbs-down&quot; [size]=&quot;14&quot; aria-hidden=&quot;true&quot; /&gt;" dispEnd="&lt;app-icon name=&quot;thumbs-down&quot; [size]=&quot;14&quot; aria-hidden=&quot;true&quot; /&gt;"/> Nichts für uns werden mit <ph id="2" equiv="INTERPOLATION" disp="{{ selectedGroup()?.name }}"/> geteilt und prägen die nächsten Vorschläge. </target>
+        <target><pc id="0" equivStart="START_TAG_APP_ICON" equivEnd="CLOSE_TAG_APP_ICON" type="other" dispStart="&lt;app-icon name=&quot;thumbs-up&quot; [size]=&quot;14&quot; aria-hidden=&quot;true&quot; /&gt;" dispEnd="&lt;app-icon name=&quot;thumbs-down&quot; [size]=&quot;14&quot; aria-hidden=&quot;true&quot; /&gt;"/> Interessiert mich und <pc id="1" equivStart="START_TAG_APP_ICON_1" equivEnd="CLOSE_TAG_APP_ICON" type="other" dispStart="&lt;app-icon name=&quot;thumbs-down&quot; [size]=&quot;14&quot; aria-hidden=&quot;true&quot; /&gt;" dispEnd="&lt;app-icon name=&quot;thumbs-down&quot; [size]=&quot;14&quot; aria-hidden=&quot;true&quot; /&gt;"/> Nichts für uns werden mit <ph id="2" equiv="INTERPOLATION" disp="{{ selectedGroup()?.name }}"/> geteilt und prägen die nächsten Vorschläge. </target>
       </segment>
     </unit>
     <unit id="3948662579507719766">
@@ -5383,7 +5383,7 @@
       </notes>
       <segment state="translated">
         <source>Was there</source>
-        <target>War da</target>
+        <target>War dabei</target>
       </segment>
     </unit>
     <unit id="4054265866818778245">
@@ -6779,7 +6779,7 @@
       </notes>
       <segment state="translated">
         <source>Hasn’t answered</source>
-        <target>Hat nicht geantwortet</target>
+        <target>Keine Antwort</target>
       </segment>
     </unit>
     <unit id="4893176640275242151">
@@ -8379,7 +8379,7 @@
       </notes>
       <segment state="translated">
         <source><ph id="0" equiv="name" disp="name"/> was there</source>
-        <target><ph id="0" equiv="name" disp="name"/> war da</target>
+        <target><ph id="0" equiv="name" disp="name"/> war dabei</target>
       </segment>
     </unit>
     <unit id="585919947763588623">
@@ -11322,7 +11322,7 @@
       </notes>
       <segment state="translated">
         <source>Skipped</source>
-        <target>Ausgelassen</target>
+        <target>Nicht gespielt</target>
       </segment>
     </unit>
     <unit id="7619560701830330401">
@@ -11630,7 +11630,7 @@
       </notes>
       <segment state="translated">
         <source>Interested</source>
-        <target>Interessiert</target>
+        <target>Interessiert mich</target>
       </segment>
     </unit>
     <unit id="7762962488467282613">

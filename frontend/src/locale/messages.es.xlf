@@ -6779,7 +6779,7 @@
       </notes>
       <segment state="translated">
         <source>Hasn’t answered</source>
-        <target>No ha respondido</target>
+        <target>Sin responder</target>
       </segment>
     </unit>
     <unit id="4893176640275242151">
@@ -8633,7 +8633,7 @@
       </notes>
       <segment state="translated">
         <source>Still shortlisted</source>
-        <target>Aún preseleccionados</target>
+        <target>Siguen preseleccionados</target>
       </segment>
     </unit>
     <unit id="6001725418904188373">
@@ -11639,7 +11639,7 @@
       </notes>
       <segment state="translated">
         <source>Rate what you played (<ph id="0" equiv="INTERPOLATION" disp="{{ myUnratedGames.length }}"/>)</source>
-        <target>Valora lo que jugaste (<ph id="0" equiv="INTERPOLATION" disp="{{ myUnratedGames.length }}"/>)</target>
+        <target>Puntúa lo que jugaste (<ph id="0" equiv="INTERPOLATION" disp="{{ myUnratedGames.length }}"/>)</target>
       </segment>
     </unit>
     <unit id="776912899475826989">
@@ -11901,7 +11901,7 @@
       </notes>
       <segment state="translated">
         <source>Could not save your rating.</source>
-        <target>No se ha podido guardar tu valoración.</target>
+        <target>No se ha podido guardar tu puntuación.</target>
       </segment>
     </unit>
     <unit id="7884742361510661371">
@@ -12907,7 +12907,7 @@
       </notes>
       <segment state="translated">
         <source>Planned</source>
-        <target>Planificada</target>
+        <target>Prevista</target>
       </segment>
     </unit>
     <unit id="8451961759523973606">
@@ -13186,7 +13186,7 @@
       </notes>
       <segment state="translated">
         <source>Your own rating, kept for every night you play it.</source>
-        <target>Tu propia valoración, que se guarda para todas las noches en que lo juegues.</target>
+        <target>Tu propia puntuación, que se guarda para todas las noches en que lo juegues.</target>
       </segment>
     </unit>
     <unit id="8594356370099397513">
@@ -13349,7 +13349,7 @@
       </notes>
       <segment state="translated">
         <source>No reply needed</source>
-        <target>No necesita responder</target>
+        <target>No hace falta responder</target>
       </segment>
     </unit>
     <unit id="868023076605835825">
@@ -13698,7 +13698,7 @@
       </notes>
       <segment state="translated">
         <source>Tick the games you played. Everyone who came is marked as a player; untick anyone who sat a game out.</source>
-        <target>Marca los juegos a los que jugasteis. Todas las personas que vinieron cuentan como jugadoras; desmarca a quien no jugó alguno.</target>
+        <target>Marca los juegos a los que jugasteis. Se marca a todas las personas que vinieron; desmarca a quien no jugó alguno.</target>
       </segment>
     </unit>
     <unit id="8865777077981814555">
@@ -13762,7 +13762,7 @@
       </notes>
       <segment state="translated">
         <source>Back</source>
-        <target>Atrás</target>
+        <target>Volver</target>
       </segment>
     </unit>
     <unit id="8891667033965826221">
@@ -14357,7 +14357,7 @@
       </notes>
       <segment state="translated">
         <source>Favours the games this group rates and plays the most.</source>
-        <target>Prioriza los juegos que este grupo valora y juega más.</target>
+        <target>Prioriza los juegos mejor puntuados y más jugados por este grupo.</target>
       </segment>
     </unit>
     <unit id="950714964925956479">

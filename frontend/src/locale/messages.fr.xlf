@@ -3784,7 +3784,7 @@
       </notes>
       <segment state="translated">
         <source>There</source>
-        <target>Là</target>
+        <target>Était là</target>
       </segment>
     </unit>
     <unit id="3216448677786204093">
@@ -5156,7 +5156,7 @@
       </notes>
       <segment state="translated">
         <source><pc id="0" equivStart="START_TAG_APP_ICON" equivEnd="CLOSE_TAG_APP_ICON" type="other" dispStart="&lt;app-icon name=&quot;thumbs-up&quot; [size]=&quot;14&quot; aria-hidden=&quot;true&quot; /&gt;" dispEnd="&lt;app-icon name=&quot;thumbs-down&quot; [size]=&quot;14&quot; aria-hidden=&quot;true&quot; /&gt;"/> Interested and <pc id="1" equivStart="START_TAG_APP_ICON_1" equivEnd="CLOSE_TAG_APP_ICON" type="other" dispStart="&lt;app-icon name=&quot;thumbs-down&quot; [size]=&quot;14&quot; aria-hidden=&quot;true&quot; /&gt;" dispEnd="&lt;app-icon name=&quot;thumbs-down&quot; [size]=&quot;14&quot; aria-hidden=&quot;true&quot; /&gt;"/> Not for us are shared with <ph id="2" equiv="INTERPOLATION" disp="{{ selectedGroup()?.name }}"/> and shape the next suggestions. </source>
-        <target><pc id="0" equivStart="START_TAG_APP_ICON" equivEnd="CLOSE_TAG_APP_ICON" type="other" dispStart="&lt;app-icon name=&quot;thumbs-up&quot; [size]=&quot;14&quot; aria-hidden=&quot;true&quot; /&gt;" dispEnd="&lt;app-icon name=&quot;thumbs-down&quot; [size]=&quot;14&quot; aria-hidden=&quot;true&quot; /&gt;"/> Ça nous tente et <pc id="1" equivStart="START_TAG_APP_ICON_1" equivEnd="CLOSE_TAG_APP_ICON" type="other" dispStart="&lt;app-icon name=&quot;thumbs-down&quot; [size]=&quot;14&quot; aria-hidden=&quot;true&quot; /&gt;" dispEnd="&lt;app-icon name=&quot;thumbs-down&quot; [size]=&quot;14&quot; aria-hidden=&quot;true&quot; /&gt;"/> Pas pour nous sont partagés avec <ph id="2" equiv="INTERPOLATION" disp="{{ selectedGroup()?.name }}"/> et orientent les prochaines suggestions. </target>
+        <target><pc id="0" equivStart="START_TAG_APP_ICON" equivEnd="CLOSE_TAG_APP_ICON" type="other" dispStart="&lt;app-icon name=&quot;thumbs-up&quot; [size]=&quot;14&quot; aria-hidden=&quot;true&quot; /&gt;" dispEnd="&lt;app-icon name=&quot;thumbs-down&quot; [size]=&quot;14&quot; aria-hidden=&quot;true&quot; /&gt;"/> Ça m’intéresse et <pc id="1" equivStart="START_TAG_APP_ICON_1" equivEnd="CLOSE_TAG_APP_ICON" type="other" dispStart="&lt;app-icon name=&quot;thumbs-down&quot; [size]=&quot;14&quot; aria-hidden=&quot;true&quot; /&gt;" dispEnd="&lt;app-icon name=&quot;thumbs-down&quot; [size]=&quot;14&quot; aria-hidden=&quot;true&quot; /&gt;"/> Pas pour nous sont partagés avec <ph id="2" equiv="INTERPOLATION" disp="{{ selectedGroup()?.name }}"/> et orientent les prochaines suggestions. </target>
       </segment>
     </unit>
     <unit id="3948662579507719766">
@@ -8633,7 +8633,7 @@
       </notes>
       <segment state="translated">
         <source>Still shortlisted</source>
-        <target>Encore présélectionnés</target>
+        <target>Toujours présélectionnés</target>
       </segment>
     </unit>
     <unit id="6001725418904188373">
@@ -11630,7 +11630,7 @@
       </notes>
       <segment state="translated">
         <source>Interested</source>
-        <target>Ça nous tente</target>
+        <target>Ça m’intéresse</target>
       </segment>
     </unit>
     <unit id="7762962488467282613">
