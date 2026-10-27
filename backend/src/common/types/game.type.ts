@@ -45,6 +45,27 @@ export class GameCompleteDto extends GameDto {
     titleTranslations: Record<string, string>
 }
 
+/** One published edition of a game, for choosing which one someone owns (ADR-0025). */
+export class GameEditionChoiceDto {
+    @ApiProperty({ example: 7, description: 'The edition id, to send as `editionId` when adding the game to a shelf.' })
+    id: number
+
+    @ApiProperty({ example: 'es', description: 'BCP 47 language of the edition.' })
+    languageCode: string
+
+    @ApiProperty({ example: 'Código Secreto' })
+    title: string
+
+    @ApiProperty({ example: false, description: 'The edition the game is best known by.' })
+    isPrimary: boolean
+}
+
+/** A game on someone's shelf: its title is the one on their own edition when they said which (ADR-0025 rule 1). */
+export class OwnedGameCompleteDto extends GameCompleteDto {
+    @ApiProperty({ example: 7, nullable: true, description: 'The edition this copy is, or null when the owner has not said.' })
+    ownedEditionId: number | null
+}
+
 export class GameWithTagsDto extends GameDto {
     @ApiProperty({
         type: [GameTagWithCategoryDto],
@@ -84,6 +105,18 @@ export class GameOwnershipDto {
 
     @ApiProperty({ example: 'Bought for the group', nullable: true })
     purchaseNotes: string | null
+
+    @ApiProperty({ example: 7, nullable: true, description: 'The edition this copy is, or null when the owner has not said.' })
+    editionId: number | null
+
+    @ApiProperty({
+        example: 'Codenames',
+        description: "The title of this copy: its edition's when `editionId` is set, else the title the reader sees.",
+    })
+    title: string
+
+    @ApiProperty({ example: 'en', description: 'The language of `title`.' })
+    titleLanguage: string
 }
 
 export class GameViewTagDto {
@@ -205,6 +238,12 @@ export class GameViewDto {
 
     @ApiProperty({ type: GameViewRatingDto })
     ratingData: GameViewRatingDto
+
+    @ApiProperty({
+        type: [GameEditionChoiceDto],
+        description: 'Every edition of the game, the primary one first, to choose which one a copy is.',
+    })
+    editions: Array<GameEditionChoiceDto>
 
     @ApiProperty({
         type: [GameCompleteDto],

@@ -934,6 +934,11 @@ export class GameQueries {
 
                 // Editions keep their id when their language stays, so records that point at them are not lost.
                 for (const statement of [
+                    // A copy of a removed edition goes back to "not said"; explicit, so it never depends on foreign keys being enforced.
+                    {
+                        sql: `UPDATE OwnedGame SET editionId = NULL WHERE editionId IN (SELECT id FROM GameEdition WHERE gameId = ? AND ${gone})`,
+                        args: [input.gameId, ...languages],
+                    },
                     { sql: `DELETE FROM GameTranslation WHERE gameId = ? AND ${gone}`, args: [input.gameId, ...languages] },
                     { sql: `DELETE FROM GameEdition WHERE gameId = ? AND ${gone}`, args: [input.gameId, ...languages] },
                     { sql: 'UPDATE GameEdition SET isPrimary = 0 WHERE gameId = ?', args: [input.gameId] },

@@ -25,6 +25,10 @@ operational details.
 - A game proposal says which language its title is in (the page's language
   until changed) and can list the game's titles in other languages. Approving
   it creates those editions, with the proposed title's language as primary.
+- Say which edition you own: adding a game that has several editions asks
+  which one (the page's language preselected, else the original), and the
+  game page shows and changes it. My Games, who brings a game to a night and
+  a person's linked games then show the title on your own box.
 - Game titles in groups, history and recommendations follow the page's
   language, and a game that only has an edition in another language shows
   that one.

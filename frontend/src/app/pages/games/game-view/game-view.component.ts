@@ -5,7 +5,7 @@ import { AbstractControl, FormControl, FormGroup, FormsModule, ReactiveFormsModu
 import { ActivatedRoute, RouterLink } from '@angular/router'
 import { finalize } from 'rxjs'
 import { Api } from '../../../api/api'
-import type { GameViewType } from '../../../api/api.types'
+import type { GameViewType, UpdateGameOwnedType } from '../../../api/api.types'
 import { CardGameComponent } from '../../../components/card-game/card-game.component'
 import { ImageProfileComponent } from '../../../components/image-profile/image-profile.component'
 import { TagsComponent } from '../../../components/tags/tags.component'
@@ -19,7 +19,8 @@ import { WishlistToggleComponent } from '../../../components/wishlist-toggle/wis
 import { CustomDatePipe } from '../../../core/pipes/customDate.pipe'
 import { GameTitlePipe } from '../../../core/pipes/game-title.pipe'
 import { DataService } from '../../../core/services/data.service'
-import { gameTitleLanguage, otherGameTitles } from '../../../core/utils/gameTitle'
+import { ShelfEditionService } from '../../../core/services/shelf-edition.service'
+import { gameTitle, gameTitleLanguage, otherGameTitles } from '../../../core/utils/gameTitle'
 import { mergeHistoryParticipants } from '../../../core/utils/historyParticipants'
 
 /** Nights listed before "Show all" on the game page. */
@@ -50,6 +51,7 @@ export class GameViewPageComponent {
     private readonly route = inject(ActivatedRoute)
     private readonly dataService = inject(DataService)
     private readonly toastService = inject(ToastService)
+    private readonly shelfEditions = inject(ShelfEditionService)
 
     // Custom validator for positive number (including 0)
     private positiveNumberValidator(control: AbstractControl): ValidationErrors | null {
@@ -118,6 +120,7 @@ export class GameViewPageComponent {
     // to prevent spamming actions, basically isLoading flags
     public readonly PREVENT_SPAM = {
         isLoadingReview: false,
+        isLoadingChangeEdition: false,
         isLoadingUpdateOwnership: false,
         isLoadingAddToCollection: false,
         isLoadingRemoveFromCollection: false,
@@ -241,59 +244,111 @@ export class GameViewPageComponent {
     // #region Ownership
     public addToCollection() {
         const currentUser = this.currentUser$()
-        const gameId = this.gameView$()?.gameData?.id
+        const gameView = this.gameView$()
+        const gameId = gameView?.gameData?.id
 
-        if (!currentUser?.id || !gameId || this.PREVENT_SPAM.isLoadingAddToCollection) {
+        if (!currentUser?.id || !gameView || !gameId || this.PREVENT_SPAM.isLoadingAddToCollection) {
             return
         }
 
         this.PREVENT_SPAM.isLoadingAddToCollection = true
 
-        this.api
-            .addGameToUserCollection(currentUser.id, gameId)
-            .pipe(
-                finalize(() => {
-                    this.PREVENT_SPAM.isLoadingAddToCollection = false
-                }),
-            )
-            .subscribe({
-                next: () => {
-                    this.toastService.success('Game added to collection')
+        // A game with several editions asks which one you own (ADR-0025); the game page already knows them.
+        this.shelfEditions
+            .addToShelf(currentUser.id, gameView.gameData, gameTitle(gameView.gameData), gameView.editions)
+            .then((added) => {
+                if (!added) return
 
-                    // Check if the game was in the wishlist before adding to collection
-                    const wasInWishlist = this.isWishlistedComputed()
+                this.toastService.success('Game added to collection')
 
-                    this.gameView$.update((game) => {
-                        if (!game) {
-                            return null
-                        }
+                // Check if the game was in the wishlist before adding to collection
+                const wasInWishlist = this.isWishlistedComputed()
 
-                        return {
-                            ...game,
-                            ownedGameData: {
-                                purchaseDate: null,
-                                purchasePrice: null,
-                                purchaseNotes: null,
-                            },
-                            // Automatically remove from wishlist when added to collection
-                            wishlistedGameData: null,
-                        }
-                    })
-
-                    // Show notification if the game was automatically removed from wishlist
-                    if (wasInWishlist) {
-                        this.toastService.info('Game automatically removed from wishlist')
+                // The copy's edition is saved as chosen; reload the page's data to show it.
+                this.gameView$.update((game) => {
+                    if (!game) {
+                        return null
                     }
 
-                    // Refresh the wishlist to ensure consistency with server state
-                    this.dataService.refreshUserWishlist()
-                    this.dataService.refreshUserGames()
-                },
-                error: () => {
-                    this.toastService.error('Error adding game to collection')
-                    // On error, reload the game data
-                    this._loadGameData(currentUser.id, gameId)
-                },
+                    return {
+                        ...game,
+                        ownedGameData: {
+                            purchaseDate: null,
+                            purchasePrice: null,
+                            purchaseNotes: null,
+                            editionId: null,
+                            title: game.gameData.title ?? '',
+                            titleLanguage: game.gameData.titleLanguage ?? 'en',
+                        },
+                        // Automatically remove from wishlist when added to collection
+                        wishlistedGameData: null,
+                    }
+                })
+
+                // Show notification if the game was automatically removed from wishlist
+                if (wasInWishlist) {
+                    this.toastService.info('Game automatically removed from wishlist')
+                }
+
+                // Refresh the wishlist to ensure consistency with server state
+                this.dataService.refreshUserWishlist()
+                this.dataService.refreshUserGames()
+                this._loadGameData(currentUser.id, gameId)
+            })
+            .catch(() => {
+                this.toastService.error('Error adding game to collection')
+                // On error, reload the game data
+                this._loadGameData(currentUser.id, gameId)
+            })
+            .finally(() => {
+                this.PREVENT_SPAM.isLoadingAddToCollection = false
+            })
+    }
+
+    /** Asks which edition your copy is, again, and saves the answer at once. */
+    public changeEdition() {
+        const currentUser = this.currentUser$()
+        const gameView = this.gameView$()
+
+        if (!currentUser?.id || !gameView?.ownedGameData || this.PREVENT_SPAM.isLoadingChangeEdition) return
+
+        this.PREVENT_SPAM.isLoadingChangeEdition = true
+        this.shelfEditions
+            .changeEdition(
+                currentUser.id,
+                gameView.gameData,
+                gameTitle(gameView.gameData),
+                gameView.editions,
+                gameView.ownedGameData.editionId,
+            )
+            .then((editionId) => {
+                if (editionId === undefined) return
+                const edition = gameView.editions.find((candidate) => candidate.id === editionId)
+
+                this.gameView$.update((game) =>
+                    game?.ownedGameData
+                        ? {
+                              ...game,
+                              ownedGameData: {
+                                  ...game.ownedGameData,
+                                  editionId,
+                                  // ADR-0025 rule 1: the copy's title is its edition's, else the one the page shows.
+                                  title: edition?.title ?? game.gameData.title ?? '',
+                                  titleLanguage: edition?.languageCode ?? game.gameData.titleLanguage ?? 'en',
+                              },
+                          }
+                        : game,
+                )
+                this.dataService.refreshUserGames()
+                this.toastService.success($localize`:Confirmation after changing which edition of a game you own:Edition saved`)
+            })
+            .catch(() => {
+                this.toastService.error(
+                    $localize`:Error after failing to save which edition of a game you own:Could not save the edition. Try again.`,
+                )
+            })
+            .finally(() => {
+                this.PREVENT_SPAM.isLoadingChangeEdition = false
             })
     }
 
@@ -379,7 +434,7 @@ export class GameViewPageComponent {
         }
 
         const formValue = this.ownershipFormGroup.value
-        const updatedOwnedGameData: GameViewType['ownedGameData'] = {
+        const updatedOwnedGameData: UpdateGameOwnedType = {
             purchaseDate: formValue.purchaseDate || null,
             purchasePrice: formValue.purchasePrice ? Number(formValue.purchasePrice) : null,
             purchaseNotes: formValue.purchaseNotes || null,
@@ -401,7 +456,17 @@ export class GameViewPageComponent {
                             return null
                         }
 
-                        return { ...game, ownedGameData: res }
+                        return {
+                            ...game,
+                            ownedGameData: game.ownedGameData
+                                ? {
+                                      ...game.ownedGameData,
+                                      purchaseDate: res.purchaseDate,
+                                      purchasePrice: res.purchasePrice,
+                                      purchaseNotes: res.purchaseNotes,
+                                  }
+                                : game.ownedGameData,
+                        }
                     })
                     this.toastService.success('Purchase details updated')
                 },

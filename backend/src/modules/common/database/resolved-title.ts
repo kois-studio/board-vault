@@ -23,3 +23,20 @@ export function resolvedTitleSql(gameId: string, locale: string): ResolvedTitleS
 
     return { title: pick('title'), language: pick('languageCode'), normalizedTitle: pick('normalizedTitle') }
 }
+
+/**
+ * ADR-0025's rule 1, for a row that is someone's copy of a game: the title of the edition they said they own
+ * (`OwnedGame.editionId`), else rule 2 (`resolvedTitleSql`). `ownedGame` is the alias of the `OwnedGame` row in the
+ * query (such as `og`) and `gameId` a SQL expression for its game.
+ */
+export function ownedTitleSql(ownedGame: string, gameId: string, locale: string): ResolvedTitleSql {
+    const resolved = resolvedTitleSql(gameId, locale)
+    const owned = (column: string, fallback: string) =>
+        `COALESCE((SELECT oe.${column} FROM GameEdition oe WHERE oe.id = ${ownedGame}.editionId AND oe.gameId = ${gameId}), ${fallback})`
+
+    return {
+        title: owned('title', resolved.title),
+        language: owned('languageCode', resolved.language),
+        normalizedTitle: owned('normalizedTitle', resolved.normalizedTitle),
+    }
+}

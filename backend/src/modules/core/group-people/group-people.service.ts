@@ -339,6 +339,8 @@ export class GroupPeopleService {
             confirmedByAccountId: row[4] === null ? null : Number(row[4]),
             createdAt: String(row[5]),
             updatedAt: String(row[6]),
+            copyTitle: row[7] === null ? null : String(row[7]),
+            copyTitleLanguage: row[8] === null ? null : String(row[8]),
         }))
     }
 

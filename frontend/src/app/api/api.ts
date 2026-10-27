@@ -22,6 +22,7 @@ import {
     clerkSyncResultSchema,
     createdGroupSchema,
     gameCompleteSchema,
+    gameEditionsSchema,
     gameOwnedSchema,
     gameProposalSchema,
     gameResultsUpdatedSchema,
@@ -92,6 +93,7 @@ import type {
     CreateGameProposalType,
     CreatePlaySessionRequest,
     GameCompleteType,
+    GameEditionType,
     GameOwnedType,
     GameProposalType,
     GameResultsUpdatedType,
@@ -535,9 +537,27 @@ export class Api {
             .pipe(map((response) => gameViewSchema.parse(response)))
     }
 
-    addGameToUserCollection(userId: number, gameId: number) {
+    /** `editionId` says which edition the person owns; it must be an edition of the game (ADR-0025). */
+    addGameToUserCollection(userId: number, gameId: number, editionId?: number | null) {
         return this.http
-            .post<{ success: true }>(`${this.url}/collection/users/${userId}/games/${gameId}`, {})
+            .post<{ success: true }>(
+                `${this.url}/collection/users/${userId}/games/${gameId}`,
+                editionId === undefined || editionId === null ? {} : { editionId },
+            )
+            .pipe(map((response) => successSchema.parse(response)))
+    }
+
+    /** A game's editions, the primary one first, to choose which one a copy is. */
+    getGameEditions(gameId: number) {
+        return this.http
+            .get<Array<GameEditionType>>(`${this.url}/collection/games/${gameId}/editions`)
+            .pipe(map((response) => gameEditionsSchema.parse(response)))
+    }
+
+    /** Says which edition a copy on the shelf is, or clears it with null. */
+    setOwnedEdition(userId: number, gameId: number, editionId: number | null) {
+        return this.http
+            .patch<{ success: true }>(`${this.url}/collection/users/${userId}/games/${gameId}/edition`, { editionId })
             .pipe(map((response) => successSchema.parse(response)))
     }
 

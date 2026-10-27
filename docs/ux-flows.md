@@ -156,7 +156,12 @@ its existing ownership and shortlist rules.
 
 ## Ownership
 
-My Games links to catalogue browsing. A person without an account has Add a
+My Games links to catalogue browsing. Adding a game to My Games (from Browse,
+the game page, the wishlist, or a night's ownership follow-up) asks which
+edition you own when the game has several, preselecting the one in the page's
+language, else the original; one edition asks nothing, and "I’m not sure"
+leaves it unsaid. The game page shows your copy's edition and can change it
+(ADR-0025). A person without an account has Add a
 game for [name] on their group page; it searches the catalogue and explicitly
 names the owner before saving. This is a group-scoped ownership statement,
 visible and editable by the group's members, never another account's private
