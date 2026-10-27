@@ -28,14 +28,14 @@ import { ImageBackgroundComponent } from '../../components/ui/image-background/i
 import { InPageLinkDirective } from '../../components/ui/in-page-link/in-page-link.directive'
 import { PageHeaderComponent } from '../../components/ui/page-header/page-header.component'
 import { LOADING_KEYS } from '../../core/enums/loading-keys-enum'
-import { formatNumber, intlLocale } from '../../core/i18n/format'
+import { formatList, formatNumber, intlLocale } from '../../core/i18n/format'
 import { PlayersPipe } from '../../core/pipes/count.pipe'
 import { CustomDatePipe } from '../../core/pipes/customDate.pipe'
 import { GameTitlePipe } from '../../core/pipes/game-title.pipe'
 import { DataService } from '../../core/services/data.service'
 import { LoadingService } from '../../core/services/loading.service'
 import { attendeeNames, formatAttendeeSummary } from '../../core/utils/formatAttendeeSummary'
-import { gameTitle } from '../../core/utils/gameTitle'
+import { gameCoverAlt, gameTitle } from '../../core/utils/gameTitle'
 import { groupGameCount, groupPeopleCount } from '../../core/utils/groupCounts'
 import { formatWinners, historyWinnerNames, mergeHistoryParticipants } from '../../core/utils/historyParticipants'
 import { initialsAvatar } from '../../core/utils/initialsAvatar'
@@ -125,6 +125,7 @@ export class GroupViewComponent {
     public readonly PLAYER_COUNTS = [2, 3, 4, 5, 6]
     public readonly avgReviewsIndexComputed = this.groupViewService.avgReviewsIndexComputed
     public readonly formatNumber = formatNumber
+    public readonly formatList = formatList
     public readonly totalUniqueGamesComputed = this.groupViewService.totalUniqueGamesComputed
     // Group pulse: everyone in the group, with or without an account, as on Home.
     public readonly groupPeopleCount = groupPeopleCount
@@ -815,7 +816,7 @@ export class GroupViewComponent {
 
     /** The cover's description for screen readers. */
     public coverAlt(game: Parameters<typeof gameTitle>[0]): string {
-        return $localize`:Description of a game's cover picture; the placeholder is the game title:${gameTitle(game)}:title: cover`
+        return gameCoverAlt(gameTitle(game))
     }
 
     /** The name of a cover that opens the game's page. */

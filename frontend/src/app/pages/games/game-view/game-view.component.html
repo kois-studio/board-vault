@@ -1,13 +1,13 @@
 @if (isLoadingGameData()) {
   <p class="flex min-h-[50vh] flex-col items-center justify-center gap-x-2 text-bv-text-muted">
     <app-spinner size="large" />
-    Loading game data...
+    <ng-container i18n="While a game page loads">Loading game data…</ng-container>
   </p>
 } @else if (gameLoadError()) {
   <div class="flex min-h-[50vh] flex-col items-center justify-center gap-3 px-4 text-center text-secondary">
-    <h1 class="text-xl font-semibold">Game data could not be loaded.</h1>
-    <p>Check your connection and try again.</p>
-    <button appButton icon="arrow-repeat" (click)="retryGameLoad()">Retry</button>
+    <h1 class="text-xl font-semibold" i18n="Error on a game page">Game data could not be loaded.</h1>
+    <p i18n="Under an error when a page could not load">Check your connection and try again.</p>
+    <button appButton icon="arrow-repeat" (click)="retryGameLoad()" i18n="Button under an error">Retry</button>
   </div>
 } @else if (gameView$(); as game) {
   <container-wrapper>
@@ -16,7 +16,7 @@
       <section class="grid grid-cols-1 gap-8 md:grid-cols-[minmax(0,320px)_1fr] lg:gap-12" aria-labelledby="game-title">
         <div class="relative mx-auto aspect-square w-full max-w-xs rounded-2xl border border-bv-border bg-bv-surface p-3 shadow-sm md:max-w-none">
           <div class="h-full w-full overflow-hidden rounded-xl">
-            <image-background class="h-full" [src]="game.gameData.imageUrl" [alt]="(game.gameData | gameTitle) + ' cover'" loading="eager" />
+            <image-background class="h-full" [src]="game.gameData.imageUrl" [alt]="game.gameData | gameTitle | coverAlt" loading="eager" />
           </div>
           @if (!game.ownedGameData) {
             <app-wishlist-toggle class="absolute right-5 top-5" [game]="game.gameData" (changed)="onWishlistChanged($event)" />
@@ -30,10 +30,10 @@
             <p class="mt-1 text-secondary" [attr.lang]="other.lang">{{ other.title }}</p>
           }
 
-          <ul class="mt-4 flex flex-wrap gap-2 text-sm" aria-label="Game facts">
+          <ul class="mt-4 flex flex-wrap gap-2 text-sm" i18n-aria-label="Accessible name of the list of a game's length and player count on its page" aria-label="Game facts">
             @if (game.gameData.gameAvgDuration) {
               <li class="inline-flex items-center gap-1.5 rounded-full bg-bv-surface-2 px-3 py-1.5">
-                <app-icon name="clock" [size]="15" aria-hidden="true" /> ~{{ game.gameData.gameAvgDuration }} min
+                <app-icon name="clock" [size]="15" aria-hidden="true" /> ~<ng-container i18n="How long a game lasts, in minutes">{{ game.gameData.gameAvgDuration }} min</ng-container>
               </li>
             }
             @if (playersLabelComputed(); as players) {
@@ -49,29 +49,35 @@
           <!-- Ratings: what your groups think, what everyone thinks, what you think -->
           <dl class="mt-6 grid grid-cols-2 gap-3 sm:max-w-md">
             <div class="rounded-2xl border border-bv-border p-4">
-              <dt class="text-xs font-semibold uppercase tracking-wide text-secondary">Your groups</dt>
+              <dt class="text-xs font-semibold uppercase tracking-wide text-secondary" i18n="Heading of the average rating of a game in your groups, on its page">Your groups</dt>
               <dd class="mt-1 flex items-baseline gap-1">
                 <span class="text-2xl font-bold">{{ outOfFive(game.ratingData.avgGroupsRating?.review) }}</span>
-                <span class="text-sm text-secondary">/ 5 · {{ game.ratingData.avgGroupsRating?.count ?? 0 }} rating{{ (game.ratingData.avgGroupsRating?.count ?? 0) === 1 ? '' : 's' }}</span>
+                <span class="text-sm text-secondary" i18n="After a game's average rating: out of 5, then how many ratings it comes from">{game.ratingData.avgGroupsRating?.count ?? 0, plural, one {/ 5 · {{ game.ratingData.avgGroupsRating?.count ?? 0 }} rating} other {/ 5 · {{ game.ratingData.avgGroupsRating?.count ?? 0 }} ratings}}</span>
               </dd>
             </div>
             <div class="rounded-2xl border border-bv-border p-4">
-              <dt class="text-xs font-semibold uppercase tracking-wide text-secondary">Everyone</dt>
+              <dt class="text-xs font-semibold uppercase tracking-wide text-secondary" i18n="Heading of the average rating of a game among everyone on Board Vault, on its page">Everyone</dt>
               <dd class="mt-1 flex items-baseline gap-1">
                 <span class="text-2xl font-bold">{{ outOfFive(game.ratingData.avgGlobalRating?.review) }}</span>
-                <span class="text-sm text-secondary">/ 5 · {{ game.ratingData.avgGlobalRating?.count ?? 0 }} rating{{ (game.ratingData.avgGlobalRating?.count ?? 0) === 1 ? '' : 's' }}</span>
+                <span class="text-sm text-secondary" i18n="After a game's average rating: out of 5, then how many ratings it comes from">{game.ratingData.avgGlobalRating?.count ?? 0, plural, one {/ 5 · {{ game.ratingData.avgGlobalRating?.count ?? 0 }} rating} other {/ 5 · {{ game.ratingData.avgGlobalRating?.count ?? 0 }} ratings}}</span>
               </dd>
             </div>
           </dl>
 
           <div class="mt-4 flex flex-wrap items-center gap-3">
-            <span class="text-sm font-semibold">{{ gameUserReviewComputed() > 0 ? 'Your rating' : 'Rate it' }}</span>
-            <div class="flex items-center" role="group" aria-label="Your rating">
+            <span class="text-sm font-semibold">
+              @if (gameUserReviewComputed() > 0) {
+                <ng-container i18n="Label of your stars on a game page once you rated it">Your rating</ng-container>
+              } @else {
+                <ng-container i18n="Label of the stars on a game page before you rate it">Rate it</ng-container>
+              }
+            </span>
+            <div class="flex items-center" role="group" i18n-aria-label="Accessible name of the five rating stars on a game page" aria-label="Your rating">
               @for (star of [2, 4, 6, 8, 10]; track $index) {
                 <button
                   type="button"
                   (click)="saveGameReview(star)"
-                  [attr.aria-label]="'Rate ' + star / 2 + ' out of 5 stars'"
+                  [attr.aria-label]="rateLabel(star / 2)"
                   [attr.aria-pressed]="gameUserReviewComputed() === star"
                   class="cursor-pointer p-1 motion-safe:transition-transform motion-safe:hover:scale-110"
                 >
@@ -90,11 +96,11 @@
           <div class="mt-6 flex flex-wrap items-center gap-3 border-t border-bv-border pt-6">
             @if (game.ownedGameData) {
               <span class="inline-flex items-center gap-2 rounded-full bg-bv-success/10 px-4 py-2 text-sm font-semibold text-bv-success">
-                <app-icon name="circle-check" [size]="16" aria-hidden="true" /> In your games
+                <app-icon name="circle-check" [size]="16" aria-hidden="true" /> <ng-container i18n="Badge on a game page when the game is on My Games">In your games</ng-container>
               </span>
-              <button appButton variant="secondary" size="small" (click)="removeFromCollection()" [loading]="PREVENT_SPAM.isLoadingRemoveFromCollection">Remove</button>
+              <button appButton variant="secondary" size="small" (click)="removeFromCollection()" [loading]="PREVENT_SPAM.isLoadingRemoveFromCollection" i18n="Button on a game page that takes it off My Games">Remove</button>
             } @else {
-              <button appButton icon="plus-lg" (click)="addToCollection()" [loading]="PREVENT_SPAM.isLoadingAddToCollection">I own this game</button>
+              <button appButton icon="plus-lg" (click)="addToCollection()" [loading]="PREVENT_SPAM.isLoadingAddToCollection" i18n="Button on a game page that adds it to My Games">I own this game</button>
             }
           </div>
         </div>
@@ -103,21 +109,21 @@
       <div class="grid grid-cols-1 gap-8 lg:grid-cols-2">
         <!-- Who has it in your groups -->
         <section aria-labelledby="owners-heading">
-          <h2 id="owners-heading" class="mb-3 text-xl font-bold">In your groups</h2>
+          <h2 id="owners-heading" class="mb-3 text-xl font-bold" i18n="Heading on a game page of the groups where someone owns it">In your groups</h2>
           @if (groupOwnershipComputed().length) {
             <ul class="divide-y divide-bv-border rounded-2xl border border-bv-border">
               @for (entry of groupOwnershipComputed(); track entry.group.id) {
                 <li class="flex items-center justify-between gap-4 p-4">
                   <span class="min-w-0">
                     <a [routerLink]="['/groups', entry.group.id]" class="block truncate font-semibold hover:underline">{{ entry.group.name }}</a>
-                    <span class="block truncate text-sm text-secondary">Owned by {{ entry.owners.join(', ') }}</span>
+                    <span class="block truncate text-sm text-secondary" i18n="Who owns a game in one of your groups, on its page; the placeholder is a list of names">Owned by {{ formatList(entry.owners) }}</span>
                   </span>
-                  <a class="shrink-0 text-sm font-semibold text-bv-primary hover:underline" routerLink="/play/recommendations" [queryParams]="{ groupId: entry.group.id }">Plan with it</a>
+                  <a class="shrink-0 text-sm font-semibold text-bv-primary hover:underline" routerLink="/play/recommendations" [queryParams]="{ groupId: entry.group.id }" i18n="Link on a game page that opens the suggestions for a group that owns it">Plan with it</a>
                 </li>
               }
             </ul>
           } @else {
-            <p class="rounded-2xl border border-dashed border-bv-border p-5 text-secondary">Nobody in your groups owns it yet.</p>
+            <p class="rounded-2xl border border-dashed border-bv-border p-5 text-secondary" i18n="Game page when nobody in your groups owns the game">Nobody in your groups owns it yet.</p>
           }
         </section>
 
@@ -125,9 +131,9 @@
         <section aria-labelledby="played-heading">
           <h2 id="played-heading" class="mb-3 text-xl font-bold">
             @if (userHistoryFilteredComputed().length) {
-              Played {{ userHistoryFilteredComputed().length }} time{{ userHistoryFilteredComputed().length === 1 ? '' : 's' }}
+              <ng-container i18n="Heading on a game page of the game nights where you played it">{userHistoryFilteredComputed().length, plural, one {Played {{ userHistoryFilteredComputed().length }} time} other {Played {{ userHistoryFilteredComputed().length }} times}}</ng-container>
             } @else {
-              Your plays
+              <ng-container i18n="Heading on a game page when you have not played it yet">Your plays</ng-container>
             }
           </h2>
           @if (userHistoryFilteredComputed().length) {
@@ -159,11 +165,15 @@
                 [attr.aria-expanded]="showAllPlays()"
                 (click)="showAllPlays.set(!showAllPlays())"
               >
-                {{ showAllPlays() ? 'Show the latest only' : 'Show all ' + userHistoryFilteredComputed().length + ' plays' }}
+                @if (showAllPlays()) {
+                  <ng-container i18n="Button on a game page that shows only your latest plays">Show the latest only</ng-container>
+                } @else {
+                  <ng-container i18n="Button on a game page that shows every play; the placeholder is how many, always more than one">Show all {{ userHistoryFilteredComputed().length }} plays</ng-container>
+                }
               </button>
             }
           } @else {
-            <p class="rounded-2xl border border-dashed border-bv-border p-5 text-secondary">You haven't played it in a recorded session yet.</p>
+            <p class="rounded-2xl border border-dashed border-bv-border p-5 text-secondary" i18n="Game page when you have not played the game yet">You haven’t played it in a recorded session yet.</p>
           }
         </section>
       </div>
@@ -172,27 +182,27 @@
       @if (game.ownedGameData) {
         <details class="group rounded-2xl border border-bv-border">
           <summary class="flex cursor-pointer list-none items-center justify-between gap-3 p-4 font-semibold">
-            <span>Your copy <span class="font-normal text-secondary">· purchase date, price, notes</span></span>
+            <span i18n="Heading of the folded section about your copy of a game; the second part lists what is inside">Your copy <span class="font-normal text-secondary">· purchase date, price, notes</span></span>
             <app-icon name="chevron-down" [size]="18" className="transition group-open:rotate-180" aria-hidden="true" />
           </summary>
           <form [formGroup]="ownershipFormGroup" class="grid grid-cols-1 gap-4 border-t border-bv-border p-4 sm:grid-cols-2" (ngSubmit)="saveOwnedGameDetails()">
             <label class="block text-sm font-medium">
-              Bought on <span class="text-xs text-secondary">(optional)</span>
+              <ng-container i18n="Label of the purchase date of your copy of a game">Bought on <span class="text-xs text-secondary">(optional)</span></ng-container>
               <input type="date" formControlName="purchaseDate" class="mt-1 w-full rounded-lg border border-bv-border px-3 py-2 bg-bv-surface" />
             </label>
             <label class="block text-sm font-medium">
-              Price paid <span class="text-xs text-secondary">(optional)</span>
+              <ng-container i18n="Label of the price you paid for your copy of a game">Price paid <span class="text-xs text-secondary">(optional)</span></ng-container>
               <input type="number" formControlName="purchasePrice" min="0" step="0.01" placeholder="0.00" class="mt-1 w-full rounded-lg border border-bv-border px-3 py-2 bg-bv-surface" />
               @if (ownershipFormGroup.get('purchasePrice')?.errors?.['positiveNumber']) {
-                <span class="mt-1 block text-sm text-bv-danger">Enter a positive number.</span>
+                <span class="mt-1 block text-sm text-bv-danger" i18n="Error under the price of your copy of a game">Enter a positive number.</span>
               }
             </label>
             <label class="block text-sm font-medium sm:col-span-2">
-              Notes <span class="text-xs text-secondary">(optional)</span>
-              <textarea formControlName="purchaseNotes" rows="2" maxlength="128" placeholder="For example: gift from Ana, missing one meeple" class="mt-1 w-full resize-none rounded-lg border border-bv-border px-3 py-2 bg-bv-surface"></textarea>
+              <ng-container i18n="Label of the notes about your copy of a game">Notes <span class="text-xs text-secondary">(optional)</span></ng-container>
+              <textarea formControlName="purchaseNotes" rows="2" maxlength="128" i18n-placeholder="Placeholder of the notes about your copy of a game; Ana is a sample name" placeholder="For example: gift from Ana, missing one meeple" class="mt-1 w-full resize-none rounded-lg border border-bv-border px-3 py-2 bg-bv-surface"></textarea>
             </label>
             <div class="flex justify-end sm:col-span-2">
-              <button appButton type="submit" [loading]="PREVENT_SPAM.isLoadingUpdateOwnership" [disabled]="ownershipFormGroup.invalid">Save</button>
+              <button appButton type="submit" [loading]="PREVENT_SPAM.isLoadingUpdateOwnership" [disabled]="ownershipFormGroup.invalid" i18n="Button that saves the details of your copy of a game">Save</button>
             </div>
           </form>
         </details>
@@ -201,7 +211,7 @@
       <!-- Similar games -->
       @if (game.similarGames.length) {
         <section aria-labelledby="similar-heading">
-          <h2 id="similar-heading" class="mb-4 text-xl font-bold">Similar games</h2>
+          <h2 id="similar-heading" class="mb-4 text-xl font-bold" i18n="Heading of the games like this one on a game page">Similar games</h2>
           <div class="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-5">
             @for (similarGame of game.similarGames; track similarGame.id) {
               <a [routerLink]="['/games', similarGame.id]" class="block rounded-lg focus-visible:outline-none motion-safe:transition-transform motion-safe:hover:-translate-y-0.5">

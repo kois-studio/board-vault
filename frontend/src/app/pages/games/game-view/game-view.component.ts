@@ -16,17 +16,20 @@ import { IconComponent } from '../../../components/ui/icon/icon.component'
 import { ImageBackgroundComponent } from '../../../components/ui/image-background/image-background.component'
 import { SpinnerComponent } from '../../../components/ui/spinner/spinner.component'
 import { WishlistToggleComponent } from '../../../components/wishlist-toggle/wishlist-toggle.component'
+import { formatList, formatNumber } from '../../../core/i18n/format'
 import { CustomDatePipe } from '../../../core/pipes/customDate.pipe'
-import { GameTitlePipe } from '../../../core/pipes/game-title.pipe'
+import { CoverAltPipe, GameTitlePipe } from '../../../core/pipes/game-title.pipe'
 import { DataService } from '../../../core/services/data.service'
 import { gameTitleLanguage, otherGameTitles } from '../../../core/utils/gameTitle'
 import { mergeHistoryParticipants } from '../../../core/utils/historyParticipants'
+import { playerRange } from '../../../core/utils/plural'
 
 /** Nights listed before "Show all" on the game page. */
 const PLAYS_SHOWN = 6
 
 @Component({
     imports: [
+        CoverAltPipe,
         GameTitlePipe,
         CommonModule,
         FormsModule,
@@ -171,7 +174,7 @@ export class GameViewPageComponent {
             error: () => {
                 this.isLoadingGameData.set(false)
                 this.gameLoadError.set(true)
-                this.toastService.error('Error loading game data')
+                this.toastService.error($localize`:Toast when a game page could not load:Error loading game data`)
             },
         })
     }
@@ -225,10 +228,10 @@ export class GameViewPageComponent {
                             },
                         }
                     })
-                    this.toastService.success('Review saved')
+                    this.toastService.success($localize`:Toast after rating a game:Review saved`)
                 },
                 error: () => {
-                    this.toastService.error('Error saving review')
+                    this.toastService.error($localize`:Toast when rating a game failed:Error saving review`)
                     // On error, reload the game data
                     this._loadGameData(currentUser.id, gameId)
                 },
@@ -258,7 +261,7 @@ export class GameViewPageComponent {
             )
             .subscribe({
                 next: () => {
-                    this.toastService.success('Game added to collection')
+                    this.toastService.success($localize`:Toast after adding a game to My Games from its page:Game added to collection`)
 
                     // Check if the game was in the wishlist before adding to collection
                     const wasInWishlist = this.isWishlistedComputed()
@@ -282,7 +285,9 @@ export class GameViewPageComponent {
 
                     // Show notification if the game was automatically removed from wishlist
                     if (wasInWishlist) {
-                        this.toastService.info('Game automatically removed from wishlist')
+                        this.toastService.info(
+                            $localize`:Toast after adding a game you had on your wishlist to My Games:Game automatically removed from wishlist`,
+                        )
                     }
 
                     // Refresh the wishlist to ensure consistency with server state
@@ -290,7 +295,9 @@ export class GameViewPageComponent {
                     this.dataService.refreshUserGames()
                 },
                 error: () => {
-                    this.toastService.error('Error adding game to collection')
+                    this.toastService.error(
+                        $localize`:Toast when adding a game to My Games from its page failed:Error adding game to collection`,
+                    )
                     // On error, reload the game data
                     this._loadGameData(currentUser.id, gameId)
                 },
@@ -316,7 +323,7 @@ export class GameViewPageComponent {
             )
             .subscribe({
                 next: () => {
-                    this.toastService.success('Game removed from collection')
+                    this.toastService.success($localize`:Toast after taking a game off My Games:Game removed from collection`)
                     this.gameView$.update((game) => {
                         if (!game) {
                             return null
@@ -327,7 +334,7 @@ export class GameViewPageComponent {
                     this.dataService.refreshUserGames()
                 },
                 error: () => {
-                    this.toastService.error('Error removing game from collection')
+                    this.toastService.error($localize`:Toast when taking a game off My Games failed:Error removing game from collection`)
                     // On error, reload the game data
                     this._loadGameData(currentUser.id, gameId)
                 },
@@ -358,16 +365,27 @@ export class GameViewPageComponent {
         if (!game?.minPlayers && !game?.maxPlayers) return null
         const min = game.minPlayers ?? game.maxPlayers
         const max = game.maxPlayers ?? game.minPlayers
-        return min === max ? `${min} player${min === 1 ? '' : 's'}` : `${min}–${max} players`
+        return playerRange(min, max)
     })
+
+    /** Names joined the way the page's language lists them: "Ana, Luis and Marta". */
+    public readonly formatList = formatList
 
     /** Averages are stored out of 10 and shown out of 5. */
     public outOfFive(review: number | undefined): string {
-        return review ? (review / 2).toFixed(1) : '–'
+        return review ? formatNumber(review / 2, { minimumFractionDigits: 1, maximumFractionDigits: 1 }) : '–'
+    }
+
+    /** The name of a rating star for screen readers: "Rate 3 out of 5 stars". */
+    public rateLabel(stars: number): string {
+        return $localize`:Accessible name of a rating star on a game page; the placeholder is a number from 1 to 5:Rate ${stars}:stars: out of 5 stars`
     }
 
     public getGroupName(groupId: number): string {
-        return this.userGroups$().find((group) => group.id === groupId)?.name ?? `Group ${groupId}`
+        return (
+            this.userGroups$().find((group) => group.id === groupId)?.name ??
+            $localize`:Stands for the name of a group you are no longer in; the placeholder is its number:Group ${groupId}:id:`
+        )
     }
 
     public saveOwnedGameDetails() {
@@ -403,10 +421,12 @@ export class GameViewPageComponent {
 
                         return { ...game, ownedGameData: res }
                     })
-                    this.toastService.success('Purchase details updated')
+                    this.toastService.success($localize`:Toast after saving the details of your copy of a game:Purchase details updated`)
                 },
                 error: () => {
-                    this.toastService.error('Error updating purchase details')
+                    this.toastService.error(
+                        $localize`:Toast when saving the details of your copy of a game failed:Error updating purchase details`,
+                    )
                     // On error, reload the game data
                     this._loadGameData(currentUser.id, gameId)
                 },

@@ -1,9 +1,10 @@
 import { CommonModule } from '@angular/common'
 import { Component, computed, inject } from '@angular/core'
 import { RouterLink } from '@angular/router'
-import { formatDateTime, timeAgo } from '../../core/i18n/format'
+import { formatDateTime, formatNumber, intlLocale, timeAgo } from '../../core/i18n/format'
 import { GameTitlePipe } from '../../core/pipes/game-title.pipe'
 import { DataService } from '../../core/services/data.service'
+import { gameTitleLanguage } from '../../core/utils/gameTitle'
 import { IconComponent } from '../ui/icon/icon.component'
 import { InfoPopoverComponent } from '../ui/info-popover/info-popover.component'
 @Component({
@@ -42,6 +43,21 @@ export class CollectionActivityComponent {
                 unwishlisted: 'heart-off',
             }[actionType] ?? 'circle-help'
         )
+    }
+
+    /** The title's language when it differs from the page's, for the link's `lang`. */
+    public titleLanguage(game: Parameters<typeof gameTitleLanguage>[0]): string | null {
+        return gameTitleLanguage(game)
+    }
+
+    /** Whether a number of stars takes the singular in the page's language. */
+    public isOne(stars: number): boolean {
+        return new Intl.PluralRules(intlLocale()).select(stars) === 'one'
+    }
+
+    /** Stars out of 5 in the page's number format: "4", "3.5" ("3,5" in German). */
+    public formatStars(stars: number): string {
+        return formatNumber(stars, { maximumFractionDigits: 1 })
     }
 
     // Helper method to format date as relative time

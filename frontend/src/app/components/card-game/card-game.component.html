@@ -1,13 +1,13 @@
 <div class="flex h-full w-full flex-col overflow-hidden rounded-2xl border border-bv-border bg-bv-surface transition hover:border-bv-primary/30 hover:shadow-md motion-reduce:transition-none">
     <div class="aspect-square bg-bv-bg p-2">
-        <image-background class="block h-full w-full" [src]="imageUrl()" [alt]="title() + ' cover'" />
+        <image-background class="block h-full w-full" [src]="imageUrl()" [alt]="title() | coverAlt" />
     </div>
 
     <div class="flex flex-1 flex-col gap-1 px-3 py-3">
         <h3 class="truncate font-semibold" [title]="title()">{{ title() }}</h3>
         <p class="flex flex-wrap items-center gap-x-3 gap-y-0.5 text-sm text-secondary">
             @if (gameAvgDuration()) {
-                <span class="inline-flex items-center gap-1"><app-icon name="clock" [size]="13" aria-hidden="true" />~{{ gameAvgDuration() }} min</span>
+                <span class="inline-flex items-center gap-1"><app-icon name="clock" [size]="13" aria-hidden="true" />~<ng-container i18n="How long a game lasts, in minutes">{{ gameAvgDuration() }} min</ng-container></span>
             }
             @if (playersLabel) {
                 <span class="inline-flex items-center gap-1"><app-icon name="users" [size]="13" aria-hidden="true" />{{ playersLabel }}</span>

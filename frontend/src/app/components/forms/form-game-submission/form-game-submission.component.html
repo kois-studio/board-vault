@@ -1,26 +1,24 @@
 <form [formGroup]="gameSubmissionForm" (ngSubmit)="onSubmit()" class="space-y-6">
   <!-- Title -->
   <div>
-    <label for="title" class="block text-sm font-medium text-bv-text-muted mb-2">
-      Game Title *
-    </label>
+    <label for="title" class="block text-sm font-medium text-bv-text-muted mb-2" i18n="Label of the title field of the game proposal form; the asterisk marks it as required">Game Title *</label>
     <input
       type="text"
       id="title"
       formControlName="title"
       [class]="'w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-bv-primary focus:border-bv-primary ' + titleClass"
-      placeholder="Enter the game title"
+      i18n-placeholder="Placeholder of the title field of the game proposal form" placeholder="Enter the game title"
       />
     @if (title?.invalid && (title?.dirty || title?.touched)) {
       <div class="mt-1 text-sm text-bv-danger">
         @if (title?.errors?.['required']) {
-          <div>Game title is required</div>
+          <div i18n="Error under the title field of the game proposal form">Game title is required</div>
         }
         @if (title?.errors?.['minlength']) {
-          <div>Title must be at least 2 characters</div>
+          <div i18n="Error under the title field of the game proposal form">Title must be at least 2 characters</div>
         }
         @if (title?.errors?.['maxlength']) {
-          <div>Title must be less than 100 characters</div>
+          <div i18n="Error under the title field of the game proposal form">Title must be less than 100 characters</div>
         }
       </div>
     }
@@ -28,9 +26,7 @@
 
   <!-- Image URL -->
   <div>
-    <label for="imageUrl" class="block text-sm font-medium text-bv-text-muted mb-2">
-      Image URL
-    </label>
+    <label for="imageUrl" class="block text-sm font-medium text-bv-text-muted mb-2" i18n="Label of the picture address field of the game proposal form">Image URL</label>
     <input
       type="url"
       id="imageUrl"
@@ -41,7 +37,7 @@
     @if (imageUrl?.invalid && (imageUrl?.dirty || imageUrl?.touched)) {
       <div class="mt-1 text-sm text-bv-danger">
         @if (imageUrl?.errors?.['pattern']) {
-          <div>Please enter a valid URL</div>
+          <div i18n="Error under the picture address field of the game proposal form">Please enter a valid URL</div>
         }
       </div>
     }
@@ -49,9 +45,7 @@
 
   <!-- Game Duration -->
   <div>
-    <label for="gameAvgDuration" class="block text-sm font-medium text-bv-text-muted mb-2">
-      Average Duration (minutes)
-    </label>
+    <label for="gameAvgDuration" class="block text-sm font-medium text-bv-text-muted mb-2" i18n="Label of the duration field of the game proposal form">Average Duration (minutes)</label>
     <input
       type="number"
       id="gameAvgDuration"
@@ -64,10 +58,10 @@
     @if (gameAvgDuration?.invalid && (gameAvgDuration?.dirty || gameAvgDuration?.touched)) {
       <div class="mt-1 text-sm text-bv-danger">
         @if (gameAvgDuration?.errors?.['min']) {
-          <div>Duration must be at least 1 minute</div>
+          <div i18n="Error under the duration field of the game proposal form">Duration must be at least 1 minute</div>
         }
         @if (gameAvgDuration?.errors?.['max']) {
-          <div>Duration must be less than 1440 minutes (24 hours)</div>
+          <div i18n="Error under the duration field of the game proposal form">Duration must be less than 1440 minutes (24 hours)</div>
         }
       </div>
     }
@@ -76,9 +70,7 @@
   <!-- Player Count -->
   <div class="grid grid-cols-2 gap-4">
     <div>
-      <label for="minPlayers" class="block text-sm font-medium text-bv-text-muted mb-2">
-        Minimum Players
-      </label>
+      <label for="minPlayers" class="block text-sm font-medium text-bv-text-muted mb-2" i18n="Label of the fewest players field of the game proposal form">Minimum Players</label>
       <input
         type="number"
         id="minPlayers"
@@ -92,19 +84,17 @@
       @if (minPlayers?.invalid && (minPlayers?.dirty || minPlayers?.touched)) {
         <div class="mt-1 text-sm text-bv-danger">
           @if (minPlayers?.errors?.['min']) {
-            <div>Minimum players must be at least 1</div>
+            <div i18n="Error under the fewest players field of the game proposal form">Minimum players must be at least 1</div>
           }
           @if (minPlayers?.errors?.['max']) {
-            <div>Minimum players must be less than 20</div>
+            <div i18n="Error under the fewest players field of the game proposal form">Minimum players must be less than 20</div>
           }
         </div>
       }
     </div>
 
     <div>
-      <label for="maxPlayers" class="block text-sm font-medium text-bv-text-muted mb-2">
-        Maximum Players
-      </label>
+      <label for="maxPlayers" class="block text-sm font-medium text-bv-text-muted mb-2" i18n="Label of the most players field of the game proposal form">Maximum Players</label>
       <input
         type="number"
         id="maxPlayers"
@@ -118,13 +108,13 @@
       @if (maxPlayers?.invalid && (maxPlayers?.dirty || maxPlayers?.touched)) {
         <div class="mt-1 text-sm text-bv-danger">
           @if (maxPlayers?.errors?.['min']) {
-            <div>Maximum players must be at least 1</div>
+            <div i18n="Error under the most players field of the game proposal form">Maximum players must be at least 1</div>
           }
           @if (maxPlayers?.errors?.['max']) {
-            <div>Maximum players must be less than 20</div>
+            <div i18n="Error under the most players field of the game proposal form">Maximum players must be less than 20</div>
           }
           @if (maxPlayers?.errors?.['invalidRange']) {
-            <div>Maximum players must be greater than or equal to minimum players</div>
+            <div i18n="Error under the most players field of the game proposal form">Maximum players must be greater than or equal to minimum players</div>
           }
         </div>
       }
@@ -133,44 +123,40 @@
 
   <!-- Proposed Tags -->
   <div>
-    <label for="proposedTags" class="block text-sm font-medium text-bv-text-muted mb-2">
-      Proposed Tags
-    </label>
+    <label for="proposedTags" class="block text-sm font-medium text-bv-text-muted mb-2" i18n="Label of the tags field of the game proposal form">Proposed Tags</label>
     <input
       type="text"
       id="proposedTags"
       formControlName="proposedTags"
       class="w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-bv-primary focus:border-bv-primary"
-      placeholder="strategy, family, card-game (comma separated)"
+      i18n-placeholder="Placeholder of the tags field of the game proposal form: example tags" placeholder="strategy, family, card-game (comma separated)"
       />
-    <p class="mt-1 text-sm text-bv-text-muted">Suggest tags that describe this game (comma separated)</p>
+    <p class="mt-1 text-sm text-bv-text-muted" i18n="Hint under the tags field of the game proposal form">Suggest tags that describe this game (comma separated)</p>
   </div>
 
   <!-- Notes -->
   <div>
-    <label for="notes" class="block text-sm font-medium text-bv-text-muted mb-2">
-      Additional Notes
-    </label>
+    <label for="notes" class="block text-sm font-medium text-bv-text-muted mb-2" i18n="Label of the notes field of the game proposal form">Additional Notes</label>
     <textarea
       id="notes"
       formControlName="notes"
       rows="4"
       [class]="'w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-bv-primary focus:border-bv-primary ' + notesClass"
-      placeholder="Tell us more about this game, why you think it should be added to our collection..."
+      i18n-placeholder="Placeholder of the notes field of the game proposal form" placeholder="Tell us more about this game, why you think it should be added to our collection…"
     ></textarea>
     @if (notes?.invalid && (notes?.dirty || notes?.touched)) {
       <div class="mt-1 text-sm text-bv-danger">
         @if (notes?.errors?.['maxlength']) {
-          <div>Notes must be less than 500 characters</div>
+          <div i18n="Error under the notes field of the game proposal form">Notes must be less than 500 characters</div>
         }
       </div>
     }
-    <p class="mt-1 text-sm text-bv-text-muted">{{ notes?.value?.length || 0 }}/500 characters</p>
+    <p class="mt-1 text-sm text-bv-text-muted" i18n="Counter under the notes field of the game proposal form: characters typed out of 500">{{ notes?.value?.length || 0 }}/500 characters</p>
   </div>
 
   <!-- Where the approved game goes -->
   <fieldset>
-    <legend class="mb-2 block text-sm font-medium text-bv-text-muted">When it is approved</legend>
+    <legend class="mb-2 block text-sm font-medium text-bv-text-muted" i18n="Legend of the choice of where a proposed game goes for you once an admin approves it">When it is approved</legend>
     <div class="grid grid-cols-1 gap-2 sm:grid-cols-3">
       @for (option of addToOptions; track option.value) {
         <label class="flex cursor-pointer items-start gap-2 rounded-lg border border-bv-border p-3 has-checked:border-bv-primary has-checked:bg-bv-primary-soft">
@@ -190,19 +176,17 @@
       type="button"
       (click)="resetForm()"
       class="text-sm"
-      >
-      Reset
-    </button>
+       i18n="Button that empties the game proposal form">Reset</button>
     <button appButton
       type="submit"
       [disabled]="gameSubmissionForm.invalid || isSubmitting()"
       class="text-sm"
       >
       @if (!isSubmitting()) {
-        <span>Submit Proposal</span>
+        <span i18n="Button that sends the game proposal form">Submit Proposal</span>
       }
       @if (isSubmitting()) {
-        <span>Submitting...</span>
+        <span i18n="Button of the game proposal form while it sends">Submitting…</span>
       }
     </button>
   </div>

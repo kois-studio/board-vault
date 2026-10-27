@@ -16,22 +16,23 @@ import { PageHeaderComponent } from '../../../components/ui/page-header/page-hea
 import { WishlistToggleComponent } from '../../../components/wishlist-toggle/wishlist-toggle.component'
 import { GameTitlePipe } from '../../../core/pipes/game-title.pipe'
 import { DataService } from '../../../core/services/data.service'
+import { gameTitle } from '../../../core/utils/gameTitle'
 import { BrowsePageService, DEFAULT_BROWSE_FILTERS } from './browse-page.service'
 
 /** The API's maximum page size; five rows of four or four rows of five. */
 const BROWSE_PAGE_SIZE = 20
 
 export const GAME_LENGTH_OPTIONS: Array<{ value: GameLength; label: string }> = [
-    { value: 'short', label: 'Under 30 min' },
-    { value: 'medium', label: '30–60 min' },
-    { value: 'long', label: '1–2 hours' },
-    { value: 'epic', label: 'Over 2 hours' },
+    { value: 'short', label: $localize`:Option of the game length filter:Under 30 min` },
+    { value: 'medium', label: $localize`:Option of the game length filter:30–60 min` },
+    { value: 'long', label: $localize`:Option of the game length filter:1–2 hours` },
+    { value: 'epic', label: $localize`:Option of the game length filter:Over 2 hours` },
 ]
 
 export const BROWSE_SORT_OPTIONS: Array<{ value: BrowseSort; label: string }> = [
-    { value: 'title', label: 'A–Z' },
-    { value: 'shortest', label: 'Shortest first' },
-    { value: 'newest', label: 'Newest in the catalogue' },
+    { value: 'title', label: $localize`:Sort option, alphabetical by title:A–Z` },
+    { value: 'shortest', label: $localize`:Sort option, shortest games first:Shortest first` },
+    { value: 'newest', label: $localize`:Sort option on Browse, the games added to the catalogue last first:Newest in the catalogue` },
 ]
 
 /** Reads the Browse filters from the page URL, dropping values the API would reject. */
@@ -100,7 +101,9 @@ export class BrowsePageComponent {
     private initialLoadStarted = false
     public readonly acquisitionGroupId = signal<number | null>(null)
     public readonly acquisitionGroupName = computed(
-        () => this.userGroups$().find((group) => group.id === this.acquisitionGroupId())?.name ?? 'this group',
+        () =>
+            this.userGroups$().find((group) => group.id === this.acquisitionGroupId())?.name ??
+            $localize`:Stands for the group's name on Browse while it is unknown; it goes into sentences such as Find a game for this group:this group`,
     )
     public readonly acquisitionState = signal<Record<number, 'saving' | 'saved' | 'removing'>>({})
     public readonly acquisitionBoardLoading = signal(false)
@@ -303,7 +306,9 @@ export class BrowsePageComponent {
         this.api.addGroupAcquisitionInterest(groupId, gameId).subscribe({
             next: () => {
                 this.acquisitionState.update((state) => ({ ...state, [gameId]: 'saved' }))
-                this.toastService.success(`Added to ${this.acquisitionGroupName()}'s acquisition board.`)
+                this.toastService.success(
+                    $localize`:Toast after adding a game to a group's shortlist of games to buy; the placeholder is the group name:Added to ${this.acquisitionGroupName()}:group:’s acquisition board.`,
+                )
             },
             error: () => {
                 this.acquisitionState.update((state) => {
@@ -311,7 +316,9 @@ export class BrowsePageComponent {
                     delete nextState[gameId]
                     return nextState
                 })
-                this.toastService.error('Could not add this game to the group board.')
+                this.toastService.error(
+                    $localize`:Toast when adding a game to a group's shortlist of games to buy failed:Could not add this game to the group board.`,
+                )
             },
         })
     }
@@ -333,11 +340,27 @@ export class BrowsePageComponent {
                 delete nextState[gameId]
                 return nextState
             })
-            this.toastService.success(`Removed your interest from ${this.acquisitionGroupName()}'s acquisition board.`)
+            this.toastService.success(
+                $localize`:Toast after taking your interest off a game on a group's shortlist of games to buy; the placeholder is the group name:Removed your interest from ${this.acquisitionGroupName()}:group:’s acquisition board.`,
+            )
         } catch {
             this.acquisitionState.update((state) => ({ ...state, [gameId]: 'saved' }))
-            this.toastService.error('Could not remove your interest from the group board.')
+            this.toastService.error(
+                $localize`:Toast when taking your interest off a game on a group's shortlist failed:Could not remove your interest from the group board.`,
+            )
         }
+    }
+
+    /** The name of a game's I own it button for screen readers; it says so once the game is saved, as the button does. */
+    public collectionLabel(game: { id: number; isInCollection?: boolean } & Parameters<typeof gameTitle>[0]): string {
+        return game.isInCollection || this.collectionState()[game.id] === 'saved'
+            ? $localize`:Accessible name of the button under a game on Browse when it is on My Games; the placeholder is the game title:${gameTitle(game)}:title: is already in your collection`
+            : $localize`:Accessible name of the I own it button under a game on Browse; the placeholder is the game title:Add ${gameTitle(game)}:title: to your collection`
+    }
+
+    /** The name of a chosen tag's button, which removes it from the filters. */
+    public removeTagLabel(tagName: string): string {
+        return $localize`:Accessible name of a chosen tag on Browse, a button that removes it from the filters; the placeholder is the tag name:Remove tag ${tagName}:tag:`
     }
 
     public addGameToCollection(gameId: number): void {
@@ -351,7 +374,7 @@ export class BrowsePageComponent {
                 // The server takes an owned game off the wishlist.
                 this.dataService.userWishlist.update((wishlist) => wishlist.filter((game) => game.id !== gameId))
                 this.dataService.refreshUserGames()
-                this.toastService.success('Game added to your collection.')
+                this.toastService.success($localize`:Toast after adding a game to My Games from Browse:Game added to your collection.`)
             },
             error: () => {
                 this.collectionState.update((state) => {
@@ -359,7 +382,9 @@ export class BrowsePageComponent {
                     delete nextState[gameId]
                     return nextState
                 })
-                this.toastService.error('Could not add this game to your collection.')
+                this.toastService.error(
+                    $localize`:Toast when adding a game to My Games from Browse failed:Could not add this game to your collection.`,
+                )
             },
         })
     }

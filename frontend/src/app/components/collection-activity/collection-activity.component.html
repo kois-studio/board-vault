@@ -1,21 +1,21 @@
     <h2 class="text-lg font-medium text-bv-text mb-4 flex items-center justify-between gap-2 w-full">
-        Recent Activity
-        <app-info-popover label="About recent activity">
-            <p class="font-semibold">What this list shows</p>
-            <p class="mt-1 text-bv-text-muted">Your latest changes to your collection:</p>
+        <ng-container i18n="Heading of your recent collection activity">Recent Activity</ng-container>
+        <app-info-popover i18n-label="Accessible name of the info button next to Recent Activity" label="About recent activity">
+            <p class="font-semibold" i18n="Heading in the info popover of Recent Activity">What this list shows</p>
+            <p class="mt-1 text-bv-text-muted" i18n="In the info popover of Recent Activity, before a list">Your latest changes to your collection:</p>
             <ul class="mt-2 list-disc space-y-1 pl-5 text-bv-text-muted">
-                <li>Games you add to or remove from My Games</li>
-                <li>Changes to your copy's purchase details</li>
-                <li>Ratings you give</li>
-                <li>Games you add to or remove from your wishlist</li>
+                <li i18n="Item in the info popover of Recent Activity">Games you add to or remove from My Games</li>
+                <li i18n="Item in the info popover of Recent Activity">Changes to your copy’s purchase details</li>
+                <li i18n="Item in the info popover of Recent Activity">Ratings you give</li>
+                <li i18n="Item in the info popover of Recent Activity">Games you add to or remove from your wishlist</li>
             </ul>
-            <p class="mt-2 text-bv-text-muted">It keeps your last 32 changes, however old; each new change replaces the oldest. Only you can see it.</p>
+            <p class="mt-2 text-bv-text-muted" i18n="In the info popover of Recent Activity">It keeps your last 32 changes, however old; each new change replaces the oldest. Only you can see it.</p>
         </app-info-popover>
     </h2>
     <div class="bg-bv-surface rounded-xl shadow-sm border border-bv-border overflow-hidden">
         @if (userCollectionActivity$().length === 0) {
             <div class="p-8 text-center text-bv-text-muted">
-                <p>No recent activity found.</p>
+                <p i18n="Recent Activity when there is none">No recent activity found.</p>
             </div>
         } @else {
             <ul class="divide-y divide-bv-border">
@@ -36,27 +36,34 @@
                             
                             <div>
                                 <p class="text-sm text-bv-text">
-                                    {{
-                                        {
-                                            added: 'You added',
-                                            rated: 'You rated',
-                                            removed: 'You removed',
-                                            wishlisted: 'You added',
-                                            unwishlisted: 'You removed',
-                                            updated: 'You updated',
-                                        }[activity.actionType]
-                                    }}
-                                    <a [routerLink]="['/games/', activity.gameData.id]" class="font-medium hover:underline">{{ activity.gameData | gameTitle }}</a>
-                                    {{
-                                        {
-                                            added: 'to your collection',
-                                            rated: 'with ' + (activity.actionDetails?.rating ?? 0) / 2 + ' stars',
-                                            removed: 'from your collection',
-                                            wishlisted: 'to your wishlist',
-                                            unwishlisted: 'from your wishlist',
-                                            updated: 'in your collection',
-                                        }[activity.actionType]
-                                    }}
+                                    @switch (activity.actionType) {
+                                        @case ('added') {
+                                            <ng-container i18n="Line in Recent Activity; the link is the game title">You added <a [routerLink]="['/games/', activity.gameData.id]" class="font-medium hover:underline" [attr.lang]="titleLanguage(activity.gameData)">{{ activity.gameData | gameTitle }}</a> to your collection</ng-container>
+                                        }
+                                        @case ('removed') {
+                                            <ng-container i18n="Line in Recent Activity; the link is the game title">You removed <a [routerLink]="['/games/', activity.gameData.id]" class="font-medium hover:underline" [attr.lang]="titleLanguage(activity.gameData)">{{ activity.gameData | gameTitle }}</a> from your collection</ng-container>
+                                        }
+                                        @case ('wishlisted') {
+                                            <ng-container i18n="Line in Recent Activity; the link is the game title">You added <a [routerLink]="['/games/', activity.gameData.id]" class="font-medium hover:underline" [attr.lang]="titleLanguage(activity.gameData)">{{ activity.gameData | gameTitle }}</a> to your wishlist</ng-container>
+                                        }
+                                        @case ('unwishlisted') {
+                                            <ng-container i18n="Line in Recent Activity; the link is the game title">You removed <a [routerLink]="['/games/', activity.gameData.id]" class="font-medium hover:underline" [attr.lang]="titleLanguage(activity.gameData)">{{ activity.gameData | gameTitle }}</a> from your wishlist</ng-container>
+                                        }
+                                        @case ('updated') {
+                                            <ng-container i18n="Line in Recent Activity: you changed the purchase details of your copy; the link is the game title">You updated <a [routerLink]="['/games/', activity.gameData.id]" class="font-medium hover:underline" [attr.lang]="titleLanguage(activity.gameData)">{{ activity.gameData | gameTitle }}</a> in your collection</ng-container>
+                                        }
+                                        @case ('rated') {
+                                            @let stars = (activity.actionDetails?.rating ?? 0) / 2;
+                                            @if (isOne(stars)) {
+                                                <ng-container i18n="rated with stars, one|Line in Recent Activity; the link is the game title, then the number of stars out of 5, one">You rated <a [routerLink]="['/games/', activity.gameData.id]" class="font-medium hover:underline" [attr.lang]="titleLanguage(activity.gameData)">{{ activity.gameData | gameTitle }}</a> with {{ formatStars(stars) }} star</ng-container>
+                                            } @else {
+                                                <ng-container i18n="rated with stars, other|Line in Recent Activity; the link is the game title, then the number of stars out of 5, more than one">You rated <a [routerLink]="['/games/', activity.gameData.id]" class="font-medium hover:underline" [attr.lang]="titleLanguage(activity.gameData)">{{ activity.gameData | gameTitle }}</a> with {{ formatStars(stars) }} stars</ng-container>
+                                            }
+                                        }
+                                        @default {
+                                            <a [routerLink]="['/games/', activity.gameData.id]" class="font-medium hover:underline" [attr.lang]="titleLanguage(activity.gameData)">{{ activity.gameData | gameTitle }}</a>
+                                        }
+                                    }
                                 </p>
                                 <p class="text-xs text-bv-text-muted mt-1">{{ formatTimeAgo(activity.createdAt) }}</p>
                             </div>
@@ -69,7 +76,11 @@
                     <button 
                         (click)="showAllActivity = !showAllActivity" 
                         class="text-sm text-bv-primary font-medium hover:underline cursor-pointer">
-                        {{ showAllActivity ? 'Show less' : 'View all activity' }}
+                        @if (showAllActivity) {
+                            <ng-container i18n="Button under Recent Activity that shows only the latest changes">Show less</ng-container>
+                        } @else {
+                            <ng-container i18n="Button under Recent Activity that shows every change">View all activity</ng-container>
+                        }
                     </button>
                 </div>
             }

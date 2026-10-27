@@ -43,9 +43,21 @@ export class FormGameSubmissionComponent implements OnInit, OnChanges {
     })
 
     public readonly addToOptions = [
-        { value: 'shelf', label: 'I own it', hint: 'Added to your shelf' },
-        { value: 'wishlist', label: 'I want it', hint: 'Added to your wishlist' },
-        { value: 'none', label: 'Neither', hint: 'Just add it to the catalogue' },
+        {
+            value: 'shelf',
+            label: $localize`:Option of the game proposal form, you own the game:I own it`,
+            hint: $localize`:proposal goes to your shelf|Hint of the I own it option; once approved, the game is added to your shelf:Added to your shelf`,
+        },
+        {
+            value: 'wishlist',
+            label: $localize`:Option of the game proposal form, you want the game:I want it`,
+            hint: $localize`:proposal goes to your wishlist|Hint of the I want it option; once approved, the game is added to your wishlist:Added to your wishlist`,
+        },
+        {
+            value: 'none',
+            label: $localize`:Option of the game proposal form, you neither own nor want the game:Neither`,
+            hint: $localize`:Hint of the Neither option; once approved, the game is only added to the catalogue:Just add it to the catalogue`,
+        },
     ] as const
 
     // Form controls getters
@@ -113,7 +125,9 @@ export class FormGameSubmissionComponent implements OnInit, OnChanges {
 
         const currentUser = this.currentUser$()
         if (!currentUser) {
-            this.toastService.error('You must be logged in to submit a game proposal')
+            this.toastService.error(
+                $localize`:Toast when sending a game proposal while signed out:You must be logged in to submit a game proposal`,
+            )
             return
         }
 
@@ -122,7 +136,7 @@ export class FormGameSubmissionComponent implements OnInit, OnChanges {
         try {
             const formData = this.gameSubmissionForm.value
             if (!formData.title) {
-                this.toastService.error('Title is required')
+                this.toastService.error($localize`:Toast when sending a game proposal without a title:Title is required`)
                 return
             }
 
@@ -139,12 +153,12 @@ export class FormGameSubmissionComponent implements OnInit, OnChanges {
 
             await firstValueFrom(this.api.createGameProposal(currentUser.id, proposalData))
 
-            this.toastService.success('Game proposal submitted successfully!')
+            this.toastService.success($localize`:Toast after sending a game proposal:Game proposal submitted successfully!`)
             this.proposalSubmitted.emit()
             this.resetForm()
         } catch (error) {
             console.error('Error submitting game proposal:', error)
-            this.toastService.error('Failed to submit game proposal. Please try again.')
+            this.toastService.error($localize`:Toast when sending a game proposal failed:Failed to submit game proposal. Please try again.`)
         } finally {
             this.isSubmitting.set(false)
         }
