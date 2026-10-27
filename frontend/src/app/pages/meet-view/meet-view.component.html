@@ -409,7 +409,7 @@
                                     @if (meet.status === 'scheduled') {
                                         <div class="mt-2 flex flex-wrap items-center gap-2 border-t border-bv-border pt-2 text-xs">
                                             @if (bringer) {
-                                                <span class="mr-auto flex min-w-0 items-center gap-1.5 font-medium text-bv-text"><app-icon name="check" [size]="14" className="shrink-0 text-bv-success" aria-hidden="true" /><span class="truncate">{{ bringer.isMe ? 'You’re bringing it' : bringer.name + ' brings it' }}</span></span>
+                                                <span class="mr-auto flex min-w-0 items-center gap-1.5 font-medium text-bv-text"><app-icon name="check" [size]="14" className="shrink-0 text-bv-success" aria-hidden="true" /><span class="truncate">{{ bringer.isMe ? 'You’re bringing it' : bringer.name + ' brings it' }}@if (bringer.copy; as copy) { · <span [attr.lang]="copy.language">{{ copy.title }}</span>}</span></span>
                                                 @if (bringer.isMe || canShapeNight) {
                                                     <button type="button" class="font-medium text-bv-text-muted underline-offset-2 hover:underline" [disabled]="bringingGameId() !== null" (click)="setBringer(game.id, null)">{{ bringer.isMe ? 'I won’t bring it' : 'Clear' }}</button>
                                                 }

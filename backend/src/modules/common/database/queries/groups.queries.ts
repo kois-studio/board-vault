@@ -624,15 +624,16 @@ export class GroupQueries {
         return this.database.execute({
             sql: `
                 SELECT o.gameId, o.status, o.source, o.enteredByAccountId,
-                       o.confirmedByAccountId, o.createdAt, o.updatedAt
+                       o.confirmedByAccountId, o.createdAt, o.updatedAt, NULL, NULL
                 FROM GroupPersonGameOwnership o
                 INNER JOIN GroupPerson gp ON gp.id = o.groupPersonId AND gp.groupId = ?
                 WHERE o.groupPersonId = ?
                 UNION ALL
                 SELECT og.gameId, 'asserted', 'account_collection', gp.accountId,
-                       NULL, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP
+                       NULL, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, oe.title, oe.languageCode
                 FROM GroupPerson gp
                 INNER JOIN OwnedGame og ON og.accountId = gp.accountId
+                LEFT JOIN GameEdition oe ON oe.id = og.editionId AND oe.gameId = og.gameId
                 WHERE gp.id = ? AND gp.groupId = ? AND gp.kind = 'linked'
                   AND NOT EXISTS (
                       SELECT 1

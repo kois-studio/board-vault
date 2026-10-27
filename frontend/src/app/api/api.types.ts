@@ -47,13 +47,34 @@ export type GameWithTagsType = GameType & {
     }>
 }
 
+/** A game on someone's shelf: `title` is the edition they own when they said which (ADR-0025). */
+export type OwnedGameCompleteType = GameCompleteType & {
+    /** The edition this copy is; null when the owner has not said. */
+    ownedEditionId: number | null
+}
+
+/** One published edition of a game, for choosing which one a copy is (ADR-0025). */
+export type GameEditionType = {
+    id: number
+    languageCode: string
+    title: string
+    isPrimary: boolean
+}
+
 export type GameViewType = {
     gameData: GameCompleteType
     ownedGameData: null | {
         purchaseDate: string | null
         purchasePrice: number | null
         purchaseNotes: string | null
+        /** The edition this copy is; null when you have not said. */
+        editionId: number | null
+        /** The title of this copy: its edition's when `editionId` is set, else the title the page shows. */
+        title: string
+        titleLanguage: string
     }
+    /** Every edition of the game, the primary one first. */
+    editions: Array<GameEditionType>
     tags: Array<{
         tag: string
         category: string
@@ -77,6 +98,7 @@ export type GameOwnedType = {
     purchaseDate: string | null
     purchasePrice: number | null
     purchaseNotes: string | null
+    editionId: number | null
 }
 
 export type UpdateGameOwnedType = {
@@ -147,6 +169,9 @@ export type GroupPersonOwnershipType = {
     confirmedByAccountId: number | null
     createdAt: string
     updatedAt: string
+    /** For a game from a linked account's shelf: the title of the edition that copy is; null when not said. */
+    copyTitle: string | null
+    copyTitleLanguage: string | null
 }
 
 export type GroupPersonPreferenceType = {
@@ -471,7 +496,14 @@ export type UpdateSessionShortlistRequest = {
 
 export type MeetGameVotesType = { gameId: number; accountIds: Array<number> }
 
-export type MeetGameBringerType = { gameId: number; accountId: number | null; groupPersonId: number | null }
+export type MeetGameBringerType = {
+    gameId: number
+    accountId: number | null
+    groupPersonId: number | null
+    /** The title of the edition the bringer's copy is; null when they have not said (the game's own title applies). */
+    copyTitle: string | null
+    copyTitleLanguage: string | null
+}
 
 export type SessionGameBringersUpdatedType = { sessionId: number; gameBringers: Array<MeetGameBringerType> }
 

@@ -1,5 +1,7 @@
 import { BadRequestException } from '@nestjs/common'
 
+import { ownedTitleSql } from '../resolved-title.js'
+
 import type { CollectionActivityDto } from '../../../../common/types/collection-activity.type.js'
 import type { GameOwnedDto, UpdateGameOwnedDto } from '../../../../common/types/game-owned.type.js'
 import type { DatabaseService } from '../database.service.js'
@@ -98,13 +100,45 @@ export class CollectionQueries {
         })
     }
 
-    async addGameToCollection(accountId: number, gameId: number): Promise<{ success: boolean; wishlistRemoved: boolean }> {
+    /** The editions of a game, the primary one first. */
+    getGameEditions(gameId: number) {
+        return this.database.execute({
+            sql: 'SELECT id, languageCode, title, isPrimary FROM GameEdition WHERE gameId = ? ORDER BY isPrimary DESC, languageCode ASC',
+            args: [gameId],
+        })
+    }
+
+    /** Each owned game of an account with the title of the edition they own (rule 1; the reader's title when they did not say). */
+    getOwnedTitlesByAccountId(accountId: number, locale: string) {
+        const owned = ownedTitleSql('og', 'og.gameId', locale)
+
+        return this.database.execute({
+            sql: `SELECT og.gameId, og.editionId, ${owned.title} AS title, ${owned.language} AS titleLanguage FROM OwnedGame og WHERE og.accountId = ?`,
+            args: [accountId],
+        })
+    }
+
+    /** Sets which edition a copy is; the rows changed (0 when the account does not own the game). */
+    async setOwnedEdition(accountId: number, gameId: number, editionId: number | null): Promise<number> {
+        const result = await this.database.execute({
+            sql: 'UPDATE OwnedGame SET editionId = ? WHERE accountId = ? AND gameId = ?',
+            args: [editionId, accountId, gameId],
+        })
+
+        return result.rowsAffected
+    }
+
+    async addGameToCollection(
+        accountId: number,
+        gameId: number,
+        editionId: number | null = null,
+    ): Promise<{ success: boolean; wishlistRemoved: boolean }> {
         const transaction = await this.database.transaction('write')
 
         try {
             const ownedGame = await transaction.execute({
-                sql: 'INSERT OR IGNORE INTO OwnedGame (accountId, gameId) VALUES (?, ?)',
-                args: [accountId, gameId],
+                sql: 'INSERT OR IGNORE INTO OwnedGame (accountId, gameId, editionId) VALUES (?, ?, ?)',
+                args: [accountId, gameId, editionId],
             })
 
             if (ownedGame.rowsAffected !== 1) {

@@ -372,6 +372,15 @@
         <target>Sì. Funziona in qualsiasi browser recente e puoi installarlo nella schermata Home.</target>
       </segment>
     </unit>
+    <unit id="1307312122579659057">
+      <notes>
+        <note category="description">Choice in the edition chooser for someone who does not know or does not want to say which edition they own</note>
+      </notes>
+      <segment state="translated">
+        <source>I’m not sure</source>
+        <target>Non lo so</target>
+      </segment>
+    </unit>
     <unit id="1313010108209054073">
       <notes>
         <note category="description">Label on the game night card on Home while the night is under way</note>
@@ -856,6 +865,15 @@
         <target>Rivedi i giochi e le preferenze registrati per <ph id="0" equiv="INTERPOLATION" disp="{{ claimablePerson.person.displayName }}"/>, poi collega quello storico al tuo account.</target>
       </segment>
     </unit>
+    <unit id="1824005036025311052">
+      <notes>
+        <note category="description">Button on the game page that asks again which edition of the game you own</note>
+      </notes>
+      <segment state="translated">
+        <source>Change edition</source>
+        <target>Cambia edizione</target>
+      </segment>
+    </unit>
     <unit id="1826151550199685921">
       <notes>
         <note category="description">Group history line; actor and person are names, game is a game title</note>
@@ -1217,6 +1235,15 @@
       <segment state="translated">
         <source>Create your shelf</source>
         <target>Crea il tuo scaffale</target>
+      </segment>
+    </unit>
+    <unit id="2159130950882492111">
+      <notes>
+        <note category="description">Button that closes the edition chooser without saving</note>
+      </notes>
+      <segment state="translated">
+        <source>Cancel</source>
+        <target>Annulla</target>
       </segment>
     </unit>
     <unit id="2167597038819055618">
@@ -2234,6 +2261,15 @@
         <target><ph id="0" equiv="actor" disp="actor"/> ha registrato la vittoria di <ph id="1" equiv="winners" disp="formatList(winners)"/> a <ph id="2" equiv="game" disp="game"/></target>
       </segment>
     </unit>
+    <unit id="3111885274191005376">
+      <notes>
+        <note category="description">Confirmation after changing which edition of a game you own</note>
+      </notes>
+      <segment state="translated">
+        <source>Edition saved</source>
+        <target>Edizione salvata</target>
+      </segment>
+    </unit>
     <unit id="3117578262676715596">
       <notes>
         <note category="description">Text on the page where you take over a person prepared for you in a group</note>
@@ -2904,6 +2940,15 @@
       <segment state="translated">
         <source>Standings</source>
         <target>Classifica</target>
+      </segment>
+    </unit>
+    <unit id="3768927257183755959">
+      <notes>
+        <note category="description">Button that saves the edition chosen in the edition chooser for a game already in My Games</note>
+      </notes>
+      <segment state="translated">
+        <source>Save</source>
+        <target>Salva</target>
       </segment>
     </unit>
     <unit id="3802474981569028143">
@@ -3658,6 +3703,15 @@
         <target>Questa persona del gruppo ora è collegata al tuo account. Lo storico del gruppo resta privato per i suoi membri.</target>
       </segment>
     </unit>
+    <unit id="4406973836784974418">
+      <notes>
+        <note category="description">Label of the list of editions in the edition chooser</note>
+      </notes>
+      <segment state="translated">
+        <source>Editions</source>
+        <target>Edizioni</target>
+      </segment>
+    </unit>
     <unit id="4415919604451271822">
       <notes>
         <note category="description">Group history line; actor and person are names, game is a game title</note>
@@ -3737,6 +3791,15 @@
       <segment state="translated">
         <source> Board Vault helps a group of friends organize its games, choose what to play, and remember every session. </source>
         <target>Board Vault aiuta un gruppo di persone che giocano insieme a organizzare i giochi, scegliere a cosa giocare e ricordare ogni serata di gioco.</target>
+      </segment>
+    </unit>
+    <unit id="4501800346302358695">
+      <notes>
+        <note category="description">Button that adds the game to My Games with the edition chosen in the edition chooser</note>
+      </notes>
+      <segment state="translated">
+        <source>Add to My Games</source>
+        <target>Aggiungi a I miei giochi</target>
       </segment>
     </unit>
     <unit id="4505288544316005654">
@@ -7087,6 +7150,15 @@
         <target>Amministrazione</target>
       </segment>
     </unit>
+    <unit id="7846220163732677832">
+      <notes>
+        <note category="description">Shown on the game page when you have not said which edition of the game you own</note>
+      </notes>
+      <segment state="translated">
+        <source>Edition not set</source>
+        <target>Edizione non indicata</target>
+      </segment>
+    </unit>
     <unit id="785270353086309130">
       <notes>
         <note category="description">Error under the invite field on the group&apos;s settings page, when it is empty</note>
@@ -7175,6 +7247,15 @@
       <segment state="translated">
         <source>You’re all caught up.</source>
         <target>Sei in pari con tutto.</target>
+      </segment>
+    </unit>
+    <unit id="7894133274112638816">
+      <notes>
+        <note category="description">Hint in the edition chooser: your copy shows the title of the edition you pick</note>
+      </notes>
+      <segment state="translated">
+        <source>Your copy shows the title of the edition you pick.</source>
+        <target>La tua copia mostra il titolo dell’edizione che scegli.</target>
       </segment>
     </unit>
     <unit id="7899674800818281248">
@@ -7723,6 +7804,15 @@
         <target>Una casa in ordine per la tua collezione di giochi da tavolo e per le persone con cui giochi.</target>
       </segment>
     </unit>
+    <unit id="8419322791833950146">
+      <notes>
+        <note category="description">Heading of the question asked when adding a game that has several editions to My Games, or changing the edition of one</note>
+      </notes>
+      <segment state="translated">
+        <source> Which edition do you own? </source>
+        <target>Quale edizione hai?</target>
+      </segment>
+    </unit>
     <unit id="8420640184883196687">
       <notes>
         <note category="description">Hint under the heading of the optional list of titles in other languages</note>
@@ -8116,6 +8206,15 @@
         <target>Solo conteggi con uno pseudonimo, nel nostro database. Niente cookie, niente pubblicità, niente condiviso.</target>
       </segment>
     </unit>
+    <unit id="8873512080778685444">
+      <notes>
+        <note category="description">Label before the title of the edition of a game you own, on the game page</note>
+      </notes>
+      <segment state="translated">
+        <source>Your copy:</source>
+        <target>La tua copia:</target>
+      </segment>
+    </unit>
     <unit id="8894032101147847060">
       <notes>
         <note category="description">Main heading of the landing page</note>
@@ -8195,6 +8294,15 @@
       <segment state="translated">
         <source><ph id="0" equiv="actor" disp="actor"/> took <ph id="1" equiv="removed" disp="removed"/> off the shortlist of a game night</source>
         <target><ph id="0" equiv="actor" disp="actor"/> ha tolto <ph id="1" equiv="removed" disp="removed"/> dalla preselezione di una serata di gioco</target>
+      </segment>
+    </unit>
+    <unit id="9006031073990985776">
+      <notes>
+        <note category="description">Error after failing to save which edition of a game you own</note>
+      </notes>
+      <segment state="translated">
+        <source>Could not save the edition. Try again.</source>
+        <target>Impossibile salvare l’edizione. Riprova.</target>
       </segment>
     </unit>
     <unit id="9014138025274858717">

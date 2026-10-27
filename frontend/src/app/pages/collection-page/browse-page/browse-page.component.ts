@@ -5,6 +5,7 @@ import { ActivatedRoute, ParamMap, Router, RouterLink } from '@angular/router'
 import { firstValueFrom, Subscription } from 'rxjs'
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators'
 import { Api } from '../../../api/api'
+import type { GameCompleteType } from '../../../api/api.types'
 import { BrowseFilters, BrowseSort, GameLength } from '../../../api/api.types'
 import { CardGameComponent } from '../../../components/card-game/card-game.component'
 import { SkeletonCardGameComponent } from '../../../components/skeletons/skeleton-card-game/skeleton-card-game.component'
@@ -16,6 +17,8 @@ import { PageHeaderComponent } from '../../../components/ui/page-header/page-hea
 import { WishlistToggleComponent } from '../../../components/wishlist-toggle/wishlist-toggle.component'
 import { GameTitlePipe } from '../../../core/pipes/game-title.pipe'
 import { DataService } from '../../../core/services/data.service'
+import { ShelfEditionService } from '../../../core/services/shelf-edition.service'
+import { gameTitle } from '../../../core/utils/gameTitle'
 import { BrowsePageService, DEFAULT_BROWSE_FILTERS } from './browse-page.service'
 
 /** The API's maximum page size; five rows of four or four rows of five. */
@@ -71,6 +74,7 @@ export function parseBrowseFilters(params: ParamMap): BrowseFilters {
 export class BrowsePageComponent {
     private readonly api = inject(Api)
     private readonly dataService = inject(DataService)
+    private readonly shelfEditions = inject(ShelfEditionService)
     private readonly browsePageService = inject(BrowsePageService)
     private readonly router = inject(Router)
     // --------------------------------------------------------------------------
@@ -340,28 +344,34 @@ export class BrowsePageComponent {
         }
     }
 
-    public addGameToCollection(gameId: number): void {
+    public addGameToCollection(game: GameCompleteType): void {
+        const gameId = game.id
         const userId = this.currentUser$()?.id
-        if (!userId || this.collectionState()[gameId] || this.userGames$().some((game) => game.id === gameId)) return
+        if (!userId || this.collectionState()[gameId] || this.userGames$().some((owned) => owned.id === gameId)) return
 
         this.collectionState.update((state) => ({ ...state, [gameId]: 'saving' }))
-        this.api.addGameToUserCollection(userId, gameId).subscribe({
-            next: () => {
+        const forgetGame = () =>
+            this.collectionState.update((state) => {
+                const nextState = { ...state }
+                delete nextState[gameId]
+                return nextState
+            })
+
+        // A game with several editions asks which one is on the shelf (ADR-0025).
+        this.shelfEditions.addToShelf(userId, game, gameTitle(game)).then(
+            (added) => {
+                if (!added) return forgetGame()
                 this.collectionState.update((state) => ({ ...state, [gameId]: 'saved' }))
                 // The server takes an owned game off the wishlist.
-                this.dataService.userWishlist.update((wishlist) => wishlist.filter((game) => game.id !== gameId))
+                this.dataService.userWishlist.update((wishlist) => wishlist.filter((item) => item.id !== gameId))
                 this.dataService.refreshUserGames()
                 this.toastService.success('Game added to your collection.')
             },
-            error: () => {
-                this.collectionState.update((state) => {
-                    const nextState = { ...state }
-                    delete nextState[gameId]
-                    return nextState
-                })
+            () => {
+                forgetGame()
                 this.toastService.error('Could not add this game to your collection.')
             },
-        })
+        )
     }
 
     private _searchGames(isNextPage = false) {

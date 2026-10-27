@@ -383,6 +383,15 @@
         <source>Yes. It runs in any modern browser and you can install it to your home screen.</source>
       </segment>
     </unit>
+    <unit id="1307312122579659057">
+      <notes>
+        <note category="location">src/app/components/edition-choice-dialog/edition-choice-dialog.component.html</note>
+        <note category="description">Choice in the edition chooser for someone who does not know or does not want to say which edition they own</note>
+      </notes>
+      <segment>
+        <source>I’m not sure</source>
+      </segment>
+    </unit>
     <unit id="1313010108209054073">
       <notes>
         <note category="location">src/app/components/next-night-card/next-night-card.component.html</note>
@@ -871,6 +880,15 @@
         <source>Review the games and preferences recorded for <ph id="0" equiv="INTERPOLATION" disp="{{ claimablePerson.person.displayName }}"/>, then link that history to your account.</source>
       </segment>
     </unit>
+    <unit id="1824005036025311052">
+      <notes>
+        <note category="location">src/app/pages/games/game-view/game-view.component.html</note>
+        <note category="description">Button on the game page that asks again which edition of the game you own</note>
+      </notes>
+      <segment>
+        <source>Change edition</source>
+      </segment>
+    </unit>
     <unit id="1826151550199685921">
       <notes>
         <note category="location">src/app/core/utils/groupActivity.ts</note>
@@ -1240,6 +1258,15 @@
       </notes>
       <segment>
         <source>Create your shelf</source>
+      </segment>
+    </unit>
+    <unit id="2159130950882492111">
+      <notes>
+        <note category="location">src/app/components/edition-choice-dialog/edition-choice-dialog.component.html</note>
+        <note category="description">Button that closes the edition chooser without saving</note>
+      </notes>
+      <segment>
+        <source>Cancel</source>
       </segment>
     </unit>
     <unit id="2167597038819055618">
@@ -2271,6 +2298,15 @@
         <source><ph id="0" equiv="actor" disp="actor"/> recorded that <ph id="1" equiv="winners" disp="formatList(winners)"/> won <ph id="2" equiv="game" disp="game"/></source>
       </segment>
     </unit>
+    <unit id="3111885274191005376">
+      <notes>
+        <note category="location">src/app/pages/games/game-view/game-view.component.ts</note>
+        <note category="description">Confirmation after changing which edition of a game you own</note>
+      </notes>
+      <segment>
+        <source>Edition saved</source>
+      </segment>
+    </unit>
     <unit id="3117578262676715596">
       <notes>
         <note category="location">src/app/pages/group-person-claim/group-person-claim.component.html</note>
@@ -2945,6 +2981,15 @@
       </notes>
       <segment>
         <source>Standings</source>
+      </segment>
+    </unit>
+    <unit id="3768927257183755959">
+      <notes>
+        <note category="location">src/app/components/edition-choice-dialog/edition-choice-dialog.component.html</note>
+        <note category="description">Button that saves the edition chosen in the edition chooser for a game already in My Games</note>
+      </notes>
+      <segment>
+        <source>Save</source>
       </segment>
     </unit>
     <unit id="3802474981569028143">
@@ -3708,6 +3753,15 @@
         <source>This group person is now linked to your account. The group history stays private to its members.</source>
       </segment>
     </unit>
+    <unit id="4406973836784974418">
+      <notes>
+        <note category="location">src/app/components/edition-choice-dialog/edition-choice-dialog.component.html</note>
+        <note category="description">Label of the list of editions in the edition chooser</note>
+      </notes>
+      <segment>
+        <source>Editions</source>
+      </segment>
+    </unit>
     <unit id="4415919604451271822">
       <notes>
         <note category="location">src/app/core/utils/groupActivity.ts</note>
@@ -3787,6 +3841,15 @@
       </notes>
       <segment>
         <source> Board Vault helps a group of friends organize its games, choose what to play, and remember every session. </source>
+      </segment>
+    </unit>
+    <unit id="4501800346302358695">
+      <notes>
+        <note category="location">src/app/components/edition-choice-dialog/edition-choice-dialog.component.html</note>
+        <note category="description">Button that adds the game to My Games with the edition chosen in the edition chooser</note>
+      </notes>
+      <segment>
+        <source>Add to My Games</source>
       </segment>
     </unit>
     <unit id="4505288544316005654">
@@ -7167,6 +7230,15 @@
         <source>Administration</source>
       </segment>
     </unit>
+    <unit id="7846220163732677832">
+      <notes>
+        <note category="location">src/app/pages/games/game-view/game-view.component.html</note>
+        <note category="description">Shown on the game page when you have not said which edition of the game you own</note>
+      </notes>
+      <segment>
+        <source>Edition not set</source>
+      </segment>
+    </unit>
     <unit id="785270353086309130">
       <notes>
         <note category="location">src/app/pages/groups/group-edit/group-edit.component.ts</note>
@@ -7255,6 +7327,15 @@
       </notes>
       <segment>
         <source>You’re all caught up.</source>
+      </segment>
+    </unit>
+    <unit id="7894133274112638816">
+      <notes>
+        <note category="location">src/app/components/edition-choice-dialog/edition-choice-dialog.component.html</note>
+        <note category="description">Hint in the edition chooser: your copy shows the title of the edition you pick</note>
+      </notes>
+      <segment>
+        <source>Your copy shows the title of the edition you pick.</source>
       </segment>
     </unit>
     <unit id="7899674800818281248">
@@ -7813,6 +7894,15 @@
         <source>A tidy home for your board game collection, and for the people you play with.</source>
       </segment>
     </unit>
+    <unit id="8419322791833950146">
+      <notes>
+        <note category="location">src/app/components/edition-choice-dialog/edition-choice-dialog.component.html</note>
+        <note category="description">Heading of the question asked when adding a game that has several editions to My Games, or changing the edition of one</note>
+      </notes>
+      <segment>
+        <source> Which edition do you own? </source>
+      </segment>
+    </unit>
     <unit id="8420640184883196687">
       <notes>
         <note category="location">src/app/components/forms/form-game-submission/form-game-submission.component.html</note>
@@ -8209,6 +8299,15 @@
         <source>Just counts under a pseudonym, in our own database. No cookies, no ads, nothing shared.</source>
       </segment>
     </unit>
+    <unit id="8873512080778685444">
+      <notes>
+        <note category="location">src/app/pages/games/game-view/game-view.component.html</note>
+        <note category="description">Label before the title of the edition of a game you own, on the game page</note>
+      </notes>
+      <segment>
+        <source>Your copy:</source>
+      </segment>
+    </unit>
     <unit id="8894032101147847060">
       <notes>
         <note category="location">src/app/pages/landing/landing.component.html</note>
@@ -8288,6 +8387,15 @@
       </notes>
       <segment>
         <source><ph id="0" equiv="actor" disp="actor"/> took <ph id="1" equiv="removed" disp="removed"/> off the shortlist of a game night</source>
+      </segment>
+    </unit>
+    <unit id="9006031073990985776">
+      <notes>
+        <note category="location">src/app/pages/games/game-view/game-view.component.ts</note>
+        <note category="description">Error after failing to save which edition of a game you own</note>
+      </notes>
+      <segment>
+        <source>Could not save the edition. Try again.</source>
       </segment>
     </unit>
     <unit id="9014138025274858717">

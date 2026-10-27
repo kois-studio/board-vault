@@ -84,8 +84,8 @@ try {
             SELECT CASE WHEN EXISTS (SELECT 1 FROM sqlite_master WHERE type = 'table' AND name = 'GameEdition')
                 AND EXISTS (SELECT 1 FROM sqlite_master WHERE type = 'index' AND name = 'GameEdition_one_primary')
                 THEN 'game-editions: ok' ELSE 'game-editions: missing' END;
-            SELECT CASE WHEN (SELECT COUNT(*) FROM SchemaMigrations) = 29
-                AND (SELECT MAX(version) FROM SchemaMigrations) = '0029'
+            SELECT CASE WHEN (SELECT COUNT(*) FROM SchemaMigrations) = 30
+                AND (SELECT MAX(version) FROM SchemaMigrations) = '0030'
                 THEN 'migration-state: ok' ELSE 'migration-state: invalid' END;
             SELECT CASE WHEN EXISTS (SELECT 1 FROM pragma_table_info('GroupPerson') WHERE name = 'claimEmail')
                 THEN 'group-person-claim-email: ok' ELSE 'group-person-claim-email: missing' END;

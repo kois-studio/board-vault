@@ -528,8 +528,8 @@ describe('DatabaseService logging', () => {
 
         expect(transactionFactory).toHaveBeenCalledWith('write')
         expect(execute).toHaveBeenNthCalledWith(1, {
-            sql: 'INSERT OR IGNORE INTO OwnedGame (accountId, gameId) VALUES (?, ?)',
-            args: [1, 42],
+            sql: 'INSERT OR IGNORE INTO OwnedGame (accountId, gameId, editionId) VALUES (?, ?, ?)',
+            args: [1, 42, null],
         })
         expect(execute).toHaveBeenCalledWith({
             sql: 'SELECT 1 FROM WishlistedGame WHERE accountId = ? AND gameId = ?',

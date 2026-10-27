@@ -3418,13 +3418,13 @@
         ],
         "responses": {
           "200": {
-            "description": "List of all games owned by the user",
+            "description": "List of all games owned by the user, each titled after the edition the user owns when they said which",
             "content": {
               "application/json": {
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/GameCompleteDto"
+                    "$ref": "#/components/schemas/OwnedGameCompleteDto"
                   }
                 }
               }
@@ -3507,6 +3507,16 @@
             }
           }
         ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AddGameToCollectionBody"
+              }
+            }
+          }
+        },
         "responses": {
           "200": {
             "description": "Game added to the user's collection",
@@ -3568,6 +3578,67 @@
           }
         ],
         "summary": "Remove a game from a user's collection",
+        "tags": [
+          "collection"
+        ]
+      }
+    },
+    "/collection/users/{userId}/games/{gameId}/edition": {
+      "patch": {
+        "deprecated": false,
+        "operationId": "CollectionController_setOwnedEdition",
+        "parameters": [
+          {
+            "name": "userId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "gameId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SetOwnedEditionBody"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "The edition of the copy was saved",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "The edition belongs to another game"
+          },
+          "404": {
+            "description": "The user does not own the game"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Say which edition of a game on the shelf the user owns, or clear it",
         "tags": [
           "collection"
         ]
@@ -3799,6 +3870,46 @@
           }
         ],
         "summary": "Browse the catalogue with filters",
+        "tags": [
+          "collection"
+        ]
+      }
+    },
+    "/collection/games/{gameId}/editions": {
+      "get": {
+        "deprecated": false,
+        "operationId": "CollectionController_getGameEditions",
+        "parameters": [
+          {
+            "name": "gameId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Every edition of the game",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/GameEditionChoiceDto"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "The editions of a game, the primary one first, to choose which one a copy is",
         "tags": [
           "collection"
         ]
@@ -6492,6 +6603,18 @@
           "updatedAt": {
             "type": "string",
             "example": "2026-09-25 12:00:00"
+          },
+          "copyTitle": {
+            "type": "object",
+            "example": "Codenames",
+            "nullable": true,
+            "description": "For a game from a linked account's shelf: the title of the edition that copy is, when its owner said which (ADR-0025). Null: the game's own title applies."
+          },
+          "copyTitleLanguage": {
+            "type": "object",
+            "example": "en",
+            "nullable": true,
+            "description": "The language of `copyTitle`."
           }
         },
         "required": [
@@ -6501,7 +6624,9 @@
           "enteredByAccountId",
           "confirmedByAccountId",
           "createdAt",
-          "updatedAt"
+          "updatedAt",
+          "copyTitle",
+          "copyTitleLanguage"
         ]
       },
       "GroupPersonGamePreferenceDto": {
@@ -7917,12 +8042,26 @@
             "example": null,
             "nullable": true,
             "description": "The group person bringing the game, when the organizer named one."
+          },
+          "copyTitle": {
+            "type": "object",
+            "example": "Codenames",
+            "nullable": true,
+            "description": "The title of the edition the bringer's copy is, when they said which (ADR-0025). Null: the game's own title applies."
+          },
+          "copyTitleLanguage": {
+            "type": "object",
+            "example": "en",
+            "nullable": true,
+            "description": "The language of `copyTitle`."
           }
         },
         "required": [
           "gameId",
           "accountId",
-          "groupPersonId"
+          "groupPersonId",
+          "copyTitle",
+          "copyTitleLanguage"
         ]
       },
       "MeetWithAttendeesAndGames": {
@@ -9323,6 +9462,70 @@
           "duplicateOfGameId"
         ]
       },
+      "OwnedGameCompleteDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number",
+            "example": 12345
+          },
+          "imageUrl": {
+            "type": "string",
+            "example": "/artwork/12-0123456789abcdef.webp",
+            "description": "Artwork served by this API (a path to resolve against the API address), or empty for none."
+          },
+          "gameAvgDuration": {
+            "type": "number",
+            "example": 120,
+            "description": "The average duration of the game in minutes."
+          },
+          "minPlayers": {
+            "type": "number",
+            "example": 3,
+            "description": "The minimum number of players required to play the game."
+          },
+          "maxPlayers": {
+            "type": "number",
+            "example": 4,
+            "description": "The maximum number of players that can play the game."
+          },
+          "title": {
+            "type": "string",
+            "example": "Código Secreto",
+            "description": "The title the reader sees (ADR-0025): the edition in the reader's interface language, else the game's primary edition. Empty for a game with no edition."
+          },
+          "titleLanguage": {
+            "type": "string",
+            "example": "es",
+            "description": "The language of `title`."
+          },
+          "titleTranslations": {
+            "type": "object",
+            "example": {
+              "en": "Codenames",
+              "es": "Código Secreto"
+            },
+            "description": "Every known edition title by language code, for \"also known as\" and search. Some endpoints list only the shown one."
+          },
+          "ownedEditionId": {
+            "type": "object",
+            "example": 7,
+            "nullable": true,
+            "description": "The edition this copy is, or null when the owner has not said."
+          }
+        },
+        "required": [
+          "id",
+          "imageUrl",
+          "gameAvgDuration",
+          "minPlayers",
+          "maxPlayers",
+          "title",
+          "titleLanguage",
+          "titleTranslations",
+          "ownedEditionId"
+        ]
+      },
       "GameOwnershipDto": {
         "type": "object",
         "properties": {
@@ -9340,12 +9543,31 @@
             "type": "object",
             "example": "Bought for the group",
             "nullable": true
+          },
+          "editionId": {
+            "type": "object",
+            "example": 7,
+            "nullable": true,
+            "description": "The edition this copy is, or null when the owner has not said."
+          },
+          "title": {
+            "type": "string",
+            "example": "Codenames",
+            "description": "The title of this copy: its edition's when `editionId` is set, else the title the reader sees."
+          },
+          "titleLanguage": {
+            "type": "string",
+            "example": "en",
+            "description": "The language of `title`."
           }
         },
         "required": [
           "purchaseDate",
           "purchasePrice",
-          "purchaseNotes"
+          "purchaseNotes",
+          "editionId",
+          "title",
+          "titleLanguage"
         ]
       },
       "GameViewTagDto": {
@@ -9432,6 +9654,36 @@
           "avgGlobalRating"
         ]
       },
+      "GameEditionChoiceDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number",
+            "example": 7,
+            "description": "The edition id, to send as `editionId` when adding the game to a shelf."
+          },
+          "languageCode": {
+            "type": "string",
+            "example": "es",
+            "description": "BCP 47 language of the edition."
+          },
+          "title": {
+            "type": "string",
+            "example": "Código Secreto"
+          },
+          "isPrimary": {
+            "type": "boolean",
+            "example": false,
+            "description": "The edition the game is best known by."
+          }
+        },
+        "required": [
+          "id",
+          "languageCode",
+          "title",
+          "isPrimary"
+        ]
+      },
       "GameViewDto": {
         "type": "object",
         "properties": {
@@ -9465,6 +9717,13 @@
           "ratingData": {
             "$ref": "#/components/schemas/GameViewRatingDto"
           },
+          "editions": {
+            "description": "Every edition of the game, the primary one first, to choose which one a copy is.",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/GameEditionChoiceDto"
+            }
+          },
           "similarGames": {
             "description": "Up to four games sharing the most tags with this one; empty when none shares a tag.",
             "type": "array",
@@ -9479,7 +9738,32 @@
           "tags",
           "wishlistedGameData",
           "ratingData",
+          "editions",
           "similarGames"
+        ]
+      },
+      "AddGameToCollectionBody": {
+        "type": "object",
+        "properties": {
+          "editionId": {
+            "type": "number",
+            "example": 7,
+            "description": "The edition of the game the person owns. It must be an edition of that game. Leave out when the game has one edition or the person does not say."
+          }
+        }
+      },
+      "SetOwnedEditionBody": {
+        "type": "object",
+        "properties": {
+          "editionId": {
+            "type": "object",
+            "example": 7,
+            "nullable": true,
+            "description": "The edition this copy is, or null for \"not said\"."
+          }
+        },
+        "required": [
+          "editionId"
         ]
       },
       "UpdateGameOwnedDto": {
@@ -9529,6 +9813,12 @@
             "type": "object",
             "example": "I got this as a gift from my friend.",
             "description": "Any notes about the purchase."
+          },
+          "editionId": {
+            "type": "object",
+            "example": 7,
+            "nullable": true,
+            "description": "The edition of the game this copy is (ADR-0025), or null when the owner has not said."
           }
         },
         "required": [
@@ -9536,7 +9826,8 @@
           "gameId",
           "purchasePrice",
           "purchaseDate",
-          "purchaseNotes"
+          "purchaseNotes",
+          "editionId"
         ]
       },
       "WishlistResponseDto": {
