@@ -1,26 +1,24 @@
 import { Injectable } from '@nestjs/common'
 
+import { titleFieldsFromRow } from '../../../common/utils/game-title.js'
 import { toIsoDate } from '../../../common/utils/stored-date.js'
 import { DatabaseService } from '../../common/database/database.service.js'
 
+import type { Locale } from '../../../common/i18n/locale.js'
 import type { GameCompleteDto } from '../../../common/types/game.type.js'
 import type { GroupCollectionDto, GroupCollectionPersonDto, GroupInsightsDto } from '../../../common/types/group-insights.type.js'
 import type { AvatarDto } from '../../../common/types/user.type.js'
 import type { Row } from '@libsql/client'
 
-/** Columns 0–6 of an insights game row: id, image, duration, players, and the en/es titles. */
+/** Columns 0–6 of an insights game row: id, image, duration, players, and the reader's title with its language. */
 function toGame(row: Row): GameCompleteDto {
-    const titleEn = String(row[5] ?? row[6] ?? '')
-    const titleEs = String(row[6] ?? row[5] ?? '')
-
     return {
         id: Number(row[0]),
-        title: titleEn,
         imageUrl: String(row[1] ?? ''),
         gameAvgDuration: Number(row[2] ?? 0),
         minPlayers: Number(row[3] ?? 0),
         maxPlayers: Number(row[4] ?? 0),
-        titleTranslations: { en: titleEn, es: titleEs },
+        ...titleFieldsFromRow(row[5], row[6]),
     }
 }
 
@@ -39,8 +37,8 @@ const toNullableId = (value: unknown): number | null => (value === null || value
 export class GroupInsightsService {
     constructor(private readonly databaseService: DatabaseService) {}
 
-    async getInsights(groupId: number): Promise<GroupInsightsDto> {
-        const { totals, standings, mostPlayed, neverPlayed } = await this.databaseService.groups.getGroupInsights(groupId)
+    async getInsights(groupId: number, locale: Locale): Promise<GroupInsightsDto> {
+        const { totals, standings, mostPlayed, neverPlayed } = await this.databaseService.groups.getGroupInsights(groupId, locale)
         const total = totals.rows[0]
 
         return {
@@ -67,8 +65,8 @@ export class GroupInsightsService {
     }
 
     /** Everyone's games in the group and their approximate worth, from catalogue retail prices only. */
-    async getCollection(groupId: number): Promise<GroupCollectionDto> {
-        const rows = (await this.databaseService.groups.getGroupCollection(groupId)).rows
+    async getCollection(groupId: number, locale: Locale): Promise<GroupCollectionDto> {
+        const rows = (await this.databaseService.groups.getGroupCollection(groupId, locale)).rows
         const people = new Map<string, GroupCollectionPersonDto & { cents: number }>()
         let totalCents = 0
         let copies = 0

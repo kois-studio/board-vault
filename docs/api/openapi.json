@@ -3952,7 +3952,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/GameDto"
+                    "$ref": "#/components/schemas/GameCompleteDto"
                   }
                 }
               }
@@ -6624,13 +6624,21 @@
           },
           "title": {
             "type": "string",
-            "example": "Game Title"
+            "example": "Código Secreto",
+            "description": "The title the reader sees (ADR-0025): the edition in the reader's interface language, else the game's primary edition. Empty for a game with no edition."
+          },
+          "titleLanguage": {
+            "type": "string",
+            "example": "es",
+            "description": "The language of `title`."
           },
           "titleTranslations": {
             "type": "object",
             "example": {
-              "en": "Game Title"
-            }
+              "en": "Codenames",
+              "es": "Código Secreto"
+            },
+            "description": "Every known edition title by language code, for \"also known as\" and search. Some endpoints list only the shown one."
           }
         },
         "required": [
@@ -6639,6 +6647,8 @@
           "gameAvgDuration",
           "minPlayers",
           "maxPlayers",
+          "title",
+          "titleLanguage",
           "titleTranslations"
         ]
       },
@@ -7007,11 +7017,18 @@
             "example": "Catan",
             "nullable": true,
             "description": "Null when the game is no longer in the catalogue."
+          },
+          "titleLanguage": {
+            "type": "string",
+            "example": "es",
+            "nullable": true,
+            "description": "The language of `title`; null when the game is gone."
           }
         },
         "required": [
           "id",
-          "title"
+          "title",
+          "titleLanguage"
         ]
       },
       "GroupActivityDto": {

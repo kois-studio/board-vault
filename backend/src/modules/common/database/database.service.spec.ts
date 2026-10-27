@@ -60,7 +60,7 @@ describe('DatabaseService logging', () => {
 
         ;(service as unknown as { tursoClient: { execute: typeof execute } }).tursoClient = { execute }
 
-        await service.recommendations.getRecommendationCandidates(7, [1, 2], 2, 120)
+        await service.recommendations.getRecommendationCandidates(7, [1, 2], 2, 'es', 120)
 
         const [{ sql, args }] = execute.mock.calls[0] as [{ sql: string; args: Array<number> }]
 
@@ -75,8 +75,8 @@ describe('DatabaseService logging', () => {
 
         ;(service as unknown as { tursoClient: { execute: typeof execute } }).tursoClient = { execute }
 
-        await service.recommendations.getRecommendationCandidates(7, [1, 2], 2)
-        await service.recommendations.getGroupPersonRecommendationCandidates(7, [3, 4], 2, 90)
+        await service.recommendations.getRecommendationCandidates(7, [1, 2], 2, 'es')
+        await service.recommendations.getGroupPersonRecommendationCandidates(7, [3, 4], 2, 'es', 90)
 
         const [[accounts], [people]] = execute.mock.calls as [
             [{ sql: string; args: Array<number> }],

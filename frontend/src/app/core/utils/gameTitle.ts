@@ -1,14 +1,24 @@
 import { pageLocale } from '../i18n/format'
 import type { Locale } from '../i18n/locales'
 
-type TitledGame = { title?: string | null; titleTranslations?: Partial<Record<string, string | null>> | null }
+type TitledGame = {
+    title?: string | null
+    /** The language of `title` when the API resolved it for this reader (ADR-0025). */
+    titleLanguage?: string | null
+    titleTranslations?: Partial<Record<string, string | null>> | null
+}
+
+/** The API resolved the title for this reader: their language's edition, else the primary one. */
+const hasResolvedTitle = (game: TitledGame): boolean => Boolean(game.titleLanguage && game.title)
 
 /**
- * A game's title in the page's language when the catalogue has that edition's title, else its English
- * title, else its stored title, else "Untitled game" (ADR-0025). Show every game title through this,
- * never `titleTranslations.en`, so a Spanish page says "Código Secreto".
+ * The title the API resolved for this reader (`title` with its `titleLanguage`) when it sent one; otherwise
+ * the game's title in the page's language, else its English title, else its stored title, else "Untitled
+ * game" (ADR-0025). Show every game title through this, never `titleTranslations.en`, so a Spanish page says
+ * "Código Secreto".
  */
 export function gameTitle(game: TitledGame, locale: Locale = pageLocale()): string {
+    if (hasResolvedTitle(game)) return game.title as string
     return (
         game.titleTranslations?.[locale] ||
         game.titleTranslations?.['en'] ||
@@ -22,6 +32,7 @@ export function gameTitle(game: TitledGame, locale: Locale = pageLocale()): stri
  * so a screen reader pronounces it right; null when the title is in the page's language or unknown.
  */
 export function gameTitleLanguage(game: TitledGame, locale: Locale = pageLocale()): string | null {
+    if (hasResolvedTitle(game)) return game.titleLanguage === locale ? null : (game.titleLanguage as string)
     if (game.titleTranslations?.[locale]) return null
     if (game.titleTranslations?.['en']) return locale === 'en' ? null : 'en'
     return null

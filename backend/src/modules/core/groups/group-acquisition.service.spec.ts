@@ -13,8 +13,8 @@ describe('GroupAcquisitionService', () => {
                         90,
                         2,
                         5,
-                        'Game',
                         'Juego',
+                        'es',
                         '2026-09-03 20:00:00',
                         1,
                         'organizer',
@@ -29,8 +29,8 @@ describe('GroupAcquisitionService', () => {
                         90,
                         2,
                         5,
-                        'Game',
                         'Juego',
+                        'es',
                         '2026-09-03 20:00:00',
                         2,
                         'friend',
@@ -44,9 +44,9 @@ describe('GroupAcquisitionService', () => {
         }
         const service = new GroupAcquisitionService(fakeDatabase(database))
 
-        await expect(service.getBoard(7)).resolves.toMatchObject([
+        await expect(service.getBoard(7, 'es')).resolves.toMatchObject([
             {
-                gameData: expect.objectContaining({ id: 42, titleTranslations: { en: 'Game', es: 'Juego' } }),
+                gameData: expect.objectContaining({ id: 42, title: 'Juego', titleLanguage: 'es', titleTranslations: { es: 'Juego' } }),
                 interestedBy: [expect.objectContaining({ id: 1 }), expect.objectContaining({ id: 2 })],
                 interestCount: 2,
                 ownerCount: 0,

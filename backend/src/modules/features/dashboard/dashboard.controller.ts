@@ -1,6 +1,7 @@
 import { Controller, Delete, Get, Param, ParseIntPipe, Post, UseGuards } from '@nestjs/common'
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger'
 
+import { RequestLocale } from '../../../common/decorators/request-locale.decorator.js'
 import { AuthGuard } from '../../../common/guards/auth.guard.js'
 import { UserOwnershipGuard } from '../../../common/guards/ownership.guard.js'
 import { UserInGroupGuard } from '../../../common/guards/user-in-group.guard.js'
@@ -9,6 +10,8 @@ import { UserStatsDto } from '../../../common/types/stats.type.js'
 import { HistoryRecordDto } from '../play/play.types.js'
 
 import { DashboardService } from './dashboard.service.js'
+
+import type { Locale } from '../../../common/i18n/locale.js'
 
 @UseGuards(AuthGuard)
 @ApiTags('dashboard')
@@ -29,8 +32,8 @@ export class DashboardController {
     @Get('/users/:userId/groups')
     @ApiOperation({ summary: 'Get all groups of a user with members and games', deprecated: false })
     @ApiResponse({ status: 200, type: [GroupWithMembersAndGames], description: 'List of all groups of the user' })
-    async getGroupsOfUser(@Param('userId', ParseIntPipe) userId: number) {
-        return this.dashboardService.getGroupsOfUser(userId)
+    async getGroupsOfUser(@Param('userId', ParseIntPipe) userId: number, @RequestLocale() locale: Locale) {
+        return this.dashboardService.getGroupsOfUser(userId, locale)
     }
 
     @UseGuards(UserOwnershipGuard)
@@ -53,8 +56,12 @@ export class DashboardController {
     @Get('/users/:userId/groups/:groupId/meetings')
     @ApiOperation({ summary: 'Get all meetings of a group', deprecated: false })
     @ApiResponse({ status: 200, type: [HistoryRecordDto], description: 'Meetings retrieved successfully' })
-    async getGroupMeetings(@Param('userId', ParseIntPipe) userId: number, @Param('groupId', ParseIntPipe) groupId: number) {
-        return this.dashboardService.getGroupMeetings(userId, groupId)
+    async getGroupMeetings(
+        @Param('userId', ParseIntPipe) userId: number,
+        @Param('groupId', ParseIntPipe) groupId: number,
+        @RequestLocale() locale: Locale,
+    ) {
+        return this.dashboardService.getGroupMeetings(userId, groupId, locale)
     }
 
     @UseGuards(UserOwnershipGuard, UserInGroupGuard)

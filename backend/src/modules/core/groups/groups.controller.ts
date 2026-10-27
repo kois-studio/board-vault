@@ -15,6 +15,7 @@ import {
 } from '@nestjs/common'
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger'
 
+import { RequestLocale } from '../../../common/decorators/request-locale.decorator.js'
 import { AuthGuard } from '../../../common/guards/auth.guard.js'
 import { GroupOwnerGuard } from '../../../common/guards/group-owner.guard.js'
 import { RateLimit, RateLimitGuard } from '../../../common/guards/rate-limit.guard.js'
@@ -40,6 +41,8 @@ import { GroupAcquisitionService } from './group-acquisition.service.js'
 import { GroupActivityService } from './group-activity.service.js'
 import { GroupInsightsService } from './group-insights.service.js'
 import { GroupsService } from './groups.service.js'
+
+import type { Locale } from '../../../common/i18n/locale.js'
 
 @UseGuards(AuthGuard)
 @UsePipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true, transform: true }))
@@ -144,32 +147,32 @@ export class GroupsController {
     @ApiOperation({ summary: 'Get the group history: who changed what in the group, newest first (ADR-0020)' })
     @ApiResponse({ status: 200, type: GroupActivityPageDto })
     @ApiResponse({ status: 403, description: 'Only current members of the group can read its history.' })
-    getActivity(@Param('groupId', ParseIntPipe) groupId: number, @Query() query: GroupActivityQuery) {
-        return this.groupActivityService.getPage(groupId, query.before, query.limit)
+    getActivity(@Param('groupId', ParseIntPipe) groupId: number, @Query() query: GroupActivityQuery, @RequestLocale() locale: Locale) {
+        return this.groupActivityService.getPage(groupId, query.before, query.limit, locale)
     }
 
     @UseGuards(UserInGroupGuard)
     @Get('/:groupId/insights')
     @ApiOperation({ summary: 'Get standings, most played and never played games from completed game nights' })
     @ApiResponse({ status: 200, type: GroupInsightsDto })
-    getInsights(@Param('groupId', ParseIntPipe) groupId: number) {
-        return this.groupInsightsService.getInsights(groupId)
+    getInsights(@Param('groupId', ParseIntPipe) groupId: number, @RequestLocale() locale: Locale) {
+        return this.groupInsightsService.getInsights(groupId, locale)
     }
 
     @UseGuards(UserInGroupGuard)
     @Get('/:groupId/collection')
     @ApiOperation({ summary: "Get everyone's games in the group and their approximate worth from catalogue retail prices" })
     @ApiResponse({ status: 200, type: GroupCollectionDto })
-    getCollection(@Param('groupId', ParseIntPipe) groupId: number) {
-        return this.groupInsightsService.getCollection(groupId)
+    getCollection(@Param('groupId', ParseIntPipe) groupId: number, @RequestLocale() locale: Locale) {
+        return this.groupInsightsService.getCollection(groupId, locale)
     }
 
     @UseGuards(UserInGroupGuard)
     @Get('/:groupId/acquisition-board')
     @ApiOperation({ summary: 'Get the group acquisition board' })
     @ApiResponse({ status: 200, type: [GroupAcquisitionEntryDto] })
-    getAcquisitionBoard(@Param('groupId', ParseIntPipe) groupId: number) {
-        return this.groupAcquisitionService.getBoard(groupId)
+    getAcquisitionBoard(@Param('groupId', ParseIntPipe) groupId: number, @RequestLocale() locale: Locale) {
+        return this.groupAcquisitionService.getBoard(groupId, locale)
     }
 
     @UseGuards(UserInGroupGuard)

@@ -26,6 +26,33 @@ describe('gameTitle', () => {
     })
 })
 
+describe('gameTitle with a title the API resolved', () => {
+    const german = { title: 'Bärenpark', titleLanguage: 'de', titleTranslations: { de: 'Bärenpark' } }
+    const codenames = { title: 'Código Secreto', titleLanguage: 'es', titleTranslations: { en: 'Codenames', es: 'Código Secreto' } }
+
+    it('shows the resolved title, whatever editions the game has', () => {
+        expect(gameTitle(german, 'en')).toBe('Bärenpark')
+        expect(gameTitle(german, 'es')).toBe('Bärenpark')
+        expect(gameTitle(codenames, 'es')).toBe('Código Secreto')
+        expect(new GameTitlePipe().transform(german)).toBe('Bärenpark')
+    })
+
+    it('takes the language of the resolved title, null when it is the page’s', () => {
+        expect(gameTitleLanguage(german, 'es')).toBe('de')
+        expect(gameTitleLanguage(codenames, 'es')).toBeNull()
+        expect(gameTitleLanguage(codenames, 'en')).toBe('es')
+    })
+
+    it('falls back to the editions when the API sent no language or an empty title', () => {
+        expect(gameTitle({ title: 'Codenames', titleTranslations: { en: 'Codenames (EN)' } }, 'en')).toBe('Codenames (EN)')
+        expect(gameTitle({ title: '', titleLanguage: 'en', titleTranslations: { en: 'Codenames' } }, 'en')).toBe('Codenames')
+    })
+
+    it('still lists the other editions for "also known as"', () => {
+        expect(otherGameTitles(codenames, 'es')).toEqual([{ title: 'Codenames', lang: 'en' }])
+    })
+})
+
 describe('otherGameTitles', () => {
     it('lists the titles not shown, once each, with their language', () => {
         const game = { titleTranslations: { en: 'Codenames', es: 'Código Secreto' } }

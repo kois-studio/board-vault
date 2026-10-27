@@ -53,6 +53,19 @@ response.
 Browse sorts by the title of the edition in the reader's language, else the
 primary edition, so the order matches what the page shows (ADR-0025).
 
+Every game in a response (the shelf and wishlist, Browse, a game page and its
+similar games, a group's library, insights, acquisition board and people
+catalogue, recommendations, and the history of a person or a group) carries
+`title` and `titleLanguage`, resolved in `request.locale` by one rule: the
+edition in the reader's language, else the primary edition (a game with no
+edition has an empty `title`). `title` is never the stored English title.
+`titleTranslations` is a map by language code of the editions the endpoint
+knows, for "Also known as" and search; endpoints that read a game from a
+joined row list only the shown edition in it. The group's history names games
+the same way (`games[].title`, `titleLanguage`), and the shared SQL for the rule
+is `resolvedTitleSql` (`backend/src/modules/common/database/resolved-title.ts`).
+Administration keeps its own `titleEn` and `titleEs`.
+
 Tag and tag category names are vocabulary, so they follow the reader's
 language: `GET /collection/tags` and a game page's `tags` name them in
 `request.locale` (English where a language has no name yet) and sort them as

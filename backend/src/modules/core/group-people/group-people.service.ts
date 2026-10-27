@@ -1,9 +1,11 @@
 import { ForbiddenException, Injectable, NotFoundException } from '@nestjs/common'
 
+import { titleFieldsFromRow } from '../../../common/utils/game-title.js'
 import { DatabaseService } from '../../common/database/database.service.js'
 import { normalizeTitle } from '../game-translation/normalize-title.js'
 import { ActivityNotifier } from '../notifications/activity-notifier.service.js'
 
+import type { Locale } from '../../../common/i18n/locale.js'
 import type { GameCompleteDto } from '../../../common/types/game.type.js'
 import type { GroupActivityType } from '../../../common/types/group-activity.type.js'
 import type {
@@ -54,14 +56,14 @@ export class GroupPeopleService {
         )
     }
 
-    async getCatalog(actorAccountId: number, groupId: number, search = ''): Promise<Array<GameCompleteDto>> {
+    async getCatalog(actorAccountId: number, groupId: number, locale: Locale, search = ''): Promise<Array<GameCompleteDto>> {
         await this.assertGroupMember(actorAccountId, groupId)
         // Stored titles are normalized, so the search is too: "love letter" finds Love Letter.
         const normalizedSearch = normalizeTitle(search)
 
         // Punctuation alone normalizes to nothing: a search with no match, not the whole catalogue.
         if (normalizedSearch === '' && search.trim() !== '') return []
-        const result = await this.databaseService.groups.getGroupPersonGameCatalog(normalizedSearch)
+        const result = await this.databaseService.groups.getGroupPersonGameCatalog(normalizedSearch, locale)
 
         return result.rows.map(row => ({
             id: Number(row[0]),
@@ -69,8 +71,7 @@ export class GroupPeopleService {
             gameAvgDuration: Number(row[2]),
             minPlayers: Number(row[3]),
             maxPlayers: Number(row[4]),
-            title: String(row[5]),
-            titleTranslations: { en: String(row[6] ?? ''), es: String(row[7] ?? '') },
+            ...titleFieldsFromRow(row[5], row[6]),
         }))
     }
 

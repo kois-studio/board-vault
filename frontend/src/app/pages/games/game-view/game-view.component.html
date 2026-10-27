@@ -16,7 +16,7 @@
       <section class="grid grid-cols-1 gap-8 md:grid-cols-[minmax(0,320px)_1fr] lg:gap-12" aria-labelledby="game-title">
         <div class="relative mx-auto aspect-square w-full max-w-xs rounded-2xl border border-bv-border bg-bv-surface p-3 shadow-sm md:max-w-none">
           <div class="h-full w-full overflow-hidden rounded-xl">
-            <image-background class="h-full" [src]="game.gameData.imageUrl" [alt]="game.gameData.titleTranslations.en + ' cover'" loading="eager" />
+            <image-background class="h-full" [src]="game.gameData.imageUrl" [alt]="(game.gameData | gameTitle) + ' cover'" loading="eager" />
           </div>
           @if (!game.ownedGameData) {
             <app-wishlist-toggle class="absolute right-5 top-5" [game]="game.gameData" (changed)="onWishlistChanged($event)" />

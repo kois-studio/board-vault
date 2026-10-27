@@ -18,7 +18,7 @@ describe('GroupPeopleService participant boundaries', () => {
                 .fn()
                 .mockResolvedValue({ rows: [{ id: 7, email: 'friend@example.com', username: 'friend', displayName: 'Friend' }] }),
             getClaimableGroupPersonIds: vi.fn().mockResolvedValue({ rows: [[21]] }),
-            getGroupPersonGameCatalog: vi.fn().mockResolvedValue({ rows: [[42, 'image', 60, 2, 4, 'Catan', 'Catan', 'Catán']] }),
+            getGroupPersonGameCatalog: vi.fn().mockResolvedValue({ rows: [[42, 'image', 60, 2, 4, 'Catán', 'es']] }),
             getGroupPeople: vi.fn().mockResolvedValue({ rows: [personRow] }),
             getGroupPersonOwnership: vi.fn().mockResolvedValue({ rows: [[42, 'asserted', 'placeholder_setup', 7, null, 'a', 'b']] }),
             getGroupPersonPreferences: vi.fn().mockResolvedValue({ rows: [[42, 'favorite', 'placeholder_setup', 7, 'a', 'b']] }),
@@ -56,20 +56,20 @@ describe('GroupPeopleService participant boundaries', () => {
     it('returns a group-scoped catalog for ownership assertions without exposing private collections', async () => {
         const { service, databaseService } = createService()
 
-        await expect(service.getCatalog(7, 12, 'catan')).resolves.toEqual([
-            expect.objectContaining({ id: 42, title: 'Catan', titleTranslations: { en: 'Catan', es: 'Catán' } }),
+        await expect(service.getCatalog(7, 12, 'es', 'catan')).resolves.toEqual([
+            expect.objectContaining({ id: 42, title: 'Catán', titleLanguage: 'es', titleTranslations: { es: 'Catán' } }),
         ])
-        expect(databaseService.getGroupPersonGameCatalog).toHaveBeenCalledWith('catan')
+        expect(databaseService.getGroupPersonGameCatalog).toHaveBeenCalledWith('catan', 'es')
     })
 
     it('searches the catalog the way titles are stored, and finds nothing for punctuation alone', async () => {
         const { service, databaseService } = createService()
 
-        await service.getCatalog(7, 12, '  Love Letter ')
-        expect(databaseService.getGroupPersonGameCatalog).toHaveBeenCalledWith('love-letter')
+        await service.getCatalog(7, 12, 'en', '  Love Letter ')
+        expect(databaseService.getGroupPersonGameCatalog).toHaveBeenCalledWith('love-letter', 'en')
 
         databaseService.getGroupPersonGameCatalog?.mockClear()
-        await expect(service.getCatalog(7, 12, '%%')).resolves.toEqual([])
+        await expect(service.getCatalog(7, 12, 'en', '%%')).resolves.toEqual([])
         expect(databaseService.getGroupPersonGameCatalog).not.toHaveBeenCalled()
     })
 

@@ -102,7 +102,7 @@ describe('group history (e2e)', () => {
                 type: 'person_game_set',
                 actor: { id: 3, name: 'Rita', standing: 'member' },
                 person: { id: 7, name: 'Pedro', standing: 'member' },
-                game: { id: 2, title: 'Catan' },
+                game: { id: 2, title: 'Catan', titleLanguage: 'en' },
                 data: { status: 'rejected', previousStatus: 'asserted' },
             }),
             expect.objectContaining({
@@ -154,7 +154,7 @@ describe('group history (e2e)', () => {
             ['session_shortlist_changed', 'Rita'],
             ['session_planned', 'Paula'],
         ])
-        expect(entries[2]?.games).toEqual([{ id: 1, title: 'Azul' }])
+        expect(entries[2]?.games).toEqual([{ id: 1, title: 'Azul', titleLanguage: 'en' }])
     })
 
     it('pages newest first', async () => {

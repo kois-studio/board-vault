@@ -9,6 +9,12 @@ import type { MeetAccountGamesService } from '../../core/meet-account-games/meet
 import type { MeetsService } from '../../core/meets/meets.service.js'
 import type { UsersService } from '../../core/users/users.service.js'
 
+const titledGames = {
+    withTitles: vi.fn(async (games: Array<{ id: number }>) =>
+        games.map(game => ({ ...game, title: 'Juego', titleLanguage: 'es', titleTranslations: { es: 'Juego' } })),
+    ),
+} as unknown as GameTranslationService
+
 describe('PlayService history', () => {
     it('includes only completed sessions in personal history, with a fixed number of queries', async () => {
         const meet = (id: number, status: string) => ({
@@ -41,10 +47,10 @@ describe('PlayService history', () => {
             { getGamesByIds: vi.fn().mockResolvedValue(new Map([[42, { id: 42, imageUrl: 'image' }]])) } as unknown as GamesService,
             meets as unknown as MeetsService,
             {} as unknown as MeetAccountGamesService,
-            { getTranslationsByGameIds: vi.fn().mockResolvedValue(new Map([[42, { en: 'Game' }]])) } as unknown as GameTranslationService,
+            titledGames,
         )
 
-        const history = await service.getUserGamesHistory(1)
+        const history = await service.getUserGamesHistory(1, 'es')
 
         expect(history).toHaveLength(1)
         expect(history[0]?.gamesPlayed[0]?.playedBy.map(user => [user.id, user.standing])).toEqual([[1, 'left']])
@@ -107,10 +113,10 @@ describe('PlayService history', () => {
             { getGamesByIds: vi.fn().mockResolvedValue(new Map([[42, { id: 42, imageUrl: 'image' }]])) } as unknown as GamesService,
             meets as unknown as MeetsService,
             {} as unknown as MeetAccountGamesService,
-            { getTranslationsByGameIds: vi.fn().mockResolvedValue(new Map([[42, { en: 'Game' }]])) } as unknown as GameTranslationService,
+            titledGames,
         )
 
-        const [record] = await service.getUserGamesHistory(6)
+        const [record] = await service.getUserGamesHistory(6, 'es')
 
         const expectedPeople = [
             { id: 3, displayName: 'bloddsword', accountId: 6, avatar: accountAvatar, standing: 'member' },
@@ -151,8 +157,8 @@ describe('PlayService history', () => {
             getRecommendationFeedbackForGroup: vi.fn().mockResolvedValue({ rows: [] }),
             getRecommendationCandidates: vi.fn().mockResolvedValue({
                 rows: [
-                    [42, 'image-42', 90, 2, 5, 'Better Game', 'Mejor juego', 2, 8, '2026-08-01T19:30:00.000Z'],
-                    [21, 'image-21', 120, 2, 5, 'Long Game', 'Juego largo', 1, null, null],
+                    [42, 'image-42', 90, 2, 5, 'Mejor juego', 'es', 2, 8, '2026-08-01T19:30:00.000Z'],
+                    [21, 'image-21', 120, 2, 5, 'Juego largo', 'es', 1, null, null],
                 ],
             }),
         }
@@ -166,19 +172,26 @@ describe('PlayService history', () => {
         )
 
         await expect(
-            service.getRecommendations(1, {
-                groupId: 7,
-                attendeeIds: [1, 2],
-                availableMinutes: 120,
-            }),
+            service.getRecommendations(
+                1,
+                {
+                    groupId: 7,
+                    attendeeIds: [1, 2],
+                    availableMinutes: 120,
+                },
+                'es',
+            ),
         ).resolves.toMatchObject({
             recommendations: [
-                expect.objectContaining({ gameData: expect.objectContaining({ id: 42 }), score: 91 }),
+                expect.objectContaining({
+                    gameData: expect.objectContaining({ id: 42, title: 'Mejor juego', titleLanguage: 'es' }),
+                    score: 91,
+                }),
                 expect.objectContaining({ gameData: expect.objectContaining({ id: 21 }), score: 70 }),
             ],
             noResultReason: null,
         })
-        expect(database.getRecommendationCandidates).toHaveBeenCalledWith(7, [1, 2], 2, 120)
+        expect(database.getRecommendationCandidates).toHaveBeenCalledWith(7, [1, 2], 2, 'es', 120)
     })
 
     it('names selected group people when explaining participant recommendations', async () => {
@@ -192,7 +205,7 @@ describe('PlayService history', () => {
                 ],
             }),
             getGroupPersonRecommendationCandidates: vi.fn().mockResolvedValue({
-                rows: [[42, 'image-42', 90, 2, 5, 'Shared Game', 'Juego compartido', 2, null, null, 2]],
+                rows: [[42, 'image-42', 90, 2, 5, 'Shared Game', 'en', 2, null, null, 2]],
             }),
             getParticipantRecommendationFeedbackForGroup: vi.fn().mockResolvedValue({ rows: [] }),
         }
@@ -206,10 +219,14 @@ describe('PlayService history', () => {
         )
 
         await expect(
-            service.getParticipantRecommendations(1, {
-                groupId: 7,
-                groupPersonIds: [12, 13],
-            }),
+            service.getParticipantRecommendations(
+                1,
+                {
+                    groupId: 7,
+                    groupPersonIds: [12, 13],
+                },
+                'es',
+            ),
         ).resolves.toMatchObject({
             recommendations: [
                 expect.objectContaining({
@@ -251,12 +268,16 @@ describe('PlayService history', () => {
         )
 
         await expect(
-            service.getRecommendations(1, {
-                groupId: 7,
-                attendeeIds: [1, 2],
-                availableMinutes: 120,
-                decisionLens: 'fresh',
-            }),
+            service.getRecommendations(
+                1,
+                {
+                    groupId: 7,
+                    attendeeIds: [1, 2],
+                    availableMinutes: 120,
+                    decisionLens: 'fresh',
+                },
+                'es',
+            ),
         ).resolves.toMatchObject({
             decisionLens: 'fresh',
             recommendations: [
@@ -279,7 +300,7 @@ describe('PlayService history', () => {
             getGroupById: vi.fn().mockResolvedValue({ rows: [[7]] }),
             getGroupMemberIds: vi.fn().mockResolvedValue([1, 2]),
             getRecommendationCandidates: vi.fn().mockResolvedValue({
-                rows: [[42, 'image-42', 90, 2, 5, 'Better Game', 'Mejor juego', 2, 8, null]],
+                rows: [[42, 'image-42', 90, 2, 5, 'Mejor juego', 'es', 2, 8, null]],
             }),
             getRecommendationFeedbackForGroup: vi.fn().mockResolvedValue({
                 rows: [
@@ -298,7 +319,7 @@ describe('PlayService history', () => {
             {} as GameTranslationService,
         )
 
-        await expect(service.getRecommendations(1, { groupId: 7, attendeeIds: [1, 2] })).resolves.toMatchObject({
+        await expect(service.getRecommendations(1, { groupId: 7, attendeeIds: [1, 2] }, 'es')).resolves.toMatchObject({
             recommendations: [
                 expect.objectContaining({
                     score: 74,
@@ -322,7 +343,7 @@ describe('PlayService history', () => {
             {} as GameTranslationService,
         )
 
-        await expect(service.getRecommendations(1, { groupId: 7, attendeeIds: [1, 99] })).rejects.toThrow(
+        await expect(service.getRecommendations(1, { groupId: 7, attendeeIds: [1, 99] }, 'es')).rejects.toThrow(
             'Every attendee must belong to the selected group',
         )
     })
@@ -343,9 +364,11 @@ describe('PlayService history', () => {
             {} as GameTranslationService,
         )
 
-        await expect(service.getRecommendations(1, { groupId: 7, attendeeIds: [1, 2], availableMinutes: 60 })).resolves.toMatchObject({
-            noResultReason: 'No games for 2 players fit within 60 minutes.',
-        })
+        await expect(service.getRecommendations(1, { groupId: 7, attendeeIds: [1, 2], availableMinutes: 60 }, 'es')).resolves.toMatchObject(
+            {
+                noResultReason: 'No games for 2 players fit within 60 minutes.',
+            },
+        )
         expect(database.getRecommendationCandidateCounts).toHaveBeenCalledWith([1, 2], 2, 60)
     })
 

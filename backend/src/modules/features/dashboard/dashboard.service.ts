@@ -16,6 +16,7 @@ import { ReviewsService } from '../../core/reviews/reviews.service.js'
 import { UsersService } from '../../core/users/users.service.js'
 import { buildHistoryRecords, parseAvatar } from '../play/history-records.js'
 
+import type { Locale } from '../../../common/i18n/locale.js'
 import type { SuccessDto } from '../../../common/types/auth.type.js'
 import type { GameProposalDto } from '../../../common/types/game-proposal.type.js'
 import type { CreatedGroupDto, GroupMemberWithGames, GroupWithMembersAndGames } from '../../../common/types/group.type.js'
@@ -55,7 +56,7 @@ export class DashboardService {
     }
 
     @LogFeature(new Logger('DashboardService'))
-    async getGroupsOfUser(userId: number): Promise<Array<GroupWithMembersAndGames>> {
+    async getGroupsOfUser(userId: number, locale: Locale): Promise<Array<GroupWithMembersAndGames>> {
         const memberships = await this.groupMembershipsService.getGroupMembershipsByAccountId(userId)
         const groups = await Promise.all(
             memberships.map(async membership => ({
@@ -90,15 +91,12 @@ export class DashboardService {
         const gameIds = [
             ...new Set([...[...ownedByMember.values()].flat().map(owned => owned.gameId), ...[...gamesByPerson.values()].flat()]),
         ]
-        const [games, translations] = await Promise.all([
-            this.gamesService.getGamesByIds(gameIds),
-            this.gameTranslationService.getTranslationsByGameIds(gameIds),
-        ])
-        const completeGames = (ids: Array<number>) =>
-            ids
-                .map(id => games.get(id))
-                .filter(game => game !== undefined)
-                .map(game => ({ ...game, titleTranslations: translations.get(game.id) ?? { en: '', es: '' } }))
+        const games = new Map(
+            (await this.gameTranslationService.withTitles([...(await this.gamesService.getGamesByIds(gameIds)).values()], locale)).map(
+                game => [game.id, game],
+            ),
+        )
+        const completeGames = (ids: Array<number>) => ids.map(id => games.get(id)).filter(game => game !== undefined)
         const placeholders = placeholderRows.rows.map(row => {
             const personGameIds = gamesByPerson.get(Number(row.id)) ?? []
 
@@ -159,7 +157,7 @@ export class DashboardService {
     }
 
     @LogFeature(new Logger('DashboardService'))
-    async getGroupMeetings(_userId: number, groupId: number): Promise<Array<HistoryRecordDto>> {
+    async getGroupMeetings(_userId: number, groupId: number, locale: Locale): Promise<Array<HistoryRecordDto>> {
         const groupMeetings = (await this.meetsService.getMeetsByGroupId(groupId)).filter(meet => meet.status === 'completed')
 
         return buildHistoryRecords(groupMeetings, {
@@ -167,6 +165,7 @@ export class DashboardService {
             gamesService: this.gamesService,
             gameTranslationService: this.gameTranslationService,
             usersService: this.usersService,
+            locale,
             meetAccountGamesService: this.meetAccountGamesService,
         })
     }

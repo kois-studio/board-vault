@@ -1,6 +1,7 @@
 import { BadRequestException, ForbiddenException, Injectable, Logger, NotFoundException } from '@nestjs/common'
 
 import { LogFeature } from '../../../common/decorators/logger.decorator.js'
+import { titleFieldsFromRow } from '../../../common/utils/game-title.js'
 import { toIsoDate } from '../../../common/utils/stored-date.js'
 import { DatabaseService } from '../../common/database/database.service.js'
 import { GameTranslationService } from '../../core/game-translation/game-translation.service.js'
@@ -26,6 +27,7 @@ import type {
     RecommendationSignalsDto,
     RecommendationsDto,
 } from './play.types.js'
+import type { Locale } from '../../../common/i18n/locale.js'
 import type { AccountMeetDto } from '../../../common/types/meet.type.js'
 import type { AvatarDto, UserPublicDto } from '../../../common/types/user.type.js'
 
@@ -41,7 +43,7 @@ export class PlayService {
     ) {}
 
     @LogFeature(new Logger('PlayService'))
-    async getRecommendations(actorAccountId: number, body: RecommendationRequestBody): Promise<RecommendationsDto> {
+    async getRecommendations(actorAccountId: number, body: RecommendationRequestBody, locale: Locale): Promise<RecommendationsDto> {
         const group = await this.databaseService.groups.getGroupById(body.groupId)
 
         if (group.rows.length === 0) {
@@ -62,6 +64,7 @@ export class PlayService {
             body.groupId,
             body.attendeeIds,
             body.attendeeIds.length,
+            locale,
             body.availableMinutes,
         )
         const decisionLens = body.decisionLens ?? 'balanced'
@@ -116,7 +119,11 @@ export class PlayService {
         }
     }
 
-    async getParticipantRecommendations(actorAccountId: number, body: ParticipantRecommendationRequestBody): Promise<RecommendationsDto> {
+    async getParticipantRecommendations(
+        actorAccountId: number,
+        body: ParticipantRecommendationRequestBody,
+        locale: Locale,
+    ): Promise<RecommendationsDto> {
         const group = await this.databaseService.groups.getGroupById(body.groupId)
 
         if (group.rows.length === 0) {
@@ -141,6 +148,7 @@ export class PlayService {
             body.groupId,
             body.groupPersonIds,
             body.groupPersonIds.length,
+            locale,
             body.availableMinutes,
         )
         const feedbackByGame = new Map<number, { interestedCount: number; notForUsCount: number }>()
@@ -271,8 +279,6 @@ export class PlayService {
         const gameAvgDuration = row[2] === null || row[2] === undefined ? 0 : Number(row[2])
         const minPlayers = row[3] === null || row[3] === undefined ? 0 : Number(row[3])
         const maxPlayers = row[4] === null || row[4] === undefined ? 0 : Number(row[4])
-        const titleEn = String(row[5] ?? row[6])
-        const titleEs = String(row[6] ?? row[5])
         const attendeeOwnerCount = Number(row[7])
         const averageReview = row[8] === null || row[8] === undefined ? null : Number(row[8])
         const lastPlayedAt = row[9] === null || row[9] === undefined ? null : toIsoDate(String(row[9]))
@@ -331,12 +337,11 @@ export class PlayService {
         return {
             gameData: {
                 id: gameId,
-                title: titleEn,
                 imageUrl: String(row[1]),
                 gameAvgDuration,
                 minPlayers,
                 maxPlayers,
-                titleTranslations: { en: titleEn, es: titleEs },
+                ...titleFieldsFromRow(row[5], row[6]),
             },
             score: Math.max(
                 0,
@@ -494,7 +499,7 @@ export class PlayService {
     }
 
     @LogFeature(new Logger('PlayService'))
-    async getUserGamesHistory(userId: number): Promise<Array<HistoryRecordDto>> {
+    async getUserGamesHistory(userId: number, locale: Locale): Promise<Array<HistoryRecordDto>> {
         const meetIds = await this.databaseService.sessions.getDistinctCompletedMeetIdsForAccountHistory(userId)
         const meets = (await this.meetsService.getMeetsByIdsForAccount(meetIds, userId)).filter(meet => meet.status === 'completed')
 
@@ -503,6 +508,7 @@ export class PlayService {
             gamesService: this.gamesService,
             gameTranslationService: this.gameTranslationService,
             usersService: this.usersService,
+            locale,
             meetAccountGamesService: this.meetAccountGamesService,
         })
     }

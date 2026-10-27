@@ -23,7 +23,7 @@ import { SuccessDto } from '../../../common/types/auth.type.js'
 import { CollectionActivityDto } from '../../../common/types/collection-activity.type.js'
 import { GameOwnedDto, UpdateGameOwnedDto } from '../../../common/types/game-owned.type.js'
 import { CreateGameReviewBody, GameReviewWithGameDataDto } from '../../../common/types/game-review.type.js'
-import { BrowseGamesQuery, BrowseGamesResultDto, GameCompleteDto, GameDto, GameViewDto } from '../../../common/types/game.type.js'
+import { BrowseGamesQuery, BrowseGamesResultDto, GameCompleteDto, GameViewDto } from '../../../common/types/game.type.js'
 import { CatalogueTagDto } from '../../../common/types/tag.type.js'
 import { WishlistResponseDto } from '../../../common/types/wishlisted-game.type.js'
 
@@ -46,8 +46,8 @@ export class CollectionController {
     @Get('/users/:userId/games')
     @ApiOperation({ summary: 'Get all games owned by a user', deprecated: false })
     @ApiResponse({ status: 200, type: [GameCompleteDto], description: 'List of all games owned by the user' })
-    async getGamesOwnedByUser(@Param('userId', ParseIntPipe) userId: number) {
-        return this.collectionService.getGamesOwnedByUser(userId)
+    async getGamesOwnedByUser(@Param('userId', ParseIntPipe) userId: number, @RequestLocale() locale: Locale) {
+        return this.collectionService.getGamesOwnedByUser(userId, locale)
     }
 
     @UseGuards(UserOwnershipGuard)
@@ -130,8 +130,8 @@ export class CollectionController {
     @Get('/users/:userId/reviews')
     @ApiOperation({ summary: 'Get all reviews of a user', deprecated: false })
     @ApiResponse({ status: 200, type: [GameReviewWithGameDataDto], description: 'List of all reviews of the user' })
-    async getReviewsOfUser(@Param('userId', ParseIntPipe) userId: number) {
-        return this.collectionService.getReviewsOfUser(userId)
+    async getReviewsOfUser(@Param('userId', ParseIntPipe) userId: number, @RequestLocale() locale: Locale) {
+        return this.collectionService.getReviewsOfUser(userId, locale)
     }
 
     @UseGuards(UserOwnershipGuard)
@@ -150,16 +150,16 @@ export class CollectionController {
     @UseGuards(UserOwnershipGuard)
     @Get('/users/:userId/wishlist')
     @ApiOperation({ summary: 'Get all wishlist of a user', deprecated: false })
-    @ApiResponse({ status: 200, type: [GameDto], description: 'List of all wishlist of the user' })
-    async getUserWishlist(@Param('userId', ParseIntPipe) userId: number) {
-        return this.collectionService.getUserWishlist(userId)
+    @ApiResponse({ status: 200, type: [GameCompleteDto], description: 'List of all wishlist of the user' })
+    async getUserWishlist(@Param('userId', ParseIntPipe) userId: number, @RequestLocale() locale: Locale) {
+        return this.collectionService.getUserWishlist(userId, locale)
     }
 
     @UseGuards(UserOwnershipGuard)
     @Get('/users/:userId/recent-activity')
     @ApiOperation({ summary: "Get all recent activity of a user's collection", deprecated: false })
     @ApiResponse({ status: 200, type: [CollectionActivityDto], description: 'List of all recent activity of the user' })
-    async getUserCollectionActivities(@Param('userId', ParseIntPipe) userId: number) {
-        return this.collectionService.getUserCollectionActivities(userId)
+    async getUserCollectionActivities(@Param('userId', ParseIntPipe) userId: number, @RequestLocale() locale: Locale) {
+        return this.collectionService.getUserCollectionActivities(userId, locale)
     }
 }

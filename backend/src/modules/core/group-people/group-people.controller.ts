@@ -18,6 +18,7 @@ import {
 } from '@nestjs/common'
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger'
 
+import { RequestLocale } from '../../../common/decorators/request-locale.decorator.js'
 import { AuthGuard } from '../../../common/guards/auth.guard.js'
 import { GroupPeopleFeatureGuard } from '../../../common/guards/group-people-feature.guard.js'
 import { GameCompleteDto } from '../../../common/types/game.type.js'
@@ -35,6 +36,8 @@ import {
 } from '../../../common/types/group-person.type.js'
 
 import { GroupPeopleService } from './group-people.service.js'
+
+import type { Locale } from '../../../common/i18n/locale.js'
 
 @UseGuards(AuthGuard, GroupPeopleFeatureGuard)
 @UsePipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true, transform: true }))
@@ -62,8 +65,9 @@ export class GroupPeopleController {
         @Req() request: { user: { userId: number } },
         @Param('groupId', ParseIntPipe) groupId: number,
         @Query() query: GroupPersonCatalogQuery,
+        @RequestLocale() locale: Locale,
     ) {
-        return this.groupPeopleService.getCatalog(request.user.userId, groupId, query.search)
+        return this.groupPeopleService.getCatalog(request.user.userId, groupId, locale, query.search)
     }
 
     @Post('groups/:groupId/people')

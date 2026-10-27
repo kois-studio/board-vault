@@ -1,7 +1,9 @@
 import { Injectable } from '@nestjs/common'
 
+import { DEFAULT_LOCALE } from '../../../common/i18n/locale.js'
 import { DatabaseService } from '../../common/database/database.service.js'
 
+import type { Locale } from '../../../common/i18n/locale.js'
 import type {
     GroupActivityAccountDto,
     GroupActivityData,
@@ -48,7 +50,12 @@ function parseData(value: unknown): GroupActivityData {
 export class GroupActivityService {
     constructor(private readonly databaseService: DatabaseService) {}
 
-    async getPage(groupId: number, before?: number, limit = DEFAULT_PAGE_SIZE): Promise<GroupActivityPageDto> {
+    async getPage(
+        groupId: number,
+        before?: number,
+        limit = DEFAULT_PAGE_SIZE,
+        locale: Locale = DEFAULT_LOCALE,
+    ): Promise<GroupActivityPageDto> {
         const history = this.databaseService.groupActivity
         const rows = (await history.getPage(groupId, before ?? null, limit)).rows
         const entries = rows.slice(0, limit).map(row => ({
@@ -87,7 +94,7 @@ export class GroupActivityService {
         const [accountRows, personRows, gameRows] = await Promise.all([
             accountIds.length > 0 ? history.getAccounts(groupId, accountIds) : { rows: [] },
             personIds.length > 0 ? history.getPeople(groupId, personIds) : { rows: [] },
-            gameIds.length > 0 ? history.getGameTitles(gameIds) : { rows: [] },
+            gameIds.length > 0 ? history.getGameTitles(gameIds, locale) : { rows: [] },
         ])
         const accounts = new Map<number, GroupActivityAccountDto>(
             accountRows.rows.map(row => [
@@ -103,10 +110,17 @@ export class GroupActivityService {
             ]),
         )
         const games = new Map<number, GroupActivityGameDto>(
-            gameRows.rows.map(row => [Number(row[0]), { id: Number(row[0]), title: row[1] === null ? null : String(row[1]) }]),
+            gameRows.rows.map(row => [
+                Number(row[0]),
+                {
+                    id: Number(row[0]),
+                    title: row[1] === null ? null : String(row[1]),
+                    titleLanguage: row[2] === null ? null : String(row[2]),
+                },
+            ]),
         )
         const account = (id: number): GroupActivityAccountDto => accounts.get(id) ?? { id, name: 'Deleted account', standing: 'deleted' }
-        const game = (id: number): GroupActivityGameDto => games.get(id) ?? { id, title: null }
+        const game = (id: number): GroupActivityGameDto => games.get(id) ?? { id, title: null, titleLanguage: null }
 
         return {
             entries: entries.map((entry): GroupActivityDto => ({

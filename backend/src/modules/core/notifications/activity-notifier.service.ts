@@ -167,7 +167,7 @@ export class ActivityNotifier {
 
             if (!groupName || !rows.some(row => Number(row[1]) === change.enteredByAccountId)) return
             const [personRow] = (await this.databaseService.groups.getGroupPersonById(change.groupPersonId, change.groupId)).rows
-            const [gameRow] = (await this.databaseService.groupActivity.getGameTitles([change.gameId])).rows
+            const [gameRow] = (await this.databaseService.groupActivity.getGameTitles([change.gameId], 'en')).rows
 
             if (!personRow) return
             const actor = await this.accountName(change.actorAccountId)

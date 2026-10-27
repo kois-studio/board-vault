@@ -189,10 +189,13 @@ describe('group insights (e2e)', () => {
         ])
         expect(response.body.mostPlayed[0].lastPlayedAt).toBe('2026-09-08T18:00:00.000Z')
         // Charlie was only "played" in a scheduled and a cancelled night; Delta is on the Guest's shelf.
-        expect(response.body.neverPlayed.map((game: { titleTranslations: { en: string } }) => game.titleTranslations.en)).toEqual([
-            'Charlie',
-            'Delta',
-        ])
+        // Delta has only a Spanish edition, which every reader gets (ADR-0025).
+        expect(response.body.neverPlayed.map((game: { title: string; titleLanguage: string }) => [game.title, game.titleLanguage])).toEqual(
+            [
+                ['Charlie', 'en'],
+                ['Delta', 'es'],
+            ],
+        )
         expect(response.body.neverPlayedCount).toBe(2)
     })
 

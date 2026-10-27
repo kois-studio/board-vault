@@ -1,6 +1,7 @@
 import { BadRequestException, NotFoundException } from '@nestjs/common'
 
 import { containsPattern, LIKE_ESCAPE } from '../like-pattern.js'
+import { resolvedTitleSql } from '../resolved-title.js'
 
 import { gameArtworkStatements, type StoredArtwork } from './artwork.queries.js'
 
@@ -275,6 +276,16 @@ export class GameQueries {
         return this.database.execute({
             sql: `SELECT * FROM Game WHERE id IN (${ids.map(() => '?').join(', ')})`,
             args: ids,
+        })
+    }
+
+    /** Each game's title for a reader (their language, else the primary edition) and the title's language. */
+    getResolvedTitlesByGameIds(gameIds: Array<number>, locale: string) {
+        const resolved = resolvedTitleSql('g.id', locale)
+
+        return this.database.execute({
+            sql: `SELECT g.id, ${resolved.title} AS title, ${resolved.language} AS titleLanguage FROM Game g WHERE g.id IN (${gameIds.map(() => '?').join(', ')})`,
+            args: gameIds,
         })
     }
 

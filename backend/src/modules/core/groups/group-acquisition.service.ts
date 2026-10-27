@@ -1,7 +1,9 @@
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common'
 
+import { titleFieldsFromRow } from '../../../common/utils/game-title.js'
 import { DatabaseService } from '../../common/database/database.service.js'
 
+import type { Locale } from '../../../common/i18n/locale.js'
 import type {
     GroupAcquisitionDecisionStatus,
     GroupAcquisitionEntryDto,
@@ -14,8 +16,8 @@ import type { AvatarDto, UserPublicDto } from '../../../common/types/user.type.j
 export class GroupAcquisitionService {
     constructor(private readonly databaseService: DatabaseService) {}
 
-    async getBoard(groupId: number): Promise<Array<GroupAcquisitionEntryDto>> {
-        const resultSet = await this.databaseService.groups.getGroupAcquisitionBoard(groupId)
+    async getBoard(groupId: number, locale: Locale): Promise<Array<GroupAcquisitionEntryDto>> {
+        const resultSet = await this.databaseService.groups.getGroupAcquisitionBoard(groupId, locale)
         const entries = new Map<number, GroupAcquisitionEntryDto>()
 
         for (const row of resultSet.rows) {
@@ -33,18 +35,14 @@ export class GroupAcquisitionService {
                 continue
             }
 
-            const titleEn = String(row[5] ?? row[6] ?? '')
-            const titleEs = String(row[6] ?? row[5] ?? '')
-
             entries.set(gameId, {
                 gameData: {
                     id: gameId,
-                    title: titleEn,
                     imageUrl: String(row[1]),
                     gameAvgDuration: Number(row[2] ?? 0),
                     minPlayers: Number(row[3] ?? 0),
                     maxPlayers: Number(row[4] ?? 0),
-                    titleTranslations: { en: titleEn, es: titleEs },
+                    ...titleFieldsFromRow(row[5], row[6]),
                 },
                 interestedBy: [interestedBy],
                 interestCount: Number(row[12] ?? 0),

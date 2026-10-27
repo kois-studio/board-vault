@@ -30,11 +30,21 @@ export class GameDto {
 }
 
 export class GameCompleteDto extends GameDto {
-    @ApiProperty({ example: 'Game Title', required: false })
-    title?: string
+    @ApiProperty({
+        example: 'Código Secreto',
+        description:
+            "The title the reader sees (ADR-0025): the edition in the reader's interface language, else the game's primary edition. Empty for a game with no edition.",
+    })
+    title: string
 
-    @ApiProperty({ example: { en: 'Game Title' } })
-    titleTranslations: Record<SupportedLanguage, string>
+    @ApiProperty({ example: 'es', description: 'The language of `title`.' })
+    titleLanguage: string
+
+    @ApiProperty({
+        example: { en: 'Codenames', es: 'Código Secreto' },
+        description: 'Every known edition title by language code, for "also known as" and search. Some endpoints list only the shown one.',
+    })
+    titleTranslations: Record<string, string>
 }
 
 export class GameWithTagsAndTranslationsDto extends GameDto {
