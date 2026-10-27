@@ -93,6 +93,9 @@ export class GroupActivityGameDto {
 
     @ApiProperty({ example: 'Catan', nullable: true, type: String, description: 'Null when the game is no longer in the catalogue.' })
     title: string | null
+
+    @ApiProperty({ example: 'es', nullable: true, type: String, description: 'The language of `title`; null when the game is gone.' })
+    titleLanguage: string | null
 }
 
 export class GroupActivityDto {

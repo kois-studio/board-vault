@@ -15,15 +15,15 @@ describe('GroupInsightsService', () => {
                         [null, 9, 'Guest', null, 1, 1, 0],
                     ],
                 },
-                mostPlayed: { rows: [[10, 'image', 60, 2, 4, 'Alpha', null, 2, '2026-09-08T18:00:00.000Z']] },
-                neverPlayed: { rows: [[13, 'image', 20, 3, 8, null, 'Delta', 5]] },
+                mostPlayed: { rows: [[10, 'image', 60, 2, 4, 'Alpha', 'en', 2, '2026-09-08T18:00:00.000Z']] },
+                neverPlayed: { rows: [[13, 'image', 20, 3, 8, 'Delta', 'de', 5]] },
             }),
         }
         const service = new GroupInsightsService(fakeDatabase(database))
 
-        const insights = await service.getInsights(7)
+        const insights = await service.getInsights(7, 'es')
 
-        expect(database.getGroupInsights).toHaveBeenCalledWith(7)
+        expect(database.getGroupInsights).toHaveBeenCalledWith(7, 'es')
         expect(insights).toEqual({
             sessions: 2,
             gamesPlayed: 3,
@@ -49,7 +49,8 @@ describe('GroupInsightsService', () => {
                         gameAvgDuration: 60,
                         minPlayers: 2,
                         maxPlayers: 4,
-                        titleTranslations: { en: 'Alpha', es: 'Alpha' },
+                        titleLanguage: 'en',
+                        titleTranslations: { en: 'Alpha' },
                     },
                     sessions: 2,
                     lastPlayedAt: '2026-09-08T18:00:00.000Z',
@@ -63,7 +64,8 @@ describe('GroupInsightsService', () => {
                     gameAvgDuration: 20,
                     minPlayers: 3,
                     maxPlayers: 8,
-                    titleTranslations: { en: 'Delta', es: 'Delta' },
+                    titleLanguage: 'de',
+                    titleTranslations: { de: 'Delta' },
                 },
             ],
             neverPlayedCount: 5,
@@ -80,7 +82,7 @@ describe('GroupInsightsService', () => {
             }),
         )
 
-        await expect(service.getInsights(7)).resolves.toEqual({
+        await expect(service.getInsights(7, 'es')).resolves.toEqual({
             sessions: 0,
             gamesPlayed: 0,
             gamesWithWinner: 0,

@@ -24,6 +24,7 @@ import { formatDateTime, isoDay } from '../../core/i18n/format'
 import { CountPipe, PlayersPipe } from '../../core/pipes/count.pipe'
 import { DataService } from '../../core/services/data.service'
 import { LoadingService } from '../../core/services/loading.service'
+import { gameTitle } from '../../core/utils/gameTitle'
 import { canTakePart } from '../../core/utils/groupPeople'
 import { ImageProfileComponent } from '../image-profile/image-profile.component'
 import { ToastService } from '../toast/toast.service'
@@ -964,7 +965,7 @@ export class LogSessionWizardComponent {
     }
 
     public getGameTitle(game: GameCompleteType): string {
-        return game.titleTranslations.en || game.title || 'Untitled game'
+        return gameTitle(game)
     }
 
     public getSessionDateLabel(): string {

@@ -87,19 +87,18 @@ export const clerkAuthStatusSchema = z.object({
 export const gameCompleteSchema: z.ZodMiniType<GameCompleteType> = z.object({
     id: z.number(),
     title: z.optional(z.string()),
+    titleLanguage: z.optional(z.string()),
     imageUrl: artworkUrlSchema,
     gameAvgDuration: z.number(),
     minPlayers: z.number(),
     maxPlayers: z.number(),
-    titleTranslations: z.object({
-        en: z.string(),
-        es: z.string(),
-    }),
+    titleTranslations: z.record(z.string(), z.string()),
 })
 
 const gameSchema: z.ZodMiniType<GameType> = z.object({
     id: z.number(),
     title: z.optional(z.string()),
+    titleLanguage: z.optional(z.string()),
     imageUrl: artworkUrlSchema,
     gameAvgDuration: z.number(),
     minPlayers: z.number(),
@@ -324,7 +323,11 @@ const groupActivityNameSchema = z.object({
     name: z.string(),
     standing: z.enum(['member', 'left', 'deleted']),
 })
-const groupActivityGameSchema = z.object({ id: z.number(), title: z.nullable(z.string()) })
+const groupActivityGameSchema = z.object({
+    id: z.number(),
+    title: z.nullable(z.string()),
+    titleLanguage: z.optional(z.nullable(z.string())),
+})
 
 export const groupActivityPageSchema: z.ZodMiniType<GroupActivityPageType> = z.object({
     entries: z.array(

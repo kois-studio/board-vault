@@ -18,6 +18,9 @@ operational details.
   in on another device.
 - Games now store their titles as editions, one per language. Nothing
   changes on screen yet.
+- Game titles in groups, history and recommendations follow the page's
+  language, and a game that only has an edition in another language shows
+  that one.
 - Tag and tag category names in Spanish, French, German, and Italian, edited
   in Administration → Tags; Browse filters and game pages show them in the
   page's language.

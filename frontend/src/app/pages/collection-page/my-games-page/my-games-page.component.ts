@@ -11,6 +11,7 @@ import { CountPipe } from '../../../core/pipes/count.pipe'
 import { GameTitlePipe } from '../../../core/pipes/game-title.pipe'
 import { DataService } from '../../../core/services/data.service'
 import { LoadingService } from '../../../core/services/loading.service'
+import { gameTitle } from '../../../core/utils/gameTitle'
 @Component({
     imports: [
         GameTitlePipe,
@@ -56,8 +57,7 @@ export class MyGamesPageComponent {
                 (!query || Object.values(game.titleTranslations).some((title) => title?.toLowerCase().includes(query))) &&
                 (players === null || (game.minPlayers <= players && players <= game.maxPlayers)),
         )
-        const byTitle = (a: (typeof games)[number], b: (typeof games)[number]) =>
-            a.titleTranslations.en.localeCompare(b.titleTranslations.en)
+        const byTitle = (a: (typeof games)[number], b: (typeof games)[number]) => gameTitle(a).localeCompare(gameTitle(b))
         return [...games].sort((a, b) => {
             if (toolbar && this.sortBy() === 'duration') return (a.gameAvgDuration ?? 0) - (b.gameAvgDuration ?? 0) || byTitle(a, b)
             return byTitle(a, b)

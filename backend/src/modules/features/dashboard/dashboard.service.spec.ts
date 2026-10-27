@@ -51,14 +51,14 @@ describe('DashboardService group history', () => {
             { getGamesByIds: vi.fn().mockResolvedValue(new Map()) } as never,
             {} as never,
             meets as never,
-            { getTranslationsByGameIds: vi.fn().mockResolvedValue(new Map()) } as never,
+            { withTitles: vi.fn(async (games: Array<unknown>) => games) } as never,
             meetAccountGames as never,
             {} as never,
             {} as never,
             {} as never,
         )
 
-        await expect(service.getGroupMeetings(1, 7)).resolves.toHaveLength(1)
+        await expect(service.getGroupMeetings(1, 7, 'es')).resolves.toHaveLength(1)
         expect(database.getHistoryDetailsByMeetIds).toHaveBeenCalledWith([10])
     })
 })
@@ -100,7 +100,14 @@ describe('DashboardService groups overview', () => {
             getGameById: vi.fn(),
         }
         const translations = {
-            getTranslationsByGameIds: vi.fn(async (ids: Array<number>) => new Map(ids.map(id => [id, { en: `Game ${id}`, es: '' }]))),
+            withTitles: vi.fn(async (games: Array<{ id: number }>) =>
+                games.map(game => ({
+                    ...game,
+                    title: `Game ${game.id}`,
+                    titleLanguage: 'es',
+                    titleTranslations: { es: `Game ${game.id}` },
+                })),
+            ),
             getGameTranslations: vi.fn(),
         }
         const database = {
@@ -131,13 +138,13 @@ describe('DashboardService groups overview', () => {
             {} as never,
         )
 
-        const groups = await service.getGroupsOfUser(1)
+        const groups = await service.getGroupsOfUser(1, 'es')
 
         expect(groups).toHaveLength(2)
-        expect(groups[0]?.members[1]?.games.map(game => game.titleTranslations.en)).toEqual(['Game 21', 'Game 22', 'Game 23'])
+        expect(groups[0]?.members[1]?.games.map(game => game.title)).toEqual(['Game 21', 'Game 22', 'Game 23'])
         expect(users.getPublicUsersByIds).toHaveBeenCalledTimes(1)
         expect(games.getGamesByIds).toHaveBeenCalledTimes(1)
-        expect(translations.getTranslationsByGameIds).toHaveBeenCalledTimes(1)
+        expect(translations.withTitles).toHaveBeenCalledTimes(1)
         expect(games.getGameById).not.toHaveBeenCalled()
         expect(groups[0]?.placeholders).toEqual([])
         expect(groups[1]?.placeholders).toEqual([
@@ -146,7 +153,7 @@ describe('DashboardService groups overview', () => {
                 displayName: 'Lucía',
                 avatar: null,
                 gameIds: [77],
-                games: [{ id: 77, imageUrl: '', titleTranslations: { en: 'Game 77', es: '' } }],
+                games: [{ id: 77, imageUrl: '', title: 'Game 77', titleLanguage: 'es', titleTranslations: { es: 'Game 77' } }],
             },
         ])
         expect(database.getActivePlaceholdersByGroupIds).toHaveBeenCalledTimes(1)

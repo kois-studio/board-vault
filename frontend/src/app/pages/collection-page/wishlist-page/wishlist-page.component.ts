@@ -15,6 +15,7 @@ import { LOADING_KEYS } from '../../../core/enums/loading-keys-enum'
 import { GameTitlePipe } from '../../../core/pipes/game-title.pipe'
 import { DataService } from '../../../core/services/data.service'
 import { LoadingService } from '../../../core/services/loading.service'
+import { gameTitle } from '../../../core/utils/gameTitle'
 @Component({
     imports: [
         GameTitlePipe,
@@ -63,7 +64,7 @@ export class WishlistPageComponent {
                 next: () => {
                     this.userWishlist$.update((wishlist) => wishlist.filter((item) => item.id !== game.id))
                     this.dataService.refreshUserGames()
-                    this.toastService.success(`${game.titleTranslations.en} moved to My Games`)
+                    this.toastService.success(`${gameTitle(game)} moved to My Games`)
                 },
                 error: () => this.toastService.error('Could not add this game to My Games. Try again.'),
             })

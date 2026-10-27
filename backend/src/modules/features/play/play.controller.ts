@@ -1,6 +1,7 @@
 import { Body, Controller, Get, Param, ParseIntPipe, Post, Query, Req, UseGuards, UsePipes, ValidationPipe } from '@nestjs/common'
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger'
 
+import { RequestLocale } from '../../../common/decorators/request-locale.decorator.js'
 import { AuthGuard } from '../../../common/guards/auth.guard.js'
 import { UserOwnershipGuard } from '../../../common/guards/ownership.guard.js'
 import { AccountMeetDto } from '../../../common/types/meet.type.js'
@@ -17,6 +18,8 @@ import {
     RecommendationsDto,
 } from './play.types.js'
 
+import type { Locale } from '../../../common/i18n/locale.js'
+
 @UseGuards(AuthGuard)
 @ApiTags('play')
 @ApiBearerAuth()
@@ -28,16 +31,24 @@ export class PlayController {
     @UsePipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true, transform: true }))
     @ApiOperation({ summary: 'Get deterministic recommendations for selected group attendees' })
     @ApiResponse({ status: 200, type: RecommendationsDto })
-    getRecommendations(@Req() request: { user: { userId: number } }, @Body() body: RecommendationRequestBody) {
-        return this.playService.getRecommendations(request.user.userId, body)
+    getRecommendations(
+        @Req() request: { user: { userId: number } },
+        @Body() body: RecommendationRequestBody,
+        @RequestLocale() locale: Locale,
+    ) {
+        return this.playService.getRecommendations(request.user.userId, body, locale)
     }
 
     @Post('/recommendations/participants')
     @UsePipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true, transform: true }))
     @ApiOperation({ summary: 'Get deterministic recommendations for group people, including placeholders' })
     @ApiResponse({ status: 200, type: RecommendationsDto })
-    getParticipantRecommendations(@Req() request: { user: { userId: number } }, @Body() body: ParticipantRecommendationRequestBody) {
-        return this.playService.getParticipantRecommendations(request.user.userId, body)
+    getParticipantRecommendations(
+        @Req() request: { user: { userId: number } },
+        @Body() body: ParticipantRecommendationRequestBody,
+        @RequestLocale() locale: Locale,
+    ) {
+        return this.playService.getParticipantRecommendations(request.user.userId, body, locale)
     }
 
     @Post('/recommendations/feedback')
@@ -71,8 +82,8 @@ export class PlayController {
     @Get('/users/:userId/history')
     @ApiOperation({ summary: 'List of all games played by the user', deprecated: false })
     @ApiResponse({ status: 200, type: [HistoryRecordDto], description: 'List of all games played by the user' })
-    async getUserGamesHistory(@Param('userId', ParseIntPipe) userId: number) {
-        return this.playService.getUserGamesHistory(userId)
+    async getUserGamesHistory(@Param('userId', ParseIntPipe) userId: number, @RequestLocale() locale: Locale) {
+        return this.playService.getUserGamesHistory(userId, locale)
     }
 
     @UseGuards(UserOwnershipGuard)

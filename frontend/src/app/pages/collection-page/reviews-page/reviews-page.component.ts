@@ -8,11 +8,12 @@ import { PageHeaderComponent } from '../../../components/ui/page-header/page-hea
 import { LOADING_KEYS } from '../../../core/enums/loading-keys-enum'
 import { DataService } from '../../../core/services/data.service'
 import { LoadingService } from '../../../core/services/loading.service'
+import { gameTitle } from '../../../core/utils/gameTitle'
 import { ReviewRowComponent } from './review-row/review-row.component'
 
 export type ReviewSort = 'title' | 'rating' | 'recent'
 
-const byTitle = (a: GameCompleteType, b: GameCompleteType) => a.titleTranslations.en.localeCompare(b.titleTranslations.en)
+const byTitle = (a: GameCompleteType, b: GameCompleteType) => gameTitle(a).localeCompare(gameTitle(b))
 
 @Component({
     imports: [ContainerWrapperComponent, PageHeaderComponent, ButtonComponent, RouterLink, ReviewRowComponent, SkeletonReviewGameComponent],

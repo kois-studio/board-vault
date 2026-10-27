@@ -1,3 +1,5 @@
+import { resolvedTitleSql } from '../resolved-title.js'
+
 import type { DatabaseService } from '../database.service.js'
 
 /** Game recommendation candidates and feedback. */
@@ -105,7 +107,14 @@ export class RecommendationQueries {
         })
     }
 
-    getRecommendationCandidates(groupId: number, attendeeIds: Array<number>, playerCount: number, availableMinutes?: number) {
+    getRecommendationCandidates(
+        groupId: number,
+        attendeeIds: Array<number>,
+        playerCount: number,
+        locale: string,
+        availableMinutes?: number,
+    ) {
+        const resolved = resolvedTitleSql('g.id', locale)
         const attendeePlaceholders = attendeeIds.map(() => '?').join(', ')
         const durationFilter = availableMinutes === undefined ? '' : 'AND (g.gameAvgDuration IS NULL OR g.gameAvgDuration <= ?)'
         // In the order the placeholders appear: owners, reviews, last played (group, then four attendee lists), the
@@ -135,8 +144,8 @@ export class RecommendationQueries {
                     g.gameAvgDuration,
                     g.minPlayers,
                     g.maxPlayers,
-                    gt_en.title,
-                    gt_es.title,
+                    ${resolved.title},
+                    ${resolved.language},
                     (
                         SELECT COUNT(DISTINCT og.accountId)
                         FROM OwnedGame og
@@ -194,15 +203,9 @@ export class RecommendationQueries {
                 INNER JOIN OwnedGame ownedByAttendee
                     ON ownedByAttendee.gameId = g.id
                    AND ownedByAttendee.accountId IN (${attendeePlaceholders})
-                LEFT JOIN GameEdition gt_en
-                    ON gt_en.gameId = g.id AND gt_en.languageCode = 'en'
-                LEFT JOIN GameEdition gt_es
-                    ON gt_es.gameId = g.id AND gt_es.languageCode = 'es'
-                LEFT JOIN GameEdition gt_pr
-                    ON gt_pr.gameId = g.id AND gt_pr.isPrimary = 1
                 WHERE (g.minPlayers IS NULL OR g.minPlayers <= ?)
                   AND (g.maxPlayers IS NULL OR g.maxPlayers >= ?)
-                  AND gt_pr.title IS NOT NULL
+                  AND ${resolved.title} IS NOT NULL
                   ${durationFilter}
                 GROUP BY g.id
             `,
@@ -210,7 +213,14 @@ export class RecommendationQueries {
         })
     }
 
-    getGroupPersonRecommendationCandidates(groupId: number, groupPersonIds: Array<number>, playerCount: number, availableMinutes?: number) {
+    getGroupPersonRecommendationCandidates(
+        groupId: number,
+        groupPersonIds: Array<number>,
+        playerCount: number,
+        locale: string,
+        availableMinutes?: number,
+    ) {
+        const resolved = resolvedTitleSql('g.id', locale)
         const personPlaceholders = groupPersonIds.map(() => '?').join(', ')
         const durationFilter = availableMinutes === undefined ? '' : 'AND (g.gameAvgDuration IS NULL OR g.gameAvgDuration <= ?)'
         // In order: the selected people's group, their ids, the group again for "last played", and the player count twice.
@@ -243,8 +253,8 @@ export class RecommendationQueries {
                     g.gameAvgDuration,
                     g.minPlayers,
                     g.maxPlayers,
-                    gt_en.title,
-                    gt_es.title,
+                    ${resolved.title},
+                    ${resolved.language},
                     COUNT(DISTINCT available_games.groupPersonId) AS ownerCount,
                     (
                         SELECT AVG(gr.review)
@@ -290,12 +300,9 @@ export class RecommendationQueries {
                     ), 0) AS preferenceScore
                 FROM Game g
                 INNER JOIN available_games ON available_games.gameId = g.id
-                LEFT JOIN GameEdition gt_en ON gt_en.gameId = g.id AND gt_en.languageCode = 'en'
-                LEFT JOIN GameEdition gt_es ON gt_es.gameId = g.id AND gt_es.languageCode = 'es'
-                LEFT JOIN GameEdition gt_pr ON gt_pr.gameId = g.id AND gt_pr.isPrimary = 1
                 WHERE (g.minPlayers IS NULL OR g.minPlayers <= ?)
                   AND (g.maxPlayers IS NULL OR g.maxPlayers >= ?)
-                  AND gt_pr.title IS NOT NULL
+                  AND ${resolved.title} IS NOT NULL
                   ${durationFilter}
                 GROUP BY g.id
             `,

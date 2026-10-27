@@ -1,6 +1,7 @@
 import { Component, computed, inject, input, output, signal } from '@angular/core'
 import type { GameCompleteType } from '../../api/api.types'
 import { DataService } from '../../core/services/data.service'
+import { gameTitle } from '../../core/utils/gameTitle'
 import { ToastService } from '../toast/toast.service'
 import { IconComponent } from '../ui/icon/icon.component'
 
@@ -34,9 +35,7 @@ export class WishlistToggleComponent {
     )
     protected readonly actionLabel = computed(() => (this.wishlisted() ? 'Remove from wishlist' : 'Add to wishlist'))
     protected readonly ariaLabel = computed(() =>
-        this.wishlisted()
-            ? `Remove ${this.game().titleTranslations.en} from your wishlist`
-            : `Add ${this.game().titleTranslations.en} to your wishlist`,
+        this.wishlisted() ? `Remove ${gameTitle(this.game())} from your wishlist` : `Add ${gameTitle(this.game())} to your wishlist`,
     )
 
     protected async toggle(): Promise<void> {

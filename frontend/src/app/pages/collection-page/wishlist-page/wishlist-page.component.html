@@ -47,7 +47,7 @@
                         icon="shopping-bag"
                         class="mt-2 w-full"
                         [loading]="buyingGameId() === game.id"
-                        [attr.aria-label]="'I bought ' + game.titleTranslations.en + ': move it to My Games'"
+                        [attr.aria-label]="'I bought ' + (game | gameTitle) + ': move it to My Games'"
                         (click)="markAsBought(game)"
                     >
                         I bought it

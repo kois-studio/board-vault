@@ -25,7 +25,9 @@ export type PublicUserType = Pick<UserType, 'id' | 'username' | 'displayName' | 
 
 export type GameType = {
     id: number
+    /** The title for this reader (ADR-0025); `titleLanguage` says which language it is in. */
     title?: string
+    titleLanguage?: string
     imageUrl: string
     gameAvgDuration: number
     minPlayers: number
@@ -35,7 +37,8 @@ export type GameType = {
 type SupportedLanguage = 'en' | 'es'
 
 export type GameCompleteType = GameType & {
-    titleTranslations: Record<SupportedLanguage, string>
+    /** Every known edition title by language code. */
+    titleTranslations: Record<string, string>
 }
 
 export type GameWithTagsAndTranslationsType = GameType & {
@@ -218,12 +221,12 @@ export type GroupActivityType = {
     actor: GroupActivityNameType
     meetId: number | null
     person: GroupActivityNameType | null
-    game: { id: number; title: string | null } | null
+    game: { id: number; title: string | null; titleLanguage?: string | null } | null
     subject: GroupActivityNameType | null
     data: Record<string, unknown>
     accounts: Array<GroupActivityNameType>
     people: Array<GroupActivityNameType>
-    games: Array<{ id: number; title: string | null }>
+    games: Array<{ id: number; title: string | null; titleLanguage?: string | null }>
 }
 
 export type GroupActivityPageType = {

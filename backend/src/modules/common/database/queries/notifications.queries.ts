@@ -9,6 +9,7 @@ import {
     readShelfChange,
     type ShelfChange,
 } from '../../../core/notifications/shelf-notification.js'
+import { resolvedTitleSql } from '../resolved-title.js'
 
 import type { CreateNotificationBody, UpdateNotificationBody } from '../../../../common/types/notification.type.js'
 import type { DatabaseService } from '../database.service.js'
@@ -161,14 +162,13 @@ export class NotificationQueries {
         const titles = new Map<number, string>()
 
         if (gameIds.length === 0) return titles
+        // The stored message is English for older clients (the inbox writes its own from `context`), so the English edition, else the primary one.
+        const resolved = resolvedTitleSql('g.id', 'en')
         const rows = (
             await transaction.execute({
                 sql: `
-                    SELECT g.id, COALESCE(gt_pr.title, gt_en.title, gt_es.title)
+                    SELECT g.id, ${resolved.title}
                     FROM Game g
-                    LEFT JOIN GameEdition gt_en ON gt_en.gameId = g.id AND gt_en.languageCode = 'en'
-                    LEFT JOIN GameEdition gt_es ON gt_es.gameId = g.id AND gt_es.languageCode = 'es'
-                    LEFT JOIN GameEdition gt_pr ON gt_pr.gameId = g.id AND gt_pr.isPrimary = 1
                     WHERE g.id IN (${placeholders(gameIds)})
                 `,
                 args: gameIds,
@@ -260,17 +260,15 @@ export class NotificationQueries {
 
     /** Each game's title in the reader's language, else the primary edition, with the language it is in. */
     getContextGames(gameIds: Array<number>, locale: string) {
+        const resolved = resolvedTitleSql('g.id', locale)
+
         return this.database.execute({
             sql: `
-                SELECT g.id,
-                    COALESCE(t.title, pr.title) AS title,
-                    COALESCE(t.languageCode, pr.languageCode) AS language
+                SELECT g.id, ${resolved.title} AS title, ${resolved.language} AS language
                 FROM Game g
-                LEFT JOIN GameEdition t ON t.gameId = g.id AND t.languageCode = ?
-                LEFT JOIN GameEdition pr ON pr.gameId = g.id AND pr.isPrimary = 1
                 WHERE g.id IN (${NotificationQueries.placeholders(gameIds)})
             `,
-            args: [locale, ...gameIds],
+            args: gameIds,
         })
     }
 

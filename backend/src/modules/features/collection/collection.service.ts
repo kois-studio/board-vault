@@ -33,16 +33,11 @@ export class CollectionService {
     ) {}
 
     @LogFeature(new Logger('CollectionService'))
-    async getGamesOwnedByUser(userId: number): Promise<Array<GameCompleteDto>> {
+    async getGamesOwnedByUser(userId: number, locale: Locale): Promise<Array<GameCompleteDto>> {
         const gamesOwned = await this.gamesOwnedService.getGamesOwnedByAccountId(userId)
         const games = await Promise.all(gamesOwned.map(async game => this.gamesService.getGameById(game.gameId)))
 
-        return Promise.all(
-            games.map(async game => ({
-                ...game,
-                titleTranslations: await this.gameTranslationService.getGameTranslations(game.id),
-            })),
-        )
+        return this.gameTranslationService.withTitles(games, locale)
     }
 
     @LogFeature(new Logger('CollectionService'))
@@ -65,18 +60,11 @@ export class CollectionService {
             pageSize: query.limit,
             locale,
         })
-        const [games, translations] = await Promise.all([
-            this.gamesService.getGamesByIds(gameIds),
-            this.gameTranslationService.getTranslationsByGameIds(gameIds),
-        ])
+        const games = await this.gamesService.getGamesByIds(gameIds)
+        const found = gameIds.flatMap(gameId => games.get(gameId) ?? [])
 
         return {
-            games: gameIds.flatMap(gameId => {
-                const game = games.get(gameId)
-                const titleTranslations = translations.get(gameId)
-
-                return game && titleTranslations ? [{ ...game, titleTranslations }] : []
-            }),
+            games: await this.gameTranslationService.withTitles(found, locale),
             pagination: {
                 currentPage: query.page,
                 totalPages: Math.ceil(total / query.limit),
@@ -95,7 +83,6 @@ export class CollectionService {
     async getGameViewByUserId(userId: number, gameId: number, locale: Locale): Promise<GameViewDto> {
         // Step 1: Get each part of data needed in the view
         const gameData = await this.gamesService.getGameById(gameId)
-        const titleTranslations = await this.gameTranslationService.getGameTranslations(gameId)
         const ownedGameData = await this.gamesOwnedService.isGameIdOwnedByAccountId(userId, gameId, false)
         const wishlistGameData = await this.wishlistService.isGameWishlisted(userId, gameId)
         // reviews
@@ -115,11 +102,10 @@ export class CollectionService {
             .sort((a, b) => compare(a.category, b.category) || compare(a.tag, b.tag))
 
         // Step 2: Construct the GameView
+        const [gameWithTitles] = await this.gameTranslationService.withTitles([gameData], locale)
+
         return {
-            gameData: {
-                ...gameData,
-                titleTranslations,
-            },
+            gameData: gameWithTitles!,
             ownedGameData: !ownedGameData
                 ? null
                 : {
@@ -139,12 +125,7 @@ export class CollectionService {
                 avgGroupsRating,
                 avgGlobalRating,
             },
-            similarGames: await Promise.all(
-                similarGamesFiltered.map(async game => ({
-                    ...game,
-                    titleTranslations: await this.gameTranslationService.getGameTranslations(game.id),
-                })),
-            ),
+            similarGames: await this.gameTranslationService.withTitles(similarGamesFiltered, locale),
         }
     }
 
@@ -199,20 +180,16 @@ export class CollectionService {
     }
 
     @LogFeature(new Logger('CollectionService'))
-    async getReviewsOfUser(userId: number): Promise<Array<GameReviewWithGameDataDto>> {
+    async getReviewsOfUser(userId: number, locale: Locale): Promise<Array<GameReviewWithGameDataDto>> {
         const reviews = await this.reviewsService.getUserReviews(userId)
+        const games = await Promise.all(reviews.map(async review => this.gamesService.getGameById(review.gameId)))
+        const titled = new Map((await this.gameTranslationService.withTitles(games, locale)).map(game => [game.id, game]))
 
-        return Promise.all(
-            reviews.map(async review => {
-                const game = await this.gamesService.getGameById(review.gameId)
-                const titleTranslations = await this.gameTranslationService.getGameTranslations(game.id)
+        return reviews.flatMap(review => {
+            const gameData = titled.get(review.gameId)
 
-                return {
-                    ...review,
-                    gameData: { ...game, titleTranslations },
-                }
-            }),
-        )
+            return gameData ? [{ ...review, gameData }] : []
+        })
     }
 
     @LogFeature(new Logger('CollectionService'))
@@ -224,29 +201,23 @@ export class CollectionService {
     }
 
     @LogFeature(new Logger('CollectionService'))
-    async getUserWishlist(userId: number): Promise<Array<GameCompleteDto>> {
+    async getUserWishlist(userId: number, locale: Locale): Promise<Array<GameCompleteDto>> {
         const wishlist = await this.wishlistService.getWishlistByAccountId(userId)
         const games = await Promise.all(wishlist.map(async gameId => this.gamesService.getGameById(gameId)))
 
-        return Promise.all(
-            games.map(async game => ({
-                ...game,
-                titleTranslations: await this.gameTranslationService.getGameTranslations(game.id),
-            })),
-        )
+        return this.gameTranslationService.withTitles(games, locale)
     }
 
     @LogFeature(new Logger('CollectionService'))
-    async getUserCollectionActivities(userId: number): Promise<Array<CollectionActivityWithGameDataDto>> {
+    async getUserCollectionActivities(userId: number, locale: Locale): Promise<Array<CollectionActivityWithGameDataDto>> {
         const activities = await this.collectionActivityService.getUserCollectionActivities(userId)
+        const games = await Promise.all(activities.map(async activity => this.gamesService.getGameById(activity.gameId)))
+        const titled = new Map((await this.gameTranslationService.withTitles(games, locale)).map(game => [game.id, game]))
 
-        return Promise.all(
-            activities.map(async activity => {
-                const game = await this.gamesService.getGameById(activity.gameId)
-                const titleTranslations = await this.gameTranslationService.getGameTranslations(game.id)
+        return activities.flatMap(activity => {
+            const gameData = titled.get(activity.gameId)
 
-                return { ...activity, gameData: { ...game, titleTranslations } }
-            }),
-        )
+            return gameData ? [{ ...activity, gameData }] : []
+        })
     }
 }
