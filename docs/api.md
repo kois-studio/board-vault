@@ -64,7 +64,49 @@ knows, for "Also known as" and search; endpoints that read a game from a
 joined row list only the shown edition in it. The group's history names games
 the same way (`games[].title`, `titleLanguage`), and the shared SQL for the rule
 is `resolvedTitleSql` (`backend/src/modules/common/database/resolved-title.ts`).
-Administration keeps its own `titleEn` and `titleEs`.
+Administration (`/admin/games`) is not resolved per reader: an `AdminGameDto`
+has `title`, the primary edition's title (empty for a game with no edition),
+and `editions`, every edition as `{ id, languageCode, title, isPrimary }`, the
+primary one first, then by language code. `PATCH /admin/games/:id` takes
+`editions`, the game's whole new set of `{ languageCode, title, isPrimary }`:
+at least one, titles trimmed and not empty (200 characters), language codes
+unique and exactly one primary, else 400. A language code is two or three
+letters and an optional region, canonicalized (`pt-br` becomes `pt-BR`); an
+edition may be in any language, not only an interface language. Editions whose
+language stays keep their `id`; the ones left out are deleted, and the legacy
+`GameTranslation` rows follow. The admin `issue` filter and the overview's
+`catalogueIssues` count `no-title` (no edition), `no-artwork`, `no-primary`
+(editions but none primary), `no-tags`, and `no-price`; the catalogue search
+matches any edition's title.
+
+A proposal (`POST /profile/users/:userId/proposals`) says which language its
+`title` is in with `titleLanguage` (default: `request.locale`) and may list
+`otherTitles`, up to ten `{ languageCode, title }` in other languages, none in
+the title's language and one per language. Proposals read back `titleLanguage`
+(`en` for proposals made before it was recorded) and `otherTitles` (`[]`).
+Approving a proposal takes the same `editions` as a game update; left out, the
+game gets the proposal's title in its language as the primary edition, plus
+its other titles.
+
+Someone's copy of a game can say which edition it is (ADR-0025). `GET
+/collection/games/:gameId/editions` lists a game's editions as `{ id,
+languageCode, title, isPrimary }`, the primary one first; a game page's
+`editions` is the same list. `POST /collection/users/:userId/games/:gameId`
+takes an optional `{ editionId }`, which must be an edition of that game
+(else 400); left out it is stored as `null`, "not said", which is also what a
+game with one edition gets. `PATCH /collection/users/:userId/games/:gameId/edition`
+with `{ editionId: number | null }` changes or clears it (400 for another
+game's edition, 404 for a game not on the shelf). An admin removing the edition
+sets it back to `null`. Where a title belongs to someone's copy, the edition
+they said they own wins (rule 1), else the rule above: the shelf
+(`GET /collection/users/:userId/games`, each entry with `ownedEditionId`, its
+`title` and `titleLanguage` those of the owned edition), the game page's
+`ownedGameData` (`editionId`, and `title` and `titleLanguage` of the copy), and,
+as `copyTitle` and `copyTitleLanguage` (null when not said, so the game's own
+title applies), the entries of a night's `gameBringers` and the `ownership`
+of a group person linked to an account. `resolvedTitleSql`'s sibling
+`ownedTitleSql` writes the same rule in SQL. Browse, the game page heading,
+a group's library, recommendations and history stay on the reader's language.
 
 Tag and tag category names are vocabulary, so they follow the reader's
 language: `GET /collection/tags` and a game page's `tags` name them in

@@ -95,7 +95,7 @@ export class ProfileService {
     }
 
     @LogFeature(new Logger('ProfileService'))
-    async createGameProposal(userId: number, proposalData: CreateGameProposalBody): Promise<GameProposalDto> {
-        return this.gameProposalService.createGameProposal(userId, proposalData)
+    async createGameProposal(userId: number, proposalData: CreateGameProposalBody, locale: Locale): Promise<GameProposalDto> {
+        return this.gameProposalService.createGameProposal(userId, proposalData, locale)
     }
 }

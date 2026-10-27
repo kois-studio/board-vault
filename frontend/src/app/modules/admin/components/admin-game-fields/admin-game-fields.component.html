@@ -1,26 +1,5 @@
 <div class="space-y-6" [formGroup]="form()">
-    <div class="grid gap-4 sm:grid-cols-2">
-        <div>
-            <label for="titleEn" class="mb-1 block text-sm font-medium">English title</label>
-            <input
-                id="titleEn"
-                class="app-input"
-                formControlName="titleEn"
-                [attr.aria-invalid]="showTitleEnError"
-                [attr.aria-describedby]="showTitleEnError ? 'titleEn-error' : null"
-            />
-            @if (showTitleEnError) {
-                <p id="titleEn-error" class="mt-1 text-sm text-bv-danger">{{ titleError('titleEn') }}</p>
-            }
-        </div>
-        <div>
-            <label for="titleEs" class="mb-1 block text-sm font-medium">Spanish title</label>
-            <input id="titleEs" class="app-input" formControlName="titleEs" aria-describedby="titleEs-hint" [attr.aria-invalid]="form().controls.titleEs.invalid" />
-            <p id="titleEs-hint" class="mt-1 text-sm" [class.text-bv-danger]="form().controls.titleEs.invalid" [class.text-bv-text-muted]="!form().controls.titleEs.invalid">
-                {{ form().controls.titleEs.invalid ? titleError('titleEs') : 'Leave it empty if there is no Spanish edition.' }}
-            </p>
-        </div>
-    </div>
+    <app-admin-game-editions [control]="form().controls.editions" [readonly]="readonly()" />
 
     <div class="grid gap-4 sm:grid-cols-[minmax(0,1fr)_6rem]">
         <div>

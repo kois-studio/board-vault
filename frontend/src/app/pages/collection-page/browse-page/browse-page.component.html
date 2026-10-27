@@ -212,7 +212,7 @@
                             [class]="game.isInCollection || collectionState()[game.id] === 'saved' ? 'border-bv-success/30 bg-bv-success/10 text-bv-success' : 'border-bv-border bg-bv-surface hover:border-bv-primary hover:bg-bv-primary-soft'"
                             [disabled]="game.isInCollection || !!collectionState()[game.id]"
                             [attr.aria-label]="collectionLabel(game)"
-                            (click)="addGameToCollection(game.id)"
+                            (click)="addGameToCollection(game)"
                         >
                             @if (game.isInCollection || collectionState()[game.id] === 'saved') {
                                 <ng-container i18n="Button under a game on Browse once the game is on My Games">In your games ✓</ng-container>

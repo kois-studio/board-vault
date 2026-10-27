@@ -1,10 +1,12 @@
 import { BadRequestException, Injectable, Logger, NotFoundException } from '@nestjs/common'
 
 import { LogFeature } from '../../../common/decorators/logger.decorator.js'
+import { validateEditions, type EditionInput } from '../../../common/i18n/edition-language.js'
 import { isSupportedLocale } from '../../../common/i18n/locale.js'
 import { structuredLog } from '../../../common/logging/structured-log.js'
 import {
     AdminGameDto,
+    AdminGameEditionDto,
     AdminGamesQuery,
     AdminOverviewDto,
     CATALOGUE_QUALITY_ISSUES,
@@ -18,7 +20,6 @@ import {
     ProposalStatusCountsDto,
 } from '../../../common/types/admin.type.js'
 import { GameProposalCompleteDto } from '../../../common/types/game-proposal.type.js'
-import { SupportedLanguage } from '../../../common/types/game-translation.type.js'
 import { TagDto, GameTagWithCategoryDto } from '../../../common/types/tag.type.js'
 import { ArtworkService } from '../../../modules/core/artwork/artwork.service.js'
 import { GameProposalService } from '../../../modules/core/game-proposal/game-proposal.service.js'
@@ -253,19 +254,7 @@ export class AdminService {
         if (body.gameAvgDuration !== undefined) game.gameAvgDuration = body.gameAvgDuration
         if (body.retailPrice !== undefined) game.retailPriceCents = toCents(body.retailPrice)
 
-        const translations: Partial<Record<SupportedLanguage, { title: string; normalizedTitle: string } | null>> = {}
-
-        for (const languageCode of ['en', 'es'] as const) {
-            const title = body.translations?.[languageCode]
-
-            if (title === undefined) continue
-            const trimmed = title.trim()
-
-            if (!trimmed && languageCode === 'en') throw new BadRequestException('The English title cannot be empty.')
-            translations[languageCode] = trimmed
-                ? { title: trimmed, normalizedTitle: this.gameTranslationService.normalizeTitle(trimmed) }
-                : null
-        }
+        const editions = body.editions ? this.withNormalizedTitles(validateEditions(body.editions)) : undefined
 
         // Copied before the transaction: a download can take seconds and must not hold the write lock.
         const artwork = await this.artworkService.resolveChange(body.imageUrl, current.imageUrl)
@@ -274,7 +263,7 @@ export class AdminService {
             gameId,
             game,
             artwork: artwork.kind === 'keep' ? undefined : artwork.kind === 'remove' ? null : artwork.artwork,
-            translations,
+            editions,
             tagIds,
         })
 
@@ -288,7 +277,7 @@ export class AdminService {
         const fields = [
             ...Object.keys(game),
             ...(artwork.kind === 'keep' ? [] : ['artwork']),
-            ...Object.keys(translations).map(language => `title.${language}`),
+            ...(editions ? ['editions'] : []),
             ...(tagIds ? ['tags'] : []),
         ]
 
@@ -318,9 +307,31 @@ export class AdminService {
         if (unknown.length > 0) throw new BadRequestException(`Unknown tag ids: ${unknown.join(', ')}.`)
     }
 
+    private withNormalizedTitles(editions: Array<EditionInput>) {
+        return editions.map(edition => ({ ...edition, normalizedTitle: this.gameTranslationService.normalizeTitle(edition.title) }))
+    }
+
     private async toAdminGames(rows: Array<Record<string, unknown>>): Promise<Array<AdminGameDto>> {
         const gameIds = rows.map(row => Number(row['id']))
-        const tagRows = await this.databaseService.games.getTagsOfGames(gameIds)
+        const [tagRows, editionRows] = await Promise.all([
+            this.databaseService.games.getTagsOfGames(gameIds),
+            this.databaseService.games.getEditionsOfGames(gameIds),
+        ])
+        const editionsByGame = new Map<number, Array<AdminGameEditionDto>>()
+
+        for (const row of editionRows.rows) {
+            const gameId = Number(row['gameId'])
+
+            editionsByGame.set(gameId, [
+                ...(editionsByGame.get(gameId) ?? []),
+                {
+                    id: Number(row['id']),
+                    languageCode: String(row['languageCode']),
+                    title: String(row['title']),
+                    isPrimary: Number(row['isPrimary']) === 1,
+                },
+            ])
+        }
         const tagsByGame = new Map<number, Array<GameTagWithCategoryDto>>()
 
         for (const row of tagRows.rows) {
@@ -334,16 +345,15 @@ export class AdminService {
 
         return rows.map(row => {
             const id = Number(row['id'])
-            const titleEn = String(row['titleEn'] ?? '')
 
             return {
                 id,
-                title: titleEn,
+                title: String(row['title'] ?? ''),
                 imageUrl: String(row['imageUrl'] ?? ''),
                 gameAvgDuration: Number(row['gameAvgDuration']),
                 minPlayers: Number(row['minPlayers']),
                 maxPlayers: Number(row['maxPlayers']),
-                translations: { en: titleEn, es: String(row['titleEs'] ?? '') },
+                editions: editionsByGame.get(id) ?? [],
                 tags: tagsByGame.get(id) ?? [],
                 issues: CATALOGUE_QUALITY_ISSUES.filter(issue => Number(row[issue]) === 1),
                 artworkSource: row['artworkSource'] ? String(row['artworkSource']) : null,
@@ -504,19 +514,22 @@ export class AdminService {
             maxPlayers: maxPlayers!,
         }
 
-        const titles: Record<SupportedLanguage, string | undefined> = {
-            en: approvalData.translations?.en?.trim() || proposal.title,
-            es: approvalData.translations?.es?.trim() || undefined,
-        }
-        const translations = Object.entries(titles)
-            .filter((entry): entry is [SupportedLanguage, string] => Boolean(entry[1]))
-            .map(([languageCode, title]) => ({ languageCode, title, normalizedTitle: this.gameTranslationService.normalizeTitle(title) }))
+        // Exactly the reviewed editions, or the proposal's own: its title in its language as the primary
+        // edition, plus the other titles it listed.
+        const editions = this.withNormalizedTitles(
+            validateEditions(
+                approvalData.editions ?? [
+                    { languageCode: proposal.titleLanguage, title: proposal.title, isPrimary: true },
+                    ...proposal.otherTitles.map(other => ({ ...other, isPrimary: false })),
+                ],
+            ),
+        )
 
         const { createdGameId, addedToShelfOf } = await this.databaseService.games.approveGameProposalAtomically({
             proposalId,
             reviewerId,
             ...gameData,
-            translations,
+            editions,
             tagIds,
             reviewNotes: approvalData.reviewNotes,
             notification: {
@@ -588,8 +601,8 @@ export class AdminService {
 
         // Throws 404 when the game does not exist.
         await this.gameService.getGameById(body.duplicateOfGameId)
-        const titles = await this.gameTranslationService.getGameTranslations(body.duplicateOfGameId)
-        const duplicateOfTitle = titles.en || titles.es || 'a game in the catalogue'
+        const duplicate = await this.databaseService.games.getEditionsOfGames([body.duplicateOfGameId])
+        const duplicateOfTitle = String(duplicate.rows[0]?.['title'] ?? '') || 'a game in the catalogue'
         const reviewNotes = body.reviewNotes?.trim() || null
 
         await this.databaseService.games.closeGameProposalAtomically({

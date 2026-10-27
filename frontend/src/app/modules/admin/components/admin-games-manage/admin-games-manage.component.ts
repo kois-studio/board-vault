@@ -5,7 +5,7 @@ import { ActivatedRoute, RouterLink } from '@angular/router'
 import { firstValueFrom } from 'rxjs'
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators'
 import { Api } from '../../../../api/api'
-import type { CatalogueIssue, CatalogueTagType, GameLength } from '../../../../api/api.types'
+import type { AdminGameType, CatalogueIssue, CatalogueTagType, GameLength } from '../../../../api/api.types'
 import { ButtonComponent } from '../../../../components/ui/button/button.component'
 import { IconComponent } from '../../../../components/ui/icon/icon.component'
 import { ImageBackgroundComponent } from '../../../../components/ui/image-background/image-background.component'
@@ -17,12 +17,12 @@ import { AdminPageHeaderComponent } from '../admin-page-header/admin-page-header
 import { AdminGamesManageService } from './admin-games-manage.service'
 /** What each data problem is called in the list, and what to do about it. */
 export const CATALOGUE_ISSUES: Array<{ value: CatalogueIssue; label: string; hint: string }> = [
-    { value: 'no-title', label: 'No title', hint: 'The game has no English title, so it cannot be found by name.' },
+    { value: 'no-title', label: 'No title', hint: 'The game has no edition, so it has no title and cannot be found by name.' },
     { value: 'no-artwork', label: 'No artwork', hint: 'Add an artwork URL.' },
     {
-        value: 'no-spanish',
-        label: 'No Spanish title',
-        hint: 'No Spanish title, or the same as the English one. Some games do keep their name.',
+        value: 'no-primary',
+        label: 'No primary edition',
+        hint: 'The game has editions but none is the primary one, so it has no title to show. Open it and choose one.',
     },
     { value: 'no-tags', label: 'No tags', hint: 'Without tags the game is missing from tag filters and suggestions.' },
     { value: 'no-price', label: 'No price', hint: 'Without a retail price the game is left out of collection worth estimates.' },
@@ -113,6 +113,14 @@ export class AdminGamesManageComponent implements OnInit {
 
     public retry(): void {
         void this.service.load(this.filters(), this.service.page())
+    }
+
+    /** The titles of the game's other editions, for the list's second column. */
+    public otherEditions(game: AdminGameType): string {
+        return game.editions
+            .filter((edition) => !edition.isPrimary)
+            .map((edition) => edition.title)
+            .join(' · ')
     }
 
     public issueLabel(issue: CatalogueIssue): string {

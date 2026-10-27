@@ -219,7 +219,10 @@ describe('proposing a game (e2e)', () => {
                     gameAvgDuration: 15,
                     imageUrl: 'https://example.test/codenames.png',
                     retailPrice: 24.95,
-                    translations: { en: 'Codenames', es: 'Código Secreto' },
+                    editions: [
+                        { languageCode: 'en', title: 'Codenames', isPrimary: true },
+                        { languageCode: 'es', title: 'Código Secreto', isPrimary: false },
+                    ],
                     tagIds: [partyTag],
                 })
                 .expect(201)
@@ -262,6 +265,82 @@ describe('proposing a game (e2e)', () => {
                 ['es', 'Código Secreto', 0],
             ])
             expect(tags.rows.map(row => Number(row.tagId))).toEqual([partyTag])
+        })
+
+        it('records the title language, defaulting to the request language, and approves into editions with it primary', async () => {
+            const german = await request(app.getHttpServer())
+                .post('/profile/users/2/proposals')
+                .set(asProposer)
+                .send({
+                    title: 'Die Siedler von Catan',
+                    titleLanguage: 'DE',
+                    otherTitles: [{ languageCode: 'en', title: ' Catan ' }],
+                })
+                .expect(201)
+
+            expect(german.body).toEqual(
+                expect.objectContaining({ titleLanguage: 'de', otherTitles: [{ languageCode: 'en', title: 'Catan' }] }),
+            )
+
+            const spanish = await request(app.getHttpServer())
+                .post('/profile/users/2/proposals')
+                .set(asProposer)
+                .set('Accept-Language', 'es-ES,es;q=0.9')
+                .send({ title: 'Ciudadelas' })
+                .expect(201)
+
+            expect(spanish.body).toEqual(expect.objectContaining({ titleLanguage: 'es', otherTitles: [] }))
+
+            // A proposal from before the column existed reads as English.
+            const old = await database.execute("INSERT INTO GameProposal (submittedBy, title) VALUES (2, 'Old proposal') RETURNING id")
+            const listed = await request(app.getHttpServer())
+                .get(`/admin/proposals/${Number(old.rows[0]?.id)}`)
+                .set(asAdmin)
+                .expect(200)
+
+            expect(listed.body).toEqual(expect.objectContaining({ titleLanguage: 'en', otherTitles: [] }))
+
+            // Approving without editions creates the proposal's own, with its title's language primary.
+            const approved = await request(app.getHttpServer())
+                .post(`/admin/proposals/${german.body.id}/approve`)
+                .set(asAdmin)
+                .send({ minPlayers: 3, maxPlayers: 4, gameAvgDuration: 90 })
+                .expect(201)
+            const editions = await database.execute({
+                sql: 'SELECT languageCode, title, isPrimary FROM GameEdition WHERE gameId = ? ORDER BY languageCode',
+                args: [Number(approved.body.createdGameId)],
+            })
+            const translations = await database.execute({
+                sql: 'SELECT languageCode FROM GameTranslation WHERE gameId = ? ORDER BY languageCode',
+                args: [Number(approved.body.createdGameId)],
+            })
+
+            expect(editions.rows.map(row => [row.languageCode, row.title, Number(row.isPrimary)])).toEqual([
+                ['de', 'Die Siedler von Catan', 1],
+                ['en', 'Catan', 0],
+            ])
+            expect(translations.rows.map(row => row.languageCode)).toEqual(['de', 'en'])
+        })
+
+        it('refuses bad title languages and other titles on a proposal', async () => {
+            for (const body of [
+                { titleLanguage: 'deutsch' },
+                { titleLanguage: 'de', otherTitles: [{ languageCode: 'DE', title: 'Catan' }] },
+                {
+                    otherTitles: [
+                        { languageCode: 'en', title: 'A' },
+                        { languageCode: 'en', title: 'B' },
+                    ],
+                },
+                { otherTitles: [{ languageCode: 'xx-yy-zz', title: 'A' }] },
+                { otherTitles: [{ languageCode: 'en', title: '   ' }] },
+            ]) {
+                await request(app.getHttpServer())
+                    .post('/profile/users/2/proposals')
+                    .set(asProposer)
+                    .send({ title: 'Catan', ...body })
+                    .expect(400)
+            }
         })
 
         it('approves nothing while the artwork address is a dead link, and says why', async () => {
