@@ -212,7 +212,7 @@ describe('DatabaseService logging', () => {
                 gameAvgDuration: 60,
                 minPlayers: 3,
                 maxPlayers: 4,
-                translations: [{ languageCode: 'en', title: 'Catan', normalizedTitle: 'catan' }],
+                editions: [{ languageCode: 'en', title: 'Catan', normalizedTitle: 'catan', isPrimary: true }],
                 tagIds: [2],
                 reviewNotes: 'Ready for the shelf',
                 notification: {
@@ -296,7 +296,7 @@ describe('DatabaseService logging', () => {
                 gameAvgDuration: 60,
                 minPlayers: 3,
                 maxPlayers: 4,
-                translations: [{ languageCode: 'en', title: 'Catan', normalizedTitle: 'catan' }],
+                editions: [{ languageCode: 'en', title: 'Catan', normalizedTitle: 'catan', isPrimary: true }],
                 tagIds: [2],
                 notification: {
                     accountId: 4,
@@ -323,7 +323,7 @@ describe('DatabaseService logging', () => {
                 gameAvgDuration: 60,
                 minPlayers: 3,
                 maxPlayers: 4,
-                translations: [{ languageCode: 'en', title: 'Catan', normalizedTitle: 'catan' }],
+                editions: [{ languageCode: 'en', title: 'Catan', normalizedTitle: 'catan', isPrimary: true }],
                 tagIds: [],
                 notification: {
                     accountId: 4,
@@ -409,6 +409,8 @@ describe('DatabaseService logging', () => {
             service.games.createGameProposal({
                 submittedBy: 5,
                 title: 'Azul',
+                titleLanguage: 'en',
+                otherTitles: [],
                 addTo: 'shelf',
                 adminNotification: {
                     type: 'game_proposal_submitted',
@@ -418,7 +420,7 @@ describe('DatabaseService logging', () => {
             }),
         ).resolves.toEqual({ proposalId: 31 })
 
-        expect(transaction.execute.mock.calls[0]![0].args).toEqual([5, 'Azul', null, null, null, null, null, null, 'shelf'])
+        expect(transaction.execute.mock.calls[0]![0].args).toEqual([5, 'Azul', null, null, null, null, null, null, 'shelf', 'en', null])
         expect(transaction.execute.mock.calls[1]![0]).toEqual({
             sql: expect.stringContaining('WHERE isAdmin = 1 AND isDeleted = 0 AND id != ?'),
             args: ['game_proposal_submitted', 'New game proposal: "Azul"', '{"gameTitle":"Azul","submittedBy":5,"proposalId":31}', 5],

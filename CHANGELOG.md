@@ -18,6 +18,13 @@ operational details.
   in on another device.
 - Games now store their titles as editions, one per language. Nothing
   changes on screen yet.
+- Administration edits a game's editions: a language, a title and a primary
+  mark for each, in any language, instead of the fixed English and Spanish
+  titles. The Games filter finds games with editions but no primary one
+  instead of games without a Spanish title.
+- A game proposal says which language its title is in (the page's language
+  until changed) and can list the game's titles in other languages. Approving
+  it creates those editions, with the proposed title's language as primary.
 - Game titles in groups, history and recommendations follow the page's
   language, and a game that only has an edition in another language shows
   that one.

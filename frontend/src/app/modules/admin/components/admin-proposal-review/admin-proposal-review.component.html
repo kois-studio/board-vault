@@ -50,7 +50,10 @@
                 <section class="space-y-3 rounded-lg border border-bv-border bg-bv-surface p-4 shadow-sm">
                     <h3 class="text-lg font-semibold">As proposed</h3>
                     <dl class="space-y-2 text-sm">
-                        <div><dt class="text-bv-text-muted">Title</dt><dd class="font-medium break-words">{{ proposal.title }}</dd></div>
+                        <div><dt class="text-bv-text-muted">Title</dt><dd class="font-medium break-words">{{ proposal.title }} <span class="font-normal text-bv-text-muted">({{ languageName(proposal.titleLanguage) }})</span></dd></div>
+                        @for (other of proposal.otherTitles; track other.languageCode) {
+                            <div><dt class="text-bv-text-muted">Title in {{ languageName(other.languageCode) }}</dt><dd class="break-words">{{ other.title }}</dd></div>
+                        }
                         <div>
                             <dt class="text-bv-text-muted">Players</dt>
                             <dd>@if (proposal.minPlayers || proposal.maxPlayers) { {{ proposal.minPlayers ?? '?' }}–{{ proposal.maxPlayers ?? '?' }} } @else { <span class="text-bv-text-muted">Not given</span> }</dd>
@@ -152,13 +155,13 @@
                             <button type="button" class="app-menu-item w-full" (click)="duplicateOf.set(game)">{{ gameTitle(game) }}</button>
                         </li>
                     } @empty {
-                        <li class="px-3 py-2 text-sm text-bv-text-muted">No match yet. Search the catalogue by title, in English or Spanish.</li>
+                        <li class="px-3 py-2 text-sm text-bv-text-muted">No match yet. Search the catalogue by title, in any language.</li>
                     }
                 </ul>
             }
 
             <label for="duplicateNotes" class="mb-1 mt-4 block text-sm font-medium">Note for the proposer <span class="font-normal text-bv-text-muted">(optional)</span></label>
-            <input id="duplicateNotes" class="app-input" [formControl]="duplicateNotes" placeholder="For example: listed under its Spanish title." />
+            <input id="duplicateNotes" class="app-input" [formControl]="duplicateNotes" placeholder="For example: listed under its German title." />
 
             <div class="mt-6 flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
                 <button appButton variant="secondary" type="button" (click)="isMarkingDuplicate.set(false)">Cancel</button>
