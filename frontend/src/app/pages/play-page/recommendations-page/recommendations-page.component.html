@@ -1,28 +1,28 @@
 <app-page-header [titleText]="pageTitle()">
-    Choose who is coming and how long you have. Suggestions update as you go and only use games the people coming own.
+    <ng-container i18n="Subtitle of What to play">Choose who is coming and how long you have. Suggestions update as you go and only use games the people coming own.</ng-container>
 </app-page-header>
 
 <container-wrapper>
     @if (isLoadingGroups()) {
-        <p class="py-8 text-center text-bv-text-muted" role="status">Loading your groups…</p>
+        <p class="py-8 text-center text-bv-text-muted" role="status" i18n="What to play while your groups load">Loading your groups…</p>
     } @else if (userGroupsError()) {
         <section class="rounded-lg border border-bv-border bg-bv-surface p-6 text-center" role="alert">
-            <h2 class="mb-2 text-xl font-semibold">Groups could not be loaded</h2>
-            <p class="mb-5 text-bv-text-muted">Suggestions need a group and its people.</p>
-            <button appButton icon="arrow-repeat" (click)="retryGroups()">Retry</button>
+            <h2 class="mb-2 text-xl font-semibold" i18n="What to play when your groups could not load">Groups could not be loaded</h2>
+            <p class="mb-5 text-bv-text-muted" i18n="What to play when your groups could not load, under the heading">Suggestions need a group and its people.</p>
+            <button appButton icon="arrow-repeat" (click)="retryGroups()" i18n="Button that loads the groups again">Retry</button>
         </section>
     } @else if (userGroups().length === 0) {
         <section class="rounded-lg border border-dashed border-bv-border px-6 py-12 text-center">
             <div class="mx-auto flex h-14 w-14 items-center justify-center rounded-lg bg-bv-accent text-bv-on-accent" aria-hidden="true"><app-icon name="lightbulb" [size]="28" /></div>
-            <h2 class="mt-5 text-xl font-bold">Create or join a group first</h2>
-            <p class="mx-auto mt-2 max-w-lg text-sm leading-6 text-bv-text-muted">Suggestions come from the games the people in a group own.</p>
-            <a appButton class="mt-6" routerLink="/dashboard">Open groups</a>
+            <h2 class="mt-5 text-xl font-bold" i18n="What to play when you are in no group">Create or join a group first</h2>
+            <p class="mx-auto mt-2 max-w-lg text-sm leading-6 text-bv-text-muted" i18n="What to play when you are in no group, under the heading">Suggestions come from the games the people in a group own.</p>
+            <a appButton class="mt-6" routerLink="/dashboard" i18n="Button that opens Home, where your groups are">Open groups</a>
         </section>
     } @else {
-        <section class="space-y-6 rounded-lg border border-bv-border bg-bv-surface p-5 shadow-sm sm:p-6" aria-label="Who is playing">
+        <section class="space-y-6 rounded-lg border border-bv-border bg-bv-surface p-5 shadow-sm sm:p-6" i18n-aria-label="Accessible name of the choices at the top of What to play" aria-label="Who is playing">
             @if (userGroups().length > 1) {
                 <fieldset class="min-w-0">
-                    <legend class="mb-2 text-sm font-semibold">Group</legend>
+                    <legend class="mb-2 text-sm font-semibold" i18n="Label of the group choice on What to play">Group</legend>
                     @if (userGroups().length <= 4) {
                         <div class="flex flex-wrap gap-2">
                             @for (group of userGroups(); track group.id) {
@@ -30,7 +30,7 @@
                             }
                         </div>
                     } @else {
-                        <select class="app-input sm:max-w-xs" aria-label="Group" [value]="selectedGroupId() ?? ''" (change)="selectGroup(+$any($event.target).value)">
+                        <select class="app-input sm:max-w-xs" i18n-aria-label="Label of the group choice on What to play" aria-label="Group" [value]="selectedGroupId() ?? ''" (change)="selectGroup(+$any($event.target).value)">
                             @for (group of userGroups(); track group.id) {
                                 <option [value]="group.id" [selected]="group.id === selectedGroupId()">{{ group.name }}</option>
                             }
@@ -42,17 +42,17 @@
             @if (selectedGroup(); as group) {
                 <fieldset class="min-w-0">
                     <div class="mb-2 flex flex-wrap items-baseline gap-x-4 gap-y-1">
-                        <legend class="text-sm font-semibold">Who is coming?</legend>
-                        <span class="text-sm text-bv-text-muted" aria-live="polite">{{ selectedAttendeeIds().length }} of {{ attendeeOptions().length }}</span>
-                        <button type="button" class="rounded text-sm font-medium text-bv-primary underline underline-offset-2" (click)="selectAllAttendees()">Everyone</button>
-                        <button type="button" class="rounded text-sm text-bv-text-muted underline underline-offset-2" (click)="clearAttendees()">Nobody</button>
+                        <legend class="text-sm font-semibold" i18n="Label of the people choice on What to play">Who is coming?</legend>
+                        <span class="text-sm text-bv-text-muted" aria-live="polite" i18n="Next to Who is coming? on What to play: how many of the group's people are chosen">{{ selectedAttendeeIds().length }} of {{ attendeeOptions().length }}</span>
+                        <button type="button" class="rounded text-sm font-medium text-bv-primary underline underline-offset-2" (click)="selectAllAttendees()" i18n="Button on What to play that chooses all the group's people">Everyone</button>
+                        <button type="button" class="rounded text-sm text-bv-text-muted underline underline-offset-2" (click)="clearAttendees()" i18n="Button on What to play that unchooses all the group's people">Nobody</button>
                     </div>
                     @if (groupPeopleLoading()) {
-                        <p class="text-sm text-bv-text-muted" role="status">Loading the group’s people…</p>
+                        <p class="text-sm text-bv-text-muted" role="status" i18n="What to play while the group's people load">Loading the group’s people…</p>
                     } @else {
                         <div class="flex flex-wrap gap-2">
                             @for (person of attendeeOptions(); track person.id) {
-                                <button type="button" class="app-chip max-w-full py-1 pl-1" [attr.aria-pressed]="isAttendeeSelected(person.id)" (click)="toggleAttendee(person.id)" [title]="person.name + ' · ' + (person.games | count: 'game')">
+                                <button type="button" class="app-chip max-w-full py-1 pl-1" [attr.aria-pressed]="isAttendeeSelected(person.id)" (click)="toggleAttendee(person.id)" [title]="personTitle(person)">
                                     <app-image-profile size="small" [avatar]="person.avatar" aria-hidden="true" />
                                     <span class="min-w-0 truncate">{{ person.name }}</span>
                                 </button>
@@ -64,7 +64,7 @@
 
             <div class="grid grid-cols-1 gap-6 lg:grid-cols-2">
                 <fieldset class="min-w-0">
-                    <legend class="mb-2 text-sm font-semibold">How long do you have?</legend>
+                    <legend class="mb-2 text-sm font-semibold" i18n="Label of the time choice on What to play">How long do you have?</legend>
                     <div class="flex flex-wrap gap-2">
                         @for (option of DURATION_OPTIONS; track option.label) {
                             <button type="button" class="app-chip" [attr.aria-pressed]="availableMinutes() === option.minutes" (click)="setAvailableMinutes(option.minutes)">{{ option.label }}</button>
@@ -72,7 +72,7 @@
                     </div>
                 </fieldset>
                 <fieldset class="min-w-0">
-                    <legend class="mb-2 text-sm font-semibold">What are you in the mood for?</legend>
+                    <legend class="mb-2 text-sm font-semibold" i18n="Label of the mood choice on What to play">What are you in the mood for?</legend>
                     <div class="flex flex-wrap gap-2">
                         @for (lens of LENS_OPTIONS; track lens) {
                             <button type="button" class="app-chip" [attr.aria-pressed]="decisionLens() === lens" (click)="setDecisionLens(lens)">{{ getDecisionLensLabel(lens) }}</button>
@@ -87,15 +87,19 @@
             <div class="mb-4 flex flex-wrap items-baseline justify-between gap-2">
                 <h2 id="suggestions-heading" class="text-lg font-semibold">
                     @if (recommendations(); as result) {
-                        {{ result.recommendations.length === 0 ? 'No games fit yet' : result.recommendations.length + (result.recommendations.length === 1 ? ' game fits' : ' games fit') }}
+                        @if (result.recommendations.length === 0) {
+                            <ng-container i18n="Heading of the suggestions on What to play when no game fits">No games fit yet</ng-container>
+                        } @else {
+                            <ng-container i18n="Heading of the suggestions on What to play: how many games fit">{result.recommendations.length, plural, one {{{ result.recommendations.length }} game fits} other {{{ result.recommendations.length }} games fit}}</ng-container>
+                        }
                     } @else {
-                        Suggestions
+                        <ng-container i18n="Heading of the suggestions on What to play before they load">Suggestions</ng-container>
                     }
                 </h2>
                 @if (isLoading()) {
-                    <span class="flex items-center gap-2 text-sm text-bv-text-muted" role="status"><app-spinner size="small" [label]="null" /> Updating…</span>
+                    <span class="flex items-center gap-2 text-sm text-bv-text-muted" role="status"><app-spinner size="small" [label]="null" /> <ng-container i18n="On What to play while the suggestions reload">Updating…</ng-container></span>
                 } @else if (recommendations()) {
-                    <span class="text-sm text-bv-text-muted">For {{ selectedAttendeeIds().length }} {{ selectedAttendeeIds().length === 1 ? 'person' : 'people' }} · {{ durationLabel() }} · {{ decisionLensLabel }}</span>
+                    <span class="text-sm text-bv-text-muted" i18n="Above the suggestions on What to play: how many people, the time such as up to 2 h, and the mood such as Balanced">{selectedAttendeeIds().length, plural, one {For {{ selectedAttendeeIds().length }} person · {{ durationLabel() }} · {{ decisionLensLabel }}} other {For {{ selectedAttendeeIds().length }} people · {{ durationLabel() }} · {{ decisionLensLabel }}}}</span>
                 }
             </div>
 
@@ -103,20 +107,20 @@
                 <div class="rounded-lg border border-bv-danger/30 bg-bv-danger/10 p-4 text-sm text-bv-danger" role="alert">
                     <p>{{ errorMessage() }}</p>
                     @if (selectedAttendeeIds().length > 0) {
-                        <button appButton variant="secondary" size="small" class="mt-3" icon="arrow-repeat" (click)="loadRecommendations()">Try again</button>
+                        <button appButton variant="secondary" size="small" class="mt-3" icon="arrow-repeat" (click)="loadRecommendations()" i18n="Button that loads the suggestions again">Try again</button>
                     }
                 </div>
             } @else if (selectedAttendeeIds().length === 0 && !groupPeopleLoading()) {
-                <p class="rounded-lg border border-dashed border-bv-border p-6 text-center text-sm text-bv-text-muted">Choose who is coming to see what fits.</p>
+                <p class="rounded-lg border border-dashed border-bv-border p-6 text-center text-sm text-bv-text-muted" i18n="What to play when nobody is chosen">Choose who is coming to see what fits.</p>
             } @else if (recommendations(); as result) {
                 @if (result.recommendations.length === 0) {
                     <div class="rounded-lg border border-dashed border-bv-border p-6 text-center">
                         <p class="text-bv-text-muted">{{ result.noResultReason }}</p>
-                        <p class="mt-2 text-sm text-bv-text-muted">Try more time, other people, or add a game to someone’s collection.</p>
-                        <a appButton variant="secondary" class="mt-4" routerLink="/collection/browse">Browse games</a>
+                        <p class="mt-2 text-sm text-bv-text-muted" i18n="What to play when no game fits, under the reason">Try more time, other people, or add a game to someone’s collection.</p>
+                        <a appButton variant="secondary" class="mt-4" routerLink="/collection/browse" i18n="Button on What to play that opens Browse">Browse games</a>
                     </div>
                 } @else {
-                    <p class="mb-4 flex flex-wrap items-center gap-1 text-xs text-bv-text-muted">
+                    <p class="mb-4 flex flex-wrap items-center gap-1 text-xs text-bv-text-muted" i18n="Above the suggestions on What to play; the icons are the two vote buttons and the placeholder is the group name">
                         <app-icon name="thumbs-up" [size]="14" aria-hidden="true" /> Interested and <app-icon name="thumbs-down" [size]="14" aria-hidden="true" /> Not for us are shared with {{ selectedGroup()?.name }} and shape the next suggestions.
                     </p>
                     <ol class="grid grid-cols-1 gap-4 transition-opacity lg:grid-cols-2" [class.opacity-60]="isLoading()">
@@ -131,7 +135,7 @@
                                 [minutes]="recommendation.gameData.gameAvgDuration"
                                 [minPlayers]="recommendation.gameData.minPlayers"
                                 [maxPlayers]="recommendation.gameData.maxPlayers"
-                                [historyLabel]="recommendation.explanation.lastPlayedAt ? 'Last played ' + (recommendation.explanation.lastPlayedAt | customDate) : 'New to this group'"
+                                [historyLabel]="lastPlayedLabel(recommendation.explanation.lastPlayedAt)"
                                 [reasons]="recommendation.explanation.reasons"
                                 [score]="recommendation.score"
                                 [isTopPick]="first"
@@ -140,18 +144,18 @@
                                 <div class="mt-4 flex flex-wrap items-center justify-between gap-2">
                                     @if (nextNight(); as night) {
                                         @if (addedToNight()[gameId]) {
-                                            <a class="flex items-center gap-1.5 text-sm font-medium text-bv-success hover:underline" [routerLink]="['/sessions', night.id]"><app-icon name="check" [size]="16" aria-hidden="true" /> On the {{ nextNightLabel() }} shortlist</a>
+                                            <a class="flex items-center gap-1.5 text-sm font-medium text-bv-success hover:underline" [routerLink]="['/sessions', night.id]"><app-icon name="check" [size]="16" aria-hidden="true" /> <ng-container i18n="On a suggested game already put on a planned night; the placeholder is its date, such as Sat 24 Oct">On the {{ nextNightLabel() }} shortlist</ng-container></a>
                                         } @else {
-                                            <button appButton variant="secondary" size="small" type="button" icon="calendar-plus" [disabled]="addingToNight() !== null" (click)="addToNextNight(gameId)">Add to {{ nextNightLabel() }}</button>
+                                            <button appButton variant="secondary" size="small" type="button" icon="calendar-plus" [disabled]="addingToNight() !== null" (click)="addToNextNight(gameId)" i18n="Button on a suggested game that puts it on a planned night; the placeholder is its date, such as Sat 24 Oct">Add to {{ nextNightLabel() }}</button>
                                         }
                                     } @else {
-                                        <a appButton variant="secondary" size="small" icon="calendar-plus" [routerLink]="['/groups', result.groupId, 'sessions', 'new']" [queryParams]="{ plannedGameId: gameId, participantIds: getRecommendationParticipantIds(result) }">Plan with this game</a>
+                                        <a appButton variant="secondary" size="small" icon="calendar-plus" [routerLink]="['/groups', result.groupId, 'sessions', 'new']" [queryParams]="{ plannedGameId: gameId, participantIds: getRecommendationParticipantIds(result) }" i18n="Button on a suggested game that plans a game night with it">Plan with this game</a>
                                     }
-                                    <div class="flex gap-1" role="group" [attr.aria-label]="'Your opinion on ' + getGameTitle(recommendation)">
-                                        <button type="button" class="app-chip px-2.5" aria-label="Interested" title="Interested" [attr.aria-pressed]="feedback === 'interested'" [disabled]="feedback === 'saving'" (click)="saveFeedback(gameId, 'interested')">
+                                    <div class="flex gap-1" role="group" [attr.aria-label]="opinionLabel(getGameTitle(recommendation))">
+                                        <button type="button" class="app-chip px-2.5" i18n-aria-label="Vote button on a suggested game" aria-label="Interested" i18n-title="Vote button on a suggested game" title="Interested" [attr.aria-pressed]="feedback === 'interested'" [disabled]="feedback === 'saving'" (click)="saveFeedback(gameId, 'interested')">
                                             <app-icon name="thumbs-up" [size]="16" aria-hidden="true" />
                                         </button>
-                                        <button type="button" class="app-chip px-2.5" aria-label="Not for us" title="Not for us" [attr.aria-pressed]="feedback === 'not_for_us'" [disabled]="feedback === 'saving'" (click)="saveFeedback(gameId, 'not_for_us')">
+                                        <button type="button" class="app-chip px-2.5" i18n-aria-label="Vote button on a suggested game" aria-label="Not for us" i18n-title="Vote button on a suggested game" title="Not for us" [attr.aria-pressed]="feedback === 'not_for_us'" [disabled]="feedback === 'saving'" (click)="saveFeedback(gameId, 'not_for_us')">
                                             <app-icon name="thumbs-down" [size]="16" aria-hidden="true" />
                                         </button>
                                     </div>
@@ -165,7 +169,7 @@
                     </ol>
                 }
             } @else {
-                <p class="py-8 text-center text-sm text-bv-text-muted" role="status">Finding games that fit…</p>
+                <p class="py-8 text-center text-sm text-bv-text-muted" role="status" i18n="What to play while the suggestions load">Finding games that fit…</p>
             }
         </section>
     }

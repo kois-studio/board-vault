@@ -1,11 +1,11 @@
-<app-page-header titleText="Upcoming" [showActionButton]="true">
-    Game nights your groups have planned, and the ones still waiting for their results.
+<app-page-header i18n-titleText="Title of the Upcoming page" titleText="Upcoming" [showActionButton]="true">
+    <ng-container i18n="Subtitle of the Upcoming page">Game nights your groups have planned, and the ones still waiting for their results.</ng-container>
     <div class="action-button flex flex-wrap gap-2">
-        <a appButton variant="secondary" class="text-center" routerLink="/play/log-session">Record a past session</a>
+        <a appButton variant="secondary" class="text-center" routerLink="/play/log-session" i18n="Button that opens the form to record a game night that already happened">Record a past session</a>
         @if (onlyGroup(); as group) {
-            <a appButton icon="plus-lg" class="text-center" [routerLink]="['/groups', group.id, 'sessions', 'new']">Plan a session</a>
+            <a appButton icon="plus-lg" class="text-center" [routerLink]="['/groups', group.id, 'sessions', 'new']" i18n="Button that opens the form to plan a game night">Plan a session</a>
         } @else {
-            <button appButton icon="plus-lg" (click)="isSchedulingASession.set(true)" [disabled]="isSchedulingASession()" [attr.aria-expanded]="isSchedulingASession()" aria-controls="plan-session-panel">Plan a session</button>
+            <button appButton icon="plus-lg" (click)="isSchedulingASession.set(true)" [disabled]="isSchedulingASession()" [attr.aria-expanded]="isSchedulingASession()" aria-controls="plan-session-panel" i18n="Button that opens the form to plan a game night">Plan a session</button>
         }
     </div>
 </app-page-header>
@@ -15,23 +15,23 @@
         <section id="plan-session-panel" class="mb-8 rounded-lg border border-bv-border bg-bv-surface p-5 shadow-sm" aria-labelledby="plan-session-heading">
             <div class="flex items-start justify-between gap-4">
                 <div>
-                    <h2 id="plan-session-heading" class="text-lg font-semibold">Which group is it for?</h2>
-                    <p class="mt-1 text-sm text-bv-text-muted">Next you choose the date, who is invited, and a shortlist of games.</p>
+                    <h2 id="plan-session-heading" class="text-lg font-semibold" i18n="Heading of the group choice when planning a game night">Which group is it for?</h2>
+                    <p class="mt-1 text-sm text-bv-text-muted" i18n="Under Which group is it for? when planning a game night">Next you choose the date, who is invited, and a shortlist of games.</p>
                 </div>
-                <button type="button" class="rounded text-sm font-medium text-bv-text-muted underline underline-offset-2 hover:text-bv-text" (click)="isSchedulingASession.set(false)">Cancel</button>
+                <button type="button" class="rounded text-sm font-medium text-bv-text-muted underline underline-offset-2 hover:text-bv-text" (click)="isSchedulingASession.set(false)" i18n="Button that closes the group choice when planning a game night">Cancel</button>
             </div>
             @if (isLoadingGroups()) {
-                <p class="mt-4 text-sm text-bv-text-muted" role="status">Loading groups…</p>
+                <p class="mt-4 text-sm text-bv-text-muted" role="status" i18n="Group choice when planning a game night, while the groups load">Loading groups…</p>
             } @else if (groupsError()) {
                 <div class="mt-4 text-sm text-bv-text-muted" role="alert">
-                    <p>Groups could not be loaded.</p>
-                    <button appButton class="mt-3" size="small" icon="arrow-repeat" (click)="retryGroups()">Retry</button>
+                    <p i18n="Group choice when planning a game night, when the groups could not load">Groups could not be loaded.</p>
+                    <button appButton class="mt-3" size="small" icon="arrow-repeat" (click)="retryGroups()" i18n="Button that loads the groups again">Retry</button>
                 </div>
             } @else if (userGroups$().length === 0) {
-                <p class="mt-4 text-sm text-bv-text-muted">Create or join a group before planning a session.</p>
+                <p class="mt-4 text-sm text-bv-text-muted" i18n="Group choice when planning a game night, when you are in no group">Create or join a group before planning a session.</p>
                 <div class="mt-3 flex flex-wrap gap-3">
-                    <a appButton routerLink="/create-group">Create a group</a>
-                    <a appButton variant="secondary" routerLink="/dashboard">View invitations</a>
+                    <a appButton routerLink="/create-group" i18n="Button that opens the form to create a group">Create a group</a>
+                    <a appButton variant="secondary" routerLink="/dashboard" i18n="Button that opens Home, where your group invitations are">View invitations</a>
                 </div>
             } @else {
                 <div class="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2">
@@ -39,7 +39,9 @@
                         <a class="flex items-center justify-between gap-3 rounded-lg border border-bv-border p-4 transition hover:border-bv-primary/50 hover:bg-bv-primary-soft" [routerLink]="['/groups', group.id, 'sessions', 'new']">
                             <span class="min-w-0">
                                 <span class="block font-semibold wrap-anywhere">{{ group.name }}</span>
-                                <span class="block text-sm text-bv-text-muted">{{ getGroupContext(group.id) }}</span>
+                                @if (getGroupContext(group.id); as context) {
+                                    <span class="block text-sm text-bv-text-muted"><ng-container i18n="Under a group's name when planning a game night: how many people it has">{context.people, plural, one {{{ context.people }} person} other {{{ context.people }} people}}</ng-container> · <ng-container i18n="Under a group's name when planning a game night, after its people: how many games it has">{context.games, plural, one {{{ context.games }} game} other {{{ context.games }} games}}</ng-container></span>
+                                }
                             </span>
                             <app-icon name="chevron-right" [size]="18" className="shrink-0 text-bv-text-muted" aria-hidden="true" />
                         </a>
@@ -50,22 +52,22 @@
     }
 
     @if (isLoadingMeets()) {
-        <div class="py-8 text-center text-bv-text-muted" role="status" aria-live="polite">Loading upcoming sessions…</div>
+        <div class="py-8 text-center text-bv-text-muted" role="status" aria-live="polite" i18n="Upcoming page while it loads">Loading upcoming sessions…</div>
     } @else if (meetsError()) {
         <div class="py-8 text-center text-bv-text-muted" role="alert">
-            <p>Upcoming sessions could not be loaded.</p>
-            <p class="mb-4 mt-2 text-sm">Check your connection and try again.</p>
-            <button appButton icon="arrow-repeat" (click)="retrySessions()">Retry</button>
+            <p i18n="Upcoming page when the game nights could not load">Upcoming sessions could not be loaded.</p>
+            <p class="mb-4 mt-2 text-sm" i18n="Under an error that a list could not load">Check your connection and try again.</p>
+            <button appButton icon="arrow-repeat" (click)="retrySessions()" i18n="Button that loads the game nights again">Retry</button>
         </div>
     } @else if (sections().length === 0) {
         <div class="rounded-lg border border-dashed border-bv-border px-6 py-12 text-center">
             <div class="mx-auto flex h-14 w-14 items-center justify-center rounded-lg bg-bv-primary-soft text-bv-on-primary-soft" aria-hidden="true"><app-icon name="calendar-plus" [size]="28" /></div>
-            <h2 class="mt-5 text-xl font-bold text-bv-text">No game nights planned</h2>
-            <p class="mx-auto mt-2 max-w-lg text-sm leading-6 text-bv-text-muted">Pick a group, a date, and a few games. Everyone invited can answer and suggest more.</p>
+            <h2 class="mt-5 text-xl font-bold text-bv-text" i18n="Upcoming page when nothing is planned">No game nights planned</h2>
+            <p class="mx-auto mt-2 max-w-lg text-sm leading-6 text-bv-text-muted" i18n="Upcoming page when nothing is planned, under No game nights planned">Pick a group, a date, and a few games. Everyone invited can answer and suggest more.</p>
             @if (onlyGroup(); as group) {
-                <a appButton class="mt-6" icon="plus-lg" [routerLink]="['/groups', group.id, 'sessions', 'new']">Plan a session</a>
+                <a appButton class="mt-6" icon="plus-lg" [routerLink]="['/groups', group.id, 'sessions', 'new']" i18n="Button that opens the form to plan a game night">Plan a session</a>
             } @else {
-                <button appButton class="mt-6" icon="plus-lg" (click)="isSchedulingASession.set(true)">Plan a session</button>
+                <button appButton class="mt-6" icon="plus-lg" (click)="isSchedulingASession.set(true)" i18n="Button that opens the form to plan a game night">Plan a session</button>
             }
         </div>
     } @else {
@@ -89,7 +91,7 @@
                                         <span class="block font-semibold wrap-anywhere">{{ getGroupName(session.groupId) }}</span>
                                         <span class="block text-sm text-bv-text-muted">{{ when.weekday }} · {{ when.time }} · {{ relativeDay(session.meetDate) }}</span>
                                         @if (session.notes) {
-                                            <span class="mt-1 block truncate text-sm italic text-bv-text-muted">“{{ session.notes }}”</span>
+                                            <span class="mt-1 block truncate text-sm italic text-bv-text-muted" i18n="A game night's note on Upcoming, in quotation marks">“{{ session.notes }}”</span>
                                         }
                                     </span>
                                     <span class="hidden shrink-0 rounded-full px-3 py-1 text-xs font-semibold sm:inline" [class]="STATE_STYLES[section.state].pill">{{ STATE_STYLES[section.state].action }}</span>

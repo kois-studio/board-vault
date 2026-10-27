@@ -8,7 +8,7 @@ import { ContainerWrapperComponent } from '../../../components/ui/container-wrap
 import { IconComponent } from '../../../components/ui/icon/icon.component'
 import { PageHeaderComponent } from '../../../components/ui/page-header/page-header.component'
 import { LOADING_KEYS } from '../../../core/enums/loading-keys-enum'
-import { formatDateTime } from '../../../core/i18n/format'
+import { formatDateTime, intlLocale } from '../../../core/i18n/format'
 import { CustomDatePipe } from '../../../core/pipes/customDate.pipe'
 import { DataService } from '../../../core/services/data.service'
 import { LoadingService } from '../../../core/services/loading.service'
@@ -66,7 +66,12 @@ export class HistoryPageComponent {
             groupId && !this.isLoadingGroups() && !this.groupsError() && !this.userGroups$().some((group) => group.id === groupId),
         )
     })
-    public readonly historyTitle = computed(() => (this.historyGroupName() ? `${this.historyGroupName()} history` : 'History'))
+    public readonly historyTitle = computed(() => {
+        const group = this.historyGroupName()
+        return group
+            ? $localize`:Title of the History page filtered to one group; the placeholder is the group name:${group}:group: history`
+            : $localize`:Title of the History page:History`
+    })
 
     // --------------------------------------------------------------------------
     //        Computed
@@ -113,7 +118,8 @@ export class HistoryPageComponent {
             }
         }
 
-        const mostPlayed = [...gameCounts.values()].sort((a, b) => b.count - a.count || a.title.localeCompare(b.title))[0] ?? null
+        const mostPlayed =
+            [...gameCounts.values()].sort((a, b) => b.count - a.count || a.title.localeCompare(b.title, intlLocale()))[0] ?? null
         return {
             sessions: records.length,
             gamesPlayed,
@@ -124,7 +130,11 @@ export class HistoryPageComponent {
     })
     public readonly mostPlayedSummary = computed(() => {
         const mostPlayed = this.historySummary().mostPlayed
-        return mostPlayed ? `${mostPlayed.title} · ${mostPlayed.count} session${mostPlayed.count === 1 ? '' : 's'}` : null
+        if (!mostPlayed) return null
+        const { title, count } = mostPlayed
+        return new Intl.PluralRules(intlLocale()).select(count) === 'one'
+            ? $localize`:most played sessions, one|After Most played on History; a game title, then in how many game nights it was played, one:${title}:title: · ${count}:count: session`
+            : $localize`:most played sessions, other|After Most played on History; a game title, then in how many game nights it was played, more than one:${title}:title: · ${count}:count: sessions`
     })
 
     private readonly customDate = new CustomDatePipe()
@@ -169,7 +179,10 @@ export class HistoryPageComponent {
     }
 
     public getGroupName(groupId: number): string {
-        return this.userGroups$().find((group) => group.id === groupId)?.name ?? 'Selected group'
+        return (
+            this.userGroups$().find((group) => group.id === groupId)?.name ??
+            $localize`:Stands for the name of a group that is not loaded, on History:Selected group`
+        )
     }
 
     /** Attendees recorded as accounts, group people, or both, each listed once. */

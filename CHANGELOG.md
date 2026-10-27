@@ -34,6 +34,11 @@ operational details.
   a game, your proposals, recent activity) and the game page in Spanish,
   French, German, and Italian. Owner names read as a list in each language
   ("Ana, Luis and Marta"), and a rating of one star says "1 star".
+- Play and game nights (the Play hub, Upcoming, What to play, History,
+  recording a night, planning one, and a night's page) in Spanish, French,
+  German, and Italian. Lists of who voted, played or is interested read as a
+  list in each language ("Ana and Bo"), and players are called people
+  throughout.
 - Home always offers recording and planning. One group keeps its full card,
   several groups show as compact rows with a corner pin that appears on
   hover; pinned groups lead.

@@ -1,15 +1,15 @@
-<app-page-header [titleText]="editingId ? 'Correct this session' : isLive() ? 'Start playing now' : 'Record a session'" [showActionButton]="false">
-    @if (editingId) { Update the day, people, games and individual plays. Your correction will appear in the group’s history. }
-    @else if (isLive()) { Choose who is here. You can add people and games as they arrive. }
-    @else { Add a game night that already happened. Planning one instead? <a class="font-medium text-bv-primary underline underline-offset-2" routerLink="/play/upcoming-sessions" [queryParams]="{ plan: 1 }">Plan a game night</a>. }
+<app-page-header [titleText]="pageTitle" [showActionButton]="false">
+    @if (editingId) { <ng-container i18n="Subtitle of the form that corrects a recorded game night">Update the day, people, games and individual plays. Your correction will appear in the group’s history.</ng-container> }
+    @else if (isLive()) { <ng-container i18n="Subtitle of the form that starts a game night now">Choose who is here. You can add people and games as they arrive.</ng-container> }
+    @else { <ng-container i18n="Subtitle of the form that records a game night; the link opens the plan form">Add a game night that already happened. Planning one instead? <a class="font-medium text-bv-primary underline underline-offset-2" routerLink="/play/upcoming-sessions" [queryParams]="{ plan: 1 }">Plan a game night</a>.</ng-container> }
 </app-page-header>
 
 <container-wrapper>
     <div class="mx-auto max-w-4xl">
-        @if (loadingRecording()) { <p class="mb-4" role="status">Loading the recording…</p> }
-        @if (recordingError()) { <div class="mb-4 rounded-lg border border-bv-danger/30 p-4" role="alert"><p>{{ recordingError() }}</p>@if (editingId) { <button appButton variant="secondary" class="mt-2" (click)="loadRecording()">Reload recording</button> }</div> }
+        @if (loadingRecording()) { <p class="mb-4" role="status" i18n="While a recorded game night loads for correcting">Loading the recording…</p> }
+        @if (recordingError()) { <div class="mb-4 rounded-lg border border-bv-danger/30 p-4" role="alert"><p>{{ recordingError() }}</p>@if (editingId) { <button appButton variant="secondary" class="mt-2" (click)="loadRecording()" i18n="Button that loads a recorded game night again">Reload recording</button> }</div> }
         <!-- Progress -->
-        <nav aria-label="Progress" class="mb-6" [hidden]="isLive()">
+        <nav i18n-aria-label="Accessible name of the steps of the form that records a game night" aria-label="Progress" class="mb-6" [hidden]="isLive()">
             <ol class="grid grid-cols-3 gap-2">
                 @for (step of steps; track step.key) {
                     @let index = getStepIndex(step.key);
@@ -57,28 +57,28 @@
                 @if (isLoadingGroups()) {
                     <div class="flex flex-col items-center justify-center py-12">
                         <app-spinner size="large" />
-                        <p class="mt-4 text-bv-text-muted">Loading groups…</p>
+                        <p class="mt-4 text-bv-text-muted" i18n="Form that records a game night while your groups load">Loading groups…</p>
                     </div>
                 } @else if (userGroupsError()) {
                     <div class="py-12 text-center" role="alert">
-                        <p class="text-bv-text-muted">Your groups could not be loaded.</p>
-                        <p class="mt-2 text-sm text-bv-text-muted">Check your connection and try again.</p>
-                        <button appButton class="mt-4" icon="arrow-repeat" (click)="retryGroups()">Retry</button>
+                        <p class="text-bv-text-muted" i18n="Plan form when your groups could not load">Your groups could not be loaded.</p>
+                        <p class="mt-2 text-sm text-bv-text-muted" i18n="Under an error that a list could not load">Check your connection and try again.</p>
+                        <button appButton class="mt-4" icon="arrow-repeat" (click)="retryGroups()" i18n="Button that loads the groups again">Retry</button>
                     </div>
                 } @else if (userGroups().length === 0) {
                     <div class="py-12 text-center">
-                        <p class="text-bv-text-muted">Create or join a group before recording a session.</p>
-                        <p class="mt-2 text-sm text-bv-text-muted">A group gives the session its people and games.</p>
+                        <p class="text-bv-text-muted" i18n="Form that records a game night when you are in no group">Create or join a group before recording a session.</p>
+                        <p class="mt-2 text-sm text-bv-text-muted" i18n="Form that records a game night when you are in no group, under the message">A group gives the session its people and games.</p>
                         <div class="mt-5 flex flex-wrap justify-center gap-3">
-                            <a appButton routerLink="/create-group">Create a group</a>
-                            <a appButton variant="secondary" routerLink="/dashboard">View invitations</a>
+                            <a appButton routerLink="/create-group" i18n="Button that opens the form to create a group">Create a group</a>
+                            <a appButton variant="secondary" routerLink="/dashboard" i18n="Button that opens Home, where your group invitations are">View invitations</a>
                         </div>
                     </div>
                 } @else {
                     <div class="space-y-7">
                         <div class="grid grid-cols-1 gap-6 sm:grid-cols-[1fr_auto]">
                             <fieldset class="min-w-0">
-                                <legend class="mb-2 text-sm font-semibold">Group</legend>
+                                <legend class="mb-2 text-sm font-semibold" i18n="Label of the group choice in the form that records a game night">Group</legend>
                                 <div class="flex flex-wrap gap-2">
                                     @for (group of userGroups(); track group.id) {
                                         <button type="button" class="app-chip" [attr.aria-pressed]="selectedGroup()?.id === group.id" [disabled]="!!editingId" (click)="selectGroup(group)">{{ group.name }}</button>
@@ -86,17 +86,17 @@
                                 </div>
                             </fieldset>
                             <div [hidden]="isLive()">
-                                <label for="session-date" class="mb-2 block text-sm font-semibold">Day</label>
+                                <label for="session-date" class="mb-2 block text-sm font-semibold" i18n="Label of the date field of the form that records a game night">Day</label>
                                 <input id="session-date" type="date" class="app-input sm:w-48" [max]="today" [formControl]="sessionDate" [class.border-bv-danger]="sessionDate.invalid" [attr.aria-invalid]="sessionDate.invalid" aria-describedby="session-date-error" />
                                 <div class="mt-2 flex gap-2">
-                                    <button type="button" class="app-chip" [attr.aria-pressed]="sessionDate.value === dayValue(0)" (click)="setDay(0)">Today</button>
-                                    <button type="button" class="app-chip" [attr.aria-pressed]="sessionDate.value === dayValue(-1)" (click)="setDay(-1)">Yesterday</button>
+                                    <button type="button" class="app-chip" [attr.aria-pressed]="sessionDate.value === dayValue(0)" (click)="setDay(0)" i18n="Quick date button when recording a game night">Today</button>
+                                    <button type="button" class="app-chip" [attr.aria-pressed]="sessionDate.value === dayValue(-1)" (click)="setDay(-1)" i18n="Quick date button when recording a game night">Yesterday</button>
                                 </div>
                                 <p id="session-date-error" class="mt-1 text-sm text-bv-danger" aria-live="polite">
                                     @if (sessionDate.hasError('required')) {
-                                        Choose the day you played.
+                                        <ng-container i18n="Error on the form that records a game night without a date">Choose the day you played.</ng-container>
                                     } @else if (sessionDate.hasError('futureDate')) {
-                                        That day has not happened yet.
+                                        <ng-container i18n="Error on the form that records a game night with a date in the future">That day has not happened yet.</ng-container>
                                     }
                                 </p>
                             </div>
@@ -104,39 +104,35 @@
 
                         @if (liveSession(); as live) {
                             @if (isLive()) {
-                                <aside class="flex flex-wrap items-center gap-3 rounded-lg border border-bv-success/30 bg-bv-success/10 p-3" aria-label="A night is already on">
-                                    <p class="min-w-0 flex-1 text-sm font-medium">{{ selectedGroup()?.name }} already has a night under way.</p>
-                                    <a appButton size="small" [routerLink]="['/sessions', live.id]">Open it</a>
+                                <aside class="flex flex-wrap items-center gap-3 rounded-lg border border-bv-success/30 bg-bv-success/10 p-3" i18n-aria-label="Accessible name of the notice that the group already has a game night going on now" aria-label="A night is already on">
+                                    <p class="min-w-0 flex-1 text-sm font-medium" i18n="Notice when starting a game night for a group that already has one going on; the placeholder is the group name">{{ selectedGroup()?.name }} already has a night under way.</p>
+                                    <a appButton size="small" [routerLink]="['/sessions', live.id]" i18n="Button that opens the game night going on now">Open it</a>
                                 </aside>
                             }
                         } @else if (!isLive() && !editingId && selectedGroup()) {
-                            <p class="text-sm text-bv-text-muted">
-                                Playing right now?
-                                <button type="button" class="font-semibold text-bv-primary hover:underline" (click)="switchToLive()">Start the night live</button>
-                                and add games as you go.
-                            </p>
+                            <p class="text-sm text-bv-text-muted" i18n="Hint on the form that records a game night; the button switches to starting one now">Playing right now? <button type="button" class="font-semibold text-bv-primary hover:underline" (click)="switchToLive()">Start the night live</button> and add games as you go.</p>
                         }
                         @if (!isLive() && sameDaySessions().length > 0) {
-                            <aside class="flex gap-3 rounded-lg border border-bv-warning/30 bg-bv-warning/10 p-3" aria-label="Sessions already on this day">
+                            <aside class="flex gap-3 rounded-lg border border-bv-warning/30 bg-bv-warning/10 p-3" i18n-aria-label="Accessible name of the notice that the group already has a game night on the chosen day" aria-label="Sessions already on this day">
                                 <app-icon name="info" [size]="18" className="mt-0.5 shrink-0 text-bv-warning" aria-hidden="true" />
                                 <div class="min-w-0">
-                                    <p class="text-sm font-medium">This group already has a night on this day. Is it the one you mean?</p>
+                                    <p class="text-sm font-medium" i18n="Notice when recording a game night on a day the group already has one">This group already has a night on this day. Is it the one you mean?</p>
                                     <ul class="mt-1 space-y-1">
                                         @for (session of sameDaySessions().slice(0, 3); track session.id) {
-                                            <li><a class="text-sm font-semibold text-bv-primary hover:underline" [routerLink]="['/sessions', session.id]">Open the {{ session.status === 'completed' ? 'recorded' : session.status === 'active' ? 'live' : 'planned' }} night · {{ sessionSuggestionLabel(session.id) }}</a></li>
+                                            <li><a class="text-sm font-semibold text-bv-primary hover:underline" [routerLink]="['/sessions', session.id]">{{ sameDayLabel(session.status, sessionSuggestionLabel(session.id)) }}</a></li>
                                         }
                                     </ul>
-                                    <p class="mt-1 text-xs text-bv-text-muted">A separate gathering? Carry on here.</p>
+                                    <p class="mt-1 text-xs text-bv-text-muted" i18n="Under the game nights already on the chosen day">A separate gathering? Carry on here.</p>
                                 </div>
                             </aside>
                         }
                         @if (selectedGroup()) {
                             <fieldset class="min-w-0">
                                 <div class="mb-2 flex flex-wrap items-baseline gap-x-4 gap-y-1">
-                                    <legend class="text-sm font-semibold">Who came?</legend>
-                                    <span class="text-sm text-bv-text-muted" aria-live="polite">{{ getSelectedAttendees().length }} of {{ attendees().length }}</span>
-                                    <button type="button" class="rounded text-sm font-medium text-bv-primary underline underline-offset-2" (click)="selectAllAttendees()">Everyone</button>
-                                    <button type="button" class="rounded text-sm text-bv-text-muted underline underline-offset-2" (click)="deselectAllAttendees()">Nobody</button>
+                                    <legend class="text-sm font-semibold" i18n="Label of the people choice in the form that records a game night">Who came?</legend>
+                                    <span class="text-sm text-bv-text-muted" aria-live="polite" i18n="Next to Who came? on the form that records a game night: how many of the group's people are chosen">{{ getSelectedAttendees().length }} of {{ attendees().length }}</span>
+                                    <button type="button" class="rounded text-sm font-medium text-bv-primary underline underline-offset-2" (click)="selectAllAttendees()" i18n="Button on the form that records a game night that chooses all the group's people">Everyone</button>
+                                    <button type="button" class="rounded text-sm text-bv-text-muted underline underline-offset-2" (click)="deselectAllAttendees()" i18n="Button on the form that records a game night that unchooses all the group's people">Nobody</button>
                                 </div>
                                 <div class="grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-3">
                                     @for (attendee of attendees(); track attendee.user.id) {
@@ -150,7 +146,7 @@
                                             <app-image-profile [avatar]="attendee.user.avatar" aria-hidden="true" />
                                             <span class="min-w-0 flex-1">
                                                 <span class="block truncate font-medium" [title]="attendee.user.displayName || attendee.user.username">{{ attendee.user.displayName || attendee.user.username }}</span>
-                                                <span class="block text-xs text-bv-text-muted">{{ attendee.user.games.length }} {{ attendee.user.games.length === 1 ? 'game' : 'games' }}</span>
+                                                <span class="block text-xs text-bv-text-muted" i18n="Under a person's name on the plan form: how many games they own">{attendee.user.games.length, plural, one {{{ attendee.user.games.length }} game} other {{{ attendee.user.games.length }} games}}</span>
                                             </span>
                                             <span class="flex h-5 w-5 shrink-0 items-center justify-center rounded-full border" [class]="attendee.selected ? 'border-bv-primary bg-bv-primary text-bv-on-primary' : 'border-bv-border'" aria-hidden="true">
                                                 @if (attendee.selected) {
@@ -171,15 +167,15 @@
                 <div class="space-y-4">
                         <div class="flex flex-wrap items-center justify-between gap-3">
                             <label class="relative block w-full sm:w-72">
-                                <span class="sr-only">Search the games</span>
+                                <span class="sr-only" i18n="Label of the search field in the games step of the form that records a game night">Search the games</span>
                                 <app-icon name="search" [size]="16" className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-bv-text-muted" aria-hidden="true" />
-                                <input type="search" class="app-input pl-9" [placeholder]="'Search ' + (games().length | count: 'game')" [value]="gameQuery()" (input)="gameQuery.set($any($event.target).value)" />
+                                <input type="search" class="app-input pl-9" [placeholder]="searchPlaceholder(games().length)" [value]="gameQuery()" (input)="gameQuery.set($any($event.target).value)" />
                             </label>
-                            <span class="text-sm text-bv-text-muted" aria-live="polite">{{ getSelectedGames().length }} chosen</span>
+                            <span class="text-sm text-bv-text-muted" aria-live="polite" i18n="Next to the search in the games step: how many games are chosen">{getSelectedGames().length, plural, one {{{ getSelectedGames().length }} chosen} other {{{ getSelectedGames().length }} chosen}}</span>
                         </div>
 
                     @if (games().length === 0) {
-                        <p class="rounded-lg border border-dashed border-bv-border p-6 text-center text-sm text-bv-text-muted">Nobody who came has games in Board Vault yet. Search for what you played; you don’t need to own it.</p>
+                        <p class="rounded-lg border border-dashed border-bv-border p-6 text-center text-sm text-bv-text-muted" i18n="Games step when nobody who came owns a game">Nobody who came has games in Board Vault yet. Search for what you played; you don’t need to own it.</p>
                     } @else {
 
                         <ul class="space-y-2">
@@ -190,7 +186,7 @@
                                         <image-background class="block h-12 w-12 shrink-0" [src]="selection.game.imageUrl" [alt]="''" />
                                         <span class="min-w-0 flex-1">
                                             <span class="block font-semibold wrap-anywhere">{{ getGameTitle(selection.game) }}</span>
-                                            <span class="block text-xs text-bv-text-muted">{{ selection.game.gameAvgDuration }} min · {{ selection.game | players }}</span>
+                                            <span class="block text-xs text-bv-text-muted" i18n="Under a game on a game night's page: how long it lasts in minutes, then how many can play">{{ selection.game.gameAvgDuration }} min · {{ selection.game | players }}</span>
                                         </span>
                                         <span class="mr-2 flex h-5 w-5 shrink-0 items-center justify-center rounded border" [class]="selection.selected ? 'border-bv-primary bg-bv-primary text-bv-on-primary' : 'border-bv-border'" aria-hidden="true">
                                             @if (selection.selected) {
@@ -200,8 +196,14 @@
                                     </button>
                                     @if (selection.selected) {
                                         <fieldset class="min-w-0 border-t border-bv-border px-3 pb-3 pt-2">
-                                            <legend class="sr-only">Who played {{ getGameTitle(selection.game) }}?</legend>
-                                            <p class="mb-2 text-xs font-medium text-bv-text-muted" aria-hidden="true">{{ playsFor(gameId).length > 0 ? 'Play 1 · played by' : 'Played by' }}</p>
+                                            <legend class="sr-only" i18n="Label of the people buttons of a chosen game; the placeholder is the game title">Who played {{ getGameTitle(selection.game) }}?</legend>
+                                            <p class="mb-2 text-xs font-medium text-bv-text-muted" aria-hidden="true">
+                                                @if (playsFor(gameId).length > 0) {
+                                                    <ng-container i18n="Above the people buttons of the first play of a game played more than once">Play 1 · played by</ng-container>
+                                                } @else {
+                                                    <ng-container i18n="Above the people buttons of a chosen game">Played by</ng-container>
+                                                }
+                                            </p>
                                             <div class="flex flex-wrap gap-2">
                                                 @for (attendee of getSelectedAttendees(); track attendee.user.id) {
                                                     <button type="button" class="app-chip max-w-full py-1 pl-1" [attr.aria-pressed]="isMatrixCellSelected(attendee.user.id, gameId)" (click)="toggleMatrixCell(attendee.user.id, gameId)">
@@ -211,10 +213,10 @@
                                                 }
                                             </div>
                                             @for (play of playsFor(gameId); track play.key; let index = $index) {
-                                                <div class="mt-3 border-t border-bv-border pt-3" role="group" [attr.aria-label]="'Play ' + (index + 2) + ' of ' + getGameTitle(selection.game)">
+                                                <div class="mt-3 border-t border-bv-border pt-3" role="group" [attr.aria-label]="playGroupLabel(index + 2, getGameTitle(selection.game))">
                                                     <div class="mb-2 flex items-center justify-between gap-2">
-                                                        <p class="text-xs font-medium text-bv-text-muted">Play {{ index + 2 }} · played by</p>
-                                                        <button type="button" class="rounded text-xs text-bv-text-muted underline-offset-2 hover:text-bv-danger hover:underline" (click)="removePlay(play.key)">Remove<span class="sr-only"> play {{ index + 2 }}</span></button>
+                                                        <p class="text-xs font-medium text-bv-text-muted" i18n="Above the people buttons of an extra play of a game; the placeholder is its number">Play {{ index + 2 }} · played by</p>
+                                                        <button type="button" class="rounded text-xs text-bv-text-muted underline-offset-2 hover:text-bv-danger hover:underline" (click)="removePlay(play.key)" i18n="Button that removes an extra play of a game; the hidden part says which play">Remove<span class="sr-only"> play {{ index + 2 }}</span></button>
                                                     </div>
                                                     <div class="flex flex-wrap gap-2">
                                                         @for (attendee of getSelectedAttendees(); track attendee.user.id) {
@@ -225,22 +227,22 @@
                                                         }
                                                     </div>
                                                     @if (play.participantIds.length === 0) {
-                                                        <p class="mt-2 text-sm text-bv-danger" role="alert">Choose at least one player for this play.</p>
+                                                        <p class="mt-2 text-sm text-bv-danger" role="alert" i18n="Error on an extra play of a game without players">Choose at least one player for this play.</p>
                                                     }
                                                 </div>
                                             }
                                             <button type="button" class="mt-3 inline-flex items-center gap-1.5 rounded text-sm font-semibold text-bv-primary hover:underline" (click)="repeatGame(gameId)">
                                                 <app-icon name="plus" [size]="16" aria-hidden="true" />
-                                                Played it again
+                                                <ng-container i18n="Button that adds another play of the same game">Played it again</ng-container>
                                             </button>
                                             @if (getSelectedParticipantCount(gameId) === 0) {
-                                                <p class="mt-2 text-sm text-bv-danger" role="alert">Choose at least one player.</p>
+                                                <p class="mt-2 text-sm text-bv-danger" role="alert" i18n="Error on a chosen game without players">Choose at least one player.</p>
                                             }
                                         </fieldset>
                                     }
                                 </li>
                             } @empty {
-                                <li class="p-4 text-center text-sm text-bv-text-muted">None of their games match “{{ gameQuery() }}”.</li>
+                                <li class="p-4 text-center text-sm text-bv-text-muted" i18n="Games step when none of the games of the people who came match the search; the placeholder is the search">None of their games match “{{ gameQuery() }}”.</li>
                             }
                         </ul>
                     }
@@ -248,13 +250,13 @@
                     @if (gameQuery().trim().length >= 2) {
                         <section class="space-y-2" aria-labelledby="other-games-heading">
                             <div>
-                                <h3 id="other-games-heading" class="text-sm font-semibold">Other games</h3>
-                                <p class="text-xs text-bv-text-muted">Borrowed or just bought? Recording a game doesn’t add it to anyone’s collection.</p>
+                                <h3 id="other-games-heading" class="text-sm font-semibold" i18n="Heading of the search results from the whole catalogue in the games step">Other games</h3>
+                                <p class="text-xs text-bv-text-muted" i18n="Under Other games">Borrowed or just bought? Recording a game doesn’t add it to anyone’s collection.</p>
                             </div>
                             @if (catalogError()) {
-                                <p class="text-sm text-bv-danger" role="alert">The search failed. Your choices are safe. <button type="button" class="font-semibold underline" (click)="searchCatalog()">Try again</button></p>
+                                <p class="text-sm text-bv-danger" role="alert" i18n="Error when the catalogue search failed in the games step; the button searches again">The search failed. Your choices are safe. <button type="button" class="font-semibold underline" (click)="searchCatalog()">Try again</button></p>
                             } @else if (catalogLoading() && otherGames().length === 0) {
-                                <p class="text-sm text-bv-text-muted" role="status">Searching…</p>
+                                <p class="text-sm text-bv-text-muted" role="status" i18n="While the catalogue search runs in the games step">Searching…</p>
                             } @else {
                                 <ul class="space-y-2">
                                     @for (game of otherGames().slice(0, 8); track game.id) {
@@ -263,14 +265,14 @@
                                                 <image-background class="block h-12 w-12 shrink-0" [src]="game.imageUrl" [alt]="''" />
                                                 <span class="min-w-0 flex-1">
                                                     <span class="block font-semibold wrap-anywhere">{{ getGameTitle(game) }}</span>
-                                                    <span class="block text-xs text-bv-text-muted">{{ game.gameAvgDuration }} min · {{ game | players }}</span>
+                                                    <span class="block text-xs text-bv-text-muted" i18n="Under a game on a game night's page: how long it lasts in minutes, then how many can play">{{ game.gameAvgDuration }} min · {{ game | players }}</span>
                                                 </span>
                                                 <app-icon name="plus" [size]="18" className="mr-2 shrink-0 text-bv-primary" aria-hidden="true" />
-                                                <span class="sr-only">Add {{ getGameTitle(game) }}</span>
+                                                <span class="sr-only" i18n="Hidden name of the button that adds a catalogue game to the games step; the placeholder is the game title">Add {{ getGameTitle(game) }}</span>
                                             </button>
                                         </li>
                                     } @empty {
-                                        <li class="text-sm text-bv-text-muted">No other games match.</li>
+                                        <li class="text-sm text-bv-text-muted" i18n="Other games when nothing in the catalogue matches">No other games match.</li>
                                     }
                                 </ul>
                             }
@@ -283,24 +285,25 @@
             @if (currentStep() === 'save') {
                 <div class="space-y-6">
                     <div>
-                        <label for="session-notes" class="block text-sm font-semibold">Note <span class="font-normal text-bv-text-muted">(optional)</span></label>
+                        <label for="session-notes" class="block text-sm font-semibold" i18n="Label of the note field of the form that records a game night">Note <span class="font-normal text-bv-text-muted">(optional)</span></label>
                         <textarea
                             id="session-notes"
                             [formControl]="sessionNotes"
                             maxlength="1000"
                             rows="4"
                             class="app-input mt-2"
+                            i18n-placeholder="Example in the note field of the form that records a game night"
                             placeholder="For example: we finally finished the campaign and everyone wants a rematch."
                         ></textarea>
                         <p class="mt-1 text-right text-xs text-bv-text-muted">{{ sessionNotes.value?.length ?? 0 }}/1000</p>
                     </div>
 
                     <section class="rounded-lg bg-bv-surface-2 p-4" aria-labelledby="review-heading">
-                        <h3 id="review-heading" class="text-sm font-semibold">What will be saved</h3>
+                        <h3 id="review-heading" class="text-sm font-semibold" i18n="Heading of the summary in the last step of the form that records a game night">What will be saved</h3>
                         <dl class="mt-3 grid grid-cols-1 gap-3 text-sm sm:grid-cols-3">
-                            <div><dt class="text-bv-text-muted">Group</dt><dd class="font-medium wrap-anywhere">{{ selectedGroup()?.name }}</dd></div>
-                            <div><dt class="text-bv-text-muted">Day</dt><dd class="font-medium">{{ getSessionDateLabel() }}</dd></div>
-                            <div><dt class="text-bv-text-muted">Who came</dt><dd class="font-medium wrap-anywhere">{{ getSelectedAttendeeNames() }}</dd></div>
+                            <div><dt class="text-bv-text-muted" i18n="Label of the group choice in the form that records a game night">Group</dt><dd class="font-medium wrap-anywhere">{{ selectedGroup()?.name }}</dd></div>
+                            <div><dt class="text-bv-text-muted" i18n="Label of the date field of the form that records a game night">Day</dt><dd class="font-medium">{{ getSessionDateLabel() }}</dd></div>
+                            <div><dt class="text-bv-text-muted" i18n="Heading of the people of a recorded game night">Who came</dt><dd class="font-medium wrap-anywhere">{{ getSelectedAttendeeNames() }}</dd></div>
                         </dl>
                         <ul class="mt-4 space-y-2 border-t border-bv-border pt-4">
                             @for (play of recordedPlays(); track $index) {
@@ -320,13 +323,21 @@
             <!-- Navigation -->
             <div class="mt-8 flex items-center justify-between gap-3 border-t border-bv-border pt-6">
                 @if (currentStep() !== 'who') {
-                    <button appButton variant="secondary" icon="arrow-left" (click)="previousStep()">Back</button>
+                    <button appButton variant="secondary" icon="arrow-left" (click)="previousStep()" i18n="Button that goes to the previous step of a form">Back</button>
                 } @else {
                     <span></span>
                 }
 
                 <button appButton [disabled]="!canProceedToNextStep() || isLoading()" [loading]="isLoading()" (click)="nextStep()">
-                    {{ isLive() ? 'Start game night' : currentStep() === 'save' ? editingId ? 'Save correction' : 'Save session' : 'Next' }}
+                    @if (isLive()) {
+                        <ng-container i18n="Button that starts a planned game night">Start game night</ng-container>
+                    } @else if (currentStep() !== 'save') {
+                        <ng-container i18n="Button that goes to the next step of a form">Next</ng-container>
+                    } @else if (editingId) {
+                        <ng-container i18n="Button that saves a corrected game night">Save correction</ng-container>
+                    } @else {
+                        <ng-container i18n="Button that saves a recorded game night">Save session</ng-container>
+                    }
                 </button>
             </div>
         </div>

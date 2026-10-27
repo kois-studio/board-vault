@@ -15,14 +15,14 @@
             </div>
             @if (headingLevel() === 1) {
             <h1 class="mt-2 text-2xl font-bold sm:text-3xl">
-                Game night <span class="text-bv-text-muted">· {{ when.time }}</span>
+                <ng-container i18n="Title of a game night's page, then its start time">Game night <span class="text-bv-text-muted">· {{ when.time }}</span></ng-container>
                 @if (accessibleDate()) {
                 <span class="sr-only">, {{ accessibleDate() }}</span>
                 }
             </h1>
             } @else {
             <h3 class="mt-2 text-2xl font-bold sm:text-3xl">
-                Game night <span class="text-bv-text-muted">· {{ when.time }}</span>
+                <ng-container i18n="Title of a game night's page, then its start time">Game night <span class="text-bv-text-muted">· {{ when.time }}</span></ng-container>
                 @if (accessibleDate()) {
                 <span class="sr-only">, {{ accessibleDate() }}</span>
                 }
@@ -34,11 +34,11 @@
     </div>
 
     @if (notes(); as notes) {
-    <p class="mt-5 rounded-lg bg-bv-surface-2 px-4 py-3 text-sm italic wrap-anywhere">“{{ notes }}”</p>
+    <p class="mt-5 rounded-lg bg-bv-surface-2 px-4 py-3 text-sm italic wrap-anywhere" i18n="A game night's note, in quotation marks">“{{ notes }}”</p>
     }
 
     @if (stats().length) {
-    <dl class="mt-5 flex flex-wrap gap-x-6 gap-y-2 text-sm" aria-label="Session summary">
+    <dl class="mt-5 flex flex-wrap gap-x-6 gap-y-2 text-sm" i18n-aria-label="Accessible name of the numbers at the top of a game night's page" aria-label="Session summary">
         @for (stat of stats(); track stat.label) {
         <div class="flex items-baseline gap-1.5"><dt class="text-bv-text-muted">{{ stat.label }}</dt><dd class="font-semibold">{{ stat.value }}</dd></div>
         }

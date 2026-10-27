@@ -414,7 +414,7 @@ export class DataService {
                 next: (meets) => this.userMeets.set(meets),
                 error: () => {
                     this.userMeetsError.set(true)
-                    this.toastService.error("Error retrieving user's meets")
+                    this.toastService.error($localize`:Toast when your game nights could not load:Error retrieving user’s meets`)
                 },
             })
     }
@@ -432,7 +432,7 @@ export class DataService {
                 next: (history) => this.userHistory.set(history),
                 error: () => {
                     this.userHistoryError.set(true)
-                    this.toastService.error("Error retrieving user's history")
+                    this.toastService.error($localize`:Toast when your game night history could not load:Error retrieving user’s history`)
                 },
             })
     }

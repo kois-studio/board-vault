@@ -1,48 +1,86 @@
-<app-page-header titleText="Play" [showActionButton]="true">
-    Plan game nights, pick what to play, and keep a record of what your groups played.
-    <a appButton class="action-button text-center" icon="plus-lg" routerLink="/play/upcoming-sessions" [queryParams]="{ plan: 1 }">Plan a session</a>
+<app-page-header i18n-titleText="Title of the Play page" titleText="Play" [showActionButton]="true">
+    <ng-container i18n="Subtitle of the Play page">Plan game nights, pick what to play, and keep a record of what your groups played.</ng-container>
+    <a appButton class="action-button text-center" icon="plus-lg" routerLink="/play/upcoming-sessions" [queryParams]="{ plan: 1 }" i18n="Button that opens the form to plan a game night">Plan a session</a>
 </app-page-header>
 
 <container-wrapper>
     <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
-        <app-card-section icon="calendar-clock" tone="primary" titleText="Upcoming" description="Game nights your groups have planned" cardLink="/play/upcoming-sessions">
-            <app-badge class="app-card-section-badge" tone="primary" [text]="isLoadingMeets() ? 'Loading…' : userMeetsError() ? 'Unavailable' : countLabel(upcomingSessions().length, 'session')" />
+        <app-card-section
+            icon="calendar-clock"
+            tone="primary"
+            i18n-titleText="Title of the Upcoming card on the Play page"
+            titleText="Upcoming"
+            i18n-description="Description of the Upcoming card on the Play page"
+            description="Game nights your groups have planned"
+            cardLink="/play/upcoming-sessions"
+        >
+            <app-badge class="app-card-section-badge" tone="primary" [text]="isLoadingMeets() ? loadingLabel : userMeetsError() ? unavailableLabel : sessionsLabel(upcomingSessions().length)" />
             @if (isLoadingMeets()) {
-                <p class="text-sm text-bv-text-muted">Loading your sessions…</p>
+                <p class="text-sm text-bv-text-muted" i18n="Upcoming card on the Play page while it loads">Loading your sessions…</p>
             } @else if (userMeetsError()) {
-                <p class="text-sm text-bv-text-muted">Sessions could not be loaded. Open the page to retry.</p>
+                <p class="text-sm text-bv-text-muted" i18n="Upcoming card on the Play page when the sessions could not load">Sessions could not be loaded. Open the page to retry.</p>
             } @else if (wrapUpCount() > 0) {
-                <p class="min-w-0 text-sm font-medium text-bv-warning">{{ countLabel(wrapUpCount(), 'session') }} waiting for results</p>
+                <p class="min-w-0 text-sm font-medium text-bv-warning" i18n="Upcoming card on the Play page: game nights that are over but nobody recorded what was played">{wrapUpCount(), plural, one {{{ wrapUpCount() }} session waiting for results} other {{{ wrapUpCount() }} sessions waiting for results}}</p>
             } @else if (nextSession(); as next) {
-                <p class="min-w-0 text-sm text-bv-text-muted wrap-anywhere">{{ next.status === 'active' ? 'Happening now' : 'Next' }}: {{ getGroupName(next.groupId) }} · {{ relativeDay(next.meetDate) }}</p>
+                <p class="min-w-0 text-sm text-bv-text-muted wrap-anywhere">
+                    @if (next.status === 'active') {
+                        <ng-container i18n="Upcoming card on the Play page: the game night going on now; group name, then a day such as Today">Happening now: {{ getGroupName(next.groupId) }} · {{ relativeDay(next.meetDate) }}</ng-container>
+                    } @else {
+                        <ng-container i18n="Upcoming card on the Play page: the next game night; group name, then a day such as Tomorrow">Next: {{ getGroupName(next.groupId) }} · {{ relativeDay(next.meetDate) }}</ng-container>
+                    }
+                </p>
             } @else {
-                <p class="text-sm text-bv-text-muted">Nothing planned yet.</p>
+                <p class="text-sm text-bv-text-muted" i18n="Upcoming card on the Play page when nothing is planned">Nothing planned yet.</p>
             }
-            <span class="flex shrink-0 items-center text-sm font-medium text-bv-primary group-hover:underline">Open &gt;</span>
+            <span class="flex shrink-0 items-center text-sm font-medium text-bv-primary group-hover:underline" i18n="Link at the bottom of the Upcoming card on the Play page">Open &gt;</span>
         </app-card-section>
 
-        <app-card-section icon="lightbulb" tone="accent" titleText="What to play" description="Suggestions for the people coming and the time you have" cardLink="/play/recommendations">
+        <app-card-section
+            icon="lightbulb"
+            tone="accent"
+            i18n-titleText="Title of the What to play card on the Play page"
+            titleText="What to play"
+            i18n-description="Description of the What to play card on the Play page"
+            description="Suggestions for the people coming and the time you have"
+            cardLink="/play/recommendations"
+        >
             <div></div>
-            <span class="flex shrink-0 items-center text-sm font-medium text-bv-primary group-hover:underline">Find a game &gt;</span>
+            <span class="flex shrink-0 items-center text-sm font-medium text-bv-primary group-hover:underline" i18n="Link at the bottom of the What to play card on the Play page">Find a game &gt;</span>
         </app-card-section>
 
-        <app-card-section icon="history" tone="success" titleText="History" description="Every game night your groups have recorded" cardLink="/play/history">
-            <app-badge class="app-card-section-badge" tone="success" [text]="isLoadingHistory() ? 'Loading…' : userHistoryError() ? 'Unavailable' : countLabel(userHistory$().length, 'session')" />
+        <app-card-section
+            icon="history"
+            tone="success"
+            i18n-titleText="Title of the History card on the Play page"
+            titleText="History"
+            i18n-description="Description of the History card on the Play page"
+            description="Every game night your groups have recorded"
+            cardLink="/play/history"
+        >
+            <app-badge class="app-card-section-badge" tone="success" [text]="isLoadingHistory() ? loadingLabel : userHistoryError() ? unavailableLabel : sessionsLabel(userHistory$().length)" />
             @if (isLoadingHistory()) {
-                <p class="text-sm text-bv-text-muted">Loading your history…</p>
+                <p class="text-sm text-bv-text-muted" i18n="History card on the Play page while it loads">Loading your history…</p>
             } @else if (userHistoryError()) {
-                <p class="text-sm text-bv-text-muted">History could not be loaded. Open the page to retry.</p>
+                <p class="text-sm text-bv-text-muted" i18n="History card on the Play page when the history could not load">History could not be loaded. Open the page to retry.</p>
             } @else if (lastSession(); as last) {
-                <p class="min-w-0 text-sm text-bv-text-muted wrap-anywhere">Last: {{ getGroupName(last.meetData.groupId) }} · {{ relativeDay(last.meetData.meetDate) }}</p>
+                <p class="min-w-0 text-sm text-bv-text-muted wrap-anywhere" i18n="History card on the Play page: the last recorded game night; group name, then a day such as Yesterday">Last: {{ getGroupName(last.meetData.groupId) }} · {{ relativeDay(last.meetData.meetDate) }}</p>
             } @else {
-                <p class="text-sm text-bv-text-muted">No sessions recorded yet.</p>
+                <p class="text-sm text-bv-text-muted" i18n="History card on the Play page when nothing is recorded">No sessions recorded yet.</p>
             }
-            <span class="flex shrink-0 items-center text-sm font-medium text-bv-primary group-hover:underline">View all &gt;</span>
+            <span class="flex shrink-0 items-center text-sm font-medium text-bv-primary group-hover:underline" i18n="Link at the bottom of the History card on the Play page">View all &gt;</span>
         </app-card-section>
 
-        <app-card-section icon="notebook-pen" tone="warning" titleText="Record a session" description="Add a game night that already happened" cardLink="/play/log-session">
+        <app-card-section
+            icon="notebook-pen"
+            tone="warning"
+            i18n-titleText="Title of the Record a session card on the Play page"
+            titleText="Record a session"
+            i18n-description="Description of the Record a session card on the Play page"
+            description="Add a game night that already happened"
+            cardLink="/play/log-session"
+        >
             <div></div>
-            <span class="flex shrink-0 items-center text-sm font-medium text-bv-primary group-hover:underline">Start &gt;</span>
+            <span class="flex shrink-0 items-center text-sm font-medium text-bv-primary group-hover:underline" i18n="Link at the bottom of the Record a session card on the Play page">Start &gt;</span>
         </app-card-section>
     </div>
 </container-wrapper>
