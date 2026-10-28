@@ -346,6 +346,8 @@ const groupActivityNameSchema = z.object({
     name: z.string(),
     standing: z.enum(['member', 'left', 'deleted']),
 })
+// The account behind a group person, so a line about someone's own games reads "Ana said they have Catan".
+const groupActivityPersonSchema = z.extend(groupActivityNameSchema, { accountId: z.optional(z.nullable(z.number())) })
 const groupActivityGameSchema = z.object({
     id: z.number(),
     title: z.nullable(z.string()),
@@ -360,12 +362,12 @@ export const groupActivityPageSchema: z.ZodMiniType<GroupActivityPageType> = z.o
             createdAt: z.string(),
             actor: groupActivityNameSchema,
             meetId: z.nullable(z.number()),
-            person: z.nullable(groupActivityNameSchema),
+            person: z.nullable(groupActivityPersonSchema),
             game: z.nullable(groupActivityGameSchema),
             subject: z.nullable(groupActivityNameSchema),
             data: z.record(z.string(), z.unknown()),
             accounts: z.array(groupActivityNameSchema),
-            people: z.array(groupActivityNameSchema),
+            people: z.array(groupActivityPersonSchema),
             games: z.array(groupActivityGameSchema),
         }),
     ),
@@ -740,7 +742,7 @@ export const userNotificationsSchema: z.ZodMiniType<Array<NotificationType>> = z
                 accounts: z.array(z.object({ id: z.number(), name: z.nullable(z.string()), deleted: z.boolean() })),
                 groups: z.array(z.object({ id: z.number(), name: z.string() })),
                 sessions: z.array(z.object({ id: z.number(), date: z.string(), timezone: z.string() })),
-                people: z.array(z.object({ id: z.number(), name: z.string() })),
+                people: z.array(z.object({ id: z.number(), name: z.string(), accountId: z.optional(z.nullable(z.number())) })),
                 games: z.array(z.object({ id: z.number(), title: z.string(), titleLanguage: z.string() })),
             }),
         ),

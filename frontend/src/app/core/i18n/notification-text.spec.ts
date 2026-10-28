@@ -8,7 +8,11 @@ const context = {
     ],
     groups: [{ id: 10, name: 'Fridays' }],
     sessions: [{ id: 41, date: '2026-10-09T17:00:00.000Z', timezone: 'Europe/Madrid' }],
-    people: [{ id: 7, name: 'Leo' }],
+    people: [
+        { id: 7, name: 'Leo' },
+        // Paula's own group person, linked to Paula's account.
+        { id: 8, name: 'Paula', accountId: 3 },
+    ],
     games: [
         { id: 101, title: 'Catan', titleLanguage: 'en' },
         { id: 102, title: 'Azul', titleLanguage: 'en' },
@@ -64,6 +68,22 @@ describe('notificationText', () => {
         expect(
             notificationText(notification('group_person_changed', { account: 3, group: 10, person: 7, game: 101, change: 'owned' })),
         ).toBe('Paula said Leo has Catan, in Fridays.')
+        // Paula's person changed by someone else is still about Paula.
+        expect(
+            notificationText(notification('group_person_changed', { account: 4, group: 10, person: 8, game: 101, change: 'owned' })),
+        ).toBe('Deleted account said Paula has Catan, in Fridays.')
+    })
+
+    it('speaks of a member changing their own games as themselves', () => {
+        const own = (change: string) =>
+            notificationText(notification('group_person_changed', { account: 3, group: 10, person: 8, game: 101, change }))
+
+        expect(own('owned')).toBe('Paula said they have Catan, in Fridays.')
+        expect(own('not_owned')).toBe('Paula removed Catan from their games in Fridays.')
+        expect(own('unsure')).toBe('Paula isn’t sure they have Catan, in Fridays.')
+        expect(own('preference')).toBe('Paula changed how much they like Catan, in Fridays.')
+        expect(own('preference_removed')).toBe('Paula removed what they think of Catan, in Fridays.')
+        expect(own('something_new')).toBe('Stored English')
     })
 
     it('shows the stored message without what a sentence needs', () => {

@@ -74,6 +74,14 @@ export class GroupActivityPersonDto {
 
     @ApiProperty({ enum: GROUP_PERSON_STANDINGS })
     standing: GroupPersonStanding
+
+    @ApiProperty({
+        example: 12,
+        nullable: true,
+        type: Number,
+        description: 'The account of a person who has one, so an entry can tell someone changing their own games.',
+    })
+    accountId: number | null
 }
 
 export class GroupActivityAccountDto {
