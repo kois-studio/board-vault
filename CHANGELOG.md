@@ -313,6 +313,15 @@ operational details.
 - A member changing their own games or preferences reads as such in the
   group's history and in notifications: "Ana said they have Catan" instead of
   "Ana said Ana has Catan", in every language.
+- A planned game night whose day has passed with nothing recorded asks for
+  results on its page, as Upcoming does: it shows "Waiting for results" and a
+  Record results button that opens it with its date kept, instead of the
+  "Can you make it?" answers, Start, and Add to calendar.
+- Ratings show out of 5 stars everywhere: the group library and the
+  recommendation reason "Selected-attendee rating" showed the stored score out
+  of 10.
+- Browse cards line up again when a game has a tall cover: the cover box grew
+  to fit the image and pushed the title down.
 - Game titles on Home and the group pages show in the page's language, and
   a few Spanish, French, German, and Italian texts there read more naturally
   and without gendered forms.

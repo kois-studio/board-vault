@@ -481,6 +481,21 @@ describe('GroupViewComponent page layout', () => {
         expect(component.totalUniqueGamesComputed()).toHaveLength(2)
     })
 
+    it('shows the group rating of a game out of 5 stars, as ratings are stored out of 10', async () => {
+        const fixture = await render(6, {
+            ...group,
+            members: [
+                { ...group.members[0], reviews: [{ gameId: 42, review: 10 }] },
+                { ...group.members[1], reviews: [{ gameId: 42, review: 7 }] },
+            ],
+        })
+        const text = (fixture.nativeElement as HTMLElement).textContent
+
+        expect(text).toContain('★ 4.3')
+        expect(text).toContain('Group rating 4.3 out of 5')
+        expect(text).not.toContain('8.5')
+    })
+
     it('lists the games of people without an account, with their names', async () => {
         const fixture = await render(6, {
             ...group,

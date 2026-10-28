@@ -38,7 +38,7 @@ import { canTakePart } from '../../core/utils/groupPeople'
 import { formatWinners, nameWithStanding } from '../../core/utils/historyParticipants'
 import { rsvpToast } from '../../core/utils/rsvp'
 import { downloadSessionIcs, googleCalendarUrl } from '../../core/utils/sessionCalendar'
-import { relativeDay, type SessionDateParts, sessionDate, sessionDateParts } from '../../core/utils/sessionTiming'
+import { relativeDay, type SessionDateParts, sessionDate, sessionDateParts, upcomingState } from '../../core/utils/sessionTiming'
 /** Someone in this session: a member account, or a group person in sessions recorded with group people. */
 export type SessionPerson = {
     /** `a<accountId>` or `p<groupPersonId>`, the same key the results use. */
@@ -399,6 +399,14 @@ export class MeetViewComponent {
         return this.meetData?.status === 'scheduled' || this.meetData?.status === 'active'
     }
 
+    /**
+     * A planned night whose evening is over and nothing is recorded: Upcoming lists it under
+     * "Waiting for results", so the page asks for results instead of answers. Starting it keeps its date.
+     */
+    get isAwaitingResults(): boolean {
+        return Boolean(this.meetData && upcomingState(this.meetData) === 'wrap-up')
+    }
+
     get attendeeCount(): number {
         return this.isGroupPersonSession ? (this.meetData?.participants?.length ?? 0) : (this.meetData?.attendees.length ?? 0)
     }
@@ -757,7 +765,7 @@ export class MeetViewComponent {
     // #region Calendar
 
     get canAddToCalendar(): boolean {
-        return this.meetData?.status === 'scheduled' || this.meetData?.status === 'active'
+        return (this.meetData?.status === 'scheduled' || this.meetData?.status === 'active') && !this.isAwaitingResults
     }
 
     get googleCalendarLink(): string {
@@ -816,7 +824,7 @@ export class MeetViewComponent {
     }
 
     get canRespondToRsvp(): boolean {
-        return Boolean(this.currentRsvpStatus && this.canEditSession)
+        return Boolean(this.currentRsvpStatus && this.canEditSession && !this.isAwaitingResults)
     }
 
     get canRecordAttendance(): boolean {
