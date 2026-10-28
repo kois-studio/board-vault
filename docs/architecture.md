@@ -161,7 +161,10 @@ Header popovers use the disclosure pattern
 them.
 
 `LayoutCompleteComponent` wraps browsing pages; `LayoutBasicComponent` wraps
-focused actions (create, edit, claim, propose) without navigation.
+focused actions (create, edit, claim, propose) without navigation. The
+not-found page (`**`) sits in `LayoutCompleteComponent` too, in a parent of
+its own after both, so the wildcard only matches once no page in either
+layout did.
 `SidebarLayoutComponent` is the shell for areas with their own sections
 (Settings, and Administration under `/admin`, which stays a lazy-loaded
 chunk that only admins download): sidebar and section side by side on desktop, and on phones a

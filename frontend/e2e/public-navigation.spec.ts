@@ -105,7 +105,35 @@ test.describe('public navigation', () => {
         await page.goto('/route-that-does-not-exist')
 
         await expect(page.getByRole('heading', { name: /page not found|404/i })).toBeVisible()
+        // It sits in the app's layout, so the header and footer offer a way on, and the page has one main.
+        await expect(page.getByRole('link', { name: 'Board Vault home' })).toBeVisible()
+        await expect(page.getByRole('contentinfo')).toBeVisible()
+        await expect(page.getByRole('main')).toHaveCount(1)
+
+        await page.getByRole('main').getByRole('link', { name: 'Go back home' }).click()
+        await expect(page).toHaveURL(/\/$/)
+        await expect(page.getByRole('heading', { level: 1, name: /Every game you own/i })).toBeVisible()
     })
+
+    test('keeps the focused pages out of the not-found page', async ({ page }) => {
+        // The wildcard comes after both layouts; a focused (header-less) page must still match its own route.
+        await page.goto('/create-group')
+
+        // Its guard ran, so the route matched: signed out, it sends the visitor to the landing page.
+        await expect(page).toHaveURL(/\/$/)
+        await expect(page.getByRole('heading', { level: 1, name: /Every game you own/i })).toBeVisible()
+        await expect(page.getByRole('heading', { name: /page not found|404/i })).toHaveCount(0)
+    })
+
+    for (const path of ['/settings/nope', '/admin/nope', '/groups/1/nope']) {
+        test(`shows the not-found page under an existing section: ${path}`, async ({ page }) => {
+            // A known first segment with an unknown rest falls back through both layouts to the wildcard.
+            await page.goto(path)
+
+            await expect(page).toHaveURL(new RegExp(`${path}$`))
+            await expect(page.getByRole('heading', { name: /page not found|404/i })).toBeVisible()
+        })
+    }
 
     test('recognizes a Clerk invitation ticket on the registration route', async ({ page }) => {
         await page.goto('/register?__clerk_ticket=test-ticket')

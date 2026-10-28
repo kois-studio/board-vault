@@ -281,6 +281,10 @@ operational details.
 
 ### Fixed
 
+- The not-found page keeps the header and footer, so there is a way on, and
+  reads as one centred column on any screen instead of leaving an empty
+  column on desktop and a misaligned text on phones. Its button goes to
+  Home once you are signed in.
 - Game titles on Home and the group pages show in the page's language, and
   a few Spanish, French, German, and Italian texts there read more naturally
   and without gendered forms.
