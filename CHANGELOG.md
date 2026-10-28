@@ -101,6 +101,9 @@ operational details.
 
 ### Changed
 
+- Administration → Tags shows Edit, Merge and Delete on each tag as icon
+  buttons (pencil, merge, bin) that name the action on hover, and on phones
+  they stay on the right of a long tag name.
 - Names have at most 20 characters, for accounts and for people without one,
   and the API enforces it. Longer names saved before are shown cut the same
   way everywhere ("Bartholomew Montgom…"), notifications included. Names stay
