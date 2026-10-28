@@ -1,0 +1,23 @@
+<div class="flex min-w-0 flex-col gap-2">
+    <select class="app-input" [attr.aria-label]="label()" [disabled]="disabled()" (change)="select($any($event.target).value)">
+        @for (code of interfaceLanguages; track code) {
+            <option [value]="code" [selected]="!isOther() && value() === code">{{ name(code) }}</option>
+        }
+        <option value="__other" [selected]="isOther()">{{ otherLabel() }}</option>
+    </select>
+    @if (isOther()) {
+        <input
+            class="app-input"
+            type="text"
+            maxlength="16"
+            autocapitalize="none"
+            autocomplete="off"
+            spellcheck="false"
+            [attr.aria-label]="codeLabel()"
+            [placeholder]="codePlaceholder()"
+            [disabled]="disabled()"
+            [value]="value()"
+            (input)="type($any($event.target).value)"
+        />
+    }
+</div>

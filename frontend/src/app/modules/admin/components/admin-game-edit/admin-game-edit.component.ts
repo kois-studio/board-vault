@@ -10,6 +10,7 @@ import { ButtonComponent } from '../../../../components/ui/button/button.compone
 import { IconComponent } from '../../../../components/ui/icon/icon.component'
 import { SpinnerComponent } from '../../../../components/ui/spinner/spinner.component'
 import { LogService } from '../../../../core/services/log.service'
+import { rowsFromEditions, toEditionsBody } from '../admin-game-editions/edition-rows'
 import {
     AdminGameFieldsComponent,
     createGameFieldsForm,
@@ -92,7 +93,7 @@ export class AdminGameEditComponent implements OnInit {
         try {
             const saved = await firstValueFrom(
                 this.api.updateAdminGame(game.id, {
-                    translations: { en: value.titleEn.trim(), es: value.titleEs.trim() },
+                    editions: toEditionsBody(value.editions),
                     imageUrl: value.imageUrl.trim(),
                     minPlayers: value.minPlayers ?? undefined,
                     maxPlayers: value.maxPlayers ?? undefined,
@@ -153,8 +154,7 @@ export class AdminGameEditComponent implements OnInit {
         this.game.set(game)
         this.selectedTagIds.set(new Set(game.tags.map((tag) => tag.id)))
         this.form.reset({
-            titleEn: game.translations.en,
-            titleEs: game.translations.es,
+            editions: rowsFromEditions(game.editions),
             imageUrl: game.imageUrl,
             minPlayers: game.minPlayers,
             maxPlayers: game.maxPlayers,

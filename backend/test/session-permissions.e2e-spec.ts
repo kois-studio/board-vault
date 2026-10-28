@@ -130,7 +130,7 @@ describe('session permissions (e2e)', () => {
         await server().put('/sessions/60/games/1/bringer').set(as('user_rita')).send({}).expect(200)
         expect(await toBring()).toEqual([1])
         expect((await server().get('/sessions/60').set(as('user_pau')).expect(200)).body.gameBringers).toEqual([
-            { gameId: 1, accountId: 3, groupPersonId: null },
+            { gameId: 1, accountId: 3, groupPersonId: null, copyTitle: null, copyTitleLanguage: null },
         ])
 
         await server().patch('/sessions/60/rsvp').set(as('user_rita')).send({ rsvpStatus: 'declined' }).expect(200)

@@ -3,6 +3,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
 import { Meta, Title } from '@angular/platform-browser'
 import { NavigationEnd, Router, RouterOutlet } from '@angular/router'
 import { filter } from 'rxjs'
+import { EditionChoiceDialogComponent } from './components/edition-choice-dialog/edition-choice-dialog.component'
 import { ToastComponent } from './components/toast/toast.component'
 import { InPageLinkDirective } from './components/ui/in-page-link/in-page-link.directive'
 import { OFFERED_LOCALES, SOURCE_LOCALE } from './core/i18n/locales'
@@ -11,7 +12,7 @@ import { UsageService } from './core/services/usage.service'
 
 @Component({
     selector: 'app-root',
-    imports: [RouterOutlet, ToastComponent, InPageLinkDirective],
+    imports: [RouterOutlet, ToastComponent, EditionChoiceDialogComponent, InPageLinkDirective],
     templateUrl: './app.component.html',
 })
 export class AppComponent {

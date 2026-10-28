@@ -99,6 +99,18 @@
                 <app-icon name="circle-check" [size]="16" aria-hidden="true" /> <ng-container i18n="Badge on a game page when the game is on My Games">In your games</ng-container>
               </span>
               <button appButton variant="secondary" size="small" (click)="removeFromCollection()" [loading]="PREVENT_SPAM.isLoadingRemoveFromCollection" i18n="Button on a game page that takes it off My Games">Remove</button>
+              <!-- Which edition your copy is, for a game that has several (ADR-0025). -->
+              @if (game.editions.length > 1) {
+                <p class="flex w-full flex-wrap items-center gap-x-2 gap-y-1 text-sm text-secondary">
+                  <span i18n="Label before the title of the edition of a game you own, on the game page">Your copy:</span>
+                  @if (game.ownedGameData.editionId !== null) {
+                    <span class="font-medium text-bv-text" [attr.lang]="game.ownedGameData.titleLanguage">{{ game.ownedGameData.title }}</span>
+                  } @else {
+                    <span class="font-medium text-bv-text" i18n="Shown on the game page when you have not said which edition of the game you own">Edition not set</span>
+                  }
+                  <button type="button" class="font-medium text-bv-primary underline-offset-2 hover:underline" [disabled]="PREVENT_SPAM.isLoadingChangeEdition" (click)="changeEdition()" i18n="Button on the game page that asks again which edition of the game you own">Change edition</button>
+                </p>
+              }
             } @else {
               <button appButton icon="plus-lg" (click)="addToCollection()" [loading]="PREVENT_SPAM.isLoadingAddToCollection" i18n="Button on a game page that adds it to My Games">I own this game</button>
             }

@@ -1,18 +1,38 @@
 import { ResultSet } from '@libsql/client'
 import { Injectable, Logger, NotFoundException } from '@nestjs/common'
 
+import { requireEditionLanguage, validateOtherTitles } from '../../../common/i18n/edition-language.js'
 import { gameProposalsSchema } from '../../../common/schemas/db-game-proposal.schema.js'
 import { CacheService } from '../../common/cache/cache.service.js'
 import { DatabaseService } from '../../common/database/database.service.js'
 import { NotificationTypeEnum } from '../notifications/notifications-enum.type.js'
 
+import type { Locale } from '../../../common/i18n/locale.js'
 import type {
     GameProposalAddTo,
     GameProposalDto,
+    ProposalOtherTitleDto,
     CreateGameProposalBody,
     UpdateGameProposalBody,
 } from '../../../common/types/game-proposal.type.js'
 import type { UserProposalStatsDto } from '../../../common/types/stats.type.js'
+
+/** The `otherTitles` JSON column; anything unreadable counts as none. */
+function parseOtherTitles(value: unknown): Array<ProposalOtherTitleDto> {
+    if (!value) return []
+
+    try {
+        const parsed: unknown = JSON.parse(String(value))
+
+        return Array.isArray(parsed)
+            ? parsed
+                  .filter(entry => entry && typeof entry.languageCode === 'string' && typeof entry.title === 'string')
+                  .map(entry => ({ languageCode: entry.languageCode, title: entry.title }))
+            : []
+    } catch {
+        return []
+    }
+}
 
 @Injectable()
 export class GameProposalService {
@@ -42,6 +62,9 @@ export class GameProposalService {
             createdGameId: row[13] ? Number(row[13]) : null,
             submittedAt: String(row[14]),
             addTo: row[15] === 'shelf' || row[15] === 'wishlist' ? (row[15] as GameProposalAddTo) : null,
+            // Proposals made before migration 0029 have no language: their titles are English.
+            titleLanguage: row[16] ? String(row[16]) : 'en',
+            otherTitles: parseOtherTitles(row[17]),
         }))
 
         return this._validateSchema(proposals)
@@ -100,13 +123,18 @@ export class GameProposalService {
         return proposals
     }
 
-    async createGameProposal(submittedBy: number, proposalData: CreateGameProposalBody): Promise<GameProposalDto> {
+    async createGameProposal(submittedBy: number, proposalData: CreateGameProposalBody, locale: Locale): Promise<GameProposalDto> {
         this.LOGGER.log('Creating game proposal')
+
+        const titleLanguage = proposalData.titleLanguage === undefined ? locale : requireEditionLanguage(proposalData.titleLanguage)
+        const otherTitles = validateOtherTitles(titleLanguage, proposalData.otherTitles ?? [])
 
         // Admins are told in the same transaction; the proposer is not notified of their own proposal.
         const { proposalId } = await this.databaseService.games.createGameProposal({
             submittedBy,
             title: proposalData.title,
+            titleLanguage,
+            otherTitles,
             imageUrl: proposalData.imageUrl,
             gameAvgDuration: proposalData.gameAvgDuration,
             minPlayers: proposalData.minPlayers,

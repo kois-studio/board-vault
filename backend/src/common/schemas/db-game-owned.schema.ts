@@ -22,6 +22,7 @@ export const gameOwnedSchema = z.object({
         .refine(date => !isNaN(Date.parse(date)), { message: 'Invalid date format' })
         .nullable(),
     purchaseNotes: z.string().nullable(),
+    editionId: z.number().int().positive().nullable(), // ref: GameEdition
 })
 
 export const gameOwnedsSchema = z.array(gameOwnedSchema)

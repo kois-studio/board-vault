@@ -10,7 +10,7 @@ The database is SQLite through libSQL: a local file in development, Turso in
 production. The schema is
 [`database/schema/schema.sql`](../database/schema/schema.sql) (the 0001–0005
 baseline) plus the numbered files in
-[`database/migrations/`](../database/migrations/). Current version: **0028**.
+[`database/migrations/`](../database/migrations/). Current version: **0030**.
 All SQL lives in the per-domain query classes in
 [`database/queries/`](../backend/src/modules/common/database/queries/).
 
@@ -58,8 +58,8 @@ sessions they created, and more.
 | `GameTranslation` | Legacy title per language (`en`, `es`). The API still writes it with every `GameEdition` change, so a rollback can read it again, until a later migration drops it. | `Game` (cascade) |
 | `TagCategory`, `Tag`, `GameTag` | Catalogue tagging. | `TagCategory` → `Tag` (cascade); `Game`, `Tag` (cascade) |
 | `TagTranslation`, `TagCategoryTranslation` | A tag's or category's name in another interface language (`es`, `fr`, `de`, `it`; ADR-0024). English stays in `name`; a language without a row shows the English. | `Tag`, `TagCategory` (cascade) |
-| `GameProposal` | A user's request to add a game; admins approve, reject, or mark as duplicate. Approval creates the game with exactly the reviewed values: players and length must come from the proposal or the admin, never a default. A rejection's `reviewNotes` is the reason the proposer reads; a duplicate names the existing game in the proposer's notification (`duplicateOfGameId` in its data). `addTo` (`shelf`, `wishlist`, or NULL) is where the approved game goes for the proposer, added in the approval transaction. | submitter `Account` (cascade); reviewer `Account`, created `Game` (set null) |
-| `OwnedGame` | Private shelf: owned game, price, purchase date. | `Account`, `Game` (cascade) |
+| `GameProposal` | A user's request to add a game; admins approve, reject, or mark as duplicate. Approval creates the game with exactly the reviewed values: players and length must come from the proposal or the admin, never a default. A rejection's `reviewNotes` is the reason the proposer reads; a duplicate names the existing game in the proposer's notification (`duplicateOfGameId` in its data). `addTo` (`shelf`, `wishlist`, or NULL) is where the approved game goes for the proposer, added in the approval transaction. `titleLanguage` is the language of `title` (NULL, on proposals before migration 0029, means English) and `otherTitles` a JSON array of `{ languageCode, title }` or NULL; approval turns them into the game's editions, `title` in `titleLanguage` being the primary one. | submitter `Account` (cascade); reviewer `Account`, created `Game` (set null) |
+| `OwnedGame` | Private shelf: owned game, price, purchase date. `editionId` is the edition the copy is (ADR-0025); NULL means "not said" and the copy shows the title the reader's language resolves to. The API stores only an edition of that game, and removing an edition sets it back to NULL. | `Account`, `Game` (cascade); `GameEdition` (set null) |
 | `WishlistedGame` | Private wishlist with priority. | `Account`, `Game` (cascade) |
 | `GameReview` | A user's rating and review. | `Account`, `Game` (cascade) |
 | `CollectionActivity` | Last 32 shelf, wishlist, and review actions per account. | `Account`, `Game` (cascade) |

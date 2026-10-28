@@ -82,6 +82,7 @@ describe('GameViewPageComponent plays', () => {
     const view: GameViewType = {
         gameData: loveLetter,
         ownedGameData: null,
+        editions: [],
         tags: [],
         wishlistedGameData: null,
         ratingData: { userRating: null, avgGroupsRating: null, avgGlobalRating: null },
