@@ -26,7 +26,8 @@ export function reasonText({ code, values = {} }: ReasonCode): string | null {
         case 'duration_unknown':
             return $localize`:Recommendation reason:Duration is not available`
         case 'rating':
-            return $localize`:Recommendation reason, a rating out of 10:Selected-attendee rating: ${formatNumber(values['rating'] ?? 0, { minimumFractionDigits: 1, maximumFractionDigits: 1 })}:rating:/10`
+            // The API sends the average out of 10, as ratings are stored; the app shows ratings out of 5 stars.
+            return $localize`:Recommendation reason, a rating out of 5 stars:Selected-attendee rating: ${formatNumber((values['rating'] ?? 0) / 2, { minimumFractionDigits: 1, maximumFractionDigits: 1 })}:rating: out of 5`
         case 'no_rating':
             return $localize`:Recommendation reason:No selected-attendee rating yet`
         case 'interested':

@@ -124,8 +124,12 @@ export class GroupViewComponent {
     public readonly playerCount$ = this.groupViewService.playerCount
     public readonly PLAYER_COUNTS = [2, 3, 4, 5, 6]
     public readonly avgReviewsIndexComputed = this.groupViewService.avgReviewsIndexComputed
-    public readonly formatNumber = formatNumber
     public readonly formatList = formatList
+
+    /** Averages are stored out of 10 and shown out of 5, as on the game page. */
+    public outOfFive(review: number): string {
+        return formatNumber(review / 2, { minimumFractionDigits: 1, maximumFractionDigits: 1 })
+    }
     public readonly totalUniqueGamesComputed = this.groupViewService.totalUniqueGamesComputed
     // Group pulse: everyone in the group, with or without an account, as on Home.
     public readonly groupPeopleCount = groupPeopleCount

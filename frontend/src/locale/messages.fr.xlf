@@ -465,6 +465,15 @@
         <target><ph id="0" equiv="actor" disp="actor"/> a modifié la présélection d’une soirée jeux</target>
       </segment>
     </unit>
+    <unit id="1248678079199715255">
+      <notes>
+        <note category="description">On the page of a planned game night whose day has passed and nothing is recorded yet, under its title</note>
+      </notes>
+      <segment state="translated">
+        <source>This night is over. Record who came and what you played, or cancel it if it didn’t happen.</source>
+        <target>Cette soirée est passée. Note qui est venu et à quoi vous avez joué, ou annule-la si elle n’a pas eu lieu.</target>
+      </segment>
+    </unit>
     <unit id="1251428933558875497">
       <notes>
         <note category="description">Toast after adding a game a person owns, on the group page</note>
@@ -4497,6 +4506,15 @@
       <segment state="translated">
         <source>Background Color</source>
         <target>Couleur de fond</target>
+      </segment>
+    </unit>
+    <unit id="3474910394658676010">
+      <notes>
+        <note category="description">Hint under Record results on a planned game night whose day has passed</note>
+      </notes>
+      <segment state="translated">
+        <source>The night keeps its date. Mark the games you played, who played, and who won, then finish it.</source>
+        <target>La soirée garde sa date. Marque les jeux auxquels vous avez joué, qui a joué et qui a gagné, puis termine-la.</target>
       </segment>
     </unit>
     <unit id="347726722080737708">
@@ -10879,15 +10897,6 @@
         <target>Possède ? –</target>
       </segment>
     </unit>
-    <unit id="6930216235586087894">
-      <notes>
-        <note category="description">Recommendation reason, a rating out of 10</note>
-      </notes>
-      <segment state="translated">
-        <source>Selected-attendee rating: <ph id="0" equiv="rating" disp="formatNumber(values[&apos;rating&apos;] ?? 0, { minimumFractionDigits: 1, maximumFractionDigits: 1 })"/>/10</source>
-        <target>Note des personnes présentes : <ph id="0" equiv="rating" disp="formatNumber(values[&apos;rating&apos;] ?? 0, { minimumFractionDigits: 1, maximumFractionDigits: 1 })"/>/10</target>
-      </segment>
-    </unit>
     <unit id="693316950352117213">
       <notes>
         <note category="description">Read by screen readers while the recent game nights on the group page load</note>
@@ -11441,7 +11450,7 @@
     </unit>
     <unit id="7219158508769872160">
       <notes>
-        <note category="description">Button that opens the form for who won one play</note>
+        <note category="description">Button on a planned game night whose day has passed: opens it to mark what was played</note>
       </notes>
       <segment state="translated">
         <source>Record results</source>
@@ -12234,6 +12243,15 @@
         <target>Invitations en attente</target>
       </segment>
     </unit>
+    <unit id="7668323527725129528">
+      <notes>
+        <note category="description">Recommendation reason, a rating out of 5 stars</note>
+      </notes>
+      <segment state="translated">
+        <source>Selected-attendee rating: <ph id="0" equiv="rating" disp="formatNumber((values[&apos;rating&apos;] ?? 0) / 2, { minimumFractionDigits: 1, maximumFractionDigits: 1 })"/> out of 5</source>
+        <target>Note des personnes présentes : <ph id="0" equiv="rating" disp="formatNumber((values[&apos;rating&apos;] ?? 0) / 2, { minimumFractionDigits: 1, maximumFractionDigits: 1 })"/> sur 5</target>
+      </segment>
+    </unit>
     <unit id="7668815026368992788">
       <notes>
         <note category="description">A game night&apos;s page when it could not load</note>
@@ -12818,6 +12836,15 @@
       <segment state="translated">
         <source>Your personal shelf becomes the source for recommendations.</source>
         <target>Ton étagère personnelle devient la source des recommandations.</target>
+      </segment>
+    </unit>
+    <unit id="7930581890544594087">
+      <notes>
+        <note category="description">Average rating of a game in a group&apos;s library, for screen readers; the placeholder is the rating out of 5, such as 4.5</note>
+      </notes>
+      <segment state="translated">
+        <source>Group rating <ph id="0" equiv="INTERPOLATION" disp="{{ outOfFive(review.average) }}"/> out of 5</source>
+        <target>Note du groupe : <ph id="0" equiv="INTERPOLATION" disp="{{ outOfFive(review.average) }}"/> sur 5</target>
       </segment>
     </unit>
     <unit id="7932939814717653761">

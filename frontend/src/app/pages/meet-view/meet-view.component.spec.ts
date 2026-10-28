@@ -591,6 +591,9 @@ describe('MeetViewComponent participant safeguards', () => {
 
 // Contributed in #71: the page must re-render when a request answers after the click (OnPush).
 describe('MeetViewComponent rendered lifecycle actions', () => {
+    // Some tests fake the clock; give it back even when one fails, so the fake date never leaks into the next.
+    afterEach(() => vi.useRealTimers())
+
     const scheduledMeet = (): MeetWithAttendeesAndGamesType => ({
         id: 59,
         groupId: 7,
@@ -689,7 +692,43 @@ describe('MeetViewComponent rendered lifecycle actions', () => {
         vi.useRealTimers()
     })
 
+    it('asks for results instead of answers once a planned night is over, and starts it without asking', async () => {
+        vi.useFakeTimers({ now: new Date('2026-10-24T10:00:00.000Z'), toFake: ['Date'] })
+        const { fixture, button, statusResponse } = await setup()
+        const element = fixture.nativeElement as HTMLElement
+
+        expect(element.textContent).toContain('Waiting for results')
+        expect(element.textContent).toContain('This night is over.')
+        expect(element.textContent).not.toContain('Can you make it?')
+        expect(element.textContent).not.toContain('Add to calendar')
+        expect(button('Start game night')).toBeUndefined()
+
+        button('Record results')?.click()
+        await fixture.whenStable()
+        expect(element.textContent).not.toContain('Start this game night now?')
+        expect(button('Record results')?.disabled).toBe(true)
+
+        // The night keeps its date: the API only moves a night that starts early.
+        statusResponse.next({ sessionId: 59, status: 'active', sessionDate: '2026-10-14T17:00:00.000Z' })
+        statusResponse.complete()
+        await fixture.whenStable()
+        expect(button('Finish game night')?.disabled).toBe(false)
+        vi.useRealTimers()
+    })
+
+    it('still treats a night as planned on its evening, until twelve hours after it starts', async () => {
+        vi.useFakeTimers({ now: new Date('2026-10-15T04:00:00.000Z'), toFake: ['Date'] })
+        const { fixture, button } = await setup()
+        const element = fixture.nativeElement as HTMLElement
+
+        expect(element.textContent).toContain('Can you make it?')
+        expect(button('Start game night')).toBeDefined()
+        expect(button('Record results')).toBeUndefined()
+        vi.useRealTimers()
+    })
+
     it('marks you as going and frees the RSVP buttons once the RSVP is saved', async () => {
+        vi.useFakeTimers({ now: new Date('2026-10-10T18:00:00.000Z'), toFake: ['Date'] })
         const { fixture, button, rsvpResponse, dataService } = await setup()
 
         button('I’m going')?.click()
@@ -705,5 +744,6 @@ describe('MeetViewComponent rendered lifecycle actions', () => {
         expect(button('Can’t make it')?.disabled).toBe(false)
         // Home and Upcoming list your answer too.
         expect(dataService.refreshUserMeets).toHaveBeenCalled()
+        vi.useRealTimers()
     })
 })

@@ -224,6 +224,8 @@ not the only label for an action.
 - **Session timing:** `core/utils/sessionTiming.ts` says whether a scheduled
   session is `planned`, `live`, or waiting for results (`wrap-up`, 12 hours
   after it started), and formats date blocks and "in 6 days" labels.
+  Upcoming and the game night page both use it: a `wrap-up` night asks for
+  results (Record results) instead of answers and Start.
 - **Undo:** for a quick, reversible action, act at once and pass an action
   to the toast instead of asking for confirmation first:
   `toastService.success('Removed from your wishlist', { label: 'Undo', run: () => … })`.

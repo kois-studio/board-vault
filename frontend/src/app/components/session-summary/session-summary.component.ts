@@ -31,6 +31,14 @@ const STATUS: Record<MeetType['status'], { label: string; description: string; d
     },
 }
 
+/** A planned night whose evening is over and nothing is recorded yet: the warning tone, as on Upcoming. */
+const AWAITING_RESULTS = {
+    label: $localize`:Heading on Upcoming for game nights that are over but have no results yet:Waiting for results`,
+    description: $localize`:On the page of a planned game night whose day has passed and nothing is recorded yet, under its title:This night is over. Record who came and what you played, or cancel it if it didn’t happen.`,
+    date: 'bg-bv-warning/15 text-bv-warning',
+    pill: 'bg-bv-warning/15 text-bv-warning',
+}
+
 /**
  * The top of a game night: date, status, group, notes and counts. Presentational: the session
  * page and the landing page's example render it. RSVP and actions are projected below.
@@ -52,7 +60,11 @@ export class SessionSummaryComponent {
     readonly stats = input<Array<SessionStat>>([])
     /** The session page's title is the page heading; elsewhere it sits under a section heading. */
     readonly headingLevel = input<1 | 3>(1)
+    /** A planned night that is already over (`wrap-up` in sessionTiming): it waits for results, not answers. */
+    readonly awaitingResults = input(false)
 
-    public readonly tone = computed(() => STATUS[this.status()])
+    public readonly tone = computed(() =>
+        this.awaitingResults() && this.status() === 'scheduled' ? AWAITING_RESULTS : STATUS[this.status()],
+    )
     public readonly isUpcoming = computed(() => this.status() === 'scheduled' || this.status() === 'active')
 }
