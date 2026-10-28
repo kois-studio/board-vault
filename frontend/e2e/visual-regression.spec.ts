@@ -1,4 +1,5 @@
 import { expect, test } from '@playwright/test'
+import { showLandingSamples } from './fixtures/landing'
 
 test.describe('public visual regression', () => {
     // Baselines are rendered on the CI Linux runner. Font rendering differs on
@@ -12,6 +13,7 @@ test.describe('public visual regression', () => {
             await page.emulateMedia({ colorScheme: theme })
             await page.goto('/')
             await expect(page.locator('app-icon svg:visible').first()).toBeVisible()
+            await showLandingSamples(page)
 
             await expect(page).toHaveScreenshot(`landing-desktop-${theme}.png`, {
                 fullPage: true,
@@ -25,6 +27,7 @@ test.describe('public visual regression', () => {
             await page.emulateMedia({ colorScheme: theme })
             await page.goto('/')
             await expect(page.locator('app-icon svg:visible').first()).toBeVisible()
+            await showLandingSamples(page)
 
             await expect(page).toHaveScreenshot(`landing-mobile-${theme}.png`, {
                 fullPage: true,

@@ -106,7 +106,12 @@ export class GroupActivityService {
         const people = new Map<number, GroupActivityPersonDto>(
             personRows.rows.map(row => [
                 Number(row[0]),
-                { id: Number(row[0]), name: String(row[1]), standing: String(row[2]) as GroupPersonStanding },
+                {
+                    id: Number(row[0]),
+                    name: String(row[1]),
+                    standing: String(row[2]) as GroupPersonStanding,
+                    accountId: row[3] === null ? null : Number(row[3]),
+                },
             ]),
         )
         const games = new Map<number, GroupActivityGameDto>(

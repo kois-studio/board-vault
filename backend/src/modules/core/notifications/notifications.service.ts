@@ -119,7 +119,11 @@ export class NotificationsService {
             read(
                 refs.people,
                 () => queries.getContextPeople(refs.people),
-                row => ({ id: Number(row.id), name: shortName(String(row.displayName)) }),
+                row => ({
+                    id: Number(row.id),
+                    name: shortName(String(row.displayName)),
+                    accountId: row.accountId === null ? null : Number(row.accountId),
+                }),
             ),
             read(
                 refs.games,

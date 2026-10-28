@@ -41,9 +41,21 @@ operational details.
 - Home and the group pages (group, settings, new group, a person of the
   group, taking over a person, the group's history) in Spanish, French,
   German, and Italian, with counts that agree in every language.
-- Home always offers recording and planning. One group keeps its full card,
-  several groups show as compact rows with a corner pin that appears on
-  hover; pinned groups lead.
+- Collection (My Games, Browse and its filters, Reviews, Wishlist, proposing
+  a game, your proposals, recent activity) and the game page in Spanish,
+  French, German, and Italian. Owner names read as a list in each language
+  ("Ana, Luis and Marta"), and a rating of one star says "1 star".
+- Play and game nights (the Play hub, Upcoming, What to play, History,
+  recording a night, planning one, and a night's page) in Spanish, French,
+  German, and Italian. Lists of who voted, played or is interested read as a
+  list in each language ("Ana and Bo"), and players are called people
+  throughout.
+- Settings (Profile, Appearance, Account, Privacy), your page, the avatar
+  editor and the remaining messages in Spanish, French, German, and Italian;
+  only Administration stays in English. Your page's browser tab now reads
+  "Your page" instead of "Page not found".
+- Home always offers recording and planning. With several groups each has a
+  corner pin that appears on hover; pinned groups lead.
 - Recording keeps its group context, offers Today/Yesterday and same-day
   session suggestions, and can search catalogue games without ownership.
   Separate plays keep their own players, winners and scores. Completed
@@ -101,6 +113,10 @@ operational details.
 
 ### Changed
 
+- Home shows every group as its full card, stacked, when there are several:
+  people, the invite nudge, and What to play, Library and History for each,
+  with the last or next night under the name and the pin on the card's
+  corner. Pinned groups still lead.
 - Names have at most 20 characters, for accounts and for people without one,
   and the API enforces it. Longer names saved before are shown cut the same
   way everywhere ("Bartholomew Montgom…"), notifications included. Names stay
@@ -285,6 +301,15 @@ operational details.
   reads as one centred column on any screen instead of leaving an empty
   column on desktop and a misaligned text on phones. Its button goes to
   Home once you are signed in.
+- A member shows with the same name and avatar everywhere in a group. Group
+  people, standings, the group's history and notifications showed the name
+  they had when they joined (sometimes their username) after they changed it
+  in Settings → Profile, while the member list and "Owned by" showed the new
+  one. The owner can no longer rename a member through the API, as the app
+  never offered; people without an account are renamed as before.
+- A member changing their own games or preferences reads as such in the
+  group's history and in notifications: "Ana said they have Catan" instead of
+  "Ana said Ana has Catan", in every language.
 - Game titles on Home and the group pages show in the page's language, and
   a few Spanish, French, German, and Italian texts there read more naturally
   and without gendered forms.

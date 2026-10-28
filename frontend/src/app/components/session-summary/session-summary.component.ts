@@ -6,26 +6,26 @@ export type SessionStat = { label: string; value: number }
 
 const STATUS: Record<MeetType['status'], { label: string; description: string; date: string; pill: string }> = {
     scheduled: {
-        label: 'Planned',
-        description: 'Answer if you can make it. The organizer starts the night when everyone is at the table.',
+        label: $localize`:Tag on a planned game night, on Upcoming:Planned`,
+        description: $localize`:On a planned game night's page, under its title:Answer if you can make it. The organizer starts the night when everyone is at the table.`,
         date: 'bg-bv-primary-soft text-bv-on-primary-soft',
         pill: 'bg-bv-primary-soft text-bv-on-primary-soft',
     },
     active: {
-        label: 'Live now',
-        description: 'Mark the games as you play them, who played, and who won.',
+        label: $localize`:Tag on a game night going on now, on Upcoming:Live now`,
+        description: $localize`:On the page of a game night going on now, under its title:Mark the games as you play them, who played, and who won.`,
         date: 'bg-bv-success/15 text-bv-success',
         pill: 'bg-bv-success/15 text-bv-success',
     },
     completed: {
-        label: 'Completed',
-        description: 'Part of the group’s history. You can still record who won each game.',
+        label: $localize`:Tag on a game night that has ended and is recorded:Completed`,
+        description: $localize`:On the page of a recorded game night, under its title:Part of the group’s history. You can still record who won each game.`,
         date: 'bg-bv-surface-2 text-bv-text',
         pill: 'bg-bv-surface-2 text-bv-text-muted',
     },
     cancelled: {
-        label: 'Cancelled',
-        description: 'This game night was cancelled. It stays here for reference.',
+        label: $localize`:Tag on a cancelled game night:Cancelled`,
+        description: $localize`:On the page of a cancelled game night, under its title:This game night was cancelled. It stays here for reference.`,
         date: 'bg-bv-danger/10 text-bv-danger',
         pill: 'bg-bv-danger/10 text-bv-danger',
     },

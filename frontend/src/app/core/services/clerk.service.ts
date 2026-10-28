@@ -303,11 +303,35 @@ export async function afterFirstPagePaint(router: Router): Promise<void> {
             filter((event) => event instanceof NavigationEnd || event instanceof NavigationCancel || event instanceof NavigationError),
         ),
     )
-    // The routed page renders in this task and paints on the next frame. Two frames later that paint has
-    // been presented; then wait for the browser to be idle, a second at most.
-    await new Promise<void>((resolve) => requestAnimationFrame(() => requestAnimationFrame(() => resolve())))
+    // The routed page renders in this task and paints on a later frame. Once that paint is reported, wait
+    // for the browser to be idle, a second at most.
+    await firstContentfulPaint()
     await new Promise<void>((resolve) => {
         if (typeof requestIdleCallback === 'function') requestIdleCallback(() => resolve(), { timeout: 1000 })
         else setTimeout(resolve, 0)
+    })
+}
+
+/**
+ * Resolves once the browser reports the first contentful paint, the moment Lighthouse measures too. Two
+ * animation frames were not enough: headless Chrome reports the paint later than that, so Clerk's download
+ * could start first and be counted before the paint. Without paint timing it waits two frames; it waits
+ * three seconds at most.
+ */
+function firstContentfulPaint(): Promise<void> {
+    if (typeof PerformanceObserver === 'undefined' || !PerformanceObserver.supportedEntryTypes?.includes('paint')) {
+        return new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(() => resolve())))
+    }
+    return new Promise((resolve) => {
+        const observer = new PerformanceObserver((entries) => {
+            if (entries.getEntriesByName('first-contentful-paint').length > 0) done()
+        })
+        const timer = setTimeout(() => done(), 3000)
+        const done = () => {
+            observer.disconnect()
+            clearTimeout(timer)
+            resolve()
+        }
+        observer.observe({ type: 'paint', buffered: true })
     })
 }

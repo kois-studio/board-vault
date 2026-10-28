@@ -1,10 +1,12 @@
 import { Component, input } from '@angular/core'
+import { CoverAltPipe } from '../../core/pipes/game-title.pipe'
+import { playerRange } from '../../core/utils/plural'
 import { IconComponent } from '../ui/icon/icon.component'
 import { ImageBackgroundComponent } from '../ui/image-background/image-background.component'
 import { ReviewDisplayComponent } from '../ui/review-display/review-display.component'
 
 @Component({
-    imports: [ReviewDisplayComponent, ImageBackgroundComponent, IconComponent],
+    imports: [CoverAltPipe, ReviewDisplayComponent, ImageBackgroundComponent, IconComponent],
     selector: 'app-card-game',
     templateUrl: 'card-game.component.html',
 })
@@ -21,6 +23,6 @@ export class CardGameComponent {
         const min = this.minPlayers() || this.maxPlayers()
         const max = this.maxPlayers() || this.minPlayers()
         if (!min) return ''
-        return min === max ? `${min} player${min === 1 ? '' : 's'}` : `${min}–${max} players`
+        return playerRange(min, max)
     }
 }

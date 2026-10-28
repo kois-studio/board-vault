@@ -30,23 +30,70 @@ export class SettingsAppearanceComponent {
     public readonly textSize = this.theme.textSize
 
     public readonly schemes: Array<Option<ThemePreference>> = [
-        { value: 'system', label: 'System', icon: 'monitor', description: 'Match your device, and switch when it does.' },
-        { value: 'light', label: 'Light', icon: 'sun', description: 'Light background, always.' },
-        { value: 'dark', label: 'Dark', icon: 'moon', description: 'Dark background, always.' },
+        {
+            value: 'system',
+            label: $localize`:Color scheme option in the Appearance settings that follows the device:System`,
+            icon: 'monitor',
+            description: $localize`:Description of the System color scheme in the Appearance settings:Match your device, and switch when it does.`,
+        },
+        {
+            value: 'light',
+            label: $localize`:Color scheme option in the Appearance settings:Light`,
+            icon: 'sun',
+            description: $localize`:Description of the Light color scheme in the Appearance settings:Light background, always.`,
+        },
+        {
+            value: 'dark',
+            label: $localize`:Color scheme option in the Appearance settings:Dark`,
+            icon: 'moon',
+            description: $localize`:Description of the Dark color scheme in the Appearance settings:Dark background, always.`,
+        },
     ]
 
     public readonly palettes: Array<Option<ThemePalette>> = [
-        { value: 'ciruela', label: 'Ciruela', description: 'Plum and lilac. The Board Vault colors.' },
-        { value: 'felt', label: 'Felt', description: 'The green of a card table.' },
-        { value: 'harbor', label: 'Harbor', description: 'Deep sea blue.' },
-        { value: 'graphite', label: 'Graphite', description: 'Quiet grays.' },
+        // Ciruela is the name of Board Vault's own theme, the same in every language.
+        {
+            value: 'ciruela',
+            label: 'Ciruela',
+            description: $localize`:Description of the Ciruela theme, Board Vault's own plum colors, in the Appearance settings:Plum and lilac. The Board Vault colors.`,
+        },
+        {
+            value: 'felt',
+            label: $localize`:Name of a green color theme in the Appearance settings, like the felt of a card table:Felt`,
+            description: $localize`:Description of the Felt theme in the Appearance settings:The green of a card table.`,
+        },
+        {
+            value: 'harbor',
+            label: $localize`:Name of a blue color theme in the Appearance settings, like a harbour by the sea:Harbor`,
+            description: $localize`:Description of the Harbor theme in the Appearance settings:Deep sea blue.`,
+        },
+        {
+            value: 'graphite',
+            label: $localize`:Name of a gray color theme in the Appearance settings:Graphite`,
+            description: $localize`:Description of the Graphite theme in the Appearance settings:Quiet grays.`,
+        },
     ]
 
     /** `sample` is the size of the "Aa" preview in pixels: the root size each option sets (styles.css). */
     public readonly textSizes: Array<Option<TextSize> & { sample: number }> = [
-        { value: 'default', label: 'Default', description: 'The standard size.', sample: 16 },
-        { value: 'large', label: 'Large', description: 'A little bigger.', sample: 18 },
-        { value: 'larger', label: 'Larger', description: 'Bigger still.', sample: 20 },
+        {
+            value: 'default',
+            label: $localize`:Text size option in the Appearance settings:Default`,
+            description: $localize`:Description of the Default text size in the Appearance settings:The standard size.`,
+            sample: 16,
+        },
+        {
+            value: 'large',
+            label: $localize`:Text size option in the Appearance settings:Large`,
+            description: $localize`:Description of the Large text size in the Appearance settings:A little bigger.`,
+            sample: 18,
+        },
+        {
+            value: 'larger',
+            label: $localize`:Text size option in the Appearance settings, bigger than Large:Larger`,
+            description: $localize`:Description of the Larger text size in the Appearance settings:Bigger still.`,
+            sample: 20,
+        },
     ]
 
     public optionClass(chosen: boolean): string {

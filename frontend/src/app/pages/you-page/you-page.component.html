@@ -5,37 +5,37 @@
                 <app-image-profile size="large" class="shrink-0" [avatar]="user.avatar" />
                 <div class="min-w-0 flex-1">
                     <h1 id="you-name" class="text-3xl font-bold tracking-tight wrap-anywhere">{{ user.displayName }}</h1>
-                    <p class="mt-1 text-secondary">{{ user.username }} · Only you see this page</p>
+                    <p class="mt-1 text-secondary" i18n="Under your name on your own page; the placeholder is your username">{{ user.username }} · Only you see this page</p>
                 </div>
-                <a routerLink="/settings/profile" class="inline-flex min-h-11 items-center gap-2 text-sm font-semibold text-bv-primary hover:underline">Edit profile</a>
+                <a routerLink="/settings/profile" class="inline-flex min-h-11 items-center gap-2 text-sm font-semibold text-bv-primary hover:underline" i18n="Link on your own page to the Profile settings">Edit profile</a>
             </section>
         }
 
-        <section aria-label="Your numbers">
+        <section i18n-aria-label="Accessible name of the numbers at the top of your own page" aria-label="Your numbers">
             <dl class="grid grid-cols-2 gap-3 sm:grid-cols-4">
                 <div class="rounded-2xl border border-bv-border bg-bv-surface p-4 shadow-sm">
-                    <dt class="text-xs text-secondary">Game nights</dt>
+                    <dt class="text-xs text-secondary" i18n="Number on your own page: game nights you came to, in all your groups">Game nights</dt>
                     <dd class="mt-1 text-3xl font-bold">{{ totals().nights }}</dd>
                 </div>
                 <div class="rounded-2xl border border-bv-border bg-bv-surface p-4 shadow-sm">
-                    <dt class="text-xs text-secondary">Games played</dt>
+                    <dt class="text-xs text-secondary" i18n="Number on your own page: games you played, in all your groups">Games played</dt>
                     <dd class="mt-1 text-3xl font-bold">{{ totals().plays }}</dd>
                 </div>
                 <div class="rounded-2xl border border-bv-border bg-bv-surface p-4 shadow-sm">
-                    <dt class="text-xs text-secondary">Wins</dt>
+                    <dt class="text-xs text-secondary" i18n="Number on your own page: games you won, in all your groups">Wins</dt>
                     <dd class="mt-1 text-3xl font-bold">{{ totals().wins }}</dd>
                 </div>
                 <div class="rounded-2xl border border-bv-border bg-bv-surface p-4 shadow-sm">
-                    <dt class="text-xs text-secondary">Games you own</dt>
+                    <dt class="text-xs text-secondary" i18n="Number on your own page: games in My Games">Games you own</dt>
                     <dd class="mt-1 text-3xl font-bold"><a routerLink="/collection" class="hover:text-bv-primary">{{ ownedGames() }}</a></dd>
-                    @if (paid() > 0) { <dd class="text-xs text-secondary">{{ paid() | currency: 'EUR' : 'symbol' : '1.0-0' }} paid</dd> }
+                    @if (paid() > 0) { <dd class="text-xs text-secondary" i18n="Under Games you own on your own page; the placeholder is what you paid for them, in euros">{{ paid() | currency: 'EUR' : 'symbol' : '1.0-0' }} paid</dd> }
                 </div>
             </dl>
         </section>
 
         <section aria-labelledby="you-groups-heading">
-            <h2 id="you-groups-heading" class="text-2xl font-bold">In your groups</h2>
-            <p class="mt-1 text-sm text-secondary">What each group sees on your page there.</p>
+            <h2 id="you-groups-heading" class="text-2xl font-bold" i18n="Heading on your own page above your groups">In your groups</h2>
+            <p class="mt-1 text-sm text-secondary" i18n="Under In your groups on your own page">What each group sees on your page there.</p>
             @if (groups().length > 0) {
                 <ul class="mt-4 divide-y divide-bv-border overflow-hidden rounded-2xl border border-bv-border bg-bv-surface">
                     @for (group of groups(); track group.id) {
@@ -44,49 +44,53 @@
                                 <span class="min-w-0 flex-1">
                                     <span class="block truncate font-semibold">{{ group.name }}</span>
                                     <span class="block text-xs text-secondary">
-                                        @if (group.failed) { Numbers could not be loaded }
-                                        @else if (group.standing; as standing) { {{ standing.sessions | count: 'night' }} · {{ standing.gamesPlayed | count: 'game' }} played · {{ standing.wins | count: 'win' }} }
-                                        @else { No finished nights yet }
+                                        @if (group.failed) {
+                                            &ngsp;<ng-container i18n="Under a group's name on your own page when its numbers could not load">Numbers could not be loaded</ng-container>
+                                        } @else if (group.standing; as standing) {
+                                            &ngsp;<ng-container i18n="Under a group's name on your own page: game nights you came to in that group">{standing.sessions, plural, one {{{ standing.sessions }} night} other {{{ standing.sessions }} nights}}</ng-container> · <ng-container i18n="Under a group's name on your own page: games you played in that group">{standing.gamesPlayed, plural, one {{{ standing.gamesPlayed }} game played} other {{{ standing.gamesPlayed }} games played}}</ng-container> · <ng-container i18n="Under a group's name on your own page: games you won in that group">{standing.wins, plural, one {{{ standing.wins }} win} other {{{ standing.wins }} wins}}</ng-container>
+                                        } @else {
+                                            &ngsp;<ng-container i18n="Under a group's name on your own page when you have no finished game night there">No finished nights yet</ng-container>
+                                        }
                                     </span>
                                 </span>
-                                <span class="hidden text-sm font-semibold text-bv-primary sm:inline">Your page in {{ group.name }}</span>
+                                <span class="hidden text-sm font-semibold text-bv-primary sm:inline" i18n="Link text on your own page to your page in one group; the placeholder is the group's name">Your page in {{ group.name }}</span>
                                 <app-icon name="chevron-right" [size]="18" className="shrink-0 text-bv-text-muted" aria-hidden="true" />
                             </a>
                         </li>
                     }
                 </ul>
             } @else {
-                <p class="mt-4 rounded-2xl border border-dashed border-bv-border p-5 text-secondary">You are not in a group yet.</p>
+                <p class="mt-4 rounded-2xl border border-dashed border-bv-border p-5 text-secondary" i18n="Your own page when you are in no group">You are not in a group yet.</p>
             }
         </section>
 
         <div class="grid grid-cols-1 gap-8 lg:grid-cols-2">
             <section aria-labelledby="you-played-heading">
-                <h2 id="you-played-heading" class="text-2xl font-bold">You play most</h2>
+                <h2 id="you-played-heading" class="text-2xl font-bold" i18n="Heading on your own page above the games you played most">You play most</h2>
                 @if (mostPlayed().length > 0) {
                     <ol class="mt-4 space-y-2">
                         @for (line of mostPlayed(); track line.game.id) {
                             <li>
                                 <a [routerLink]="['/games', line.game.id]" class="flex items-center gap-3 rounded-2xl border border-bv-border bg-bv-surface p-2 pr-4 transition hover:border-bv-primary/40">
                                     <span class="h-12 w-12 shrink-0 overflow-hidden rounded-xl"><image-background class="h-full" [src]="line.game.imageUrl" [alt]="''" /></span>
-                                    <span class="min-w-0 flex-1 truncate font-medium">{{ title(line.game) }}</span>
+                                    <span class="min-w-0 flex-1 truncate font-medium" [attr.lang]="titleLanguage(line.game)">{{ title(line.game) }}</span>
                                     <span class="shrink-0 text-right text-xs text-secondary">
-                                        <span class="block font-semibold text-bv-text">{{ line.plays | count: 'play' }}</span>
-                                        {{ line.wins | count: 'win' }}
+                                        <span class="block font-semibold text-bv-text" i18n="On your own page, next to a game you play most: how many times you played it">{line.plays, plural, one {{{ line.plays }} play} other {{{ line.plays }} plays}}</span>
+                                        &ngsp;<ng-container i18n="On your own page, next to a game you play most: how many times you won it">{line.wins, plural, one {{{ line.wins }} win} other {{{ line.wins }} wins}}</ng-container>
                                     </span>
                                 </a>
                             </li>
                         }
                     </ol>
                 } @else {
-                    <p class="mt-4 rounded-2xl border border-dashed border-bv-border p-5 text-secondary">Games you play show here once a night is recorded.</p>
+                    <p class="mt-4 rounded-2xl border border-dashed border-bv-border p-5 text-secondary" i18n="Your own page before any game night is recorded">Games you play show here once a night is recorded.</p>
                 }
             </section>
 
             <section aria-labelledby="you-rated-heading">
                 <div class="flex items-baseline justify-between gap-3">
-                    <h2 id="you-rated-heading" class="text-2xl font-bold">Your favourites</h2>
-                    @if (ratedCount() > 0) { <span class="text-sm text-secondary">{{ ratedCount() | count: 'game' }} rated</span> }
+                    <h2 id="you-rated-heading" class="text-2xl font-bold" i18n="Heading on your own page above the games you rated highest">Your favourites</h2>
+                    @if (ratedCount() > 0) { <span class="text-sm text-secondary" i18n="Next to Your favourites on your own page: how many games you rated">{ratedCount(), plural, one {{{ ratedCount() }} game rated} other {{{ ratedCount() }} games rated}}</span> }
                 </div>
                 @if (topRated().length > 0) {
                     <ol class="mt-4 space-y-2">
@@ -94,14 +98,14 @@
                             <li>
                                 <a [routerLink]="['/games', review.gameId]" class="flex items-center gap-3 rounded-2xl border border-bv-border bg-bv-surface p-2 pr-4 transition hover:border-bv-primary/40">
                                     <span class="h-12 w-12 shrink-0 overflow-hidden rounded-xl"><image-background class="h-full" [src]="review.gameData.imageUrl" [alt]="''" /></span>
-                                    <span class="min-w-0 flex-1 truncate font-medium">{{ title(review.gameData) }}</span>
+                                    <span class="min-w-0 flex-1 truncate font-medium" [attr.lang]="titleLanguage(review.gameData)">{{ title(review.gameData) }}</span>
                                     <review-display class="shrink-0" [review]="review.review" />
                                 </a>
                             </li>
                         }
                     </ol>
                 } @else {
-                    <p class="mt-4 rounded-2xl border border-dashed border-bv-border p-5 text-secondary">Rate a game after you play it and your favourites show here.</p>
+                    <p class="mt-4 rounded-2xl border border-dashed border-bv-border p-5 text-secondary" i18n="Your own page before you rate any game">Rate a game after you play it and your favourites show here.</p>
                 }
             </section>
         </div>

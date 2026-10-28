@@ -61,6 +61,14 @@ export class AvatarEditorComponent implements OnInit {
         return this.bootstrapIcons.filter((icon) => icon.toLowerCase().includes(this.searchTerm.toLowerCase()))
     }
 
+    colourLabel(position: number): string {
+        return $localize`:Accessible name of a colour swatch in the avatar editor; the placeholder is its position, 1 to 8:Choose player colour ${position}:position:`
+    }
+
+    iconLabel(position: number): string {
+        return $localize`:Accessible name of an icon in the avatar editor; the placeholder is its position in the list:Choose avatar icon ${position}:position:`
+    }
+
     swatchColour(color: string): string {
         return playerColourStyle(color).background
     }

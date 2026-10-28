@@ -235,6 +235,9 @@ export type GroupActivityStanding = 'member' | 'left' | 'deleted'
 
 export type GroupActivityNameType = { id: number; name: string; standing: GroupActivityStanding }
 
+/** A group person in the history, with their account when they have one (null for someone without one). */
+export type GroupActivityPersonType = GroupActivityNameType & { accountId?: number | null }
+
 /** One entry of a group's history (ADR-0020): who changed what. Names are the current ones. */
 export type GroupActivityType = {
     id: number
@@ -242,12 +245,12 @@ export type GroupActivityType = {
     createdAt: string
     actor: GroupActivityNameType
     meetId: number | null
-    person: GroupActivityNameType | null
+    person: GroupActivityPersonType | null
     game: { id: number; title: string | null; titleLanguage?: string | null } | null
     subject: GroupActivityNameType | null
     data: Record<string, unknown>
     accounts: Array<GroupActivityNameType>
-    people: Array<GroupActivityNameType>
+    people: Array<GroupActivityPersonType>
     games: Array<{ id: number; title: string | null; titleLanguage?: string | null }>
 }
 
@@ -338,7 +341,7 @@ export type NotificationContextType = {
     accounts: Array<{ id: number; name: string | null; deleted: boolean }>
     groups: Array<{ id: number; name: string }>
     sessions: Array<{ id: number; date: string; timezone: string }>
-    people: Array<{ id: number; name: string }>
+    people: Array<{ id: number; name: string; accountId?: number | null }>
     games: Array<{ id: number; title: string; titleLanguage: string }>
 }
 
