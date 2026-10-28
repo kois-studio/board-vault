@@ -70,15 +70,15 @@ export class SubmissionsPageComponent {
     public getStatusText(status: GameProposalType['status']): string {
         switch (status) {
             case 'pending':
-                return 'Pending Review'
+                return $localize`:Status of a game proposal waiting for an admin:Pending Review`
             case 'approved':
-                return 'Approved'
+                return $localize`:proposal status|Status of a game proposal an admin approved:Approved`
             case 'rejected':
-                return 'Rejected'
+                return $localize`:proposal status|Status of a game proposal an admin rejected:Rejected`
             case 'duplicate':
-                return 'Duplicate'
+                return $localize`:proposal status|Status of a game proposal for a game already in the catalogue:Duplicate`
             default:
-                return 'Unknown'
+                return $localize`:proposal status|Status of a game proposal the app does not recognise:Unknown`
         }
     }
 

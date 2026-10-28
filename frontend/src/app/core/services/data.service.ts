@@ -205,7 +205,7 @@ export class DataService {
                 },
                 error: () => {
                     this.userGamesError.set(true)
-                    this.toastService.error('Error retrieving user games')
+                    this.toastService.error($localize`:Toast when My Games could not be loaded:Error retrieving user games`)
                 },
             })
     }
@@ -352,7 +352,7 @@ export class DataService {
                 },
                 error: () => {
                     this.userReviewsError.set(true)
-                    this.toastService.error("Error retrieving user's reviews")
+                    this.toastService.error($localize`:Toast when your ratings could not be loaded:Error retrieving user’s reviews`)
                 },
             })
     }
@@ -414,7 +414,7 @@ export class DataService {
                 next: (meets) => this.userMeets.set(meets),
                 error: () => {
                     this.userMeetsError.set(true)
-                    this.toastService.error("Error retrieving user's meets")
+                    this.toastService.error($localize`:Toast when your game nights could not load:Error retrieving user’s meets`)
                 },
             })
     }
@@ -432,7 +432,7 @@ export class DataService {
                 next: (history) => this.userHistory.set(history),
                 error: () => {
                     this.userHistoryError.set(true)
-                    this.toastService.error("Error retrieving user's history")
+                    this.toastService.error($localize`:Toast when your game night history could not load:Error retrieving user’s history`)
                 },
             })
     }
@@ -452,7 +452,7 @@ export class DataService {
                 },
                 error: () => {
                     this.userWishlistError.set(true)
-                    this.toastService.error("Error retrieving user's wishlist")
+                    this.toastService.error($localize`:Toast when your wishlist could not be loaded:Error retrieving user’s wishlist`)
                 },
             })
     }
@@ -470,7 +470,9 @@ export class DataService {
                     this.userCollectionActivity.set(collectionActivity)
                 },
                 error: () => {
-                    this.toastService.error("Error retrieving user's collection activity")
+                    this.toastService.error(
+                        $localize`:Toast when your recent collection activity could not be loaded:Error retrieving user’s collection activity`,
+                    )
                 },
             })
     }
@@ -490,7 +492,7 @@ export class DataService {
                 },
                 error: () => {
                     this.userStatsError.set(true)
-                    this.toastService.error("Error retrieving user's stats")
+                    this.toastService.error($localize`:Toast when your numbers could not be loaded:Error retrieving user’s stats`)
                 },
             })
     }
@@ -568,10 +570,12 @@ export class DataService {
                         }),
                     )
                     // 3.
-                    this.toastService.success('User data updated')
+                    this.toastService.success($localize`:Toast after your profile is saved:User data updated`)
                 },
                 error: () => {
-                    this.toastService.error('Your profile could not be updated. Please try again.')
+                    this.toastService.error(
+                        $localize`:Toast when your profile could not be saved:Your profile could not be updated. Please try again.`,
+                    )
                 },
             })
     }
@@ -656,13 +660,15 @@ export class DataService {
                     // 2.
                     this.api.getUserGames(currentUser.id).pipe(
                         catchError(() => {
-                            this.toastService.error('Error fetching updated games')
+                            this.toastService.error(
+                                $localize`:Toast when My Games could not be reloaded after a change:Error fetching updated games`,
+                            )
                             return of([]) // Return an empty array if fetching fails
                         }),
                     ),
                 ),
                 catchError(() => {
-                    this.toastService.error('Error updating games')
+                    this.toastService.error($localize`:Toast when the change to My Games could not be saved:Error updating games`)
                     return of(null)
                 }),
             )
@@ -682,7 +688,7 @@ export class DataService {
                             }),
                         )
                         // 3.
-                        this.toastService.success('Games updated')
+                        this.toastService.success($localize`:Toast after My Games is saved:Games updated`)
                     }
                 },
             })
@@ -898,10 +904,10 @@ export class DataService {
                 this._getUserReviews(accountId)
                 this._getUserCollectionActivity(accountId)
 
-                this.toastService.success('Review saved')
+                this.toastService.success($localize`:Toast after rating a game:Review saved`)
             },
             error: () => {
-                this.toastService.error('Error saving review')
+                this.toastService.error($localize`:Toast when rating a game failed:Error saving review`)
             },
         })
     }
@@ -985,7 +991,9 @@ export class DataService {
         return this.api.updateSessionAttendees(meetId, { attendeeIds }).pipe(
             catchError((error) => {
                 this.toastService.error(
-                    error.status === 400 ? 'A session must have at least one group member' : 'Could not save the attendee changes',
+                    error.status === 400
+                        ? $localize`:Toast when a game night would be left with nobody from the group:A session must have at least one group member`
+                        : $localize`:Toast when the change to who came to a game night could not be saved:Could not save the attendee changes`,
                 )
                 return throwError(() => error)
             }),
@@ -1007,7 +1015,9 @@ export class DataService {
                 },
                 error: () => {
                     this.userProposalsError.set(true)
-                    this.toastService.error("Error retrieving user's proposals")
+                    this.toastService.error(
+                        $localize`:Toast when your game proposals could not be loaded:Error retrieving user’s proposals`,
+                    )
                 },
             })
     }
@@ -1027,7 +1037,9 @@ export class DataService {
                 },
                 error: () => {
                     this.userProposalStatsError.set(true)
-                    this.toastService.error("Error retrieving user's proposal stats")
+                    this.toastService.error(
+                        $localize`:Toast when the numbers about your game proposals could not be loaded:Error retrieving user’s proposal stats`,
+                    )
                 },
             })
     }

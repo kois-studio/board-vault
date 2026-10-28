@@ -9,9 +9,8 @@ import { ContainerWrapperComponent } from '../../components/ui/container-wrapper
 import { IconComponent } from '../../components/ui/icon/icon.component'
 import { ImageBackgroundComponent } from '../../components/ui/image-background/image-background.component'
 import { ReviewDisplayComponent } from '../../components/ui/review-display/review-display.component'
-import { CountPipe } from '../../core/pipes/count.pipe'
 import { DataService } from '../../core/services/data.service'
-import { gameTitle } from '../../core/utils/gameTitle'
+import { gameTitle, gameTitleLanguage } from '../../core/utils/gameTitle'
 
 type GroupLine = { id: number; name: string; standing: GroupStandingType | null; failed: boolean }
 
@@ -23,7 +22,6 @@ type GroupLine = { id: number; name: string; standing: GroupStandingType | null;
     selector: 'app-you-page',
     imports: [
         ContainerWrapperComponent,
-        CountPipe,
         CurrencyPipe,
         IconComponent,
         ImageBackgroundComponent,
@@ -39,6 +37,7 @@ export class YouPageComponent {
 
     public readonly user = this.dataService.currentUser
     public readonly title = gameTitle
+    public readonly titleLanguage = gameTitleLanguage
     private readonly standings = signal<Record<number, GroupStandingType | null | 'failed'>>({})
 
     /** Each group with your line in its standings, the same numbers its group page shows. */

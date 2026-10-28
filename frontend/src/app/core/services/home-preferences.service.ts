@@ -69,7 +69,9 @@ export class HomePreferencesService {
         } catch {
             if (generation === this.generation) {
                 this.preferences.set(previous)
-                this.toast.error('Could not save your Home preferences. Try again.')
+                this.toast.error(
+                    $localize`:Toast when your Home layout choices could not be saved:Could not save your Home preferences. Try again.`,
+                )
             }
         } finally {
             if (generation === this.generation) this.saving.set(false)

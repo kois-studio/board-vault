@@ -1,7 +1,7 @@
 <div class="flex flex-col items-center p-2 max-w-md mx-auto">
     <!-- Avatar Preview -->
     <div class="mb-6 text-center">
-        <h2 class="text-xl font-semibold mb-3">Avatar Preview</h2>
+        <h2 class="text-xl font-semibold mb-3" i18n="Heading of the avatar editor above how your avatar will look">Avatar Preview</h2>
         <div class="flex items-center justify-center">
             <app-image-profile [avatar]="draft()" size="large" />
         </div>
@@ -9,7 +9,7 @@
 
     <!-- Color Selection -->
     <div class="w-full mb-6">
-        <h3 class="text-lg font-medium mb-2">Background Color</h3>
+        <h3 class="text-lg font-medium mb-2" i18n="Heading of the avatar editor above the colours to pick from">Background Color</h3>
         <div class="grid grid-cols-4 gap-2 sm:grid-cols-8">
             @for (color of colorPalette; track color) {
             <button
@@ -20,7 +20,7 @@
                 [class.ring-offset-2]="color === draft().backgroundColor"
                 [class.ring-bv-primary]="color === draft().backgroundColor"
                 (click)="selectColor(color)"
-                [attr.aria-label]="'Choose player colour ' + ($index + 1)"
+                [attr.aria-label]="colourLabel($index + 1)"
                 [attr.aria-pressed]="color === draft().backgroundColor"
             ></button>
             }
@@ -37,9 +37,8 @@
                     'text-bv-primary border-b-2 border-bv-primary': activeTab === 'icon',
                     'text-bv-text-muted': activeTab !== 'icon',
                 }"
-            >
-                Icon
-            </button>
+                i18n="Tab of the avatar editor: pick an icon as your avatar"
+            >Icon</button>
             <button
                 (click)="switchTab('emoji')"
                 class="py-2 px-4 font-medium transition-colors duration-200 cursor-pointer"
@@ -47,9 +46,8 @@
                     'text-bv-primary border-b-2 border-bv-primary': activeTab === 'emoji',
                     'text-bv-text-muted': activeTab !== 'emoji',
                 }"
-            >
-                Emoji
-            </button>
+                i18n="Tab of the avatar editor: pick an emoji as your avatar"
+            >Emoji</button>
             <button
                 (click)="switchTab('initials')"
                 class="py-2 px-4 font-medium transition-colors duration-200 cursor-pointer"
@@ -57,9 +55,8 @@
                     'text-bv-primary border-b-2 border-bv-primary': activeTab === 'initials',
                     'text-bv-text-muted': activeTab !== 'initials',
                 }"
-            >
-                Initials
-            </button>
+                i18n="Tab of the avatar editor: use your initials as your avatar"
+            >Initials</button>
         </div>
     </div>
 
@@ -81,7 +78,7 @@
             @for (icon of filteredIcons; track icon) {
             <button
                 (click)="selectIcon(icon)"
-                [attr.aria-label]="'Choose ' + icon + ' avatar icon'"
+                [attr.aria-label]="iconLabel($index + 1)"
                 class="h-12 w-12 flex items-center justify-center rounded-lg hover:bg-bv-surface-2 transition-colors duration-200 cursor-pointer"
                 [class.bg-bv-primary-soft]="draft().iconName === icon"
             >
@@ -113,7 +110,7 @@
     @if (activeTab === 'initials') {
     <div class="w-full">
         <div class="mb-4">
-            <label class="block mb-1">Your Initials</label>
+            <label class="block mb-1" i18n="Label of the field in the avatar editor where you type your initials">Your Initials</label>
             <input
                 type="text"
                 [ngModel]="draft().initials"
@@ -122,7 +119,7 @@
                 placeholder="AB"
                 class="w-full px-3 py-2 border border-bv-border rounded-md focus:outline-none focus:ring-1 focus:ring-bv-primary"
             />
-            <p class="mt-1 text-sm text-bv-text-muted">Maximum 2 characters</p>
+            <p class="mt-1 text-sm text-bv-text-muted" i18n="Hint under the initials field of the avatar editor">Maximum 2 characters</p>
         </div>
     </div>
     }

@@ -20,8 +20,8 @@ import { IconComponent } from '../../components/ui/icon/icon.component'
 import { PageHeaderComponent } from '../../components/ui/page-header/page-header.component'
 import { SpinnerComponent } from '../../components/ui/spinner/spinner.component'
 import { LOADING_KEYS } from '../../core/enums/loading-keys-enum'
-import { formatDateTime, isoDay } from '../../core/i18n/format'
-import { CountPipe, PlayersPipe } from '../../core/pipes/count.pipe'
+import { formatDateTime, formatList, intlLocale, isoDay } from '../../core/i18n/format'
+import { PlayersPipe } from '../../core/pipes/count.pipe'
 import { DataService } from '../../core/services/data.service'
 import { LoadingService } from '../../core/services/loading.service'
 import { gameTitle } from '../../core/utils/gameTitle'
@@ -81,7 +81,6 @@ function todayInputValue(): string {
     selector: 'app-log-session-wizard',
     templateUrl: './log-session-wizard.component.html',
     imports: [
-        CountPipe,
         PlayersPipe,
         CommonModule,
         ReactiveFormsModule,
@@ -161,13 +160,21 @@ export class LogSessionWizardComponent {
     public isLoading = signal<boolean>(false)
 
     public steps: [StepInfo, ...StepInfo[]] = [
-        { key: 'who', label: 'Who and when', description: 'Pick the group, the day, and who came.' },
+        {
+            key: 'who',
+            label: $localize`:First step of the form that records a game night:Who and when`,
+            description: $localize`:Under the first step of the form that records a game night:Pick the group, the day, and who came.`,
+        },
         {
             key: 'games',
-            label: 'Games',
-            description: 'Tick the games you played. Everyone who came is marked as a player; untick anyone who sat a game out.',
+            label: $localize`:Second step of the form that records a game night:Games`,
+            description: $localize`:Under the second step of the form that records a game night:Tick the games you played. Everyone who came is marked as a player; untick anyone who sat a game out.`,
         },
-        { key: 'save', label: 'Note and save', description: 'Add a note if you like, check the details, and save.' },
+        {
+            key: 'save',
+            label: $localize`:Last step of the form that records a game night:Note and save`,
+            description: $localize`:Under the last step of the form that records a game night:Add a note if you like, check the details, and save.`,
+        },
     ]
 
     // --------------------------------------------------------------------------
@@ -248,11 +255,16 @@ export class LogSessionWizardComponent {
         switch (step) {
             case 'who': {
                 const people = this.getSelectedAttendees().length
-                return `${this.selectedGroup()?.name} · ${people} ${people === 1 ? 'person' : 'people'}`
+                const group = this.selectedGroup()?.name
+                return new Intl.PluralRules(intlLocale()).select(people) === 'one'
+                    ? $localize`:wizard who summary, one|Under the first step once done; the group name, then how many people came:${group}:group: · ${people}:count: person`
+                    : $localize`:wizard who summary, other|Under the first step once done; the group name, then how many people came:${group}:group: · ${people}:count: people`
             }
             case 'games': {
                 const games = this.getSelectedGames().length
-                return `${games} ${games === 1 ? 'game' : 'games'}`
+                return new Intl.PluralRules(intlLocale()).select(games) === 'one'
+                    ? $localize`:wizard games summary, one|Under the second step once done; how many games were played:${games}:count: game`
+                    : $localize`:wizard games summary, other|Under the second step once done; how many games were played:${games}:count: games`
             }
             default:
                 return ''
@@ -349,8 +361,8 @@ export class LogSessionWizardComponent {
                 {
                     user: {
                         id,
-                        username: 'Former player',
-                        displayName: 'Former player',
+                        username: $localize`:Name shown for someone who played on a game night and has left the group:Former player`,
+                        displayName: $localize`:Name shown for someone who played on a game night and has left the group:Former player`,
                         avatar: { backgroundColor: '#64748b', iconName: null, emoji: null, type: 'initials', initials: 'FP' },
                         joinedAt: '',
                         games: [],
@@ -454,7 +466,10 @@ export class LogSessionWizardComponent {
                         const legacy = [...legacyAccountIds].map((accountId) => {
                             const member = group.members.find((member) => member.id === accountId)
                             const person = response.people.find((person) => person.person.accountId === accountId)?.person
-                            const name = member?.displayName || person?.displayName || 'Former player'
+                            const name =
+                                member?.displayName ||
+                                person?.displayName ||
+                                $localize`:Name shown for someone who played on a game night and has left the group:Former player`
                             return {
                                 user: {
                                     id: -accountId,
@@ -462,7 +477,7 @@ export class LogSessionWizardComponent {
                                     displayName: this.pendingRecording?.groupPersonIds?.some((id) =>
                                         response.people.some((entry) => entry.person.id === id && entry.person.accountId === accountId),
                                     )
-                                        ? `${name} (separate account entry)`
+                                        ? $localize`:A name on a game night recorded twice, once by account and once as a group person:${name}:name: (separate account entry)`
                                         : name,
                                     avatar: member?.avatar ??
                                         person?.avatar ?? {
@@ -611,7 +626,9 @@ export class LogSessionWizardComponent {
         const selectedGames = this.games().filter((game) => game.selected)
 
         if (!group || !sessionDate || selectedAttendees.length === 0 || selectedGames.length === 0) {
-            this.toastService.error('Choose a group, who came, and at least one game before saving.')
+            this.toastService.error(
+                $localize`:Toast when the form that records a game night is saved too early:Choose a group, who came, and at least one game before saving.`,
+            )
             return
         }
 
@@ -623,7 +640,9 @@ export class LogSessionWizardComponent {
         }))
 
         if (games.some((game) => game.participantIds.length === 0)) {
-            this.toastService.error('Select at least one player for every game.')
+            this.toastService.error(
+                $localize`:Toast when a game in the form that records a game night has no players:Select at least one player for every game.`,
+            )
             return
         }
 
@@ -658,7 +677,7 @@ export class LogSessionWizardComponent {
                 sessionId = this.editingId
             } else sessionId = (await firstValueFrom(this.api.createPlaySession(body))).sessionId
 
-            this.toastService.success('Session saved.')
+            this.toastService.success($localize`:Toast after recording a game night:Session saved.`)
             // Play › History and Home read these cached lists; reload them so the new session shows up.
             this.dataService.refreshUserHistory()
             this.dataService.refreshUserMeets()
@@ -667,8 +686,8 @@ export class LogSessionWizardComponent {
             const status = (error as { status?: number }).status
             this.recordingError.set(
                 status === 409
-                    ? 'This session changed while you were editing. Your changes have not been saved. Reload the recording before trying again.'
-                    : 'Could not save the session. Your choices are still here; check your connection and try again.',
+                    ? $localize`:Error when a recorded game night changed while you corrected it:This session changed while you were editing. Your changes have not been saved. Reload the recording before trying again.`
+                    : $localize`:Error when a game night could not be recorded:Could not save the session. Your choices are still here; check your connection and try again.`,
             )
             this.toastService.error(this.recordingError())
         } finally {
@@ -831,7 +850,9 @@ export class LogSessionWizardComponent {
                 this.selectGroup(group)
             }
         } catch {
-            this.recordingError.set('Could not load this recording. Check your access and connection, then retry.')
+            this.recordingError.set(
+                $localize`:Error when a recorded game night could not load for correcting:Could not load this recording. Check your access and connection, then retry.`,
+            )
         } finally {
             this.loadingRecording.set(false)
         }
@@ -895,7 +916,9 @@ export class LogSessionWizardComponent {
             this.dataService.refreshUserMeets()
             await this.router.navigate(['/sessions', session.sessionId])
         } catch {
-            this.recordingError.set('Could not start the night. Your choices are still here; try again.')
+            this.recordingError.set(
+                $localize`:Error when a game night could not be started:Could not start the night. Your choices are still here; try again.`,
+            )
         } finally {
             this.isLoading.set(false)
         }
@@ -908,7 +931,11 @@ export class LogSessionWizardComponent {
         const step = this.steps.find((step) => step.key === this.currentStep()) ?? this.steps[0]
         // A night starting now has no day to pick, and the people are the ones here.
         return this.isLive() && step.key === 'who'
-            ? { ...step, label: 'Who is here', description: 'Pick the group and who is here.' }
+            ? {
+                  ...step,
+                  label: $localize`:First step of the form that starts a game night now:Who is here`,
+                  description: $localize`:Under the first step of the form that starts a game night now:Pick the group and who is here.`,
+              }
             : step
     }
 
@@ -921,14 +948,15 @@ export class LogSessionWizardComponent {
     }
 
     public getSelectedAttendeeNames(): string {
-        return this.getSelectedAttendees()
-            .map((attendee) => attendee.user.displayName || attendee.user.username)
-            .join(', ')
+        return formatList(this.getSelectedAttendees().map((attendee) => attendee.user.displayName || attendee.user.username))
     }
 
     public sessionSuggestionLabel(sessionId: number): string {
         const history = (this.dataService.userHistory?.() ?? []).find((record) => record.meetData.id === sessionId)
-        return history?.gamesPlayed.map((play) => this.getGameTitle(play.gameData)).join(', ') || 'View people and games'
+        const titles = history?.gamesPlayed.map((play) => this.getGameTitle(play.gameData)) ?? []
+        return titles.length > 0
+            ? formatList(titles)
+            : $localize`:Link to a game night on the same day that has no games recorded yet:View people and games`
     }
     public primaryPlayers(gameId: number): number[] {
         return this.matrix()
@@ -937,16 +965,16 @@ export class LogSessionWizardComponent {
     }
     public playerName(id: number): string {
         const attendee = this.attendees().find((attendee) => attendee.user.id === id)
-        return attendee?.user.displayName || attendee?.user.username || 'Player'
+        return attendee?.user.displayName || attendee?.user.username || $localize`:Name shown for a player whose name is not known:Player`
     }
     public playTitle(gameId: number): string {
         const game = this.games().find((selection) => selection.game.id === gameId)?.game
-        return game ? this.getGameTitle(game) : 'Game'
+        return game ? this.getGameTitle(game) : $localize`:Title shown for a game whose title is not known:Game`
     }
     /** Account ids sit negated beside group-person ids in this form (see restoreRecording), so look them up the same way. */
     public namesForPlay(play: CreatePlaySessionRequest['games'][number]): string {
         const accounts = (play.participantIds ?? []).map((id) => (this.usesGroupPeople() ? -id : id))
-        return [...(play.participantPersonIds ?? []), ...accounts].map((id) => this.playerName(id)).join(', ')
+        return formatList([...(play.participantPersonIds ?? []), ...accounts].map((id) => this.playerName(id)))
     }
 
     public playImage(gameId: number): string {
@@ -968,9 +996,38 @@ export class LogSessionWizardComponent {
         return gameTitle(game)
     }
 
+    public get pageTitle(): string {
+        if (this.editingId) return $localize`:Title of the form that corrects a recorded game night:Correct this session`
+        if (this.isLive()) return $localize`:Title of the form that starts a game night now:Start playing now`
+        return $localize`:Title of the form that records a game night that already happened:Record a session`
+    }
+
+    /** "Open the recorded night", by status, for a night already on the chosen day. */
+    public sameDayLabel(status: string, games: string): string {
+        if (status === 'completed') {
+            return $localize`:Link to a recorded game night on the same day; the placeholder lists its games:Open the recorded night · ${games}:games:`
+        }
+        if (status === 'active') {
+            return $localize`:Link to a game night going on now on the same day; the placeholder lists its games:Open the live night · ${games}:games:`
+        }
+        return $localize`:Link to a planned game night on the same day; the placeholder lists its games:Open the planned night · ${games}:games:`
+    }
+
+    /** "Search 12 games", for the search field of the games step. */
+    public searchPlaceholder(count: number): string {
+        return new Intl.PluralRules(intlLocale()).select(count) === 'one'
+            ? $localize`:search games placeholder, one|Placeholder of the search field in the games step; the placeholder is how many games there are:Search ${count}:count: game`
+            : $localize`:search games placeholder, other|Placeholder of the search field in the games step; the placeholder is how many games there are:Search ${count}:count: games`
+    }
+
+    /** "Play 2 of Catan", for the group of buttons of one extra play. */
+    public playGroupLabel(number: number, title: string): string {
+        return $localize`:Accessible name of the people buttons of one play of a game; the play number, then the game title:Play ${number}:number: of ${title}:title:`
+    }
+
     public getSessionDateLabel(): string {
         const value = this.sessionDate.value
-        if (!value) return 'Not set'
+        if (!value) return $localize`:The day of a game night in the form that records it, before one is chosen:Not set`
         return formatDateTime(new Date(`${value}T12:00:00`), { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })
     }
 

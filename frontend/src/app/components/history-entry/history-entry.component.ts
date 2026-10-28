@@ -44,6 +44,21 @@ export type HistoryEntryView = {
 export class HistoryEntryComponent {
     readonly entry = input.required<HistoryEntryView>()
 
+    /** The Open link's name for screen readers, with the night's date. */
+    public openLabel(dateLabel: string): string {
+        return $localize`:Accessible name of the Open link on a recorded game night; the placeholder is its date:Open the session of ${dateLabel}:date:`
+    }
+
+    /** The name of a game's cover link for screen readers. */
+    public viewLabel(title: string): string {
+        return $localize`:Accessible name of a game's cover link in a recorded game night; the placeholder is the game title:View ${title}:title:`
+    }
+
+    /** Who played a game, for its tooltip and screen readers. */
+    public playedByLabel(names: string): string {
+        return $localize`:Who played a game in a recorded night; the placeholder is a list of names:Played by ${names}:names:`
+    }
+
     public hideBrokenImage(event: Event): void {
         const image = event.target
         if (image instanceof HTMLImageElement) image.hidden = true

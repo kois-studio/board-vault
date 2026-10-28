@@ -33,9 +33,15 @@ export class WishlistToggleComponent {
             this.popping() ? 'scale-125' : '',
         ].join(' '),
     )
-    protected readonly actionLabel = computed(() => (this.wishlisted() ? 'Remove from wishlist' : 'Add to wishlist'))
+    protected readonly actionLabel = computed(() =>
+        this.wishlisted()
+            ? $localize`:Label of the heart on a game cover when the game is on your wishlist:Remove from wishlist`
+            : $localize`:Label of the heart on a game cover:Add to wishlist`,
+    )
     protected readonly ariaLabel = computed(() =>
-        this.wishlisted() ? `Remove ${gameTitle(this.game())} from your wishlist` : `Add ${gameTitle(this.game())} to your wishlist`,
+        this.wishlisted()
+            ? $localize`:Accessible name of the heart on a game cover when the game is on your wishlist; the placeholder is the game title:Remove ${gameTitle(this.game())}:title: from your wishlist`
+            : $localize`:Accessible name of the heart on a game cover; the placeholder is the game title:Add ${gameTitle(this.game())}:title: to your wishlist`,
     )
 
     protected async toggle(): Promise<void> {
@@ -48,12 +54,19 @@ export class WishlistToggleComponent {
                 this.popping.set(true)
                 setTimeout(() => this.popping.set(false), 300)
             }
-            this.toastService.success(isWishlisted ? 'Added to your wishlist' : 'Removed from your wishlist', {
-                label: 'Undo',
-                run: () => this.toggle(),
-            })
+            this.toastService.success(
+                isWishlisted
+                    ? $localize`:Toast after adding a game to your wishlist:Added to your wishlist`
+                    : $localize`:Toast after removing a game from your wishlist:Removed from your wishlist`,
+                {
+                    label: $localize`:Button on a toast that reverts what you just did:Undo`,
+                    run: () => this.toggle(),
+                },
+            )
         } catch {
-            this.toastService.error('Could not update your wishlist. Try again.')
+            this.toastService.error(
+                $localize`:Toast when adding or removing a game from your wishlist failed:Could not update your wishlist. Try again.`,
+            )
         } finally {
             this.busy.set(false)
         }
