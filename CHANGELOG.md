@@ -313,6 +313,12 @@ operational details.
 - A member changing their own games or preferences reads as such in the
   group's history and in notifications: "Ana said they have Catan" instead of
   "Ana said Ana has Catan", in every language.
+- Every page without the navigation bar (create a group, plan a game night,
+  group settings, claim a person, propose a game) starts with the same "Back
+  to …" link above its heading. Plan a game night and Propose a game had no
+  way out but the browser's Back button; Propose a game now goes back to
+  Browse with the same search. Those pages no longer put a second `<main>`
+  inside the layout's.
 - A planned game night whose day has passed with nothing recorded asks for
   results on its page, as Upcoming does: it shows "Waiting for results" and a
   Record results button that opens it with its date kept, instead of the

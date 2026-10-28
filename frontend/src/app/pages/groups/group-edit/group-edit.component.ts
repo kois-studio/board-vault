@@ -9,6 +9,7 @@ import { ClerkGroupInvitationSummaryType, ClerkGroupInvitationType, GroupPersonW
 import { CardAccountComponent } from '../../../components/card-account/card-account.component'
 import { ImageProfileComponent } from '../../../components/image-profile/image-profile.component'
 import { ToastService } from '../../../components/toast/toast.service'
+import { BackLinkComponent } from '../../../components/ui/back-link/back-link.component'
 import { ButtonComponent } from '../../../components/ui/button/button.component'
 import { DialogDirective } from '../../../components/ui/dialog/dialog.directive'
 import { IconComponent } from '../../../components/ui/icon/icon.component'
@@ -19,6 +20,7 @@ import { LoadingService } from '../../../core/services/loading.service'
 import { groupGameCount, groupPeopleCount } from '../../../core/utils/groupCounts'
 @Component({
     imports: [
+        BackLinkComponent,
         ButtonComponent,
         RouterLink,
         ImageProfileComponent,
@@ -33,6 +35,8 @@ import { groupGameCount, groupPeopleCount } from '../../../core/utils/groupCount
 export class GroupEditComponent {
     private readonly api = inject(Api)
     private readonly toastService = inject(ToastService)
+    /** From the address, so the way back works before the group has loaded. */
+    protected readonly groupId = inject(ActivatedRoute).snapshot.paramMap.get('groupId')
     // --------------------------------------------------------------------------
     //        DATA from services
     // --------------------------------------------------------------------------

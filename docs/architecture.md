@@ -161,7 +161,8 @@ Header popovers use the disclosure pattern
 them.
 
 `LayoutCompleteComponent` wraps browsing pages; `LayoutBasicComponent` wraps
-focused actions (create, edit, claim, propose) without navigation. The
+focused actions (create, edit, claim, propose) without navigation; each of
+those pages starts with a back link (`appBackLink`) instead. The
 not-found page (`**`) sits in `LayoutCompleteComponent` too, in a parent of
 its own after both, so the wildcard only matches once no page in either
 layout did.

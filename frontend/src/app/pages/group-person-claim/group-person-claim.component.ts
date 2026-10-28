@@ -4,6 +4,7 @@ import { firstValueFrom } from 'rxjs'
 import { Api } from '../../api/api'
 import type { GameCompleteType, GroupPersonPreferenceType, GroupPersonWorkspaceType } from '../../api/api.types'
 import { ToastService } from '../../components/toast/toast.service'
+import { BackLinkComponent } from '../../components/ui/back-link/back-link.component'
 import { ButtonComponent } from '../../components/ui/button/button.component'
 import { gameTitle as titleOf } from '../../core/utils/gameTitle'
 
@@ -16,7 +17,7 @@ type ClaimSummary = {
 }
 
 @Component({
-    imports: [ButtonComponent, RouterLink],
+    imports: [BackLinkComponent, ButtonComponent, RouterLink],
     templateUrl: './group-person-claim.component.html',
 })
 export class GroupPersonClaimComponent {

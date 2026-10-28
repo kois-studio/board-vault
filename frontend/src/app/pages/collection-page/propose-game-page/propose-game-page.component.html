@@ -1,5 +1,7 @@
 @if (!isSubmitted()) {
     <app-page-header i18n-titleText="Title of the Propose a game page" titleText="Propose a Game">
+        <!-- Browse opens this page with its search as the title; going back finds that search again. -->
+        <a appBackLink routerLink="/collection/browse" [queryParams]="{ q: initialTitle() ?? null }" i18n="Link above the form that proposes a game, back to the Browse page">Back to Browse</a>
         <ng-container i18n="Subtitle of the Propose a game page">Submit a game proposal to be added to our collection</ng-container>
     </app-page-header>
     <container-wrapper>
@@ -18,7 +20,7 @@
                 <h2 class="text-2xl font-bold text-bv-text" i18n="Heading after sending a game proposal">Thank You!</h2>
                 <p class="text-lg text-bv-text-muted max-w-md" i18n="After sending a game proposal">Thanks for your proposal! We will review it as soon as possible and let you know the outcome.</p>
             </div>
-            <button appButton (click)="navigateBack()" i18n="Button after sending a game proposal that opens the Collection page">Back to Collection</button>
+            <a appButton routerLink="/collection" i18n="Button after sending a game proposal that opens the Collection page">Back to Collection</a>
         </div>
     </container-wrapper>
 }

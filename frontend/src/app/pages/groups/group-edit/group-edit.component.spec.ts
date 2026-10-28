@@ -4,6 +4,7 @@ import { ActivatedRoute, convertToParamMap, provideRouter } from '@angular/route
 import { of } from 'rxjs'
 import { Api } from '../../../api/api'
 import { ToastService } from '../../../components/toast/toast.service'
+import { LOADING_KEYS } from '../../../core/enums/loading-keys-enum'
 import { DataService } from '../../../core/services/data.service'
 import { LoadingService } from '../../../core/services/loading.service'
 import { GroupEditComponent } from './group-edit.component'
@@ -25,7 +26,7 @@ describe('GroupEditComponent (Manage group)', () => {
         claimable: false,
     })
 
-    const setup = async (query: Record<string, string> = {}) => {
+    const setup = async (query: Record<string, string> = {}, loadingGroups = false) => {
         const dataService = {
             currentUser: signal({ id: 1 }),
             userGroups: signal([group]),
@@ -54,7 +55,7 @@ describe('GroupEditComponent (Manage group)', () => {
                     },
                 },
                 { provide: DataService, useValue: dataService },
-                { provide: LoadingService, useValue: { loadingStatesIndex: signal({}) } },
+                { provide: LoadingService, useValue: { loadingStatesIndex: signal({ [LOADING_KEYS.USER_GROUPS]: loadingGroups }) } },
                 { provide: ToastService, useValue: { success: vi.fn(), error: vi.fn() } },
             ],
         }).compileComponents()
@@ -68,6 +69,17 @@ describe('GroupEditComponent (Manage group)', () => {
         component.inviteTarget.setValue(value)
         component.onInviteSubmit(new Event('submit') as SubmitEvent)
     }
+
+    it('leads back to the group from the address, before the group has loaded', async () => {
+        const { fixture, component } = await setup({}, true)
+
+        expect(component.isResolvingGroup()).toBe(true)
+        const back = fixture.nativeElement.querySelector('a[appBackLink]') as HTMLAnchorElement
+        expect(back.getAttribute('href')).toBe('/groups/7')
+        expect(back.textContent?.trim()).toBe('Back to group workspace')
+        // The layout already gives the page its <main>.
+        expect(fixture.nativeElement.querySelector('main')).toBeNull()
+    })
 
     it('sends an email invitation for an address, and an in-app one for a username', async () => {
         const { component, dataService } = await setup()

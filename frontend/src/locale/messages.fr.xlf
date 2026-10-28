@@ -14063,6 +14063,15 @@
         <target>Nous n’avons pas pu finir de t’ajouter à ce groupe. L’invitation a peut-être expiré ou déjà servi, ou le groupe n’est plus disponible. Réessaie, ou déconnecte-toi et demande une nouvelle invitation à la personne qui a créé le groupe.</target>
       </segment>
     </unit>
+    <unit id="8439160099000475740">
+      <notes>
+        <note category="description">Link above the form that proposes a game, back to the Browse page</note>
+      </notes>
+      <segment state="translated">
+        <source>Back to Browse</source>
+        <target>Retour à Parcourir</target>
+      </segment>
+    </unit>
     <unit id="8440128775129354214">
       <notes>
         <note category="description">Heading of the Privacy settings</note>

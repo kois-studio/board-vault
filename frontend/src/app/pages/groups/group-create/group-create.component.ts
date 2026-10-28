@@ -2,11 +2,12 @@ import { Component, inject, signal } from '@angular/core'
 import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms'
 import { Router, RouterLink } from '@angular/router'
 import { firstValueFrom } from 'rxjs'
+import { BackLinkComponent } from '../../../components/ui/back-link/back-link.component'
 import { ButtonComponent } from '../../../components/ui/button/button.component'
 import { DataService } from '../../../core/services/data.service'
 
 @Component({
-    imports: [ReactiveFormsModule, ButtonComponent, RouterLink],
+    imports: [ReactiveFormsModule, BackLinkComponent, ButtonComponent, RouterLink],
     templateUrl: 'group-create.component.html',
 })
 export class GroupCreateComponent {

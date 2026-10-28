@@ -7,6 +7,7 @@ import { Api } from '../../api/api'
 import type { GameCompleteType, GroupPersonWorkspaceType, PublicUserType } from '../../api/api.types'
 import { ImageProfileComponent } from '../../components/image-profile/image-profile.component'
 import { ToastService } from '../../components/toast/toast.service'
+import { BackLinkComponent } from '../../components/ui/back-link/back-link.component'
 import { ButtonComponent } from '../../components/ui/button/button.component'
 import { ContainerWrapperComponent } from '../../components/ui/container-wrapper/container-wrapper.component'
 import { IconComponent } from '../../components/ui/icon/icon.component'
@@ -63,6 +64,7 @@ function initialsAvatar(name: string): PublicUserType['avatar'] {
         PlayersPipe,
         ReactiveFormsModule,
         RouterLink,
+        BackLinkComponent,
         ButtonComponent,
         ContainerWrapperComponent,
         IconComponent,
@@ -107,7 +109,7 @@ export class MeetNewComponent {
     public readonly isCreating = signal(false)
     private initializedGroupId: number | null = null
 
-    private readonly groupId = Number.parseInt(this.route.snapshot.paramMap.get('groupId') || '', 10)
+    protected readonly groupId = Number.parseInt(this.route.snapshot.paramMap.get('groupId') || '', 10)
 
     public readonly groupData = computed(() => {
         if (!this.dataService.currentUser()) return null

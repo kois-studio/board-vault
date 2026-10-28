@@ -1,6 +1,6 @@
-<main class="min-h-[calc(100vh-8rem)] bg-bv-bg px-4 py-8 sm:px-6 lg:px-8 lg:py-12">
+<div class="min-h-[calc(100vh-8rem)] bg-bv-bg px-4 py-8 sm:px-6 lg:px-8 lg:py-12">
     <div class="mx-auto max-w-3xl">
-        <a class="text-sm font-medium text-bv-primary hover:underline" [routerLink]="['/groups', route.snapshot.paramMap.get('groupId')]" i18n="Link on the page where you take over a person prepared for you in a group, back to the group page">Back to group</a>
+        <a appBackLink [routerLink]="['/groups', route.snapshot.paramMap.get('groupId')]" i18n="Link on the page where you take over a person prepared for you in a group, back to the group page">Back to group</a>
 
         @if (isLoading()) {
             <section class="mt-8 rounded-3xl border border-bv-border bg-bv-surface p-8 text-center shadow-sm" role="status" aria-live="polite">
@@ -97,4 +97,4 @@
             }
         }
     </div>
-</main>
+</div>
