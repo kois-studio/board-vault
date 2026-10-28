@@ -16,7 +16,7 @@ test.describe('settings account UX', () => {
         await expect(page.getByTestId('account-username')).not.toBeEmpty()
         await expect(page.getByRole('button', { name: 'Manage sign-in' })).toBeVisible()
         await expect(page.getByRole('heading', { name: 'Delete account' })).toBeVisible()
-        await expect(page.getByText(/can't be undone/i).first()).toBeVisible()
+        await expect(page.getByText(/can’t be undone/i).first()).toBeVisible()
 
         // Opening the confirmation and backing out deletes nothing: the storage state stays usable.
         await page.getByTestId('delete-account').click()

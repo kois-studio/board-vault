@@ -4,7 +4,7 @@
     <!-- Dialog box -->
     <div appDialog (dialogClosed)="hideDialog()" class="bg-bv-surface rounded border border-bv-text-muted w-full h-full sm:h-auto sm:w-3/4 max-w-xl relative pt-4" (click)="$event.stopPropagation()">
         <!-- Close button -->
-        <button (click)="hideDialog()" aria-label="Close avatar editor" class="py-2 px-4 rounded-lg hover:bg-bv-surface-2 absolute top-2 right-2 cursor-pointer">
+        <button (click)="hideDialog()" i18n-aria-label="Accessible name of the button that closes the avatar editor" aria-label="Close avatar editor" class="py-2 px-4 rounded-lg hover:bg-bv-surface-2 absolute top-2 right-2 cursor-pointer">
             <app-icon name="x" [size]="18" />
         </button>
         <!-- Dialog content -->

@@ -50,6 +50,10 @@ operational details.
   German, and Italian. Lists of who voted, played or is interested read as a
   list in each language ("Ana and Bo"), and players are called people
   throughout.
+- Settings (Profile, Appearance, Account, Privacy), your page, the avatar
+  editor and the remaining messages in Spanish, French, German, and Italian;
+  only Administration stays in English. Your page's browser tab now reads
+  "Your page" instead of "Page not found".
 - Home always offers recording and planning. With several groups each has a
   corner pin that appears on hover; pinned groups lead.
 - Recording keeps its group context, offers Today/Yesterday and same-day

@@ -7,6 +7,10 @@ import { ToastService } from '../../components/toast/toast.service'
 import { LogService } from '../services/log.service'
 import { LoginService } from '../services/login.service'
 
+// Administration stays in English (ADR-0024), but this toast reaches people who aren't operators.
+const accessDenied = () =>
+    $localize`:Toast when someone who isn't an operator opens an Administration address:Access Denied: You do not have permission to view this page.`
+
 export const AdminGuard: CanActivateFn = (_route, state): Observable<boolean> | boolean => {
     const loginService = inject(LoginService)
     const router = inject(Router)
@@ -21,7 +25,7 @@ export const AdminGuard: CanActivateFn = (_route, state): Observable<boolean> | 
         }
 
         logger.warn('AdminGuard: Access denied (authenticated but not admin).')
-        toastService.error('Access Denied: You do not have permission to view this page.')
+        toastService.error(accessDenied())
         router.navigate(['/dashboard'])
         return false
     }
@@ -38,7 +42,7 @@ export const AdminGuard: CanActivateFn = (_route, state): Observable<boolean> | 
                 }
 
                 logger.warn('AdminGuard: Access denied (session verified, but user is not admin).')
-                toastService.error('Access Denied: You do not have permission to view this page.')
+                toastService.error(accessDenied())
                 router.navigate(['/dashboard'])
                 return of(false)
             }
@@ -48,7 +52,9 @@ export const AdminGuard: CanActivateFn = (_route, state): Observable<boolean> | 
             // for session expiry or invalid session.
             // We add a specific toast for the admin access attempt.
             logger.log('AdminGuard: Session verification failed or user not authenticated. Redirecting to login.')
-            toastService.info('Please log in with admin credentials to access this area.')
+            toastService.info(
+                $localize`:Toast when someone signed out opens an Administration address:Please log in with admin credentials to access this area.`,
+            )
             router.navigate(['/login'], { queryParams: { returnUrl: state.url } })
             return of(false)
         }),
