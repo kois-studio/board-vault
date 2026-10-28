@@ -83,6 +83,15 @@ planning data (votes or a bringer); otherwise its row is removed. On a
 completed night, people taken out of a correction are kept as absent rather
 than having their invitation deleted, so history keeps who was invited.
 
+## Amendment (2026-10-26)
+
+Several groups no longer use compact rows: each group shows the same full
+card as a single group (people, invite nudge, What to play, Library and
+History), stacked in the same order, with the last or next night as a chip
+under the name and the pin on the card's corner. The shortcuts are what
+people open most, and they were one tap away only for people with one group.
+Home grows longer with each group; pins keep the ones that matter on top.
+
 ## Consequences
 
 Migration 0025 is additive. Old application versions can ignore the new

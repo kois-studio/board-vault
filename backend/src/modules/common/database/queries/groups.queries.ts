@@ -34,7 +34,18 @@ export const PERSON_STANDING = `
         ELSE 'member'
     END AS standing`
 
-const PERSON_COLUMNS = `gp.id, gp.groupId, gp.accountId, gp.kind, gp.status, gp.displayName, gp.avatar, gp.createdAt, gp.updatedAt, gp.claimedAt, ${PERSON_STANDING}`
+/**
+ * A group person's name and avatar as everyone sees them. A person with an account shows the
+ * account's current name and avatar, as the group's member list does; the row keeps only the copy
+ * taken when they joined, which a later change in Settings → Profile never reaches. A person
+ * without an account shows the row's own, which the owner edits. Names are resolved when read
+ * (ADR-0020), and a deleted account is already named "Deleted account" (ADR-0018). The copies
+ * written when someone joins or claims a person are only a fallback for a missing account row.
+ */
+export const PERSON_NAME = `COALESCE((SELECT COALESCE(NULLIF(TRIM(pa.displayName), ''), pa.username) FROM Account pa WHERE pa.id = gp.accountId), gp.displayName)`
+export const PERSON_AVATAR = `CASE WHEN gp.accountId IS NULL THEN gp.avatar ELSE (SELECT pa.avatar FROM Account pa WHERE pa.id = gp.accountId) END`
+
+const PERSON_COLUMNS = `gp.id, gp.groupId, gp.accountId, gp.kind, gp.status, ${PERSON_NAME} AS displayName, ${PERSON_AVATAR} AS avatar, gp.createdAt, gp.updatedAt, gp.claimedAt, ${PERSON_STANDING}`
 
 /** Groups, memberships, group people, and acquisition interest. */
 export class GroupQueries {
@@ -322,7 +333,7 @@ export class GroupQueries {
                 SELECT ${PERSON_COLUMNS}
                 FROM GroupPerson gp
                 WHERE gp.groupId = ? ${includeArchived ? '' : "AND gp.status = 'active'"}
-                ORDER BY gp.status ASC, gp.displayName COLLATE NOCASE ASC, gp.id ASC
+                ORDER BY gp.status ASC, ${PERSON_NAME} COLLATE NOCASE ASC, gp.id ASC
             `,
             args: [groupId],
         })
@@ -624,15 +635,16 @@ export class GroupQueries {
         return this.database.execute({
             sql: `
                 SELECT o.gameId, o.status, o.source, o.enteredByAccountId,
-                       o.confirmedByAccountId, o.createdAt, o.updatedAt
+                       o.confirmedByAccountId, o.createdAt, o.updatedAt, NULL, NULL
                 FROM GroupPersonGameOwnership o
                 INNER JOIN GroupPerson gp ON gp.id = o.groupPersonId AND gp.groupId = ?
                 WHERE o.groupPersonId = ?
                 UNION ALL
                 SELECT og.gameId, 'asserted', 'account_collection', gp.accountId,
-                       NULL, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP
+                       NULL, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, oe.title, oe.languageCode
                 FROM GroupPerson gp
                 INNER JOIN OwnedGame og ON og.accountId = gp.accountId
+                LEFT JOIN GameEdition oe ON oe.id = og.editionId AND oe.gameId = og.gameId
                 WHERE gp.id = ? AND gp.groupId = ? AND gp.kind = 'linked'
                   AND NOT EXISTS (
                       SELECT 1
@@ -820,8 +832,8 @@ export class GroupQueries {
                     SELECT
                         s.accountId,
                         gp.id,
-                        COALESCE(gp.displayName, NULLIF(a.displayName, ''), a.username) AS displayName,
-                        COALESCE(gp.avatar, a.avatar),
+                        COALESCE(${PERSON_NAME}, NULLIF(a.displayName, ''), a.username) AS displayName,
+                        COALESCE(${PERSON_AVATAR}, a.avatar),
                         s.sessions,
                         s.gamesPlayed,
                         COALESCE(w.wins, 0) AS wins

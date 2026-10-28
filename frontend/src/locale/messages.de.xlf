@@ -483,6 +483,15 @@
         <target>Spiel für <ph id="0" equiv="name" disp="this.name()"/> hinzugefügt.</target>
       </segment>
     </unit>
+    <unit id="1257763851250011113">
+      <notes>
+        <note category="description">Group history line, someone changing their own games or preferences; actor is a name, game is a game title</note>
+      </notes>
+      <segment state="translated">
+        <source><ph id="0" equiv="actor" disp="actor"/> said they have an opinion on <ph id="1" equiv="game" disp="game"/></source>
+        <target><ph id="0" equiv="actor" disp="actor"/> hat die eigene Meinung zu <ph id="1" equiv="game" disp="game"/> angegeben</target>
+      </segment>
+    </unit>
     <unit id="1260099573097287890">
       <notes>
         <note category="description">Hidden name of the button that adds a catalogue game to the games step; the placeholder is the game title</note>
@@ -499,6 +508,15 @@
       <segment state="translated">
         <source>Total Proposals</source>
         <target>Vorschläge insgesamt</target>
+      </segment>
+    </unit>
+    <unit id="1274668146835758541">
+      <notes>
+        <note category="description">Notification, someone changing their own games or preferences in a group; person is a name, game is a game title</note>
+      </notes>
+      <segment state="translated">
+        <source><ph id="0" equiv="person" disp="actor"/> said they have <ph id="1" equiv="game" disp="game"/>, in <ph id="2" equiv="group" disp="group"/>.</source>
+        <target><ph id="0" equiv="person" disp="actor"/> hat angegeben, <ph id="1" equiv="game" disp="game"/> zu haben, in <ph id="2" equiv="group" disp="group"/>.</target>
       </segment>
     </unit>
     <unit id="1286983255645370171">
@@ -541,6 +559,15 @@
       <segment state="translated">
         <source><ph id="0" equiv="group" disp="group"/> history</source>
         <target>Verlauf von <ph id="0" equiv="group" disp="group"/></target>
+      </segment>
+    </unit>
+    <unit id="1307312122579659057">
+      <notes>
+        <note category="description">Choice in the edition chooser for someone who does not know or does not want to say which edition they own</note>
+      </notes>
+      <segment state="translated">
+        <source>I’m not sure</source>
+        <target>Ich bin nicht sicher</target>
       </segment>
     </unit>
     <unit id="1313010108209054073">
@@ -1191,15 +1218,6 @@
         <target>Sammlung</target>
       </segment>
     </unit>
-    <unit id="1687843960576683654">
-      <notes>
-        <note category="description">Name of the list of faces on a group card on Home</note>
-      </notes>
-      <segment state="translated">
-        <source>People in this group</source>
-        <target>Personen in dieser Gruppe</target>
-      </segment>
-    </unit>
     <unit id="1688683156203780908">
       <notes>
         <note category="description">Greeting on Home for a new account; the placeholder is your name</note>
@@ -1353,6 +1371,15 @@
         <target>Kein Zugriff auf die Zwischenablage; nutze „Link öffnen“.</target>
       </segment>
     </unit>
+    <unit id="1790637555628658675">
+      <notes>
+        <note category="description">Name of the field where a language code is typed</note>
+      </notes>
+      <segment state="translated">
+        <source>Language code</source>
+        <target>Sprachcode</target>
+      </segment>
+    </unit>
     <unit id="1790722701366905577">
       <notes>
         <note category="description">Under a game that none of the people coming to a game night own</note>
@@ -1371,6 +1398,15 @@
         <target>{VAR_PLURAL, plural, one {<ph id="0" equiv="INTERPOLATION"/> passt} other {<ph id="1" equiv="INTERPOLATION"/> passen}}</target>
       </segment>
     </unit>
+    <unit id="180215682275041064">
+      <notes>
+        <note category="description">Label of the button that removes a row of other titles; the language name follows</note>
+      </notes>
+      <segment state="translated">
+        <source>Remove the title in <ph id="0" equiv="language" disp="row.languageCode ? languageName(row.languageCode) : &apos;…&apos;"/></source>
+        <target>Titel auf <ph id="0" equiv="language" disp="row.languageCode ? languageName(row.languageCode) : &apos;…&apos;"/> entfernen</target>
+      </segment>
+    </unit>
     <unit id="1804981326505301788">
       <notes>
         <note category="description">Accessible name of the numbers at the top of your own page</note>
@@ -1387,6 +1423,15 @@
       <segment state="translated">
         <source>Review the games and preferences recorded for <ph id="0" equiv="INTERPOLATION" disp="{{ claimablePerson.person.displayName }}"/>, then link that history to your account.</source>
         <target>Prüf die für <ph id="0" equiv="INTERPOLATION" disp="{{ claimablePerson.person.displayName }}"/> eingetragenen Spiele und Vorlieben und verknüpfe diesen Verlauf dann mit deinem Konto.</target>
+      </segment>
+    </unit>
+    <unit id="1824005036025311052">
+      <notes>
+        <note category="description">Button on the game page that asks again which edition of the game you own</note>
+      </notes>
+      <segment state="translated">
+        <source>Change edition</source>
+        <target>Ausgabe ändern</target>
       </segment>
     </unit>
     <unit id="1826151550199685921">
@@ -2052,7 +2097,7 @@
     </unit>
     <unit id="2159130950882492111">
       <notes>
-        <note category="description">Button that stops editing your display name without saving</note>
+        <note category="description">Button that closes the edition chooser without saving</note>
       </notes>
       <segment state="translated">
         <source>Cancel</source>
@@ -2174,6 +2219,15 @@
       <segment state="translated">
         <source>Plum and lilac. The Board Vault colors.</source>
         <target>Pflaume und Flieder. Die Farben von Board Vault.</target>
+      </segment>
+    </unit>
+    <unit id="223321090152278153">
+      <notes>
+        <note category="description">Group history line, someone changing their own games or preferences; actor is a name, game is a game title</note>
+      </notes>
+      <segment state="translated">
+        <source><ph id="0" equiv="actor" disp="actor"/> removed what they think of <ph id="1" equiv="game" disp="game"/></source>
+        <target><ph id="0" equiv="actor" disp="actor"/> hat die eigene Meinung zu <ph id="1" equiv="game" disp="game"/> entfernt</target>
       </segment>
     </unit>
     <unit id="2237775413745074505">
@@ -2745,6 +2799,15 @@
         <target>Wir konnten diese Anmeldung nicht mit Board Vault verbinden. Versuch es noch einmal, oder melde dich ab und nutze deinen Einladungslink.</target>
       </segment>
     </unit>
+    <unit id="2529039960931560775">
+      <notes>
+        <note category="description">Group history line, someone changing their own games or preferences; actor is a name, game is a game title</note>
+      </notes>
+      <segment state="translated">
+        <source><ph id="0" equiv="actor" disp="actor"/> removed <ph id="1" equiv="game" disp="game"/> from their games</source>
+        <target><ph id="0" equiv="actor" disp="actor"/> hat <ph id="1" equiv="game" disp="game"/> aus den eigenen Spielen entfernt</target>
+      </segment>
+    </unit>
     <unit id="2530318293105149171">
       <notes>
         <note category="description">Subtitle of the Reviews page</note>
@@ -3147,6 +3210,15 @@
         <target>Die Vorschläge konnten nicht geladen werden. Prüf deine Verbindung und versuch es noch einmal.</target>
       </segment>
     </unit>
+    <unit id="2745028842390991019">
+      <notes>
+        <note category="description">Notification, someone changing their own games or preferences in a group; person is a name, game is a game title</note>
+      </notes>
+      <segment state="translated">
+        <source><ph id="0" equiv="person" disp="actor"/> isn’t sure they have <ph id="1" equiv="game" disp="game"/>, in <ph id="2" equiv="group" disp="group"/>.</source>
+        <target><ph id="0" equiv="person" disp="actor"/> hat angegeben, <ph id="1" equiv="game" disp="game"/> vielleicht zu haben, in <ph id="2" equiv="group" disp="group"/>.</target>
+      </segment>
+    </unit>
     <unit id="2754237322863948261">
       <notes>
         <note category="description">Toast after deleting a notification</note>
@@ -3280,6 +3352,15 @@
       <segment state="translated">
         <source>Too many verifications are pending on this account. Remove an unverified email address, phone number, or wallet you no longer need, or wait a few minutes for an incomplete passkey setup to expire, then try again.</source>
         <target>Für dieses Konto stehen zu viele Bestätigungen aus. Entfernen Sie eine nicht bestätigte E-Mail-Adresse, Telefonnummer oder Wallet, die Sie nicht mehr brauchen, oder warten Sie einige Minuten, bis ein halb eingerichteter Passkey abläuft, und versuchen Sie es dann erneut.</target>
+      </segment>
+    </unit>
+    <unit id="2808459010951137562">
+      <notes>
+        <note category="description">Button that adds a row for a title in another language</note>
+      </notes>
+      <segment state="translated">
+        <source>Add a title</source>
+        <target>Titel hinzufügen</target>
       </segment>
     </unit>
     <unit id="281153916191694572">
@@ -3807,6 +3888,15 @@
         <target>Noch nichts markiert. Tipp unten auf ein Spiel, sobald die Gruppe damit anfängt.</target>
       </segment>
     </unit>
+    <unit id="3111885274191005376">
+      <notes>
+        <note category="description">Confirmation after changing which edition of a game you own</note>
+      </notes>
+      <segment state="translated">
+        <source>Edition saved</source>
+        <target>Ausgabe gespeichert</target>
+      </segment>
+    </unit>
     <unit id="3117578262676715596">
       <notes>
         <note category="description">Text on the page where you take over a person prepared for you in a group</note>
@@ -4292,15 +4382,6 @@
         <target><ph id="0" equiv="actor" disp="actor"/> kommt zu einem Spieleabend</target>
       </segment>
     </unit>
-    <unit id="3376307529362264656">
-      <notes>
-        <note category="description">Placeholder of the search field on Browse</note>
-      </notes>
-      <segment state="translated">
-        <source>Search by title, in English or Spanish</source>
-        <target>Nach Titel suchen, auf Englisch oder Spanisch</target>
-      </segment>
-    </unit>
     <unit id="3386246347342903734">
       <notes>
         <note category="description">Heading of the closing call to action on the landing page</note>
@@ -4553,6 +4634,15 @@
         <target> Deinen Benutzernamen, deine E-Mail-Adressen, dein Passwort und deine angemeldeten Geräte verwaltet Clerk, unser Anmeldedienst. </target>
       </segment>
     </unit>
+    <unit id="3503592559345073785">
+      <notes>
+        <note category="description">Group history line, someone changing their own games or preferences; actor is a name, game is a game title</note>
+      </notes>
+      <segment state="translated">
+        <source><ph id="0" equiv="actor" disp="actor"/> isn’t sure they have <ph id="1" equiv="game" disp="game"/></source>
+        <target><ph id="0" equiv="actor" disp="actor"/> hat angegeben, <ph id="1" equiv="game" disp="game"/> vielleicht zu haben</target>
+      </segment>
+    </unit>
     <unit id="3511545370905854666">
       <notes>
         <note category="description">Choice of the menu that says what a person thinks of a game on the group page</note>
@@ -4725,6 +4815,15 @@
         <target>Erste Schritte</target>
       </segment>
     </unit>
+    <unit id="3614057461352661644">
+      <notes>
+        <note category="description">Name of the list of faces on a group card on Home</note>
+      </notes>
+      <segment state="translated">
+        <source>People in <ph id="0" equiv="group" disp="this.group().name"/></source>
+        <target>Personen in <ph id="0" equiv="group" disp="this.group().name"/></target>
+      </segment>
+    </unit>
     <unit id="3635224618020757014">
       <notes>
         <note category="description">Your own answer on a game night card</note>
@@ -4849,6 +4948,15 @@
       <segment state="translated">
         <source>The link could not be copied; use Open link.</source>
         <target>Der Link konnte nicht kopiert werden; nutze „Link öffnen“.</target>
+      </segment>
+    </unit>
+    <unit id="3695816730555625996">
+      <notes>
+        <note category="description">Label of the language selector under the game title in the propose-a-game form</note>
+      </notes>
+      <segment state="translated">
+        <source>Language of the title</source>
+        <target>Sprache des Titels</target>
       </segment>
     </unit>
     <unit id="3711889941704624217">
@@ -5023,9 +5131,18 @@
         <target>Rangliste</target>
       </segment>
     </unit>
+    <unit id="3768264297677107657">
+      <notes>
+        <note category="description">Placeholder of the search field on Browse</note>
+      </notes>
+      <segment state="translated">
+        <source>Search by title</source>
+        <target>Nach Titel suchen</target>
+      </segment>
+    </unit>
     <unit id="3768927257183755959">
       <notes>
-        <note category="description">Button that saves your new display name</note>
+        <note category="description">Button that saves the edition chosen in the edition chooser for a game already in My Games</note>
       </notes>
       <segment state="translated">
         <source>Save</source>
@@ -5148,6 +5265,15 @@
       <segment state="translated">
         <source>Delete this group</source>
         <target>Diese Gruppe löschen</target>
+      </segment>
+    </unit>
+    <unit id="3837355392149877236">
+      <notes>
+        <note category="description">Group history line, someone changing their own games or preferences; actor is a name, game is a game title</note>
+      </notes>
+      <segment state="translated">
+        <source><ph id="0" equiv="actor" disp="actor"/> said they like <ph id="1" equiv="game" disp="game"/></source>
+        <target><ph id="0" equiv="actor" disp="actor"/> hat angegeben, <ph id="1" equiv="game" disp="game"/> zu mögen</target>
       </segment>
     </unit>
     <unit id="3841095492114279113">
@@ -5672,6 +5798,16 @@
       <segment state="translated">
         <source>Filter by tags</source>
         <target>Nach Tags filtern</target>
+      </segment>
+    </unit>
+    <unit id="4057862988487622358">
+      <notes>
+        <note category="description">Last option of a language list, to type any other language code</note>
+        <note category="meaning">language option</note>
+      </notes>
+      <segment state="translated">
+        <source>Other…</source>
+        <target>Andere …</target>
       </segment>
     </unit>
     <unit id="4057932224780575479">
@@ -6238,7 +6374,7 @@
       </notes>
       <segment state="translated">
         <source>Owned by <ph id="0" equiv="owners" disp="owners"/> of <ph id="1" equiv="people" disp="attendees"/> selected people</source>
-        <target>In der Sammlung von <ph id="0" equiv="owners" disp="owners"/> der <ph id="1" equiv="people" disp="attendees"/> ausgewählten Personen</target>
+        <target><ph id="0" equiv="owners" disp="owners"/> von <ph id="1" equiv="people" disp="attendees"/> ausgewählten Personen haben es</target>
       </segment>
     </unit>
     <unit id="4292370937084065936">
@@ -6248,6 +6384,15 @@
       <segment state="translated">
         <source><ph id="0" equiv="actor" disp="actor"/> recorded results for an individual play on a game night</source>
         <target><ph id="0" equiv="actor" disp="actor"/> hat die Ergebnisse einer Partie bei einem Spieleabend eingetragen</target>
+      </segment>
+    </unit>
+    <unit id="4304971421339457870">
+      <notes>
+        <note category="description">Notification, someone changing their own games or preferences in a group; person is a name, game is a game title</note>
+      </notes>
+      <segment state="translated">
+        <source><ph id="0" equiv="person" disp="actor"/> removed <ph id="1" equiv="game" disp="game"/> from their games in <ph id="2" equiv="group" disp="group"/>.</source>
+        <target><ph id="0" equiv="person" disp="actor"/> hat <ph id="1" equiv="game" disp="game"/> aus den eigenen Spielen entfernt, in <ph id="2" equiv="group" disp="group"/>.</target>
       </segment>
     </unit>
     <unit id="430848017615851667">
@@ -6383,6 +6528,15 @@
       <segment state="translated">
         <source>None of your games match these filters.</source>
         <target>Keines deiner Spiele passt zu diesen Filtern.</target>
+      </segment>
+    </unit>
+    <unit id="4406973836784974418">
+      <notes>
+        <note category="description">Label of the list of editions in the edition chooser</note>
+      </notes>
+      <segment state="translated">
+        <source>Editions</source>
+        <target>Ausgaben</target>
       </segment>
     </unit>
     <unit id="4409631049692082621">
@@ -6529,6 +6683,15 @@
         <target>Gestern</target>
       </segment>
     </unit>
+    <unit id="4501800346302358695">
+      <notes>
+        <note category="description">Button that adds the game to My Games with the edition chosen in the edition chooser</note>
+      </notes>
+      <segment state="translated">
+        <source>Add to My Games</source>
+        <target>Zu Meine Spiele hinzufügen</target>
+      </segment>
+    </unit>
     <unit id="4505288544316005654">
       <notes>
         <note category="description">Shown on the group&apos;s settings page to a member who is not its owner</note>
@@ -6563,6 +6726,15 @@
       <segment state="translated">
         <source>Could not add this game to your collection.</source>
         <target>Dieses Spiel konnte nicht zu deiner Sammlung hinzugefügt werden.</target>
+      </segment>
+    </unit>
+    <unit id="4526568127452551506">
+      <notes>
+        <note category="description">Notification, someone changing their own games or preferences in a group; person is a name, game is a game title</note>
+      </notes>
+      <segment state="translated">
+        <source><ph id="0" equiv="person" disp="actor"/> changed how much they like <ph id="1" equiv="game" disp="game"/>, in <ph id="2" equiv="group" disp="group"/>.</source>
+        <target><ph id="0" equiv="person" disp="actor"/> hat die eigene Meinung zu <ph id="1" equiv="game" disp="game"/> geändert, in <ph id="2" equiv="group" disp="group"/>.</target>
       </segment>
     </unit>
     <unit id="4527736376608736339">
@@ -6997,6 +7169,15 @@
         <target>Ich bringe es nicht mit</target>
       </segment>
     </unit>
+    <unit id="4785969012495884701">
+      <notes>
+        <note category="description">Error under the other titles when a language code is not valid</note>
+      </notes>
+      <segment state="translated">
+        <source>Use a language code such as de or pt-BR.</source>
+        <target>Verwende einen Sprachcode wie de oder pt-BR.</target>
+      </segment>
+    </unit>
     <unit id="4792123205739798415">
       <notes>
         <note category="description">Label of the people choice in the form that records a game night</note>
@@ -7284,6 +7465,15 @@
       <segment state="translated">
         <source>Settings</source>
         <target>Einstellungen</target>
+      </segment>
+    </unit>
+    <unit id="4933144856966619908">
+      <notes>
+        <note category="description">Group history line, someone changing their own games or preferences; actor is a name, game is a game title</note>
+      </notes>
+      <segment state="translated">
+        <source><ph id="0" equiv="actor" disp="actor"/> said they don’t have <ph id="1" equiv="game" disp="game"/></source>
+        <target><ph id="0" equiv="actor" disp="actor"/> hat angegeben, <ph id="1" equiv="game" disp="game"/> nicht zu haben</target>
       </segment>
     </unit>
     <unit id="4934924354211996143">
@@ -9221,6 +9411,15 @@
         <target>Wir bauen noch am Kern, deshalb werden neue Konten nur auf Einladung erstellt.</target>
       </segment>
     </unit>
+    <unit id="6005496837258976067">
+      <notes>
+        <note category="description">Screen reader name of a language selector in the list of other titles</note>
+      </notes>
+      <segment state="translated">
+        <source>Language of this title</source>
+        <target>Sprache dieses Titels</target>
+      </segment>
+    </unit>
     <unit id="6008489739592125163">
       <notes>
         <note category="description">Error under the display name field when it is too long; the placeholder is the most characters allowed</note>
@@ -10581,6 +10780,15 @@
         <target>Dein Benutzername muss 4–64 Zeichen lang sein.</target>
       </segment>
     </unit>
+    <unit id="6762830186305693321">
+      <notes>
+        <note category="description">Group history line, someone changing their own games or preferences; actor is a name, game is a game title</note>
+      </notes>
+      <segment state="translated">
+        <source><ph id="0" equiv="actor" disp="actor"/> said they don’t mind <ph id="1" equiv="game" disp="game"/></source>
+        <target><ph id="0" equiv="actor" disp="actor"/> hat angegeben, nichts gegen <ph id="1" equiv="game" disp="game"/> zu haben</target>
+      </segment>
+    </unit>
     <unit id="6766874920336829687">
       <notes>
         <note category="description">Shown in the group&apos;s library when no game fits the chosen player count</note>
@@ -11085,6 +11293,15 @@
       <segment state="translated">
         <source>Every game someone in the group owns, best rated first.</source>
         <target>Jedes Spiel, das jemand in der Gruppe besitzt, die bestbewerteten zuerst.</target>
+      </segment>
+    </unit>
+    <unit id="7051528060076760035">
+      <notes>
+        <note category="description">Group history line, someone changing their own games or preferences; actor is a name, game is a game title</note>
+      </notes>
+      <segment state="translated">
+        <source><ph id="0" equiv="actor" disp="actor"/> said they would rather not play <ph id="1" equiv="game" disp="game"/></source>
+        <target><ph id="0" equiv="actor" disp="actor"/> hat angegeben, <ph id="1" equiv="game" disp="game"/> lieber nicht zu spielen</target>
       </segment>
     </unit>
     <unit id="7061555756418309143">
@@ -11806,7 +12023,7 @@
         <note category="description">Accessible name of a rating star on a game page; the placeholder is a number from 1 to 5</note>
       </notes>
       <segment state="translated">
-        <source>Rate <ph id="0" equiv="stars" disp="stars"/> out of 5 stars</source>
+        <source>Rate <ph id="0" equiv="stars" disp="formatNumber(stars)"/> out of 5 stars</source>
         <target>Mit <ph id="0" equiv="stars" disp="stars"/> von 5 Sternen bewerten</target>
       </segment>
     </unit>
@@ -12184,9 +12401,9 @@
       <notes>
         <note category="description">Accessible name of a game&apos;s cover link in a recorded game night; the placeholder is the game title</note>
       </notes>
-      <segment state="translated">
+      <segment state="initial">
         <source>View <ph id="0" equiv="title" disp="title"/></source>
-        <target><ph id="0" equiv="title" disp="title"/> ansehen</target>
+        <target><ph id="0" equiv="title" disp="gameTitle(game)"/> ansehen</target>
       </segment>
     </unit>
     <unit id="7647510484935085361">
@@ -12588,6 +12805,15 @@
         <target>Verwaltung</target>
       </segment>
     </unit>
+    <unit id="7846220163732677832">
+      <notes>
+        <note category="description">Shown on the game page when you have not said which edition of the game you own</note>
+      </notes>
+      <segment state="translated">
+        <source>Edition not set</source>
+        <target>Ausgabe nicht angegeben</target>
+      </segment>
+    </unit>
     <unit id="7846643244803883224">
       <notes>
         <note category="description">Button on Browse that hides the tag filters</note>
@@ -12739,6 +12965,15 @@
       <segment state="translated">
         <source>You’re all caught up.</source>
         <target>Du bist auf dem neuesten Stand.</target>
+      </segment>
+    </unit>
+    <unit id="7894133274112638816">
+      <notes>
+        <note category="description">Hint in the edition chooser: your copy shows the title of the edition you pick</note>
+      </notes>
+      <segment state="translated">
+        <source>Your copy shows the title of the edition you pick.</source>
+        <target>Dein Exemplar zeigt den Titel der Ausgabe, die du wählst.</target>
       </segment>
     </unit>
     <unit id="7899674800818281248">
@@ -12991,6 +13226,15 @@
         <target>Sichere Anmeldung</target>
       </segment>
     </unit>
+    <unit id="8027999063674702321">
+      <notes>
+        <note category="description">Error under the other titles when two titles share a language</note>
+      </notes>
+      <segment state="translated">
+        <source>Each language can have only one title.</source>
+        <target>Jede Sprache kann nur einen Titel haben.</target>
+      </segment>
+    </unit>
     <unit id="8049452186746342791">
       <notes>
         <note category="description">Item of the avatar menu that lists the game proposals someone sent</note>
@@ -13160,6 +13404,15 @@
       <segment state="translated">
         <source>User or Group not found</source>
         <target>Konto oder Gruppe nicht gefunden</target>
+      </segment>
+    </unit>
+    <unit id="8113665790726732827">
+      <notes>
+        <note category="description">Heading of the optional list of the game&apos;s titles in other languages in the propose-a-game form</note>
+      </notes>
+      <segment state="translated">
+        <source>Other known titles</source>
+        <target>Weitere bekannte Titel</target>
       </segment>
     </unit>
     <unit id="8116175184239166510">
@@ -13747,6 +14000,24 @@
         <target>Die Anmeldeeinstellungen sind erst verfügbar, wenn die Authentifizierung fertig geladen ist.</target>
       </segment>
     </unit>
+    <unit id="8419322791833950146">
+      <notes>
+        <note category="description">Heading of the question asked when adding a game that has several editions to My Games, or changing the edition of one</note>
+      </notes>
+      <segment state="translated">
+        <source> Which edition do you own? </source>
+        <target>Welche Ausgabe hast du?</target>
+      </segment>
+    </unit>
+    <unit id="8420640184883196687">
+      <notes>
+        <note category="description">Hint under the heading of the optional list of titles in other languages</note>
+      </notes>
+      <segment state="translated">
+        <source>Optional. The same game under its name in other languages, if you know them.</source>
+        <target>Optional. Dasselbe Spiel unter seinem Namen in anderen Sprachen, falls du sie kennst.</target>
+      </segment>
+    </unit>
     <unit id="8421971980013015956">
       <notes>
         <note category="description">Label on a game proposal: the notes you wrote</note>
@@ -14035,6 +14306,15 @@
         <target>Wähl mindestens eine Person.</target>
       </segment>
     </unit>
+    <unit id="8526482226417637721">
+      <notes>
+        <note category="description">Notification, someone changing their own games or preferences in a group; person is a name, game is a game title</note>
+      </notes>
+      <segment state="translated">
+        <source><ph id="0" equiv="person" disp="actor"/> removed what they think of <ph id="1" equiv="game" disp="game"/>, in <ph id="2" equiv="group" disp="group"/>.</source>
+        <target><ph id="0" equiv="person" disp="actor"/> hat die eigene Meinung zu <ph id="1" equiv="game" disp="game"/> entfernt, in <ph id="2" equiv="group" disp="group"/>.</target>
+      </segment>
+    </unit>
     <unit id="8531755906780019444">
       <notes>
         <note category="description">Your own answer on a game night card, before you answer</note>
@@ -14150,6 +14430,15 @@
       <segment state="translated">
         <source>Group</source>
         <target>Gruppe</target>
+      </segment>
+    </unit>
+    <unit id="8624101861978584839">
+      <notes>
+        <note category="description">Group history line, someone changing their own games or preferences; actor is a name, game is a game title</note>
+      </notes>
+      <segment state="translated">
+        <source><ph id="0" equiv="actor" disp="actor"/> said they have <ph id="1" equiv="game" disp="game"/> as a favourite</source>
+        <target><ph id="0" equiv="actor" disp="actor"/> hat <ph id="1" equiv="game" disp="game"/> als Lieblingsspiel angegeben</target>
       </segment>
     </unit>
     <unit id="8626011843982871371">
@@ -14619,6 +14908,15 @@
         <target>Kaufentscheidung aktualisiert: <ph id="0" equiv="status" disp="this.getAcquisitionDecisionLabel(status)"/>.</target>
       </segment>
     </unit>
+    <unit id="8838456709946633598">
+      <notes>
+        <note category="description">Group history line, someone changing their own games or preferences; actor is a name, game is a game title</note>
+      </notes>
+      <segment state="translated">
+        <source><ph id="0" equiv="actor" disp="actor"/> said they have <ph id="1" equiv="game" disp="game"/></source>
+        <target><ph id="0" equiv="actor" disp="actor"/> hat angegeben, <ph id="1" equiv="game" disp="game"/> zu haben</target>
+      </segment>
+    </unit>
     <unit id="884821975591494973">
       <notes>
         <note category="description">Group history line; actor and person are names</note>
@@ -14699,6 +14997,15 @@
       <segment state="translated">
         <source>Help us expand our game collection! Submit a proposal for a game you’d like to see added to BoardVault.</source>
         <target>Hilf uns, unsere Spielesammlung zu erweitern! Schlag ein Spiel vor, das du gern in BoardVault sehen würdest.</target>
+      </segment>
+    </unit>
+    <unit id="8873512080778685444">
+      <notes>
+        <note category="description">Label before the title of the edition of a game you own, on the game page</note>
+      </notes>
+      <segment state="translated">
+        <source>Your copy:</source>
+        <target>Dein Exemplar:</target>
       </segment>
     </unit>
     <unit id="8881851115595994876">
@@ -14889,6 +15196,15 @@
       <segment state="translated">
         <source><ph id="0" equiv="actor" disp="actor"/> took <ph id="1" equiv="removed" disp="removed"/> off the shortlist of a game night</source>
         <target><ph id="0" equiv="actor" disp="actor"/> hat <ph id="1" equiv="removed" disp="removed"/> aus der Vorauswahl eines Spieleabends entfernt</target>
+      </segment>
+    </unit>
+    <unit id="9006031073990985776">
+      <notes>
+        <note category="description">Error after failing to save which edition of a game you own</note>
+      </notes>
+      <segment state="translated">
+        <source>Could not save the edition. Try again.</source>
+        <target>Die Ausgabe konnte nicht gespeichert werden. Versuche es noch einmal.</target>
       </segment>
     </unit>
     <unit id="9014138025274858717">
@@ -15194,6 +15510,15 @@
       <segment state="translated">
         <source>Ask the group owner to invite the rest of your table.</source>
         <target>Bitte die Person, die die Gruppe verwaltet, den Rest deiner Runde einzuladen.</target>
+      </segment>
+    </unit>
+    <unit id="9195472737674660999">
+      <notes>
+        <note category="description">Screen reader name of a title field in the list of other titles</note>
+      </notes>
+      <segment state="translated">
+        <source>Title in this language</source>
+        <target>Titel in dieser Sprache</target>
       </segment>
     </unit>
     <unit id="9202989475789662593">

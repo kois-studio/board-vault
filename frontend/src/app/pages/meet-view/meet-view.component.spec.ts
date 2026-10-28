@@ -271,15 +271,22 @@ describe('MeetViewComponent participant safeguards', () => {
             expect(component.canBring(43)).toBe(false)
             expect(component.comingOwners(43)).toEqual([])
 
-            const setSessionGameBringer = vi
-                .fn()
-                .mockReturnValue(of({ sessionId: 99, gameBringers: [{ gameId: 42, accountId: 1, groupPersonId: null }] }))
+            const setSessionGameBringer = vi.fn().mockReturnValue(
+                of({
+                    sessionId: 99,
+                    gameBringers: [{ gameId: 42, accountId: 1, groupPersonId: null, copyTitle: null, copyTitleLanguage: null }],
+                }),
+            )
             Object.assign(api, { setSessionGameBringer })
             await component.setBringer(42, {})
 
             expect(setSessionGameBringer).toHaveBeenCalledWith(99, 42, {})
-            expect(component.bringerOf(42)).toEqual({ name: 'Ana', isMe: true })
+            expect(component.bringerOf(42)).toEqual({ name: 'Ana', isMe: true, copy: null })
             expect(component.bringerOf(43)).toBeNull()
+
+            // A bringer whose copy is another edition than the title shown names it (ADR-0025 rule 1).
+            meet.gameBringers = [{ gameId: 42, accountId: 1, groupPersonId: null, copyTitle: 'Azul (Deutsch)', copyTitleLanguage: 'de' }]
+            expect(component.bringerOf(42)?.copy).toEqual({ title: 'Azul (Deutsch)', language: 'de' })
         })
 
         it('asks for nothing when everyone has declined', async () => {

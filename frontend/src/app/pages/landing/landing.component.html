@@ -36,7 +36,11 @@
         </ul>
     </div>
 
-    <!-- What it does: five rows, each with a small sample filled with the example group. -->
+    <!-- What it does: five rows, each with a small sample filled with the example group.
+         The samples are below the fold, so each one is built when it comes within half a screen of view, not in the
+         first render: built together with the page, they were one long task that Lighthouse counted as blocking time.
+         Headings and text stay in the first render, for in-page links and for reading the page by headings.
+         Each placeholder is about its sample's height, and is replaced before it scrolls into view. -->
     <section id="features" class="mx-auto max-w-6xl scroll-mt-4 px-4 py-[clamp(3rem,7vw,6rem)]" i18n-aria-label="Name of the landing page section that shows what Board Vault does" aria-label="Features">
         <div class="flex flex-col gap-[clamp(4rem,9vw,7.5rem)]">
             <!-- 01 Add -->
@@ -46,6 +50,7 @@
                     <h2 class="text-[clamp(1.75rem,3.4vw,2.5rem)] font-extrabold leading-[1.1] tracking-[-0.025em] text-balance text-bv-text" i18n="Heading of the first landing feature">Add a game in seconds</h2>
                     <p class="text-lg leading-relaxed text-bv-text-muted" i18n="Text of the first landing feature; Add is the button in the example next to it">Search the catalogue and tap Add. The box art, player count and play time come with it.</p>
                 </div>
+                @defer (on viewport({ rootMargin: '50% 0px' })) {
                 <div class="rounded-2xl border border-bv-border bg-bv-surface p-5 shadow-sm">
                     <div class="flex h-12 items-center gap-2.5 rounded-lg border-2 border-bv-primary px-3.5 text-bv-text">
                         <app-icon name="search" [size]="18" className="text-bv-text-muted" />
@@ -68,6 +73,9 @@
                         }
                     </ul>
                 </div>
+                } @placeholder {
+                <div class="min-h-[19rem] rounded-2xl border border-bv-border bg-bv-surface shadow-sm" data-landing-placeholder></div>
+                }
             </div>
 
             <!-- 02 Find: the chips work. -->
@@ -77,6 +85,7 @@
                     <h2 class="text-[clamp(1.75rem,3.4vw,2.5rem)] font-extrabold leading-[1.1] tracking-[-0.025em] text-balance text-bv-text" i18n="Heading of the second landing feature">Find the right game fast</h2>
                     <p class="text-lg leading-relaxed text-bv-text-muted" i18n="Text of the second landing feature">Filter by how many people are playing, and sort by title or by play time.</p>
                 </div>
+                @defer (on viewport({ rootMargin: '50% 0px' })) {
                 <div class="rounded-2xl border border-bv-border bg-bv-surface p-5 shadow-bv-lift lg:order-1">
                     <div class="flex items-baseline justify-between gap-3">
                         <p class="text-xl font-bold text-bv-text" i18n="Name of your own shelf, in the landing example">My games</p>
@@ -103,6 +112,9 @@
                         }
                     </ul>
                 </div>
+                } @placeholder {
+                <div class="min-h-[28rem] rounded-2xl border border-bv-border bg-bv-surface shadow-bv-lift lg:order-1" data-landing-placeholder></div>
+                }
             </div>
 
             <!-- 03 Rate -->
@@ -112,6 +124,7 @@
                     <h2 class="text-[clamp(1.75rem,3.4vw,2.5rem)] font-extrabold leading-[1.1] tracking-[-0.025em] text-balance text-bv-text" i18n="Heading of the third landing feature">Rate what you play, wish for what’s next</h2>
                     <p class="text-lg leading-relaxed text-bv-text-muted" i18n="Text of the third landing feature">Give each game a rating after you play it, and keep a wishlist of the ones you want to get.</p>
                 </div>
+                @defer (on viewport({ rootMargin: '50% 0px' })) {
                 <ul class="divide-y divide-bv-border rounded-2xl border border-bv-border bg-bv-surface px-5 py-2 shadow-sm">
                     @for (item of ratings; track item.game.id) {
                     <li class="flex items-center gap-3.5 py-3">
@@ -132,6 +145,9 @@
                         <app-icon name="heart" [size]="20" fill="currentColor" className="text-bv-danger" i18n-label="A game you want, in the landing example" label="On your wishlist" />
                     </li>
                 </ul>
+                } @placeholder {
+                <div class="min-h-[19.25rem] rounded-2xl border border-bv-border bg-bv-surface shadow-sm" data-landing-placeholder></div>
+                }
             </div>
 
             <!-- 04 Share: "How it works" lands here, where the collection turns into a group. -->
@@ -143,6 +159,7 @@
                         Create a group and see everyone’s games in one place, who owns each one, and suggestions that fit the people coming.
                     </p>
                 </div>
+                @defer (on viewport({ rootMargin: '50% 0px' })) {
                 <div class="lg:order-1">
                     <div class="rounded-2xl border border-bv-border bg-bv-surface p-5 shadow-sm">
                         <div class="flex items-baseline justify-between gap-3">
@@ -178,6 +195,9 @@
                         />
                     </div>
                 </div>
+                } @placeholder {
+                <div class="min-h-[24rem] rounded-2xl border border-bv-border bg-bv-surface shadow-sm lg:order-1" data-landing-placeholder></div>
+                }
             </div>
 
             <!-- 05 Plan and remember -->
@@ -189,6 +209,7 @@
                         Set a date and see who’s coming. Afterwards, record what you played and who won, so the next pick is easier.
                     </p>
                 </div>
+                @defer (on viewport({ rootMargin: '50% 0px' })) {
                 <div class="rounded-2xl border border-bv-border bg-bv-surface p-5 shadow-sm">
                     <div class="flex items-center gap-3.5">
                         <p class="flex h-[3.875rem] w-[3.625rem] shrink-0 flex-col items-center justify-center rounded-lg bg-bv-primary leading-none text-bv-on-primary">
@@ -221,6 +242,9 @@
                         }
                     </ul>
                 </div>
+                } @placeholder {
+                <div class="min-h-[25rem] rounded-2xl border border-bv-border bg-bv-surface shadow-sm" data-landing-placeholder></div>
+                }
             </div>
         </div>
     </section>

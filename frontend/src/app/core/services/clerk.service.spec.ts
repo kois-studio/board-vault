@@ -65,6 +65,11 @@ describe('ClerkService appearance', () => {
 })
 
 describe('afterFirstPagePaint', () => {
+    afterEach(() => {
+        vi.useRealTimers()
+        vi.unstubAllGlobals()
+    })
+
     it('waits for the first navigation to finish, then for a painted frame', async () => {
         vi.useFakeTimers()
         const events = new Subject<unknown>()
@@ -79,6 +84,33 @@ describe('afterFirstPagePaint', () => {
         await vi.runAllTimersAsync()
         expect(done).toBe(true)
         vi.useRealTimers()
+    })
+
+    it('waits for the browser to report the first contentful paint, when it can', async () => {
+        let report!: (names: string[]) => void
+        class FakePerformanceObserver {
+            public static readonly supportedEntryTypes = ['paint']
+            constructor(callback: (entries: { getEntriesByName: (name: string) => unknown[] }) => void) {
+                report = (names) => callback({ getEntriesByName: (name) => names.filter((entry) => entry === name) })
+            }
+            public observe(): void {}
+            public disconnect(): void {}
+        }
+        vi.stubGlobal('PerformanceObserver', FakePerformanceObserver)
+        vi.useFakeTimers()
+        const events = new Subject<unknown>()
+        let done = false
+        void afterFirstPagePaint({ events } as unknown as Router).then(() => (done = true))
+
+        events.next(new NavigationEnd(1, '/', '/'))
+        await vi.advanceTimersByTimeAsync(100)
+        report(['first-paint'])
+        await vi.advanceTimersByTimeAsync(100)
+        expect(done).toBe(false)
+
+        report(['first-contentful-paint'])
+        await vi.runAllTimersAsync()
+        expect(done).toBe(true)
     })
 })
 

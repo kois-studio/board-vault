@@ -16,9 +16,9 @@ describe('AdminGamesManageComponent', () => {
         gameAvgDuration: 25,
         minPlayers: 2,
         maxPlayers: 5,
-        translations: { en: 'Hanabi', es: '' },
+        editions: [{ id: 1, languageCode: 'en', title: 'Hanabi', isPrimary: true }],
         tags: [],
-        issues: ['no-artwork', 'no-spanish', 'no-tags'],
+        issues: ['no-artwork', 'no-primary', 'no-tags'],
         artworkSource: null,
         retailPrice: null,
     }

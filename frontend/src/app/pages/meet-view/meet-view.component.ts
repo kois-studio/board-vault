@@ -31,6 +31,7 @@ import { PlayersPipe } from '../../core/pipes/count.pipe'
 import { CustomDatePipe } from '../../core/pipes/customDate.pipe'
 import { CoverAltPipe } from '../../core/pipes/game-title.pipe'
 import { DataService } from '../../core/services/data.service'
+import { ShelfEditionService } from '../../core/services/shelf-edition.service'
 import type { Nullable } from '../../core/types/commons.type'
 import { gameTitle } from '../../core/utils/gameTitle'
 import { canTakePart } from '../../core/utils/groupPeople'
@@ -131,6 +132,7 @@ export class MeetViewComponent {
         private readonly api: Api,
         private readonly route: ActivatedRoute,
         private readonly dataService: DataService,
+        private readonly shelfEditions: ShelfEditionService,
         private readonly toastService: ToastService,
     ) {
         // Show the confirmation once: a reload or a shared link must not say it was just saved.
@@ -315,11 +317,13 @@ export class MeetViewComponent {
         if (!target || !this.meetData || !this.userData || this.ownershipSaving[gameId]) return
         this.ownershipSaving[gameId] = true
         try {
-            await firstValueFrom(
-                target === 'me'
-                    ? this.api.addGameToUserCollection(this.userData.id, gameId)
-                    : this.api.updateGroupPersonOwnership(this.meetData.groupId, Number(target), gameId, 'asserted'),
-            )
+            if (target === 'me') {
+                // A game with several editions asks which one is on the shelf (ADR-0025).
+                const game = this.playedGameDetails.find((candidate) => candidate.id === gameId) ?? {}
+                if (!(await this.shelfEditions.addToShelf(this.userData.id, { id: gameId }, gameTitle(game)))) return
+            } else {
+                await firstValueFrom(this.api.updateGroupPersonOwnership(this.meetData.groupId, Number(target), gameId, 'asserted'))
+            }
             this.ownershipSaved[gameId] = true
             this.dataService.refreshUserGames()
             this.dataService.refreshUserGroups()
@@ -1226,18 +1230,29 @@ export class MeetViewComponent {
         return this.invitedPeople.filter((person) => this.rsvpOf(person) !== 'declined' && this.personOwnsGame(person, gameId))
     }
 
-    bringerOf(gameId: number): { name: string; isMe: boolean } | null {
+    /** `copy` is the edition of the bringer's copy when it is not the title already shown (ADR-0025 rule 1). */
+    bringerOf(gameId: number): { name: string; isMe: boolean; copy: { title: string; language: string } | null } | null {
         const bringer = this.meetData?.gameBringers?.find((entry) => entry.gameId === gameId)
         if (!bringer) return null
+        const shown = this.totalGames.find((game) => game.id === gameId)
+        const copy =
+            bringer.copyTitle && bringer.copyTitleLanguage && (!shown || bringer.copyTitle !== gameTitle(shown))
+                ? { title: bringer.copyTitle, language: bringer.copyTitleLanguage }
+                : null
         if (bringer.accountId !== null) {
             const member = this.groupData?.members.find((entry) => entry.id === bringer.accountId)
             return {
                 name: member?.displayName || member?.username || $localize`:Name shown for a person whose name is not known:Someone`,
                 isMe: bringer.accountId === this.userData?.id,
+                copy,
             }
         }
         const person = this.groupPeople.find((entry) => entry.person.id === bringer.groupPersonId)
-        return { name: person?.person.displayName ?? $localize`:Name shown for a person whose name is not known:Someone`, isMe: false }
+        return {
+            name: person?.person.displayName ?? $localize`:Name shown for a person whose name is not known:Someone`,
+            isMe: false,
+            copy,
+        }
     }
 
     /** You are coming and own the game, so you can say you'll bring it. */

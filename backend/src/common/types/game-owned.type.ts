@@ -1,5 +1,5 @@
-import { ApiProperty, OmitType, PartialType } from '@nestjs/swagger'
-import { IsDateString, IsInt, IsNumber, IsOptional, IsString, MaxLength, Min } from 'class-validator'
+import { ApiProperty, ApiPropertyOptional, OmitType, PartialType } from '@nestjs/swagger'
+import { IsDateString, IsInt, IsNumber, IsOptional, IsString, MaxLength, Min, ValidateIf } from 'class-validator'
 
 // base GameOwned as it comes from db
 export class GameOwnedDto {
@@ -29,6 +29,33 @@ export class GameOwnedDto {
     @IsString()
     @MaxLength(1000)
     purchaseNotes: string | null
+
+    @ApiProperty({
+        example: 7,
+        nullable: true,
+        description: 'The edition of the game this copy is (ADR-0025), or null when the owner has not said.',
+    })
+    editionId: number | null
 }
 
-export class UpdateGameOwnedDto extends PartialType(OmitType(GameOwnedDto, ['accountId', 'gameId'])) {}
+export class UpdateGameOwnedDto extends PartialType(OmitType(GameOwnedDto, ['accountId', 'gameId', 'editionId'])) {}
+
+export class AddGameToCollectionBody {
+    @ApiPropertyOptional({
+        example: 7,
+        description:
+            'The edition of the game the person owns. It must be an edition of that game. Leave out when the game has one edition or the person does not say.',
+    })
+    @IsOptional()
+    @IsInt()
+    @Min(1)
+    editionId?: number
+}
+
+export class SetOwnedEditionBody {
+    @ApiProperty({ example: 7, nullable: true, description: 'The edition this copy is, or null for "not said".' })
+    @ValidateIf((_, value) => value !== null)
+    @IsInt()
+    @Min(1)
+    editionId: number | null
+}

@@ -59,6 +59,16 @@ export class MeetGameBringerDto {
 
     @ApiProperty({ example: null, nullable: true, description: 'The group person bringing the game, when the organizer named one.' })
     groupPersonId: number | null
+
+    @ApiProperty({
+        example: 'Codenames',
+        nullable: true,
+        description: "The title of the edition the bringer's copy is, when they said which (ADR-0025). Null: the game's own title applies.",
+    })
+    copyTitle: string | null
+
+    @ApiProperty({ example: 'en', nullable: true, description: 'The language of `copyTitle`.' })
+    copyTitleLanguage: string | null
 }
 
 export class MeetAttendeeStatusDto {
