@@ -22,6 +22,12 @@ export class NotificationNamedDto {
     name: string
 }
 
+/** A group person, with their account when they have one, so a change someone made to their own games reads as such. */
+export class NotificationPersonDto extends NotificationNamedDto {
+    @ApiProperty({ example: 12, nullable: true, type: Number })
+    accountId: number | null
+}
+
 export class NotificationSessionDto {
     @ApiProperty({ example: 41 })
     id: number
@@ -59,8 +65,8 @@ export class NotificationContextDto {
     @ApiProperty({ type: [NotificationSessionDto] })
     sessions: Array<NotificationSessionDto>
 
-    @ApiProperty({ type: [NotificationNamedDto], description: 'Group people.' })
-    people: Array<NotificationNamedDto>
+    @ApiProperty({ type: [NotificationPersonDto], description: 'Group people.' })
+    people: Array<NotificationPersonDto>
 
     @ApiProperty({ type: [NotificationGameDto] })
     games: Array<NotificationGameDto>

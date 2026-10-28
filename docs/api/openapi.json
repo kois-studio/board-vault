@@ -892,6 +892,9 @@
                 }
               }
             }
+          },
+          "400": {
+            "description": "A member shows the name and avatar of their own profile: only a person without an account is renamed here."
           }
         },
         "security": [
@@ -6255,6 +6258,29 @@
           "timezone"
         ]
       },
+      "NotificationPersonDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number",
+            "example": 3
+          },
+          "name": {
+            "type": "string",
+            "example": "Thursday Crew"
+          },
+          "accountId": {
+            "type": "number",
+            "example": 12,
+            "nullable": true
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "accountId"
+        ]
+      },
       "NotificationGameDto": {
         "type": "object",
         "properties": {
@@ -6303,7 +6329,7 @@
             "description": "Group people.",
             "type": "array",
             "items": {
-              "$ref": "#/components/schemas/NotificationNamedDto"
+              "$ref": "#/components/schemas/NotificationPersonDto"
             }
           },
           "games": {
@@ -7122,12 +7148,19 @@
               "left",
               "deleted"
             ]
+          },
+          "accountId": {
+            "type": "number",
+            "example": 12,
+            "nullable": true,
+            "description": "The account of a person who has one, so an entry can tell someone changing their own games."
           }
         },
         "required": [
           "id",
           "name",
-          "standing"
+          "standing",
+          "accountId"
         ]
       },
       "GroupActivityGameDto": {

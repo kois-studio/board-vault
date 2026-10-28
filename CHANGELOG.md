@@ -297,6 +297,15 @@ operational details.
 
 ### Fixed
 
+- A member shows with the same name and avatar everywhere in a group. Group
+  people, standings, the group's history and notifications showed the name
+  they had when they joined (sometimes their username) after they changed it
+  in Settings → Profile, while the member list and "Owned by" showed the new
+  one. The owner can no longer rename a member through the API, as the app
+  never offered; people without an account are renamed as before.
+- A member changing their own games or preferences reads as such in the
+  group's history and in notifications: "Ana said they have Catan" instead of
+  "Ana said Ana has Catan", in every language.
 - Game titles on Home and the group pages show in the page's language, and
   a few Spanish, French, German, and Italian texts there read more naturally
   and without gendered forms.

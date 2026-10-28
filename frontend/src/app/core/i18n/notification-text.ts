@@ -21,7 +21,8 @@ function wordNotification(notification: NotificationType, context: NotificationC
         return found.deleted || !found.name ? $localize`:A person whose account was deleted:Deleted account` : found.name
     }
     const group = context.groups.find((item) => item.id === data['group'])?.name ?? null
-    const person = context.people.find((item) => item.id === data['person'])?.name ?? null
+    const groupPerson = context.people.find((item) => item.id === data['person'])
+    const person = groupPerson?.name ?? null
     const session = context.sessions.find((item) => item.id === data['meeting'])
     const when = session
         ? formatDateTime(
@@ -58,7 +59,11 @@ function wordNotification(notification: NotificationType, context: NotificationC
         case 'group_person_changed': {
             const game = titles.get(data['game'] as number) ?? null
             if (!actor || !person || !game || !group) return null
-            return groupPersonChange(String(data['change'] ?? ''), actor, person, game, group)
+            // A member changing their own games: "Ana said they have Catan", not "Ana said Ana has Catan".
+            const own = typeof groupPerson?.accountId === 'number' && groupPerson.accountId === data['account']
+            return own
+                ? ownChange(String(data['change'] ?? ''), actor, game, group)
+                : groupPersonChange(String(data['change'] ?? ''), actor, person, game, group)
         }
         case 'game_proposal_approved':
             return typeof data['gameTitle'] === 'string' ? $localize`Your game proposal "${data['gameTitle']}:title:" was approved!` : null
@@ -73,6 +78,23 @@ function wordNotification(notification: NotificationType, context: NotificationC
             const sentence = $localize`Your game proposal "${data['gameTitle']}:title:" is already in Board Vault as "${data['duplicateOfTitle']}:existingTitle:".`
             return typeof data['reviewNotes'] === 'string' && data['reviewNotes'] ? `${sentence} ${data['reviewNotes']}` : sentence
         }
+        default:
+            return null
+    }
+}
+
+function ownChange(change: string, actor: string, game: string, group: string): string | null {
+    switch (change) {
+        case 'owned':
+            return $localize`:Notification, someone changing their own games or preferences in a group; person is a name, game is a game title:${actor}:person: said they have ${game}:game:, in ${group}:group:.`
+        case 'not_owned':
+            return $localize`:Notification, someone changing their own games or preferences in a group; person is a name, game is a game title:${actor}:person: removed ${game}:game: from their games in ${group}:group:.`
+        case 'unsure':
+            return $localize`:Notification, someone changing their own games or preferences in a group; person is a name, game is a game title:${actor}:person: isn’t sure they have ${game}:game:, in ${group}:group:.`
+        case 'preference':
+            return $localize`:Notification, someone changing their own games or preferences in a group; person is a name, game is a game title:${actor}:person: changed how much they like ${game}:game:, in ${group}:group:.`
+        case 'preference_removed':
+            return $localize`:Notification, someone changing their own games or preferences in a group; person is a name, game is a game title:${actor}:person: removed what they think of ${game}:game:, in ${group}:group:.`
         default:
             return null
     }

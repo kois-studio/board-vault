@@ -84,6 +84,10 @@ export class GroupPeopleController {
     @Patch('groups/:groupId/people/:personId')
     @ApiOperation({ summary: 'Update or archive a group person' })
     @ApiResponse({ status: 200, type: GroupPersonDto })
+    @ApiResponse({
+        status: 400,
+        description: 'A member shows the name and avatar of their own profile: only a person without an account is renamed here.',
+    })
     updatePerson(
         @Req() request: { user: { userId: number } },
         @Param('groupId', ParseIntPipe) groupId: number,

@@ -29,8 +29,22 @@ function personNames(entry: GroupActivityType, key: string): Array<string> {
     return ids(entry, key).map((id) => activityName(entry.people.find((person) => person.id === id)))
 }
 
-/** "Rita said Pedro likes Catan", one sentence per preference. */
-function preferenceSet(actor: string, person: string, game: string, preference: unknown): string {
+/** "Rita said Pedro likes Catan", one sentence per preference; "Rita said they like Catan" for their own. */
+function preferenceSet(actor: string, person: string, game: string, preference: unknown, own: boolean): string {
+    if (own) {
+        switch (preference) {
+            case 'favorite':
+                return $localize`:Group history line, someone changing their own games or preferences; actor is a name, game is a game title:${actor}:actor: said they have ${game}:game: as a favourite`
+            case 'like':
+                return $localize`:Group history line, someone changing their own games or preferences; actor is a name, game is a game title:${actor}:actor: said they like ${game}:game:`
+            case 'neutral':
+                return $localize`:Group history line, someone changing their own games or preferences; actor is a name, game is a game title:${actor}:actor: said they don’t mind ${game}:game:`
+            case 'avoid':
+                return $localize`:Group history line, someone changing their own games or preferences; actor is a name, game is a game title:${actor}:actor: said they would rather not play ${game}:game:`
+            default:
+                return $localize`:Group history line, someone changing their own games or preferences; actor is a name, game is a game title:${actor}:actor: said they have an opinion on ${game}:game:`
+        }
+    }
     switch (preference) {
         case 'favorite':
             return $localize`:Group history line; actor and person are names, game is a game title:${actor}:actor: said ${person}:person: has ${game}:game: as a favourite`
@@ -53,6 +67,8 @@ export function describeActivity(entry: GroupActivityType): string {
     const actor = activityName(entry.actor)
     const person = activityName(entry.person)
     const game = entry.game?.title ?? aGame()
+    // A member changing their own games or preferences: "Ana said they have Catan", not "Ana said Ana has Catan".
+    const own = typeof entry.person?.accountId === 'number' && entry.person.accountId === entry.actor.id
 
     switch (entry.type) {
         case 'session_planned':
@@ -155,6 +171,15 @@ export function describeActivity(entry: GroupActivityType): string {
             return $localize`:Group history line, someone linking a group person to their own account; actor and person are names:${actor}:actor: linked ${person}:person: to their account`
         case 'person_game_set': {
             const status = entry.data['status']
+            if (own) {
+                if (status === 'asserted')
+                    return $localize`:Group history line, someone changing their own games or preferences; actor is a name, game is a game title:${actor}:actor: said they have ${game}:game:`
+                if (status === 'disputed')
+                    return $localize`:Group history line, someone changing their own games or preferences; actor is a name, game is a game title:${actor}:actor: isn’t sure they have ${game}:game:`
+                if (entry.data['previousStatus'] === 'asserted')
+                    return $localize`:Group history line, someone changing their own games or preferences; actor is a name, game is a game title:${actor}:actor: removed ${game}:game: from their games`
+                return $localize`:Group history line, someone changing their own games or preferences; actor is a name, game is a game title:${actor}:actor: said they don’t have ${game}:game:`
+            }
             if (status === 'asserted')
                 return $localize`:Group history line; actor and person are names, game is a game title:${actor}:actor: said ${person}:person: has ${game}:game:`
             if (status === 'disputed')
@@ -164,8 +189,10 @@ export function describeActivity(entry: GroupActivityType): string {
             return $localize`:Group history line; actor and person are names, game is a game title:${actor}:actor: said ${person}:person: doesn’t have ${game}:game:`
         }
         case 'person_preference_set':
-            return preferenceSet(actor, person, game, entry.data['preference'])
+            return preferenceSet(actor, person, game, entry.data['preference'], own)
         case 'person_preference_removed':
+            if (own)
+                return $localize`:Group history line, someone changing their own games or preferences; actor is a name, game is a game title:${actor}:actor: removed what they think of ${game}:game:`
             return $localize`:Group history line; actor and person are names, game is a game title:${actor}:actor: removed what ${person}:person: thinks of ${game}:game:`
         case 'member_joined':
             return $localize`:Group history line; actor is a name:${actor}:actor: joined the group`
