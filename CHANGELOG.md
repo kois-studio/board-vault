@@ -113,6 +113,9 @@ operational details.
 
 ### Changed
 
+- Administration → Tags shows Edit, Merge and Delete on each tag as icon
+  buttons (pencil, merge, bin) that name the action on hover, and on phones
+  they stay on the right of a long tag name.
 - Home shows every group as its full card, stacked, when there are several:
   people, the invite nudge, and What to play, Library and History for each,
   with the last or next night under the name and the pin on the card's
