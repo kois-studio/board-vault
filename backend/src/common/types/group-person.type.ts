@@ -108,6 +108,17 @@ export class GroupPersonGameOwnershipDto {
 
     @ApiProperty({ example: '2026-09-25 12:00:00' })
     updatedAt: string
+
+    @ApiProperty({
+        example: 'Codenames',
+        nullable: true,
+        description:
+            "For a game from a linked account's shelf: the title of the edition that copy is, when its owner said which (ADR-0025). Null: the game's own title applies.",
+    })
+    copyTitle: string | null
+
+    @ApiProperty({ example: 'en', nullable: true, description: 'The language of `copyTitle`.' })
+    copyTitleLanguage: string | null
 }
 
 export class UpdateGroupPersonOwnershipBody {

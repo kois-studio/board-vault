@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger'
-import { Transform } from 'class-transformer'
-import { IsIn, IsInt, IsNotEmpty, IsOptional, IsString, MaxLength, Min } from 'class-validator'
+import { Transform, Type } from 'class-transformer'
+import { ArrayMaxSize, IsArray, IsIn, IsInt, IsNotEmpty, IsOptional, IsString, MaxLength, Min, ValidateNested } from 'class-validator'
 
 import { IsArtworkUrl } from '../validators/is-artwork-url.js'
 
@@ -10,6 +10,22 @@ import { UserPublicDto } from './user.type.js'
  * Base GameProposal as it comes from db
  */
 export type GameProposalAddTo = 'shelf' | 'wishlist'
+
+/** A title of a proposed game in another language. */
+export class ProposalOtherTitleDto {
+    @ApiProperty({ example: 'es', description: 'BCP 47 language of the title.' })
+    @IsString()
+    @MaxLength(16)
+    languageCode: string
+
+    @ApiProperty({ example: 'Los colonos de Catán' })
+    // Trimmed first, so a title of only spaces is empty and rejected.
+    @Transform(({ value }) => (typeof value === 'string' ? value.trim() : value))
+    @IsString()
+    @IsNotEmpty()
+    @MaxLength(200)
+    title: string
+}
 
 export class GameProposalDto {
     @ApiProperty({ example: 12345 })
@@ -27,6 +43,12 @@ export class GameProposalDto {
 
     @ApiProperty({ example: 'Catan', description: 'Game title' })
     title: string
+
+    @ApiProperty({ example: 'en', description: 'The language of `title`. Proposals made before languages were recorded read as English.' })
+    titleLanguage: string
+
+    @ApiProperty({ type: [ProposalOtherTitleDto], description: "The game's title in other languages, when the proposer knew them." })
+    otherTitles: Array<ProposalOtherTitleDto>
 
     @ApiProperty({
         example: 'https://www.example.com/image.jpg',
@@ -123,6 +145,28 @@ export class CreateGameProposalBody {
     @IsNotEmpty()
     @MaxLength(200)
     title: string
+
+    @ApiProperty({
+        example: 'de',
+        required: false,
+        description: 'The language of `title`, such as "de" or "pt-BR". Default: the reader\'s interface language (Accept-Language).',
+    })
+    @IsOptional()
+    @IsString()
+    @MaxLength(16)
+    titleLanguage?: string
+
+    @ApiProperty({
+        type: [ProposalOtherTitleDto],
+        required: false,
+        description: "The game's title in other languages: at most 10, one per language, none in the language of `title`.",
+    })
+    @IsOptional()
+    @IsArray()
+    @ArrayMaxSize(10)
+    @ValidateNested({ each: true })
+    @Type(() => ProposalOtherTitleDto)
+    otherTitles?: ProposalOtherTitleDto[]
 
     @ApiProperty({
         example: 'https://www.example.com/image.jpg',

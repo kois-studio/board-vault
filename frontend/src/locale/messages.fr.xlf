@@ -6,7 +6,7 @@
       </notes>
       <segment state="translated">
         <source>Fits <ph id="0" equiv="players" disp="players"/> players</source>
-        <target>Pour <ph id="0" equiv="players" disp="players"/> personnes</target>
+        <target>Pour <ph id="0" equiv="players" disp="players"/> joueurs</target>
       </segment>
     </unit>
     <unit id="1006147056168230215">
@@ -240,7 +240,7 @@
       </notes>
       <segment state="translated">
         <source>Cancel this game night?</source>
-        <target>Annuler cette soirée jeux ?</target>
+        <target>Annuler cette soirée jeux ?</target>
       </segment>
     </unit>
     <unit id="1118178001556987002">
@@ -354,7 +354,7 @@
     <unit id="1200295485288897600">
       <segment state="translated">
         <source>Your game proposal &quot;<ph id="0" equiv="title" disp="data[&apos;gameTitle&apos;]"/>&quot; was approved!</source>
-        <target>Ta proposition de jeu « <ph id="0" equiv="title" disp="data[&apos;gameTitle&apos;]"/> » a été acceptée !</target>
+        <target>Ta proposition de jeu « <ph id="0" equiv="title" disp="data[&apos;gameTitle&apos;]"/> » a été acceptée !</target>
       </segment>
     </unit>
     <unit id="1211771464911319805">
@@ -513,7 +513,7 @@
     <unit id="1289605213459398820">
       <segment state="translated">
         <source>Your game proposal &quot;<ph id="0" equiv="title" disp="data[&apos;gameTitle&apos;]"/>&quot; is already in Board Vault as &quot;<ph id="1" equiv="existingTitle" disp="data[&apos;duplicateOfTitle&apos;]"/>&quot;.</source>
-        <target>Ta proposition de jeu « <ph id="0" equiv="title" disp="data[&apos;gameTitle&apos;]"/> » est déjà dans Board Vault sous le nom « <ph id="1" equiv="existingTitle" disp="data[&apos;duplicateOfTitle&apos;]"/> ».</target>
+        <target>Ta proposition de jeu « <ph id="0" equiv="title" disp="data[&apos;gameTitle&apos;]"/> » est déjà dans Board Vault sous le nom « <ph id="1" equiv="existingTitle" disp="data[&apos;duplicateOfTitle&apos;]"/> ».</target>
       </segment>
     </unit>
     <unit id="1292985735794176989">
@@ -532,6 +532,15 @@
       <segment state="translated">
         <source><ph id="0" equiv="group" disp="group"/> history</source>
         <target>Historique de <ph id="0" equiv="group" disp="group"/></target>
+      </segment>
+    </unit>
+    <unit id="1307312122579659057">
+      <notes>
+        <note category="description">Choice in the edition chooser for someone who does not know or does not want to say which edition they own</note>
+      </notes>
+      <segment state="translated">
+        <source>I’m not sure</source>
+        <target>Je ne sais pas</target>
       </segment>
     </unit>
     <unit id="1313010108209054073">
@@ -839,7 +848,7 @@
       </notes>
       <segment state="translated">
         <source>Who played <ph id="0" equiv="INTERPOLATION" disp="{{ getGameTitle(selection.game) }}"/>?</source>
-        <target>Qui a joué à <ph id="0" equiv="INTERPOLATION" disp="{{ getGameTitle(selection.game) }}"/> ?</target>
+        <target>Qui a joué à <ph id="0" equiv="INTERPOLATION" disp="{{ getGameTitle(selection.game) }}"/> ?</target>
       </segment>
     </unit>
     <unit id="1514311279156634171">
@@ -1182,15 +1191,6 @@
         <target>Collection</target>
       </segment>
     </unit>
-    <unit id="1687843960576683654">
-      <notes>
-        <note category="description">Name of the list of faces on a group card on Home</note>
-      </notes>
-      <segment state="translated">
-        <source>People in this group</source>
-        <target>Personnes de ce groupe</target>
-      </segment>
-    </unit>
     <unit id="1688683156203780908">
       <notes>
         <note category="description">Greeting on Home for a new account; the placeholder is your name</note>
@@ -1323,7 +1323,7 @@
       </notes>
       <segment state="translated">
         <source>What are you in the mood for?</source>
-        <target>De quoi avez-vous envie ?</target>
+        <target>De quoi avez-vous envie ?</target>
       </segment>
     </unit>
     <unit id="1775054142380666131">
@@ -1344,6 +1344,15 @@
         <target>Le presse-papiers n’est pas accessible ; utilise « Ouvrir le lien ».</target>
       </segment>
     </unit>
+    <unit id="1790637555628658675">
+      <notes>
+        <note category="description">Name of the field where a language code is typed</note>
+      </notes>
+      <segment state="translated">
+        <source>Language code</source>
+        <target>Code de langue</target>
+      </segment>
+    </unit>
     <unit id="1790722701366905577">
       <notes>
         <note category="description">Under a game that none of the people coming to a game night own</note>
@@ -1362,6 +1371,15 @@
         <target>{VAR_PLURAL, plural, one {<ph id="0" equiv="INTERPOLATION"/> refus} other {<ph id="1" equiv="INTERPOLATION"/> refus}}</target>
       </segment>
     </unit>
+    <unit id="180215682275041064">
+      <notes>
+        <note category="description">Label of the button that removes a row of other titles; the language name follows</note>
+      </notes>
+      <segment state="translated">
+        <source>Remove the title in <ph id="0" equiv="language" disp="row.languageCode ? languageName(row.languageCode) : &apos;…&apos;"/></source>
+        <target>Retirer le titre en <ph id="0" equiv="language" disp="row.languageCode ? languageName(row.languageCode) : &apos;…&apos;"/></target>
+      </segment>
+    </unit>
     <unit id="1804981326505301788">
       <notes>
         <note category="description">Accessible name of the numbers at the top of your own page</note>
@@ -1378,6 +1396,15 @@
       <segment state="translated">
         <source>Review the games and preferences recorded for <ph id="0" equiv="INTERPOLATION" disp="{{ claimablePerson.person.displayName }}"/>, then link that history to your account.</source>
         <target>Vérifie les jeux et préférences enregistrés pour <ph id="0" equiv="INTERPOLATION" disp="{{ claimablePerson.person.displayName }}"/>, puis lie cet historique à ton compte.</target>
+      </segment>
+    </unit>
+    <unit id="1824005036025311052">
+      <notes>
+        <note category="description">Button on the game page that asks again which edition of the game you own</note>
+      </notes>
+      <segment state="translated">
+        <source>Change edition</source>
+        <target>Changer d’édition</target>
       </segment>
     </unit>
     <unit id="1826151550199685921">
@@ -1683,7 +1710,7 @@
       </notes>
       <segment state="translated">
         <source>This group already has a night on this day. Is it the one you mean?</source>
-        <target>Ce groupe a déjà une soirée ce jour-là. Est-ce celle que tu cherches ?</target>
+        <target>Ce groupe a déjà une soirée ce jour-là. Est-ce celle que tu cherches ?</target>
       </segment>
     </unit>
     <unit id="1968746440402555823">
@@ -1957,7 +1984,7 @@
     <unit id="2120057704151430913">
       <segment state="translated">
         <source><ph id="0" equiv="person" disp="actor"/> planned a game night in <ph id="1" equiv="group" disp="group"/> for <ph id="2" equiv="date" disp="when"/>. Can you make it?</source>
-        <target><ph id="0" equiv="person" disp="actor"/> a prévu une soirée jeux dans <ph id="1" equiv="group" disp="group"/> pour le <ph id="2" equiv="date" disp="when"/>. Tu peux venir ?</target>
+        <target><ph id="0" equiv="person" disp="actor"/> a prévu une soirée jeux dans <ph id="1" equiv="group" disp="group"/> pour le <ph id="2" equiv="date" disp="when"/>. Tu peux venir ?</target>
       </segment>
     </unit>
     <unit id="2126199240204318418">
@@ -1966,7 +1993,7 @@
       </notes>
       <segment state="translated">
         <source>Could not save the shortlist. Your previous shortlist is still active; try again.</source>
-        <target>Impossible d’enregistrer la présélection. L’ancienne est toujours active ; réessaie.</target>
+        <target>Impossible d’enregistrer la présélection. L’ancienne est toujours active ; réessaie.</target>
       </segment>
     </unit>
     <unit id="2129729292853557788">
@@ -2043,7 +2070,7 @@
     </unit>
     <unit id="2159130950882492111">
       <notes>
-        <note category="description">Button that stops editing your display name without saving</note>
+        <note category="description">Button that closes the edition chooser without saving</note>
       </notes>
       <segment state="translated">
         <source>Cancel</source>
@@ -2246,7 +2273,7 @@
       </notes>
       <segment state="translated">
         <source>Last played <ph id="0" equiv="date" disp="this.customDate.transform(lastPlayedAt)"/></source>
-        <target>Dernière partie : <ph id="0" equiv="date" disp="this.customDate.transform(lastPlayedAt)"/></target>
+        <target>Dernière partie : <ph id="0" equiv="date" disp="this.customDate.transform(lastPlayedAt)"/></target>
       </segment>
     </unit>
     <unit id="2294181630533466151">
@@ -2615,7 +2642,7 @@
       </notes>
       <segment state="translated">
         <source>Unread: </source>
-        <target>Non lue : </target>
+        <target>Non lue : </target>
       </segment>
     </unit>
     <unit id="2476720291978934849">
@@ -2642,7 +2669,7 @@
       </notes>
       <segment state="translated">
         <source>For example: at Ana’s place, bring snacks.</source>
-        <target>Par exemple : chez Ana, apportez de quoi grignoter.</target>
+        <target>Par exemple : chez Ana, apportez de quoi grignoter.</target>
       </segment>
     </unit>
     <unit id="2485595059919735658">
@@ -2994,7 +3021,7 @@
       </notes>
       <segment state="translated">
         <source>Vote for what you’d play; the most wanted games go first. Add more from the suggestions below.</source>
-        <target>Vote pour ce à quoi tu jouerais ; les jeux les plus demandés passent en premier. Ajoutes-en d’autres depuis les suggestions ci-dessous.</target>
+        <target>Vote pour ce à quoi tu jouerais ; les jeux les plus demandés passent en premier. Ajoutes-en d’autres depuis les suggestions ci-dessous.</target>
       </segment>
     </unit>
     <unit id="2643703668230155641">
@@ -3273,6 +3300,15 @@
         <target>Trop de vérifications sont en attente sur ce compte. Supprimez une adresse e-mail, un numéro de téléphone ou un portefeuille non vérifié dont vous n’avez plus besoin, ou attendez quelques minutes qu’une clé de sécurité à moitié configurée expire, puis réessayez.</target>
       </segment>
     </unit>
+    <unit id="2808459010951137562">
+      <notes>
+        <note category="description">Button that adds a row for a title in another language</note>
+      </notes>
+      <segment state="translated">
+        <source>Add a title</source>
+        <target>Ajouter un titre</target>
+      </segment>
+    </unit>
     <unit id="281153916191694572">
       <notes>
         <note category="description">Link at the top of the avatar menu to the signed-in person&apos;s own page</note>
@@ -3396,7 +3432,7 @@
       </notes>
       <segment state="translated">
         <source>No game matches “<ph id="0" equiv="INTERPOLATION" disp="{{ gameQuery() }}"/>”.</source>
-        <target>Aucun jeu ne correspond à « <ph id="0" equiv="INTERPOLATION" disp="{{ gameQuery() }}"/> ».</target>
+        <target>Aucun jeu ne correspond à « <ph id="0" equiv="INTERPOLATION" disp="{{ gameQuery() }}"/> ».</target>
       </segment>
     </unit>
     <unit id="2863930478372071829">
@@ -3759,7 +3795,7 @@
       </notes>
       <segment state="translated">
         <source>Fits <ph id="0" equiv="players" disp="players"/> player</source>
-        <target>Pour <ph id="0" equiv="players" disp="players"/> personne</target>
+        <target>Pour <ph id="0" equiv="players" disp="players"/> joueur</target>
       </segment>
     </unit>
     <unit id="30921813512214027">
@@ -3796,6 +3832,15 @@
       <segment state="translated">
         <source>Nothing marked yet. Tap a game below when the group starts playing it.</source>
         <target>Rien de marqué pour l’instant. Touche un jeu ci-dessous quand le groupe commence à y jouer.</target>
+      </segment>
+    </unit>
+    <unit id="3111885274191005376">
+      <notes>
+        <note category="description">Confirmation after changing which edition of a game you own</note>
+      </notes>
+      <segment state="translated">
+        <source>Edition saved</source>
+        <target>Édition enregistrée</target>
       </segment>
     </unit>
     <unit id="3117578262676715596">
@@ -3991,7 +4036,7 @@
       </notes>
       <segment state="translated">
         <source>Happening now: <ph id="0" equiv="INTERPOLATION" disp="{{ getGroupName(next.groupId) }}"/> · <ph id="1" equiv="INTERPOLATION_1" disp="{{ relativeDay(next.meetDate) }}"/></source>
-        <target>En cours : <ph id="0" equiv="INTERPOLATION" disp="{{ getGroupName(next.groupId) }}"/> · <ph id="1" equiv="INTERPOLATION_1" disp="{{ relativeDay(next.meetDate) }}"/></target>
+        <target>En cours : <ph id="0" equiv="INTERPOLATION" disp="{{ getGroupName(next.groupId) }}"/> · <ph id="1" equiv="INTERPOLATION_1" disp="{{ relativeDay(next.meetDate) }}"/></target>
       </segment>
     </unit>
     <unit id="3221346974013206065">
@@ -4283,15 +4328,6 @@
         <target><ph id="0" equiv="actor" disp="actor"/> vient à une soirée jeux</target>
       </segment>
     </unit>
-    <unit id="3376307529362264656">
-      <notes>
-        <note category="description">Placeholder of the search field on Browse</note>
-      </notes>
-      <segment state="translated">
-        <source>Search by title, in English or Spanish</source>
-        <target>Recherche par titre, en anglais ou en espagnol</target>
-      </segment>
-    </unit>
     <unit id="3386246347342903734">
       <notes>
         <note category="description">Heading of the closing call to action on the landing page</note>
@@ -4325,7 +4361,7 @@
       </notes>
       <segment state="translated">
         <source>Playing right now? <pc id="0" equivStart="START_TAG_BUTTON" equivEnd="CLOSE_TAG_BUTTON" type="other" dispStart="&lt;button type=&quot;button&quot; class=&quot;font-semibold text-bv-primary hover:underline&quot; (click)=&quot;switchToLive()&quot;&gt;" dispEnd="&lt;/button&gt;">Start the night live</pc> and add games as you go.</source>
-        <target>Vous jouez en ce moment ? <pc id="0" equivStart="START_TAG_BUTTON" equivEnd="CLOSE_TAG_BUTTON" type="other" dispStart="&lt;button type=&quot;button&quot; class=&quot;font-semibold text-bv-primary hover:underline&quot; (click)=&quot;switchToLive()&quot;&gt;" dispEnd="&lt;/button&gt;">Lance la soirée en direct</pc> et ajoute les jeux au fur et à mesure.</target>
+        <target>Vous jouez en ce moment ? <pc id="0" equivStart="START_TAG_BUTTON" equivEnd="CLOSE_TAG_BUTTON" type="other" dispStart="&lt;button type=&quot;button&quot; class=&quot;font-semibold text-bv-primary hover:underline&quot; (click)=&quot;switchToLive()&quot;&gt;" dispEnd="&lt;/button&gt;">Lance la soirée en direct</pc> et ajoute les jeux au fur et à mesure.</target>
       </segment>
     </unit>
     <unit id="339519880898510125">
@@ -4650,7 +4686,7 @@
       </notes>
       <segment state="translated">
         <source>Once a session is complete it shows up here: who came, what you played, and any notes.</source>
-        <target>Une fois terminée, une soirée apparaît ici : qui est venu, à quoi vous avez joué et les notes.</target>
+        <target>Une fois terminée, une soirée apparaît ici : qui est venu, à quoi vous avez joué et les notes.</target>
       </segment>
     </unit>
     <unit id="35756903740128492">
@@ -4705,6 +4741,15 @@
       <segment state="translated">
         <source>Getting set up</source>
         <target>Pour bien démarrer</target>
+      </segment>
+    </unit>
+    <unit id="3614057461352661644">
+      <notes>
+        <note category="description">Name of the list of faces on a group card on Home</note>
+      </notes>
+      <segment state="translated">
+        <source>People in <ph id="0" equiv="group" disp="this.group().name"/></source>
+        <target>Personnes dans <ph id="0" equiv="group" disp="this.group().name"/></target>
       </segment>
     </unit>
     <unit id="3635224618020757014">
@@ -4833,6 +4878,15 @@
         <target>Impossible de copier le lien ; utilise « Ouvrir le lien ».</target>
       </segment>
     </unit>
+    <unit id="3695816730555625996">
+      <notes>
+        <note category="description">Label of the language selector under the game title in the propose-a-game form</note>
+      </notes>
+      <segment state="translated">
+        <source>Language of the title</source>
+        <target>Langue du titre</target>
+      </segment>
+    </unit>
     <unit id="3711889941704624217">
       <notes>
         <note category="description">Label on a game proposal: the picture it suggests</note>
@@ -4857,7 +4911,7 @@
       </notes>
       <segment state="translated">
         <source>How long do you have?</source>
-        <target>Combien de temps avez-vous ?</target>
+        <target>Combien de temps avez-vous ?</target>
       </segment>
     </unit>
     <unit id="3716963987837273697">
@@ -5005,9 +5059,18 @@
         <target>Classement</target>
       </segment>
     </unit>
+    <unit id="3768264297677107657">
+      <notes>
+        <note category="description">Placeholder of the search field on Browse</note>
+      </notes>
+      <segment state="translated">
+        <source>Search by title</source>
+        <target>Rechercher par titre</target>
+      </segment>
+    </unit>
     <unit id="3768927257183755959">
       <notes>
-        <note category="description">Button that saves your new display name</note>
+        <note category="description">Button that saves the edition chosen in the edition chooser for a game already in My Games</note>
       </notes>
       <segment state="translated">
         <source>Save</source>
@@ -5083,7 +5146,7 @@
       </notes>
       <segment state="translated">
         <source>None of their games match “<ph id="0" equiv="INTERPOLATION" disp="{{ gameQuery() }}"/>”.</source>
-        <target>Aucun de leurs jeux ne correspond à « <ph id="0" equiv="INTERPOLATION" disp="{{ gameQuery() }}"/> ».</target>
+        <target>Aucun de leurs jeux ne correspond à « <ph id="0" equiv="INTERPOLATION" disp="{{ gameQuery() }}"/> ».</target>
       </segment>
     </unit>
     <unit id="3818674493124644050">
@@ -5135,7 +5198,7 @@
     <unit id="3841095492114279113">
       <segment state="translated">
         <source>Your game proposal &quot;<ph id="0" equiv="title" disp="data[&apos;gameTitle&apos;]"/>&quot; was rejected: <ph id="1" equiv="reason" disp="data[&apos;reviewNotes&apos;]"/></source>
-        <target>Ta proposition de jeu « <ph id="0" equiv="title" disp="data[&apos;gameTitle&apos;]"/> » a été refusée : <ph id="1" equiv="reason" disp="data[&apos;reviewNotes&apos;]"/></target>
+        <target>Ta proposition de jeu « <ph id="0" equiv="title" disp="data[&apos;gameTitle&apos;]"/> » a été refusée : <ph id="1" equiv="reason" disp="data[&apos;reviewNotes&apos;]"/></target>
       </segment>
     </unit>
     <unit id="3848463043339307213">
@@ -5208,7 +5271,7 @@
       </notes>
       <segment state="translated">
         <source>A separate gathering? Carry on here.</source>
-        <target>Une autre rencontre ? Continue ici.</target>
+        <target>Une autre rencontre ? Continue ici.</target>
       </segment>
     </unit>
     <unit id="3881461726062003333">
@@ -5271,7 +5334,7 @@
       </notes>
       <segment state="translated">
         <source>Who is coming?</source>
-        <target>Qui vient ?</target>
+        <target>Qui vient ?</target>
       </segment>
     </unit>
     <unit id="3899897295778943071">
@@ -5635,7 +5698,7 @@
       </notes>
       <segment state="translated">
         <source>Could not save the results. Your changes are still in the form; try again.</source>
-        <target>Impossible d’enregistrer les résultats. Tes modifications sont toujours dans le formulaire ; réessaie.</target>
+        <target>Impossible d’enregistrer les résultats. Tes modifications sont toujours dans le formulaire ; réessaie.</target>
       </segment>
     </unit>
     <unit id="4053701949944299149">
@@ -5654,6 +5717,16 @@
       <segment state="translated">
         <source>Filter by tags</source>
         <target>Filtrer par étiquettes</target>
+      </segment>
+    </unit>
+    <unit id="4057862988487622358">
+      <notes>
+        <note category="description">Last option of a language list, to type any other language code</note>
+        <note category="meaning">language option</note>
+      </notes>
+      <segment state="translated">
+        <source>Other…</source>
+        <target>Autre…</target>
       </segment>
     </unit>
     <unit id="4057932224780575479">
@@ -5833,7 +5906,7 @@
       </notes>
       <segment state="translated">
         <source>Borrowed or just bought? Recording a game doesn’t add it to anyone’s collection.</source>
-        <target>Emprunté ou tout juste acheté ? Enregistrer un jeu ne l’ajoute à la collection de personne.</target>
+        <target>Emprunté ou tout juste acheté ? Enregistrer un jeu ne l’ajoute à la collection de personne.</target>
       </segment>
     </unit>
     <unit id="413249134650595008">
@@ -6220,7 +6293,7 @@
       </notes>
       <segment state="translated">
         <source>Owned by <ph id="0" equiv="owners" disp="owners"/> of <ph id="1" equiv="people" disp="attendees"/> selected people</source>
-        <target>Dans la collection de <ph id="0" equiv="owners" disp="owners"/> des <ph id="1" equiv="people" disp="attendees"/> personnes choisies</target>
+        <target><ph id="0" equiv="owners" disp="owners"/> des <ph id="1" equiv="people" disp="attendees"/> personnes choisies l’ont</target>
       </segment>
     </unit>
     <unit id="4292370937084065936">
@@ -6367,6 +6440,15 @@
         <target>Aucun de tes jeux ne correspond à ces filtres.</target>
       </segment>
     </unit>
+    <unit id="4406973836784974418">
+      <notes>
+        <note category="description">Label of the list of editions in the edition chooser</note>
+      </notes>
+      <segment state="translated">
+        <source>Editions</source>
+        <target>Éditions</target>
+      </segment>
+    </unit>
     <unit id="4409631049692082621">
       <notes>
         <note category="description">Account settings, when the username you chose in the sign-in panel belongs to another Board Vault account; the placeholders are the new username and the one your groups still see</note>
@@ -6472,7 +6554,7 @@
       </notes>
       <segment state="translated">
         <source>Score <ph id="0" equiv="INTERPOLATION" disp="{{ roundScore(play.position, person) }}"/></source>
-        <target>Score : <ph id="0" equiv="INTERPOLATION" disp="{{ roundScore(play.position, person) }}"/></target>
+        <target>Score : <ph id="0" equiv="INTERPOLATION" disp="{{ roundScore(play.position, person) }}"/></target>
       </segment>
     </unit>
     <unit id="4493418406674855888">
@@ -6490,7 +6572,7 @@
       </notes>
       <segment state="translated">
         <source>Last: <ph id="0" equiv="INTERPOLATION" disp="{{ getGroupName(last.meetData.groupId) }}"/> · <ph id="1" equiv="INTERPOLATION_1" disp="{{ relativeDay(last.meetData.meetDate) }}"/></source>
-        <target>Dernière : <ph id="0" equiv="INTERPOLATION" disp="{{ getGroupName(last.meetData.groupId) }}"/> · <ph id="1" equiv="INTERPOLATION_1" disp="{{ relativeDay(last.meetData.meetDate) }}"/></target>
+        <target>Dernière : <ph id="0" equiv="INTERPOLATION" disp="{{ getGroupName(last.meetData.groupId) }}"/> · <ph id="1" equiv="INTERPOLATION_1" disp="{{ relativeDay(last.meetData.meetDate) }}"/></target>
       </segment>
     </unit>
     <unit id="4495457554525951237">
@@ -6509,6 +6591,15 @@
       <segment state="translated">
         <source>Yesterday</source>
         <target>Hier</target>
+      </segment>
+    </unit>
+    <unit id="4501800346302358695">
+      <notes>
+        <note category="description">Button that adds the game to My Games with the edition chosen in the edition chooser</note>
+      </notes>
+      <segment state="translated">
+        <source>Add to My Games</source>
+        <target>Ajouter à Mes jeux</target>
       </segment>
     </unit>
     <unit id="4505288544316005654">
@@ -6770,7 +6861,7 @@
       </notes>
       <segment state="translated">
         <source>Estimated duration: <ph id="0" equiv="minutes" disp="values[&apos;minutes&apos;] ?? 0"/> minutes</source>
-        <target>Durée estimée : <ph id="0" equiv="minutes" disp="values[&apos;minutes&apos;] ?? 0"/> minutes</target>
+        <target>Durée estimée : <ph id="0" equiv="minutes" disp="values[&apos;minutes&apos;] ?? 0"/> minutes</target>
       </segment>
     </unit>
     <unit id="4686641492334111502">
@@ -6807,7 +6898,7 @@
       </notes>
       <segment state="translated">
         <source>New purchase? Record who owns it (optional)</source>
-        <target>Nouvel achat ? Enregistre qui l’a (facultatif)</target>
+        <target>Nouvel achat ? Enregistre qui l’a (facultatif)</target>
       </segment>
     </unit>
     <unit id="4700297265679480587">
@@ -6916,7 +7007,7 @@
       </notes>
       <segment state="translated">
         <source><ph id="0" equiv="count" disp="min"/> player</source>
-        <target><ph id="0" equiv="count" disp="min"/> personne</target>
+        <target><ph id="0" equiv="count" disp="min"/> joueur</target>
       </segment>
     </unit>
     <unit id="4754161652314426063">
@@ -6979,13 +7070,22 @@
         <target>Je ne l’apporte pas</target>
       </segment>
     </unit>
+    <unit id="4785969012495884701">
+      <notes>
+        <note category="description">Error under the other titles when a language code is not valid</note>
+      </notes>
+      <segment state="translated">
+        <source>Use a language code such as de or pt-BR.</source>
+        <target>Utilise un code de langue comme de ou pt-BR.</target>
+      </segment>
+    </unit>
     <unit id="4792123205739798415">
       <notes>
         <note category="description">Label of the people choice in the form that records a game night</note>
       </notes>
       <segment state="translated">
         <source>Who came?</source>
-        <target>Qui est venu ?</target>
+        <target>Qui est venu ?</target>
       </segment>
     </unit>
     <unit id="4792646961216411565">
@@ -7093,7 +7193,7 @@
       </notes>
       <segment state="translated">
         <source>Bring: <ph id="0" equiv="names" disp="names"/></source>
-        <target>Peut l’apporter : <ph id="0" equiv="names" disp="names"/></target>
+        <target>Peut l’apporter : <ph id="0" equiv="names" disp="names"/></target>
       </segment>
     </unit>
     <unit id="4840511660305222279">
@@ -7292,7 +7392,7 @@
       </notes>
       <segment state="translated">
         <source>Add a game night that already happened. Planning one instead? <pc id="0" equivStart="START_LINK" equivEnd="CLOSE_LINK" type="link" dispStart="&lt;a class=&quot;font-medium text-bv-primary underline underline-offset-2&quot; routerLink=&quot;/play/upcoming-sessions&quot; [queryParams]=&quot;{ plan: 1 }&quot;&gt;" dispEnd="&lt;/a&gt;">Plan a game night</pc>.</source>
-        <target>Ajoute une soirée jeux qui a déjà eu lieu. Tu veux plutôt en prévoir une ? <pc id="0" equivStart="START_LINK" equivEnd="CLOSE_LINK" type="link" dispStart="&lt;a class=&quot;font-medium text-bv-primary underline underline-offset-2&quot; routerLink=&quot;/play/upcoming-sessions&quot; [queryParams]=&quot;{ plan: 1 }&quot;&gt;" dispEnd="&lt;/a&gt;">Prévois une soirée jeux</pc>.</target>
+        <target>Ajoute une soirée jeux qui a déjà eu lieu. Tu veux plutôt en prévoir une ? <pc id="0" equivStart="START_LINK" equivEnd="CLOSE_LINK" type="link" dispStart="&lt;a class=&quot;font-medium text-bv-primary underline underline-offset-2&quot; routerLink=&quot;/play/upcoming-sessions&quot; [queryParams]=&quot;{ plan: 1 }&quot;&gt;" dispEnd="&lt;/a&gt;">Prévois une soirée jeux</pc>.</target>
       </segment>
     </unit>
     <unit id="4945999461216663813">
@@ -8549,7 +8649,7 @@
       </notes>
       <segment state="translated">
         <source>Start this game night now?</source>
-        <target>Lancer cette soirée jeux maintenant ?</target>
+        <target>Lancer cette soirée jeux maintenant ?</target>
       </segment>
     </unit>
     <unit id="5677837656801597684">
@@ -8739,7 +8839,7 @@
       </notes>
       <segment state="translated">
         <source>Finish this game night?</source>
-        <target>Terminer cette soirée jeux ?</target>
+        <target>Terminer cette soirée jeux ?</target>
       </segment>
     </unit>
     <unit id="5766449302106608624">
@@ -8820,7 +8920,7 @@
       </notes>
       <segment state="translated">
         <source>Could not save the played-game participants. Your previous state was restored; try again.</source>
-        <target>Impossible d’enregistrer qui a joué. L’état précédent a été rétabli ; réessaie.</target>
+        <target>Impossible d’enregistrer qui a joué. L’état précédent a été rétabli ; réessaie.</target>
       </segment>
     </unit>
     <unit id="5806689821062151539">
@@ -9203,6 +9303,15 @@
         <target>Nous construisons encore l’essentiel, donc les nouveaux comptes sont créés uniquement sur invitation.</target>
       </segment>
     </unit>
+    <unit id="6005496837258976067">
+      <notes>
+        <note category="description">Screen reader name of a language selector in the list of other titles</note>
+      </notes>
+      <segment state="translated">
+        <source>Language of this title</source>
+        <target>Langue de ce titre</target>
+      </segment>
+    </unit>
     <unit id="6008489739592125163">
       <notes>
         <note category="description">Error under the display name field when it is too long; the placeholder is the most characters allowed</note>
@@ -9323,7 +9432,7 @@
       </notes>
       <segment state="translated">
         <source>Could not save the session. Your choices are still here; check your connection and try again.</source>
-        <target>Impossible d’enregistrer la soirée. Tes choix sont toujours là ; vérifie ta connexion et réessaie.</target>
+        <target>Impossible d’enregistrer la soirée. Tes choix sont toujours là ; vérifie ta connexion et réessaie.</target>
       </segment>
     </unit>
     <unit id="6065958917146955223">
@@ -9743,7 +9852,7 @@
     <unit id="6303882608616595614">
       <segment state="translated">
         <source>New game proposal: &quot;<ph id="0" equiv="title" disp="data[&apos;gameTitle&apos;]"/>&quot;</source>
-        <target>Nouvelle proposition de jeu : « <ph id="0" equiv="title" disp="data[&apos;gameTitle&apos;]"/> »</target>
+        <target>Nouvelle proposition de jeu : « <ph id="0" equiv="title" disp="data[&apos;gameTitle&apos;]"/> »</target>
       </segment>
     </unit>
     <unit id="6304263341645712272">
@@ -9879,7 +9988,7 @@
       </notes>
       <segment state="translated">
         <source><ph id="0" equiv="count" disp="min"/> players</source>
-        <target><ph id="0" equiv="count" disp="min"/> personnes</target>
+        <target><ph id="0" equiv="count" disp="min"/> joueurs</target>
       </segment>
     </unit>
     <unit id="6369425269629738896">
@@ -9924,7 +10033,7 @@
       </notes>
       <segment state="translated">
         <source>What should <ph id="0" equiv="group" disp="group.name"/> play?</source>
-        <target>À quoi <ph id="0" equiv="group" disp="group.name"/> devrait jouer ?</target>
+        <target>À quoi <ph id="0" equiv="group" disp="group.name"/> devrait jouer ?</target>
       </segment>
     </unit>
     <unit id="6383831676306471109">
@@ -9933,7 +10042,7 @@
       </notes>
       <segment state="translated">
         <source>Could not record ownership. Your session is already saved; try again.</source>
-        <target>Impossible d’enregistrer qui l’a. Ta soirée est déjà enregistrée ; réessaie.</target>
+        <target>Impossible d’enregistrer qui l’a. Ta soirée est déjà enregistrée ; réessaie.</target>
       </segment>
     </unit>
     <unit id="6389145516487479848">
@@ -10299,7 +10408,7 @@
       </notes>
       <segment state="translated">
         <source>Next: <ph id="0" equiv="INTERPOLATION" disp="{{ getGroupName(next.groupId) }}"/> · <ph id="1" equiv="INTERPOLATION_1" disp="{{ relativeDay(next.meetDate) }}"/></source>
-        <target>Prochaine : <ph id="0" equiv="INTERPOLATION" disp="{{ getGroupName(next.groupId) }}"/> · <ph id="1" equiv="INTERPOLATION_1" disp="{{ relativeDay(next.meetDate) }}"/></target>
+        <target>Prochaine : <ph id="0" equiv="INTERPOLATION" disp="{{ getGroupName(next.groupId) }}"/> · <ph id="1" equiv="INTERPOLATION_1" disp="{{ relativeDay(next.meetDate) }}"/></target>
       </segment>
     </unit>
     <unit id="6649871890818757941">
@@ -10371,7 +10480,7 @@
       </notes>
       <segment state="translated">
         <source>Could not start the night. Your choices are still here; try again.</source>
-        <target>Impossible de lancer la soirée. Tes choix sont toujours là ; réessaie.</target>
+        <target>Impossible de lancer la soirée. Tes choix sont toujours là ; réessaie.</target>
       </segment>
     </unit>
     <unit id="6668162205643683502">
@@ -10524,7 +10633,7 @@
       </notes>
       <segment state="translated">
         <source>“<ph id="0" equiv="INTERPOLATION" disp="{{ item.notes }}"/>”</source>
-        <target>« <ph id="0" equiv="INTERPOLATION" disp="{{ item.notes }}"/> »</target>
+        <target>« <ph id="0" equiv="INTERPOLATION" disp="{{ item.notes }}"/> »</target>
       </segment>
     </unit>
     <unit id="6722197117273372334">
@@ -10669,7 +10778,7 @@
       </notes>
       <segment state="translated">
         <source>Played by <ph id="0" equiv="names" disp="names"/></source>
-        <target>Joué par : <ph id="0" equiv="names" disp="names"/></target>
+        <target>Joué par : <ph id="0" equiv="names" disp="names"/></target>
       </segment>
     </unit>
     <unit id="6818417212441598328">
@@ -10687,7 +10796,7 @@
       </notes>
       <segment state="translated">
         <source>Bring: <ph id="0" equiv="names" disp="names"/> +<ph id="1" equiv="count" disp="entry.owners.length - 2"/></source>
-        <target>Peut l’apporter : <ph id="0" equiv="names" disp="names"/> +<ph id="1" equiv="count" disp="entry.owners.length - 2"/></target>
+        <target>Peut l’apporter : <ph id="0" equiv="names" disp="names"/> +<ph id="1" equiv="count" disp="entry.owners.length - 2"/></target>
       </segment>
     </unit>
     <unit id="6833264188558306028">
@@ -10813,7 +10922,7 @@
       </notes>
       <segment state="translated">
         <source>Who’s invited?</source>
-        <target>Qui est invité ?</target>
+        <target>Qui est invité ?</target>
       </segment>
     </unit>
     <unit id="6895869641688908649">
@@ -10840,7 +10949,7 @@
       </notes>
       <segment state="translated">
         <source>{VAR_PLURAL, plural, one {<ph id="0" equiv="INTERPOLATION"/> player} other {<ph id="1" equiv="INTERPOLATION"/> players}}</source>
-        <target>{VAR_PLURAL, plural, one {<ph id="0" equiv="INTERPOLATION"/> personne} other {<ph id="1" equiv="INTERPOLATION"/> personnes}}</target>
+        <target>{VAR_PLURAL, plural, one {<ph id="0" equiv="INTERPOLATION"/> joueur} other {<ph id="1" equiv="INTERPOLATION"/> joueurs}}</target>
       </segment>
     </unit>
     <unit id="691103730541896005">
@@ -10885,7 +10994,7 @@
       </notes>
       <segment state="translated">
         <source>Selected-attendee rating: <ph id="0" equiv="rating" disp="formatNumber(values[&apos;rating&apos;] ?? 0, { minimumFractionDigits: 1, maximumFractionDigits: 1 })"/>/10</source>
-        <target>Note des personnes présentes : <ph id="0" equiv="rating" disp="formatNumber(values[&apos;rating&apos;] ?? 0, { minimumFractionDigits: 1, maximumFractionDigits: 1 })"/>/10</target>
+        <target>Note des personnes présentes : <ph id="0" equiv="rating" disp="formatNumber(values[&apos;rating&apos;] ?? 0, { minimumFractionDigits: 1, maximumFractionDigits: 1 })"/>/10</target>
       </segment>
     </unit>
     <unit id="693316950352117213">
@@ -11084,7 +11193,7 @@
       </notes>
       <segment state="translated">
         <source>When?</source>
-        <target>Quand ?</target>
+        <target>Quand ?</target>
       </segment>
     </unit>
     <unit id="7066364207166726093">
@@ -11138,7 +11247,7 @@
       </notes>
       <segment state="translated">
         <source>Can you make it?</source>
-        <target>Tu peux venir ?</target>
+        <target>Tu peux venir ?</target>
       </segment>
     </unit>
     <unit id="7085036273592820424">
@@ -11797,7 +11906,7 @@
         <note category="description">Accessible name of a rating star on a game page; the placeholder is a number from 1 to 5</note>
       </notes>
       <segment state="translated">
-        <source>Rate <ph id="0" equiv="stars" disp="stars"/> out of 5 stars</source>
+        <source>Rate <ph id="0" equiv="stars" disp="formatNumber(stars)"/> out of 5 stars</source>
         <target>Noter <ph id="0" equiv="stars" disp="stars"/> sur 5 étoiles</target>
       </segment>
     </unit>
@@ -12123,7 +12232,7 @@
       </notes>
       <segment state="translated">
         <source>Could not save the played-game state. Your previous state was restored; try again.</source>
-        <target>Impossible d’enregistrer l’état « joué ». L’état précédent a été rétabli ; réessaie.</target>
+        <target>Impossible d’enregistrer l’état « joué ». L’état précédent a été rétabli ; réessaie.</target>
       </segment>
     </unit>
     <unit id="7632303553192069422">
@@ -12175,9 +12284,9 @@
       <notes>
         <note category="description">Accessible name of a game&apos;s cover link in a recorded game night; the placeholder is the game title</note>
       </notes>
-      <segment state="translated">
+      <segment state="initial">
         <source>View <ph id="0" equiv="title" disp="title"/></source>
-        <target>Voir <ph id="0" equiv="title" disp="title"/></target>
+        <target>Voir <ph id="0" equiv="title" disp="gameTitle(game)"/></target>
       </segment>
     </unit>
     <unit id="7647510484935085361">
@@ -12422,7 +12531,7 @@
       </notes>
       <segment state="translated">
         <source>No games for <ph id="0" equiv="players" disp="players"/> players fit within <ph id="1" equiv="minutes" disp="values[&apos;minutes&apos;] ?? 0"/> minutes.</source>
-        <target>Aucun jeu pour <ph id="0" equiv="players" disp="players"/> personnes ne tient en <ph id="1" equiv="minutes" disp="values[&apos;minutes&apos;] ?? 0"/> minutes.</target>
+        <target>Aucun jeu pour <ph id="0" equiv="players" disp="players"/> joueurs ne tient en <ph id="1" equiv="minutes" disp="values[&apos;minutes&apos;] ?? 0"/> minutes.</target>
       </segment>
     </unit>
     <unit id="7779255236836032869">
@@ -12431,7 +12540,7 @@
       </notes>
       <segment state="translated">
         <source>Session in Board Vault: <ph id="0" equiv="url" disp="url"/></source>
-        <target>Soirée dans Board Vault : <ph id="0" equiv="url" disp="url"/></target>
+        <target>Soirée dans Board Vault : <ph id="0" equiv="url" disp="url"/></target>
       </segment>
     </unit>
     <unit id="7780232441598492946">
@@ -12568,6 +12677,15 @@
       <segment state="translated">
         <source>Administration</source>
         <target>Administration</target>
+      </segment>
+    </unit>
+    <unit id="7846220163732677832">
+      <notes>
+        <note category="description">Shown on the game page when you have not said which edition of the game you own</note>
+      </notes>
+      <segment state="translated">
+        <source>Edition not set</source>
+        <target>Édition non précisée</target>
       </segment>
     </unit>
     <unit id="7846643244803883224">
@@ -12723,6 +12841,15 @@
         <target>Tu es à jour.</target>
       </segment>
     </unit>
+    <unit id="7894133274112638816">
+      <notes>
+        <note category="description">Hint in the edition chooser: your copy shows the title of the edition you pick</note>
+      </notes>
+      <segment state="translated">
+        <source>Your copy shows the title of the edition you pick.</source>
+        <target>Ta copie affiche le titre de l’édition que tu choisis.</target>
+      </segment>
+    </unit>
     <unit id="7899674800818281248">
       <notes>
         <note category="description">Button on a notification</note>
@@ -12772,7 +12899,7 @@
       </notes>
       <segment state="translated">
         <source>Most played: <pc id="0" equivStart="START_TAG_STRONG" equivEnd="CLOSE_TAG_STRONG" type="other" dispStart="&lt;strong class=&quot;text-bv-text&quot;&gt;" dispEnd="&lt;/strong&gt;"><ph id="1" equiv="INTERPOLATION" disp="{{ mostPlayed }}"/></pc></source>
-        <target>Le plus joué : <pc id="0" equivStart="START_TAG_STRONG" equivEnd="CLOSE_TAG_STRONG" type="other" dispStart="&lt;strong class=&quot;text-bv-text&quot;&gt;" dispEnd="&lt;/strong&gt;"><ph id="1" equiv="INTERPOLATION" disp="{{ mostPlayed }}"/></pc></target>
+        <target>Le plus joué : <pc id="0" equivStart="START_TAG_STRONG" equivEnd="CLOSE_TAG_STRONG" type="other" dispStart="&lt;strong class=&quot;text-bv-text&quot;&gt;" dispEnd="&lt;/strong&gt;"><ph id="1" equiv="INTERPOLATION" disp="{{ mostPlayed }}"/></pc></target>
       </segment>
     </unit>
     <unit id="7914959784420103692">
@@ -12826,7 +12953,7 @@
       </notes>
       <segment state="translated">
         <source>How did it go for you?</source>
-        <target>Comment ça s’est passé pour toi ?</target>
+        <target>Comment ça s’est passé pour toi ?</target>
       </segment>
     </unit>
     <unit id="7933138725764944793">
@@ -12962,6 +13089,15 @@
       <segment state="translated">
         <source>Secure sign-in</source>
         <target>Connexion sécurisée</target>
+      </segment>
+    </unit>
+    <unit id="8027999063674702321">
+      <notes>
+        <note category="description">Error under the other titles when two titles share a language</note>
+      </notes>
+      <segment state="translated">
+        <source>Each language can have only one title.</source>
+        <target>Chaque langue ne peut avoir qu’un seul titre.</target>
       </segment>
     </unit>
     <unit id="8049452186746342791">
@@ -13133,6 +13269,15 @@
       <segment state="translated">
         <source>User or Group not found</source>
         <target>Compte ou groupe introuvable</target>
+      </segment>
+    </unit>
+    <unit id="8113665790726732827">
+      <notes>
+        <note category="description">Heading of the optional list of the game&apos;s titles in other languages in the propose-a-game form</note>
+      </notes>
+      <segment state="translated">
+        <source>Other known titles</source>
+        <target>Autres titres connus</target>
       </segment>
     </unit>
     <unit id="8116175184239166510">
@@ -13391,7 +13536,7 @@
       </notes>
       <segment state="translated">
         <source><ph id="0" equiv="min" disp="min"/>–<ph id="1" equiv="max" disp="max"/> players</source>
-        <target><ph id="0" equiv="min" disp="min"/>–<ph id="1" equiv="max" disp="max"/> personnes</target>
+        <target><ph id="0" equiv="min" disp="min"/> à <ph id="1" equiv="max" disp="max"/> joueurs</target>
       </segment>
     </unit>
     <unit id="8240050429696370605">
@@ -13482,7 +13627,7 @@
       </notes>
       <segment state="translated">
         <source>Nobody who came has games in Board Vault yet. Search for what you played; you don’t need to own it.</source>
-        <target>Aucune des personnes venues n’a encore de jeux dans Board Vault. Cherche ce à quoi vous avez joué ; pas besoin de l’avoir.</target>
+        <target>Aucune des personnes venues n’a encore de jeux dans Board Vault. Cherche ce à quoi vous avez joué ; pas besoin de l’avoir.</target>
       </segment>
     </unit>
     <unit id="8277394468476112564">
@@ -13527,7 +13672,7 @@
       </notes>
       <segment state="translated">
         <source>Could not save attendance. Your previous attendance state was restored; try again.</source>
-        <target>Impossible d’enregistrer les présences. Les présences précédentes ont été rétablies ; réessaie.</target>
+        <target>Impossible d’enregistrer les présences. Les présences précédentes ont été rétablies ; réessaie.</target>
       </segment>
     </unit>
     <unit id="8303840094006173473">
@@ -13718,6 +13863,24 @@
       <segment state="translated">
         <source>Sign-in settings are unavailable until authentication finishes loading.</source>
         <target>Les paramètres de connexion sont indisponibles tant que l’authentification n’a pas fini de charger.</target>
+      </segment>
+    </unit>
+    <unit id="8419322791833950146">
+      <notes>
+        <note category="description">Heading of the question asked when adding a game that has several editions to My Games, or changing the edition of one</note>
+      </notes>
+      <segment state="translated">
+        <source> Which edition do you own? </source>
+        <target>Quelle édition possèdes-tu ?</target>
+      </segment>
+    </unit>
+    <unit id="8420640184883196687">
+      <notes>
+        <note category="description">Hint under the heading of the optional list of titles in other languages</note>
+      </notes>
+      <segment state="translated">
+        <source>Optional. The same game under its name in other languages, if you know them.</source>
+        <target>Facultatif. Le même jeu sous son nom dans d’autres langues, si tu les connais.</target>
       </segment>
     </unit>
     <unit id="8421971980013015956">
@@ -13924,7 +14087,7 @@
       </notes>
       <segment state="translated">
         <source>Wanted by <ph id="0" equiv="INTERPOLATION" disp="{{ voterNames(game.id) }}"/></source>
-        <target>Envie de : <ph id="0" equiv="INTERPOLATION" disp="{{ voterNames(game.id) }}"/></target>
+        <target>Envie de : <ph id="0" equiv="INTERPOLATION" disp="{{ voterNames(game.id) }}"/></target>
       </segment>
     </unit>
     <unit id="8491186692526032527">
@@ -13942,7 +14105,7 @@
       </notes>
       <segment state="translated">
         <source>The results could not be saved. The session may have changed; reload it before trying again.</source>
-        <target>Impossible d’enregistrer les résultats. La soirée a peut-être changé ; recharge-la avant de réessayer.</target>
+        <target>Impossible d’enregistrer les résultats. La soirée a peut-être changé ; recharge-la avant de réessayer.</target>
       </segment>
     </unit>
     <unit id="8506230638457254442">
@@ -14402,7 +14565,7 @@
       </notes>
       <segment state="translated">
         <source>What should this group play next?</source>
-        <target>À quoi ce groupe devrait-il jouer ensuite ?</target>
+        <target>À quoi ce groupe devrait-il jouer ensuite ?</target>
       </segment>
     </unit>
     <unit id="8732404100110264247">
@@ -14429,7 +14592,7 @@
       </notes>
       <segment state="translated">
         <source>Your timezone: <ph id="0" equiv="INTERPOLATION" disp="{{ localTimezone }}"/></source>
-        <target>Ton fuseau horaire : <ph id="0" equiv="INTERPOLATION" disp="{{ localTimezone }}"/></target>
+        <target>Ton fuseau horaire : <ph id="0" equiv="INTERPOLATION" disp="{{ localTimezone }}"/></target>
       </segment>
     </unit>
     <unit id="8738566988208018044">
@@ -14508,7 +14671,7 @@
       </notes>
       <segment state="translated">
         <source>Nobody is bringing it yet · owned by <ph id="0" equiv="INTERPOLATION" disp="{{ namesOf(owners) }}"/></source>
-        <target>Personne ne l’apporte encore · à : <ph id="0" equiv="INTERPOLATION" disp="{{ namesOf(owners) }}"/></target>
+        <target>Personne ne l’apporte encore · à : <ph id="0" equiv="INTERPOLATION" disp="{{ namesOf(owners) }}"/></target>
       </segment>
     </unit>
     <unit id="880297634309685750">
@@ -14634,7 +14797,7 @@
       </notes>
       <segment state="translated">
         <source>Tick the games you played. Everyone who came is marked as a player; untick anyone who sat a game out.</source>
-        <target>Coche les jeux auxquels vous avez joué. Toutes les personnes venues sont marquées comme ayant joué ; décoche celles qui ont passé leur tour.</target>
+        <target>Coche les jeux auxquels vous avez joué. Toutes les personnes venues sont marquées comme ayant joué ; décoche celles qui ont passé leur tour.</target>
       </segment>
     </unit>
     <unit id="8865777077981814555">
@@ -14672,6 +14835,15 @@
       <segment state="translated">
         <source>Help us expand our game collection! Submit a proposal for a game you’d like to see added to BoardVault.</source>
         <target>Aide-nous à enrichir notre collection de jeux ! Envoie une proposition pour un jeu que tu aimerais voir dans BoardVault.</target>
+      </segment>
+    </unit>
+    <unit id="8873512080778685444">
+      <notes>
+        <note category="description">Label before the title of the edition of a game you own, on the game page</note>
+      </notes>
+      <segment state="translated">
+        <source>Your copy:</source>
+        <target>Ta copie :</target>
       </segment>
     </unit>
     <unit id="8881851115595994876">
@@ -14798,7 +14970,7 @@
       </notes>
       <segment state="translated">
         <source>Which group is it for?</source>
-        <target>C’est pour quel groupe ?</target>
+        <target>C’est pour quel groupe ?</target>
       </segment>
     </unit>
     <unit id="8978604435370885043">
@@ -14862,6 +15034,15 @@
       <segment state="translated">
         <source><ph id="0" equiv="actor" disp="actor"/> took <ph id="1" equiv="removed" disp="removed"/> off the shortlist of a game night</source>
         <target><ph id="0" equiv="actor" disp="actor"/> a retiré <ph id="1" equiv="removed" disp="removed"/> de la présélection d’une soirée jeux</target>
+      </segment>
+    </unit>
+    <unit id="9006031073990985776">
+      <notes>
+        <note category="description">Error after failing to save which edition of a game you own</note>
+      </notes>
+      <segment state="translated">
+        <source>Could not save the edition. Try again.</source>
+        <target>Impossible d’enregistrer l’édition. Réessaie.</target>
       </segment>
     </unit>
     <unit id="9014138025274858717">
@@ -15167,6 +15348,15 @@
       <segment state="translated">
         <source>Ask the group owner to invite the rest of your table.</source>
         <target>Demande à la personne qui gère le groupe d’inviter le reste de ta tablée.</target>
+      </segment>
+    </unit>
+    <unit id="9195472737674660999">
+      <notes>
+        <note category="description">Screen reader name of a title field in the list of other titles</note>
+      </notes>
+      <segment state="translated">
+        <source>Title in this language</source>
+        <target>Titre dans cette langue</target>
       </segment>
     </unit>
     <unit id="9202989475789662593">

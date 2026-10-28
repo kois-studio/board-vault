@@ -1,14 +1,19 @@
-import { Component, inject, input, OnChanges, OnInit, output, SimpleChanges, signal } from '@angular/core'
+import { Component, computed, inject, input, OnChanges, OnInit, output, SimpleChanges, signal } from '@angular/core'
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms'
 import { firstValueFrom } from 'rxjs'
 import { Api } from '../../../api/api'
 import type { CreateGameProposalType } from '../../../api/api.types'
+import { pageLocale } from '../../../core/i18n/format'
+import { canonicalLanguageCode, languageName } from '../../../core/i18n/language-names'
 import { DataService } from '../../../core/services/data.service'
 import { ToastService } from '../../toast/toast.service'
 import { ButtonComponent } from '../../ui/button/button.component'
+import { IconComponent } from '../../ui/icon/icon.component'
+import { LanguageFieldComponent } from '../../ui/language-field/language-field.component'
+import { addOtherTitle, MAX_OTHER_TITLES, type OtherTitleRow, otherTitlesBody, titleProblem } from './proposal-titles'
 
 @Component({
-    imports: [ButtonComponent, ReactiveFormsModule],
+    imports: [ButtonComponent, IconComponent, LanguageFieldComponent, ReactiveFormsModule],
     selector: 'form-game-submission',
     templateUrl: 'form-game-submission.component.html',
 })
@@ -29,6 +34,14 @@ export class FormGameSubmissionComponent implements OnInit, OnChanges {
     readonly proposalSubmitted = output<void>()
 
     public readonly isSubmitting = signal(false)
+
+    // The title's language (the page's language until changed) and the same game's titles in other languages.
+    public readonly titleLanguage = signal<string>(pageLocale())
+    public readonly otherTitles = signal<ReadonlyArray<OtherTitleRow>>([])
+    public readonly maxOtherTitles = MAX_OTHER_TITLES
+    public readonly titleProblem = computed(() => titleProblem(this.titleLanguage(), this.otherTitles()))
+    public readonly otherLanguageLabel = $localize`:language option|Last option of a language list, to type any other language code:Other…`
+    public readonly codeLabel = $localize`:Name of the field where a language code is typed:Language code`
 
     public gameSubmissionForm = new FormGroup({
         title: new FormControl('', [Validators.required, Validators.minLength(2), Validators.maxLength(100)]),
@@ -121,7 +134,7 @@ export class FormGameSubmissionComponent implements OnInit, OnChanges {
     }
 
     public async onSubmit() {
-        if (this.gameSubmissionForm.invalid || this.isSubmitting()) return
+        if (this.gameSubmissionForm.invalid || this.titleProblem() || this.isSubmitting()) return
 
         const currentUser = this.currentUser$()
         if (!currentUser) {
@@ -140,8 +153,11 @@ export class FormGameSubmissionComponent implements OnInit, OnChanges {
                 return
             }
 
+            const otherTitles = otherTitlesBody(this.otherTitles())
             const proposalData: CreateGameProposalType = {
                 title: formData.title,
+                titleLanguage: canonicalLanguageCode(this.titleLanguage()) ?? undefined,
+                ...(otherTitles.length > 0 ? { otherTitles } : {}),
                 imageUrl: formData.imageUrl || undefined,
                 gameAvgDuration: formData.gameAvgDuration || undefined,
                 minPlayers: formData.minPlayers || undefined,
@@ -164,7 +180,29 @@ export class FormGameSubmissionComponent implements OnInit, OnChanges {
         }
     }
 
+    public addTitle(): void {
+        this.otherTitles.update((rows) => addOtherTitle(rows, this.titleLanguage()))
+    }
+
+    public removeTitle(key: number): void {
+        this.otherTitles.update((rows) => rows.filter((row) => row.key !== key))
+    }
+
+    public setTitleLanguage(key: number, languageCode: string): void {
+        this.otherTitles.update((rows) => rows.map((row) => (row.key === key ? { ...row, languageCode } : row)))
+    }
+
+    public setTitleText(key: number, title: string): void {
+        this.otherTitles.update((rows) => rows.map((row) => (row.key === key ? { ...row, title } : row)))
+    }
+
+    public removeLabel(row: OtherTitleRow): string {
+        return $localize`:Label of the button that removes a row of other titles; the language name follows:Remove the title in ${row.languageCode ? languageName(row.languageCode) : '…'}:language:`
+    }
+
     public resetForm() {
+        this.titleLanguage.set(pageLocale())
+        this.otherTitles.set([])
         this.gameSubmissionForm.reset()
         this.gameSubmissionForm.markAsUntouched()
         this.gameSubmissionForm.markAsPristine()

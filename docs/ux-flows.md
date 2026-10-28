@@ -84,13 +84,14 @@ shortlists and bringers, without a repeated planning empty-state prompt.
 Pending invitations remain prominent. Accounts without a group retain the
 first-group setup path.
 
-One group shows its full card: identity, people, the invite nudge, and What to
-play, Library and History. Several groups show as compact rows (identity,
-last or next night) so the page stays short; the header's Record and Plan
-are the only recording entries on Home. Every group-specific recording entry
-elsewhere keeps its group selected.
+Each group shows its full card: identity, people, the invite nudge, and What
+to play, Library and History. Several groups stack one card per group, each
+with a chip under its name for the night under way, the next one or the last
+one played; one group has no chip, since the next night above already says
+it. The header's Record and Plan are the only recording entries on Home.
+Every group-specific recording entry elsewhere keeps its group selected.
 
-With several groups, each row has a small pin in its corner. On a pointer
+With several groups, each card has a small pin in its corner. On a pointer
 device it appears on hover or keyboard focus; on touch it stays faintly
 visible. Pinned groups lead in the order they were pinned, then live, next
 and past nights as before, with stable name/id ties. There is no sort
@@ -156,7 +157,12 @@ its existing ownership and shortlist rules.
 
 ## Ownership
 
-My Games links to catalogue browsing. A person without an account has Add a
+My Games links to catalogue browsing. Adding a game to My Games (from Browse,
+the game page, the wishlist, or a night's ownership follow-up) asks which
+edition you own when the game has several, preselecting the one in the page's
+language, else the original; one edition asks nothing, and "I’m not sure"
+leaves it unsaid. The game page shows your copy's edition and can change it
+(ADR-0025). A person without an account has Add a
 game for [name] on their group page; it searches the catalogue and explicitly
 names the owner before saving. This is a group-scoped ownership statement,
 visible and editable by the group's members, never another account's private

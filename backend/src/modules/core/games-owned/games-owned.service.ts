@@ -19,6 +19,7 @@ export class GamesOwnedService {
             purchasePrice: row[2] ? Number(row[2]) : null,
             purchaseDate: row[3] ? String(row[3]) : null,
             purchaseNotes: row[4] ? String(row[4]) : null,
+            editionId: row['editionId'] === null || row['editionId'] === undefined ? null : Number(row['editionId']),
         }))
 
         return this._validateSchema(ownedGames)

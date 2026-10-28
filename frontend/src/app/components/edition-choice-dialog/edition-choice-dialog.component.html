@@ -1,0 +1,54 @@
+@if (question(); as asked) {
+<div class="fixed inset-0 z-50 flex items-center justify-center bg-black/50" (click)="cancel()">
+    <div
+        appDialog
+        (dialogClosed)="cancel()"
+        class="relative mx-4 w-full max-w-md rounded-lg border border-bv-border bg-bv-surface"
+        aria-labelledby="edition-choice-heading"
+        (click)="$event.stopPropagation()"
+    >
+        <form class="p-6" (submit)="$event.preventDefault(); confirm()">
+            <h2 id="edition-choice-heading" class="text-lg font-semibold text-bv-text" i18n="Heading of the question asked when adding a game that has several editions to My Games, or changing the edition of one">
+                Which edition do you own?
+            </h2>
+            <p class="mt-1 font-medium text-bv-text">{{ asked.gameTitle }}</p>
+            <p class="text-sm text-bv-text-muted" i18n="Hint in the edition chooser: your copy shows the title of the edition you pick">Your copy shows the title of the edition you pick.</p>
+
+            <fieldset class="mt-4 space-y-2">
+                <legend class="sr-only" i18n="Label of the list of editions in the edition chooser">Editions</legend>
+                @for (edition of asked.editions; track edition.id) {
+                <label class="flex cursor-pointer items-start gap-3 rounded-lg border border-bv-border p-3 has-[:checked]:border-bv-primary has-[:checked]:bg-bv-primary/5">
+                    <input
+                        type="radio"
+                        name="edition"
+                        class="mt-1"
+                        [value]="edition.id"
+                        [checked]="selectedId() === edition.id"
+                        (change)="pick(edition.id)"
+                    />
+                    <span class="min-w-0 text-bv-text">
+                        <span class="font-medium" [attr.lang]="edition.languageCode">{{ edition.title }}</span> —
+                        <span class="text-bv-text-muted">{{ languageName(edition.languageCode) }}</span>
+                    </span>
+                </label>
+                }
+                <label class="flex cursor-pointer items-start gap-3 rounded-lg border border-bv-border p-3 has-[:checked]:border-bv-primary has-[:checked]:bg-bv-primary/5">
+                    <input type="radio" name="edition" class="mt-1" [checked]="selectedId() === null" (change)="pick(null)" />
+                    <span class="font-medium text-bv-text" i18n="Choice in the edition chooser for someone who does not know or does not want to say which edition they own">I’m not sure</span>
+                </label>
+            </fieldset>
+
+            <div class="mt-6 flex justify-end gap-3">
+                <button appButton type="button" variant="secondary" (click)="cancel()" i18n="Button that closes the edition chooser without saving">Cancel</button>
+                <button appButton type="submit">
+                    @if (asked.mode === 'add') {
+                    <ng-container i18n="Button that adds the game to My Games with the edition chosen in the edition chooser">Add to My Games</ng-container>
+                    } @else {
+                    <ng-container i18n="Button that saves the edition chosen in the edition chooser for a game already in My Games">Save</ng-container>
+                    }
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+}

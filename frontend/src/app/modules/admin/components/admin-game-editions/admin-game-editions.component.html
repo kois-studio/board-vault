@@ -1,0 +1,48 @@
+<fieldset class="min-w-0 space-y-3" [attr.aria-describedby]="error ? 'editions-error' : 'editions-hint'" [attr.aria-invalid]="error ? true : null">
+    <legend class="text-sm font-medium">Editions</legend>
+    <p id="editions-hint" class="text-sm text-bv-text-muted">
+        One title per language. The primary edition is the one the game is best known by; it names the game wherever there is no better match.
+    </p>
+    <ul class="space-y-3">
+        @for (row of rows(); track row.key) {
+            <li class="grid grid-cols-[minmax(0,1fr)_auto] items-start gap-3 rounded-lg border border-bv-border p-3 sm:grid-cols-[11rem_minmax(0,1fr)_auto_auto]">
+                <app-language-field
+                    class="col-span-2 sm:col-span-1"
+                    [label]="'Language of this edition'"
+                    [value]="row.languageCode"
+                    [disabled]="readonly() || control().disabled"
+                    (valueChange)="setLanguage(row, $event)"
+                />
+                <input
+                    class="app-input col-span-2 sm:col-span-1"
+                    type="text"
+                    [attr.aria-label]="'Title, ' + rowLabel(row)"
+                    [value]="row.title"
+                    [disabled]="readonly() || control().disabled"
+                    (input)="setTitle(row, $any($event.target).value)"
+                />
+                <label class="flex min-h-11 items-center gap-2 text-sm">
+                    <input
+                        type="radio"
+                        name="primary-edition"
+                        [checked]="row.isPrimary"
+                        [disabled]="readonly() || control().disabled"
+                        (change)="setPrimary(row)"
+                    />
+                    Primary
+                </label>
+                @if (!readonly() && !control().disabled) {
+                    <button type="button" class="app-chip" (click)="remove(row)" [attr.aria-label]="'Remove edition, ' + rowLabel(row)">
+                        <app-icon name="trash" [size]="16" />
+                    </button>
+                }
+            </li>
+        }
+    </ul>
+    @if (error; as message) {
+        <p id="editions-error" class="text-sm text-bv-danger" role="alert">{{ message }}</p>
+    }
+    @if (!readonly() && !control().disabled) {
+        <button appButton type="button" variant="secondary" size="small" icon="plus" (click)="add()">Add edition</button>
+    }
+</fieldset>

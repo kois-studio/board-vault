@@ -83,7 +83,11 @@ export class ProfileController {
     @ApiOperation({ summary: 'Create a new game proposal', deprecated: false })
     @ApiResponse({ status: 201, type: GameProposalDto, description: 'Game proposal created' })
     @ApiResponse({ status: 400, description: 'Invalid proposal data' })
-    async createGameProposal(@Param('userId', ParseIntPipe) userId: number, @Body() proposalData: CreateGameProposalBody) {
-        return this.profileService.createGameProposal(userId, proposalData)
+    async createGameProposal(
+        @Param('userId', ParseIntPipe) userId: number,
+        @Body() proposalData: CreateGameProposalBody,
+        @RequestLocale() locale: Locale,
+    ) {
+        return this.profileService.createGameProposal(userId, proposalData, locale)
     }
 }
