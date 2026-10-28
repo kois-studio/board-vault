@@ -474,6 +474,15 @@
         <target>Gioco aggiunto per <ph id="0" equiv="name" disp="this.name()"/>.</target>
       </segment>
     </unit>
+    <unit id="1257763851250011113">
+      <notes>
+        <note category="description">Group history line, someone changing their own games or preferences; actor is a name, game is a game title</note>
+      </notes>
+      <segment state="translated">
+        <source><ph id="0" equiv="actor" disp="actor"/> said they have an opinion on <ph id="1" equiv="game" disp="game"/></source>
+        <target><ph id="0" equiv="actor" disp="actor"/> ha indicato cosa pensa di <ph id="1" equiv="game" disp="game"/></target>
+      </segment>
+    </unit>
     <unit id="1260099573097287890">
       <notes>
         <note category="description">Hidden name of the button that adds a catalogue game to the games step; the placeholder is the game title</note>
@@ -490,6 +499,15 @@
       <segment state="translated">
         <source>Total Proposals</source>
         <target>Proposte in totale</target>
+      </segment>
+    </unit>
+    <unit id="1274668146835758541">
+      <notes>
+        <note category="description">Notification, someone changing their own games or preferences in a group; person is a name, game is a game title</note>
+      </notes>
+      <segment state="translated">
+        <source><ph id="0" equiv="person" disp="actor"/> said they have <ph id="1" equiv="game" disp="game"/>, in <ph id="2" equiv="group" disp="group"/>.</source>
+        <target><ph id="0" equiv="person" disp="actor"/> ha indicato di avere <ph id="1" equiv="game" disp="game"/>, in <ph id="2" equiv="group" disp="group"/>.</target>
       </segment>
     </unit>
     <unit id="1286983255645370171">
@@ -2194,6 +2212,15 @@
         <target>Prugna e lilla. I colori di Board Vault.</target>
       </segment>
     </unit>
+    <unit id="223321090152278153">
+      <notes>
+        <note category="description">Group history line, someone changing their own games or preferences; actor is a name, game is a game title</note>
+      </notes>
+      <segment state="translated">
+        <source><ph id="0" equiv="actor" disp="actor"/> removed what they think of <ph id="1" equiv="game" disp="game"/></source>
+        <target><ph id="0" equiv="actor" disp="actor"/> ha rimosso la propria opinione su <ph id="1" equiv="game" disp="game"/></target>
+      </segment>
+    </unit>
     <unit id="2237775413745074505">
       <notes>
         <note category="description">Shown while the group page loads</note>
@@ -2763,6 +2790,15 @@
         <target>Non siamo riusciti a collegare questo accesso a Board Vault. Riprova, oppure esci e usa il tuo link d’invito.</target>
       </segment>
     </unit>
+    <unit id="2529039960931560775">
+      <notes>
+        <note category="description">Group history line, someone changing their own games or preferences; actor is a name, game is a game title</note>
+      </notes>
+      <segment state="translated">
+        <source><ph id="0" equiv="actor" disp="actor"/> removed <ph id="1" equiv="game" disp="game"/> from their games</source>
+        <target><ph id="0" equiv="actor" disp="actor"/> ha tolto <ph id="1" equiv="game" disp="game"/> dai propri giochi</target>
+      </segment>
+    </unit>
     <unit id="2530318293105149171">
       <notes>
         <note category="description">Subtitle of the Reviews page</note>
@@ -3163,6 +3199,15 @@
       <segment state="translated">
         <source>Suggestions could not be loaded. Check your connection and try again.</source>
         <target>Non è stato possibile caricare i suggerimenti. Controlla la connessione e riprova.</target>
+      </segment>
+    </unit>
+    <unit id="2745028842390991019">
+      <notes>
+        <note category="description">Notification, someone changing their own games or preferences in a group; person is a name, game is a game title</note>
+      </notes>
+      <segment state="translated">
+        <source><ph id="0" equiv="person" disp="actor"/> isn’t sure they have <ph id="1" equiv="game" disp="game"/>, in <ph id="2" equiv="group" disp="group"/>.</source>
+        <target><ph id="0" equiv="person" disp="actor"/> ha indicato di avere forse <ph id="1" equiv="game" disp="game"/>, in <ph id="2" equiv="group" disp="group"/>.</target>
       </segment>
     </unit>
     <unit id="2754237322863948261">
@@ -4571,6 +4616,15 @@
         <target> Il tuo nome utente, i tuoi indirizzi email, la password e i dispositivi connessi sono gestiti da Clerk, il nostro servizio di accesso. </target>
       </segment>
     </unit>
+    <unit id="3503592559345073785">
+      <notes>
+        <note category="description">Group history line, someone changing their own games or preferences; actor is a name, game is a game title</note>
+      </notes>
+      <segment state="translated">
+        <source><ph id="0" equiv="actor" disp="actor"/> isn’t sure they have <ph id="1" equiv="game" disp="game"/></source>
+        <target><ph id="0" equiv="actor" disp="actor"/> ha indicato di avere forse <ph id="1" equiv="game" disp="game"/></target>
+      </segment>
+    </unit>
     <unit id="3511545370905854666">
       <notes>
         <note category="description">Choice of the menu that says what a person thinks of a game on the group page</note>
@@ -5193,6 +5247,15 @@
       <segment state="translated">
         <source>Delete this group</source>
         <target>Elimina questo gruppo</target>
+      </segment>
+    </unit>
+    <unit id="3837355392149877236">
+      <notes>
+        <note category="description">Group history line, someone changing their own games or preferences; actor is a name, game is a game title</note>
+      </notes>
+      <segment state="translated">
+        <source><ph id="0" equiv="actor" disp="actor"/> said they like <ph id="1" equiv="game" disp="game"/></source>
+        <target><ph id="0" equiv="actor" disp="actor"/> ha indicato di apprezzare <ph id="1" equiv="game" disp="game"/></target>
       </segment>
     </unit>
     <unit id="3841095492114279113">
@@ -6305,6 +6368,15 @@
         <target><ph id="0" equiv="actor" disp="actor"/> ha registrato i risultati di una partita in una serata di gioco</target>
       </segment>
     </unit>
+    <unit id="4304971421339457870">
+      <notes>
+        <note category="description">Notification, someone changing their own games or preferences in a group; person is a name, game is a game title</note>
+      </notes>
+      <segment state="translated">
+        <source><ph id="0" equiv="person" disp="actor"/> removed <ph id="1" equiv="game" disp="game"/> from their games in <ph id="2" equiv="group" disp="group"/>.</source>
+        <target><ph id="0" equiv="person" disp="actor"/> ha tolto <ph id="1" equiv="game" disp="game"/> dai propri giochi in <ph id="2" equiv="group" disp="group"/>.</target>
+      </segment>
+    </unit>
     <unit id="430848017615851667">
       <notes>
         <note category="description">Label of the invite field on the group&apos;s settings page</note>
@@ -6636,6 +6708,15 @@
       <segment state="translated">
         <source>Could not add this game to your collection.</source>
         <target>Impossibile aggiungere questo gioco alla tua collezione.</target>
+      </segment>
+    </unit>
+    <unit id="4526568127452551506">
+      <notes>
+        <note category="description">Notification, someone changing their own games or preferences in a group; person is a name, game is a game title</note>
+      </notes>
+      <segment state="translated">
+        <source><ph id="0" equiv="person" disp="actor"/> changed how much they like <ph id="1" equiv="game" disp="game"/>, in <ph id="2" equiv="group" disp="group"/>.</source>
+        <target><ph id="0" equiv="person" disp="actor"/> ha cambiato la propria opinione su <ph id="1" equiv="game" disp="game"/>, in <ph id="2" equiv="group" disp="group"/>.</target>
       </segment>
     </unit>
     <unit id="4527736376608736339">
@@ -7366,6 +7447,15 @@
       <segment state="translated">
         <source>Settings</source>
         <target>Impostazioni</target>
+      </segment>
+    </unit>
+    <unit id="4933144856966619908">
+      <notes>
+        <note category="description">Group history line, someone changing their own games or preferences; actor is a name, game is a game title</note>
+      </notes>
+      <segment state="translated">
+        <source><ph id="0" equiv="actor" disp="actor"/> said they don’t have <ph id="1" equiv="game" disp="game"/></source>
+        <target><ph id="0" equiv="actor" disp="actor"/> ha indicato di non avere <ph id="1" equiv="game" disp="game"/></target>
       </segment>
     </unit>
     <unit id="4934924354211996143">
@@ -10672,6 +10762,15 @@
         <target>Il nome utente deve avere da 4 a 64 caratteri.</target>
       </segment>
     </unit>
+    <unit id="6762830186305693321">
+      <notes>
+        <note category="description">Group history line, someone changing their own games or preferences; actor is a name, game is a game title</note>
+      </notes>
+      <segment state="translated">
+        <source><ph id="0" equiv="actor" disp="actor"/> said they don’t mind <ph id="1" equiv="game" disp="game"/></source>
+        <target><ph id="0" equiv="actor" disp="actor"/> ha indicato di non avere nulla contro <ph id="1" equiv="game" disp="game"/></target>
+      </segment>
+    </unit>
     <unit id="6766874920336829687">
       <notes>
         <note category="description">Shown in the group&apos;s library when no game fits the chosen player count</note>
@@ -11185,6 +11284,15 @@
       <segment state="translated">
         <source>Every game someone in the group owns, best rated first.</source>
         <target>Ogni gioco che qualcuno del gruppo possiede, prima i più votati.</target>
+      </segment>
+    </unit>
+    <unit id="7051528060076760035">
+      <notes>
+        <note category="description">Group history line, someone changing their own games or preferences; actor is a name, game is a game title</note>
+      </notes>
+      <segment state="translated">
+        <source><ph id="0" equiv="actor" disp="actor"/> said they would rather not play <ph id="1" equiv="game" disp="game"/></source>
+        <target><ph id="0" equiv="actor" disp="actor"/> ha indicato di preferire non giocare a <ph id="1" equiv="game" disp="game"/></target>
       </segment>
     </unit>
     <unit id="7061555756418309143">
@@ -14171,6 +14279,15 @@
         <target>Scegli almeno una persona.</target>
       </segment>
     </unit>
+    <unit id="8526482226417637721">
+      <notes>
+        <note category="description">Notification, someone changing their own games or preferences in a group; person is a name, game is a game title</note>
+      </notes>
+      <segment state="translated">
+        <source><ph id="0" equiv="person" disp="actor"/> removed what they think of <ph id="1" equiv="game" disp="game"/>, in <ph id="2" equiv="group" disp="group"/>.</source>
+        <target><ph id="0" equiv="person" disp="actor"/> ha tolto la propria opinione su <ph id="1" equiv="game" disp="game"/>, in <ph id="2" equiv="group" disp="group"/>.</target>
+      </segment>
+    </unit>
     <unit id="8531755906780019444">
       <notes>
         <note category="description">Your own answer on a game night card, before you answer</note>
@@ -14286,6 +14403,15 @@
       <segment state="translated">
         <source>Group</source>
         <target>Gruppo</target>
+      </segment>
+    </unit>
+    <unit id="8624101861978584839">
+      <notes>
+        <note category="description">Group history line, someone changing their own games or preferences; actor is a name, game is a game title</note>
+      </notes>
+      <segment state="translated">
+        <source><ph id="0" equiv="actor" disp="actor"/> said they have <ph id="1" equiv="game" disp="game"/> as a favourite</source>
+        <target><ph id="0" equiv="actor" disp="actor"/> ha indicato <ph id="1" equiv="game" disp="game"/> tra i propri preferiti</target>
       </segment>
     </unit>
     <unit id="8626011843982871371">
@@ -14753,6 +14879,15 @@
       <segment state="translated">
         <source>Acquisition decision updated: <ph id="0" equiv="status" disp="this.getAcquisitionDecisionLabel(status)"/>.</source>
         <target>Decisione d’acquisto aggiornata: <ph id="0" equiv="status" disp="this.getAcquisitionDecisionLabel(status)"/>.</target>
+      </segment>
+    </unit>
+    <unit id="8838456709946633598">
+      <notes>
+        <note category="description">Group history line, someone changing their own games or preferences; actor is a name, game is a game title</note>
+      </notes>
+      <segment state="translated">
+        <source><ph id="0" equiv="actor" disp="actor"/> said they have <ph id="1" equiv="game" disp="game"/></source>
+        <target><ph id="0" equiv="actor" disp="actor"/> ha indicato di avere <ph id="1" equiv="game" disp="game"/></target>
       </segment>
     </unit>
     <unit id="884821975591494973">

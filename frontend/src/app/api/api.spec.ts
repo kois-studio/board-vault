@@ -270,6 +270,55 @@ describe('Api response contracts', () => {
         await expect(response).rejects.toThrow()
     })
 
+    it("keeps the account behind each group person in the history, so own changes read as the member's own", async () => {
+        const response = firstValueFrom(api.getGroupActivity(10))
+        const request = http.expectOne(`${environment.apiUrl}/groups/10/activity`)
+
+        request.flush({
+            entries: [
+                {
+                    id: 1,
+                    type: 'person_game_set',
+                    createdAt: '2026-10-17 10:45:13',
+                    actor: { id: 6, name: 'Bloody', standing: 'member' },
+                    meetId: null,
+                    person: { id: 3, name: 'Bloody', standing: 'member', accountId: 6 },
+                    game: { id: 58, title: 'Casting Shadows', titleLanguage: 'en' },
+                    subject: null,
+                    data: { status: 'asserted', previousStatus: null },
+                    accounts: [],
+                    people: [{ id: 4, name: 'Pedro', standing: 'member', accountId: null }],
+                    games: [],
+                },
+            ],
+            hasMore: false,
+        })
+
+        const [entry] = (await response).entries
+        expect(entry?.person).toEqual({ id: 3, name: 'Bloody', standing: 'member', accountId: 6 })
+        expect(entry?.people).toEqual([{ id: 4, name: 'Pedro', standing: 'member', accountId: null }])
+    })
+
+    it('keeps the account behind each group person a notification names', async () => {
+        const response = firstValueFrom(api.getUserNotifications(7))
+        const request = http.expectOne(`${environment.apiUrl}/profile/users/7/notifications`)
+
+        request.flush([
+            {
+                id: 1,
+                accountId: 7,
+                type: 'group_person_changed',
+                message: 'Bloody said they have Casting Shadows, in Fridays.',
+                createdAt: '2026-10-17 10:45:13',
+                isRead: false,
+                context: { accounts: [], groups: [], sessions: [], people: [{ id: 3, name: 'Bloody', accountId: 6 }], games: [] },
+            },
+        ])
+
+        const [notification] = await response
+        expect(notification?.context?.people).toEqual([{ id: 3, name: 'Bloody', accountId: 6 }])
+    })
+
     it('rejects a malformed acquisition decision entry at the API boundary', async () => {
         const response = firstValueFrom(api.getGroupAcquisitionBoard(7))
         const request = http.expectOne(`${environment.apiUrl}/groups/7/acquisition-board`)
