@@ -15,6 +15,8 @@ describe('AdminProposalReviewComponent', () => {
         submitterId: 7,
         status: 'pending',
         title: 'Azul',
+        titleLanguage: 'en',
+        otherTitles: [{ languageCode: 'es', title: 'Azul (ES)' }],
         imageUrl: null,
         gameAvgDuration: null,
         minPlayers: 2,
@@ -35,7 +37,7 @@ describe('AdminProposalReviewComponent', () => {
         gameAvgDuration: 45,
         minPlayers: 2,
         maxPlayers: 4,
-        translations: { en: 'Azul', es: 'Azul' },
+        editions: [{ id: 3, languageCode: 'en', title: 'Azul', isPrimary: true }],
         tags: [],
         issues: [],
         artworkSource: null,
@@ -109,7 +111,7 @@ describe('AdminProposalReviewComponent', () => {
 
         expect(approve().disabled).toBe(true)
 
-        component.form.patchValue({ maxPlayers: 4, gameAvgDuration: 30, titleEs: 'Azul (ES)' })
+        component.form.patchValue({ maxPlayers: 4, gameAvgDuration: 30 })
         component.selectedTagIds.set(new Set([2]))
         fixture.detectChanges()
         expect(approve().disabled).toBe(false)
@@ -117,7 +119,10 @@ describe('AdminProposalReviewComponent', () => {
         await component.approve()
 
         expect(api['approveGameProposal']).toHaveBeenCalledWith(12, {
-            translations: { en: 'Azul', es: 'Azul (ES)' },
+            editions: [
+                { languageCode: 'en', title: 'Azul', isPrimary: true },
+                { languageCode: 'es', title: 'Azul (ES)', isPrimary: false },
+            ],
             imageUrl: '',
             minPlayers: 2,
             maxPlayers: 4,
@@ -125,6 +130,22 @@ describe('AdminProposalReviewComponent', () => {
             tagIds: [2],
             reviewNotes: undefined,
         })
+    })
+
+    it('starts the editions from the proposal: its title in its language is primary, then the other titles', async () => {
+        const fixture = await render({
+            ...proposal,
+            title: 'Die Siedler von Catan',
+            titleLanguage: 'de',
+            otherTitles: [{ languageCode: 'en', title: 'Catan' }],
+        })
+        const editions = fixture.componentInstance.form.getRawValue().editions
+
+        expect(editions.map(({ languageCode, title, isPrimary }) => ({ languageCode, title, isPrimary }))).toEqual([
+            { languageCode: 'de', title: 'Die Siedler von Catan', isPrimary: true },
+            { languageCode: 'en', title: 'Catan', isPrimary: false },
+        ])
+        expect((fixture.nativeElement as HTMLElement).textContent).toContain('Title in')
     })
 
     it('refuses more minimum than maximum players', async () => {

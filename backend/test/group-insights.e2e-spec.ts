@@ -156,6 +156,7 @@ describe('group insights (e2e)', () => {
             gamesPlayed: 3,
             gamesWithWinner: 3,
         })
+        // A group person with an account shows the account's name ("Member Account"), not the copy their row keeps.
         expect(
             response.body.standings.map((entry: Record<string, unknown>) => [
                 entry.displayName,
@@ -164,7 +165,7 @@ describe('group insights (e2e)', () => {
                 entry.sessions,
             ]),
         ).toEqual([
-            ['Member', 2, 2, 1],
+            ['Member Account', 2, 2, 1],
             ['Organizer', 1, 2, 2],
             ['Guest', 1, 1, 1],
         ])

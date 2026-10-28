@@ -18,6 +18,17 @@ operational details.
   in on another device.
 - Games now store their titles as editions, one per language. Nothing
   changes on screen yet.
+- Administration edits a game's editions: a language, a title and a primary
+  mark for each, in any language, instead of the fixed English and Spanish
+  titles. The Games filter finds games with editions but no primary one
+  instead of games without a Spanish title.
+- A game proposal says which language its title is in (the page's language
+  until changed) and can list the game's titles in other languages. Approving
+  it creates those editions, with the proposed title's language as primary.
+- Say which edition you own: adding a game that has several editions asks
+  which one (the page's language preselected, else the original), and the
+  game page shows and changes it. My Games, who brings a game to a night and
+  a person's linked games then show the title on your own box.
 - Game titles in groups, history and recommendations follow the page's
   language, and a game that only has an edition in another language shows
   that one.
@@ -39,9 +50,12 @@ operational details.
   German, and Italian. Lists of who voted, played or is interested read as a
   list in each language ("Ana and Bo"), and players are called people
   throughout.
-- Home always offers recording and planning. One group keeps its full card,
-  several groups show as compact rows with a corner pin that appears on
-  hover; pinned groups lead.
+- Settings (Profile, Appearance, Account, Privacy), your page, the avatar
+  editor and the remaining messages in Spanish, French, German, and Italian;
+  only Administration stays in English. Your page's browser tab now reads
+  "Your page" instead of "Page not found".
+- Home always offers recording and planning. With several groups each has a
+  corner pin that appears on hover; pinned groups lead.
 - Recording keeps its group context, offers Today/Yesterday and same-day
   session suggestions, and can search catalogue games without ownership.
   Separate plays keep their own players, winners and scores. Completed
@@ -99,6 +113,10 @@ operational details.
 
 ### Changed
 
+- Home shows every group as its full card, stacked, when there are several:
+  people, the invite nudge, and What to play, Library and History for each,
+  with the last or next night under the name and the pin on the card's
+  corner. Pinned groups still lead.
 - Names have at most 20 characters, for accounts and for people without one,
   and the API enforces it. Longer names saved before are shown cut the same
   way everywhere ("Bartholomew Montgom…"), notifications included. Names stay
@@ -279,6 +297,15 @@ operational details.
 
 ### Fixed
 
+- A member shows with the same name and avatar everywhere in a group. Group
+  people, standings, the group's history and notifications showed the name
+  they had when they joined (sometimes their username) after they changed it
+  in Settings → Profile, while the member list and "Owned by" showed the new
+  one. The owner can no longer rename a member through the API, as the app
+  never offered; people without an account are renamed as before.
+- A member changing their own games or preferences reads as such in the
+  group's history and in notifications: "Ana said they have Catan" instead of
+  "Ana said Ana has Catan", in every language.
 - Every page without the navigation bar (create a group, plan a game night,
   group settings, claim a person, propose a game) starts with the same "Back
   to …" link above its heading. Plan a game night and Propose a game had no

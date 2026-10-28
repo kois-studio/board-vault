@@ -87,11 +87,18 @@ describe('AdminController write validation', () => {
         expect(markGameProposalAsDuplicate).toHaveBeenCalledWith(12, 7, { duplicateOfGameId: 3, reviewNotes: 'already-present' })
     })
 
-    it('rejects approval titles in languages the catalogue does not support', async () => {
-        await request(app.getHttpServer())
-            .post('/admin/proposals/12/approve')
-            .send({ minPlayers: 2, maxPlayers: 4, gameAvgDuration: 45, translations: { en: 'Azul', fr: 'Azul' } })
-            .expect(400)
+    it('rejects the old fixed translations and malformed editions on approval', async () => {
+        for (const extra of [
+            { translations: { en: 'Azul' } },
+            { editions: [] },
+            { editions: [{ languageCode: 'en', title: 'Azul' }] },
+            { editions: [{ languageCode: 'en', title: 'Azul', isPrimary: true, extra: 1 }] },
+        ]) {
+            await request(app.getHttpServer())
+                .post('/admin/proposals/12/approve')
+                .send({ minPlayers: 2, maxPlayers: 4, gameAvgDuration: 45, ...extra })
+                .expect(400)
+        }
     })
 
     it('rejects impossible player counts and lengths at the boundary', async () => {

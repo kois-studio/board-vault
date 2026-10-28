@@ -1,4 +1,4 @@
-import { ForbiddenException, Injectable, NotFoundException } from '@nestjs/common'
+import { BadRequestException, ForbiddenException, Injectable, NotFoundException } from '@nestjs/common'
 
 import { titleFieldsFromRow } from '../../../common/utils/game-title.js'
 import { DatabaseService } from '../../common/database/database.service.js'
@@ -95,6 +95,12 @@ export class GroupPeopleService {
     async update(actorAccountId: number, groupId: number, personId: number, body: UpdateGroupPersonBody): Promise<GroupPersonDto> {
         await this.assertGroupOwner(actorAccountId, groupId)
         const before = await this.getPersonOrThrow(personId, groupId)
+
+        // A member shows the name and avatar of their own profile (PERSON_NAME): only they change them, in Settings.
+        if (before.kind === 'linked' && (body.displayName !== undefined || body.avatar !== undefined)) {
+            throw new BadRequestException('A member shows the name and avatar of their own profile')
+        }
+
         const type: GroupActivityType =
             body.status !== undefined && body.status !== before.status
                 ? body.status === 'archived'
@@ -339,6 +345,8 @@ export class GroupPeopleService {
             confirmedByAccountId: row[4] === null ? null : Number(row[4]),
             createdAt: String(row[5]),
             updatedAt: String(row[6]),
+            copyTitle: row[7] === null ? null : String(row[7]),
+            copyTitleLanguage: row[8] === null ? null : String(row[8]),
         }))
     }
 

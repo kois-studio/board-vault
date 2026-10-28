@@ -173,13 +173,23 @@ export class ActivityNotifier {
             const actor = await this.accountName(change.actorAccountId)
             const person = shortName(String(personRow[5]))
             const game = gameRow?.[1] ? String(gameRow[1]) : 'a game'
-            const message = {
-                owned: `${actor} said ${person} has ${game}, in ${groupName}.`,
-                not_owned: `${actor} removed ${game} from ${person}'s games in ${groupName}.`,
-                unsure: `${actor} marked ${game} as unsure for ${person}, in ${groupName}.`,
-                preference: `${actor} changed how much ${person} likes ${game}, in ${groupName}.`,
-                preference_removed: `${actor} removed what ${person} thinks of ${game}, in ${groupName}.`,
-            }[change.change]
+            // Someone changing their own games (a member's group person) speaks of themselves, not of their name twice.
+            const own = personRow[2] !== null && Number(personRow[2]) === change.actorAccountId
+            const message = own
+                ? {
+                      owned: `${actor} said they have ${game}, in ${groupName}.`,
+                      not_owned: `${actor} removed ${game} from their games in ${groupName}.`,
+                      unsure: `${actor} isn't sure they have ${game}, in ${groupName}.`,
+                      preference: `${actor} changed how much they like ${game}, in ${groupName}.`,
+                      preference_removed: `${actor} removed what they think of ${game}, in ${groupName}.`,
+                  }[change.change]
+                : {
+                      owned: `${actor} said ${person} has ${game}, in ${groupName}.`,
+                      not_owned: `${actor} removed ${game} from ${person}'s games in ${groupName}.`,
+                      unsure: `${actor} marked ${game} as unsure for ${person}, in ${groupName}.`,
+                      preference: `${actor} changed how much ${person} likes ${game}, in ${groupName}.`,
+                      preference_removed: `${actor} removed what ${person} thinks of ${game}, in ${groupName}.`,
+                  }[change.change]
 
             await this.send([change.enteredByAccountId], change.actorAccountId, NotificationTypeEnum.GROUP_PERSON_CHANGED, message, {
                 account: change.actorAccountId,

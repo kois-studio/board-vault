@@ -1,7 +1,5 @@
 import { Component, computed, inject, signal } from '@angular/core'
 import { RouterLink } from '@angular/router'
-import { finalize } from 'rxjs'
-import { Api } from '../../../api/api'
 import type { GameCompleteType } from '../../../api/api.types'
 import { CardGameComponent } from '../../../components/card-game/card-game.component'
 import { SkeletonCardGameComponent } from '../../../components/skeletons/skeleton-card-game/skeleton-card-game.component'
@@ -15,6 +13,7 @@ import { LOADING_KEYS } from '../../../core/enums/loading-keys-enum'
 import { GameTitlePipe } from '../../../core/pipes/game-title.pipe'
 import { DataService } from '../../../core/services/data.service'
 import { LoadingService } from '../../../core/services/loading.service'
+import { ShelfEditionService } from '../../../core/services/shelf-edition.service'
 import { gameTitle } from '../../../core/utils/gameTitle'
 @Component({
     imports: [
@@ -31,8 +30,8 @@ import { gameTitle } from '../../../core/utils/gameTitle'
     templateUrl: 'wishlist-page.component.html',
 })
 export class WishlistPageComponent {
-    private readonly api = inject(Api)
     private readonly dataService = inject(DataService)
+    private readonly shelfEditions = inject(ShelfEditionService)
     private readonly loadingService = inject(LoadingService)
     private readonly toastService = inject(ToastService)
 
@@ -62,22 +61,24 @@ export class WishlistPageComponent {
         if (!userId || this.buyingGameId() !== null) return
 
         this.buyingGameId.set(game.id)
-        this.api
-            .addGameToUserCollection(userId, game.id)
-            .pipe(finalize(() => this.buyingGameId.set(null)))
-            .subscribe({
-                next: () => {
+        // A game with several editions asks which one is on the shelf (ADR-0025).
+        this.shelfEditions
+            .addToShelf(userId, game, gameTitle(game))
+            .then(
+                (added) => {
+                    if (!added) return
                     this.userWishlist$.update((wishlist) => wishlist.filter((item) => item.id !== game.id))
                     this.dataService.refreshUserGames()
                     this.toastService.success(
                         $localize`:Toast after marking a wishlist game as bought; the placeholder is the game title:${gameTitle(game)}:title: moved to My Games`,
                     )
                 },
-                error: () =>
+                () =>
                     this.toastService.error(
                         $localize`:Toast when marking a wishlist game as bought failed:Could not add this game to My Games. Try again.`,
                     ),
-            })
+            )
+            .finally(() => this.buyingGameId.set(null))
     }
 
     public retryWishlist(): void {

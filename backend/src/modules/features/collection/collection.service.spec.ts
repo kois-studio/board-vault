@@ -32,7 +32,7 @@ describe('CollectionService', () => {
 
         await expect(service.addGameToUserCollection(1, 42)).resolves.toEqual({ success: true })
 
-        expect(addGameToCollection).toHaveBeenCalledWith(1, 42)
+        expect(addGameToCollection).toHaveBeenCalledWith(1, 42, null)
         expect(invalidateForAccount).toHaveBeenCalledWith(1)
         expect(notifier.shelfChanged).toHaveBeenCalledWith(1, { added: [42] })
     })

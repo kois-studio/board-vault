@@ -1,6 +1,6 @@
 import { resolvedTitleSql } from '../resolved-title.js'
 
-import { PERSON_STANDING } from './groups.queries.js'
+import { PERSON_NAME, PERSON_STANDING } from './groups.queries.js'
 
 import type { GroupActivityEntry } from '../../../../common/types/group-activity.type.js'
 import type { DatabaseService } from '../database.service.js'
@@ -95,7 +95,7 @@ export class GroupActivityQueries {
     getPeople(groupId: number, groupPersonIds: Array<number>) {
         return this.database.execute({
             sql: `
-                SELECT gp.id, gp.displayName, ${PERSON_STANDING}
+                SELECT gp.id, ${PERSON_NAME} AS displayName, ${PERSON_STANDING}, gp.accountId
                 FROM GroupPerson gp
                 WHERE gp.groupId = ? AND gp.id IN (${groupPersonIds.map(() => '?').join(', ')})
             `,

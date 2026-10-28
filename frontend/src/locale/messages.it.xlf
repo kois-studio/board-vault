@@ -6,7 +6,7 @@
       </notes>
       <segment state="translated">
         <source>Fits <ph id="0" equiv="players" disp="players"/> players</source>
-        <target>Per <ph id="0" equiv="players" disp="players"/> persone</target>
+        <target>Per <ph id="0" equiv="players" disp="players"/> giocatori</target>
       </segment>
     </unit>
     <unit id="1006147056168230215">
@@ -297,6 +297,15 @@
         <target>Conclusa</target>
       </segment>
     </unit>
+    <unit id="1168397086420765932">
+      <notes>
+        <note category="description">Heading of the sign-in details in the Account settings</note>
+      </notes>
+      <segment state="translated">
+        <source>Sign-in</source>
+        <target>Accesso</target>
+      </segment>
+    </unit>
     <unit id="1171599222218766902">
       <notes>
         <note category="description">Name of the Accept button on a group invitation in the inbox</note>
@@ -364,15 +373,6 @@
       <segment state="translated">
         <source>Deleted account</source>
         <target>Account eliminato</target>
-      </segment>
-    </unit>
-    <unit id="121980130682744616">
-      <notes>
-        <note category="description">Hint under the language heading in the Appearance settings</note>
-      </notes>
-      <segment state="translated">
-        <source>The language of Board Vault&apos;s menus and messages. Saved on your account.</source>
-        <target>La lingua dei menu e dei messaggi di Board Vault. Salvata sul tuo account.</target>
       </segment>
     </unit>
     <unit id="1221643742069715632">
@@ -474,6 +474,15 @@
         <target>Gioco aggiunto per <ph id="0" equiv="name" disp="this.name()"/>.</target>
       </segment>
     </unit>
+    <unit id="1257763851250011113">
+      <notes>
+        <note category="description">Group history line, someone changing their own games or preferences; actor is a name, game is a game title</note>
+      </notes>
+      <segment state="translated">
+        <source><ph id="0" equiv="actor" disp="actor"/> said they have an opinion on <ph id="1" equiv="game" disp="game"/></source>
+        <target><ph id="0" equiv="actor" disp="actor"/> ha indicato cosa pensa di <ph id="1" equiv="game" disp="game"/></target>
+      </segment>
+    </unit>
     <unit id="1260099573097287890">
       <notes>
         <note category="description">Hidden name of the button that adds a catalogue game to the games step; the placeholder is the game title</note>
@@ -490,6 +499,15 @@
       <segment state="translated">
         <source>Total Proposals</source>
         <target>Proposte in totale</target>
+      </segment>
+    </unit>
+    <unit id="1274668146835758541">
+      <notes>
+        <note category="description">Notification, someone changing their own games or preferences in a group; person is a name, game is a game title</note>
+      </notes>
+      <segment state="translated">
+        <source><ph id="0" equiv="person" disp="actor"/> said they have <ph id="1" equiv="game" disp="game"/>, in <ph id="2" equiv="group" disp="group"/>.</source>
+        <target><ph id="0" equiv="person" disp="actor"/> ha indicato di avere <ph id="1" equiv="game" disp="game"/>, in <ph id="2" equiv="group" disp="group"/>.</target>
       </segment>
     </unit>
     <unit id="1286983255645370171">
@@ -534,6 +552,15 @@
         <target>Storico di <ph id="0" equiv="group" disp="group"/></target>
       </segment>
     </unit>
+    <unit id="1307312122579659057">
+      <notes>
+        <note category="description">Choice in the edition chooser for someone who does not know or does not want to say which edition they own</note>
+      </notes>
+      <segment state="translated">
+        <source>I’m not sure</source>
+        <target>Non lo so</target>
+      </segment>
+    </unit>
     <unit id="1313010108209054073">
       <notes>
         <note category="description">Label on the game night card on Home while the night is under way</note>
@@ -568,6 +595,15 @@
       <segment state="translated">
         <source>Review a private group session, attendance, games, and memories.</source>
         <target>Rivedi una serata di gioco privata del tuo gruppo: chi c’era, a cosa si è giocato e i ricordi.</target>
+      </segment>
+    </unit>
+    <unit id="1328176318825939220">
+      <notes>
+        <note category="description">Your own page before you rate any game</note>
+      </notes>
+      <segment state="translated">
+        <source>Rate a game after you play it and your favourites show here.</source>
+        <target>Valuta un gioco dopo averci giocato e qui compariranno i tuoi preferiti.</target>
       </segment>
     </unit>
     <unit id="1329344418110353950">
@@ -869,6 +905,15 @@
         <target>Se hai ricevuto un invito a un gruppo, esci e poi usa di nuovo il link dell’invito.</target>
       </segment>
     </unit>
+    <unit id="1525646804357117160">
+      <notes>
+        <note category="description">Name of a green color theme in the Appearance settings, like the felt of a card table</note>
+      </notes>
+      <segment state="translated">
+        <source>Felt</source>
+        <target>Feltro</target>
+      </segment>
+    </unit>
     <unit id="1525728150043011845">
       <notes>
         <note category="description">Button on the group page that shows the archived people</note>
@@ -1086,6 +1131,15 @@
         <target>Caricamento delle tue proposte…</target>
       </segment>
     </unit>
+    <unit id="1638155734811646591">
+      <notes>
+        <note category="description">Heading on your own page above the games you rated highest</note>
+      </notes>
+      <segment state="translated">
+        <source>Your favourites</source>
+        <target>I tuoi preferiti</target>
+      </segment>
+    </unit>
     <unit id="1659823622206259954">
       <notes>
         <note category="description">Accessible name of the people buttons of one play of a game; the play number, then the game title</note>
@@ -1155,15 +1209,6 @@
         <target>Collezione</target>
       </segment>
     </unit>
-    <unit id="1687843960576683654">
-      <notes>
-        <note category="description">Name of the list of faces on a group card on Home</note>
-      </notes>
-      <segment state="translated">
-        <source>People in this group</source>
-        <target>Persone di questo gruppo</target>
-      </segment>
-    </unit>
     <unit id="1688683156203780908">
       <notes>
         <note category="description">Greeting on Home for a new account; the placeholder is your name</note>
@@ -1189,6 +1234,15 @@
       <segment state="translated">
         <source>friend_username or friend@example.com</source>
         <target>utente_amico o amico@example.com</target>
+      </segment>
+    </unit>
+    <unit id="1696570268117903233">
+      <notes>
+        <note category="description">Description of the System color scheme in the Appearance settings</note>
+      </notes>
+      <segment state="translated">
+        <source>Match your device, and switch when it does.</source>
+        <target>Come il tuo dispositivo, e cambia quando cambia lui.</target>
       </segment>
     </unit>
     <unit id="1696742461752095316">
@@ -1308,6 +1362,15 @@
         <target>Gli appunti non sono accessibili; usa «Apri link».</target>
       </segment>
     </unit>
+    <unit id="1790637555628658675">
+      <notes>
+        <note category="description">Name of the field where a language code is typed</note>
+      </notes>
+      <segment state="translated">
+        <source>Language code</source>
+        <target>Codice lingua</target>
+      </segment>
+    </unit>
     <unit id="1790722701366905577">
       <notes>
         <note category="description">Under a game that none of the people coming to a game night own</note>
@@ -1326,6 +1389,24 @@
         <target>{VAR_PLURAL, plural, one {<ph id="0" equiv="INTERPOLATION"/> passa} other {<ph id="1" equiv="INTERPOLATION"/> passano}}</target>
       </segment>
     </unit>
+    <unit id="180215682275041064">
+      <notes>
+        <note category="description">Label of the button that removes a row of other titles; the language name follows</note>
+      </notes>
+      <segment state="translated">
+        <source>Remove the title in <ph id="0" equiv="language" disp="row.languageCode ? languageName(row.languageCode) : &apos;…&apos;"/></source>
+        <target>Rimuovi il titolo in <ph id="0" equiv="language" disp="row.languageCode ? languageName(row.languageCode) : &apos;…&apos;"/></target>
+      </segment>
+    </unit>
+    <unit id="1804981326505301788">
+      <notes>
+        <note category="description">Accessible name of the numbers at the top of your own page</note>
+      </notes>
+      <segment state="translated">
+        <source>Your numbers</source>
+        <target>I tuoi numeri</target>
+      </segment>
+    </unit>
     <unit id="1815859193587155677">
       <notes>
         <note category="description">Shown on the group page when a person without an account was prepared for you; the placeholder is that person&apos;s name</note>
@@ -1333,6 +1414,15 @@
       <segment state="translated">
         <source>Review the games and preferences recorded for <ph id="0" equiv="INTERPOLATION" disp="{{ claimablePerson.person.displayName }}"/>, then link that history to your account.</source>
         <target>Rivedi i giochi e le preferenze registrati per <ph id="0" equiv="INTERPOLATION" disp="{{ claimablePerson.person.displayName }}"/>, poi collega quello storico al tuo account.</target>
+      </segment>
+    </unit>
+    <unit id="1824005036025311052">
+      <notes>
+        <note category="description">Button on the game page that asks again which edition of the game you own</note>
+      </notes>
+      <segment state="translated">
+        <source>Change edition</source>
+        <target>Cambia edizione</target>
       </segment>
     </unit>
     <unit id="1826151550199685921">
@@ -1468,6 +1558,15 @@
       <segment state="translated">
         <source>Filter by title</source>
         <target>Filtra per titolo</target>
+      </segment>
+    </unit>
+    <unit id="1891859540218304580">
+      <notes>
+        <note category="description">What deleting your account does, in the Account settings</note>
+      </notes>
+      <segment state="translated">
+        <source>Passes each group you own to the member who joined it first. A group with nobody else in it is deleted.</source>
+        <target>Passa ogni gruppo di cui sei referente al membro che si è unito per primo. Un gruppo in cui non c’è nessun altro viene eliminato.</target>
       </segment>
     </unit>
     <unit id="1893150887726649844">
@@ -1668,6 +1767,15 @@
         <target>Proprietà registrata per <ph id="0" equiv="owner" disp="this.ownershipTargetName(gameId)"/>.</target>
       </segment>
     </unit>
+    <unit id="1998832017089258218">
+      <notes>
+        <note category="description">Your own page when you are in no group</note>
+      </notes>
+      <segment state="translated">
+        <source>You are not in a group yet.</source>
+        <target>Non sei ancora in nessun gruppo.</target>
+      </segment>
+    </unit>
     <unit id="2001224549919062414">
       <notes>
         <note category="description">Small heading of the access page while sign-up is by invitation only</note>
@@ -1684,6 +1792,15 @@
       <segment state="translated">
         <source>Avoid repeated words and characters.</source>
         <target>Evita parole e caratteri ripetuti.</target>
+      </segment>
+    </unit>
+    <unit id="2006025714989722003">
+      <notes>
+        <note category="description">Button that closes the account deletion dialog without deleting</note>
+      </notes>
+      <segment state="translated">
+        <source>Keep my account</source>
+        <target>Tieni il mio account</target>
       </segment>
     </unit>
     <unit id="201526558483161181">
@@ -1971,7 +2088,7 @@
     </unit>
     <unit id="2159130950882492111">
       <notes>
-        <note category="description">Button that closes the results form without saving</note>
+        <note category="description">Button that closes the edition chooser without saving</note>
       </notes>
       <segment state="translated">
         <source>Cancel</source>
@@ -1994,6 +2111,15 @@
       <segment state="translated">
         <source>Suggestions</source>
         <target>Suggerimenti</target>
+      </segment>
+    </unit>
+    <unit id="2173522453695220810">
+      <notes>
+        <note category="description">Text of the account deletion dialog</note>
+      </notes>
+      <segment state="translated">
+        <source> Your groups keep the nights you played, as “Deleted account”. Everything else goes, and this can’t be undone. </source>
+        <target> I tuoi gruppi conservano le serate che hai giocato, come «Account eliminato». Tutto il resto sparisce, e non si può annullare. </target>
       </segment>
     </unit>
     <unit id="2175255068699337530">
@@ -2075,6 +2201,24 @@
       <segment state="translated">
         <source>Start a shared space</source>
         <target>Inizia uno spazio condiviso</target>
+      </segment>
+    </unit>
+    <unit id="2227329299203299862">
+      <notes>
+        <note category="description">Description of the Ciruela theme, Board Vault&apos;s own plum colors, in the Appearance settings</note>
+      </notes>
+      <segment state="translated">
+        <source>Plum and lilac. The Board Vault colors.</source>
+        <target>Prugna e lilla. I colori di Board Vault.</target>
+      </segment>
+    </unit>
+    <unit id="223321090152278153">
+      <notes>
+        <note category="description">Group history line, someone changing their own games or preferences; actor is a name, game is a game title</note>
+      </notes>
+      <segment state="translated">
+        <source><ph id="0" equiv="actor" disp="actor"/> removed what they think of <ph id="1" equiv="game" disp="game"/></source>
+        <target><ph id="0" equiv="actor" disp="actor"/> ha rimosso la propria opinione su <ph id="1" equiv="game" disp="game"/></target>
       </segment>
     </unit>
     <unit id="2237775413745074505">
@@ -2375,6 +2519,15 @@
         <target>Come funziona</target>
       </segment>
     </unit>
+    <unit id="2409672154570643758">
+      <notes>
+        <note category="description">Accessible name of the display name field in Profile settings</note>
+      </notes>
+      <segment state="translated">
+        <source>Display name</source>
+        <target>Nome visualizzato</target>
+      </segment>
+    </unit>
     <unit id="241036807494707415">
       <notes>
         <note category="description">On a game the group might buy that nobody is interested in yet</note>
@@ -2382,6 +2535,15 @@
       <segment state="translated">
         <source>Interested: No one yet</source>
         <target>Interessa a: ancora nessuno</target>
+      </segment>
+    </unit>
+    <unit id="2413801874320889286">
+      <notes>
+        <note category="description">Tab of the avatar editor: use your initials as your avatar</note>
+      </notes>
+      <segment state="translated">
+        <source>Initials</source>
+        <target>Iniziali</target>
       </segment>
     </unit>
     <unit id="2415298912764521981">
@@ -2628,6 +2790,15 @@
         <target>Non siamo riusciti a collegare questo accesso a Board Vault. Riprova, oppure esci e usa il tuo link d’invito.</target>
       </segment>
     </unit>
+    <unit id="2529039960931560775">
+      <notes>
+        <note category="description">Group history line, someone changing their own games or preferences; actor is a name, game is a game title</note>
+      </notes>
+      <segment state="translated">
+        <source><ph id="0" equiv="actor" disp="actor"/> removed <ph id="1" equiv="game" disp="game"/> from their games</source>
+        <target><ph id="0" equiv="actor" disp="actor"/> ha tolto <ph id="1" equiv="game" disp="game"/> dai propri giochi</target>
+      </segment>
+    </unit>
     <unit id="2530318293105149171">
       <notes>
         <note category="description">Subtitle of the Reviews page</note>
@@ -2736,6 +2907,15 @@
         <target>La prossima serata di gioco, cosa avete giocato e i giochi che potete portare.</target>
       </segment>
     </unit>
+    <unit id="2572999923369413006">
+      <notes>
+        <note category="description">Description of the Harbor theme in the Appearance settings</note>
+      </notes>
+      <segment state="translated">
+        <source>Deep sea blue.</source>
+        <target>Blu di mare profondo.</target>
+      </segment>
+    </unit>
     <unit id="257886432852959192">
       <notes>
         <note category="description">Text on the page shown for an address that does not exist</note>
@@ -2779,6 +2959,15 @@
       <segment state="translated">
         <source>Collection — Board Vault</source>
         <target>Collezione — Board Vault</target>
+      </segment>
+    </unit>
+    <unit id="2597351097492608767">
+      <notes>
+        <note category="description">What the usage statistics keep, in the Privacy settings</note>
+      </notes>
+      <segment state="translated">
+        <source>Turning it off stops it at once and deletes what was kept about you.</source>
+        <target>Disattivarlo lo ferma subito ed elimina ciò che è stato conservato su di te.</target>
       </segment>
     </unit>
     <unit id="2605740710698379107">
@@ -2833,6 +3022,24 @@
       <segment state="translated">
         <source>Your Submission Stats</source>
         <target>Statistiche delle tue proposte</target>
+      </segment>
+    </unit>
+    <unit id="2626294452188138166">
+      <notes>
+        <note category="description">Account settings, when the username you chose in the sign-in panel could not be copied to Board Vault yet; the placeholder is the username your groups still see</note>
+      </notes>
+      <segment state="translated">
+        <source> Your groups still see you as <pc id="0" equivStart="START_TAG_SPAN" equivEnd="CLOSE_TAG_SPAN" type="other" dispStart="&lt;span class=&quot;font-mono&quot;&gt;" dispEnd="&lt;/span&gt;"><ph id="1" equiv="INTERPOLATION" disp="{{ accountUsername() }}"/></pc>: the new username could not be saved yet. Reload the page to try again. </source>
+        <target> I tuoi gruppi ti vedono ancora come <pc id="0" equivStart="START_TAG_SPAN" equivEnd="CLOSE_TAG_SPAN" type="other" dispStart="&lt;span class=&quot;font-mono&quot;&gt;" dispEnd="&lt;/span&gt;"><ph id="1" equiv="INTERPOLATION" disp="{{ accountUsername() }}"/></pc>: non è stato ancora possibile salvare il nuovo nome utente. Ricarica la pagina per riprovare. </target>
+      </segment>
+    </unit>
+    <unit id="2628744190311191326">
+      <notes>
+        <note category="description">Description of the Graphite theme in the Appearance settings</note>
+      </notes>
+      <segment state="translated">
+        <source>Quiet grays.</source>
+        <target>Grigi tranquilli.</target>
       </segment>
     </unit>
     <unit id="2637402098141045352">
@@ -2994,6 +3201,15 @@
         <target>Non è stato possibile caricare i suggerimenti. Controlla la connessione e riprova.</target>
       </segment>
     </unit>
+    <unit id="2745028842390991019">
+      <notes>
+        <note category="description">Notification, someone changing their own games or preferences in a group; person is a name, game is a game title</note>
+      </notes>
+      <segment state="translated">
+        <source><ph id="0" equiv="person" disp="actor"/> isn’t sure they have <ph id="1" equiv="game" disp="game"/>, in <ph id="2" equiv="group" disp="group"/>.</source>
+        <target><ph id="0" equiv="person" disp="actor"/> ha indicato di avere forse <ph id="1" equiv="game" disp="game"/>, in <ph id="2" equiv="group" disp="group"/>.</target>
+      </segment>
+    </unit>
     <unit id="2754237322863948261">
       <notes>
         <note category="description">Toast after deleting a notification</note>
@@ -3129,6 +3345,15 @@
         <target>Ci sono troppe verifiche in sospeso su questo account. Rimuovi un indirizzo email, un numero di telefono o un wallet non verificato che non ti serve più, oppure attendi qualche minuto che scada una passkey configurata a metà, poi riprova.</target>
       </segment>
     </unit>
+    <unit id="2808459010951137562">
+      <notes>
+        <note category="description">Button that adds a row for a title in another language</note>
+      </notes>
+      <segment state="translated">
+        <source>Add a title</source>
+        <target>Aggiungi un titolo</target>
+      </segment>
+    </unit>
     <unit id="281153916191694572">
       <notes>
         <note category="description">Link at the top of the avatar menu to the signed-in person&apos;s own page</note>
@@ -3145,6 +3370,15 @@
       <segment state="translated">
         <source>Next Friday</source>
         <target>Il venerdì dopo</target>
+      </segment>
+    </unit>
+    <unit id="2813730701941475340">
+      <notes>
+        <note category="description">Hint under the Theme heading in the Appearance settings</note>
+      </notes>
+      <segment state="translated">
+        <source>Changes the background and main color. Player colors stay the same in every theme.</source>
+        <target>Cambia lo sfondo e il colore principale. I colori delle persone restano uguali in ogni tema.</target>
       </segment>
     </unit>
     <unit id="2814590485100631296">
@@ -3264,6 +3498,15 @@
         <target>Caricamento dei tuoi gruppi…</target>
       </segment>
     </unit>
+    <unit id="2867431126656658265">
+      <notes>
+        <note category="description">What the usage statistics keep, in the Privacy settings</note>
+      </notes>
+      <segment state="translated">
+        <source>Under a code instead of your name or email. It stays in Board Vault’s own database; no other company sees it.</source>
+        <target>Con un codice al posto del tuo nome o della tua email. Resta nel database di Board Vault; nessun’altra azienda lo vede.</target>
+      </segment>
+    </unit>
     <unit id="2871617273892961858">
       <notes>
         <note category="description">Link on a notification</note>
@@ -3271,6 +3514,15 @@
       <segment state="translated">
         <source>Open the game</source>
         <target>Apri il gioco</target>
+      </segment>
+    </unit>
+    <unit id="2874252575916172948">
+      <notes>
+        <note category="description">Button that confirms deleting your account</note>
+      </notes>
+      <segment state="translated">
+        <source> Delete my account </source>
+        <target> Elimina il mio account </target>
       </segment>
     </unit>
     <unit id="2878802710573213602">
@@ -3555,6 +3807,15 @@
         <target>Scegli giorno e ora</target>
       </segment>
     </unit>
+    <unit id="3074987902485823708">
+      <notes>
+        <note category="description">Tab of the avatar editor: pick an icon as your avatar</note>
+      </notes>
+      <segment state="translated">
+        <source>Icon</source>
+        <target>Icona</target>
+      </segment>
+    </unit>
     <unit id="3079673288395334450">
       <notes>
         <note category="description">Accessible name of the I own it button under a game on Browse; the placeholder is the game title</note>
@@ -3564,13 +3825,22 @@
         <target>Aggiungi <ph id="0" equiv="title" disp="gameTitle(game)"/> alla tua collezione</target>
       </segment>
     </unit>
+    <unit id="3084097958403820640">
+      <notes>
+        <note category="description">Toast when a game night would be left with nobody from the group</note>
+      </notes>
+      <segment state="translated">
+        <source>A session must have at least one group member</source>
+        <target>Una serata di gioco deve avere almeno un membro del gruppo</target>
+      </segment>
+    </unit>
     <unit id="3092077784471830251">
       <notes>
         <note category="description">Recommendation reason</note>
       </notes>
       <segment state="translated">
         <source>Fits <ph id="0" equiv="players" disp="players"/> player</source>
-        <target>Per <ph id="0" equiv="players" disp="players"/> persona</target>
+        <target>Per <ph id="0" equiv="players" disp="players"/> giocatore</target>
       </segment>
     </unit>
     <unit id="30921813512214027">
@@ -3607,6 +3877,15 @@
       <segment state="translated">
         <source>Nothing marked yet. Tap a game below when the group starts playing it.</source>
         <target>Ancora niente di segnato. Tocca un gioco qui sotto quando il gruppo inizia a giocarci.</target>
+      </segment>
+    </unit>
+    <unit id="3111885274191005376">
+      <notes>
+        <note category="description">Confirmation after changing which edition of a game you own</note>
+      </notes>
+      <segment state="translated">
+        <source>Edition saved</source>
+        <target>Edizione salvata</target>
       </segment>
     </unit>
     <unit id="3117578262676715596">
@@ -4022,6 +4301,15 @@
         <target>Preselezione <pc id="0" equivStart="START_TAG_SPAN" equivEnd="CLOSE_TAG_SPAN" type="other" dispStart="&lt;span class=&quot;text-sm font-normal text-bv-text-muted&quot;&gt;" dispEnd="&lt;/span&gt;">facoltativa</pc></target>
       </segment>
     </unit>
+    <unit id="3338495610472058221">
+      <notes>
+        <note category="description">Heading on your own page above the games you played most</note>
+      </notes>
+      <segment state="translated">
+        <source>You play most</source>
+        <target>Quello che giochi di più</target>
+      </segment>
+    </unit>
     <unit id="3342726066427970760">
       <notes>
         <note category="description">Label on a game proposal: the notes of the admin who reviewed it</note>
@@ -4085,15 +4373,6 @@
         <target><ph id="0" equiv="actor" disp="actor"/> viene a una serata di gioco</target>
       </segment>
     </unit>
-    <unit id="3376307529362264656">
-      <notes>
-        <note category="description">Placeholder of the search field on Browse</note>
-      </notes>
-      <segment state="translated">
-        <source>Search by title, in English or Spanish</source>
-        <target>Cerca per titolo, in inglese o in spagnolo</target>
-      </segment>
-    </unit>
     <unit id="3386246347342903734">
       <notes>
         <note category="description">Heading of the closing call to action on the landing page</note>
@@ -4112,6 +4391,15 @@
         <target>Aggiungi al calendario</target>
       </segment>
     </unit>
+    <unit id="3392360256277465259">
+      <notes>
+        <note category="description">Title of the account deletion dialog</note>
+      </notes>
+      <segment state="translated">
+        <source>Delete your account?</source>
+        <target>Eliminare il tuo account?</target>
+      </segment>
+    </unit>
     <unit id="3392679878347563381">
       <notes>
         <note category="description">Hint on the form that records a game night; the button switches to starting one now</note>
@@ -4119,6 +4407,15 @@
       <segment state="translated">
         <source>Playing right now? <pc id="0" equivStart="START_TAG_BUTTON" equivEnd="CLOSE_TAG_BUTTON" type="other" dispStart="&lt;button type=&quot;button&quot; class=&quot;font-semibold text-bv-primary hover:underline&quot; (click)=&quot;switchToLive()&quot;&gt;" dispEnd="&lt;/button&gt;">Start the night live</pc> and add games as you go.</source>
         <target>State giocando adesso? <pc id="0" equivStart="START_TAG_BUTTON" equivEnd="CLOSE_TAG_BUTTON" type="other" dispStart="&lt;button type=&quot;button&quot; class=&quot;font-semibold text-bv-primary hover:underline&quot; (click)=&quot;switchToLive()&quot;&gt;" dispEnd="&lt;/button&gt;">Avvia la serata dal vivo</pc> e aggiungi i giochi man mano.</target>
+      </segment>
+    </unit>
+    <unit id="339519880898510125">
+      <notes>
+        <note category="description">What deleting your account does, in the Account settings</note>
+      </notes>
+      <segment state="translated">
+        <source>Removes your sign-in, so you can’t sign back in to this account.</source>
+        <target>Elimina il tuo accesso, quindi non potrai più accedere a questo account.</target>
       </segment>
     </unit>
     <unit id="3398338842701230044">
@@ -4274,6 +4571,15 @@
         <target>Invita</target>
       </segment>
     </unit>
+    <unit id="3468485835384597147">
+      <notes>
+        <note category="description">Heading of the avatar editor above the colours to pick from</note>
+      </notes>
+      <segment state="translated">
+        <source>Background Color</source>
+        <target>Colore di sfondo</target>
+      </segment>
+    </unit>
     <unit id="347726722080737708">
       <notes>
         <note category="description">Dialog that finishes a game night with no game marked as played, for someone who cannot cancel it</note>
@@ -4299,6 +4605,24 @@
       <segment state="translated">
         <source>Welcome</source>
         <target>Ti diamo il benvenuto</target>
+      </segment>
+    </unit>
+    <unit id="3501859429132712649">
+      <notes>
+        <note category="description">Hint in the Account settings about who keeps your sign-in details</note>
+      </notes>
+      <segment state="translated">
+        <source> Your username, email addresses, password and signed-in devices are kept by Clerk, our sign-in provider. </source>
+        <target> Il tuo nome utente, i tuoi indirizzi email, la password e i dispositivi connessi sono gestiti da Clerk, il nostro servizio di accesso. </target>
+      </segment>
+    </unit>
+    <unit id="3503592559345073785">
+      <notes>
+        <note category="description">Group history line, someone changing their own games or preferences; actor is a name, game is a game title</note>
+      </notes>
+      <segment state="translated">
+        <source><ph id="0" equiv="actor" disp="actor"/> isn’t sure they have <ph id="1" equiv="game" disp="game"/></source>
+        <target><ph id="0" equiv="actor" disp="actor"/> ha indicato di avere forse <ph id="1" equiv="game" disp="game"/></target>
       </segment>
     </unit>
     <unit id="3511545370905854666">
@@ -4345,6 +4669,15 @@
       <segment state="translated">
         <source>Plan the first night</source>
         <target>Organizza la prima serata</target>
+      </segment>
+    </unit>
+    <unit id="354050530162297439">
+      <notes>
+        <note category="description">Subtitle of the Profile settings</note>
+      </notes>
+      <segment state="translated">
+        <source>How people in your groups see you.</source>
+        <target>Come ti vedono le persone dei tuoi gruppi.</target>
       </segment>
     </unit>
     <unit id="3541048472864641079">
@@ -4462,6 +4795,15 @@
       <segment state="translated">
         <source>Getting set up</source>
         <target>Primi passi</target>
+      </segment>
+    </unit>
+    <unit id="3614057461352661644">
+      <notes>
+        <note category="description">Name of the list of faces on a group card on Home</note>
+      </notes>
+      <segment state="translated">
+        <source>People in <ph id="0" equiv="group" disp="this.group().name"/></source>
+        <target>Persone in <ph id="0" equiv="group" disp="this.group().name"/></target>
       </segment>
     </unit>
     <unit id="3635224618020757014">
@@ -4588,6 +4930,15 @@
       <segment state="translated">
         <source>The link could not be copied; use Open link.</source>
         <target>Impossibile copiare il link; usa «Apri link».</target>
+      </segment>
+    </unit>
+    <unit id="3695816730555625996">
+      <notes>
+        <note category="description">Label of the language selector under the game title in the propose-a-game form</note>
+      </notes>
+      <segment state="translated">
+        <source>Language of the title</source>
+        <target>Lingua del titolo</target>
       </segment>
     </unit>
     <unit id="3711889941704624217">
@@ -4762,9 +5113,18 @@
         <target>Classifica</target>
       </segment>
     </unit>
+    <unit id="3768264297677107657">
+      <notes>
+        <note category="description">Placeholder of the search field on Browse</note>
+      </notes>
+      <segment state="translated">
+        <source>Search by title</source>
+        <target>Cerca per titolo</target>
+      </segment>
+    </unit>
     <unit id="3768927257183755959">
       <notes>
-        <note category="description">Button that saves the details of your copy of a game</note>
+        <note category="description">Button that saves the edition chosen in the edition chooser for a game already in My Games</note>
       </notes>
       <segment state="translated">
         <source>Save</source>
@@ -4887,6 +5247,15 @@
       <segment state="translated">
         <source>Delete this group</source>
         <target>Elimina questo gruppo</target>
+      </segment>
+    </unit>
+    <unit id="3837355392149877236">
+      <notes>
+        <note category="description">Group history line, someone changing their own games or preferences; actor is a name, game is a game title</note>
+      </notes>
+      <segment state="translated">
+        <source><ph id="0" equiv="actor" disp="actor"/> said they like <ph id="1" equiv="game" disp="game"/></source>
+        <target><ph id="0" equiv="actor" disp="actor"/> ha indicato di apprezzare <ph id="1" equiv="game" disp="game"/></target>
       </segment>
     </unit>
     <unit id="3841095492114279113">
@@ -5057,6 +5426,15 @@
       <segment state="translated">
         <source>Invite <ph id="0" equiv="name" disp="name"/></source>
         <target>Invita <ph id="0" equiv="name" disp="name"/></target>
+      </segment>
+    </unit>
+    <unit id="3905533329051691155">
+      <notes>
+        <note category="description">Text size option in the Appearance settings</note>
+      </notes>
+      <segment state="translated">
+        <source>Large</source>
+        <target>Grande</target>
       </segment>
     </unit>
     <unit id="3906374096707451187">
@@ -5232,6 +5610,15 @@
         <target>Link sicuro copiato.</target>
       </segment>
     </unit>
+    <unit id="3976710906062238438">
+      <notes>
+        <note category="description">Error in the account deletion dialog</note>
+      </notes>
+      <segment state="translated">
+        <source>Your account could not be deleted. Nothing was changed; try again.</source>
+        <target>Non è stato possibile eliminare il tuo account. Non è cambiato nulla; riprova.</target>
+      </segment>
+    </unit>
     <unit id="3980130997409188141">
       <notes>
         <note category="description">Item in the info popover of Recent Activity</note>
@@ -5395,6 +5782,16 @@
         <target>Filtra per tag</target>
       </segment>
     </unit>
+    <unit id="4057862988487622358">
+      <notes>
+        <note category="description">Last option of a language list, to type any other language code</note>
+        <note category="meaning">language option</note>
+      </notes>
+      <segment state="translated">
+        <source>Other…</source>
+        <target>Altra…</target>
+      </segment>
+    </unit>
     <unit id="4057932224780575479">
       <notes>
         <note category="description">Line under the closing heading on the landing page</note>
@@ -5494,6 +5891,15 @@
         <target>{VAR_PLURAL, plural, one {<ph id="0" equiv="INTERPOLATION"/> senza risposta} other {<ph id="1" equiv="INTERPOLATION"/> senza risposta}}</target>
       </segment>
     </unit>
+    <unit id="411104056357411214">
+      <notes>
+        <note category="description">Name of a blue color theme in the Appearance settings, like a harbour by the sea</note>
+      </notes>
+      <segment state="translated">
+        <source>Harbor</source>
+        <target>Porto</target>
+      </segment>
+    </unit>
     <unit id="411354769244562331">
       <notes>
         <note category="description">How many different games the people in a group own</note>
@@ -5510,6 +5916,24 @@
       <segment state="translated">
         <source>Worth revisiting</source>
         <target>Da riprendere</target>
+      </segment>
+    </unit>
+    <unit id="4120760057956263777">
+      <notes>
+        <note category="description">Description of the Light color scheme in the Appearance settings</note>
+      </notes>
+      <segment state="translated">
+        <source>Light background, always.</source>
+        <target>Sfondo chiaro, sempre.</target>
+      </segment>
+    </unit>
+    <unit id="412609827685184281">
+      <notes>
+        <note category="description">Accessible name of the button that closes the avatar editor</note>
+      </notes>
+      <segment state="translated">
+        <source>Close avatar editor</source>
+        <target>Chiudi l’editor dell’avatar</target>
       </segment>
     </unit>
     <unit id="4127698904772386069">
@@ -5774,6 +6198,24 @@
         <target>Il tuo account è stato eliminato.</target>
       </segment>
     </unit>
+    <unit id="42285295895500617">
+      <notes>
+        <note category="description">Hint next to your avatar in the Profile settings</note>
+      </notes>
+      <segment state="translated">
+        <source>Pick an emoji, an icon or your initials, and a colour.</source>
+        <target>Scegli un’emoji, un’icona o le tue iniziali, e un colore.</target>
+      </segment>
+    </unit>
+    <unit id="4237890068713752985">
+      <notes>
+        <note category="description">Next to Your favourites on your own page: how many games you rated</note>
+      </notes>
+      <segment state="translated">
+        <source>{VAR_PLURAL, plural, one {<ph id="0" equiv="INTERPOLATION"/> game rated} other {<ph id="1" equiv="INTERPOLATION"/> games rated}}</source>
+        <target>{VAR_PLURAL, plural, one {<ph id="0" equiv="INTERPOLATION"/> gioco valutato} other {<ph id="1" equiv="INTERPOLATION"/> giochi valutati}}</target>
+      </segment>
+    </unit>
     <unit id="4238262366376573097">
       <notes>
         <note category="description">Shown by Clerk, the sign-in provider, while it checks that a sign-in is not automated</note>
@@ -5799,6 +6241,15 @@
       <segment state="translated">
         <source>Yes, remove</source>
         <target>Sì, rimuovi</target>
+      </segment>
+    </unit>
+    <unit id="4254074280878566137">
+      <notes>
+        <note category="description">Accessible name of a colour swatch in the avatar editor; the placeholder is its position, 1 to 8</note>
+      </notes>
+      <segment state="translated">
+        <source>Choose player colour <ph id="0" equiv="position" disp="position"/></source>
+        <target>Scegli il colore <ph id="0" equiv="position" disp="position"/></target>
       </segment>
     </unit>
     <unit id="425659463820154089">
@@ -5905,7 +6356,7 @@
       </notes>
       <segment state="translated">
         <source>Owned by <ph id="0" equiv="owners" disp="owners"/> of <ph id="1" equiv="people" disp="attendees"/> selected people</source>
-        <target>Nella collezione di <ph id="0" equiv="owners" disp="owners"/> delle <ph id="1" equiv="people" disp="attendees"/> persone scelte</target>
+        <target>Ce l’hanno <ph id="0" equiv="owners" disp="owners"/> delle <ph id="1" equiv="people" disp="attendees"/> persone scelte</target>
       </segment>
     </unit>
     <unit id="4292370937084065936">
@@ -5915,6 +6366,15 @@
       <segment state="translated">
         <source><ph id="0" equiv="actor" disp="actor"/> recorded results for an individual play on a game night</source>
         <target><ph id="0" equiv="actor" disp="actor"/> ha registrato i risultati di una partita in una serata di gioco</target>
+      </segment>
+    </unit>
+    <unit id="4304971421339457870">
+      <notes>
+        <note category="description">Notification, someone changing their own games or preferences in a group; person is a name, game is a game title</note>
+      </notes>
+      <segment state="translated">
+        <source><ph id="0" equiv="person" disp="actor"/> removed <ph id="1" equiv="game" disp="game"/> from their games in <ph id="2" equiv="group" disp="group"/>.</source>
+        <target><ph id="0" equiv="person" disp="actor"/> ha tolto <ph id="1" equiv="game" disp="game"/> dai propri giochi in <ph id="2" equiv="group" disp="group"/>.</target>
       </segment>
     </unit>
     <unit id="430848017615851667">
@@ -5969,6 +6429,15 @@
       <segment state="translated">
         <source>Entries discarded</source>
         <target>Voci scartate</target>
+      </segment>
+    </unit>
+    <unit id="4364002120105904553">
+      <notes>
+        <note category="description">What deleting your account does, in the Account settings</note>
+      </notes>
+      <segment state="translated">
+        <source>Keeps the nights you already played, so your groups’ history stays complete. You appear there as “Deleted account”, without your name or avatar.</source>
+        <target>Conserva le serate che hai già giocato, così lo storico dei tuoi gruppi resta completo. Lì comparirai come «Account eliminato», senza nome né avatar.</target>
       </segment>
     </unit>
     <unit id="4369542638350223376">
@@ -6043,6 +6512,24 @@
         <target>Nessuno dei tuoi giochi corrisponde a questi filtri.</target>
       </segment>
     </unit>
+    <unit id="4406973836784974418">
+      <notes>
+        <note category="description">Label of the list of editions in the edition chooser</note>
+      </notes>
+      <segment state="translated">
+        <source>Editions</source>
+        <target>Edizioni</target>
+      </segment>
+    </unit>
+    <unit id="4409631049692082621">
+      <notes>
+        <note category="description">Account settings, when the username you chose in the sign-in panel belongs to another Board Vault account; the placeholders are the new username and the one your groups still see</note>
+      </notes>
+      <segment state="translated">
+        <source><pc id="0" equivStart="START_TAG_SPAN" equivEnd="CLOSE_TAG_SPAN" type="other" dispStart="&lt;span class=&quot;font-mono&quot;&gt;" dispEnd="&lt;/span&gt;"><ph id="1" equiv="INTERPOLATION" disp="{{ username() }}"/></pc> is already taken in Board Vault, so your groups still see you as <pc id="2" equivStart="START_TAG_SPAN" equivEnd="CLOSE_TAG_SPAN" type="other" dispStart="&lt;span class=&quot;font-mono&quot;&gt;" dispEnd="&lt;/span&gt;"><ph id="3" equiv="INTERPOLATION_1" disp="{{ accountUsername() }}"/></pc>. Choose another username in Manage sign-in. </source>
+        <target><pc id="0" equivStart="START_TAG_SPAN" equivEnd="CLOSE_TAG_SPAN" type="other" dispStart="&lt;span class=&quot;font-mono&quot;&gt;" dispEnd="&lt;/span&gt;"><ph id="1" equiv="INTERPOLATION" disp="{{ username() }}"/></pc> è già in uso in Board Vault, quindi i tuoi gruppi ti vedono ancora come <pc id="2" equivStart="START_TAG_SPAN" equivEnd="CLOSE_TAG_SPAN" type="other" dispStart="&lt;span class=&quot;font-mono&quot;&gt;" dispEnd="&lt;/span&gt;"><ph id="3" equiv="INTERPOLATION_1" disp="{{ accountUsername() }}"/></pc>. Scegli un altro nome utente in Gestisci l’accesso. </target>
+      </segment>
+    </unit>
     <unit id="4415919604451271822">
       <notes>
         <note category="description">Group history line; actor and person are names, game is a game title</note>
@@ -6059,6 +6546,15 @@
       <segment state="translated">
         <source>Not rated yet</source>
         <target>Non ancora valutato</target>
+      </segment>
+    </unit>
+    <unit id="4421330787346639151">
+      <notes>
+        <note category="description">Account settings, above the list of what deleting your account does</note>
+      </notes>
+      <segment state="translated">
+        <source>This can’t be undone. Deleting your account:</source>
+        <target>Non si può annullare. Eliminare il tuo account:</target>
       </segment>
     </unit>
     <unit id="4423631371614311212">
@@ -6115,6 +6611,15 @@
         <target>Stiamo controllando la tua appartenenza e gli inviti in attesa.</target>
       </segment>
     </unit>
+    <unit id="4470021052210304275">
+      <notes>
+        <note category="description">Under Help improve Board Vault in the Privacy settings</note>
+      </notes>
+      <segment state="translated">
+        <source> Count which pages you open and which features you use, so we can see what works and what gets left half done. </source>
+        <target> Conta quali pagine apri e quali funzioni usi, così possiamo vedere cosa funziona e cosa resta a metà. </target>
+      </segment>
+    </unit>
     <unit id="4470575780412110613">
       <notes>
         <note category="description">A person&apos;s score in a play of a game</note>
@@ -6160,6 +6665,15 @@
         <target>Ieri</target>
       </segment>
     </unit>
+    <unit id="4501800346302358695">
+      <notes>
+        <note category="description">Button that adds the game to My Games with the edition chosen in the edition chooser</note>
+      </notes>
+      <segment state="translated">
+        <source>Add to My Games</source>
+        <target>Aggiungi a I miei giochi</target>
+      </segment>
+    </unit>
     <unit id="4505288544316005654">
       <notes>
         <note category="description">Shown on the group&apos;s settings page to a member who is not its owner</note>
@@ -6196,6 +6710,15 @@
         <target>Impossibile aggiungere questo gioco alla tua collezione.</target>
       </segment>
     </unit>
+    <unit id="4526568127452551506">
+      <notes>
+        <note category="description">Notification, someone changing their own games or preferences in a group; person is a name, game is a game title</note>
+      </notes>
+      <segment state="translated">
+        <source><ph id="0" equiv="person" disp="actor"/> changed how much they like <ph id="1" equiv="game" disp="game"/>, in <ph id="2" equiv="group" disp="group"/>.</source>
+        <target><ph id="0" equiv="person" disp="actor"/> ha cambiato la propria opinione su <ph id="1" equiv="game" disp="game"/>, in <ph id="2" equiv="group" disp="group"/>.</target>
+      </segment>
+    </unit>
     <unit id="4527736376608736339">
       <notes>
         <note category="description">Text in the dialog that leaves a group</note>
@@ -6230,6 +6753,15 @@
       <segment state="translated">
         <source>Filter games</source>
         <target>Filtra i giochi</target>
+      </segment>
+    </unit>
+    <unit id="4547376068759243702">
+      <notes>
+        <note category="description">Heading of the text size choice in the Appearance settings</note>
+      </notes>
+      <segment state="translated">
+        <source>Text size</source>
+        <target>Dimensione del testo</target>
       </segment>
     </unit>
     <unit id="4566831731994109275">
@@ -6432,6 +6964,15 @@
         <target><ph id="0" equiv="count" disp="count"/> recensione</target>
       </segment>
     </unit>
+    <unit id="4693633927121282743">
+      <notes>
+        <note category="description">Toast when your Home layout choices could not be saved</note>
+      </notes>
+      <segment state="translated">
+        <source>Could not save your Home preferences. Try again.</source>
+        <target>Non è stato possibile salvare le tue preferenze della Home. Riprova.</target>
+      </segment>
+    </unit>
     <unit id="4695546799743008696">
       <notes>
         <note category="description">Opens the form to record who owns a game played on a game night</note>
@@ -6468,6 +7009,15 @@
         <target>Rivedi e rivendica</target>
       </segment>
     </unit>
+    <unit id="4711284692648832970">
+      <notes>
+        <note category="description">Toast when the change to who came to a game night could not be saved</note>
+      </notes>
+      <segment state="translated">
+        <source>Could not save the attendee changes</source>
+        <target>Non è stato possibile salvare le modifiche alle presenze</target>
+      </segment>
+    </unit>
     <unit id="4715165630183338203">
       <notes>
         <note category="description">A list of games ending in one more</note>
@@ -6493,6 +7043,15 @@
       <segment state="translated">
         <source>Other games</source>
         <target>Altri giochi</target>
+      </segment>
+    </unit>
+    <unit id="4745733559103169147">
+      <notes>
+        <note category="description">Text size option in the Appearance settings, bigger than Large</note>
+      </notes>
+      <segment state="translated">
+        <source>Larger</source>
+        <target>Più grande</target>
       </segment>
     </unit>
     <unit id="4747940509314227461">
@@ -6529,7 +7088,7 @@
       </notes>
       <segment state="translated">
         <source><ph id="0" equiv="count" disp="min"/> player</source>
-        <target><ph id="0" equiv="count" disp="min"/> persona</target>
+        <target><ph id="0" equiv="count" disp="min"/> giocatore</target>
       </segment>
     </unit>
     <unit id="4754161652314426063">
@@ -6559,6 +7118,15 @@
         <target><ph id="0" equiv="count" disp="rest"/> giochi</target>
       </segment>
     </unit>
+    <unit id="4768749765465246664">
+      <notes>
+        <note category="description">Label of your email address in the Account settings</note>
+      </notes>
+      <segment state="translated">
+        <source>Email</source>
+        <target>Email</target>
+      </segment>
+    </unit>
     <unit id="4774883184461079507">
       <notes>
         <note category="description">Accessible name of the list of a game&apos;s length and player count on its page</note>
@@ -6581,6 +7149,15 @@
       <segment state="translated">
         <source>I won’t bring it</source>
         <target>Non lo porto</target>
+      </segment>
+    </unit>
+    <unit id="4785969012495884701">
+      <notes>
+        <note category="description">Error under the other titles when a language code is not valid</note>
+      </notes>
+      <segment state="translated">
+        <source>Use a language code such as de or pt-BR.</source>
+        <target>Usa un codice lingua come de o pt-BR.</target>
       </segment>
     </unit>
     <unit id="4792123205739798415">
@@ -6628,6 +7205,15 @@
         <target><ph id="0" equiv="title" disp="gameTitle(game)"/> è stato spostato in I miei giochi</target>
       </segment>
     </unit>
+    <unit id="48053915100877658">
+      <notes>
+        <note category="description">Toast after your profile is saved</note>
+      </notes>
+      <segment state="translated">
+        <source>User data updated</source>
+        <target>Profilo aggiornato</target>
+      </segment>
+    </unit>
     <unit id="4809830440227489945">
       <notes>
         <note category="description">Question on a group invitation in the inbox before declining it</note>
@@ -6644,6 +7230,15 @@
       <segment state="translated">
         <source>Remove</source>
         <target>Rimuovi</target>
+      </segment>
+    </unit>
+    <unit id="4816218345268889719">
+      <notes>
+        <note category="description">Label of the field where you type your username to confirm deleting your account; the placeholder is your username</note>
+      </notes>
+      <segment state="translated">
+        <source> Type your username, <pc id="0" equivStart="START_TAG_SPAN" equivEnd="CLOSE_TAG_SPAN" type="other" dispStart="&lt;span class=&quot;font-mono&quot;&gt;" dispEnd="&lt;/span&gt;"><ph id="1" equiv="INTERPOLATION" disp="{{ username() }}"/></pc>, to confirm </source>
+        <target> Scrivi il tuo nome utente, <pc id="0" equivStart="START_TAG_SPAN" equivEnd="CLOSE_TAG_SPAN" type="other" dispStart="&lt;span class=&quot;font-mono&quot;&gt;" dispEnd="&lt;/span&gt;"><ph id="1" equiv="INTERPOLATION" disp="{{ username() }}"/></pc>, per confermare </target>
       </segment>
     </unit>
     <unit id="4827006001062105686">
@@ -6827,6 +7422,15 @@
         <target>Durata sconosciuta</target>
       </segment>
     </unit>
+    <unit id="4915431133669985304">
+      <notes>
+        <note category="description">Heading of the Profile settings</note>
+      </notes>
+      <segment state="translated">
+        <source>Profile</source>
+        <target>Profilo</target>
+      </segment>
+    </unit>
     <unit id="4928942411756065619">
       <notes>
         <note category="description">Button that loads a recorded game night again</note>
@@ -6843,6 +7447,15 @@
       <segment state="translated">
         <source>Settings</source>
         <target>Impostazioni</target>
+      </segment>
+    </unit>
+    <unit id="4933144856966619908">
+      <notes>
+        <note category="description">Group history line, someone changing their own games or preferences; actor is a name, game is a game title</note>
+      </notes>
+      <segment state="translated">
+        <source><ph id="0" equiv="actor" disp="actor"/> said they don’t have <ph id="1" equiv="game" disp="game"/></source>
+        <target><ph id="0" equiv="actor" disp="actor"/> ha indicato di non avere <ph id="1" equiv="game" disp="game"/></target>
       </segment>
     </unit>
     <unit id="4934924354211996143">
@@ -6890,6 +7503,15 @@
         <target>Impossibile caricare le notifiche.</target>
       </segment>
     </unit>
+    <unit id="4955188057252711017">
+      <notes>
+        <note category="description">Your own page before any game night is recorded</note>
+      </notes>
+      <segment state="translated">
+        <source>Games you play show here once a night is recorded.</source>
+        <target>I giochi a cui giochi compaiono qui quando viene registrata una serata.</target>
+      </segment>
+    </unit>
     <unit id="4966269657278370058">
       <notes>
         <note category="description">Dialog that finishes a game night with no game marked as played, for the organizer</note>
@@ -6906,6 +7528,15 @@
       <segment state="translated">
         <source>No sessions recorded yet.</source>
         <target>Ancora nessuna serata registrata.</target>
+      </segment>
+    </unit>
+    <unit id="4995483472864741267">
+      <notes>
+        <note category="description">Button in the Account settings that opens the sign-in panel</note>
+      </notes>
+      <segment state="translated">
+        <source>Manage sign-in</source>
+        <target>Gestisci l’accesso</target>
       </segment>
     </unit>
     <unit id="5000950882619340704">
@@ -7024,6 +7655,15 @@
       <segment state="translated">
         <source>This records a game <ph id="0" equiv="INTERPOLATION" disp="{{ name() }}"/> owns in this group. Everyone in the group can see and correct it.</source>
         <target>Così registri un gioco che <ph id="0" equiv="INTERPOLATION" disp="{{ name() }}"/> possiede in questo gruppo. Tutto il gruppo può vederlo e correggerlo.</target>
+      </segment>
+    </unit>
+    <unit id="5070973609120067414">
+      <notes>
+        <note category="description">Under Games you own on your own page; the placeholder is what you paid for them, in euros</note>
+      </notes>
+      <segment state="translated">
+        <source><ph id="0" equiv="INTERPOLATION" disp="{{ paid() | currency: &apos;EUR&apos; : &apos;symbol&apos; : &apos;1.0-0&apos; }}"/> paid</source>
+        <target><ph id="0" equiv="INTERPOLATION" disp="{{ paid() | currency: &apos;EUR&apos; : &apos;symbol&apos; : &apos;1.0-0&apos; }}"/> pagati</target>
       </segment>
     </unit>
     <unit id="5072920679902574920">
@@ -7386,6 +8026,15 @@
         <target>Aggiungi giochi</target>
       </segment>
     </unit>
+    <unit id="5248717555542428023">
+      <notes>
+        <note category="description">Label of your username in the Account settings</note>
+      </notes>
+      <segment state="translated">
+        <source>Username</source>
+        <target>Nome utente</target>
+      </segment>
+    </unit>
     <unit id="5252594547865416175">
       <notes>
         <note category="description">Group history line; actor and person are names, game is a game title</note>
@@ -7402,6 +8051,15 @@
       <segment state="translated">
         <source>Cancel game night</source>
         <target>Annulla la serata</target>
+      </segment>
+    </unit>
+    <unit id="5265161251609188502">
+      <notes>
+        <note category="description">Link on your own page to the Profile settings</note>
+      </notes>
+      <segment state="translated">
+        <source>Edit profile</source>
+        <target>Modifica il profilo</target>
       </segment>
     </unit>
     <unit id="5270883622503105591">
@@ -7590,6 +8248,15 @@
         <target>Per esempio: regalo di Ana, manca un meeple</target>
       </segment>
     </unit>
+    <unit id="5393590910332210687">
+      <notes>
+        <note category="description">Under In your groups on your own page</note>
+      </notes>
+      <segment state="translated">
+        <source>What each group sees on your page there.</source>
+        <target>Cosa vede ogni gruppo nella tua pagina lì.</target>
+      </segment>
+    </unit>
     <unit id="5396152848669010529">
       <notes>
         <note category="description">Under a game in the plan form&apos;s shortlist when none of the invited people own it</note>
@@ -7625,6 +8292,15 @@
       <segment state="translated">
         <source><ph id="0" equiv="actor" disp="actor"/> changed who is invited for a game night</source>
         <target><ph id="0" equiv="actor" disp="actor"/> ha cambiato gli inviti di una serata di gioco</target>
+      </segment>
+    </unit>
+    <unit id="5424646807547820092">
+      <notes>
+        <note category="description">Button in the Account settings that opens the account deletion dialog</note>
+      </notes>
+      <segment state="translated">
+        <source>Delete account…</source>
+        <target>Elimina l’account…</target>
       </segment>
     </unit>
     <unit id="5426652292414469891">
@@ -7763,6 +8439,24 @@
         <target>Poi scegli la data, chi invitare e una preselezione di giochi.</target>
       </segment>
     </unit>
+    <unit id="5523940449824082581">
+      <notes>
+        <note category="description">Subtitle of the Account settings</note>
+      </notes>
+      <segment state="translated">
+        <source>How you sign in to Board Vault.</source>
+        <target>Come accedi a Board Vault.</target>
+      </segment>
+    </unit>
+    <unit id="5524357852244749835">
+      <notes>
+        <note category="description">What the usage statistics keep, in the Privacy settings</note>
+      </notes>
+      <segment state="translated">
+        <source>Nothing is stored in your browser, so there are no tracking cookies.</source>
+        <target>Nel tuo browser non viene salvato nulla, quindi non ci sono cookie di tracciamento.</target>
+      </segment>
+    </unit>
     <unit id="5527102370913772242">
       <notes>
         <note category="description">Part of a group history line, joined with others by commas into what someone changed on a game night; games is a list of game titles</note>
@@ -7815,6 +8509,15 @@
       <segment state="translated">
         <source>In your groups</source>
         <target>Nei tuoi gruppi</target>
+      </segment>
+    </unit>
+    <unit id="5572453144433972231">
+      <notes>
+        <note category="description">Under a group&apos;s name on your own page when you have no finished game night there</note>
+      </notes>
+      <segment state="translated">
+        <source>No finished nights yet</source>
+        <target>Ancora nessuna serata conclusa</target>
       </segment>
     </unit>
     <unit id="5573521891741907372">
@@ -7898,6 +8601,15 @@
         <target>Non è stato possibile organizzare la serata di gioco. Riprova.</target>
       </segment>
     </unit>
+    <unit id="5607669932062416162">
+      <notes>
+        <note category="description">Text size option in the Appearance settings</note>
+      </notes>
+      <segment state="translated">
+        <source>Default</source>
+        <target>Normale</target>
+      </segment>
+    </unit>
     <unit id="5610292640913590235">
       <notes>
         <note category="description">Button next to the group switcher, to Home</note>
@@ -7965,6 +8677,15 @@
       <segment state="translated">
         <source>The night joins the group’s history. Played games, players and attendance can no longer change, but anyone can still record who won.</source>
         <target>La serata entra nello storico del gruppo. Giochi giocati, persone e presenze non si possono più cambiare, ma chiunque può ancora registrare chi ha vinto.</target>
+      </segment>
+    </unit>
+    <unit id="5635940559783388054">
+      <notes>
+        <note category="description">Toast after My Games is saved</note>
+      </notes>
+      <segment state="translated">
+        <source>Games updated</source>
+        <target>Giochi aggiornati</target>
       </segment>
     </unit>
     <unit id="5642836248241530789">
@@ -8463,6 +9184,15 @@
         <target>Errore nel ritiro dell’invito</target>
       </segment>
     </unit>
+    <unit id="5911968732881816627">
+      <notes>
+        <note category="description">Description of the Default text size in the Appearance settings</note>
+      </notes>
+      <segment state="translated">
+        <source>The standard size.</source>
+        <target>La dimensione standard.</target>
+      </segment>
+    </unit>
     <unit id="59201787128671406">
       <notes>
         <note category="description">On a planned game night&apos;s page, under its title</note>
@@ -8591,6 +9321,15 @@
         <target>Board Vault è ancora solo su invito</target>
       </segment>
     </unit>
+    <unit id="5983207055609138296">
+      <notes>
+        <note category="description">What deleting your account does, in the Account settings</note>
+      </notes>
+      <segment state="translated">
+        <source>Removes your shelf, wishlist, ratings, notifications and invitations.</source>
+        <target>Elimina il tuo scaffale, la lista dei desideri, i voti, le notifiche e gli inviti.</target>
+      </segment>
+    </unit>
     <unit id="5988696486928205830">
       <notes>
         <note category="description">Name of the menu on the group page that says whether a person owns a game</note>
@@ -8652,6 +9391,24 @@
       <segment state="translated">
         <source>We are still building the core experience, so new accounts are created by invitation only.</source>
         <target>Stiamo ancora costruendo le basi, quindi i nuovi account si creano solo su invito.</target>
+      </segment>
+    </unit>
+    <unit id="6005496837258976067">
+      <notes>
+        <note category="description">Screen reader name of a language selector in the list of other titles</note>
+      </notes>
+      <segment state="translated">
+        <source>Language of this title</source>
+        <target>Lingua di questo titolo</target>
+      </segment>
+    </unit>
+    <unit id="6008489739592125163">
+      <notes>
+        <note category="description">Error under the display name field when it is too long; the placeholder is the most characters allowed</note>
+      </notes>
+      <segment state="translated">
+        <source>Use at most <ph id="0" equiv="INTERPOLATION" disp="{{ maxLength }}"/> characters.</source>
+        <target>Usa al massimo <ph id="0" equiv="INTERPOLATION" disp="{{ maxLength }}"/> caratteri.</target>
       </segment>
     </unit>
     <unit id="6014549998701676062">
@@ -8885,6 +9642,15 @@
         <target>Tutti i giochi di Board Vault. Aggiungi quelli che hai o salva quelli che vuoi.</target>
       </segment>
     </unit>
+    <unit id="6121350369258699877">
+      <notes>
+        <note category="description">Button in Profile settings that lets you edit your display name</note>
+      </notes>
+      <segment state="translated">
+        <source>Change display name</source>
+        <target>Cambia il nome visualizzato</target>
+      </segment>
+    </unit>
     <unit id="6123590976681789837">
       <notes>
         <note category="description">Password warning in Clerk, the sign-in provider</note>
@@ -8964,6 +9730,15 @@
       <segment state="translated">
         <source>Shortest first</source>
         <target>Prima i più brevi</target>
+      </segment>
+    </unit>
+    <unit id="6169631115497048895">
+      <notes>
+        <note category="description">Toast when someone who isn&apos;t an operator opens an Administration address</note>
+      </notes>
+      <segment state="translated">
+        <source>Access Denied: You do not have permission to view this page.</source>
+        <target>Accesso negato: non hai il permesso di vedere questa pagina.</target>
       </segment>
     </unit>
     <unit id="6174219018857528884">
@@ -9303,7 +10078,7 @@
       </notes>
       <segment state="translated">
         <source><ph id="0" equiv="count" disp="min"/> players</source>
-        <target><ph id="0" equiv="count" disp="min"/> persone</target>
+        <target><ph id="0" equiv="count" disp="min"/> giocatori</target>
       </segment>
     </unit>
     <unit id="6369425269629738896">
@@ -9459,6 +10234,15 @@
         <target>Invita le persone</target>
       </segment>
     </unit>
+    <unit id="6444163938950057626">
+      <notes>
+        <note category="description">Under a group&apos;s name on your own page when its numbers could not load</note>
+      </notes>
+      <segment state="translated">
+        <source>Numbers could not be loaded</source>
+        <target>Non è stato possibile caricare i numeri</target>
+      </segment>
+    </unit>
     <unit id="6444204669262203828">
       <notes>
         <note category="description">Button on Home for a new account</note>
@@ -9484,6 +10268,15 @@
       <segment state="translated">
         <source><ph id="0" equiv="INTERPOLATION" disp="{{ selection.game.gameAvgDuration }}"/> min · <ph id="1" equiv="INTERPOLATION_1" disp="{{ selection.game | players }}"/></source>
         <target><ph id="0" equiv="INTERPOLATION" disp="{{ selection.game.gameAvgDuration }}"/> min · <ph id="1" equiv="INTERPOLATION_1" disp="{{ selection.game | players }}"/></target>
+      </segment>
+    </unit>
+    <unit id="6458767092252578558">
+      <notes>
+        <note category="description">Description of the Felt theme in the Appearance settings</note>
+      </notes>
+      <segment state="translated">
+        <source>The green of a card table.</source>
+        <target>Il verde di un tavolo da gioco.</target>
       </segment>
     </unit>
     <unit id="646012397537365218">
@@ -9538,6 +10331,15 @@
       <segment state="translated">
         <source>Could not add this game to the group board.</source>
         <target>Impossibile aggiungere questo gioco alla lista degli acquisti del gruppo.</target>
+      </segment>
+    </unit>
+    <unit id="6525109356951792180">
+      <notes>
+        <note category="description">Heading of the avatar section in the Profile settings</note>
+      </notes>
+      <segment state="translated">
+        <source>Avatar</source>
+        <target>Avatar</target>
       </segment>
     </unit>
     <unit id="6530211822561674111">
@@ -9672,6 +10474,15 @@
         <target><ph id="0" equiv="actor" disp="actor"/> porterà <ph id="1" equiv="game" disp="game"/> a una serata di gioco</target>
       </segment>
     </unit>
+    <unit id="6632896893630378443">
+      <notes>
+        <note category="description">Error under the display name field when it is empty</note>
+      </notes>
+      <segment state="translated">
+        <source>Display name is required.</source>
+        <target>Il nome visualizzato è obbligatorio.</target>
+      </segment>
+    </unit>
     <unit id="6634276016186510744">
       <notes>
         <note category="description">Under the third step on the page of a new group</note>
@@ -9780,6 +10591,15 @@
         <target>I tuoi gruppi</target>
       </segment>
     </unit>
+    <unit id="6676568526397940446">
+      <notes>
+        <note category="description">Name of a gray color theme in the Appearance settings</note>
+      </notes>
+      <segment state="translated">
+        <source>Graphite</source>
+        <target>Grafite</target>
+      </segment>
+    </unit>
     <unit id="6678299308952029793">
       <notes>
         <note category="description">Group history line; actor is a name, invited and uninvited are lists of names</note>
@@ -9870,6 +10690,15 @@
         <target>Correggi questa serata</target>
       </segment>
     </unit>
+    <unit id="6713033374419987338">
+      <notes>
+        <note category="description">Toast when My Games could not be reloaded after a change</note>
+      </notes>
+      <segment state="translated">
+        <source>Error fetching updated games</source>
+        <target>Non è stato possibile ricaricare i tuoi giochi</target>
+      </segment>
+    </unit>
     <unit id="6716126281248146214">
       <notes>
         <note category="description">Error from Clerk, the sign-in provider, about its check that a sign-in is not automated</note>
@@ -9906,6 +10735,15 @@
         <target>Riapri</target>
       </segment>
     </unit>
+    <unit id="6737715777823698933">
+      <notes>
+        <note category="description">Toast after turning usage statistics back on in the Privacy settings</note>
+      </notes>
+      <segment state="translated">
+        <source>Thanks: what you do counts towards usage statistics again.</source>
+        <target>Grazie: quello che fai torna a contare per le statistiche d’uso.</target>
+      </segment>
+    </unit>
     <unit id="6738197648323076309">
       <notes>
         <note category="description">On the game night card on Home, the shortlisted game with the most votes, several votes</note>
@@ -9922,6 +10760,15 @@
       <segment state="translated">
         <source>Use 4–64 characters for your username.</source>
         <target>Il nome utente deve avere da 4 a 64 caratteri.</target>
+      </segment>
+    </unit>
+    <unit id="6762830186305693321">
+      <notes>
+        <note category="description">Group history line, someone changing their own games or preferences; actor is a name, game is a game title</note>
+      </notes>
+      <segment state="translated">
+        <source><ph id="0" equiv="actor" disp="actor"/> said they don’t mind <ph id="1" equiv="game" disp="game"/></source>
+        <target><ph id="0" equiv="actor" disp="actor"/> ha indicato di non avere nulla contro <ph id="1" equiv="game" disp="game"/></target>
       </segment>
     </unit>
     <unit id="6766874920336829687">
@@ -10150,6 +10997,15 @@
         <target><ph id="0" equiv="title" disp="gameTitle(game)"/> è già nella tua collezione</target>
       </segment>
     </unit>
+    <unit id="6880747325381536351">
+      <notes>
+        <note category="description">Description of the Large text size in the Appearance settings</note>
+      </notes>
+      <segment state="translated">
+        <source>A little bigger.</source>
+        <target>Un po’ più grande.</target>
+      </segment>
+    </unit>
     <unit id="6883560756902551242">
       <notes>
         <note category="description">Label of the price you paid for your copy of a game</note>
@@ -10192,7 +11048,7 @@
       </notes>
       <segment state="translated">
         <source>{VAR_PLURAL, plural, one {<ph id="0" equiv="INTERPOLATION"/> player} other {<ph id="1" equiv="INTERPOLATION"/> players}}</source>
-        <target>{VAR_PLURAL, plural, one {<ph id="0" equiv="INTERPOLATION"/> persona} other {<ph id="1" equiv="INTERPOLATION"/> persone}}</target>
+        <target>{VAR_PLURAL, plural, one {<ph id="0" equiv="INTERPOLATION"/> giocatore} other {<ph id="1" equiv="INTERPOLATION"/> giocatori}}</target>
       </segment>
     </unit>
     <unit id="691103730541896005">
@@ -10304,6 +11160,15 @@
         <target>Accesso</target>
       </segment>
     </unit>
+    <unit id="6961141167913903325">
+      <notes>
+        <note category="description">Description of the Larger text size in the Appearance settings</note>
+      </notes>
+      <segment state="translated">
+        <source>Bigger still.</source>
+        <target>Ancora più grande.</target>
+      </segment>
+    </unit>
     <unit id="6963942788569864999">
       <notes>
         <note category="description">Question on the landing page</note>
@@ -10329,6 +11194,15 @@
       <segment state="translated">
         <source>Not sure</source>
         <target>Non è chiaro</target>
+      </segment>
+    </unit>
+    <unit id="7003228241320150400">
+      <notes>
+        <note category="description">Accessible name of an icon in the avatar editor; the placeholder is its position in the list</note>
+      </notes>
+      <segment state="translated">
+        <source>Choose avatar icon <ph id="0" equiv="position" disp="position"/></source>
+        <target>Scegli l’icona avatar <ph id="0" equiv="position" disp="position"/></target>
       </segment>
     </unit>
     <unit id="7004368621129341290">
@@ -10412,6 +11286,15 @@
         <target>Ogni gioco che qualcuno del gruppo possiede, prima i più votati.</target>
       </segment>
     </unit>
+    <unit id="7051528060076760035">
+      <notes>
+        <note category="description">Group history line, someone changing their own games or preferences; actor is a name, game is a game title</note>
+      </notes>
+      <segment state="translated">
+        <source><ph id="0" equiv="actor" disp="actor"/> said they would rather not play <ph id="1" equiv="game" disp="game"/></source>
+        <target><ph id="0" equiv="actor" disp="actor"/> ha indicato di preferire non giocare a <ph id="1" equiv="game" disp="game"/></target>
+      </segment>
+    </unit>
     <unit id="7061555756418309143">
       <notes>
         <note category="description">Heading of the date section of the plan form</note>
@@ -10437,6 +11320,15 @@
       <segment state="translated">
         <source>About recent activity</source>
         <target>Informazioni sull’attività recente</target>
+      </segment>
+    </unit>
+    <unit id="7076334783418080774">
+      <notes>
+        <note category="description">Account settings, when the username you chose in the sign-in panel is not valid in Board Vault; the placeholder is the username your groups still see</note>
+      </notes>
+      <segment state="translated">
+        <source> Board Vault usernames use 4 to 40 letters, numbers, _ or -, so your groups still see you as <pc id="0" equivStart="START_TAG_SPAN" equivEnd="CLOSE_TAG_SPAN" type="other" dispStart="&lt;span class=&quot;font-mono&quot;&gt;" dispEnd="&lt;/span&gt;"><ph id="1" equiv="INTERPOLATION" disp="{{ accountUsername() }}"/></pc>. Choose another username in Manage sign-in. </source>
+        <target> I nomi utente di Board Vault usano da 4 a 40 lettere, numeri, _ o -, quindi i tuoi gruppi ti vedono ancora come <pc id="0" equivStart="START_TAG_SPAN" equivEnd="CLOSE_TAG_SPAN" type="other" dispStart="&lt;span class=&quot;font-mono&quot;&gt;" dispEnd="&lt;/span&gt;"><ph id="1" equiv="INTERPOLATION" disp="{{ accountUsername() }}"/></pc>. Scegli un altro nome utente in Gestisci l’accesso. </target>
       </segment>
     </unit>
     <unit id="708029312526242052">
@@ -10545,6 +11437,15 @@
       <segment state="translated">
         <source>Verifying your request</source>
         <target>Verifica della richiesta in corso</target>
+      </segment>
+    </unit>
+    <unit id="7103588127254721505">
+      <notes>
+        <note category="description">Heading of the color theme choice in the Appearance settings</note>
+      </notes>
+      <segment state="translated">
+        <source>Theme</source>
+        <target>Tema</target>
       </segment>
     </unit>
     <unit id="7104482404573801370">
@@ -10691,6 +11592,15 @@
         <target>Scorciatoie di <ph id="0" equiv="group" disp="this.group().name"/></target>
       </segment>
     </unit>
+    <unit id="7171452085560245602">
+      <notes>
+        <note category="description">Heading of the avatar editor above how your avatar will look</note>
+      </notes>
+      <segment state="translated">
+        <source>Avatar Preview</source>
+        <target>Anteprima dell’avatar</target>
+      </segment>
+    </unit>
     <unit id="717410283219275705">
       <notes>
         <note category="description">First step of the form that records a game night</note>
@@ -10782,6 +11692,15 @@
         <target>Qualcuno che viene preferisce evitarlo</target>
       </segment>
     </unit>
+    <unit id="7236870739940358130">
+      <notes>
+        <note category="description">Toast when the change to My Games could not be saved</note>
+      </notes>
+      <segment state="translated">
+        <source>Error updating games</source>
+        <target>Non è stato possibile aggiornare i tuoi giochi</target>
+      </segment>
+    </unit>
     <unit id="7245261921583507305">
       <notes>
         <note category="description">Accessible name of the numbers at the top of a game night&apos;s page</note>
@@ -10807,6 +11726,15 @@
       <segment state="translated">
         <source>Add to <ph id="0" equiv="INTERPOLATION" disp="{{ ownershipTargetName(game.id) }}"/></source>
         <target>Aggiungi a <ph id="0" equiv="INTERPOLATION" disp="{{ ownershipTargetName(game.id) }}"/></target>
+      </segment>
+    </unit>
+    <unit id="7258870677523380388">
+      <notes>
+        <note category="description">Hint under your username in the Profile settings; the link opens the Account settings</note>
+      </notes>
+      <segment state="translated">
+        <source> You sign in with it, and friends use it to invite you to a group. Change it in <pc id="0" equivStart="START_LINK" equivEnd="CLOSE_LINK" type="link" dispStart="&lt;a routerLink=&quot;/settings/account&quot; class=&quot;font-medium text-bv-primary underline-offset-2 hover:underline&quot;&gt;" dispEnd="&lt;/a&gt;">Account</pc>. </source>
+        <target> Lo usi per accedere, e le persone che conosci lo usano per invitarti in un gruppo. Cambialo in <pc id="0" equivStart="START_LINK" equivEnd="CLOSE_LINK" type="link" dispStart="&lt;a routerLink=&quot;/settings/account&quot; class=&quot;font-medium text-bv-primary underline-offset-2 hover:underline&quot;&gt;" dispEnd="&lt;/a&gt;">Account</pc>. </target>
       </segment>
     </unit>
     <unit id="7260873566822878599">
@@ -10933,6 +11861,15 @@
       <segment state="translated">
         <source>Submit Your First Game</source>
         <target>Proponi il tuo primo gioco</target>
+      </segment>
+    </unit>
+    <unit id="7336401989860808776">
+      <notes>
+        <note category="description">Subtitle of the Privacy settings</note>
+      </notes>
+      <segment state="translated">
+        <source>What Board Vault keeps about how you use it, and your choice about it.</source>
+        <target>Cosa conserva Board Vault su come lo usi, e la tua scelta al riguardo.</target>
       </segment>
     </unit>
     <unit id="735453982013279482">
@@ -11077,7 +12014,7 @@
         <note category="description">Accessible name of a rating star on a game page; the placeholder is a number from 1 to 5</note>
       </notes>
       <segment state="translated">
-        <source>Rate <ph id="0" equiv="stars" disp="stars"/> out of 5 stars</source>
+        <source>Rate <ph id="0" equiv="stars" disp="formatNumber(stars)"/> out of 5 stars</source>
         <target>Valuta <ph id="0" equiv="stars" disp="stars"/> su 5 stelle</target>
       </segment>
     </unit>
@@ -11142,6 +12079,15 @@
       <segment state="translated">
         <source>Games the group wants next</source>
         <target>I prossimi giochi che il gruppo vorrebbe</target>
+      </segment>
+    </unit>
+    <unit id="748413123839437193">
+      <notes>
+        <note category="description">Hint under the Text size heading in the Appearance settings</note>
+      </notes>
+      <segment state="translated">
+        <source>Makes text, buttons and icons bigger across Board Vault.</source>
+        <target>Ingrandisce testo, pulsanti e icone in tutto Board Vault.</target>
       </segment>
     </unit>
     <unit id="7487835358633203767">
@@ -11446,9 +12392,9 @@
       <notes>
         <note category="description">Accessible name of a game&apos;s cover link in a recorded game night; the placeholder is the game title</note>
       </notes>
-      <segment state="translated">
+      <segment state="initial">
         <source>View <ph id="0" equiv="title" disp="title"/></source>
-        <target>Vedi <ph id="0" equiv="title" disp="title"/></target>
+        <target>Vedi <ph id="0" equiv="title" disp="gameTitle(game)"/></target>
       </segment>
     </unit>
     <unit id="7647510484935085361">
@@ -11476,6 +12422,24 @@
       <segment state="translated">
         <source>Games</source>
         <target>Giochi</target>
+      </segment>
+    </unit>
+    <unit id="7657431316233261530">
+      <notes>
+        <note category="description">Link text on your own page to your page in one group; the placeholder is the group&apos;s name</note>
+      </notes>
+      <segment state="translated">
+        <source>Your page in <ph id="0" equiv="INTERPOLATION" disp="{{ group.name }}"/></source>
+        <target>La tua pagina in <ph id="0" equiv="INTERPOLATION" disp="{{ group.name }}"/></target>
+      </segment>
+    </unit>
+    <unit id="7662015208795302518">
+      <notes>
+        <note category="description">Heading of the account deletion section in the Account settings</note>
+      </notes>
+      <segment state="translated">
+        <source>Delete account</source>
+        <target>Elimina l’account</target>
       </segment>
     </unit>
     <unit id="7668019104010759211">
@@ -11560,6 +12524,15 @@
         <target>Non è stato possibile salvare il tuo voto. Riprova.</target>
       </segment>
     </unit>
+    <unit id="7703289853492113070">
+      <notes>
+        <note category="description">Label of the field in the avatar editor where you type your initials</note>
+      </notes>
+      <segment state="translated">
+        <source>Your Initials</source>
+        <target>Le tue iniziali</target>
+      </segment>
+    </unit>
     <unit id="771135449401995553">
       <notes>
         <note category="description">How long a game lasts, in minutes</note>
@@ -11567,6 +12540,15 @@
       <segment state="translated">
         <source><ph id="0" equiv="INTERPOLATION" disp="{{ gameAvgDuration() }}"/> min</source>
         <target><ph id="0" equiv="INTERPOLATION" disp="{{ gameAvgDuration() }}"/> min</target>
+      </segment>
+    </unit>
+    <unit id="7712075503423391224">
+      <notes>
+        <note category="description">Accessible name of the button over your avatar in the Profile settings</note>
+      </notes>
+      <segment state="translated">
+        <source>Edit profile avatar</source>
+        <target>Modifica l’avatar del profilo</target>
       </segment>
     </unit>
     <unit id="7721431665681117078">
@@ -11657,7 +12639,7 @@
       </notes>
       <segment state="translated">
         <source>No games for <ph id="0" equiv="players" disp="players"/> players fit within <ph id="1" equiv="minutes" disp="values[&apos;minutes&apos;] ?? 0"/> minutes.</source>
-        <target>Nessun gioco per <ph id="0" equiv="players" disp="players"/> persone sta in <ph id="1" equiv="minutes" disp="values[&apos;minutes&apos;] ?? 0"/> minuti.</target>
+        <target>Nessun gioco per <ph id="0" equiv="players" disp="players"/> giocatori sta in <ph id="1" equiv="minutes" disp="values[&apos;minutes&apos;] ?? 0"/> minuti.</target>
       </segment>
     </unit>
     <unit id="7779255236836032869">
@@ -11741,6 +12723,15 @@
         <target>Reimposta</target>
       </segment>
     </unit>
+    <unit id="7816917301394178354">
+      <notes>
+        <note category="description">Note at the bottom of the Profile settings</note>
+      </notes>
+      <segment state="translated">
+        <source>People in your groups see your avatar, display name and username. Your shelf and wishlist stay private.</source>
+        <target>Le persone dei tuoi gruppi vedono il tuo avatar, il nome visualizzato e il nome utente. Il tuo scaffale e la tua lista dei desideri restano privati.</target>
+      </segment>
+    </unit>
     <unit id="7817739779798876518">
       <notes>
         <note category="description">Heading of the first steps on the page of a new group; the placeholder is the group name</note>
@@ -11796,6 +12787,15 @@
         <target>Amministrazione</target>
       </segment>
     </unit>
+    <unit id="7846220163732677832">
+      <notes>
+        <note category="description">Shown on the game page when you have not said which edition of the game you own</note>
+      </notes>
+      <segment state="translated">
+        <source>Edition not set</source>
+        <target>Edizione non indicata</target>
+      </segment>
+    </unit>
     <unit id="7846643244803883224">
       <notes>
         <note category="description">Button on Browse that hides the tag filters</note>
@@ -11841,6 +12841,15 @@
         <target>Lo scaffale condiviso per i consigli</target>
       </segment>
     </unit>
+    <unit id="7870266735529442386">
+      <notes>
+        <note category="description">Browser tab title of your own page</note>
+      </notes>
+      <segment state="translated">
+        <source>Your page — Board Vault</source>
+        <target>La tua pagina — Board Vault</target>
+      </segment>
+    </unit>
     <unit id="787163983066183218">
       <notes>
         <note category="description">Tab in Collection, the game catalogue</note>
@@ -11857,6 +12866,15 @@
       <segment state="translated">
         <source>5 members · 23 games</source>
         <target>5 membri · 23 giochi</target>
+      </segment>
+    </unit>
+    <unit id="7872569207826518252">
+      <notes>
+        <note category="description">Search and link preview description of your own page</note>
+      </notes>
+      <segment state="translated">
+        <source>Your game nights, wins and favourite games across all your groups. Only you see it.</source>
+        <target>Le tue serate di gioco, le vittorie e i giochi preferiti in tutti i tuoi gruppi. La vedi solo tu.</target>
       </segment>
     </unit>
     <unit id="7873239587567815317">
@@ -11931,6 +12949,15 @@
         <target>Sei in pari con tutto.</target>
       </segment>
     </unit>
+    <unit id="7894133274112638816">
+      <notes>
+        <note category="description">Hint in the edition chooser: your copy shows the title of the edition you pick</note>
+      </notes>
+      <segment state="translated">
+        <source>Your copy shows the title of the edition you pick.</source>
+        <target>La tua copia mostra il titolo dell’edizione che scegli.</target>
+      </segment>
+    </unit>
     <unit id="7899674800818281248">
       <notes>
         <note category="description">Button on a notification</note>
@@ -11938,6 +12965,15 @@
       <segment state="translated">
         <source>Delete notification: <ph id="0" equiv="text" disp="this.text()"/></source>
         <target>Elimina la notifica: <ph id="0" equiv="text" disp="this.text()"/></target>
+      </segment>
+    </unit>
+    <unit id="7900225035551078066">
+      <notes>
+        <note category="description">Under your name on your own page; the placeholder is your username</note>
+      </notes>
+      <segment state="translated">
+        <source><ph id="0" equiv="INTERPOLATION" disp="{{ user.username }}"/> · Only you see this page</source>
+        <target><ph id="0" equiv="INTERPOLATION" disp="{{ user.username }}"/> · Questa pagina la vedi solo tu</target>
       </segment>
     </unit>
     <unit id="7903843199053930">
@@ -12091,6 +13127,15 @@
         <target>Aprila</target>
       </segment>
     </unit>
+    <unit id="7964635506383364343">
+      <notes>
+        <note category="description">What the usage statistics keep, in the Privacy settings</note>
+      </notes>
+      <segment state="translated">
+        <source>Deleted after 30 days. What is left are totals per day that belong to nobody.</source>
+        <target>Eliminato dopo 30 giorni. Restano solo totali giornalieri che non appartengono a nessuno.</target>
+      </segment>
+    </unit>
     <unit id="7966017983699316716">
       <notes>
         <note category="description">Upcoming card on the Play page when nothing is planned</note>
@@ -12154,6 +13199,15 @@
         <target>Accesso sicuro</target>
       </segment>
     </unit>
+    <unit id="8027999063674702321">
+      <notes>
+        <note category="description">Error under the other titles when two titles share a language</note>
+      </notes>
+      <segment state="translated">
+        <source>Each language can have only one title.</source>
+        <target>Ogni lingua può avere un solo titolo.</target>
+      </segment>
+    </unit>
     <unit id="8049452186746342791">
       <notes>
         <note category="description">Item of the avatar menu that lists the game proposals someone sent</note>
@@ -12161,6 +13215,15 @@
       <segment state="translated">
         <source>My submissions</source>
         <target>Le mie proposte</target>
+      </segment>
+    </unit>
+    <unit id="8050412201148857761">
+      <notes>
+        <note category="description">Toast when your numbers could not be loaded</note>
+      </notes>
+      <segment state="translated">
+        <source>Error retrieving user’s stats</source>
+        <target>Non è stato possibile caricare i tuoi numeri</target>
       </segment>
     </unit>
     <unit id="8050453666464969766">
@@ -12197,6 +13260,15 @@
       <segment state="translated">
         <source>Individual plays could not be loaded. <pc id="0" equivStart="START_TAG_BUTTON" equivEnd="CLOSE_TAG_BUTTON" type="other" dispStart="&lt;button type=&quot;button&quot; class=&quot;font-medium underline&quot; (click)=&quot;loadRecordingDetails()&quot;&gt;" dispEnd="&lt;/button&gt;">Retry</pc></source>
         <target>Non è stato possibile caricare le singole partite. <pc id="0" equivStart="START_TAG_BUTTON" equivEnd="CLOSE_TAG_BUTTON" type="other" dispStart="&lt;button type=&quot;button&quot; class=&quot;font-medium underline&quot; (click)=&quot;loadRecordingDetails()&quot;&gt;" dispEnd="&lt;/button&gt;">Riprova</pc></target>
+      </segment>
+    </unit>
+    <unit id="8063968407545537970">
+      <notes>
+        <note category="description">Toast after turning usage statistics off in the Privacy settings</note>
+      </notes>
+      <segment state="translated">
+        <source>Done: nothing you do is counted from now on.</source>
+        <target>Fatto: da ora in poi non viene contato nulla di quello che fai.</target>
       </segment>
     </unit>
     <unit id="8064022845715284898">
@@ -12305,6 +13377,15 @@
       <segment state="translated">
         <source>User or Group not found</source>
         <target>Account o gruppo non trovato</target>
+      </segment>
+    </unit>
+    <unit id="8113665790726732827">
+      <notes>
+        <note category="description">Heading of the optional list of the game&apos;s titles in other languages in the propose-a-game form</note>
+      </notes>
+      <segment state="translated">
+        <source>Other known titles</source>
+        <target>Altri titoli noti</target>
       </segment>
     </unit>
     <unit id="8116175184239166510">
@@ -12499,7 +13580,7 @@
       </notes>
       <segment state="translated">
         <source>No games owned by the selected attendees support <ph id="0" equiv="players" disp="players"/> players.</source>
-        <target>Nessun gioco di chi viene va bene per <ph id="0" equiv="players" disp="players"/> persone.</target>
+        <target>Nessun gioco di chi viene va bene per <ph id="0" equiv="players" disp="players"/> giocatori.</target>
       </segment>
     </unit>
     <unit id="8208743343075501136">
@@ -12509,6 +13590,15 @@
       <segment state="translated">
         <source>Reputation Score</source>
         <target>Punteggio di reputazione</target>
+      </segment>
+    </unit>
+    <unit id="8211116588599494869">
+      <notes>
+        <note category="description">Number on your own page: games in My Games</note>
+      </notes>
+      <segment state="translated">
+        <source>Games you own</source>
+        <target>Giochi che hai</target>
       </segment>
     </unit>
     <unit id="8212439177512998248">
@@ -12554,7 +13644,16 @@
       </notes>
       <segment state="translated">
         <source><ph id="0" equiv="min" disp="min"/>–<ph id="1" equiv="max" disp="max"/> players</source>
-        <target><ph id="0" equiv="min" disp="min"/>–<ph id="1" equiv="max" disp="max"/> persone</target>
+        <target><ph id="0" equiv="min" disp="min"/>–<ph id="1" equiv="max" disp="max"/> giocatori</target>
+      </segment>
+    </unit>
+    <unit id="8240050429696370605">
+      <notes>
+        <note category="description">What the usage statistics keep, in the Privacy settings</note>
+      </notes>
+      <segment state="translated">
+        <source>Only the name of the page or action, never what you write, your groups or your games.</source>
+        <target>Solo il nome della pagina o dell’azione, mai quello che scrivi, i tuoi gruppi o i tuoi giochi.</target>
       </segment>
     </unit>
     <unit id="824130478942009314">
@@ -12856,6 +13955,42 @@
         <target>Una casa in ordine per la tua collezione di giochi da tavolo e per le persone con cui giochi.</target>
       </segment>
     </unit>
+    <unit id="8417380252746514214">
+      <notes>
+        <note category="description">Tab of the avatar editor: pick an emoji as your avatar</note>
+      </notes>
+      <segment state="translated">
+        <source>Emoji</source>
+        <target>Emoji</target>
+      </segment>
+    </unit>
+    <unit id="8417783381901807765">
+      <notes>
+        <note category="description">Account settings while the sign-in provider has not loaded</note>
+      </notes>
+      <segment state="translated">
+        <source>Sign-in settings are unavailable until authentication finishes loading.</source>
+        <target>Le impostazioni di accesso non sono disponibili finché l’autenticazione non ha finito di caricarsi.</target>
+      </segment>
+    </unit>
+    <unit id="8419322791833950146">
+      <notes>
+        <note category="description">Heading of the question asked when adding a game that has several editions to My Games, or changing the edition of one</note>
+      </notes>
+      <segment state="translated">
+        <source> Which edition do you own? </source>
+        <target>Quale edizione hai?</target>
+      </segment>
+    </unit>
+    <unit id="8420640184883196687">
+      <notes>
+        <note category="description">Hint under the heading of the optional list of titles in other languages</note>
+      </notes>
+      <segment state="translated">
+        <source>Optional. The same game under its name in other languages, if you know them.</source>
+        <target>Facoltativo. Lo stesso gioco con il suo nome in altre lingue, se li conosci.</target>
+      </segment>
+    </unit>
     <unit id="8421971980013015956">
       <notes>
         <note category="description">Label on a game proposal: the notes you wrote</note>
@@ -12883,6 +14018,15 @@
         <target>Le mie proposte — Board Vault</target>
       </segment>
     </unit>
+    <unit id="8431906120837794890">
+      <notes>
+        <note category="description">Subtitle of the Appearance settings</note>
+      </notes>
+      <segment state="translated">
+        <source>Choose how Board Vault looks. Except for the language, your choices are saved on this device.</source>
+        <target>Scegli l’aspetto di Board Vault. Tranne la lingua, le tue scelte sono salvate su questo dispositivo.</target>
+      </segment>
+    </unit>
     <unit id="8435038262958370080">
       <notes>
         <note category="description">Error when joining a group from an invitation link failed</note>
@@ -12899,6 +14043,15 @@
       <segment state="translated">
         <source>Back to Browse</source>
         <target>Torna a Esplora</target>
+      </segment>
+    </unit>
+    <unit id="8440128775129354214">
+      <notes>
+        <note category="description">Heading of the Privacy settings</note>
+      </notes>
+      <segment state="translated">
+        <source>Privacy</source>
+        <target>Privacy</target>
       </segment>
     </unit>
     <unit id="8444895551001949986">
@@ -13108,6 +14261,15 @@
         <target>questo gruppo</target>
       </segment>
     </unit>
+    <unit id="8515784918876110643">
+      <notes>
+        <note category="description">On your own page, next to a game you play most: how many times you played it</note>
+      </notes>
+      <segment state="translated">
+        <source>{VAR_PLURAL, plural, one {<ph id="0" equiv="INTERPOLATION"/> play} other {<ph id="1" equiv="INTERPOLATION"/> plays}}</source>
+        <target>{VAR_PLURAL, plural, one {<ph id="0" equiv="INTERPOLATION"/> partita} other {<ph id="1" equiv="INTERPOLATION"/> partite}}</target>
+      </segment>
+    </unit>
     <unit id="8518343511045645438">
       <notes>
         <note category="description">Error under the title field of the game proposal form</note>
@@ -13124,6 +14286,15 @@
       <segment state="translated">
         <source>Choose at least one player.</source>
         <target>Scegli almeno una persona.</target>
+      </segment>
+    </unit>
+    <unit id="8526482226417637721">
+      <notes>
+        <note category="description">Notification, someone changing their own games or preferences in a group; person is a name, game is a game title</note>
+      </notes>
+      <segment state="translated">
+        <source><ph id="0" equiv="person" disp="actor"/> removed what they think of <ph id="1" equiv="game" disp="game"/>, in <ph id="2" equiv="group" disp="group"/>.</source>
+        <target><ph id="0" equiv="person" disp="actor"/> ha tolto la propria opinione su <ph id="1" equiv="game" disp="game"/>, in <ph id="2" equiv="group" disp="group"/>.</target>
       </segment>
     </unit>
     <unit id="8531755906780019444">
@@ -13243,6 +14414,15 @@
         <target>Gruppo</target>
       </segment>
     </unit>
+    <unit id="8624101861978584839">
+      <notes>
+        <note category="description">Group history line, someone changing their own games or preferences; actor is a name, game is a game title</note>
+      </notes>
+      <segment state="translated">
+        <source><ph id="0" equiv="actor" disp="actor"/> said they have <ph id="1" equiv="game" disp="game"/> as a favourite</source>
+        <target><ph id="0" equiv="actor" disp="actor"/> ha indicato <ph id="1" equiv="game" disp="game"/> tra i propri preferiti</target>
+      </segment>
+    </unit>
     <unit id="8626011843982871371">
       <notes>
         <note category="description">Name of your own shelf, in the landing example</note>
@@ -13325,6 +14505,15 @@
         <target>Vengono</target>
       </segment>
     </unit>
+    <unit id="8671234314555525900">
+      <notes>
+        <note category="description">Heading of the Appearance settings</note>
+      </notes>
+      <segment state="translated">
+        <source>Appearance</source>
+        <target>Aspetto</target>
+      </segment>
+    </unit>
     <unit id="8675176265050343606">
       <notes>
         <note category="description">Label of the picture address field of the game proposal form</note>
@@ -13386,6 +14575,15 @@
       <segment state="translated">
         <source>Quick dates</source>
         <target>Date rapide</target>
+      </segment>
+    </unit>
+    <unit id="8693502849454317821">
+      <notes>
+        <note category="description">Toast when someone signed out opens an Administration address</note>
+      </notes>
+      <segment state="translated">
+        <source>Please log in with admin credentials to access this area.</source>
+        <target>Accedi con un account di amministrazione per entrare in quest’area.</target>
       </segment>
     </unit>
     <unit id="8694180754500384388">
@@ -13611,6 +14809,15 @@
         <target>Ancora nessuno lo porta · ce l’ha: <ph id="0" equiv="INTERPOLATION" disp="{{ namesOf(owners) }}"/></target>
       </segment>
     </unit>
+    <unit id="880297634309685750">
+      <notes>
+        <note category="description">Toast when your profile could not be saved</note>
+      </notes>
+      <segment state="translated">
+        <source>Your profile could not be updated. Please try again.</source>
+        <target>Non è stato possibile aggiornare il tuo profilo. Riprova.</target>
+      </segment>
+    </unit>
     <unit id="8809247468668978302">
       <notes>
         <note category="description">Group history line; actor is a name, changes is one or more parts such as marked Catan as played, joined by commas</note>
@@ -13647,6 +14854,15 @@
         <target>Condividi lo scaffale con il tuo gruppo</target>
       </segment>
     </unit>
+    <unit id="8823677903532501631">
+      <notes>
+        <note category="description">Hint under the language heading in the Appearance settings</note>
+      </notes>
+      <segment state="translated">
+        <source>The language of Board Vault’s menus and messages. Saved on your account.</source>
+        <target>La lingua dei menu e dei messaggi di Board Vault. Salvata sul tuo account.</target>
+      </segment>
+    </unit>
     <unit id="8829512013052837608">
       <notes>
         <note category="description">Empty state of the Wishlist page</note>
@@ -13674,6 +14890,15 @@
         <target>Decisione d’acquisto aggiornata: <ph id="0" equiv="status" disp="this.getAcquisitionDecisionLabel(status)"/>.</target>
       </segment>
     </unit>
+    <unit id="8838456709946633598">
+      <notes>
+        <note category="description">Group history line, someone changing their own games or preferences; actor is a name, game is a game title</note>
+      </notes>
+      <segment state="translated">
+        <source><ph id="0" equiv="actor" disp="actor"/> said they have <ph id="1" equiv="game" disp="game"/></source>
+        <target><ph id="0" equiv="actor" disp="actor"/> ha indicato di avere <ph id="1" equiv="game" disp="game"/></target>
+      </segment>
+    </unit>
     <unit id="884821975591494973">
       <notes>
         <note category="description">Group history line; actor and person are names</note>
@@ -13681,6 +14906,15 @@
       <segment state="translated">
         <source><ph id="0" equiv="actor" disp="actor"/> renamed <ph id="1" equiv="person" disp="person"/></source>
         <target><ph id="0" equiv="actor" disp="actor"/> ha rinominato <ph id="1" equiv="person" disp="person"/></target>
+      </segment>
+    </unit>
+    <unit id="8848366556255847554">
+      <notes>
+        <note category="description">Error in the Privacy settings when your usage statistics choice could not load; the button loads it again</note>
+      </notes>
+      <segment state="translated">
+        <source> Your choice could not be loaded. <pc id="0" equivStart="START_TAG_BUTTON" equivEnd="CLOSE_TAG_BUTTON" type="other" dispStart="&lt;button type=&quot;button&quot; class=&quot;ml-1 font-medium underline&quot; (click)=&quot;load()&quot;&gt;" dispEnd="&lt;/button&gt;">Retry</pc></source>
+        <target> Non è stato possibile caricare la tua scelta. <pc id="0" equivStart="START_TAG_BUTTON" equivEnd="CLOSE_TAG_BUTTON" type="other" dispStart="&lt;button type=&quot;button&quot; class=&quot;ml-1 font-medium underline&quot; (click)=&quot;load()&quot;&gt;" dispEnd="&lt;/button&gt;">Riprova</pc></target>
       </segment>
     </unit>
     <unit id="8851134952747107313">
@@ -13745,6 +14979,15 @@
       <segment state="translated">
         <source>Help us expand our game collection! Submit a proposal for a game you’d like to see added to BoardVault.</source>
         <target>Aiutaci ad ampliare la nostra collezione di giochi! Invia una proposta per un gioco che vorresti vedere su BoardVault.</target>
+      </segment>
+    </unit>
+    <unit id="8873512080778685444">
+      <notes>
+        <note category="description">Label before the title of the edition of a game you own, on the game page</note>
+      </notes>
+      <segment state="translated">
+        <source>Your copy:</source>
+        <target>La tua copia:</target>
       </segment>
     </unit>
     <unit id="8881851115595994876">
@@ -13937,6 +15180,15 @@
         <target><ph id="0" equiv="actor" disp="actor"/> ha tolto <ph id="1" equiv="removed" disp="removed"/> dalla preselezione di una serata di gioco</target>
       </segment>
     </unit>
+    <unit id="9006031073990985776">
+      <notes>
+        <note category="description">Error after failing to save which edition of a game you own</note>
+      </notes>
+      <segment state="translated">
+        <source>Could not save the edition. Try again.</source>
+        <target>Impossibile salvare l’edizione. Riprova.</target>
+      </segment>
+    </unit>
     <unit id="9014138025274858717">
       <notes>
         <note category="description">Browser tab title of the landing page</note>
@@ -14011,6 +15263,15 @@
         <target><ph id="0" equiv="title" disp="title"/> · <ph id="1" equiv="count" disp="count"/> serata</target>
       </segment>
     </unit>
+    <unit id="9047093339423319377">
+      <notes>
+        <note category="description">Description of the Dark color scheme in the Appearance settings</note>
+      </notes>
+      <segment state="translated">
+        <source>Dark background, always.</source>
+        <target>Sfondo scuro, sempre.</target>
+      </segment>
+    </unit>
     <unit id="9051495169044423604">
       <notes>
         <note category="description">Time of the landing example game night and how far away it is</note>
@@ -14072,6 +15333,15 @@
       <segment state="translated">
         <source>Add the games you own</source>
         <target>Aggiungi i giochi che possiedi</target>
+      </segment>
+    </unit>
+    <unit id="9083531004541156764">
+      <notes>
+        <note category="description">What deleting your account does, in the Account settings</note>
+      </notes>
+      <segment state="translated">
+        <source>Takes you out of your groups and their upcoming game nights.</source>
+        <target>Ti toglie dai tuoi gruppi e dalle loro prossime serate di gioco.</target>
       </segment>
     </unit>
     <unit id="9086739339654328918">
@@ -14224,6 +15494,15 @@
         <target>Chiedi a chi gestisce il gruppo di invitare il resto del tavolo.</target>
       </segment>
     </unit>
+    <unit id="9195472737674660999">
+      <notes>
+        <note category="description">Screen reader name of a title field in the list of other titles</note>
+      </notes>
+      <segment state="translated">
+        <source>Title in this language</source>
+        <target>Titolo in questa lingua</target>
+      </segment>
+    </unit>
     <unit id="9202989475789662593">
       <notes>
         <note category="description">Button that shows only the games in the group&apos;s library for this many players</note>
@@ -14360,6 +15639,15 @@
         <target>Impossibile cercare i giochi. Riprova.</target>
       </segment>
     </unit>
+    <unit id="947083782139315450">
+      <notes>
+        <note category="description">Hint under the initials field of the avatar editor</note>
+      </notes>
+      <segment state="translated">
+        <source>Maximum 2 characters</source>
+        <target>Massimo 2 caratteri</target>
+      </segment>
+    </unit>
     <unit id="949012305816677721">
       <notes>
         <note category="description">Hint under the mood buttons on What to play, for Group favorite</note>
@@ -14466,6 +15754,15 @@
       <segment state="translated">
         <source>Preferences kept / discarded</source>
         <target>Preferenze tenute / scartate</target>
+      </segment>
+    </unit>
+    <unit id="995522398289246113">
+      <notes>
+        <note category="description">Number on your own page: games you played, in all your groups</note>
+      </notes>
+      <segment state="translated">
+        <source>Games played</source>
+        <target>Giochi giocati</target>
       </segment>
     </unit>
     <unit id="997728959276321541">

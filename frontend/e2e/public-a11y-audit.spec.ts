@@ -1,4 +1,5 @@
 import { expect, test } from '@playwright/test'
+import { showLandingSamples } from './fixtures/landing'
 
 const routes = ['/', '/login', '/register', '/route-that-does-not-exist']
 
@@ -54,6 +55,7 @@ test.describe('public accessibility audit', () => {
                 await page.setViewportSize({ width, height: 844 })
                 await page.goto(route)
                 await expect(page.locator('body')).toBeVisible()
+                if (route === '/') await showLandingSamples(page)
 
                 const audit = await page.evaluate(publicSurfaceAudit())
                 expect(audit.hasHorizontalOverflow).toBe(false)

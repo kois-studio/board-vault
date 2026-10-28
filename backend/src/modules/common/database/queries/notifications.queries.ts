@@ -11,6 +11,8 @@ import {
 } from '../../../core/notifications/shelf-notification.js'
 import { resolvedTitleSql } from '../resolved-title.js'
 
+import { PERSON_NAME } from './groups.queries.js'
+
 import type { CreateNotificationBody, UpdateNotificationBody } from '../../../../common/types/notification.type.js'
 import type { DatabaseService } from '../database.service.js'
 import type { InStatement, Transaction } from '@libsql/client'
@@ -253,7 +255,7 @@ export class NotificationQueries {
 
     getContextPeople(groupPersonIds: Array<number>) {
         return this.database.execute({
-            sql: `SELECT id, displayName FROM GroupPerson WHERE id IN (${NotificationQueries.placeholders(groupPersonIds)})`,
+            sql: `SELECT gp.id, ${PERSON_NAME} AS displayName, gp.accountId FROM GroupPerson gp WHERE gp.id IN (${NotificationQueries.placeholders(groupPersonIds)})`,
             args: groupPersonIds,
         })
     }

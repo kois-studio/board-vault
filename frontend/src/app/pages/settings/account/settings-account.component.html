@@ -1,52 +1,52 @@
-<h2 class="pb-2 text-2xl font-bold tracking-wide">Account</h2>
-<p class="pb-8 text-bv-text-muted">How you sign in to Board Vault.</p>
+<h2 class="pb-2 text-2xl font-bold tracking-wide" i18n="Heading of the Account settings">Account</h2>
+<p class="pb-8 text-bv-text-muted" i18n="Subtitle of the Account settings">How you sign in to Board Vault.</p>
 
 <div class="max-w-xl space-y-6">
     <section class="rounded-lg border border-bv-border p-4" aria-labelledby="sign-in-heading">
-        <h3 id="sign-in-heading" class="font-semibold">Sign-in</h3>
+        <h3 id="sign-in-heading" class="font-semibold" i18n="Heading of the sign-in details in the Account settings">Sign-in</h3>
         <dl class="grid grid-cols-[auto_1fr] gap-x-6 gap-y-2 py-3">
-            <dt class="text-bv-text-muted">Username</dt>
+            <dt class="text-bv-text-muted" i18n="Label of your username in the Account settings">Username</dt>
             <dd class="min-w-0 truncate font-mono" data-testid="account-username">{{ username() }}</dd>
-            <dt class="text-bv-text-muted">Email</dt>
+            <dt class="text-bv-text-muted" i18n="Label of your email address in the Account settings">Email</dt>
             <dd class="min-w-0 truncate" data-testid="account-email">{{ email() }}</dd>
         </dl>
         @if (usernameSync() === 'taken') {
-            <p class="pb-3 text-sm text-bv-warning" role="status" data-testid="account-username-behind">
+            <p class="pb-3 text-sm text-bv-warning" role="status" data-testid="account-username-behind" i18n="Account settings, when the username you chose in the sign-in panel belongs to another Board Vault account; the placeholders are the new username and the one your groups still see">
                 <span class="font-mono">{{ username() }}</span> is already taken in Board Vault, so your groups still see you as
                 <span class="font-mono">{{ accountUsername() }}</span>. Choose another username in Manage sign-in.
             </p>
         } @else if (usernameSync() === 'invalid') {
-            <p class="pb-3 text-sm text-bv-warning" role="status" data-testid="account-username-behind">
+            <p class="pb-3 text-sm text-bv-warning" role="status" data-testid="account-username-behind" i18n="Account settings, when the username you chose in the sign-in panel is not valid in Board Vault; the placeholder is the username your groups still see">
                 Board Vault usernames use 4 to 40 letters, numbers, _ or -, so your groups still see you as
                 <span class="font-mono">{{ accountUsername() }}</span>. Choose another username in Manage sign-in.
             </p>
         } @else if (usernameSync() === 'failed') {
-            <p class="pb-3 text-sm text-bv-warning" role="status" data-testid="account-username-behind">
+            <p class="pb-3 text-sm text-bv-warning" role="status" data-testid="account-username-behind" i18n="Account settings, when the username you chose in the sign-in panel could not be copied to Board Vault yet; the placeholder is the username your groups still see">
                 Your groups still see you as <span class="font-mono">{{ accountUsername() }}</span>: the new username could not be saved yet.
                 Reload the page to try again.
             </p>
         }
-        <p class="pb-4 text-sm text-bv-text-muted">
+        <p class="pb-4 text-sm text-bv-text-muted" i18n="Hint in the Account settings about who keeps your sign-in details">
             Your username, email addresses, password and signed-in devices are kept by Clerk, our sign-in provider.
         </p>
         @if (clerkIsAvailable()) {
-            <button appButton variant="secondary" icon="lock" (click)="openClerkProfile()">Manage sign-in</button>
+            <button appButton variant="secondary" icon="lock" (click)="openClerkProfile()" i18n="Button in the Account settings that opens the sign-in panel">Manage sign-in</button>
         } @else {
-            <p class="text-sm text-bv-warning" role="status">Sign-in settings are unavailable until authentication finishes loading.</p>
+            <p class="text-sm text-bv-warning" role="status" i18n="Account settings while the sign-in provider has not loaded">Sign-in settings are unavailable until authentication finishes loading.</p>
         }
     </section>
 
     <section class="rounded-lg border border-bv-danger/40 p-4" aria-labelledby="delete-account-heading">
-        <h3 id="delete-account-heading" class="font-semibold">Delete account</h3>
-        <p class="py-2 text-bv-text-muted">This can't be undone. Deleting your account:</p>
+        <h3 id="delete-account-heading" class="font-semibold" i18n="Heading of the account deletion section in the Account settings">Delete account</h3>
+        <p class="py-2 text-bv-text-muted" i18n="Account settings, above the list of what deleting your account does">This can’t be undone. Deleting your account:</p>
         <ul class="list-disc space-y-1 pb-2 pl-5 text-sm text-bv-text-muted">
-            <li>Removes your shelf, wishlist, ratings, notifications and invitations.</li>
-            <li>Takes you out of your groups and their upcoming game nights.</li>
-            <li>Keeps the nights you already played, so your groups' history stays complete. You appear there as "Deleted account", without your name or avatar.</li>
-            <li>Passes each group you own to the member who joined it first. A group with nobody else in it is deleted.</li>
-            <li>Removes your sign-in, so you can't sign back in to this account.</li>
+            <li i18n="What deleting your account does, in the Account settings">Removes your shelf, wishlist, ratings, notifications and invitations.</li>
+            <li i18n="What deleting your account does, in the Account settings">Takes you out of your groups and their upcoming game nights.</li>
+            <li i18n="What deleting your account does, in the Account settings">Keeps the nights you already played, so your groups’ history stays complete. You appear there as “Deleted account”, without your name or avatar.</li>
+            <li i18n="What deleting your account does, in the Account settings">Passes each group you own to the member who joined it first. A group with nobody else in it is deleted.</li>
+            <li i18n="What deleting your account does, in the Account settings">Removes your sign-in, so you can’t sign back in to this account.</li>
         </ul>
-        <button appButton variant="danger" icon="trash" data-testid="delete-account" (click)="startDeletion()">Delete account…</button>
+        <button appButton variant="danger" icon="trash" data-testid="delete-account" (click)="startDeletion()" i18n="Button in the Account settings that opens the account deletion dialog">Delete account…</button>
     </section>
 
 </div>
@@ -61,11 +61,11 @@
             aria-describedby="delete-account-description"
             (click)="$event.stopPropagation()"
         >
-            <h2 id="delete-account-title" class="text-xl font-bold">Delete your account?</h2>
-            <p id="delete-account-description" class="py-3 text-sm text-bv-text-muted">
-                Your groups keep the nights you played, as "Deleted account". Everything else goes, and this can't be undone.
+            <h2 id="delete-account-title" class="text-xl font-bold" i18n="Title of the account deletion dialog">Delete your account?</h2>
+            <p id="delete-account-description" class="py-3 text-sm text-bv-text-muted" i18n="Text of the account deletion dialog">
+                Your groups keep the nights you played, as “Deleted account”. Everything else goes, and this can’t be undone.
             </p>
-            <label class="block text-sm font-medium" for="delete-account-confirmation">
+            <label class="block text-sm font-medium" for="delete-account-confirmation" i18n="Label of the field where you type your username to confirm deleting your account; the placeholder is your username">
                 Type your username, <span class="font-mono">{{ username() }}</span>, to confirm
             </label>
             <input
@@ -79,11 +79,11 @@
                 (input)="deletionConfirmation.set($any($event.target).value)"
             />
             @if (deletionFailed()) {
-                <p class="pt-3 text-sm text-bv-danger" role="alert">Your account could not be deleted. Nothing was changed; try again.</p>
+                <p class="pt-3 text-sm text-bv-danger" role="alert" i18n="Error in the account deletion dialog">Your account could not be deleted. Nothing was changed; try again.</p>
             }
             <div class="flex flex-wrap justify-end gap-3 pt-5">
-                <button appButton variant="secondary" [disabled]="isDeleting()" (click)="cancelDeletion()">Keep my account</button>
-                <button appButton variant="danger" data-testid="confirm-delete-account" [loading]="isDeleting()" [disabled]="!canConfirmDeletion()" (click)="deleteAccount()">
+                <button appButton variant="secondary" [disabled]="isDeleting()" (click)="cancelDeletion()" i18n="Button that closes the account deletion dialog without deleting">Keep my account</button>
+                <button appButton variant="danger" data-testid="confirm-delete-account" [loading]="isDeleting()" [disabled]="!canConfirmDeletion()" (click)="deleteAccount()" i18n="Button that confirms deleting your account">
                     Delete my account
                 </button>
             </div>

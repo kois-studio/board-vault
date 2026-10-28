@@ -17,6 +17,7 @@ import type {
     CollectionActivityWithGameDataType,
     CreatedGroupType,
     GameCompleteType,
+    GameEditionType,
     GameOwnedType,
     GameProposalType,
     GameResultsUpdatedType,
@@ -37,6 +38,7 @@ import type {
     MeetWithAttendeesAndGamesType,
     NameTranslationsType,
     NotificationType,
+    OwnedGameCompleteType,
     PrivacySettingsStateType,
     RecommendationSignalsType,
     RecommendationsType,
@@ -84,7 +86,7 @@ export const clerkAuthStatusSchema = z.object({
     clerkUserId: z.string(),
 })
 
-export const gameCompleteSchema: z.ZodMiniType<GameCompleteType> = z.object({
+const gameCompleteObject = z.object({
     id: z.number(),
     title: z.optional(z.string()),
     titleLanguage: z.optional(z.string()),
@@ -94,6 +96,22 @@ export const gameCompleteSchema: z.ZodMiniType<GameCompleteType> = z.object({
     maxPlayers: z.number(),
     titleTranslations: z.record(z.string(), z.string()),
 })
+
+export const gameCompleteSchema: z.ZodMiniType<GameCompleteType> = gameCompleteObject
+
+/** Shelf entries say which edition the copy is; the wishlist's entries do not, which reads as "not said". */
+const ownedGameCompleteSchema: z.ZodMiniType<OwnedGameCompleteType> = z.extend(gameCompleteObject, {
+    ownedEditionId: z._default(z.nullable(z.number()), null),
+})
+
+export const gameEditionSchema: z.ZodMiniType<GameEditionType> = z.object({
+    id: z.number(),
+    languageCode: z.string(),
+    title: z.string(),
+    isPrimary: z.boolean(),
+})
+
+export const gameEditionsSchema = z.array(gameEditionSchema)
 
 const gameSchema: z.ZodMiniType<GameType> = z.object({
     id: z.number(),
@@ -106,7 +124,7 @@ const gameSchema: z.ZodMiniType<GameType> = z.object({
 })
 
 export const gamesSchema = z.array(gameSchema)
-export const userGamesSchema = z.array(gameCompleteSchema)
+export const userGamesSchema = z.array(ownedGameCompleteSchema)
 
 const paginationSchema = z.object({
     currentPage: z.number(),
@@ -153,9 +171,9 @@ export const adminGameSchema: z.ZodMiniType<AdminGameType> = z.object({
     gameAvgDuration: z.number(),
     minPlayers: z.number(),
     maxPlayers: z.number(),
-    translations: z.object({ en: z.string(), es: z.string() }),
+    editions: z.array(z.object({ id: z.number(), languageCode: z.string(), title: z.string(), isPrimary: z.boolean() })),
     tags: z.array(z.object({ id: z.number(), name: z.string(), categoryName: z.string() })),
-    issues: z.array(z.enum(['no-title', 'no-artwork', 'no-spanish', 'no-tags', 'no-price'])),
+    issues: z.array(z.enum(['no-title', 'no-artwork', 'no-primary', 'no-tags', 'no-price'])),
     artworkSource: z.nullable(z.string()),
     retailPrice: z.nullable(z.number()),
 })
@@ -172,7 +190,7 @@ export const adminOverviewSchema: z.ZodMiniType<AdminOverviewType> = z.object({
     catalogueIssues: z.object({
         'no-title': z.number(),
         'no-artwork': z.number(),
-        'no-spanish': z.number(),
+        'no-primary': z.number(),
         'no-tags': z.number(),
         'no-price': z.number(),
     }),
@@ -208,6 +226,7 @@ export const gameOwnedSchema: z.ZodMiniType<GameOwnedType> = z.object({
     purchaseDate: z.nullable(z.string()),
     purchasePrice: z.nullable(z.number()),
     purchaseNotes: z.nullable(z.string()),
+    editionId: z._default(z.nullable(z.number()), null),
 })
 
 const gameViewRatingSchema = z.object({
@@ -223,8 +242,12 @@ export const gameViewSchema: z.ZodMiniType<GameViewType> = z.object({
             purchaseDate: z.nullable(z.string()),
             purchasePrice: z.nullable(z.number()),
             purchaseNotes: z.nullable(z.string()),
+            editionId: z.nullable(z.number()),
+            title: z.string(),
+            titleLanguage: z.string(),
         }),
     ),
+    editions: z.array(gameEditionSchema),
     tags: z.array(z.object({ tag: z.string(), category: z.string() })),
     wishlistedGameData: z.nullable(z.object({ dateAdded: z.string(), notes: z.string() })),
     ratingData: gameViewRatingSchema,
@@ -323,6 +346,8 @@ const groupActivityNameSchema = z.object({
     name: z.string(),
     standing: z.enum(['member', 'left', 'deleted']),
 })
+// The account behind a group person, so a line about someone's own games reads "Ana said they have Catan".
+const groupActivityPersonSchema = z.extend(groupActivityNameSchema, { accountId: z.optional(z.nullable(z.number())) })
 const groupActivityGameSchema = z.object({
     id: z.number(),
     title: z.nullable(z.string()),
@@ -337,12 +362,12 @@ export const groupActivityPageSchema: z.ZodMiniType<GroupActivityPageType> = z.o
             createdAt: z.string(),
             actor: groupActivityNameSchema,
             meetId: z.nullable(z.number()),
-            person: z.nullable(groupActivityNameSchema),
+            person: z.nullable(groupActivityPersonSchema),
             game: z.nullable(groupActivityGameSchema),
             subject: z.nullable(groupActivityNameSchema),
             data: z.record(z.string(), z.unknown()),
             accounts: z.array(groupActivityNameSchema),
-            people: z.array(groupActivityNameSchema),
+            people: z.array(groupActivityPersonSchema),
             games: z.array(groupActivityGameSchema),
         }),
     ),
@@ -402,6 +427,8 @@ const gameProposalShape = z.object({
     submittedBy: z.number(),
     status: z.enum(['pending', 'approved', 'rejected', 'duplicate']),
     title: z.string(),
+    titleLanguage: z.string(),
+    otherTitles: z.array(z.object({ languageCode: z.string(), title: z.string() })),
     imageUrl: z.nullable(z.string()),
     gameAvgDuration: z.nullable(z.number()),
     minPlayers: z.nullable(z.number()),
@@ -500,6 +527,8 @@ const groupPersonOwnershipSchema = z.object({
     confirmedByAccountId: z.nullable(z.number()),
     createdAt: z.string(),
     updatedAt: z.string(),
+    copyTitle: z._default(z.nullable(z.string()), null),
+    copyTitleLanguage: z._default(z.nullable(z.string()), null),
 })
 
 const groupPersonPreferenceSchema = z.object({
@@ -587,7 +616,13 @@ export const meetSchema: z.ZodMiniType<MeetType> = meetFields
 
 const gameVotesSchema = z.object({ gameId: z.number(), accountIds: z.array(z.number()) })
 
-const gameBringerSchema = z.object({ gameId: z.number(), accountId: z.nullable(z.number()), groupPersonId: z.nullable(z.number()) })
+const gameBringerSchema = z.object({
+    gameId: z.number(),
+    accountId: z.nullable(z.number()),
+    groupPersonId: z.nullable(z.number()),
+    copyTitle: z._default(z.nullable(z.string()), null),
+    copyTitleLanguage: z._default(z.nullable(z.string()), null),
+})
 
 export const meetDetailsSchema: z.ZodMiniType<MeetWithAttendeesAndGamesType> = z.extend(meetFields, {
     attendees: z.array(z.number()),
@@ -707,7 +742,7 @@ export const userNotificationsSchema: z.ZodMiniType<Array<NotificationType>> = z
                 accounts: z.array(z.object({ id: z.number(), name: z.nullable(z.string()), deleted: z.boolean() })),
                 groups: z.array(z.object({ id: z.number(), name: z.string() })),
                 sessions: z.array(z.object({ id: z.number(), date: z.string(), timezone: z.string() })),
-                people: z.array(z.object({ id: z.number(), name: z.string() })),
+                people: z.array(z.object({ id: z.number(), name: z.string(), accountId: z.optional(z.nullable(z.number())) })),
                 games: z.array(z.object({ id: z.number(), title: z.string(), titleLanguage: z.string() })),
             }),
         ),
