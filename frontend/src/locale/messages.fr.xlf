@@ -2217,9 +2217,9 @@
       <notes>
         <note category="description">Who owns a game in one of your groups, on its page; the placeholder is a list of names</note>
       </notes>
-      <segment state="initial">
+      <segment state="translated">
         <source>Owned by <ph id="0" equiv="INTERPOLATION" disp="{{ formatList(entry.owners) }}"/></source>
-        <target>Possédé par <ph id="0" equiv="INTERPOLATION" disp="{{ libraryContext.ownerNames.join(&apos;, &apos;) }}"/></target>
+        <target>Possédé par <ph id="0" equiv="INTERPOLATION" disp="{{ formatList(entry.owners) }}"/></target>
       </segment>
     </unit>
     <unit id="2610891837730270899">
@@ -3220,15 +3220,6 @@
         <target><ph id="0" equiv="actor" disp="actor"/> vient à une soirée jeux</target>
       </segment>
     </unit>
-    <unit id="3376307529362264656">
-      <notes>
-        <note category="description">Placeholder of the search field on Browse</note>
-      </notes>
-      <segment state="translated">
-        <source>Search by title, in English or Spanish</source>
-        <target>Recherche par titre, en anglais ou en espagnol</target>
-      </segment>
-    </unit>
     <unit id="3386246347342903734">
       <notes>
         <note category="description">Heading of the closing call to action on the landing page</note>
@@ -3695,6 +3686,15 @@
       <segment state="translated">
         <source>Standings</source>
         <target>Classement</target>
+      </segment>
+    </unit>
+    <unit id="3768264297677107657">
+      <notes>
+        <note category="description">Placeholder of the search field on Browse</note>
+      </notes>
+      <segment state="translated">
+        <source>Search by title</source>
+        <target>Rechercher par titre</target>
       </segment>
     </unit>
     <unit id="3768927257183755959">
@@ -7873,9 +7873,9 @@
       <notes>
         <note category="description">Description of a game&apos;s cover picture; the placeholder is the game title</note>
       </notes>
-      <segment state="initial">
+      <segment state="translated">
         <source><ph id="0" equiv="title" disp="title"/> cover</source>
-        <target>Couverture de <ph id="0" equiv="title" disp="gameTitle(game)"/></target>
+        <target>Couverture de <ph id="0" equiv="title" disp="title"/></target>
       </segment>
     </unit>
     <unit id="6958880360965891619">
@@ -8480,7 +8480,7 @@
         <note category="description">Accessible name of a rating star on a game page; the placeholder is a number from 1 to 5</note>
       </notes>
       <segment state="translated">
-        <source>Rate <ph id="0" equiv="stars" disp="stars"/> out of 5 stars</source>
+        <source>Rate <ph id="0" equiv="stars" disp="formatNumber(stars)"/> out of 5 stars</source>
         <target>Noter <ph id="0" equiv="stars" disp="stars"/> sur 5 étoiles</target>
       </segment>
     </unit>
@@ -8812,9 +8812,9 @@
       <notes>
         <note category="description">How long a game lasts, in minutes</note>
       </notes>
-      <segment state="initial">
+      <segment state="translated">
         <source><ph id="0" equiv="INTERPOLATION" disp="{{ gameAvgDuration() }}"/> min</source>
-        <target><ph id="0" equiv="INTERPOLATION" disp="{{ game.gameAvgDuration }}"/> min</target>
+        <target><ph id="0" equiv="INTERPOLATION" disp="{{ gameAvgDuration() }}"/> min</target>
       </segment>
     </unit>
     <unit id="7721431665681117078">

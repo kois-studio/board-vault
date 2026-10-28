@@ -433,7 +433,7 @@ export class GameViewPageComponent {
 
     /** The name of a rating star for screen readers: "Rate 3 out of 5 stars". */
     public rateLabel(stars: number): string {
-        return $localize`:Accessible name of a rating star on a game page; the placeholder is a number from 1 to 5:Rate ${stars}:stars: out of 5 stars`
+        return $localize`:Accessible name of a rating star on a game page; the placeholder is a number from 1 to 5:Rate ${formatNumber(stars)}:stars: out of 5 stars`
     }
 
     public getGroupName(groupId: number): string {

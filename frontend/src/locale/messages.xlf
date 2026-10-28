@@ -3268,15 +3268,6 @@
         <source><ph id="0" equiv="actor" disp="actor"/> is coming to a game night</source>
       </segment>
     </unit>
-    <unit id="3376307529362264656">
-      <notes>
-        <note category="location">src/app/pages/collection-page/browse-page/browse-page.component.html</note>
-        <note category="description">Placeholder of the search field on Browse</note>
-      </notes>
-      <segment>
-        <source>Search by title, in English or Spanish</source>
-      </segment>
-    </unit>
     <unit id="3386246347342903734">
       <notes>
         <note category="location">src/app/pages/landing/landing.component.html</note>
@@ -3746,6 +3737,15 @@
       </notes>
       <segment>
         <source>Standings</source>
+      </segment>
+    </unit>
+    <unit id="3768264297677107657">
+      <notes>
+        <note category="location">src/app/pages/collection-page/browse-page/browse-page.component.html</note>
+        <note category="description">Placeholder of the search field on Browse</note>
+      </notes>
+      <segment>
+        <source>Search by title</source>
       </segment>
     </unit>
     <unit id="3768927257183755959">
@@ -8584,7 +8584,7 @@
         <note category="description">Accessible name of a rating star on a game page; the placeholder is a number from 1 to 5</note>
       </notes>
       <segment>
-        <source>Rate <ph id="0" equiv="stars" disp="stars"/> out of 5 stars</source>
+        <source>Rate <ph id="0" equiv="stars" disp="formatNumber(stars)"/> out of 5 stars</source>
       </segment>
     </unit>
     <unit id="7455010385478644357">
