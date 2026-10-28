@@ -22,7 +22,7 @@
                 <app-badge [text]="fitText()" [attr.aria-label]="fitLabel()" />
             </span>
         </div>
-        <p class="mt-1 text-sm text-bv-text-muted">{{ minutes() }} min · {{ { minPlayers: minPlayers(), maxPlayers: maxPlayers() } | players }} · {{ historyLabel() }}</p>
+        <p class="mt-1 text-sm text-bv-text-muted"><ng-container i18n="How long a game lasts, in minutes">{{ minutes() }} min</ng-container> · {{ { minPlayers: minPlayers(), maxPlayers: maxPlayers() } | players }} · {{ historyLabel() }}</p>
         <ul class="mt-3 space-y-1 text-sm wrap-anywhere">
             @for (reason of reasons(); track reason) {
             <li class="flex gap-2"><app-icon name="check" [size]="16" className="mt-0.5 shrink-0 text-bv-success" aria-hidden="true" /><span>{{ reason }}</span></li>
@@ -41,7 +41,7 @@
             <span class="text-bv-text-muted"> · </span>
             }
             @if (signal.notForUsCount > 0) {
-            <span class="text-bv-text-muted" i18n="How many people in the group said Not for us to a suggested game">{signal.notForUsCount, plural, other {{{ signal.notForUsCount }} passed}}</span>
+            <span class="text-bv-text-muted" i18n="How many people in the group said Not for us to a suggested game">{signal.notForUsCount, plural, one {{{ signal.notForUsCount }} passed} other {{{ signal.notForUsCount }} passed}}</span>
             }
         </p>
         }

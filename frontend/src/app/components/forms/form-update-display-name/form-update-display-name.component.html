@@ -5,7 +5,7 @@
         <input
           type="text"
           formControlName="displayName"
-          aria-label="Display name"
+          i18n-aria-label="Accessible name of the display name field in Profile settings" aria-label="Display name"
           [maxLength]="maxLength"
           class="app-input"
           [class]="displayNameClass"
@@ -15,12 +15,12 @@
           <div>
             @if (displayName?.hasError('required')) {
               <div class="text-sm text-bv-danger py-1">
-                <app-icon name="circle-alert" [size]="16" /> display name is required.
+                <app-icon name="circle-alert" [size]="16" />&ngsp;<ng-container i18n="Error under the display name field when it is empty">Display name is required.</ng-container>
               </div>
             }
             @if (displayName?.hasError('maxlength')) {
               <div class="text-sm text-bv-danger py-1">
-                <app-icon name="circle-alert" [size]="16" /> Use at most {{ maxLength }} characters.
+                <app-icon name="circle-alert" [size]="16" />&ngsp;<ng-container i18n="Error under the display name field when it is too long; the placeholder is the most characters allowed">Use at most {{ maxLength }} characters.</ng-container>
               </div>
             }
           </div>
@@ -30,11 +30,11 @@
   </div>
 
   @if (!isEditing){
-    <button appButton variant="secondary" (click)="toggleEditing()">Change display name</button>
+    <button appButton variant="secondary" (click)="toggleEditing()" i18n="Button in Profile settings that lets you edit your display name">Change display name</button>
     }@else {
     <div class="flex gap-4">
-      <button appButton variant="secondary" (click)="onCancel()">Cancel</button>
-      <button appButton variant="primary" [disabled]="disableSubmit" (click)="onSave()">Save</button>
+      <button appButton variant="secondary" (click)="onCancel()" i18n="Button that stops editing your display name without saving">Cancel</button>
+      <button appButton variant="primary" [disabled]="disableSubmit" (click)="onSave()" i18n="Button that saves your new display name">Save</button>
     </div>
   }
 </div>

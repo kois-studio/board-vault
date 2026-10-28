@@ -101,7 +101,7 @@ describe('group history (e2e)', () => {
             expect.objectContaining({
                 type: 'person_game_set',
                 actor: { id: 3, name: 'Rita', standing: 'member' },
-                person: { id: 7, name: 'Pedro', standing: 'member' },
+                person: { id: 7, name: 'Pedro', standing: 'member', accountId: null },
                 game: { id: 2, title: 'Catan', titleLanguage: 'en' },
                 data: { status: 'rejected', previousStatus: 'asserted' },
             }),

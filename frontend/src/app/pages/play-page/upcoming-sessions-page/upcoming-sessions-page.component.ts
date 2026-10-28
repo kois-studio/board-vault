@@ -6,6 +6,7 @@ import { ContainerWrapperComponent } from '../../../components/ui/container-wrap
 import { IconComponent } from '../../../components/ui/icon/icon.component'
 import { PageHeaderComponent } from '../../../components/ui/page-header/page-header.component'
 import { LOADING_KEYS } from '../../../core/enums/loading-keys-enum'
+import { intlLocale } from '../../../core/i18n/format'
 import { CustomDatePipe } from '../../../core/pipes/customDate.pipe'
 import { DataService } from '../../../core/services/data.service'
 import { LoadingService } from '../../../core/services/loading.service'
@@ -19,19 +20,19 @@ const STATE_STYLES: Record<UpcomingState, { row: string; date: string; pill: str
         row: 'border-bv-warning/40 hover:border-bv-warning',
         date: 'bg-bv-warning/15 text-bv-warning',
         pill: 'bg-bv-warning/15 text-bv-warning',
-        action: 'Record results',
+        action: $localize`:Tag on a game night that is over but has no results yet, on Upcoming:Record results`,
     },
     live: {
         row: 'border-bv-success/40 hover:border-bv-success',
         date: 'bg-bv-success/15 text-bv-success',
         pill: 'bg-bv-success/15 text-bv-success',
-        action: 'Live now',
+        action: $localize`:Tag on a game night going on now, on Upcoming:Live now`,
     },
     planned: {
         row: 'border-bv-border hover:border-bv-primary/50',
         date: 'bg-bv-primary-soft text-bv-on-primary-soft',
         pill: 'bg-bv-primary-soft text-bv-on-primary-soft',
-        action: 'Planned',
+        action: $localize`:Tag on a planned game night, on Upcoming:Planned`,
     },
 }
 
@@ -87,9 +88,24 @@ export class UpcomingSessionsPageComponent {
         }
 
         const sections: Array<UpcomingSection> = [
-            { state: 'wrap-up', title: 'Waiting for results', hint: 'Record who came and what you played', sessions: byState['wrap-up'] },
-            { state: 'live', title: 'Live now', hint: 'Happening right now', sessions: byState.live },
-            { state: 'planned', title: 'Coming up', hint: this.countLabel(byState.planned.length, 'session'), sessions: byState.planned },
+            {
+                state: 'wrap-up',
+                title: $localize`:Heading on Upcoming for game nights that are over but have no results yet:Waiting for results`,
+                hint: $localize`:Hint next to Waiting for results on Upcoming:Record who came and what you played`,
+                sessions: byState['wrap-up'],
+            },
+            {
+                state: 'live',
+                title: $localize`:Heading on Upcoming for game nights going on now:Live now`,
+                hint: $localize`:Hint next to Live now on Upcoming:Happening right now`,
+                sessions: byState.live,
+            },
+            {
+                state: 'planned',
+                title: $localize`:Heading on Upcoming for planned game nights:Coming up`,
+                hint: this.sessionsLabel(byState.planned.length),
+                sessions: byState.planned,
+            },
         ]
         return sections.filter((section) => section.sessions.length > 0)
     })
@@ -112,21 +128,27 @@ export class UpcomingSessionsPageComponent {
     }
 
     public getGroupName(groupId: number): string {
-        return this.userGroups$().find((group) => group.id === groupId)?.name ?? `Group ${groupId}`
+        return (
+            this.userGroups$().find((group) => group.id === groupId)?.name ??
+            $localize`:Stands for the name of a group you are no longer in; the placeholder is its number:Group ${groupId}:id:`
+        )
     }
 
-    public getGroupContext(groupId: number): string {
+    /** How many people and games a group has, for the group choice when planning. */
+    public getGroupContext(groupId: number): { people: number; games: number } | null {
         const group = this.userGroups$().find((candidate) => candidate.id === groupId)
-        if (!group) return ''
+        if (!group) return null
 
         const gameIds = new Set(group.members.flatMap((member) => member.games.map((game) => game.id)))
         for (const person of group.placeholders ?? []) for (const gameId of person.gameIds) gameIds.add(gameId)
-        const people = group.members.length + (group.placeholders?.length ?? 0)
-        return `${this.countLabel(people, 'person', 'people')} · ${this.countLabel(gameIds.size, 'game')}`
+        return { people: group.members.length + (group.placeholders?.length ?? 0), games: gameIds.size }
     }
 
-    private countLabel(count: number, noun: string, plural = `${noun}s`): string {
-        return `${count} ${count === 1 ? noun : plural}`
+    /** "1 session", "3 sessions": the hint next to Coming up. */
+    private sessionsLabel(count: number): string {
+        return new Intl.PluralRules(intlLocale()).select(count) === 'one'
+            ? $localize`:upcoming sessions hint, one|Hint next to Coming up on Upcoming, counting game nights, one:${count}:count: session`
+            : $localize`:upcoming sessions hint, other|Hint next to Coming up on Upcoming, counting game nights, more than one:${count}:count: sessions`
     }
 
     public retrySessions(): void {

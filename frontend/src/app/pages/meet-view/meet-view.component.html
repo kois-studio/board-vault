@@ -1,13 +1,13 @@
 @if (isLoading()) {
     <container-wrapper>
-        <div class="p-8 text-center text-bv-text-muted" role="status" aria-live="polite">Loading session…</div>
+        <div class="p-8 text-center text-bv-text-muted" role="status" aria-live="polite" i18n="A game night's page while it loads">Loading session…</div>
     </container-wrapper>
 } @else if (loadError()) {
     <container-wrapper>
         <div class="p-8 text-center text-bv-text-muted" role="alert">
-            <p class="text-lg font-medium">This session could not be loaded.</p>
-            <p class="mb-4 mt-2 text-sm">Check your connection or access and try again.</p>
-            <button appButton type="button" icon="arrow-repeat" (click)="retryLoad()">Retry</button>
+            <p class="text-lg font-medium" i18n="A game night's page when it could not load">This session could not be loaded.</p>
+            <p class="mb-4 mt-2 text-sm" i18n="A game night's page when it could not load, under the heading">Check your connection or access and try again.</p>
+            <button appButton type="button" icon="arrow-repeat" (click)="retryLoad()" i18n="Button that loads a game night again">Retry</button>
         </div>
     </container-wrapper>
 } @else if (loaded && meetData; as meet) {
@@ -32,13 +32,13 @@
 
             @if (canRespondToRsvp) {
                 <div class="mt-5 flex flex-wrap items-center gap-3 rounded-lg border border-bv-primary/30 bg-bv-primary-soft p-4">
-                    <p class="mr-auto font-medium text-bv-on-primary-soft">Can you make it?</p>
-                    <div class="flex flex-wrap gap-2" role="group" aria-label="Your answer">
+                    <p class="mr-auto font-medium text-bv-on-primary-soft" i18n="Question on a planned game night's page, above the I'm going and Can't make it buttons">Can you make it?</p>
+                    <div class="flex flex-wrap gap-2" role="group" i18n-aria-label="Accessible name of the I'm going and Can't make it buttons" aria-label="Your answer">
                         <button type="button" class="app-chip" [attr.aria-pressed]="currentRsvpStatus === 'accepted'" [disabled]="isUpdatingRsvp" (click)="updateRsvp('accepted')">
-                            <app-icon name="thumbs-up" [size]="16" aria-hidden="true" /> I’m going
+                            <app-icon name="thumbs-up" [size]="16" aria-hidden="true" /> <ng-container i18n="Button that answers you are going to a game night">I’m going</ng-container>
                         </button>
                         <button type="button" class="app-chip" [attr.aria-pressed]="currentRsvpStatus === 'declined'" [disabled]="isUpdatingRsvp" (click)="updateRsvp('declined')">
-                            <app-icon name="thumbs-down" [size]="16" aria-hidden="true" /> Can’t make it
+                            <app-icon name="thumbs-down" [size]="16" aria-hidden="true" /> <ng-container i18n="Button that answers you cannot come to a game night">Can’t make it</ng-container>
                         </button>
                     </div>
                 </div>
@@ -48,15 +48,15 @@
                 <div class="mt-5 flex flex-wrap items-center gap-3 border-t border-bv-border pt-5">
                     @if (canRunNight) {
                         @if (meet.status === 'scheduled') {
-                            <button appButton type="button" icon="dice-5" [disabled]="isUpdatingStatus" (click)="requestStart()">Start game night</button>
+                            <button appButton type="button" icon="dice-5" [disabled]="isUpdatingStatus" (click)="requestStart()" i18n="Button that starts a planned game night">Start game night</button>
                         } @else {
-                            <button appButton type="button" icon="check" [disabled]="isUpdatingStatus" (click)="requestStatusUpdate('completed')">Finish game night</button>
+                            <button appButton type="button" icon="check" [disabled]="isUpdatingStatus" (click)="requestStatusUpdate('completed')" i18n="Button that finishes a game night going on now">Finish game night</button>
                         }
                     }
                     @if (canAddToCalendar) {
                         <details class="group relative">
                             <summary class="app-btn-secondary cursor-pointer list-none [&::-webkit-details-marker]:hidden">
-                                <app-icon name="calendar-plus" [size]="18" aria-hidden="true" /> Add to calendar
+                                <app-icon name="calendar-plus" [size]="18" aria-hidden="true" /> <ng-container i18n="Button that opens the calendar choices of a game night">Add to calendar</ng-container>
                                 <app-icon name="chevron-down" [size]="16" className="transition group-open:rotate-180" aria-hidden="true" />
                             </summary>
                             <div class="absolute left-0 z-20 mt-2 w-60 rounded-lg border border-bv-border bg-bv-surface p-1 shadow-lg">
@@ -64,31 +64,37 @@
                                     <app-icon name="globe" [size]="16" aria-hidden="true" /> Google Calendar
                                 </a>
                                 <button type="button" class="flex w-full items-center gap-2 rounded-md px-3 py-2 text-left text-sm hover:bg-bv-surface-2" (click)="downloadCalendarFile()">
-                                    <app-icon name="calendar" [size]="16" aria-hidden="true" /> Apple, Outlook and others (.ics)
+                                    <app-icon name="calendar" [size]="16" aria-hidden="true" /> <ng-container i18n="Calendar choice that downloads a calendar file of a game night">Apple, Outlook and others (.ics)</ng-container>
                                 </button>
                             </div>
                         </details>
                     }
                     @if (canCorrectRecording) {
-                        <a appButton variant="secondary" icon="pencil" routerLink="/play/log-session" [queryParams]="{ groupId: meet.groupId, sessionId: meet.id }">{{ meet.status === 'completed' ? 'Correct session' : 'Edit games and players' }}</a>
+                        <a appButton variant="secondary" icon="pencil" routerLink="/play/log-session" [queryParams]="{ groupId: meet.groupId, sessionId: meet.id }">
+                            @if (meet.status === 'completed') {
+                                <ng-container i18n="Button that opens the form to correct a recorded game night">Correct session</ng-container>
+                            } @else {
+                                <ng-container i18n="Button that opens the form to change the games and players of a game night">Edit games and players</ng-container>
+                            }
+                        </a>
                     }
                     @if (canShapeNight) {
-                        <button type="button" class="ml-auto rounded text-sm font-medium text-bv-danger underline-offset-2 hover:underline disabled:opacity-60" [disabled]="isUpdatingStatus" (click)="requestStatusUpdate('cancelled')">Cancel game night</button>
+                        <button type="button" class="ml-auto rounded text-sm font-medium text-bv-danger underline-offset-2 hover:underline disabled:opacity-60" [disabled]="isUpdatingStatus" (click)="requestStatusUpdate('cancelled')" i18n="Button that cancels a game night">Cancel game night</button>
                     }
                 </div>
                 @if (canRunNight && meet.status === 'scheduled') {
-                    <p class="mt-3 text-sm text-bv-text-muted">Start the night when the group sits down to play. Then mark the games you play, who played, and who won.</p>
+                    <p class="mt-3 text-sm text-bv-text-muted" i18n="Hint under Start game night">Start the night when the group sits down to play. Then mark the games you play, who played, and who won.</p>
                 }
             }
 
             @if (recordingError) {
-                <p class="mt-3 text-sm text-bv-warning" role="alert">Individual plays could not be loaded. <button type="button" class="font-medium underline" (click)="loadRecordingDetails()">Retry</button></p>
+                <p class="mt-3 text-sm text-bv-warning" role="alert" i18n="Error on a game night's page; the button loads the plays again">Individual plays could not be loaded. <button type="button" class="font-medium underline" (click)="loadRecordingDetails()">Retry</button></p>
             }
 
             @if (actionError(); as actionErrorMessage) {
                 <div class="mt-5 flex flex-wrap items-center justify-between gap-3 rounded-lg border border-bv-danger/30 bg-bv-danger/10 p-4 text-sm text-bv-danger" role="alert">
                     <span>{{ actionErrorMessage }}</span>
-                    <button type="button" class="font-medium underline" (click)="actionError.set(null)">Dismiss</button>
+                    <button type="button" class="font-medium underline" (click)="actionError.set(null)" i18n="Button that hides an error on a game night's page">Dismiss</button>
                 </div>
             }
         </app-session-summary>
@@ -96,9 +102,9 @@
         @if (justSaved) {
             <div class="mt-5 flex flex-wrap items-center gap-x-4 gap-y-1 rounded-lg border border-bv-success/30 bg-bv-success/10 p-4" role="status">
                 <app-icon name="circle-check" [size]="20" className="shrink-0 text-bv-success" aria-hidden="true" />
-                <p class="font-semibold">Saved to the group’s history.</p>
+                <p class="font-semibold" i18n="After recording a game night">Saved to the group’s history.</p>
                 @if (myUnratedGames.length > 0) {
-                    <a appInPageLink="feedback-heading" class="text-sm font-medium text-bv-primary hover:underline">Rate what you played ({{ myUnratedGames.length }})</a>
+                    <a appInPageLink="feedback-heading" class="text-sm font-medium text-bv-primary hover:underline" i18n="Link to rate the games you played; the placeholder is how many are not rated yet">Rate what you played ({{ myUnratedGames.length }})</a>
                 }
             </div>
         }
@@ -115,51 +121,61 @@
                     @let noGames = requestedStatus === 'completed' && playedGamesCount === 0;
                     <h2 id="session-status-confirmation-title" class="text-2xl font-bold">
                         @switch (requestedStatus) {
-                            @case ('active') { Start this game night now? }
-                            @case ('completed') { {{ noGames ? 'No games marked as played' : 'Finish this game night?' }} }
-                            @default { Cancel this game night? }
+                            @case ('active') { <ng-container i18n="Title of the dialog that starts a game night">Start this game night now?</ng-container> }
+                            @case ('completed') {
+                                @if (noGames) {
+                                    <ng-container i18n="Title of the dialog that finishes a game night with no game marked as played">No games marked as played</ng-container>
+                                } @else {
+                                    <ng-container i18n="Title of the dialog that finishes a game night">Finish this game night?</ng-container>
+                                }
+                            }
+                            @default { <ng-container i18n="Title of the dialog that cancels a game night">Cancel this game night?</ng-container> }
                         }
                     </h2>
                     <p id="session-status-confirmation-description" class="mt-2 text-bv-text-muted">
                         @switch (requestedStatus) {
                             @case ('active') {
-                                It’s planned for {{ dateParts?.weekday }} {{ dateParts?.day }} {{ dateParts?.month }} at {{ dateParts?.time }}. Starting it now moves it to today, so the group’s history stays in order.
+                                <ng-container i18n="Dialog that starts a game night early; the placeholders are its day, such as Sat 24 Oct, and its time">It’s planned for {{ plannedDayLabel }} at {{ dateParts?.time }}. Starting it now moves it to today, so the group’s history stays in order.</ng-container>
                             }
                             @case ('completed') {
                                 @if (noGames) {
-                                    Mark the games you played before finishing. If the night didn’t happen, {{ canShapeNight ? 'cancel it instead' : 'ask the organizer to cancel it' }}. You can also finish it with nothing played.
+                                    @if (canShapeNight) {
+                                        <ng-container i18n="Dialog that finishes a game night with no game marked as played, for the organizer">Mark the games you played before finishing. If the night didn’t happen, cancel it instead. You can also finish it with nothing played.</ng-container>
+                                    } @else {
+                                        <ng-container i18n="Dialog that finishes a game night with no game marked as played, for someone who cannot cancel it">Mark the games you played before finishing. If the night didn’t happen, ask the organizer to cancel it. You can also finish it with nothing played.</ng-container>
+                                    }
                                 } @else {
-                                    The night joins the group’s history. Played games, players and attendance can no longer change, but anyone can still record who won.
+                                    <ng-container i18n="Dialog that finishes a game night">The night joins the group’s history. Played games, players and attendance can no longer change, but anyone can still record who won.</ng-container>
                                 }
                             }
                             @default {
-                                The night stays here for reference, but nobody can answer, mark games or record attendance any more.
+                                <ng-container i18n="Dialog that cancels a game night">The night stays here for reference, but nobody can answer, mark games or record attendance any more.</ng-container>
                             }
                         }
                     </p>
                     @if (requestedStatus !== 'active') {
                         <dl class="mt-5 grid grid-cols-3 gap-3">
-                            <div class="rounded-lg bg-bv-surface-2 p-3"><dt class="text-xs text-bv-text-muted">Played</dt><dd class="mt-1 text-xl font-bold">{{ playedGamesCount }}</dd></div>
-                            <div class="rounded-lg bg-bv-surface-2 p-3"><dt class="text-xs text-bv-text-muted">Still shortlisted</dt><dd class="mt-1 text-xl font-bold">{{ remainingPlannedGamesCount }}</dd></div>
-                            <div class="rounded-lg bg-bv-surface-2 p-3"><dt class="text-xs text-bv-text-muted">Skipped</dt><dd class="mt-1 text-xl font-bold">{{ skippedGamesCount }}</dd></div>
+                            <div class="rounded-lg bg-bv-surface-2 p-3"><dt class="text-xs text-bv-text-muted" i18n="Count on a game night's page, games played">Played</dt><dd class="mt-1 text-xl font-bold">{{ playedGamesCount }}</dd></div>
+                            <div class="rounded-lg bg-bv-surface-2 p-3"><dt class="text-xs text-bv-text-muted" i18n="Count in the dialog that finishes a game night, shortlisted games not played yet">Still shortlisted</dt><dd class="mt-1 text-xl font-bold">{{ remainingPlannedGamesCount }}</dd></div>
+                            <div class="rounded-lg bg-bv-surface-2 p-3"><dt class="text-xs text-bv-text-muted" i18n="Count on a game night's page, shortlisted games not played">Skipped</dt><dd class="mt-1 text-xl font-bold">{{ skippedGamesCount }}</dd></div>
                         </dl>
                     }
                     @if (requestedStatus === 'completed' && !noGames && remainingPlannedGamesCount > 0) {
-                        <p class="mt-4 text-sm text-bv-text-muted">Shortlisted games you didn’t play are not recorded as played.</p>
+                        <p class="mt-4 text-sm text-bv-text-muted" i18n="Dialog that finishes a game night with shortlisted games not played">Shortlisted games you didn’t play are not recorded as played.</p>
                     }
                     <div class="mt-6 flex flex-col-reverse gap-3 sm:flex-row sm:flex-wrap sm:justify-end">
-                        <button appButton variant="secondary" type="button" (click)="cancelStatusUpdate()">Keep editing</button>
+                        <button appButton variant="secondary" type="button" (click)="cancelStatusUpdate()" i18n="Button that closes the dialog that starts, finishes or cancels a game night">Keep editing</button>
                         @if (noGames) {
                             @if (canShapeNight) {
-                                <button appButton variant="danger" type="button" [disabled]="isUpdatingStatus" (click)="confirmStatusUpdate('cancelled')">Cancel game night</button>
+                                <button appButton variant="danger" type="button" [disabled]="isUpdatingStatus" (click)="confirmStatusUpdate('cancelled')" i18n="Button that cancels a game night">Cancel game night</button>
                             }
-                            <button appButton type="button" [disabled]="isUpdatingStatus" (click)="confirmStatusUpdate()">Finish anyway</button>
+                            <button appButton type="button" [disabled]="isUpdatingStatus" (click)="confirmStatusUpdate()" i18n="Button that finishes a game night with no game marked as played">Finish anyway</button>
                         } @else {
                             <button appButton [variant]="requestedStatus === 'cancelled' ? 'danger' : 'primary'" type="button" [disabled]="isUpdatingStatus" (click)="confirmStatusUpdate()">
                                 @switch (requestedStatus) {
-                                    @case ('active') { Start now }
-                                    @case ('completed') { Finish game night }
-                                    @default { Cancel game night }
+                                    @case ('active') { <ng-container i18n="Button that confirms starting a game night now">Start now</ng-container> }
+                                    @case ('completed') { <ng-container i18n="Button that finishes a game night going on now">Finish game night</ng-container> }
+                                    @default { <ng-container i18n="Button that cancels a game night">Cancel game night</ng-container> }
                                 }
                             </button>
                         }
@@ -174,15 +190,27 @@
                 @if (meet.status !== 'scheduled' || playedGamesCount > 0) {
                     <section aria-labelledby="played-heading">
                         <div class="mb-3 flex items-baseline justify-between gap-3">
-                            <h2 id="played-heading" class="text-lg font-semibold">{{ canRunNight ? 'Played tonight' : 'Played' }}</h2>
+                            <h2 id="played-heading" class="text-lg font-semibold">
+                                @if (canRunNight) {
+                                    <ng-container i18n="Heading of the played games on a game night going on now">Played tonight</ng-container>
+                                } @else {
+                                    <ng-container i18n="Heading of the played games on a game night's page">Played</ng-container>
+                                }
+                            </h2>
                             @if (isPersistingChanges) {
-                                <span class="text-sm text-bv-text-muted" role="status">Saving…</span>
+                                <span class="text-sm text-bv-text-muted" role="status" i18n="While a change on a game night's page saves">Saving…</span>
                             }
                         </div>
 
                         @if (playedGameDetails.length === 0) {
                             <p class="rounded-lg border border-dashed border-bv-border p-4 text-sm text-bv-text-muted">
-                                {{ canRunNight ? 'Nothing marked yet. Tap a game below when the group starts playing it.' : canEditSession ? 'Nothing marked yet.' : 'No games were recorded for this game night.' }}
+                                @if (canRunNight) {
+                                    <ng-container i18n="Played games of a game night going on now, before any is marked">Nothing marked yet. Tap a game below when the group starts playing it.</ng-container>
+                                } @else if (canEditSession) {
+                                    <ng-container i18n="Played games of a game night, before any is marked">Nothing marked yet.</ng-container>
+                                } @else {
+                                    <ng-container i18n="Played games of a game night where none was recorded">No games were recorded for this game night.</ng-container>
+                                }
                             </p>
                         } @else {
                             <ul class="space-y-3">
@@ -193,68 +221,74 @@
                                     <li>
                                         <article class="rounded-lg border border-bv-border bg-bv-surface p-4 shadow-sm" [attr.aria-labelledby]="'played-game-' + game.id">
                                             <div class="flex items-start gap-3">
-                                                <a [routerLink]="['/games', game.id]" class="shrink-0" [attr.aria-label]="'View ' + gameTitle(game)">
-                                                    <image-background [src]="game.imageUrl" [alt]="gameTitle(game) + ' cover'" class="h-14 w-14" />
+                                                <a [routerLink]="['/games', game.id]" class="shrink-0" [attr.aria-label]="viewLabel(gameTitle(game))">
+                                                    <image-background [src]="game.imageUrl" [alt]="gameTitle(game) | coverAlt" class="h-14 w-14" />
                                                 </a>
                                                 <div class="min-w-0 flex-1">
                                                     <h3 class="truncate font-semibold" [id]="'played-game-' + game.id" [title]="gameTitle(game)">{{ gameTitle(game) }}</h3>
-                                                    @if (playsOf(game.id).length > 1) { <p class="mt-0.5 text-sm text-bv-text-muted">{{ playsOf(game.id).length }} separate plays</p> } @else if (winners.length > 0) {
+                                                    @if (playsOf(game.id).length > 1) { <p class="mt-0.5 text-sm text-bv-text-muted" i18n="Under a game played more than once on a game night">{playsOf(game.id).length, plural, one {{{ playsOf(game.id).length }} separate play} other {{{ playsOf(game.id).length }} separate plays}}</p> } @else if (winners.length > 0) {
                                                         <p class="mt-0.5 flex min-w-0 items-center gap-1.5 text-sm font-medium text-bv-success">
                                                             <app-icon name="award-fill" [size]="16" className="shrink-0" aria-hidden="true" />
                                                             <span class="min-w-0 wrap-anywhere">{{ winnersSummary(game.id) }}</span>
                                                         </p>
                                                     } @else {
-                                                        <p class="mt-0.5 text-sm text-bv-text-muted">{{ players.length }} player{{ players.length === 1 ? '' : 's' }}</p>
+                                                        <p class="mt-0.5 text-sm text-bv-text-muted" i18n="Under a game played on a game night: how many people played it">{players.length, plural, one {{{ players.length }} player} other {{{ players.length }} players}}</p>
                                                     }
                                                 </div>
 
                                                 @if (canRunNight && !requiresRecordingEditor) {
-                                                    <button type="button" class="shrink-0 rounded text-sm font-medium text-bv-text-muted underline-offset-2 hover:text-bv-danger hover:underline disabled:opacity-60" [disabled]="isPersistingChanges" [attr.aria-label]="'Unmark ' + gameTitle(game) + ' as played'" (click)="onClickGame(game.id)">Unmark</button>
+                                                    <button type="button" class="shrink-0 rounded text-sm font-medium text-bv-text-muted underline-offset-2 hover:text-bv-danger hover:underline disabled:opacity-60" [disabled]="isPersistingChanges" [attr.aria-label]="unmarkLabel(gameTitle(game))" (click)="onClickGame(game.id)" i18n="Button that takes a game out of the played games of a game night">Unmark</button>
                                                 }
                                             </div>
 
                                                 @if (playsOf(game.id).length > 1 || hasMixedPlayers) {
-                                                    <ol class="mt-4 space-y-4" aria-label="Individual plays">
+                                                    <ol class="mt-4 space-y-4" i18n-aria-label="Accessible name of the list of plays of a game on a game night" aria-label="Individual plays">
                                                         @for (play of playsOf(game.id); track play.position; let number = $index) {
                                                             <li class="border-t border-bv-border pt-3">
-                                                                <div class="flex flex-wrap items-center justify-between gap-2"><h3 class="text-sm font-semibold">Play {{ number + 1 }}</h3>@if (canRecordResults && resultPlay !== play.position) { <button appButton variant="secondary" size="small" (click)="beginRoundResults(play.position)">Record results</button> }</div>
+                                                                <div class="flex flex-wrap items-center justify-between gap-2"><h3 class="text-sm font-semibold" i18n="Heading of one play of a game on a game night; the placeholder is its number">Play {{ number + 1 }}</h3>@if (canRecordResults && resultPlay !== play.position) { <button appButton variant="secondary" size="small" (click)="beginRoundResults(play.position)" i18n="Button that opens the form for who won one play">Record results</button> }</div>
                                                                 <ul class="mt-2 space-y-2">@for (person of roundPlayers(play.position); track person.key; let index = $index) {
                                                                     <li class="flex min-w-0 items-center gap-2 text-sm"><span class="min-w-0 flex-1 truncate">{{ person.displayName }}</span>
                                                                         @if (resultPlay === play.position) {
-                                                                            <label class="flex min-h-11 shrink-0 items-center gap-2"><input type="checkbox" [checked]="roundResultDraft[index]?.isWinner" (change)="roundResultDraft[index]!.isWinner = $any($event.target).checked" /> Winner</label>
-                                                                            <input class="app-input w-24 shrink-0" type="number" step="1" min="-1000000" max="1000000" [attr.aria-label]="'Score for ' + person.displayName" [value]="roundResultDraft[index]?.score ?? ''" (input)="roundResultDraft[index]!.score = $any($event.target).value === '' ? null : +$any($event.target).value" />
-                                                                        } @else { @if (roundEntry(play.position, person)?.isWinner) { <span class="shrink-0 rounded bg-bv-accent px-2 text-bv-on-accent">Winner</span> } @if (roundScore(play.position, person) !== null) { <span class="shrink-0">Score {{ roundScore(play.position, person) }}</span> } }
+                                                                            <label class="flex min-h-11 shrink-0 items-center gap-2"><input type="checkbox" [checked]="roundResultDraft[index]?.isWinner" (change)="roundResultDraft[index]!.isWinner = $any($event.target).checked" /> <ng-container i18n="Checkbox and tag for a person who won a play of a game">Winner</ng-container></label>
+                                                                            <input class="app-input w-24 shrink-0" type="number" step="1" min="-1000000" max="1000000" [attr.aria-label]="scoreLabel(person.displayName)" [value]="roundResultDraft[index]?.score ?? ''" (input)="roundResultDraft[index]!.score = $any($event.target).value === '' ? null : +$any($event.target).value" />
+                                                                        } @else { @if (roundEntry(play.position, person)?.isWinner) { <span class="shrink-0 rounded bg-bv-accent px-2 text-bv-on-accent" i18n="Checkbox and tag for a person who won a play of a game">Winner</span> } @if (roundScore(play.position, person) !== null) { <span class="shrink-0" i18n="A person's score in a play of a game">Score {{ roundScore(play.position, person) }}</span> } }
                                                                     </li>
                                                                 }</ul>
-                                                                @if (resultPlay === play.position) { <div class="mt-3 flex flex-wrap justify-end gap-2"><button appButton variant="secondary" size="small" [disabled]="savingRound" (click)="resultPlay = null">Cancel</button><button appButton size="small" [loading]="savingRound" (click)="saveRoundResults()">Save results</button></div> }
+                                                                @if (resultPlay === play.position) { <div class="mt-3 flex flex-wrap justify-end gap-2"><button appButton variant="secondary" size="small" [disabled]="savingRound" (click)="resultPlay = null" i18n="Button that closes the results form without saving">Cancel</button><button appButton size="small" [loading]="savingRound" (click)="saveRoundResults()" i18n="Button that saves who won a game">Save results</button></div> }
                                                             </li>
                                                         }
                                                     </ol>
                                                 }
                                             @if (editingResultsGameId === game.id) {
                                                 <fieldset class="mt-4 min-w-0 rounded-lg border border-bv-primary/30 p-3">
-                                                    <legend class="px-1 text-sm font-semibold">Results</legend>
-                                                    <p class="mb-3 text-xs text-bv-text-muted">Mark the winners. Several people can share a win. Scores are optional.</p>
+                                                    <legend class="px-1 text-sm font-semibold" i18n="Heading of the form for who won a game">Results</legend>
+                                                    <p class="mb-3 text-xs text-bv-text-muted" i18n="Hint in the form for who won a game">Mark the winners. Several people can share a win. Scores are optional.</p>
                                                     <ul class="space-y-2">
                                                         @for (person of players; track person.key) {
                                                             <li class="flex min-w-0 items-center gap-2">
                                                                 <app-image-profile size="small" class="shrink-0" [avatar]="person.avatar" />
                                                                 <span class="min-w-0 flex-1 truncate text-sm">{{ person.displayName }}</span>
-                                                                <button type="button" class="app-chip shrink-0" [attr.aria-pressed]="resultsDraft[person.key]?.isWinner ?? false" [attr.aria-label]="person.displayName + ' won'" (click)="toggleDraftWinner(person.key)">
-                                                                    <app-icon name="award-fill" [size]="14" aria-hidden="true" /> Won
+                                                                <button type="button" class="app-chip shrink-0" [attr.aria-pressed]="resultsDraft[person.key]?.isWinner ?? false" [attr.aria-label]="wonLabel(person.displayName)" (click)="toggleDraftWinner(person.key)">
+                                                                    <app-icon name="award-fill" [size]="14" aria-hidden="true" /> <ng-container i18n="Button that marks a person as a winner of a game">Won</ng-container>
                                                                 </button>
-                                                                <input type="number" inputmode="numeric" class="app-input w-24 shrink-0 text-sm" placeholder="Score" min="-1000000" max="1000000" step="1" [value]="resultsDraft[person.key]?.score ?? ''" [attr.aria-label]="'Score for ' + person.displayName" (input)="setDraftScore(person.key, $any($event.target).value)" />
+                                                                <input type="number" inputmode="numeric" class="app-input w-24 shrink-0 text-sm" i18n-placeholder="Placeholder of a person's score field" placeholder="Score" min="-1000000" max="1000000" step="1" [value]="resultsDraft[person.key]?.score ?? ''" [attr.aria-label]="scoreLabel(person.displayName)" (input)="setDraftScore(person.key, $any($event.target).value)" />
                                                             </li>
                                                         }
                                                     </ul>
                                                     <div class="mt-3 flex flex-wrap justify-end gap-2">
-                                                        <button appButton variant="secondary" size="small" type="button" (click)="cancelEditingResults()">Cancel</button>
-                                                        <button appButton size="small" type="button" [disabled]="isSavingResults" (click)="saveResults()">{{ isSavingResults ? 'Saving…' : 'Save results' }}</button>
+                                                        <button appButton variant="secondary" size="small" type="button" (click)="cancelEditingResults()" i18n="Button that closes the results form without saving">Cancel</button>
+                                                        <button appButton size="small" type="button" [disabled]="isSavingResults" (click)="saveResults()">
+                                                            @if (isSavingResults) {
+                                                                <ng-container i18n="While a change on a game night's page saves">Saving…</ng-container>
+                                                            } @else {
+                                                                <ng-container i18n="Button that saves who won a game">Save results</ng-container>
+                                                            }
+                                                        </button>
                                                     </div>
                                                 </fieldset>
                                             } @else {
                                                 @if (scores.length > 0) {
-                                                    <ol class="mt-3 flex flex-wrap gap-2 text-sm" aria-label="Scores">
+                                                    <ol class="mt-3 flex flex-wrap gap-2 text-sm" i18n-aria-label="Accessible name of the scores of a game on a game night" aria-label="Scores">
                                                         @for (entry of scores; track entry.person.key) {
                                                             <li class="flex max-w-full items-center gap-1.5 rounded-full bg-bv-surface-2 px-3 py-1">
                                                                 <span class="min-w-0 truncate">{{ entry.person.displayName }}</span>
@@ -265,8 +299,8 @@
                                                 }
 
                                                 @if (canRunNight && !requiresRecordingEditor) {
-                                                    <div class="mt-3" role="group" [attr.aria-label]="'Who played ' + gameTitle(game)">
-                                                        <p class="mb-2 text-xs font-medium text-bv-text-muted">Who played</p>
+                                                    <div class="mt-3" role="group" [attr.aria-label]="whoPlayedLabel(gameTitle(game))">
+                                                        <p class="mb-2 text-xs font-medium text-bv-text-muted" i18n="Above the people buttons of a played game, to mark who played it">Who played</p>
                                                         <div class="flex flex-wrap gap-2">
                                                             @for (person of invitedPeople; track person.key) {
                                                                 <button type="button" class="app-chip max-w-full" [attr.aria-pressed]="isPlayer(game.id, person)" [disabled]="isPersistingChanges" (click)="togglePlayer(game.id, person)">
@@ -282,14 +316,18 @@
                                                                 <app-image-profile size="small" class="rounded-full ring-2 ring-bv-surface" [class.opacity-50]="person.standing === 'left'" [avatar]="person.avatar" [title]="person.displayName" />
                                                             }
                                                         </div>
-                                                        <p class="min-w-0 text-sm text-bv-text-muted wrap-anywhere">Played by {{ namesOf(players) }}</p>
+                                                        <p class="min-w-0 text-sm text-bv-text-muted wrap-anywhere">{{ playedByLabel(namesOf(players)) }}</p>
                                                     </div>
                                                 }
 
                                                 @if (canRecordResults && players.length > 0 && playsOf(game.id).length < 2 && !hasMixedPlayers) {
                                                     <button type="button" class="mt-3 inline-flex items-center gap-1.5 rounded text-sm font-semibold text-bv-primary hover:underline" (click)="startEditingResults(game.id)">
                                                         <app-icon name="award-fill" [size]="16" aria-hidden="true" />
-                                                        {{ winners.length > 0 || scores.length > 0 ? 'Edit results' : 'Record who won' }}
+                                                        @if (winners.length > 0 || scores.length > 0) {
+                                                            <ng-container i18n="Button that opens the form to change who won a game">Edit results</ng-container>
+                                                        } @else {
+                                                            <ng-container i18n="Button that opens the form for who won a game">Record who won</ng-container>
+                                                        }
                                                     </button>
                                                 }
                                             }
@@ -302,24 +340,24 @@
                         @if (canRunNight && !requiresRecordingEditor) {
                             @let markable = playedSectionGames;
                             <div class="mt-6">
-                                <h3 class="mb-2 text-sm font-semibold">Mark a game as played</h3>
+                                <h3 class="mb-2 text-sm font-semibold" i18n="Heading of the games you can mark as played on a game night going on now">Mark a game as played</h3>
                                 @if (totalGames.length === 0) {
-                                    <p class="rounded-lg border border-dashed border-bv-border p-4 text-sm text-bv-text-muted">Nobody coming has games in Board Vault yet.</p>
+                                    <p class="rounded-lg border border-dashed border-bv-border p-4 text-sm text-bv-text-muted" i18n="Game night going on now when nobody coming owns a game">Nobody coming has games in Board Vault yet.</p>
                                 } @else {
                                     <div class="grid grid-cols-1 gap-2 sm:grid-cols-2">
                                         @for (game of markable; track game.id) {
                                             @if (!meet.playedGames.includes(game.id)) {
                                                 <button type="button" class="flex min-w-0 items-center gap-3 rounded-lg border border-bv-border bg-bv-surface p-2 text-left transition hover:border-bv-primary/50 disabled:cursor-not-allowed disabled:opacity-50" [disabled]="isPersistingChanges || !game.active" (click)="onClickGame(game.id)">
-                                                    <image-background [src]="game.imageUrl" [alt]="gameTitle(game) + ' cover'" class="h-10 w-10 shrink-0" />
+                                                    <image-background [src]="game.imageUrl" [alt]="gameTitle(game) | coverAlt" class="h-10 w-10 shrink-0" />
                                                     <span class="min-w-0 flex-1">
                                                         <span class="block truncate text-sm font-medium">{{ gameTitle(game) }}</span>
                                                         <span class="block text-xs text-bv-text-muted">
                                                             @if (!game.active) {
-                                                                Nobody coming owns it
+                                                                <ng-container i18n="Under a game that none of the people coming to a game night own">Nobody coming owns it</ng-container>
                                                             } @else if (meet.plannedGames.includes(game.id)) {
-                                                                Shortlisted · {{ game | players }}
+                                                                <ng-container i18n="Under a game on a game night's shortlist; the placeholder is how many can play, such as 2–4 players">Shortlisted · {{ game | players }}</ng-container>
                                                             } @else {
-                                                                {{ game.gameAvgDuration }} min · {{ game | players }}
+                                                                <ng-container i18n="Under a game on a game night's page: how long it lasts in minutes, then how many can play">{{ game.gameAvgDuration }} min · {{ game | players }}</ng-container>
                                                             }
                                                         </span>
                                                     </span>
@@ -330,7 +368,7 @@
                                     </div>
                                     @if (!showAllGamesForPlayed && hiddenPlayableGameCount > 0) {
                                         <button type="button" class="mt-3 text-sm font-semibold text-bv-primary hover:underline" (click)="showAllGamesForPlayed = true">
-                                            Show {{ hiddenPlayableGameCount }} more {{ hiddenPlayableGameCount === 1 ? 'game' : 'games' }} that nobody coming owns
+                                            <ng-container i18n="Button that shows the games nobody coming to a game night owns">{hiddenPlayableGameCount, plural, one {Show {{ hiddenPlayableGameCount }} more game that nobody coming owns} other {Show {{ hiddenPlayableGameCount }} more games that nobody coming owns}}</ng-container>
                                         </button>
                                     }
                                 }
@@ -342,16 +380,20 @@
                 <!-- Shortlist -->
                 <section aria-labelledby="shortlist-heading">
                     <div class="mb-3 flex items-baseline justify-between gap-3">
-                        <h2 id="shortlist-heading" class="text-lg font-semibold">Shortlist</h2>
+                        <h2 id="shortlist-heading" class="text-lg font-semibold" i18n="Heading of a game night's list of games to consider">Shortlist</h2>
                         @if (canShapeNight) {
                             <button type="button" class="rounded text-sm font-semibold text-bv-primary hover:underline" [attr.aria-expanded]="isEditingShortlist" (click)="isEditingShortlist = !isEditingShortlist">
-                                {{ isEditingShortlist ? 'Close' : 'Edit' }}
+                                @if (isEditingShortlist) {
+                                    <ng-container i18n="Button that closes the shortlist editor of a game night">Close</ng-container>
+                                } @else {
+                                    <ng-container i18n="Button that opens an editor on a game night's page">Edit</ng-container>
+                                }
                             </button>
                         }
                     </div>
                     @if (canShapeNight && isEditingShortlist) {
                         <fieldset class="mb-4 rounded-lg border border-bv-primary/30 p-4">
-                            <legend class="px-1 text-sm font-semibold">Choose from the games of the people coming</legend>
+                            <legend class="px-1 text-sm font-semibold" i18n="Heading of the shortlist editor of a game night">Choose from the games of the people coming</legend>
                             <div class="mt-2 flex flex-wrap gap-2">
                                 @for (game of totalGames; track game.id) {
                                     @if (game.active) {
@@ -362,13 +404,21 @@
                                 }
                             </div>
                             <button appButton size="small" type="button" class="mt-4" [disabled]="!plannedGameIdsDraftChanged || isUpdatingShortlist" (click)="savePlannedGames()">
-                                {{ isUpdatingShortlist ? 'Saving…' : 'Save shortlist' }}
+                                @if (isUpdatingShortlist) {
+                                    <ng-container i18n="While a change on a game night's page saves">Saving…</ng-container>
+                                } @else {
+                                    <ng-container i18n="Button that saves a game night's shortlist">Save shortlist</ng-container>
+                                }
                             </button>
                         </fieldset>
                     }
                     @if (plannedGames.length === 0) {
                         <p class="rounded-lg border border-dashed border-bv-border p-4 text-sm text-bv-text-muted">
-                            {{ canEditSession ? 'No games shortlisted yet.' : 'No games were shortlisted.' }}
+                            @if (canEditSession) {
+                                <ng-container i18n="A game night's shortlist while it is empty">No games shortlisted yet.</ng-container>
+                            } @else {
+                                <ng-container i18n="The shortlist of a past game night that had none">No games were shortlisted.</ng-container>
+                            }
                         </p>
                     } @else {
                         <ul class="grid grid-cols-1 gap-2 sm:grid-cols-2">
@@ -379,12 +429,12 @@
                                 <li class="min-w-0 rounded-lg border border-bv-border bg-bv-surface p-2 transition hover:border-bv-primary/50">
                                     <div class="flex min-w-0 items-center gap-2">
                                     <a [routerLink]="['/games', game.id]" class="flex min-w-0 flex-1 items-center gap-3">
-                                        <image-background [src]="game.imageUrl" [alt]="gameTitle(game) + ' cover'" class="h-12 w-12 shrink-0" />
+                                        <image-background [src]="game.imageUrl" [alt]="gameTitle(game) | coverAlt" class="h-12 w-12 shrink-0" />
                                         <span class="min-w-0">
                                             <span class="block truncate font-medium">{{ gameTitle(game) }}</span>
-                                            <span class="block text-xs text-bv-text-muted">{{ game.gameAvgDuration }} min · {{ game | players }}</span>
+                                            <span class="block text-xs text-bv-text-muted" i18n="Under a game on a game night's page: how long it lasts in minutes, then how many can play">{{ game.gameAvgDuration }} min · {{ game | players }}</span>
                                             @if (voteCount > 0) {
-                                                <span class="block truncate text-xs text-bv-success" [title]="voterNames(game.id)">Wanted by {{ voterNames(game.id) }}</span>
+                                                <span class="block truncate text-xs text-bv-success" [title]="voterNames(game.id)" i18n="Under a shortlisted game: who voted for it; the placeholder is a list of names">Wanted by {{ voterNames(game.id) }}</span>
                                             }
                                         </span>
                                     </a>
@@ -393,7 +443,7 @@
                                             type="button"
                                             class="app-chip shrink-0 px-2.5"
                                             [attr.aria-pressed]="hasMyVote(game.id)"
-                                            [attr.aria-label]="(hasMyVote(game.id) ? 'Take back your vote for ' : 'I’d play ') + gameTitle(game) + ', ' + (voteCount | count: 'vote')"
+                                            [attr.aria-label]="voteLabel(gameTitle(game), hasMyVote(game.id), voteCount)"
                                             [disabled]="votingGameId() !== null"
                                             (click)="toggleVote(game.id)"
                                         >
@@ -402,28 +452,28 @@
                                         </button>
                                     } @else if (voteCount > 0) {
                                         <span class="flex shrink-0 items-center gap-1 text-sm text-bv-text-muted">
-                                            <app-icon name="thumbs-up" [size]="16" aria-hidden="true" /> <span aria-hidden="true">{{ voteCount }}</span><span class="sr-only">{{ voteCount | count: 'vote' }}</span>
+                                            <app-icon name="thumbs-up" [size]="16" aria-hidden="true" /> <span aria-hidden="true">{{ voteCount }}</span><span class="sr-only" i18n="How many votes a shortlisted game has, for screen readers">{voteCount, plural, one {{{ voteCount }} vote} other {{{ voteCount }} votes}}</span>
                                         </span>
                                     }
                                     </div>
                                     @if (meet.status === 'scheduled') {
                                         <div class="mt-2 flex flex-wrap items-center gap-2 border-t border-bv-border pt-2 text-xs">
                                             @if (bringer) {
-                                                <span class="mr-auto flex min-w-0 items-center gap-1.5 font-medium text-bv-text"><app-icon name="check" [size]="14" className="shrink-0 text-bv-success" aria-hidden="true" /><span class="truncate">{{ bringer.isMe ? 'You’re bringing it' : bringer.name + ' brings it' }}@if (bringer.copy; as copy) { · <span [attr.lang]="copy.language">{{ copy.title }}</span>}</span></span>
+                                                <span class="mr-auto flex min-w-0 items-center gap-1.5 font-medium text-bv-text"><app-icon name="check" [size]="14" className="shrink-0 text-bv-success" aria-hidden="true" /><span class="truncate">@if (bringer.isMe) {<ng-container i18n="Under a shortlisted game you said you will bring">You’re bringing it</ng-container>} @else {<ng-container i18n="Under a shortlisted game: who brings it; the placeholder is a name">{{ bringer.name }} brings it</ng-container>}@if (bringer.copy; as copy) { · <span [attr.lang]="copy.language">{{ copy.title }}</span>}</span></span>
                                                 @if (bringer.isMe || canShapeNight) {
-                                                    <button type="button" class="font-medium text-bv-text-muted underline-offset-2 hover:underline" [disabled]="bringingGameId() !== null" (click)="setBringer(game.id, null)">{{ bringer.isMe ? 'I won’t bring it' : 'Clear' }}</button>
+                                                    <button type="button" class="font-medium text-bv-text-muted underline-offset-2 hover:underline" [disabled]="bringingGameId() !== null" (click)="setBringer(game.id, null)">@if (bringer.isMe) {<ng-container i18n="Button that takes back that you will bring a game">I won’t bring it</ng-container>} @else {<ng-container i18n="Button that clears who brings a shortlisted game">Clear</ng-container>}</button>
                                                 }
                                             } @else if (owners.length === 0) {
-                                                <span class="mr-auto font-medium text-bv-warning">Nobody coming owns it</span>
+                                                <span class="mr-auto font-medium text-bv-warning" i18n="Under a game that none of the people coming to a game night own">Nobody coming owns it</span>
                                             } @else {
-                                                <span class="mr-auto min-w-0 truncate text-bv-text-muted">Nobody is bringing it yet · owned by {{ namesOf(owners) }}</span>
+                                                <span class="mr-auto min-w-0 truncate text-bv-text-muted" i18n="Under a shortlisted game nobody said they will bring; the placeholder is a list of the people coming who own it">Nobody is bringing it yet · owned by {{ namesOf(owners) }}</span>
                                             }
                                             @if (!bringer?.isMe && canBring(game.id)) {
-                                                <button type="button" class="app-chip py-1 text-xs" [disabled]="bringingGameId() !== null" (click)="setBringer(game.id, {})">I’ll bring it</button>
+                                                <button type="button" class="app-chip py-1 text-xs" [disabled]="bringingGameId() !== null" (click)="setBringer(game.id, {})" i18n="Button that says you will bring a shortlisted game">I’ll bring it</button>
                                             }
                                             @if (!bringer) {
                                                 @for (person of placeholderOwners(game.id); track person.key) {
-                                                    <button type="button" class="app-chip max-w-full py-1 text-xs" [disabled]="bringingGameId() !== null" (click)="setBringer(game.id, { groupPersonId: person.personId ?? undefined })"><span class="truncate">{{ person.displayName }} brings it</span></button>
+                                                    <button type="button" class="app-chip max-w-full py-1 text-xs" [disabled]="bringingGameId() !== null" (click)="setBringer(game.id, { groupPersonId: person.personId ?? undefined })"><span class="truncate" i18n="Under a shortlisted game: who brings it; the placeholder is a name">{{ person.displayName }} brings it</span></button>
                                                 }
                                             }
                                         </div>
@@ -433,10 +483,10 @@
                         </ul>
                     }
                     @if (canProposeGames && meet.status === 'scheduled' && plannedGames.length > 0) {
-                        <p class="mt-3 text-sm text-bv-text-muted">Vote for what you’d play; the most wanted games go first. Add more from the suggestions below.</p>
+                        <p class="mt-3 text-sm text-bv-text-muted" i18n="Hint under a planned game night's shortlist">Vote for what you’d play; the most wanted games go first. Add more from the suggestions below.</p>
                     }
                     @if (meet.status === 'scheduled' && playedGamesCount === 0) {
-                        <p class="mt-3 text-sm text-bv-text-muted">Once the night starts, mark here the games the group actually plays.</p>
+                        <p class="mt-3 text-sm text-bv-text-muted" i18n="Hint under a planned game night's shortlist">Once the night starts, mark here the games the group actually plays.</p>
                     }
                 </section>
 
@@ -444,23 +494,21 @@
                 @if (meet.status === 'scheduled') {
                     <section aria-labelledby="suggestions-heading" [attr.aria-busy]="suggestionsLoading()">
                         <div class="mb-3 flex flex-wrap items-baseline justify-between gap-2">
-                            <h2 id="suggestions-heading" class="text-lg font-semibold">Suggestions for this night</h2>
-                            <a class="text-sm font-semibold text-bv-primary hover:underline" routerLink="/play/recommendations" [queryParams]="{ groupId: meet.groupId }">More options</a>
+                            <h2 id="suggestions-heading" class="text-lg font-semibold" i18n="Heading of the suggested games on a planned game night">Suggestions for this night</h2>
+                            <a class="text-sm font-semibold text-bv-primary hover:underline" routerLink="/play/recommendations" [queryParams]="{ groupId: meet.groupId }" i18n="Link from a game night's suggestions to What to play">More options</a>
                         </div>
-                        <p class="mb-3 text-sm text-bv-text-muted">
-                            From the games of the {{ comingCount }} {{ comingCount === 1 ? 'person' : 'people' }} coming. They change as people answer.
-                        </p>
+                        <p class="mb-3 text-sm text-bv-text-muted" i18n="Under the suggestions heading of a game night: how many people are coming">{comingCount, plural, one {From the games of the {{ comingCount }} person coming. They change as people answer.} other {From the games of the {{ comingCount }} people coming. They change as people answer.}}</p>
                         @if (comingCount === 0) {
-                            <p class="rounded-lg border border-dashed border-bv-border p-4 text-sm text-bv-text-muted">Nobody is coming yet, so there is nothing to suggest.</p>
+                            <p class="rounded-lg border border-dashed border-bv-border p-4 text-sm text-bv-text-muted" i18n="A game night's suggestions when nobody is coming">Nobody is coming yet, so there is nothing to suggest.</p>
                         } @else if (suggestionsError()) {
                             <p class="rounded-lg border border-bv-warning/30 bg-bv-warning/10 p-4 text-sm" role="alert">
-                                Suggestions could not be loaded.
-                                <button type="button" class="ml-2 font-semibold underline" (click)="loadSuggestions()">Retry</button>
+                                <ng-container i18n="A game night's suggestions when they could not load">Suggestions could not be loaded.</ng-container>
+                                <button type="button" class="ml-2 font-semibold underline" (click)="loadSuggestions()" i18n="Button that loads a game night's suggestions again">Retry</button>
                             </p>
                         } @else if (suggestionsLoading() && !suggestions()) {
-                            <p class="rounded-lg border border-dashed border-bv-border p-4 text-sm text-bv-text-muted" role="status">Finding games that fit…</p>
+                            <p class="rounded-lg border border-dashed border-bv-border p-4 text-sm text-bv-text-muted" role="status" i18n="What to play while the suggestions load">Finding games that fit…</p>
                         } @else if (topSuggestions.length === 0) {
-                            <p class="rounded-lg border border-dashed border-bv-border p-4 text-sm text-bv-text-muted">{{ suggestions()?.noResultReason || 'No game fits the people coming yet.' }}</p>
+                            <p class="rounded-lg border border-dashed border-bv-border p-4 text-sm text-bv-text-muted">@if (suggestions()?.noResultReason; as reason) { {{ reason }} } @else {<ng-container i18n="A game night's suggestions when no game fits">No game fits the people coming yet.</ng-container>}</p>
                         } @else {
                             <ol class="grid grid-cols-1 gap-3 transition-opacity xl:grid-cols-2" [class.opacity-60]="suggestionsLoading()">
                                 @for (suggestion of topSuggestions; track suggestion.gameData.id; let first = $first) {
@@ -473,15 +521,15 @@
                                             [minutes]="suggestion.gameData.gameAvgDuration"
                                             [minPlayers]="suggestion.gameData.minPlayers"
                                             [maxPlayers]="suggestion.gameData.maxPlayers"
-                                            [historyLabel]="suggestion.explanation.lastPlayedAt ? 'Last played ' + (suggestion.explanation.lastPlayedAt | customDate) : 'New to this group'"
+                                            [historyLabel]="lastPlayedLabel(suggestion.explanation.lastPlayedAt)"
                                             [reasons]="suggestion.explanation.reasons"
                                             [score]="suggestion.score"
                                             [isTopPick]="first"
                                         >
                                             @if (meet.plannedGames.includes(gameId)) {
-                                                <p class="mt-3 flex items-center gap-1.5 text-sm font-medium text-bv-success"><app-icon name="check" [size]="16" aria-hidden="true" /> On the shortlist</p>
+                                                <p class="mt-3 flex items-center gap-1.5 text-sm font-medium text-bv-success"><app-icon name="check" [size]="16" aria-hidden="true" /> <ng-container i18n="On a suggested game already on the game night's shortlist">On the shortlist</ng-container></p>
                                             } @else if (canProposeGames) {
-                                                <button appButton variant="secondary" size="small" type="button" class="mt-3" icon="plus" [disabled]="isUpdatingShortlist" (click)="addSuggestionToShortlist(gameId)">Add to shortlist</button>
+                                                <button appButton variant="secondary" size="small" type="button" class="mt-3" icon="plus" [disabled]="isUpdatingShortlist" (click)="addSuggestionToShortlist(gameId)" i18n="Button that puts a suggested game on the game night's shortlist">Add to shortlist</button>
                                             }
                                         </app-recommendation-card>
                                     </li>
@@ -493,12 +541,12 @@
 
                 @if (canLeaveFeedback && myPlayedGames.length > 0) {
                     <section aria-labelledby="feedback-heading">
-                        <h2 id="feedback-heading" class="text-lg font-semibold">How did it go for you?</h2>
-                        <p class="mb-3 mt-1 text-sm text-bv-text-muted">Your own rating, kept for every night you play it.</p>
+                        <h2 id="feedback-heading" class="text-lg font-semibold" i18n="Heading of the ratings of the games you played on a game night">How did it go for you?</h2>
+                        <p class="mb-3 mt-1 text-sm text-bv-text-muted" i18n="Under How did it go for you?">Your own rating, kept for every night you play it.</p>
                         <ul class="grid gap-2 grid-cols-1 sm:grid-cols-2">
                             @for (game of myPlayedGames; track game.id) {
                                 <li class="flex min-w-0 flex-wrap items-center gap-3 rounded-lg border border-bv-border bg-bv-surface p-2">
-                                    <image-background [src]="game.imageUrl" [alt]="gameTitle(game) + ' cover'" class="h-10 w-10 shrink-0" />
+                                    <image-background [src]="game.imageUrl" [alt]="gameTitle(game) | coverAlt" class="h-10 w-10 shrink-0" />
                                     <span class="min-w-0 flex-1 truncate text-sm font-medium">{{ gameTitle(game) }}</span>
                                     <app-star-rating class="shrink-0" [value]="getMyRating(game.id)" [label]="gameTitle(game)" [disabled]="savingPostSessionRatings[game.id] ?? false" (rated)="savePostSessionRating(game.id, $event)" />
                                 </li>
@@ -508,17 +556,17 @@
                 }
 
                 @if (justSaved && meet.status === 'completed' && playedGameDetails.length > 0) {
-                    <details><summary class="cursor-pointer text-sm font-medium text-bv-primary">New purchase? Record who owns it (optional)</summary><p class="mt-2 text-sm text-bv-text-muted">Your session is already saved. Add a game to your own collection, or record it for someone without an account in this group.</p>
+                    <details><summary class="cursor-pointer text-sm font-medium text-bv-primary" i18n="Opens the form to record who owns a game played on a game night">New purchase? Record who owns it (optional)</summary><p class="mt-2 text-sm text-bv-text-muted" i18n="Form to record who owns a game played on a game night">Your session is already saved. Add a game to your own collection, or record it for someone without an account in this group.</p>
                         <ul class="mt-3 space-y-3">@for (game of playedGameDetails; track game.id) {
-                            <li class="flex flex-wrap items-center gap-3"><span class="min-w-0 flex-1 text-sm">{{ gameTitle(game) }}</span><label><span class="sr-only">Owner of {{ gameTitle(game) }}</span><select class="app-input max-w-full" [value]="ownershipTarget[game.id] ?? ''" (change)="ownershipTarget[game.id] = $any($event.target).value; ownershipSaved[game.id] = false"><option value="">Choose an owner</option><option value="me">Me · My Games</option>@for (person of ownershipPeople; track person.person.id) { <option [value]="person.person.id">{{ person.person.displayName }} · {{ groupData?.name }}</option> }</select></label><button appButton variant="secondary" size="small" [disabled]="!ownershipTarget[game.id] || !!ownershipSaved[game.id]" [loading]="ownershipSaving[game.id] ?? false" (click)="recordOwnership(game.id)">{{ ownershipSaved[game.id] ? 'Recorded' : ownershipTarget[game.id] ? 'Add to ' + ownershipTargetName(game.id) : 'Record ownership' }}</button></li>
+                            <li class="flex flex-wrap items-center gap-3"><span class="min-w-0 flex-1 text-sm">{{ gameTitle(game) }}</span><label><span class="sr-only" i18n="Label of the owner list of a game played on a game night; the placeholder is the game title">Owner of {{ gameTitle(game) }}</span><select class="app-input max-w-full" [value]="ownershipTarget[game.id] ?? ''" (change)="ownershipTarget[game.id] = $any($event.target).value; ownershipSaved[game.id] = false"><option value="" i18n="First choice of the owner list for a game played on a game night">Choose an owner</option><option value="me" i18n="Choice of the owner list for a game played on a game night: you, and your collection">Me · My Games</option>@for (person of ownershipPeople; track person.person.id) { <option [value]="person.person.id">{{ person.person.displayName }} · {{ groupData?.name }}</option> }</select></label><button appButton variant="secondary" size="small" [disabled]="!ownershipTarget[game.id] || !!ownershipSaved[game.id]" [loading]="ownershipSaving[game.id] ?? false" (click)="recordOwnership(game.id)">@if (ownershipSaved[game.id]) {<ng-container i18n="Button after recording who owns a game">Recorded</ng-container>} @else if (ownershipTarget[game.id]) {<ng-container i18n="Button that records who owns a game; the placeholder is a name or My Games">Add to {{ ownershipTargetName(game.id) }}</ng-container>} @else {<ng-container i18n="Button that records who owns a game, before an owner is chosen">Record ownership</ng-container>}</button></li>
                         }</ul>
                     </details>
                 }
 
                 @if (skippedGames.length > 0) {
                     <section aria-labelledby="not-played-heading">
-                        <h2 id="not-played-heading" class="text-lg font-semibold">Shortlisted but not played</h2>
-                        <p class="mb-3 mt-1 text-sm text-bv-text-muted">Worth another look next time.</p>
+                        <h2 id="not-played-heading" class="text-lg font-semibold" i18n="Heading of the shortlisted games a game night did not play">Shortlisted but not played</h2>
+                        <p class="mb-3 mt-1 text-sm text-bv-text-muted" i18n="Under Shortlisted but not played">Worth another look next time.</p>
                         <ul class="flex flex-wrap gap-2">
                             @for (game of skippedGames; track game.id) {
                                 <li class="max-w-full"><a [routerLink]="['/games', game.id]" class="app-chip max-w-full"><span class="truncate">{{ gameTitle(game) }}</span></a></li>
@@ -532,16 +580,28 @@
             <aside class="min-w-0" aria-labelledby="people-heading">
                 <div class="rounded-lg border border-bv-border bg-bv-surface p-4 shadow-sm lg:sticky lg:top-4">
                     <div class="flex items-baseline justify-between gap-3">
-                        <h2 id="people-heading" class="text-lg font-semibold">{{ meet.status === 'completed' ? 'Who came' : meet.status === 'cancelled' ? 'Who was invited' : 'Who’s coming' }}</h2>
+                        <h2 id="people-heading" class="text-lg font-semibold">
+                            @if (meet.status === 'completed') {
+                                <ng-container i18n="Heading of the people of a recorded game night">Who came</ng-container>
+                            } @else if (meet.status === 'cancelled') {
+                                <ng-container i18n="Heading of the people of a cancelled game night">Who was invited</ng-container>
+                            } @else {
+                                <ng-container i18n="Heading of the people of a planned game night">Who’s coming</ng-container>
+                            }
+                        </h2>
                         @if (canShapeNight) {
                             <button type="button" class="rounded text-sm font-semibold text-bv-primary hover:underline" [attr.aria-expanded]="isEditingInvites" (click)="isEditingInvites = !isEditingInvites">
-                                {{ isEditingInvites ? 'Done' : 'Edit' }}
+                                @if (isEditingInvites) {
+                                    <ng-container i18n="Button that closes the invite editor of a game night">Done</ng-container>
+                                } @else {
+                                    <ng-container i18n="Button that opens an editor on a game night's page">Edit</ng-container>
+                                }
                             </button>
                         }
                     </div>
 
                     @if (isEditingInvites && canShapeNight) {
-                        <div class="mt-3 flex flex-wrap gap-2" role="group" aria-label="Who is invited">
+                        <div class="mt-3 flex flex-wrap gap-2" role="group" i18n-aria-label="Accessible name of the invite editor of a game night" aria-label="Who is invited">
                             @for (person of invitablePeople; track person.key) {
                                 <button type="button" class="app-chip max-w-full" [attr.aria-pressed]="isInvited(person)" [attr.aria-label]="inviteToggleLabel(person)" [disabled]="isPersistingChanges || isInviteLocked(person)" (click)="toggleInvite(person)">
                                     <span class="truncate">{{ person.displayName }}</span>
@@ -549,9 +609,9 @@
                             }
                         </div>
                         @if (attendeeCount === 1) {
-                            <p class="mt-3 text-xs text-bv-warning" role="status">Keep at least one person invited.</p>
+                            <p class="mt-3 text-xs text-bv-warning" role="status" i18n="Warning in the invite editor of a game night with one person left">Keep at least one person invited.</p>
                         } @else if (hasPlayedGameAttendeeLock || isGroupPersonSession) {
-                            <p class="mt-3 text-xs text-bv-text-muted">People who played a game stay invited. Take them out of that game first.</p>
+                            <p class="mt-3 text-xs text-bv-text-muted" i18n="Hint in the invite editor of a game night">People who played a game stay invited. Take them out of that game first.</p>
                         }
                     }
 
@@ -565,17 +625,17 @@
                                     <span class="block text-xs" [class]="rsvp === 'accepted' ? 'text-bv-success' : rsvp === 'declined' ? 'text-bv-danger' : 'text-bv-text-muted'">{{ rsvpLabel(person) }}</span>
                                 </span>
                                 @if (canRecordAttendance) {
-                                    <button type="button" class="app-chip shrink-0" [attr.aria-pressed]="attended(person) || playedAnyGame(person)" [attr.aria-label]="person.displayName + ' was there'" [title]="playedAnyGame(person) ? 'Played a game, so was there' : ''" [disabled]="isUpdatingAttendance || playedAnyGame(person)" (click)="toggleAttended(person)">
-                                        <app-icon name="check" [size]="14" aria-hidden="true" /> There
+                                    <button type="button" class="app-chip shrink-0" [attr.aria-pressed]="attended(person) || playedAnyGame(person)" [attr.aria-label]="wasThereLabel(person.displayName)" [title]="playedAnyGame(person) ? playedSoThereLabel : ''" [disabled]="isUpdatingAttendance || playedAnyGame(person)" (click)="toggleAttended(person)">
+                                        <app-icon name="check" [size]="14" aria-hidden="true" /> <ng-container i18n="Button that marks that a person came to a game night">There</ng-container>
                                     </button>
                                 } @else if (meet.status === 'completed' && attended(person)) {
-                                    <span class="shrink-0 text-xs text-bv-text-muted">Was there</span>
+                                    <span class="shrink-0 text-xs text-bv-text-muted" i18n="Whether a person came to a game night">Was there</span>
                                 }
                             </li>
                         }
                     </ul>
                     @if (canRecordAttendance) {
-                        <p class="mt-2 text-xs text-bv-text-muted">Mark who actually came. Anyone who played a game counts as there.</p>
+                        <p class="mt-2 text-xs text-bv-text-muted" i18n="Hint under the people of a game night going on now">Mark who actually came. Anyone who played a game counts as there.</p>
                     }
                 </div>
             </aside>

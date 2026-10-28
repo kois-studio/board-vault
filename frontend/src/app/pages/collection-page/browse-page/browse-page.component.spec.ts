@@ -139,4 +139,16 @@ describe('BrowsePageComponent filters', () => {
         expect(fixture.nativeElement.textContent).toContain('No games match these filters')
         expect(fixture.nativeElement.textContent).toContain('Clear filters')
     })
+
+    it('names each game’s collection button and each chosen tag by what it does', async () => {
+        const { component } = await setup()
+
+        expect(component.collectionLabel(azul)).toBe('Add Azul to your collection')
+        expect(component.collectionLabel({ ...azul, isInCollection: true })).toBe('Azul is already in your collection')
+        expect(component.removeTagLabel('Strategy')).toBe('Remove tag Strategy')
+
+        // Just added: the button already reads "In your games", so its name must agree.
+        component.collectionState.set({ [azul.id]: 'saved' })
+        expect(component.collectionLabel(azul)).toBe('Azul is already in your collection')
+    })
 })

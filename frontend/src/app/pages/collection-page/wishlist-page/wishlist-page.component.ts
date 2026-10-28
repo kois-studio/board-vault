@@ -50,6 +50,11 @@ export class WishlistPageComponent {
     // --------------------------------------------------------------------------
     public readonly buyingGameId = signal<number | null>(null)
 
+    /** The bought button's name for screen readers, with the game's title. */
+    public boughtLabel(game: GameCompleteType): string {
+        return $localize`:Accessible name of the I bought it button on the Wishlist page; the placeholder is the game title:I bought ${gameTitle(game)}:title:: move it to My Games`
+    }
+
     /** Adds the game to My Games; the server takes it off the wishlist. */
     public markAsBought(game: GameCompleteType): void {
         const userId = this.currentUser$()?.id
@@ -64,9 +69,14 @@ export class WishlistPageComponent {
                     if (!added) return
                     this.userWishlist$.update((wishlist) => wishlist.filter((item) => item.id !== game.id))
                     this.dataService.refreshUserGames()
-                    this.toastService.success(`${gameTitle(game)} moved to My Games`)
+                    this.toastService.success(
+                        $localize`:Toast after marking a wishlist game as bought; the placeholder is the game title:${gameTitle(game)}:title: moved to My Games`,
+                    )
                 },
-                () => this.toastService.error('Could not add this game to My Games. Try again.'),
+                () =>
+                    this.toastService.error(
+                        $localize`:Toast when marking a wishlist game as bought failed:Could not add this game to My Games. Try again.`,
+                    ),
             )
             .finally(() => this.buyingGameId.set(null))
     }

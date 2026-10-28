@@ -11,8 +11,10 @@ type CalendarEvent = { title: string; start: Date; end: Date; description: strin
 function toEvent(session: CalendarSession, groupName: string): CalendarEvent {
     const start = new Date(session.meetDate)
     const url = `${SITE_URL}/sessions/${session.id}`
-    const description = [session.notes?.trim(), `Session in Board Vault: ${url}`].filter(Boolean).join('\n\n')
-    return { title: `Game night · ${groupName}`, start, end: new Date(start.getTime() + EVENT_LENGTH_MS), description, url }
+    const link = $localize`:Last line of a game night's calendar event; the placeholder is the link to its page:Session in Board Vault: ${url}:url:`
+    const description = [session.notes?.trim(), link].filter(Boolean).join('\n\n')
+    const title = $localize`:Title of a game night's calendar event; the placeholder is the group name:Game night · ${groupName}:group:`
+    return { title, start, end: new Date(start.getTime() + EVENT_LENGTH_MS), description, url }
 }
 
 /** 2026-09-04T19:00:00.000Z → 20260904T190000Z */

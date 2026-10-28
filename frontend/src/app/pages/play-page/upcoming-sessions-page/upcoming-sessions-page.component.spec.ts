@@ -74,7 +74,7 @@ describe('UpcomingSessionsPageComponent', () => {
     it('describes a group by its people and games', async () => {
         const { component } = await setup()
 
-        expect(component.getGroupContext(7)).toBe('2 people · 3 games')
+        expect(component.getGroupContext(7)).toEqual({ people: 2, games: 3 })
     })
 
     it('goes straight to the only group when asked to plan a session', async () => {

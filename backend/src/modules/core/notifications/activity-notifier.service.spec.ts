@@ -19,6 +19,8 @@ function setup(invited: Array<[number, string]> = [], createNotifications = vi.f
             ]),
         ),
         getAccountName: vi.fn(async (accountId: number) => rows([[{ 9: 'Olga' }[accountId] ?? 'Ana']])),
+        getGroupPersonById: vi.fn().mockResolvedValue(rows([])),
+        getGameTitles: vi.fn().mockResolvedValue(rows([[40, 'Catan']])),
     }
 
     return { database, notifier: new ActivityNotifier(fakeDatabase(database)) }
@@ -120,6 +122,42 @@ describe('ActivityNotifier', () => {
             message: 'Olga removed Ana from Thursdays.',
             data: { account: 9, group: 7, member: 3 },
         })
+    })
+
+    it('tells who entered a group person game what changed, and speaks of a member changing their own as themselves', async () => {
+        const changes = ['owned', 'not_owned', 'unsure', 'preference', 'preference_removed'] as const
+        const messages = async (personAccountId: number | null) => {
+            const { database, notifier } = setup()
+
+            // id, groupId, accountId, … displayName at 5, as PERSON_COLUMNS selects them.
+            database.getGroupPersonById.mockResolvedValue(rows([[8, 7, personAccountId, 'active', 'linked', 'Leo']]))
+            for (const change of changes) {
+                await notifier.groupPersonEntryChanged({
+                    groupId: 7,
+                    actorAccountId: 3,
+                    enteredByAccountId: 2,
+                    groupPersonId: 8,
+                    gameId: 40,
+                    change,
+                })
+            }
+            return database.createNotifications.mock.calls.map(call => (call[0] as Array<{ message: string }>)[0]?.message)
+        }
+
+        expect(await messages(null)).toEqual([
+            'Ana said Leo has Catan, in Thursdays.',
+            "Ana removed Catan from Leo's games in Thursdays.",
+            'Ana marked Catan as unsure for Leo, in Thursdays.',
+            'Ana changed how much Leo likes Catan, in Thursdays.',
+            'Ana removed what Leo thinks of Catan, in Thursdays.',
+        ])
+        expect(await messages(3)).toEqual([
+            'Ana said they have Catan, in Thursdays.',
+            'Ana removed Catan from their games in Thursdays.',
+            "Ana isn't sure they have Catan, in Thursdays.",
+            'Ana changed how much they like Catan, in Thursdays.',
+            'Ana removed what they think of Catan, in Thursdays.',
+        ])
     })
 
     it('records a shelf change under the name of the person whose shelf it is', async () => {
