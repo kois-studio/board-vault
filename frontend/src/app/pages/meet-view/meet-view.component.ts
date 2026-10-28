@@ -1240,7 +1240,11 @@ export class MeetViewComponent {
             }
         }
         const person = this.groupPeople.find((entry) => entry.person.id === bringer.groupPersonId)
-        return { name: person?.person.displayName ?? $localize`:Name shown for a person whose name is not known:Someone`, isMe: false, copy }
+        return {
+            name: person?.person.displayName ?? $localize`:Name shown for a person whose name is not known:Someone`,
+            isMe: false,
+            copy,
+        }
     }
 
     /** You are coming and own the game, so you can say you'll bring it. */
