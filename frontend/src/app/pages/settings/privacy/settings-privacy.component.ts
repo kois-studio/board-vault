@@ -36,10 +36,14 @@ export class SettingsPrivacyComponent {
         try {
             this.usageAnalytics.set((await firstValueFrom(this.api.updatePrivacySettings({ usageAnalytics: next }))).usageAnalytics)
             this.toastService.success(
-                next ? 'Thanks: what you do counts towards usage statistics again.' : 'Done: nothing you do is counted from now on.',
+                next
+                    ? $localize`:Toast after turning usage statistics back on in the Privacy settings:Thanks: what you do counts towards usage statistics again.`
+                    : $localize`:Toast after turning usage statistics off in the Privacy settings:Done: nothing you do is counted from now on.`,
             )
         } catch {
-            this.toastService.error('Could not save your choice. Try again.')
+            this.toastService.error(
+                $localize`:Toast when the usage statistics choice in the Privacy settings could not be saved:Could not save your choice. Try again.`,
+            )
         } finally {
             this.saving.set(false)
         }

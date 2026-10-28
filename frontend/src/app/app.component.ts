@@ -160,6 +160,11 @@ export class AppComponent {
                 description: $localize`:Search and link preview description of the Session page:Review a private group session, attendance, games, and memories.`,
             },
             {
+                match: /^\/you$/,
+                title: $localize`:Browser tab title of your own page:Your page — Board Vault`,
+                description: $localize`:Search and link preview description of your own page:Your game nights, wins and favourite games across all your groups. Only you see it.`,
+            },
+            {
                 match: /^\/settings(?:\/|$)/,
                 title: $localize`:Browser tab title of the Settings page:Settings — Board Vault`,
                 description: $localize`:Search and link preview description of the Settings page:Manage your Board Vault account and security settings.`,

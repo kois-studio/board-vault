@@ -7,10 +7,10 @@ import { SidebarGroup, SidebarLayoutComponent } from '../../layout/sidebar-layou
 
 export const SETTINGS_SECTIONS: SidebarGroup = {
     items: [
-        { label: 'Profile', icon: 'user-circle', link: '/settings/profile' },
-        { label: 'Appearance', icon: 'palette', link: '/settings/appearance' },
-        { label: 'Account', icon: 'lock', link: '/settings/account' },
-        { label: 'Privacy', icon: 'shield-lock', link: '/settings/privacy' },
+        { label: $localize`:Section of the Settings menu:Profile`, icon: 'user-circle', link: '/settings/profile' },
+        { label: $localize`:Section of the Settings menu:Appearance`, icon: 'palette', link: '/settings/appearance' },
+        { label: $localize`:Section of the Settings menu:Account`, icon: 'lock', link: '/settings/account' },
+        { label: $localize`:Section of the Settings menu:Privacy`, icon: 'shield-lock', link: '/settings/privacy' },
     ],
 }
 
@@ -28,6 +28,7 @@ export class SettingsPageComponent {
     public readonly groups = computed<Array<SidebarGroup>>(() => {
         if (!this.loginService.isCurrentUserAdmin()) return [SETTINGS_SECTIONS]
 
+        // Administration stays in English (ADR-0024).
         return [
             SETTINGS_SECTIONS,
             {
