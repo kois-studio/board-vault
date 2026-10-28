@@ -80,6 +80,22 @@ after the first page has painted, stops `GuestOnlyGuard` waiting for it, and
 bundles the landing page with the app. Locally, with a key, that gives 94 to
 96 on all three pages and a landing LCP of 2.4 s, the same as without a key.
 
+Later the landing hovered at the performance floor on CI (76 to 85 on `main`,
+69 to 80 on pull requests), with the same paint times and bytes in every run:
+only Total Blocking Time moved, 400 to 1,200 ms. Lighthouse runs the page on a
+CPU slowed down four times, and the landing was built in one task, about
+65 ms on a fast machine, that it counted after the first paint. Now each of
+the five feature samples is built only when it comes within half a screen of
+view (`@defer (on viewport)` in `pages/landing`), with a placeholder of about
+its height, so scrolling does not shift the page. Building less at first made
+the page paint sooner than Clerk's download started, and Lighthouse then
+counted that download before the paint, so Clerk now waits for the browser's
+own `first-contentful-paint` entry instead of two animation frames. Locally
+the first task went from 64 to 46 ms and the first layout from 48 to 28 ms;
+the landing scores 91 to 92, its blocking time 150 to 174 ms instead of 169 to 234 ms.
+A check that reads the samples, or takes a full-page screenshot, scrolls past
+them first (`e2e/fixtures/landing.ts`).
+
 ## Read a report
 
 Download the `lighthouse-reports` artifact from the CI run. It has an HTML

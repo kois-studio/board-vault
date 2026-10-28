@@ -1,4 +1,5 @@
 import { expect, test } from '@playwright/test'
+import { showLandingSamples } from './fixtures/landing'
 
 test.describe('public navigation', () => {
     // Pin the signed-out, invitation-only configuration CI uses, so a full local
@@ -55,6 +56,7 @@ test.describe('public navigation', () => {
 
     test('filters the example shelf and shows only our own artwork', async ({ page }) => {
         await page.goto('/')
+        await showLandingSamples(page)
 
         const chips = page.getByRole('group', { name: 'Filter the example games by players' })
         await expect(page.getByText('8 games', { exact: true })).toBeVisible()
