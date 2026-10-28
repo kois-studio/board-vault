@@ -875,15 +875,6 @@
         <target>Sammlung</target>
       </segment>
     </unit>
-    <unit id="1687843960576683654">
-      <notes>
-        <note category="description">Name of the list of faces on a group card on Home</note>
-      </notes>
-      <segment state="translated">
-        <source>People in this group</source>
-        <target>Personen in dieser Gruppe</target>
-      </segment>
-    </unit>
     <unit id="1688683156203780908">
       <notes>
         <note category="description">Greeting on Home for a new account; the placeholder is your name</note>
@@ -3461,6 +3452,15 @@
       <segment state="translated">
         <source>Getting set up</source>
         <target>Erste Schritte</target>
+      </segment>
+    </unit>
+    <unit id="3614057461352661644">
+      <notes>
+        <note category="description">Name of the list of faces on a group card on Home</note>
+      </notes>
+      <segment state="translated">
+        <source>People in <ph id="0" equiv="group" disp="this.group().name"/></source>
+        <target>Personen in <ph id="0" equiv="group" disp="this.group().name"/></target>
       </segment>
     </unit>
     <unit id="3635224618020757014">

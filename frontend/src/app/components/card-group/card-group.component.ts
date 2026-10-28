@@ -11,9 +11,20 @@ import { IconComponent } from '../ui/icon/icon.component'
 export const INVITE_NUDGE_BELOW = 4
 const AVATARS_SHOWN = 5
 
+/** How a group's card on Home says where it stands. */
+export type GroupActivity = { tone: 'live' | 'next' | 'past' | 'none'; label: string; time: number }
+
+const ACTIVITY_CLASSES: Record<GroupActivity['tone'], string> = {
+    live: 'bg-bv-success text-bv-on-success',
+    next: 'bg-bv-primary-soft text-bv-on-primary-soft',
+    past: 'bg-bv-surface-2 text-bv-text-muted',
+    none: 'bg-bv-surface-2 text-bv-text-muted',
+}
+
 /**
- * A group on Home when it is your only one: who is in it, and one tap to what you open most.
- * Its next night is not repeated here; Home shows it above.
+ * A group on Home: who is in it, and one tap to what you open most. With several groups each gets
+ * this card, stacked, and says where it stands (a night under way, the next one, or the last one);
+ * with one, Home's next night above already says it.
  */
 @Component({
     imports: [ImageProfileComponent, IconComponent, RouterLink],
@@ -25,6 +36,18 @@ export class CardGroupComponent {
 
     readonly group = input.required<GroupWithMembersAndGames>()
     readonly invitations = input.required<undefined | Array<InvitationWithAccountsData>>()
+    /** Where the group stands, shown when Home has several groups; none hides it. */
+    readonly activity = input<GroupActivity | null>(null)
+
+    public readonly activityClass = computed(() => {
+        const activity = this.activity()
+        return activity ? ACTIVITY_CLASSES[activity.tone] : ''
+    })
+
+    /** Names the list of faces after the group, so screen readers can tell stacked cards apart. */
+    public readonly peopleLabel = computed(
+        () => $localize`:Name of the list of faces on a group card on Home:People in ${this.group().name}:group:`,
+    )
 
     /** Members plus people without an account. */
     public readonly peopleCount = computed(() => groupPeopleCount(this.group()))

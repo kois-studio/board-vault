@@ -84,13 +84,14 @@ shortlists and bringers, without a repeated planning empty-state prompt.
 Pending invitations remain prominent. Accounts without a group retain the
 first-group setup path.
 
-One group shows its full card: identity, people, the invite nudge, and What to
-play, Library and History. Several groups show as compact rows (identity,
-last or next night) so the page stays short; the header's Record and Plan
-are the only recording entries on Home. Every group-specific recording entry
-elsewhere keeps its group selected.
+Each group shows its full card: identity, people, the invite nudge, and What
+to play, Library and History. Several groups stack one card per group, each
+with a chip under its name for the night under way, the next one or the last
+one played; one group has no chip, since the next night above already says
+it. The header's Record and Plan are the only recording entries on Home.
+Every group-specific recording entry elsewhere keeps its group selected.
 
-With several groups, each row has a small pin in its corner. On a pointer
+With several groups, each card has a small pin in its corner. On a pointer
 device it appears on hover or keyboard focus; on touch it stays faintly
 visible. Pinned groups lead in the order they were pinned, then live, next
 and past nights as before, with stable name/id ties. There is no sort
