@@ -54,6 +54,15 @@
         <target>Ayudar a mejorar Board Vault</target>
       </segment>
     </unit>
+    <unit id="1023858675126468408">
+      <notes>
+        <note category="description">Link on a game proposal that opens the picture it suggests</note>
+      </notes>
+      <segment state="translated">
+        <source>View Image</source>
+        <target>Ver imagen</target>
+      </segment>
+    </unit>
     <unit id="1024803264261739724">
       <notes>
         <note category="description">Heading on Home above your last game nights</note>
@@ -70,6 +79,15 @@
       <segment state="translated">
         <source>No winners recorded yet. Mark who won on a session page and the table ranks by wins.</source>
         <target>Todavía no hay victorias registradas. Marca quién ganó en la página de una noche de juegos y la tabla se ordenará por victorias.</target>
+      </segment>
+    </unit>
+    <unit id="1039469030033012125">
+      <notes>
+        <note category="description">Button of the game proposal form while it sends</note>
+      </notes>
+      <segment state="translated">
+        <source>Submitting…</source>
+        <target>Enviando…</target>
       </segment>
     </unit>
     <unit id="1055686627716339120">
@@ -153,6 +171,15 @@
         <target>Cargando la gestión del grupo…</target>
       </segment>
     </unit>
+    <unit id="1096616252302957220">
+      <notes>
+        <note category="description">Description of the My Games card on the Collection page</note>
+      </notes>
+      <segment state="translated">
+        <source>Browse and manage your board game collection</source>
+        <target>Explora y gestiona tu colección de juegos de mesa</target>
+      </segment>
+    </unit>
     <unit id="1099970632023969760">
       <notes>
         <note category="description">Label on the page where you take over a person prepared for you in a group, after you saved</note>
@@ -169,6 +196,15 @@
       <segment state="translated">
         <source>It may have been deleted, or your membership may have changed.</source>
         <target>Puede que se haya eliminado o que tu pertenencia haya cambiado.</target>
+      </segment>
+    </unit>
+    <unit id="1118178001556987002">
+      <notes>
+        <note category="description">Button on a game page that adds it to My Games</note>
+      </notes>
+      <segment state="translated">
+        <source>I own this game</source>
+        <target>Tengo este juego</target>
       </segment>
     </unit>
     <unit id="112373499365948442">
@@ -357,6 +393,15 @@
         <target><ph id="0" equiv="actor" disp="actor"/> ha indicado qué opina de <ph id="1" equiv="game" disp="game"/></target>
       </segment>
     </unit>
+    <unit id="1260726039481606677">
+      <notes>
+        <note category="description">Label under the number of game proposals you sent</note>
+      </notes>
+      <segment state="translated">
+        <source>Total Proposals</source>
+        <target>Propuestas en total</target>
+      </segment>
+    </unit>
     <unit id="1274668146835758541">
       <notes>
         <note category="description">Notification, someone changing their own games or preferences in a group; person is a name, game is a game title</note>
@@ -481,6 +526,15 @@
         <target>Revocar</target>
       </segment>
     </unit>
+    <unit id="1351039989158141946">
+      <notes>
+        <note category="description">While a game page loads</note>
+      </notes>
+      <segment state="translated">
+        <source>Loading game data…</source>
+        <target>Cargando los datos del juego…</target>
+      </segment>
+    </unit>
     <unit id="1376605090191242753">
       <notes>
         <note category="description">Your own answer on a game night card</note>
@@ -497,6 +551,15 @@
       <segment state="translated">
         <source>We could not create the group. Check your connection and try again; your group name is still here.</source>
         <target>No hemos podido crear el grupo. Revisa tu conexión e inténtalo de nuevo; el nombre del grupo sigue aquí.</target>
+      </segment>
+    </unit>
+    <unit id="1387844711141897571">
+      <notes>
+        <note category="description">Option of the player count filter on Browse: games for this many people</note>
+      </notes>
+      <segment state="translated">
+        <source>Plays with <ph id="0" equiv="INTERPOLATION" disp="{{ count }}"/></source>
+        <target>Se juega con <ph id="0" equiv="INTERPOLATION" disp="{{ count }}"/></target>
       </segment>
     </unit>
     <unit id="1388712764439031120">
@@ -533,6 +596,16 @@
       <segment state="translated">
         <source>Password untrusted</source>
         <target>Contraseña no fiable</target>
+      </segment>
+    </unit>
+    <unit id="1407304074860724830">
+      <notes>
+        <note category="description">Badge on a Collection card counting games, more than one</note>
+        <note category="meaning">collection games badge, other</note>
+      </notes>
+      <segment state="translated">
+        <source><ph id="0" equiv="count" disp="count"/> games</source>
+        <target><ph id="0" equiv="count" disp="count"/> juegos</target>
       </segment>
     </unit>
     <unit id="1408243390839425898">
@@ -596,6 +669,15 @@
       <segment state="translated">
         <source>Avoids</source>
         <target>Lo evita</target>
+      </segment>
+    </unit>
+    <unit id="1514311279156634171">
+      <notes>
+        <note category="description">Error on the page that lists your game proposals</note>
+      </notes>
+      <segment state="translated">
+        <source>Submission data could not be loaded.</source>
+        <target>No se han podido cargar tus propuestas.</target>
       </segment>
     </unit>
     <unit id="1524457585440632012">
@@ -670,6 +752,15 @@
         <target>En el archivo</target>
       </segment>
     </unit>
+    <unit id="1565815942031653911">
+      <notes>
+        <note category="description">Toast when adding or removing a game from your wishlist failed</note>
+      </notes>
+      <segment state="translated">
+        <source>Could not update your wishlist. Try again.</source>
+        <target>No se ha podido actualizar tu lista de deseos. Inténtalo de nuevo.</target>
+      </segment>
+    </unit>
     <unit id="1582685296946620334">
       <notes>
         <note category="description">Name of the example group on the landing page, a group of friends who play on Fridays</note>
@@ -715,6 +806,15 @@
         <target>Usa tu cuenta de Board Vault para unirte al grupo que te ha invitado.</target>
       </segment>
     </unit>
+    <unit id="1611204955714241765">
+      <notes>
+        <note category="description">Stands for the name of a group you are no longer in; the placeholder is its number</note>
+      </notes>
+      <segment state="translated">
+        <source>Group <ph id="0" equiv="id" disp="groupId"/></source>
+        <target>Grupo <ph id="0" equiv="id" disp="groupId"/></target>
+      </segment>
+    </unit>
     <unit id="1616102757855967475">
       <notes>
         <note category="description">Filter button in the landing example: every game</note>
@@ -751,10 +851,37 @@
         <target>Cargando las noches de juegos</target>
       </segment>
     </unit>
+    <unit id="1633454937322260760">
+      <notes>
+        <note category="description">While the list of your game proposals loads</note>
+      </notes>
+      <segment state="translated">
+        <source>Loading your proposals…</source>
+        <target>Cargando tus propuestas…</target>
+      </segment>
+    </unit>
+    <unit id="1668741725934731983">
+      <notes>
+        <note category="description">Label of the notes field of the game proposal form</note>
+      </notes>
+      <segment state="translated">
+        <source>Additional Notes</source>
+        <target>Notas adicionales</target>
+      </segment>
+    </unit>
     <unit id="167090221720253484">
       <segment state="translated">
         <source><ph id="0" equiv="person" disp="actor"/> changed how much <ph id="1" equiv="groupPerson" disp="person"/> likes <ph id="2" equiv="game" disp="game"/>, in <ph id="3" equiv="group" disp="group"/>.</source>
         <target><ph id="0" equiv="person" disp="actor"/> ha cambiado cuánto le gusta <ph id="2" equiv="game" disp="game"/> a <ph id="1" equiv="groupPerson" disp="person"/>, en <ph id="3" equiv="group" disp="group"/>.</target>
+      </segment>
+    </unit>
+    <unit id="1678200967166821851">
+      <notes>
+        <note category="description">Option of the game proposal form, you want the game</note>
+      </notes>
+      <segment state="translated">
+        <source>I want it</source>
+        <target>Lo quiero</target>
       </segment>
     </unit>
     <unit id="16823705783062999">
@@ -764,15 +891,6 @@
       <segment state="translated">
         <source>Collection</source>
         <target>Colección</target>
-      </segment>
-    </unit>
-    <unit id="1687843960576683654">
-      <notes>
-        <note category="description">Name of the list of faces on a group card on Home</note>
-      </notes>
-      <segment state="translated">
-        <source>People in this group</source>
-        <target>Personas de este grupo</target>
       </segment>
     </unit>
     <unit id="1688683156203780908">
@@ -820,6 +938,33 @@
         <target><ph id="0" equiv="actor" disp="actor"/> ha archivado a <ph id="1" equiv="person" disp="person"/></target>
       </segment>
     </unit>
+    <unit id="1704934370146629399">
+      <notes>
+        <note category="description">Label on a game proposal: how many people can play</note>
+      </notes>
+      <segment state="translated">
+        <source>Players:</source>
+        <target>Personas:</target>
+      </segment>
+    </unit>
+    <unit id="1722160113515323109">
+      <notes>
+        <note category="description">Label of the duration field of the game proposal form</note>
+      </notes>
+      <segment state="translated">
+        <source>Average Duration (minutes)</source>
+        <target>Duración media (minutos)</target>
+      </segment>
+    </unit>
+    <unit id="1722403458135931707">
+      <notes>
+        <note category="description">Heading of the empty state of My Games</note>
+      </notes>
+      <segment state="translated">
+        <source>Start with the games you actually bring to the table</source>
+        <target>Empieza por los juegos que de verdad llevas a la mesa</target>
+      </segment>
+    </unit>
     <unit id="1723352650513758716">
       <notes>
         <note category="description">Checkbox on the page where you take over a person prepared for you in a group</note>
@@ -827,6 +972,24 @@
       <segment state="translated">
         <source>Also add the kept games to my private collection</source>
         <target>Añadir también los juegos que conservo a mi colección privada</target>
+      </segment>
+    </unit>
+    <unit id="1747770692600545175">
+      <notes>
+        <note category="description">Toast after removing a game from your wishlist</note>
+      </notes>
+      <segment state="translated">
+        <source>Removed from your wishlist</source>
+        <target>Quitado de tu lista de deseos</target>
+      </segment>
+    </unit>
+    <unit id="1764428149005377596">
+      <notes>
+        <note category="description">Error under the most players field of the game proposal form</note>
+      </notes>
+      <segment state="translated">
+        <source>Maximum players must be at least 1</source>
+        <target>El máximo de personas debe ser al menos 1</target>
       </segment>
     </unit>
     <unit id="176989928276125552">
@@ -901,6 +1064,15 @@
         <target><ph id="0" equiv="actor" disp="actor"/> ha dicho que <ph id="1" equiv="person" disp="person"/> tiene <ph id="2" equiv="game" disp="game"/></target>
       </segment>
     </unit>
+    <unit id="1834048166334291193">
+      <notes>
+        <note category="description">Button on Browse that turns off every filter, with how many are on</note>
+      </notes>
+      <segment state="translated">
+        <source>Clear filters (<ph id="0" equiv="INTERPOLATION" disp="{{ activeFilterCount() }}"/>)</source>
+        <target>Quitar filtros (<ph id="0" equiv="INTERPOLATION" disp="{{ activeFilterCount() }}"/>)</target>
+      </segment>
+    </unit>
     <unit id="1835096012816040438">
       <notes>
         <note category="description">Answer on the landing page to Can friends without an account join in?</note>
@@ -928,6 +1100,15 @@
         <target>Planear comprarlo</target>
       </segment>
     </unit>
+    <unit id="1858823786037936346">
+      <notes>
+        <note category="description">Error under the most players field of the game proposal form</note>
+      </notes>
+      <segment state="translated">
+        <source>Maximum players must be greater than or equal to minimum players</source>
+        <target>El máximo de personas debe ser igual o mayor que el mínimo</target>
+      </segment>
+    </unit>
     <unit id="186236568870281953">
       <notes>
         <note category="description">Shortcut on a group card on Home to Play, History</note>
@@ -946,6 +1127,15 @@
         <target>Mis juegos</target>
       </segment>
     </unit>
+    <unit id="1873557814712918690">
+      <notes>
+        <note category="description">Error under the duration field of the game proposal form</note>
+      </notes>
+      <segment state="translated">
+        <source>Duration must be at least 1 minute</source>
+        <target>La duración debe ser de al menos 1 minuto</target>
+      </segment>
+    </unit>
     <unit id="188054490846714924">
       <notes>
         <note category="description">Under the group&apos;s collection worth</note>
@@ -955,6 +1145,24 @@
         <target>Según el precio de venta, no lo que pagó nadie.</target>
       </segment>
     </unit>
+    <unit id="1890297221031788927">
+      <notes>
+        <note category="description">Title filter on My Games</note>
+      </notes>
+      <segment state="translated">
+        <source>Filter by title</source>
+        <target>Filtrar por título</target>
+      </segment>
+    </unit>
+    <unit id="1893150887726649844">
+      <notes>
+        <note category="description">Label of the heart on a game cover</note>
+      </notes>
+      <segment state="translated">
+        <source>Add to wishlist</source>
+        <target>Añadir a la lista de deseos</target>
+      </segment>
+    </unit>
     <unit id="1897615937904218952">
       <notes>
         <note category="description">Heading of a section on the group page</note>
@@ -962,6 +1170,15 @@
       <segment state="translated">
         <source>Recent sessions</source>
         <target>Últimas noches de juegos</target>
+      </segment>
+    </unit>
+    <unit id="1902174061027227619">
+      <notes>
+        <note category="description">Under the message that your group owns every result</note>
+      </notes>
+      <segment state="translated">
+        <source>Search for another game if you want to grow the group’s acquisition shortlist.</source>
+        <target>Busca otro juego si quieres ampliar la lista de juegos por comprar del grupo.</target>
       </segment>
     </unit>
     <unit id="1902400019249470597">
@@ -980,6 +1197,24 @@
       <segment state="translated">
         <source>Are they someone already in this group?</source>
         <target>¿Es alguien que ya está en este grupo?</target>
+      </segment>
+    </unit>
+    <unit id="1922586940816531681">
+      <notes>
+        <note category="description">Accessible name of the grid of your games on My Games</note>
+      </notes>
+      <segment state="translated">
+        <source>Your games</source>
+        <target>Tus juegos</target>
+      </segment>
+    </unit>
+    <unit id="1926737091807517456">
+      <notes>
+        <note category="description">When you sent a game proposal; the placeholder is a date</note>
+      </notes>
+      <segment state="translated">
+        <source>Submitted: <ph id="0" equiv="INTERPOLATION" disp="{{ formatDate(proposal.submittedAt) }}"/></source>
+        <target>Enviada: <ph id="0" equiv="INTERPOLATION" disp="{{ formatDate(proposal.submittedAt) }}"/></target>
       </segment>
     </unit>
     <unit id="1934485409059405046">
@@ -1081,6 +1316,15 @@
         <target>Evita palabras y caracteres repetidos.</target>
       </segment>
     </unit>
+    <unit id="201526558483161181">
+      <notes>
+        <note category="description">Sort option, alphabetical by title</note>
+      </notes>
+      <segment state="translated">
+        <source>A–Z</source>
+        <target>A–Z</target>
+      </segment>
+    </unit>
     <unit id="2017823433923732184">
       <notes>
         <note category="description">Who owns a game in the landing example group; the placeholder is a list of names</note>
@@ -1117,6 +1361,15 @@
         <target>En tu lista de deseos</target>
       </segment>
     </unit>
+    <unit id="2022901715563279890">
+      <notes>
+        <note category="description">Heading of the list of your game proposals</note>
+      </notes>
+      <segment state="translated">
+        <source>Your Game Proposals</source>
+        <target>Tus propuestas de juego</target>
+      </segment>
+    </unit>
     <unit id="2031932285140054383">
       <notes>
         <note category="description">Search and link preview description of the Join by invitation page</note>
@@ -1124,6 +1377,24 @@
       <segment state="translated">
         <source>Create your Board Vault account from a group invitation.</source>
         <target>Crea tu cuenta de Board Vault a partir de una invitación a un grupo.</target>
+      </segment>
+    </unit>
+    <unit id="2034234942475285180">
+      <notes>
+        <note category="description">Under the shortlist error on Browse</note>
+      </notes>
+      <segment state="translated">
+        <source>Try again before adding a game so the group decision stays accurate.</source>
+        <target>Inténtalo de nuevo antes de añadir un juego, para que la decisión del grupo sea correcta.</target>
+      </segment>
+    </unit>
+    <unit id="2038659859469764115">
+      <notes>
+        <note category="description">Subtitle of Browse when you look for a game a group could buy; the placeholder is the group name</note>
+      </notes>
+      <segment state="translated">
+        <source>Find a game for <ph id="0" equiv="INTERPOLATION" disp="{{ acquisitionGroupName() }}"/> to consider acquiring. Your shortlist is shared with the group.</source>
+        <target>Busca un juego que <ph id="0" equiv="INTERPOLATION" disp="{{ acquisitionGroupName() }}"/> pueda plantearse comprar. Tu selección se comparte con el grupo.</target>
       </segment>
     </unit>
     <unit id="2039576617926281033">
@@ -1159,6 +1430,25 @@
         <target>Unirme como persona nueva</target>
       </segment>
     </unit>
+    <unit id="207113992247772148">
+      <notes>
+        <note category="description">Badge on the Reviews card counting your ratings, more than one</note>
+        <note category="meaning">collection reviews badge, other</note>
+      </notes>
+      <segment state="translated">
+        <source><ph id="0" equiv="count" disp="count"/> reviews</source>
+        <target><ph id="0" equiv="count" disp="count"/> reseñas</target>
+      </segment>
+    </unit>
+    <unit id="2082589574386516102">
+      <notes>
+        <note category="description">Toast when sending a game proposal failed</note>
+      </notes>
+      <segment state="translated">
+        <source>Failed to submit game proposal. Please try again.</source>
+        <target>No se ha podido enviar la propuesta de juego. Inténtalo de nuevo.</target>
+      </segment>
+    </unit>
     <unit id="2083467759835876997">
       <notes>
         <note category="description">Shown when the search in the editor of a person&apos;s games on the group page finds nothing</note>
@@ -1186,6 +1476,15 @@
         <target>Tu contraseña quedó expuesta en una filtración de datos en internet.</target>
       </segment>
     </unit>
+    <unit id="2110366060269556985">
+      <notes>
+        <note category="description">Option of the game length filter on Browse: no filter</note>
+      </notes>
+      <segment state="translated">
+        <source>Any length</source>
+        <target>Cualquier duración</target>
+      </segment>
+    </unit>
     <unit id="2112768397949905814">
       <notes>
         <note category="description">Error under the invite field on the group&apos;s settings page</note>
@@ -1199,6 +1498,15 @@
       <segment state="translated">
         <source><ph id="0" equiv="person" disp="actor"/> planned a game night in <ph id="1" equiv="group" disp="group"/> for <ph id="2" equiv="date" disp="when"/>. Can you make it?</source>
         <target><ph id="0" equiv="person" disp="actor"/> ha planeado una noche de juegos en <ph id="1" equiv="group" disp="group"/> para el <ph id="2" equiv="date" disp="when"/>. ¿Puedes venir?</target>
+      </segment>
+    </unit>
+    <unit id="2129729292853557788">
+      <notes>
+        <note category="description">Button on a game page that shows only your latest plays</note>
+      </notes>
+      <segment state="translated">
+        <source>Show the latest only</source>
+        <target>Mostrar solo las últimas</target>
       </segment>
     </unit>
     <unit id="2134269724960321685">
@@ -1255,6 +1563,15 @@
         <target>Crea tu estantería</target>
       </segment>
     </unit>
+    <unit id="21560863844407888">
+      <notes>
+        <note category="description">Label of the heart on a game cover when the game is on your wishlist</note>
+      </notes>
+      <segment state="translated">
+        <source>Remove from wishlist</source>
+        <target>Quitar de la lista de deseos</target>
+      </segment>
+    </unit>
     <unit id="2159130950882492111">
       <notes>
         <note category="description">Button that closes the edition chooser without saving</note>
@@ -1289,6 +1606,24 @@
       <segment state="translated">
         <source> The secure sign-in service could not be reached. Refresh this page to try again. </source>
         <target>No se ha podido conectar con el servicio de inicio de sesión seguro. Recarga esta página para intentarlo de nuevo.</target>
+      </segment>
+    </unit>
+    <unit id="2197179077845811014">
+      <notes>
+        <note category="description">Toast after adding a game you had on your wishlist to My Games</note>
+      </notes>
+      <segment state="translated">
+        <source>Game automatically removed from wishlist</source>
+        <target>Juego quitado automáticamente de la lista de deseos</target>
+      </segment>
+    </unit>
+    <unit id="2207162193581844530">
+      <notes>
+        <note category="description">Title of the Reviews page</note>
+      </notes>
+      <segment state="translated">
+        <source>Game Reviews</source>
+        <target>Reseñas de juegos</target>
       </segment>
     </unit>
     <unit id="2222649520035707506">
@@ -1391,6 +1726,15 @@
         <target>Cargando el historial</target>
       </segment>
     </unit>
+    <unit id="2324637534228613113">
+      <notes>
+        <note category="description">Error on Browse when the group&apos;s shortlist of games to buy could not be loaded; the placeholder is the group name</note>
+      </notes>
+      <segment state="translated">
+        <source>We couldn’t check <ph id="0" equiv="INTERPOLATION" disp="{{ acquisitionGroupName() }}"/>’s shortlist.</source>
+        <target>No hemos podido consultar la lista de juegos por comprar de <ph id="0" equiv="INTERPOLATION" disp="{{ acquisitionGroupName() }}"/>.</target>
+      </segment>
+    </unit>
     <unit id="2325280127224934718">
       <notes>
         <note category="description">Button in the dialog that leaves a group</note>
@@ -1481,6 +1825,15 @@
         <target>Acepta para unirte a los juegos compartidos y al historial del grupo, o rechaza si no es para ti.</target>
       </segment>
     </unit>
+    <unit id="2366968860653614719">
+      <notes>
+        <note category="description">Toast when sending a game proposal while signed out</note>
+      </notes>
+      <segment state="translated">
+        <source>You must be logged in to submit a game proposal</source>
+        <target>Inicia sesión para enviar una propuesta de juego</target>
+      </segment>
+    </unit>
     <unit id="2369742814572661392">
       <notes>
         <note category="description">Shown by Clerk, the sign-in provider, while it checks that a sign-in is not automated</note>
@@ -1488,6 +1841,15 @@
       <segment state="translated">
         <source>Loading…</source>
         <target>Cargando…</target>
+      </segment>
+    </unit>
+    <unit id="2394085080346887535">
+      <notes>
+        <note category="description">Link at the bottom of a card on the Collection page</note>
+      </notes>
+      <segment state="translated">
+        <source>View all &gt;</source>
+        <target>Ver todo &gt;</target>
       </segment>
     </unit>
     <unit id="2401733069216925932">
@@ -1616,6 +1978,15 @@
         <target>Error al salir del grupo</target>
       </segment>
     </unit>
+    <unit id="2460271238059145095">
+      <notes>
+        <note category="description">Browse when no game matches the filters</note>
+      </notes>
+      <segment state="translated">
+        <source>No games match these filters</source>
+        <target>Ningún juego coincide con estos filtros</target>
+      </segment>
+    </unit>
     <unit id="2462034215411308180">
       <notes>
         <note category="description">How many people are going to a game night, on the game night card on Home</note>
@@ -1661,6 +2032,15 @@
         <target>{VAR_PLURAL, plural, one {+<ph id="0" equiv="INTERPOLATION"/> más} other {+<ph id="1" equiv="INTERPOLATION"/> más}}</target>
       </segment>
     </unit>
+    <unit id="2489085853012517012">
+      <notes>
+        <note category="description">Heading in the info popover of Recent Activity</note>
+      </notes>
+      <segment state="translated">
+        <source>What this list shows</source>
+        <target>Qué muestra esta lista</target>
+      </segment>
+    </unit>
     <unit id="2498891962961781974">
       <notes>
         <note category="description">Under the name on the page of a person of a group, for someone without an account; the placeholder is the group name</note>
@@ -1677,6 +2057,16 @@
       <segment state="translated">
         <source>View</source>
         <target>Ver</target>
+      </segment>
+    </unit>
+    <unit id="2510603567270716707">
+      <notes>
+        <note category="description">Status of a game proposal an admin rejected</note>
+        <note category="meaning">proposal status</note>
+      </notes>
+      <segment state="translated">
+        <source>Rejected</source>
+        <target>Rechazada</target>
       </segment>
     </unit>
     <unit id="2514247984958115884">
@@ -1704,6 +2094,15 @@
       <segment state="translated">
         <source><ph id="0" equiv="actor" disp="actor"/> removed <ph id="1" equiv="game" disp="game"/> from their games</source>
         <target><ph id="0" equiv="actor" disp="actor"/> ha quitado <ph id="1" equiv="game" disp="game"/> de sus juegos</target>
+      </segment>
+    </unit>
+    <unit id="2530318293105149171">
+      <notes>
+        <note category="description">Subtitle of the Reviews page</note>
+      </notes>
+      <segment state="translated">
+        <source>Your ratings, and the games from your groups you haven’t rated yet</source>
+        <target>Tus puntuaciones y los juegos de tus grupos que aún no has puntuado</target>
       </segment>
     </unit>
     <unit id="2535852132159535435">
@@ -1805,6 +2204,15 @@
         <target>Ya registrado</target>
       </segment>
     </unit>
+    <unit id="2586664428600798319">
+      <notes>
+        <note category="description">Error under the fewest players field of the game proposal form</note>
+      </notes>
+      <segment state="translated">
+        <source>Minimum players must be less than 20</source>
+        <target>El mínimo de personas debe ser menor que 20</target>
+      </segment>
+    </unit>
     <unit id="2588359477760622631">
       <notes>
         <note category="description">Toast when saving the usage statistics choice failed</note>
@@ -1823,13 +2231,22 @@
         <target>Colección — Board Vault</target>
       </segment>
     </unit>
-    <unit id="2609601448289645518">
+    <unit id="2605740710698379107">
       <notes>
-        <note category="description">Who owns a game in the group&apos;s library; the placeholder is a list of names</note>
+        <note category="description">Button on a game page that shows every play; the placeholder is how many, always more than one</note>
       </notes>
       <segment state="translated">
-        <source>Owned by <ph id="0" equiv="INTERPOLATION" disp="{{ libraryContext.ownerNames.join(&apos;, &apos;) }}"/></source>
-        <target>Lo tienen: <ph id="0" equiv="INTERPOLATION" disp="{{ libraryContext.ownerNames.join(&apos;, &apos;) }}"/></target>
+        <source>Show all <ph id="0" equiv="INTERPOLATION" disp="{{ userHistoryFilteredComputed().length }}"/> plays</source>
+        <target>Mostrar las <ph id="0" equiv="INTERPOLATION" disp="{{ userHistoryFilteredComputed().length }}"/> partidas</target>
+      </segment>
+    </unit>
+    <unit id="2609601448289645518">
+      <notes>
+        <note category="description">Who owns a game in one of your groups, on its page; the placeholder is a list of names</note>
+      </notes>
+      <segment state="translated">
+        <source>Owned by <ph id="0" equiv="INTERPOLATION" disp="{{ formatList(entry.owners) }}"/></source>
+        <target>Lo tienen: <ph id="0" equiv="INTERPOLATION" disp="{{ formatList(entry.owners) }}"/></target>
       </segment>
     </unit>
     <unit id="2610891837730270899">
@@ -1848,6 +2265,24 @@
       <segment state="translated">
         <source>Games this group can play</source>
         <target>Juegos a los que puede jugar este grupo</target>
+      </segment>
+    </unit>
+    <unit id="2622375645972349956">
+      <notes>
+        <note category="description">Heading of the games like this one on a game page</note>
+      </notes>
+      <segment state="translated">
+        <source>Similar games</source>
+        <target>Juegos parecidos</target>
+      </segment>
+    </unit>
+    <unit id="2624526467272758556">
+      <notes>
+        <note category="description">Heading of the numbers about your game proposals</note>
+      </notes>
+      <segment state="translated">
+        <source>Your Submission Stats</source>
+        <target>Estadísticas de tus propuestas</target>
       </segment>
     </unit>
     <unit id="2637402098141045352">
@@ -1886,6 +2321,15 @@
         <target>Ahora mismo no hemos podido completar esta invitación. Revisa los campos y la verificación de seguridad, y vuelve a intentarlo.</target>
       </segment>
     </unit>
+    <unit id="266972870358528882">
+      <notes>
+        <note category="description">Option of the game length filter</note>
+      </notes>
+      <segment state="translated">
+        <source>30–60 min</source>
+        <target>30–60 min</target>
+      </segment>
+    </unit>
     <unit id="2678039515633821760">
       <notes>
         <note category="description">Line under the step on Home, Add the games you own</note>
@@ -1899,6 +2343,15 @@
       <segment state="translated">
         <source><ph id="0" equiv="person" disp="actor"/> added <ph id="1" equiv="games" disp="addedList"/> to their shelf and removed <ph id="2" equiv="otherGames" disp="removedList"/>.</source>
         <target><ph id="0" equiv="person" disp="actor"/> ha añadido <ph id="1" equiv="games" disp="addedList"/> a su estantería y ha quitado <ph id="2" equiv="otherGames" disp="removedList"/>.</target>
+      </segment>
+    </unit>
+    <unit id="2695493755287708310">
+      <notes>
+        <note category="description">Error under the title field of the game proposal form</note>
+      </notes>
+      <segment state="translated">
+        <source>Title must be at least 2 characters</source>
+        <target>El título debe tener al menos 2 caracteres</target>
       </segment>
     </unit>
     <unit id="2699961251557116579">
@@ -1919,6 +2372,15 @@
         <target>Menos de <ph id="0" equiv="length" disp="length"/> caracteres</target>
       </segment>
     </unit>
+    <unit id="2717822435092080630">
+      <notes>
+        <note category="description">Item in the info popover of Recent Activity</note>
+      </notes>
+      <segment state="translated">
+        <source>Games you add to or remove from your wishlist</source>
+        <target>Juegos que añades a tu lista de deseos o quitas de ella</target>
+      </segment>
+    </unit>
     <unit id="2721916889637246959">
       <notes>
         <note category="description">Browser tab title of the Sign in page</note>
@@ -1935,6 +2397,15 @@
       <segment state="translated">
         <source>Filter games for <ph id="0" equiv="INTERPOLATION" disp="{{ person.person.displayName }}"/></source>
         <target>Filtrar los juegos de <ph id="0" equiv="INTERPOLATION" disp="{{ person.person.displayName }}"/></target>
+      </segment>
+    </unit>
+    <unit id="2739691176716561496">
+      <notes>
+        <note category="description">Line in Recent Activity; the link is the game title</note>
+      </notes>
+      <segment state="translated">
+        <source>You removed <pc id="0" equivStart="START_LINK" equivEnd="CLOSE_LINK" type="link" dispStart="&lt;a [routerLink]=&quot;[&apos;/games/&apos;, activity.gameData.id]&quot; class=&quot;font-medium hover:underline&quot; [attr.lang]=&quot;titleLanguage(activity.gameData)&quot;&gt;" dispEnd="&lt;/a&gt;"><ph id="1" equiv="INTERPOLATION" disp="{{ activity.gameData | gameTitle }}"/></pc> from your wishlist</source>
+        <target>Has quitado <pc id="0" equivStart="START_LINK" equivEnd="CLOSE_LINK" type="link" dispStart="&lt;a [routerLink]=&quot;[&apos;/games/&apos;, activity.gameData.id]&quot; class=&quot;font-medium hover:underline&quot; [attr.lang]=&quot;titleLanguage(activity.gameData)&quot;&gt;" dispEnd="&lt;/a&gt;"><ph id="1" equiv="INTERPOLATION" disp="{{ activity.gameData | gameTitle }}"/></pc> de tu lista de deseos</target>
       </segment>
     </unit>
     <unit id="2745028842390991019">
@@ -1982,6 +2453,15 @@
         <target>No se ha podido cargar el historial.</target>
       </segment>
     </unit>
+    <unit id="276581714137144093">
+      <notes>
+        <note category="description">Under the heading Waiting for your rating</note>
+      </notes>
+      <segment state="translated">
+        <source>Games someone in your groups owns that you haven’t rated yet.</source>
+        <target>Juegos que tiene alguien de tus grupos y que aún no has puntuado.</target>
+      </segment>
+    </unit>
     <unit id="2766969724475977787">
       <notes>
         <note category="description">Password advice in Clerk, the sign-in provider</note>
@@ -2025,6 +2505,15 @@
       <segment state="translated">
         <source> Create a group and see everyone’s games in one place, who owns each one, and suggestions that fit the people coming. </source>
         <target>Crea un grupo y ve en un solo sitio los juegos de cada persona, de quién es cada uno y sugerencias que encajan con quienes vienen.</target>
+      </segment>
+    </unit>
+    <unit id="2805168491800444154">
+      <notes>
+        <note category="description">Button that opens the game proposal form</note>
+      </notes>
+      <segment state="translated">
+        <source>Submit New Game</source>
+        <target>Proponer un juego</target>
       </segment>
     </unit>
     <unit id="2806917038528218276">
@@ -2099,6 +2588,33 @@
         <target>Idioma</target>
       </segment>
     </unit>
+    <unit id="2827233633791350200">
+      <notes>
+        <note category="description">Label of the game length filter on Browse</note>
+      </notes>
+      <segment state="translated">
+        <source>Length</source>
+        <target>Duración</target>
+      </segment>
+    </unit>
+    <unit id="2843459797706243256">
+      <notes>
+        <note category="description">At the bottom of Browse; the button opens the game proposal form</note>
+      </notes>
+      <segment state="translated">
+        <source>Can’t find a game? <pc id="0" equivStart="START_TAG_BUTTON" equivEnd="CLOSE_TAG_BUTTON" type="other" dispStart="&lt;button type=&quot;button&quot; class=&quot;font-semibold text-bv-primary hover:underline&quot; (click)=&quot;navigateToProposeGame()&quot;&gt;" dispEnd="&lt;/button&gt;">Propose it</pc> and an admin will add it to the catalogue.</source>
+        <target>¿No encuentras un juego? <pc id="0" equivStart="START_TAG_BUTTON" equivEnd="CLOSE_TAG_BUTTON" type="other" dispStart="&lt;button type=&quot;button&quot; class=&quot;font-semibold text-bv-primary hover:underline&quot; (click)=&quot;navigateToProposeGame()&quot;&gt;" dispEnd="&lt;/button&gt;">Propónlo</pc> y el equipo de administración lo añadirá al catálogo.</target>
+      </segment>
+    </unit>
+    <unit id="2847975938928891648">
+      <notes>
+        <note category="description">After a game&apos;s average rating: out of 5, then how many ratings it comes from</note>
+      </notes>
+      <segment state="translated">
+        <source>{VAR_PLURAL, plural, one {/ 5 · <ph id="0" equiv="INTERPOLATION"/> rating} other {/ 5 · <ph id="1" equiv="INTERPOLATION"/> ratings}}</source>
+        <target>{VAR_PLURAL, plural, one {/ 5 · <ph id="0" equiv="INTERPOLATION"/> puntuación} other {/ 5 · <ph id="1" equiv="INTERPOLATION"/> puntuaciones}}</target>
+      </segment>
+    </unit>
     <unit id="2852547726247313987">
       <notes>
         <note category="description">Under a ticked game on the page where you take over a person prepared for you in a group</note>
@@ -2110,7 +2626,7 @@
     </unit>
     <unit id="2863930478372071829">
       <notes>
-        <note category="description">Toast when your interest in a game the group might buy could not be removed</note>
+        <note category="description">Toast when taking your interest off a game on a group&apos;s shortlist failed</note>
       </notes>
       <segment state="translated">
         <source>Could not remove your interest from the group board.</source>
@@ -2124,6 +2640,15 @@
       <segment state="translated">
         <source>Open the game</source>
         <target>Abrir el juego</target>
+      </segment>
+    </unit>
+    <unit id="2878802710573213602">
+      <notes>
+        <note category="description">Toast after adding a game to a group&apos;s shortlist of games to buy; the placeholder is the group name</note>
+      </notes>
+      <segment state="translated">
+        <source>Added to <ph id="0" equiv="group" disp="this.acquisitionGroupName()"/>’s acquisition board.</source>
+        <target>Añadido a la lista de juegos por comprar de <ph id="0" equiv="group" disp="this.acquisitionGroupName()"/>.</target>
       </segment>
     </unit>
     <unit id="2890427814644571852">
@@ -2151,6 +2676,16 @@
       <segment state="translated">
         <source>Happening now</source>
         <target>En curso</target>
+      </segment>
+    </unit>
+    <unit id="293610872891234412">
+      <notes>
+        <note category="description">Label under the number of your game proposals that were rejected</note>
+        <note category="meaning">proposals rejected</note>
+      </notes>
+      <segment state="translated">
+        <source>Rejected</source>
+        <target>Rechazadas</target>
       </segment>
     </unit>
     <unit id="293984633040548807">
@@ -2207,6 +2742,16 @@
         <target>No incluidos</target>
       </segment>
     </unit>
+    <unit id="2972990440659797486">
+      <notes>
+        <note category="description">Option of the player count filter: no filter</note>
+        <note category="meaning">player count</note>
+      </notes>
+      <segment state="translated">
+        <source>Any</source>
+        <target>Cualquiera</target>
+      </segment>
+    </unit>
     <unit id="2973175612491582981">
       <notes>
         <note category="description">Shown on the page where you take over a person prepared for you in a group when the person has no preferences</note>
@@ -2243,6 +2788,24 @@
         <target>¿Has olvidado tu contraseña? Elige «¿Has olvidado tu contraseña?» en la ventana de inicio de sesión.</target>
       </segment>
     </unit>
+    <unit id="3005430230641731316">
+      <notes>
+        <note category="description">Subtitle of the My Games page</note>
+      </notes>
+      <segment state="translated">
+        <source>The games you can bring. Only you see this list; groups use it when you decide together.</source>
+        <target>Los juegos que puedes llevar. Solo tú ves esta lista; los grupos la usan cuando decidís en grupo.</target>
+      </segment>
+    </unit>
+    <unit id="3014251220941715703">
+      <notes>
+        <note category="description">Hint of the Neither option; once approved, the game is only added to the catalogue</note>
+      </notes>
+      <segment state="translated">
+        <source>Just add it to the catalogue</source>
+        <target>Solo se añade al catálogo</target>
+      </segment>
+    </unit>
     <unit id="3022911217122211328">
       <notes>
         <note category="description">Browser tab title of the Join by invitation page</note>
@@ -2250,6 +2813,15 @@
       <segment state="translated">
         <source>Join by invitation — Board Vault</source>
         <target>Únete con invitación — Board Vault</target>
+      </segment>
+    </unit>
+    <unit id="3023394972653842807">
+      <notes>
+        <note category="description">How long a proposed game lasts</note>
+      </notes>
+      <segment state="translated">
+        <source>{VAR_PLURAL, plural, one {<ph id="0" equiv="INTERPOLATION"/> minute} other {<ph id="1" equiv="INTERPOLATION"/> minutes}}</source>
+        <target>{VAR_PLURAL, plural, one {<ph id="0" equiv="INTERPOLATION"/> minuto} other {<ph id="1" equiv="INTERPOLATION"/> minutos}}</target>
       </segment>
     </unit>
     <unit id="3048609753003147221">
@@ -2279,6 +2851,25 @@
         <target>Código fuente</target>
       </segment>
     </unit>
+    <unit id="3067941418022669784">
+      <notes>
+        <note category="description">Status of a game proposal the app does not recognise</note>
+        <note category="meaning">proposal status</note>
+      </notes>
+      <segment state="translated">
+        <source>Unknown</source>
+        <target>Desconocido</target>
+      </segment>
+    </unit>
+    <unit id="3079673288395334450">
+      <notes>
+        <note category="description">Accessible name of the I own it button under a game on Browse; the placeholder is the game title</note>
+      </notes>
+      <segment state="translated">
+        <source>Add <ph id="0" equiv="title" disp="gameTitle(game)"/> to your collection</source>
+        <target>Añadir <ph id="0" equiv="title" disp="gameTitle(game)"/> a tu colección</target>
+      </segment>
+    </unit>
     <unit id="3092077784471830251">
       <notes>
         <note category="description">Recommendation reason</note>
@@ -2306,6 +2897,15 @@
         <target><ph id="0" equiv="actor" disp="actor"/> ha registrado la victoria de <ph id="1" equiv="winners" disp="formatList(winners)"/> en <ph id="2" equiv="game" disp="game"/></target>
       </segment>
     </unit>
+    <unit id="3102678077039690982">
+      <notes>
+        <note category="description">Game page when nobody in your groups owns the game</note>
+      </notes>
+      <segment state="translated">
+        <source>Nobody in your groups owns it yet.</source>
+        <target>Aún no lo tiene nadie de tus grupos.</target>
+      </segment>
+    </unit>
     <unit id="3111885274191005376">
       <notes>
         <note category="description">Confirmation after changing which edition of a game you own</note>
@@ -2324,6 +2924,16 @@
         <target>Alguien de este grupo preparó este perfil antes de que te unieras. Conserva lo que es tuyo, quita los errores y tus noches de juegos anteriores seguirán vinculadas a ti.</target>
       </segment>
     </unit>
+    <unit id="3121391582739647119">
+      <notes>
+        <note category="description">Line in Recent Activity; the link is the game title, then the number of stars out of 5, one</note>
+        <note category="meaning">rated with stars, one</note>
+      </notes>
+      <segment state="translated">
+        <source>You rated <pc id="0" equivStart="START_LINK" equivEnd="CLOSE_LINK" type="link" dispStart="&lt;a [routerLink]=&quot;[&apos;/games/&apos;, activity.gameData.id]&quot; class=&quot;font-medium hover:underline&quot; [attr.lang]=&quot;titleLanguage(activity.gameData)&quot;&gt;" dispEnd="&lt;/a&gt;"><ph id="1" equiv="INTERPOLATION" disp="{{ activity.gameData | gameTitle }}"/></pc> with <ph id="2" equiv="INTERPOLATION_1" disp="{{ formatStars(stars) }}"/> star</source>
+        <target>Has puntuado <pc id="0" equivStart="START_LINK" equivEnd="CLOSE_LINK" type="link" dispStart="&lt;a [routerLink]=&quot;[&apos;/games/&apos;, activity.gameData.id]&quot; class=&quot;font-medium hover:underline&quot; [attr.lang]=&quot;titleLanguage(activity.gameData)&quot;&gt;" dispEnd="&lt;/a&gt;"><ph id="1" equiv="INTERPOLATION" disp="{{ activity.gameData | gameTitle }}"/></pc> con <ph id="2" equiv="INTERPOLATION_1" disp="{{ formatStars(stars) }}"/> estrella</target>
+      </segment>
+    </unit>
     <unit id="3127935614657706117">
       <notes>
         <note category="description">Group history line; actor is a name</note>
@@ -2331,6 +2941,15 @@
       <segment state="translated">
         <source><ph id="0" equiv="actor" disp="actor"/> can’t make a game night</source>
         <target><ph id="0" equiv="actor" disp="actor"/> no puede ir a una noche de juegos</target>
+      </segment>
+    </unit>
+    <unit id="3139028466842840430">
+      <notes>
+        <note category="description">Label of the fewest players field of the game proposal form</note>
+      </notes>
+      <segment state="translated">
+        <source>Minimum Players</source>
+        <target>Mínimo de personas</target>
       </segment>
     </unit>
     <unit id="3146348002114324720">
@@ -2411,6 +3030,15 @@
         <target><ph id="0" equiv="person" disp="actor"/> ha dicho que <ph id="1" equiv="groupPerson" disp="person"/> tiene <ph id="2" equiv="game" disp="game"/>, en <ph id="3" equiv="group" disp="group"/>.</target>
       </segment>
     </unit>
+    <unit id="319600188148502918">
+      <notes>
+        <note category="description">Line in Recent Activity; the link is the game title</note>
+      </notes>
+      <segment state="translated">
+        <source>You added <pc id="0" equivStart="START_LINK" equivEnd="CLOSE_LINK" type="link" dispStart="&lt;a [routerLink]=&quot;[&apos;/games/&apos;, activity.gameData.id]&quot; class=&quot;font-medium hover:underline&quot; [attr.lang]=&quot;titleLanguage(activity.gameData)&quot;&gt;" dispEnd="&lt;/a&gt;"><ph id="1" equiv="INTERPOLATION" disp="{{ activity.gameData | gameTitle }}"/></pc> to your wishlist</source>
+        <target>Has añadido <pc id="0" equivStart="START_LINK" equivEnd="CLOSE_LINK" type="link" dispStart="&lt;a [routerLink]=&quot;[&apos;/games/&apos;, activity.gameData.id]&quot; class=&quot;font-medium hover:underline&quot; [attr.lang]=&quot;titleLanguage(activity.gameData)&quot;&gt;" dispEnd="&lt;/a&gt;"><ph id="1" equiv="INTERPOLATION" disp="{{ activity.gameData | gameTitle }}"/></pc> a tu lista de deseos</target>
+      </segment>
+    </unit>
     <unit id="3206338293571625434">
       <notes>
         <note category="description">Text next to the questions on the landing page</note>
@@ -2456,6 +3084,15 @@
         <target>alguien</target>
       </segment>
     </unit>
+    <unit id="3224005969462224485">
+      <notes>
+        <note category="description">Label of the stars on a game page before you rate it</note>
+      </notes>
+      <segment state="translated">
+        <source>Rate it</source>
+        <target>Puntúa</target>
+      </segment>
+    </unit>
     <unit id="3232449377650993708">
       <notes>
         <note category="description">Group history line; actor is a name</note>
@@ -2472,6 +3109,15 @@
       <segment state="translated">
         <source>Add</source>
         <target>Añadir</target>
+      </segment>
+    </unit>
+    <unit id="325179668327344974">
+      <notes>
+        <note category="description">Error on the Reviews page</note>
+      </notes>
+      <segment state="translated">
+        <source>Reviews could not be loaded.</source>
+        <target>No se han podido cargar las reseñas.</target>
       </segment>
     </unit>
     <unit id="3256590211420252677">
@@ -2544,6 +3190,34 @@
       <segment state="translated">
         <source>Connecting you to your Board Vault</source>
         <target>Te estamos conectando con tu Board Vault</target>
+      </segment>
+    </unit>
+    <unit id="3321646088739641540">
+      <notes>
+        <note category="description">Hint of the I own it option; once approved, the game is added to your shelf</note>
+        <note category="meaning">proposal goes to your shelf</note>
+      </notes>
+      <segment state="translated">
+        <source>Added to your shelf</source>
+        <target>Se añade a tu estantería</target>
+      </segment>
+    </unit>
+    <unit id="3342726066427970760">
+      <notes>
+        <note category="description">Label on a game proposal: the notes of the admin who reviewed it</note>
+      </notes>
+      <segment state="translated">
+        <source>Review Notes:</source>
+        <target>Notas de la revisión:</target>
+      </segment>
+    </unit>
+    <unit id="335271258289187682">
+      <notes>
+        <note category="description">Sort option on the Reviews page: your best rated games first</note>
+      </notes>
+      <segment state="translated">
+        <source>Highest rated</source>
+        <target>Mejor puntuados</target>
       </segment>
     </unit>
     <unit id="335857619216190644">
@@ -2636,6 +3310,15 @@
         <target>Muy bien puntuado en el grupo</target>
       </segment>
     </unit>
+    <unit id="3427011981945500679">
+      <notes>
+        <note category="description">Line in Recent Activity; the link is the game title</note>
+      </notes>
+      <segment state="translated">
+        <source>You added <pc id="0" equivStart="START_LINK" equivEnd="CLOSE_LINK" type="link" dispStart="&lt;a [routerLink]=&quot;[&apos;/games/&apos;, activity.gameData.id]&quot; class=&quot;font-medium hover:underline&quot; [attr.lang]=&quot;titleLanguage(activity.gameData)&quot;&gt;" dispEnd="&lt;/a&gt;"><ph id="1" equiv="INTERPOLATION" disp="{{ activity.gameData | gameTitle }}"/></pc> to your collection</source>
+        <target>Has añadido <pc id="0" equivStart="START_LINK" equivEnd="CLOSE_LINK" type="link" dispStart="&lt;a [routerLink]=&quot;[&apos;/games/&apos;, activity.gameData.id]&quot; class=&quot;font-medium hover:underline&quot; [attr.lang]=&quot;titleLanguage(activity.gameData)&quot;&gt;" dispEnd="&lt;/a&gt;"><ph id="1" equiv="INTERPOLATION" disp="{{ activity.gameData | gameTitle }}"/></pc> a tu colección</target>
+      </segment>
+    </unit>
     <unit id="3442074134540073346">
       <notes>
         <note category="description">Heading on the page where you take over a person prepared for you in a group; the placeholder is that person&apos;s name</note>
@@ -2652,6 +3335,15 @@
       <segment state="translated">
         <source>Open for discussion</source>
         <target>Abierto a debate</target>
+      </segment>
+    </unit>
+    <unit id="3452528779645465088">
+      <notes>
+        <note category="description">Link on a game page that opens the suggestions for a group that owns it</note>
+      </notes>
+      <segment state="translated">
+        <source>Plan with it</source>
+        <target>Planificar con él</target>
       </segment>
     </unit>
     <unit id="3454139352480131304">
@@ -2735,6 +3427,15 @@
         <target>No se han podido cargar las invitaciones por correo pendientes.</target>
       </segment>
     </unit>
+    <unit id="3517550046701184661">
+      <notes>
+        <note category="description">Button under Recent Activity that shows only the latest changes</note>
+      </notes>
+      <segment state="translated">
+        <source>Show less</source>
+        <target>Mostrar menos</target>
+      </segment>
+    </unit>
     <unit id="3540162720027434413">
       <notes>
         <note category="description">Button in the first steps on the page of a new group</note>
@@ -2780,6 +3481,15 @@
         <target>El servicio de registro seguro todavía se está cargando. Recarga esta página para continuar.</target>
       </segment>
     </unit>
+    <unit id="3589490479554274745">
+      <notes>
+        <note category="description">Label of the tags field of the game proposal form</note>
+      </notes>
+      <segment state="translated">
+        <source>Proposed Tags</source>
+        <target>Etiquetas propuestas</target>
+      </segment>
+    </unit>
     <unit id="3604302725458668058">
       <notes>
         <note category="description">Under Pending invitations on the group&apos;s settings page</note>
@@ -2796,6 +3506,15 @@
       <segment state="translated">
         <source>Getting set up</source>
         <target>Primeros pasos</target>
+      </segment>
+    </unit>
+    <unit id="3614057461352661644">
+      <notes>
+        <note category="description">Name of the list of faces on a group card on Home</note>
+      </notes>
+      <segment state="translated">
+        <source>People in <ph id="0" equiv="group" disp="this.group().name"/></source>
+        <target>Personas en <ph id="0" equiv="group" disp="this.group().name"/></target>
       </segment>
     </unit>
     <unit id="3635224618020757014">
@@ -2843,6 +3562,15 @@
         <target>La persona del grupo se ha archivado.</target>
       </segment>
     </unit>
+    <unit id="3660632916771561809">
+      <notes>
+        <note category="description">Under an error when a page could not load</note>
+      </notes>
+      <segment state="translated">
+        <source>Check your connection and try again.</source>
+        <target>Comprueba tu conexión e inténtalo de nuevo.</target>
+      </segment>
+    </unit>
     <unit id="3665532287194445682">
       <notes>
         <note category="description">Link on a group card on Home to the group&apos;s settings, shown to its owner while the group is small</note>
@@ -2888,6 +3616,15 @@
         <target>Idioma del título</target>
       </segment>
     </unit>
+    <unit id="3711889941704624217">
+      <notes>
+        <note category="description">Label on a game proposal: the picture it suggests</note>
+      </notes>
+      <segment state="translated">
+        <source>Image:</source>
+        <target>Imagen:</target>
+      </segment>
+    </unit>
     <unit id="3713544072979636035">
       <notes>
         <note category="description">Question in the dialog that leaves a group; the placeholder is the group name</note>
@@ -2895,6 +3632,15 @@
       <segment state="translated">
         <source>Leave <ph id="0" equiv="INTERPOLATION" disp="{{ groupData$()?.name }}"/>?</source>
         <target>¿Salir de <ph id="0" equiv="INTERPOLATION" disp="{{ groupData$()?.name }}"/>?</target>
+      </segment>
+    </unit>
+    <unit id="3716963987837273697">
+      <notes>
+        <note category="description">Heading of the games you have not rated yet on the Reviews page</note>
+      </notes>
+      <segment state="translated">
+        <source>Waiting for your rating</source>
+        <target>Pendientes de tu puntuación</target>
       </segment>
     </unit>
     <unit id="3723706478467868002">
@@ -2996,6 +3742,15 @@
         <target>Clasificación</target>
       </segment>
     </unit>
+    <unit id="3768264297677107657">
+      <notes>
+        <note category="description">Placeholder of the search field on Browse</note>
+      </notes>
+      <segment state="translated">
+        <source>Search by title</source>
+        <target>Buscar por título</target>
+      </segment>
+    </unit>
     <unit id="3768927257183755959">
       <notes>
         <note category="description">Button that saves the edition chosen in the edition chooser for a game already in My Games</note>
@@ -3003,6 +3758,33 @@
       <segment state="translated">
         <source>Save</source>
         <target>Guardar</target>
+      </segment>
+    </unit>
+    <unit id="3774794986981726017">
+      <notes>
+        <note category="description">Toast when your ratings could not be loaded</note>
+      </notes>
+      <segment state="translated">
+        <source>Error retrieving user’s reviews</source>
+        <target>No se han podido cargar tus reseñas</target>
+      </segment>
+    </unit>
+    <unit id="3794313695043178388">
+      <notes>
+        <note category="description">Accessible name of a chosen tag on Browse, a button that removes it from the filters; the placeholder is the tag name</note>
+      </notes>
+      <segment state="translated">
+        <source>Remove tag <ph id="0" equiv="tag" disp="tagName"/></source>
+        <target>Quitar la etiqueta <ph id="0" equiv="tag" disp="tagName"/></target>
+      </segment>
+    </unit>
+    <unit id="3800206726824128324">
+      <notes>
+        <note category="description">Button under a game on Browse while it is being added</note>
+      </notes>
+      <segment state="translated">
+        <source>Adding…</source>
+        <target>Añadiendo…</target>
       </segment>
     </unit>
     <unit id="3802474981569028143">
@@ -3174,6 +3956,33 @@
         <target>Saltar al contenido principal</target>
       </segment>
     </unit>
+    <unit id="3909618019921158488">
+      <notes>
+        <note category="description">Item in the info popover of Recent Activity</note>
+      </notes>
+      <segment state="translated">
+        <source>Games you add to or remove from My Games</source>
+        <target>Juegos que añades a Mis juegos o quitas de ahí</target>
+      </segment>
+    </unit>
+    <unit id="3927530562026845922">
+      <notes>
+        <note category="description">Heading after sending a game proposal</note>
+      </notes>
+      <segment state="translated">
+        <source>Thank You!</source>
+        <target>¡Gracias!</target>
+      </segment>
+    </unit>
+    <unit id="3928870920739021265">
+      <notes>
+        <note category="description">Error under the most players field of the game proposal form</note>
+      </notes>
+      <segment state="translated">
+        <source>Maximum players must be less than 20</source>
+        <target>El máximo de personas debe ser menor que 20</target>
+      </segment>
+    </unit>
     <unit id="3933514315493510143">
       <notes>
         <note category="description">Toast after joining a group as a new person instead of taking over one prepared for you</note>
@@ -3219,6 +4028,15 @@
         <target>Las invitaciones no están disponibles por ahora</target>
       </segment>
     </unit>
+    <unit id="3959716415262024564">
+      <notes>
+        <note category="description">Toast after taking a game off My Games</note>
+      </notes>
+      <segment state="translated">
+        <source>Game removed from collection</source>
+        <target>Juego quitado de tu colección</target>
+      </segment>
+    </unit>
     <unit id="3959937502464503632">
       <notes>
         <note category="description">How many people played a game on a played game night</note>
@@ -3255,6 +4073,15 @@
         <target>Enlace seguro copiado.</target>
       </segment>
     </unit>
+    <unit id="3980130997409188141">
+      <notes>
+        <note category="description">Item in the info popover of Recent Activity</note>
+      </notes>
+      <segment state="translated">
+        <source>Changes to your copy’s purchase details</source>
+        <target>Cambios en los datos de compra de tu ejemplar</target>
+      </segment>
+    </unit>
     <unit id="3984435286175515755">
       <notes>
         <note category="description">Password warning in Clerk, the sign-in provider</note>
@@ -3280,6 +4107,24 @@
       <segment state="translated">
         <source>Can’t come</source>
         <target>No puede ir</target>
+      </segment>
+    </unit>
+    <unit id="3999450098718379274">
+      <notes>
+        <note category="description">Hidden label of the search field on Browse</note>
+      </notes>
+      <segment state="translated">
+        <source>Search games</source>
+        <target>Buscar juegos</target>
+      </segment>
+    </unit>
+    <unit id="4008311423520391459">
+      <notes>
+        <note category="description">Toast after sending a game proposal</note>
+      </notes>
+      <segment state="translated">
+        <source>Game proposal submitted successfully!</source>
+        <target>¡Propuesta de juego enviada!</target>
       </segment>
     </unit>
     <unit id="4038311377354234638">
@@ -3325,6 +4170,15 @@
       <segment state="translated">
         <source>There should not be any personal or page related data.</source>
         <target>No debe contener datos personales ni relacionados con la página.</target>
+      </segment>
+    </unit>
+    <unit id="4054265866818778245">
+      <notes>
+        <note category="description">Button on Browse that shows the tag filters</note>
+      </notes>
+      <segment state="translated">
+        <source>Filter by tags</source>
+        <target>Filtrar por etiquetas</target>
       </segment>
     </unit>
     <unit id="4057862988487622358">
@@ -3463,6 +4317,15 @@
         <target>Caduca el <ph id="0" equiv="INTERPOLATION" disp="{{ invitation.expiresAt | customDate: false }}"/></target>
       </segment>
     </unit>
+    <unit id="4146876926005730922">
+      <notes>
+        <note category="description">Legend of the choice of where a proposed game goes for you once an admin approves it</note>
+      </notes>
+      <segment state="translated">
+        <source>When it is approved</source>
+        <target>Cuando se apruebe</target>
+      </segment>
+    </unit>
     <unit id="415153707465395556">
       <notes>
         <note category="description">Label of the group name field on the page that creates a group</note>
@@ -3479,6 +4342,15 @@
       <segment state="translated">
         <source>You have been successfully logged out.</source>
         <target>Has cerrado sesión.</target>
+      </segment>
+    </unit>
+    <unit id="4163272119298020373">
+      <notes>
+        <note category="description">Button on phones that shows the Browse filters</note>
+      </notes>
+      <segment state="translated">
+        <source>Filters</source>
+        <target>Filtros</target>
       </segment>
     </unit>
     <unit id="4164208805599118311">
@@ -3506,6 +4378,15 @@
       <segment state="translated">
         <source>a special character</source>
         <target>Al menos un carácter especial</target>
+      </segment>
+    </unit>
+    <unit id="4183622729208687152">
+      <notes>
+        <note category="description">Number of games on My Games that match the filters, out of all of them</note>
+      </notes>
+      <segment state="translated">
+        <source>{VAR_PLURAL, plural, one {<ph id="0" equiv="INTERPOLATION"/> of <ph id="1" equiv="INTERPOLATION_1"/> game} other {<ph id="2" equiv="INTERPOLATION"/> of <ph id="3" equiv="INTERPOLATION_1"/> games}}</source>
+        <target>{VAR_PLURAL, plural, one {<ph id="0" equiv="INTERPOLATION"/> de <ph id="1" equiv="INTERPOLATION_1"/> juego} other {<ph id="2" equiv="INTERPOLATION"/> de <ph id="3" equiv="INTERPOLATION_1"/> juegos}}</target>
       </segment>
     </unit>
     <unit id="4189467467511250248">
@@ -3560,6 +4441,15 @@
       <segment state="translated">
         <source>Use a name your friends will recognize. Next, you invite the people you play with.</source>
         <target>Usa un nombre que tus amistades reconozcan. Después invitarás a las personas con las que juegas.</target>
+      </segment>
+    </unit>
+    <unit id="4220765745195024064">
+      <notes>
+        <note category="description">Label on a game proposal: how long the game lasts</note>
+      </notes>
+      <segment state="translated">
+        <source>Duration:</source>
+        <target>Duración:</target>
       </segment>
     </unit>
     <unit id="4220846564711040283">
@@ -3629,6 +4519,15 @@
       <segment state="translated">
         <source>Your choices are saved</source>
         <target>Tus elecciones se han guardado</target>
+      </segment>
+    </unit>
+    <unit id="4271024645050862401">
+      <notes>
+        <note category="description">Counter under the notes field of the game proposal form: characters typed out of 500</note>
+      </notes>
+      <segment state="translated">
+        <source><ph id="0" equiv="INTERPOLATION" disp="{{ notes?.value?.length || 0 }}"/>/500 characters</source>
+        <target><ph id="0" equiv="INTERPOLATION" disp="{{ notes?.value?.length || 0 }}"/>/500 caracteres</target>
       </segment>
     </unit>
     <unit id="4272436583644511364">
@@ -3775,6 +4674,15 @@
         <target>Esta persona del grupo ya está vinculada a tu cuenta. El historial del grupo sigue siendo privado para sus miembros.</target>
       </segment>
     </unit>
+    <unit id="4404104670286938058">
+      <notes>
+        <note category="description">My Games when no game matches the filters</note>
+      </notes>
+      <segment state="translated">
+        <source>None of your games match these filters.</source>
+        <target>Ninguno de tus juegos coincide con estos filtros.</target>
+      </segment>
+    </unit>
     <unit id="4406973836784974418">
       <notes>
         <note category="description">Label of the list of editions in the edition chooser</note>
@@ -3829,6 +4737,15 @@
         <target><ph id="0" equiv="actor" disp="actor"/> ha dicho que <ph id="1" equiv="bringer" disp="bringer"/> llevará <ph id="2" equiv="game" disp="game"/> a una noche de juegos</target>
       </segment>
     </unit>
+    <unit id="4456634533010077095">
+      <notes>
+        <note category="description">Button after sending a game proposal that opens the Collection page</note>
+      </notes>
+      <segment state="translated">
+        <source>Back to Collection</source>
+        <target>Volver a Colección</target>
+      </segment>
+    </unit>
     <unit id="4457577964848061688">
       <notes>
         <note category="description">Button on the group page that adds a person without an account</note>
@@ -3881,6 +4798,24 @@
       <segment state="translated">
         <source>You can see the group context, but only the owner can manage membership.</source>
         <target>Puedes ver lo que comparte el grupo, pero solo quien lo gestiona puede administrar sus miembros.</target>
+      </segment>
+    </unit>
+    <unit id="4513847881533721905">
+      <notes>
+        <note category="description">Accessible name of the recent activity section on the Collection page</note>
+      </notes>
+      <segment state="translated">
+        <source>Recent collection activity</source>
+        <target>Actividad reciente de tu colección</target>
+      </segment>
+    </unit>
+    <unit id="4517609062676946890">
+      <notes>
+        <note category="description">Toast when adding a game to My Games from Browse failed</note>
+      </notes>
+      <segment state="translated">
+        <source>Could not add this game to your collection.</source>
+        <target>No se ha podido añadir este juego a tu colección.</target>
       </segment>
     </unit>
     <unit id="4526568127452551506">
@@ -3973,6 +4908,33 @@
         <target>Buscar un juego para añadir</target>
       </segment>
     </unit>
+    <unit id="4611134680900779619">
+      <notes>
+        <note category="description">Title of the Propose a game page</note>
+      </notes>
+      <segment state="translated">
+        <source>Propose a Game</source>
+        <target>Proponer un juego</target>
+      </segment>
+    </unit>
+    <unit id="4620525357270855473">
+      <notes>
+        <note category="description">Toast when saving the details of your copy of a game failed</note>
+      </notes>
+      <segment state="translated">
+        <source>Error updating purchase details</source>
+        <target>No se han podido actualizar los datos de compra</target>
+      </segment>
+    </unit>
+    <unit id="4625539293120114322">
+      <notes>
+        <note category="description">Error on a game page</note>
+      </notes>
+      <segment state="translated">
+        <source>Game data could not be loaded.</source>
+        <target>No se han podido cargar los datos del juego.</target>
+      </segment>
+    </unit>
     <unit id="46566196564321776">
       <notes>
         <note category="description">Label of the faces on the group page that open each person&apos;s games</note>
@@ -4016,6 +4978,25 @@
       <segment state="translated">
         <source>Estimated duration: <ph id="0" equiv="minutes" disp="values[&apos;minutes&apos;] ?? 0"/> minutes</source>
         <target>Duración estimada: <ph id="0" equiv="minutes" disp="values[&apos;minutes&apos;] ?? 0"/> minutos</target>
+      </segment>
+    </unit>
+    <unit id="4687577648345857651">
+      <notes>
+        <note category="description">Badge on the Reviews card counting your ratings, one</note>
+        <note category="meaning">collection reviews badge, one</note>
+      </notes>
+      <segment state="translated">
+        <source><ph id="0" equiv="count" disp="count"/> review</source>
+        <target><ph id="0" equiv="count" disp="count"/> reseña</target>
+      </segment>
+    </unit>
+    <unit id="4700297265679480587">
+      <notes>
+        <note category="description">Recent Activity when there is none</note>
+      </notes>
+      <segment state="translated">
+        <source>No recent activity found.</source>
+        <target>No hay actividad reciente.</target>
       </segment>
     </unit>
     <unit id="4707281579410073038">
@@ -4063,6 +5044,15 @@
         <target>Valor de la colección</target>
       </segment>
     </unit>
+    <unit id="4750304850394050335">
+      <notes>
+        <note category="description">Accessible name of the I bought it button on the Wishlist page; the placeholder is the game title</note>
+      </notes>
+      <segment state="translated">
+        <source>I bought <ph id="0" equiv="title" disp="gameTitle(game)"/>: move it to My Games</source>
+        <target>He comprado <ph id="0" equiv="title" disp="gameTitle(game)"/>: pasarlo a Mis juegos</target>
+      </segment>
+    </unit>
     <unit id="475317156489631945">
       <notes>
         <note category="description">How many can play a game, one number</note>
@@ -4089,6 +5079,15 @@
       <segment state="translated">
         <source><ph id="0" equiv="count" disp="rest"/> games</source>
         <target><ph id="0" equiv="count" disp="rest"/> juegos</target>
+      </segment>
+    </unit>
+    <unit id="4774883184461079507">
+      <notes>
+        <note category="description">Accessible name of the list of a game&apos;s length and player count on its page</note>
+      </notes>
+      <segment state="translated">
+        <source>Game facts</source>
+        <target>Datos del juego</target>
       </segment>
     </unit>
     <unit id="4775243970485777734">
@@ -4133,6 +5132,15 @@
         <target>Todavía no lleva juegos a este grupo.</target>
       </segment>
     </unit>
+    <unit id="4799433614211286966">
+      <notes>
+        <note category="description">Toast after marking a wishlist game as bought; the placeholder is the game title</note>
+      </notes>
+      <segment state="translated">
+        <source><ph id="0" equiv="title" disp="gameTitle(game)"/> moved to My Games</source>
+        <target><ph id="0" equiv="title" disp="gameTitle(game)"/> se ha movido a Mis juegos</target>
+      </segment>
+    </unit>
     <unit id="4809830440227489945">
       <notes>
         <note category="description">Question on a group invitation in the inbox before declining it</note>
@@ -4144,7 +5152,7 @@
     </unit>
     <unit id="4814285799071780083">
       <notes>
-        <note category="description">Button on a member on the group&apos;s settings page</note>
+        <note category="description">Button on a game page that takes it off My Games</note>
       </notes>
       <segment state="translated">
         <source>Remove</source>
@@ -4239,6 +5247,16 @@
       <segment state="translated">
         <source>Could not remove your interest. Try again.</source>
         <target>No se ha podido quitar tu interés. Inténtalo de nuevo.</target>
+      </segment>
+    </unit>
+    <unit id="4886307731978358870">
+      <notes>
+        <note category="description">Badge on a Collection card counting games, one</note>
+        <note category="meaning">collection games badge, one</note>
+      </notes>
+      <segment state="translated">
+        <source><ph id="0" equiv="count" disp="count"/> game</source>
+        <target><ph id="0" equiv="count" disp="count"/> juego</target>
       </segment>
     </unit>
     <unit id="4893176640275242151">
@@ -4359,6 +5377,15 @@
         <target>Este inicio de sesión necesita un paso de verificación adicional que no se puede mostrar aquí. Vuelve a intentarlo o usa otro método de inicio de sesión.</target>
       </segment>
     </unit>
+    <unit id="502859342561934882">
+      <notes>
+        <note category="description">Toast after adding a game to My Games from Browse</note>
+      </notes>
+      <segment state="translated">
+        <source>Game added to your collection.</source>
+        <target>Juego añadido a tu colección.</target>
+      </segment>
+    </unit>
     <unit id="5034132019731125982">
       <notes>
         <note category="description">Heading of the steps on the page that creates a group</note>
@@ -4375,6 +5402,33 @@
       <segment state="translated">
         <source>Open navigation</source>
         <target>Abrir navegación</target>
+      </segment>
+    </unit>
+    <unit id="5037624852514730335">
+      <notes>
+        <note category="description">Checkbox on Browse that hides the games on My Games</note>
+      </notes>
+      <segment state="translated">
+        <source>Hide games I own</source>
+        <target>Ocultar los juegos que tengo</target>
+      </segment>
+    </unit>
+    <unit id="5049662595508874652">
+      <notes>
+        <note category="description">Error under the picture address field of the game proposal form</note>
+      </notes>
+      <segment state="translated">
+        <source>Please enter a valid URL</source>
+        <target>Introduce una URL válida</target>
+      </segment>
+    </unit>
+    <unit id="5052860246555110058">
+      <notes>
+        <note category="description">Heading on a game page when you have not played it yet</note>
+      </notes>
+      <segment state="translated">
+        <source>Your plays</source>
+        <target>Tus partidas</target>
       </segment>
     </unit>
     <unit id="5054793474428722099">
@@ -4494,6 +5548,15 @@
         <target>{VAR_PLURAL, plural, one {<ph id="0" equiv="INTERPOLATION"/> persona interesada} other {<ph id="1" equiv="INTERPOLATION"/> personas interesadas}}</target>
       </segment>
     </unit>
+    <unit id="5145529370569420639">
+      <notes>
+        <note category="description">Status of a game proposal waiting for an admin</note>
+      </notes>
+      <segment state="translated">
+        <source>Pending Review</source>
+        <target>Pendiente de revisión</target>
+      </segment>
+    </unit>
     <unit id="5146386254486648933">
       <notes>
         <note category="description">Reason for a suggestion in the landing example; Ana and Mia are people in the example group</note>
@@ -4501,6 +5564,15 @@
       <segment state="translated">
         <source>Ana and Mia rated it 9</source>
         <target>Ana y Mia le dieron un 9</target>
+      </segment>
+    </unit>
+    <unit id="5146398958364876914">
+      <notes>
+        <note category="description">Label of the sort order menu</note>
+      </notes>
+      <segment state="translated">
+        <source>Sort</source>
+        <target>Ordenar</target>
       </segment>
     </unit>
     <unit id="5159913659351412884">
@@ -4521,6 +5593,15 @@
         <target>Ahora no</target>
       </segment>
     </unit>
+    <unit id="5167037823447958852">
+      <notes>
+        <note category="description">Button under a game on Browse once the game is on the group&apos;s shortlist of games to buy</note>
+      </notes>
+      <segment state="translated">
+        <source>On group shortlist ✓</source>
+        <target>En la lista de compra ✓</target>
+      </segment>
+    </unit>
     <unit id="5168805403362402794">
       <notes>
         <note category="description">Text while sign-in finishes</note>
@@ -4537,6 +5618,24 @@
       <segment state="translated">
         <source>Your password must contain</source>
         <target>Tu contraseña debe contener:</target>
+      </segment>
+    </unit>
+    <unit id="5176081896524459356">
+      <notes>
+        <note category="description">Label of the most players field of the game proposal form</note>
+      </notes>
+      <segment state="translated">
+        <source>Maximum Players</source>
+        <target>Máximo de personas</target>
+      </segment>
+    </unit>
+    <unit id="5180719574309864322">
+      <notes>
+        <note category="description">Option of the game length filter</note>
+      </notes>
+      <segment state="translated">
+        <source>Over 2 hours</source>
+        <target>Más de 2 horas</target>
       </segment>
     </unit>
     <unit id="5181319046980666139">
@@ -4582,6 +5681,15 @@
       <segment state="translated">
         <source>Avoid recent years.</source>
         <target>Evita los años recientes.</target>
+      </segment>
+    </unit>
+    <unit id="5198371000534412701">
+      <notes>
+        <note category="description">In the info popover of Recent Activity, before a list</note>
+      </notes>
+      <segment state="translated">
+        <source>Your latest changes to your collection:</source>
+        <target>Tus últimos cambios en tu colección:</target>
       </segment>
     </unit>
     <unit id="5202277594263112757">
@@ -4640,7 +5748,7 @@
     </unit>
     <unit id="5244855936488063048">
       <notes>
-        <note category="description">Link in the second step on the page of a new group, to Browse</note>
+        <note category="description">Button on the Collection and My Games pages that opens Browse</note>
       </notes>
       <segment state="translated">
         <source>Add games</source>
@@ -4654,6 +5762,15 @@
       <segment state="translated">
         <source><ph id="0" equiv="actor" disp="actor"/> said <ph id="1" equiv="person" disp="person"/> would rather not play <ph id="2" equiv="game" disp="game"/></source>
         <target><ph id="0" equiv="actor" disp="actor"/> ha dicho que <ph id="1" equiv="person" disp="person"/> prefiere no jugar a <ph id="2" equiv="game" disp="game"/></target>
+      </segment>
+    </unit>
+    <unit id="5283131864574169081">
+      <notes>
+        <note category="description">Button at the end of Browse that shows more games</note>
+      </notes>
+      <segment state="translated">
+        <source>Load More</source>
+        <target>Cargar más</target>
       </segment>
     </unit>
     <unit id="5286388501365817146">
@@ -4701,6 +5818,15 @@
         <target>Jugados antes, pero no en las tres últimas noches de juegos.</target>
       </segment>
     </unit>
+    <unit id="5331322009870039659">
+      <notes>
+        <note category="description">Toast when My Games could not be loaded</note>
+      </notes>
+      <segment state="translated">
+        <source>Error retrieving user games</source>
+        <target>No se han podido cargar tus juegos</target>
+      </segment>
+    </unit>
     <unit id="5339438463883503182">
       <notes>
         <note category="description">Shown on the group page before anything is recorded</note>
@@ -4717,6 +5843,15 @@
       <segment state="translated">
         <source>Hide archived</source>
         <target>Ocultar archivadas</target>
+      </segment>
+    </unit>
+    <unit id="5348315994900652052">
+      <notes>
+        <note category="description">Heading of the empty state of the Wishlist page</note>
+      </notes>
+      <segment state="translated">
+        <source>Nothing on your wishlist yet</source>
+        <target>Aún no hay nada en tu lista de deseos</target>
       </segment>
     </unit>
     <unit id="5353758016329326598">
@@ -4761,6 +5896,24 @@
         <target>La noche de juegos de <ph id="0" equiv="group" disp="group"/> del <ph id="1" equiv="date" disp="when"/> ha terminado. Puntúa a qué jugasteis.</target>
       </segment>
     </unit>
+    <unit id="5378565402991860666">
+      <notes>
+        <note category="description">Accessible name of the count and filters above your games on My Games</note>
+      </notes>
+      <segment state="translated">
+        <source>Filter your games</source>
+        <target>Filtrar tus juegos</target>
+      </segment>
+    </unit>
+    <unit id="5387934826700434536">
+      <notes>
+        <note category="description">Placeholder of the notes about your copy of a game; Ana is a sample name</note>
+      </notes>
+      <segment state="translated">
+        <source>For example: gift from Ana, missing one meeple</source>
+        <target>Por ejemplo: regalo de Ana, falta un meeple</target>
+      </segment>
+    </unit>
     <unit id="5418220498903662149">
       <notes>
         <note category="description">Password warning in Clerk, the sign-in provider</note>
@@ -4786,6 +5939,15 @@
       <segment state="translated">
         <source>Copy secure link</source>
         <target>Copiar enlace seguro</target>
+      </segment>
+    </unit>
+    <unit id="5447878252564528029">
+      <notes>
+        <note category="description">Heading of the folded section about your copy of a game; the second part lists what is inside</note>
+      </notes>
+      <segment state="translated">
+        <source>Your copy <pc id="0" equivStart="START_TAG_SPAN" equivEnd="CLOSE_TAG_SPAN" type="other" dispStart="&lt;span class=&quot;font-normal text-secondary&quot;&gt;" dispEnd="&lt;/span&gt;">· purchase date, price, notes</pc></source>
+        <target>Tu ejemplar <pc id="0" equivStart="START_TAG_SPAN" equivEnd="CLOSE_TAG_SPAN" type="other" dispStart="&lt;span class=&quot;font-normal text-secondary&quot;&gt;" dispEnd="&lt;/span&gt;">· fecha de compra, precio, notas</pc></target>
       </segment>
     </unit>
     <unit id="5462476764405547286">
@@ -4824,6 +5986,15 @@
         <target>¿Quitar del grupo?</target>
       </segment>
     </unit>
+    <unit id="5488887337214961987">
+      <notes>
+        <note category="description">Ribbon on a card for a section that is not available yet</note>
+      </notes>
+      <segment state="translated">
+        <source>Coming Soon</source>
+        <target>Próximamente</target>
+      </segment>
+    </unit>
     <unit id="5492578273973439931">
       <notes>
         <note category="description">Toast when the account could not be loaded right after signing in</note>
@@ -4860,6 +6031,15 @@
         <target>ha marcado <ph id="0" equiv="games" disp="added"/> como jugado</target>
       </segment>
     </unit>
+    <unit id="5528365537620995758">
+      <notes>
+        <note category="description">Browse when the search finds nothing; the placeholder is what you typed</note>
+      </notes>
+      <segment state="translated">
+        <source>No games found matching “<ph id="0" equiv="INTERPOLATION" disp="{{ searchTerm$().trim() }}"/>”</source>
+        <target>No hay juegos que coincidan con «<ph id="0" equiv="INTERPOLATION" disp="{{ searchTerm$().trim() }}"/>»</target>
+      </segment>
+    </unit>
     <unit id="5541061324274473691">
       <notes>
         <note category="description">Confirmation on the group&apos;s settings page before revoking an email invitation</note>
@@ -4867,6 +6047,15 @@
       <segment state="translated">
         <source>Revoke this link?</source>
         <target>¿Revocar este enlace?</target>
+      </segment>
+    </unit>
+    <unit id="5565633532519697959">
+      <notes>
+        <note category="description">Heading on a game page of the groups where someone owns it</note>
+      </notes>
+      <segment state="translated">
+        <source>In your groups</source>
+        <target>En tus grupos</target>
       </segment>
     </unit>
     <unit id="5573521891741907372">
@@ -4947,6 +6136,15 @@
         <target><ph id="0" equiv="person" disp="member"/> ha salido de <ph id="1" equiv="group" disp="group"/>.</target>
       </segment>
     </unit>
+    <unit id="5612567166373104432">
+      <notes>
+        <note category="description">Button under a game on Browse that adds it to the group&apos;s shortlist of games to buy; the placeholder is the group name</note>
+      </notes>
+      <segment state="translated">
+        <source>Add for <ph id="0" equiv="INTERPOLATION" disp="{{ acquisitionGroupName() }}"/></source>
+        <target>Añadir para <ph id="0" equiv="INTERPOLATION" disp="{{ acquisitionGroupName() }}"/></target>
+      </segment>
+    </unit>
     <unit id="5615445630498809391">
       <notes>
         <note category="description">Error under a group name field with a name that is too short</note>
@@ -4972,6 +6170,15 @@
       <segment state="translated">
         <source>This link has expired. Please start again or request a new link.</source>
         <target>Este enlace ha caducado. Vuelve a empezar o pide un enlace nuevo.</target>
+      </segment>
+    </unit>
+    <unit id="5642836248241530789">
+      <notes>
+        <note category="description">Toast when sending a game proposal without a title</note>
+      </notes>
+      <segment state="translated">
+        <source>Title is required</source>
+        <target>El título es obligatorio</target>
       </segment>
     </unit>
     <unit id="5651951128882735477">
@@ -5008,6 +6215,15 @@
       <segment state="translated">
         <source>Error deleting notification</source>
         <target>No se ha podido eliminar la notificación</target>
+      </segment>
+    </unit>
+    <unit id="5678394541024840151">
+      <notes>
+        <note category="description">Option of the game proposal form, you neither own nor want the game</note>
+      </notes>
+      <segment state="translated">
+        <source>Neither</source>
+        <target>Ninguna de las dos</target>
       </segment>
     </unit>
     <unit id="5679842461476058145">
@@ -5091,6 +6307,15 @@
         <target>introducido por un miembro</target>
       </segment>
     </unit>
+    <unit id="5740619620731856219">
+      <notes>
+        <note category="description">Under the message that the search found nothing</note>
+      </notes>
+      <segment state="translated">
+        <source>Please review the spelling</source>
+        <target>Revisa cómo lo has escrito</target>
+      </segment>
+    </unit>
     <unit id="5744148860872137225">
       <notes>
         <note category="description">Button on the group page for a member who is not its owner</note>
@@ -5108,6 +6333,15 @@
       <segment state="translated">
         <source>Account menu, <ph id="0" equiv="count" disp="count"/> game proposals waiting</source>
         <target>Menú de la cuenta, <ph id="0" equiv="count" disp="count"/> propuestas de juego pendientes</target>
+      </segment>
+    </unit>
+    <unit id="5749746867984271920">
+      <notes>
+        <note category="description">Button under a game on Browse while your interest is being removed</note>
+      </notes>
+      <segment state="translated">
+        <source>Removing…</source>
+        <target>Quitando…</target>
       </segment>
     </unit>
     <unit id="5766449302106608624">
@@ -5128,6 +6362,15 @@
         <target>Ver la noche de juegos</target>
       </segment>
     </unit>
+    <unit id="5775346636203685655">
+      <notes>
+        <note category="description">Button on a toast that reverts what you just did</note>
+      </notes>
+      <segment state="translated">
+        <source>Undo</source>
+        <target>Deshacer</target>
+      </segment>
+    </unit>
     <unit id="5784854363980125837">
       <notes>
         <note category="description">Under an unticked game on the page where you take over a person prepared for you in a group</note>
@@ -5144,6 +6387,15 @@
       <segment state="translated">
         <source>Favorite</source>
         <target>Favorito</target>
+      </segment>
+    </unit>
+    <unit id="5800412446479750891">
+      <notes>
+        <note category="description">Label of the notes about your copy of a game</note>
+      </notes>
+      <segment state="translated">
+        <source>Notes <pc id="0" equivStart="START_TAG_SPAN" equivEnd="CLOSE_TAG_SPAN" type="other" dispStart="&lt;span class=&quot;text-xs text-secondary&quot;&gt;" dispEnd="&lt;/span&gt;">(optional)</pc></source>
+        <target>Notas <pc id="0" equivStart="START_TAG_SPAN" equivEnd="CLOSE_TAG_SPAN" type="other" dispStart="&lt;span class=&quot;text-xs text-secondary&quot;&gt;" dispEnd="&lt;/span&gt;">(opcional)</pc></target>
       </segment>
     </unit>
     <unit id="5806689821062151539">
@@ -5299,6 +6551,15 @@
         <target>Error al retirar la invitación</target>
       </segment>
     </unit>
+    <unit id="5920370815324638756">
+      <notes>
+        <note category="description">Button under a game on the Wishlist page: you bought it, so it moves to My Games</note>
+      </notes>
+      <segment state="translated">
+        <source>I bought it</source>
+        <target>Lo he comprado</target>
+      </segment>
+    </unit>
     <unit id="5932472253314714718">
       <notes>
         <note category="description">Toast when your groups could not load</note>
@@ -5325,6 +6586,16 @@
       <segment state="translated">
         <source>Games</source>
         <target>Juegos</target>
+      </segment>
+    </unit>
+    <unit id="5945840616487670743">
+      <notes>
+        <note category="description">Status of a game proposal an admin approved</note>
+        <note category="meaning">proposal status</note>
+      </notes>
+      <segment state="translated">
+        <source>Approved</source>
+        <target>Aprobada</target>
       </segment>
     </unit>
     <unit id="5956441751465285863">
@@ -5408,6 +6679,15 @@
         <target>ha cambiado quién jugó a <ph id="0" equiv="games" disp="changed"/></target>
       </segment>
     </unit>
+    <unit id="6001725418904188373">
+      <notes>
+        <note category="description">Heading of the empty list of your game proposals</note>
+      </notes>
+      <segment state="translated">
+        <source>No proposals yet</source>
+        <target>Aún no hay propuestas</target>
+      </segment>
+    </unit>
     <unit id="6003918591551761898">
       <notes>
         <note category="description">Text on the access page while sign-up is by invitation only</note>
@@ -5424,6 +6704,15 @@
       <segment state="translated">
         <source>Language of this title</source>
         <target>Idioma de este título</target>
+      </segment>
+    </unit>
+    <unit id="6014549998701676062">
+      <notes>
+        <note category="description">Button in the empty state of My Games that opens Home</note>
+      </notes>
+      <segment state="translated">
+        <source>Go to groups</source>
+        <target>Ir a los grupos</target>
       </segment>
     </unit>
     <unit id="6023472757222269524">
@@ -5495,6 +6784,15 @@
         <target>Te invita <ph id="0" equiv="INTERPOLATION" disp="{{ invitation.fromAccount.displayName || invitation.fromAccount.username }}"/></target>
       </segment>
     </unit>
+    <unit id="6065958917146955223">
+      <notes>
+        <note category="description">Under the message that no game matches the filters</note>
+      </notes>
+      <segment state="translated">
+        <source>Try fewer filters, or another number of players.</source>
+        <target>Prueba con menos filtros o con otro número de personas.</target>
+      </segment>
+    </unit>
     <unit id="6070190345865948824">
       <notes>
         <note category="description">How often you played a game, in the landing example</note>
@@ -5502,6 +6800,24 @@
       <segment state="translated">
         <source>{VAR_PLURAL, plural, one {Played once} other {Played <ph id="0" equiv="INTERPOLATION"/> times}}</source>
         <target>{VAR_PLURAL, plural, one {Jugado una vez} other {Jugado <ph id="0" equiv="INTERPOLATION"/> veces}}</target>
+      </segment>
+    </unit>
+    <unit id="6085612899563263427">
+      <notes>
+        <note category="description">Subtitle of the Wishlist page</note>
+      </notes>
+      <segment state="translated">
+        <source>Games you’d like to own. When you get one, mark it as bought and it moves to My Games.</source>
+        <target>Juegos que te gustaría tener. Cuando consigas uno, márcalo como comprado y pasará a Mis juegos.</target>
+      </segment>
+    </unit>
+    <unit id="6089732731840432109">
+      <notes>
+        <note category="description">Placeholder of the tags field of the game proposal form: example tags</note>
+      </notes>
+      <segment state="translated">
+        <source>strategy, family, card-game (comma separated)</source>
+        <target>estrategia, familiar, cartas (separadas por comas)</target>
       </segment>
     </unit>
     <unit id="6099346861896174463">
@@ -5520,6 +6836,15 @@
       <segment state="translated">
         <source>You have joined the group!</source>
         <target>¡Te has unido al grupo!</target>
+      </segment>
+    </unit>
+    <unit id="6106536749017609878">
+      <notes>
+        <note category="description">Placeholder of the notes field of the game proposal form</note>
+      </notes>
+      <segment state="translated">
+        <source>Tell us more about this game, why you think it should be added to our collection…</source>
+        <target>Cuéntanos más sobre este juego y por qué crees que debería añadirse a nuestra colección…</target>
       </segment>
     </unit>
     <unit id="6111173421803673213">
@@ -5549,6 +6874,24 @@
         <target>última: <ph id="0" equiv="INTERPOLATION" disp="{{ item.lastPlayedAt | customDate }}"/></target>
       </segment>
     </unit>
+    <unit id="6115909076681085665">
+      <notes>
+        <note category="description">Toast when a game page could not load</note>
+      </notes>
+      <segment state="translated">
+        <source>Error loading game data</source>
+        <target>Error al cargar los datos del juego</target>
+      </segment>
+    </unit>
+    <unit id="6118702319247549610">
+      <notes>
+        <note category="description">Subtitle of the Browse page</note>
+      </notes>
+      <segment state="translated">
+        <source>Every game in Board Vault. Add the ones you own, or save the ones you want.</source>
+        <target>Todos los juegos de Board Vault. Añade los que tienes o guarda los que quieres.</target>
+      </segment>
+    </unit>
     <unit id="6123590976681789837">
       <notes>
         <note category="description">Password warning in Clerk, the sign-in provider</note>
@@ -5556,6 +6899,15 @@
       <segment state="translated">
         <source>Straight rows of keys on your keyboard are easy to guess.</source>
         <target>Las filas seguidas de teclas del teclado son fáciles de adivinar.</target>
+      </segment>
+    </unit>
+    <unit id="6132616578626491786">
+      <notes>
+        <note category="description">Accessible name of the heart on a game cover; the placeholder is the game title</note>
+      </notes>
+      <segment state="translated">
+        <source>Add <ph id="0" equiv="title" disp="gameTitle(this.game())"/> to your wishlist</source>
+        <target>Añadir <ph id="0" equiv="title" disp="gameTitle(this.game())"/> a tu lista de deseos</target>
       </segment>
     </unit>
     <unit id="6133379702600868150">
@@ -5583,6 +6935,15 @@
       <segment state="translated">
         <source>Could not add the game. Try again.</source>
         <target>No se ha podido añadir el juego. Inténtalo de nuevo.</target>
+      </segment>
+    </unit>
+    <unit id="6165219619684566053">
+      <notes>
+        <note category="description">Sort option, shortest games first</note>
+      </notes>
+      <segment state="translated">
+        <source>Shortest first</source>
+        <target>Los más cortos primero</target>
       </segment>
     </unit>
     <unit id="6174219018857528884">
@@ -5648,6 +7009,24 @@
         <target><ph id="0" equiv="actor" disp="actor"/> ha dicho que aún nadie lleva <ph id="1" equiv="game" disp="game"/> a una noche de juegos</target>
       </segment>
     </unit>
+    <unit id="6263215221938267161">
+      <notes>
+        <note category="description">Hint under the tags field of the game proposal form</note>
+      </notes>
+      <segment state="translated">
+        <source>Suggest tags that describe this game (comma separated)</source>
+        <target>Sugiere etiquetas que describan este juego (separadas por comas)</target>
+      </segment>
+    </unit>
+    <unit id="626627381906676559">
+      <notes>
+        <note category="description">Error on My Games when your games could not be loaded</note>
+      </notes>
+      <segment state="translated">
+        <source>Your collection could not be loaded.</source>
+        <target>No se ha podido cargar tu colección.</target>
+      </segment>
+    </unit>
     <unit id="6266867565509022026">
       <notes>
         <note category="description">Button on the page shown for an address that does not exist</note>
@@ -5693,6 +7072,15 @@
         <target>Pide a alguien que ya use Board Vault o que organice un grupo que te invite. Cuando te inviten, usa el enlace de registro seguro de Clerk que te den.</target>
       </segment>
     </unit>
+    <unit id="6295691601911869403">
+      <notes>
+        <note category="description">Label of the purchase date of your copy of a game</note>
+      </notes>
+      <segment state="translated">
+        <source>Bought on <pc id="0" equivStart="START_TAG_SPAN" equivEnd="CLOSE_TAG_SPAN" type="other" dispStart="&lt;span class=&quot;text-xs text-secondary&quot;&gt;" dispEnd="&lt;/span&gt;">(optional)</pc></source>
+        <target>Fecha de compra <pc id="0" equivStart="START_TAG_SPAN" equivEnd="CLOSE_TAG_SPAN" type="other" dispStart="&lt;span class=&quot;text-xs text-secondary&quot;&gt;" dispEnd="&lt;/span&gt;">(opcional)</pc></target>
+      </segment>
+    </unit>
     <unit id="6297950127540572260">
       <notes>
         <note category="description">Badge on a person of the group page who has an account</note>
@@ -5724,6 +7112,15 @@
       <segment state="translated">
         <source>New game proposal: &quot;<ph id="0" equiv="title" disp="data[&apos;gameTitle&apos;]"/>&quot;</source>
         <target>Nueva propuesta de juego: «<ph id="0" equiv="title" disp="data[&apos;gameTitle&apos;]"/>»</target>
+      </segment>
+    </unit>
+    <unit id="6304263341645712272">
+      <notes>
+        <note category="description">Toast when your game proposals could not be loaded</note>
+      </notes>
+      <segment state="translated">
+        <source>Error retrieving user’s proposals</source>
+        <target>No se han podido cargar tus propuestas</target>
       </segment>
     </unit>
     <unit id="6307023434356231637">
@@ -5771,6 +7168,15 @@
         <target>Evita sustituciones de letras previsibles, como «@» por «a».</target>
       </segment>
     </unit>
+    <unit id="6324699833795224945">
+      <notes>
+        <note category="description">Toast when your wishlist could not be loaded</note>
+      </notes>
+      <segment state="translated">
+        <source>Error retrieving user’s wishlist</source>
+        <target>No se ha podido cargar tu lista de deseos</target>
+      </segment>
+    </unit>
     <unit id="6344107819696829929">
       <notes>
         <note category="description">Name of the list of games a person of the group owns, on the group page</note>
@@ -5780,6 +7186,15 @@
         <target>Juegos que tiene <ph id="0" equiv="name" disp="name"/></target>
       </segment>
     </unit>
+    <unit id="6345605761444889578">
+      <notes>
+        <note category="description">Toast after rating a game</note>
+      </notes>
+      <segment state="translated">
+        <source>Review saved</source>
+        <target>Puntuación guardada</target>
+      </segment>
+    </unit>
     <unit id="6350938926641134340">
       <notes>
         <note category="description">Label on the group&apos;s settings page</note>
@@ -5787,6 +7202,15 @@
       <segment state="translated">
         <source>The people behind the nights</source>
         <target>Las personas detrás de las noches</target>
+      </segment>
+    </unit>
+    <unit id="6355257396659275764">
+      <notes>
+        <note category="description">Option of the game proposal form, you own the game</note>
+      </notes>
+      <segment state="translated">
+        <source>I own it</source>
+        <target>Lo tengo</target>
       </segment>
     </unit>
     <unit id="6363341208124688834">
@@ -5898,6 +7322,15 @@
         <target>Crear tu primer grupo</target>
       </segment>
     </unit>
+    <unit id="646012397537365218">
+      <notes>
+        <note category="description">Legend of the tag filters on Browse; the part in brackets explains how several tags combine</note>
+      </notes>
+      <segment state="translated">
+        <source>Tags <pc id="0" equivStart="START_TAG_SPAN" equivEnd="CLOSE_TAG_SPAN" type="other" dispStart="&lt;span class=&quot;font-normal text-bv-text-muted&quot;&gt;" dispEnd="&lt;/span&gt;">(games with all of the chosen tags)</pc></source>
+        <target>Etiquetas <pc id="0" equivStart="START_TAG_SPAN" equivEnd="CLOSE_TAG_SPAN" type="other" dispStart="&lt;span class=&quot;font-normal text-bv-text-muted&quot;&gt;" dispEnd="&lt;/span&gt;">(juegos con todas las etiquetas elegidas)</pc></target>
+      </segment>
+    </unit>
     <unit id="6477243893666331441">
       <notes>
         <note category="description">Toast when a person of a group could not be archived or restored</note>
@@ -5925,6 +7358,15 @@
         <target>Es una contraseña muy usada.</target>
       </segment>
     </unit>
+    <unit id="6512150679930954774">
+      <notes>
+        <note category="description">Toast when adding a game to a group&apos;s shortlist of games to buy failed</note>
+      </notes>
+      <segment state="translated">
+        <source>Could not add this game to the group board.</source>
+        <target>No se ha podido añadir este juego a la lista de compra del grupo.</target>
+      </segment>
+    </unit>
     <unit id="6530211822561674111">
       <notes>
         <note category="description">Button on a game the group might buy</note>
@@ -5943,10 +7385,37 @@
         <target>{VAR_PLURAL, plural, one {<ph id="0" equiv="INTERPOLATION"/> lo tiene} other {<ph id="1" equiv="INTERPOLATION"/> lo tienen}}</target>
       </segment>
     </unit>
+    <unit id="6534056417716630629">
+      <notes>
+        <note category="description">Heading of the average rating of a game among everyone on Board Vault, on its page</note>
+      </notes>
+      <segment state="translated">
+        <source>Everyone</source>
+        <target>Todo el mundo</target>
+      </segment>
+    </unit>
+    <unit id="6543772825845003650">
+      <notes>
+        <note category="description">Heading on a game page of the game nights where you played it</note>
+      </notes>
+      <segment state="translated">
+        <source>{VAR_PLURAL, plural, one {Played <ph id="0" equiv="INTERPOLATION"/> time} other {Played <ph id="1" equiv="INTERPOLATION"/> times}}</source>
+        <target>{VAR_PLURAL, plural, one {Jugado <ph id="0" equiv="INTERPOLATION"/> vez} other {Jugado <ph id="1" equiv="INTERPOLATION"/> veces}}</target>
+      </segment>
+    </unit>
     <unit id="6558378588786598467">
       <segment state="translated">
         <source><ph id="0" equiv="person" disp="actor"/> removed <ph id="1" equiv="game" disp="game"/> from <ph id="2" equiv="groupPerson" disp="person"/>&apos;s games in <ph id="3" equiv="group" disp="group"/>.</source>
         <target><ph id="0" equiv="person" disp="actor"/> ha quitado <ph id="1" equiv="game" disp="game"/> de los juegos de <ph id="2" equiv="groupPerson" disp="person"/> en <ph id="3" equiv="group" disp="group"/>.</target>
+      </segment>
+    </unit>
+    <unit id="6559246822757089203">
+      <notes>
+        <note category="description">Button that turns off every filter</note>
+      </notes>
+      <segment state="translated">
+        <source>Clear filters</source>
+        <target>Quitar filtros</target>
       </segment>
     </unit>
     <unit id="6582558331846075943">
@@ -6012,6 +7481,15 @@
         <target>Elige una fecha y deja que el grupo convierta este espacio en un recuerdo.</target>
       </segment>
     </unit>
+    <unit id="6649871890818757941">
+      <notes>
+        <note category="description">Title of the Browse card on the Collection page</note>
+      </notes>
+      <segment state="translated">
+        <source>Browse and discover</source>
+        <target>Explora y descubre</target>
+      </segment>
+    </unit>
     <unit id="6650633628037596693">
       <notes>
         <note category="description">Button from Clerk, the sign-in provider, after its check that a sign-in is not automated failed</note>
@@ -6057,6 +7535,15 @@
         <target>No se ha podido cargar este grupo.</target>
       </segment>
     </unit>
+    <unit id="6674699255313094381">
+      <notes>
+        <note category="description">Heading of the average rating of a game in your groups, on its page</note>
+      </notes>
+      <segment state="translated">
+        <source>Your groups</source>
+        <target>Tus grupos</target>
+      </segment>
+    </unit>
     <unit id="6678299308952029793">
       <notes>
         <note category="description">Group history line; actor is a name, invited and uninvited are lists of names</note>
@@ -6093,6 +7580,15 @@
         <target>Es una contraseña de uso común.</target>
       </segment>
     </unit>
+    <unit id="668561693145822792">
+      <notes>
+        <note category="description">Error on Browse when the games could not be loaded</note>
+      </notes>
+      <segment state="translated">
+        <source>We couldn’t load games right now.</source>
+        <target>No hemos podido cargar los juegos ahora mismo.</target>
+      </segment>
+    </unit>
     <unit id="6692170698163862308">
       <notes>
         <note category="description">Browser tab title of the Groups page</note>
@@ -6100,6 +7596,15 @@
       <segment state="translated">
         <source>Groups — Board Vault</source>
         <target>Grupos — Board Vault</target>
+      </segment>
+    </unit>
+    <unit id="6699978480324226846">
+      <notes>
+        <note category="description">Title of the page that lists your game proposals</note>
+      </notes>
+      <segment state="translated">
+        <source>My Submissions</source>
+        <target>Mis propuestas</target>
       </segment>
     </unit>
     <unit id="670007955983746939">
@@ -6292,6 +7797,24 @@
         <target>{VAR_PLURAL, plural, one {<ph id="0" equiv="INTERPOLATION"/><pc id="1" equivStart="START_TAG_SPAN" equivEnd="CLOSE_TAG_SPAN" type="other"> enviada</pc>} other {<ph id="2" equiv="INTERPOLATION"/><pc id="3" equivStart="START_TAG_SPAN" equivEnd="CLOSE_TAG_SPAN" type="other"> enviadas</pc>}}</target>
       </segment>
     </unit>
+    <unit id="6842470218174703150">
+      <notes>
+        <note category="description">Under the error on My Games</note>
+      </notes>
+      <segment state="translated">
+        <source>Try again without losing your saved games.</source>
+        <target>Inténtalo de nuevo sin perder los juegos que ya tienes guardados.</target>
+      </segment>
+    </unit>
+    <unit id="684353256637287842">
+      <notes>
+        <note category="description">Toast after taking your interest off a game on a group&apos;s shortlist of games to buy; the placeholder is the group name</note>
+      </notes>
+      <segment state="translated">
+        <source>Removed your interest from <ph id="0" equiv="group" disp="this.acquisitionGroupName()"/>’s acquisition board.</source>
+        <target>Has retirado tu interés de la lista de juegos por comprar de <ph id="0" equiv="group" disp="this.acquisitionGroupName()"/>.</target>
+      </segment>
+    </unit>
     <unit id="685710079621695639">
       <notes>
         <note category="description">Toast when the inbox could not load notifications</note>
@@ -6299,6 +7822,51 @@
       <segment state="translated">
         <source>Error retrieving user’s notifications</source>
         <target>No se han podido cargar tus notificaciones</target>
+      </segment>
+    </unit>
+    <unit id="6860216252576439121">
+      <notes>
+        <note category="description">Item in the info popover of Recent Activity</note>
+      </notes>
+      <segment state="translated">
+        <source>Ratings you give</source>
+        <target>Las puntuaciones que das</target>
+      </segment>
+    </unit>
+    <unit id="6861574227742175487">
+      <notes>
+        <note category="description">Toast when the numbers about your game proposals could not be loaded</note>
+      </notes>
+      <segment state="translated">
+        <source>Error retrieving user’s proposal stats</source>
+        <target>No se han podido cargar las estadísticas de tus propuestas</target>
+      </segment>
+    </unit>
+    <unit id="6874790119730599934">
+      <notes>
+        <note category="description">Option of the game length filter</note>
+      </notes>
+      <segment state="translated">
+        <source>Under 30 min</source>
+        <target>Menos de 30 min</target>
+      </segment>
+    </unit>
+    <unit id="6877790503172836711">
+      <notes>
+        <note category="description">Accessible name of the button under a game on Browse when it is on My Games; the placeholder is the game title</note>
+      </notes>
+      <segment state="translated">
+        <source><ph id="0" equiv="title" disp="gameTitle(game)"/> is already in your collection</source>
+        <target><ph id="0" equiv="title" disp="gameTitle(game)"/> ya está en tu colección</target>
+      </segment>
+    </unit>
+    <unit id="6883560756902551242">
+      <notes>
+        <note category="description">Label of the price you paid for your copy of a game</note>
+      </notes>
+      <segment state="translated">
+        <source>Price paid <pc id="0" equivStart="START_TAG_SPAN" equivEnd="CLOSE_TAG_SPAN" type="other" dispStart="&lt;span class=&quot;text-xs text-secondary&quot;&gt;" dispEnd="&lt;/span&gt;">(optional)</pc></source>
+        <target>Precio pagado <pc id="0" equivStart="START_TAG_SPAN" equivEnd="CLOSE_TAG_SPAN" type="other" dispStart="&lt;span class=&quot;text-xs text-secondary&quot;&gt;" dispEnd="&lt;/span&gt;">(opcional)</pc></target>
       </segment>
     </unit>
     <unit id="6898946761266708133">
@@ -6405,8 +7973,8 @@
         <note category="description">Description of a game&apos;s cover picture; the placeholder is the game title</note>
       </notes>
       <segment state="translated">
-        <source><ph id="0" equiv="title" disp="gameTitle(game)"/> cover</source>
-        <target>Portada de <ph id="0" equiv="title" disp="gameTitle(game)"/></target>
+        <source><ph id="0" equiv="title" disp="title"/> cover</source>
+        <target>Portada de <ph id="0" equiv="title" disp="title"/></target>
       </segment>
     </unit>
     <unit id="6958880360965891619">
@@ -6455,6 +8023,15 @@
         <target>No está claro</target>
       </segment>
     </unit>
+    <unit id="7004368621129341290">
+      <notes>
+        <note category="description">Sort option on Browse, the games added to the catalogue last first</note>
+      </notes>
+      <segment state="translated">
+        <source>Newest in the catalogue</source>
+        <target>Los últimos añadidos al catálogo</target>
+      </segment>
+    </unit>
     <unit id="7007703201160377234">
       <notes>
         <note category="description">Line at the bottom of the sign-up page with a link to the sign-in page</note>
@@ -6464,6 +8041,15 @@
         <target>¿Ya tienes una cuenta? <pc id="0" equivStart="START_LINK" equivEnd="CLOSE_LINK" type="link" dispStart="&lt;a routerLink=&quot;/login&quot; class=&quot;underline&quot;&gt;" dispEnd="&lt;/a&gt;">Iniciar sesión</pc></target>
       </segment>
     </unit>
+    <unit id="7017107942157732351">
+      <notes>
+        <note category="description">Mark on a game cover on Browse: the game is on My Games</note>
+      </notes>
+      <segment state="translated">
+        <source>In your games</source>
+        <target>En tus juegos</target>
+      </segment>
+    </unit>
     <unit id="7027286293328965480">
       <notes>
         <note category="description">Under Delete this group on the group&apos;s settings page</note>
@@ -6471,6 +8057,15 @@
       <segment state="translated">
         <source>This removes the group, its invitations, and its shared play context. Use this only if the group should no longer exist.</source>
         <target>Esto elimina el grupo, sus invitaciones y todo lo que comparte. Úsalo solo si el grupo ya no debe existir.</target>
+      </segment>
+    </unit>
+    <unit id="7037417802946513919">
+      <notes>
+        <note category="description">Browse, looking for a game a group could buy, when the group owns every result</note>
+      </notes>
+      <segment state="translated">
+        <source>Your group already owns every matching game</source>
+        <target>Tu grupo ya tiene todos los juegos que coinciden</target>
       </segment>
     </unit>
     <unit id="7038902754674153202">
@@ -6509,6 +8104,24 @@
         <target>Última decisión de <ph id="0" equiv="INTERPOLATION" disp="{{ decisionBy.displayName || decisionBy.username }}"/></target>
       </segment>
     </unit>
+    <unit id="7075982590691984096">
+      <notes>
+        <note category="description">Accessible name of the info button next to Recent Activity</note>
+      </notes>
+      <segment state="translated">
+        <source>About recent activity</source>
+        <target>Sobre la actividad reciente</target>
+      </segment>
+    </unit>
+    <unit id="708029312526242052">
+      <notes>
+        <note category="description">Button on the Reviews and Wishlist pages that opens Browse</note>
+      </notes>
+      <segment state="translated">
+        <source>Explore Games</source>
+        <target>Explorar juegos</target>
+      </segment>
+    </unit>
     <unit id="7085036273592820424">
       <notes>
         <note category="description">Password advice in Clerk, the sign-in provider</note>
@@ -6516,6 +8129,15 @@
       <segment state="translated">
         <source>Avoid common character sequences.</source>
         <target>Evita secuencias de caracteres comunes.</target>
+      </segment>
+    </unit>
+    <unit id="7086756771841585532">
+      <notes>
+        <note category="description">Error under the title field of the game proposal form</note>
+      </notes>
+      <segment state="translated">
+        <source>Game title is required</source>
+        <target>El título del juego es obligatorio</target>
       </segment>
     </unit>
     <unit id="7091938172464642490">
@@ -6527,6 +8149,15 @@
         <target><ph id="0" equiv="actor" disp="actor"/> ha dicho que <ph id="2" equiv="game" disp="game"/> es uno de los favoritos de <ph id="1" equiv="person" disp="person"/></target>
       </segment>
     </unit>
+    <unit id="7096162610064912614">
+      <notes>
+        <note category="description">Button that sends the game proposal form</note>
+      </notes>
+      <segment state="translated">
+        <source>Submit Proposal</source>
+        <target>Enviar propuesta</target>
+      </segment>
+    </unit>
     <unit id="7096407116394902860">
       <notes>
         <note category="description">Shown while the people of the group load</note>
@@ -6534,6 +8165,15 @@
       <segment state="translated">
         <source>Loading group people…</source>
         <target>Cargando las personas del grupo…</target>
+      </segment>
+    </unit>
+    <unit id="7096763519360032736">
+      <notes>
+        <note category="description">Toast after adding a game to My Games from its page</note>
+      </notes>
+      <segment state="translated">
+        <source>Game added to collection</source>
+        <target>Juego añadido a tu colección</target>
       </segment>
     </unit>
     <unit id="7102237808273658201">
@@ -6579,6 +8219,15 @@
       <segment state="translated">
         <source>This group person link is not valid.</source>
         <target>El enlace de esta persona del grupo no es válido.</target>
+      </segment>
+    </unit>
+    <unit id="7118521920413934862">
+      <notes>
+        <note category="description">Browse while the search has fewer than two letters</note>
+      </notes>
+      <segment state="translated">
+        <source>Keep typing: search starts at two letters.</source>
+        <target>Sigue escribiendo: la búsqueda empieza con dos letras.</target>
       </segment>
     </unit>
     <unit id="7118870479552816190">
@@ -6699,6 +8348,15 @@
         <target>Quién viene</target>
       </segment>
     </unit>
+    <unit id="721694966155469906">
+      <notes>
+        <note category="description">In the info popover of Recent Activity</note>
+      </notes>
+      <segment state="translated">
+        <source>It keeps your last 32 changes, however old; each new change replaces the oldest. Only you can see it.</source>
+        <target>Guarda tus últimos 32 cambios, sean de cuando sean; cada cambio nuevo sustituye al más antiguo. Solo tú puedes verla.</target>
+      </segment>
+    </unit>
     <unit id="721963055036507192">
       <notes>
         <note category="description">One of the group&apos;s numbers on the group page, how many game nights it has played</note>
@@ -6753,6 +8411,15 @@
         <target>¿Quién puede ver mi colección?</target>
       </segment>
     </unit>
+    <unit id="7306190949587501209">
+      <notes>
+        <note category="description">Button under a game on Browse once the game is on My Games</note>
+      </notes>
+      <segment state="translated">
+        <source>In your games ✓</source>
+        <target>En tus juegos ✓</target>
+      </segment>
+    </unit>
     <unit id="7306616487170771288">
       <notes>
         <note category="description">Line at the bottom of the sign-in page with a link to the access page</note>
@@ -6769,6 +8436,33 @@
       <segment state="translated">
         <source>Board Vault home</source>
         <target>Inicio de Board Vault</target>
+      </segment>
+    </unit>
+    <unit id="7312533250459992187">
+      <notes>
+        <note category="description">When an admin reviewed your game proposal; the placeholder is a date</note>
+      </notes>
+      <segment state="translated">
+        <source>Reviewed: <ph id="0" equiv="INTERPOLATION" disp="{{ formatDate(proposal.reviewedAt) }}"/></source>
+        <target>Revisada: <ph id="0" equiv="INTERPOLATION" disp="{{ formatDate(proposal.reviewedAt) }}"/></target>
+      </segment>
+    </unit>
+    <unit id="7332596917635248115">
+      <notes>
+        <note category="description">Accessible name of the heart on a game cover when the game is on your wishlist; the placeholder is the game title</note>
+      </notes>
+      <segment state="translated">
+        <source>Remove <ph id="0" equiv="title" disp="gameTitle(this.game())"/> from your wishlist</source>
+        <target>Quitar <ph id="0" equiv="title" disp="gameTitle(this.game())"/> de tu lista de deseos</target>
+      </segment>
+    </unit>
+    <unit id="7334043085641526096">
+      <notes>
+        <note category="description">Button in the empty list of your game proposals that opens the form</note>
+      </notes>
+      <segment state="translated">
+        <source>Submit Your First Game</source>
+        <target>Proponer tu primer juego</target>
       </segment>
     </unit>
     <unit id="735453982013279482">
@@ -6800,7 +8494,7 @@
     </unit>
     <unit id="7373619377359302437">
       <notes>
-        <note category="description">Label of the player count filter of the group&apos;s library</note>
+        <note category="description">Label of the player count filter on Browse</note>
       </notes>
       <segment state="translated">
         <source>Players</source>
@@ -6814,6 +8508,16 @@
       <segment state="translated">
         <source>a lowercase letter</source>
         <target>Al menos una letra minúscula</target>
+      </segment>
+    </unit>
+    <unit id="7375954189014982725">
+      <notes>
+        <note category="description">Status of a game proposal for a game already in the catalogue</note>
+        <note category="meaning">proposal status</note>
+      </notes>
+      <segment state="translated">
+        <source>Duplicate</source>
+        <target>Duplicada</target>
       </segment>
     </unit>
     <unit id="7384935012309989418">
@@ -6879,6 +8583,24 @@
         <target>Muévete entre tus grupos privados de juegos de mesa y su historial compartido.</target>
       </segment>
     </unit>
+    <unit id="7453009131327127027">
+      <notes>
+        <note category="description">Accessible name of a rating star on a game page; the placeholder is a number from 1 to 5</note>
+      </notes>
+      <segment state="translated">
+        <source>Rate <ph id="0" equiv="stars" disp="formatNumber(stars)"/> out of 5 stars</source>
+        <target>Puntuar con <ph id="0" equiv="stars" disp="stars"/> de 5 estrellas</target>
+      </segment>
+    </unit>
+    <unit id="7455010385478644357">
+      <notes>
+        <note category="description">Heading of the games you have rated on the Reviews page, with how many</note>
+      </notes>
+      <segment state="translated">
+        <source>Your ratings <pc id="0" equivStart="START_TAG_SPAN" equivEnd="CLOSE_TAG_SPAN" type="other" dispStart="&lt;span class=&quot;text-base font-normal text-secondary&quot;&gt;" dispEnd="&lt;/span&gt;">(<ph id="1" equiv="INTERPOLATION" disp="{{ userReviews$().length }}"/>)</pc></source>
+        <target>Tus puntuaciones <pc id="0" equivStart="START_TAG_SPAN" equivEnd="CLOSE_TAG_SPAN" type="other" dispStart="&lt;span class=&quot;text-base font-normal text-secondary&quot;&gt;" dispEnd="&lt;/span&gt;">(<ph id="1" equiv="INTERPOLATION" disp="{{ userReviews$().length }}"/>)</pc></target>
+      </segment>
+    </unit>
     <unit id="7455956774102417623">
       <notes>
         <note category="description">Field label on the invitation sign-up page</note>
@@ -6886,6 +8608,15 @@
       <segment state="translated">
         <source>Choose a username</source>
         <target>Elige un nombre de usuario</target>
+      </segment>
+    </unit>
+    <unit id="7467956127761639367">
+      <notes>
+        <note category="description">After sending a game proposal</note>
+      </notes>
+      <segment state="translated">
+        <source>Thanks for your proposal! We will review it as soon as possible and let you know the outcome.</source>
+        <target>¡Gracias por tu propuesta! La revisaremos lo antes posible y te contaremos el resultado.</target>
       </segment>
     </unit>
     <unit id="7479353190280997286">
@@ -6958,6 +8689,24 @@
       <segment state="translated">
         <source>Could not add your interest. Try again.</source>
         <target>No se ha podido guardar tu interés. Inténtalo de nuevo.</target>
+      </segment>
+    </unit>
+    <unit id="7540949476032116614">
+      <notes>
+        <note category="description">Link at the bottom of the Browse card on the Collection page</note>
+      </notes>
+      <segment state="translated">
+        <source>Browse games &gt;</source>
+        <target>Explorar juegos &gt;</target>
+      </segment>
+    </unit>
+    <unit id="7541099966485792493">
+      <notes>
+        <note category="description">Button in the empty state of the Wishlist page that opens Browse</note>
+      </notes>
+      <segment state="translated">
+        <source>Browse games</source>
+        <target>Explorar juegos</target>
       </segment>
     </unit>
     <unit id="756147812205802406">
@@ -7086,6 +8835,15 @@
         <target>Navegación principal</target>
       </segment>
     </unit>
+    <unit id="7637440618914484268">
+      <notes>
+        <note category="description">Option of the game length filter</note>
+      </notes>
+      <segment state="translated">
+        <source>1–2 hours</source>
+        <target>1–2 horas</target>
+      </segment>
+    </unit>
     <unit id="764127582105511202">
       <notes>
         <note category="description">Label on the game night card on Home</note>
@@ -7140,6 +8898,15 @@
         <target>Cuanto más registre tu grupo, más útil será su historial.</target>
       </segment>
     </unit>
+    <unit id="7699622144571229146">
+      <notes>
+        <note category="description">Label of the sort order menu on Browse</note>
+      </notes>
+      <segment state="translated">
+        <source>Sort by</source>
+        <target>Ordenar por</target>
+      </segment>
+    </unit>
     <unit id="7699707220451182317">
       <notes>
         <note category="description">Text in the box on the invitation sign-up page for someone who already has an account</note>
@@ -7154,8 +8921,36 @@
         <note category="description">How long a game lasts, in minutes</note>
       </notes>
       <segment state="translated">
-        <source><ph id="0" equiv="INTERPOLATION" disp="{{ game.gameAvgDuration }}"/> min</source>
-        <target><ph id="0" equiv="INTERPOLATION" disp="{{ game.gameAvgDuration }}"/> min</target>
+        <source><ph id="0" equiv="INTERPOLATION" disp="{{ gameAvgDuration() }}"/> min</source>
+        <target><ph id="0" equiv="INTERPOLATION" disp="{{ gameAvgDuration() }}"/> min</target>
+      </segment>
+    </unit>
+    <unit id="7721431665681117078">
+      <notes>
+        <note category="description">Empty state of the Reviews page</note>
+      </notes>
+      <segment state="translated">
+        <source>You haven’t rated any games yet. Tap the stars on a game to rate it.</source>
+        <target>Aún no has puntuado ningún juego. Toca las estrellas de un juego para puntuarlo.</target>
+      </segment>
+    </unit>
+    <unit id="7723102638135781698">
+      <notes>
+        <note category="description">Heading of your recent collection activity</note>
+      </notes>
+      <segment state="translated">
+        <source>Recent Activity</source>
+        <target>Actividad reciente</target>
+      </segment>
+    </unit>
+    <unit id="7741820910551245296">
+      <notes>
+        <note category="description">Label under the number of your game proposals that were approved</note>
+        <note category="meaning">proposals approved</note>
+      </notes>
+      <segment state="translated">
+        <source>Approved</source>
+        <target>Aprobadas</target>
       </segment>
     </unit>
     <unit id="7775401295627092008">
@@ -7221,6 +9016,15 @@
         <target>Noches de juegos</target>
       </segment>
     </unit>
+    <unit id="7808756054397155068">
+      <notes>
+        <note category="description">Button that empties the game proposal form</note>
+      </notes>
+      <segment state="translated">
+        <source>Reset</source>
+        <target>Restablecer</target>
+      </segment>
+    </unit>
     <unit id="7817739779798876518">
       <notes>
         <note category="description">Heading of the first steps on the page of a new group; the placeholder is the group name</note>
@@ -7238,6 +9042,15 @@
       <segment state="translated">
         <source>Inbox, <ph id="0" equiv="count" disp="count"/> new</source>
         <target>Bandeja de entrada, <ph id="0" equiv="count" disp="count"/> nueva</target>
+      </segment>
+    </unit>
+    <unit id="7819314041543176992">
+      <notes>
+        <note category="description">Button that closes a dialog</note>
+      </notes>
+      <segment state="translated">
+        <source>Close</source>
+        <target>Cerrar</target>
       </segment>
     </unit>
     <unit id="7826848079555265267">
@@ -7265,6 +9078,15 @@
       <segment state="translated">
         <source>Edition not set</source>
         <target>Edición sin indicar</target>
+      </segment>
+    </unit>
+    <unit id="7846643244803883224">
+      <notes>
+        <note category="description">Button on Browse that hides the tag filters</note>
+      </notes>
+      <segment state="translated">
+        <source>Hide tags</source>
+        <target>Ocultar etiquetas</target>
       </segment>
     </unit>
     <unit id="785270353086309130">
@@ -7312,6 +9134,15 @@
         <target>5 miembros · 23 juegos</target>
       </segment>
     </unit>
+    <unit id="7873239587567815317">
+      <notes>
+        <note category="description">Button under a game on Browse when the group&apos;s shortlist could not be loaded</note>
+      </notes>
+      <segment state="translated">
+        <source>Shortlist unavailable</source>
+        <target>Lista de compra no disponible</target>
+      </segment>
+    </unit>
     <unit id="7875866275436043807">
       <notes>
         <note category="description">Result on the page where you take over a person prepared for you in a group: the games went into your collection</note>
@@ -7319,6 +9150,15 @@
       <segment state="translated">
         <source>Included</source>
         <target>Incluidos</target>
+      </segment>
+    </unit>
+    <unit id="7876928069478681675">
+      <notes>
+        <note category="description">Empty list of your game proposals</note>
+      </notes>
+      <segment state="translated">
+        <source>Start contributing to our game collection by submitting your first proposal!</source>
+        <target>¡Contribuye a nuestra colección de juegos enviando tu primera propuesta!</target>
       </segment>
     </unit>
     <unit id="7878155326303883504">
@@ -7390,6 +9230,16 @@
         <target><ph id="0" equiv="person" disp="actor"/> ha borrado lo que opina <ph id="1" equiv="groupPerson" disp="person"/> de <ph id="2" equiv="game" disp="game"/>, en <ph id="3" equiv="group" disp="group"/>.</target>
       </segment>
     </unit>
+    <unit id="7909005689793842207">
+      <notes>
+        <note category="description">Hint of the I want it option; once approved, the game is added to your wishlist</note>
+        <note category="meaning">proposal goes to your wishlist</note>
+      </notes>
+      <segment state="translated">
+        <source>Added to your wishlist</source>
+        <target>Se añade a tu lista de deseos</target>
+      </segment>
+    </unit>
     <unit id="7914959784420103692">
       <notes>
         <note category="description">Label on the group&apos;s settings page</note>
@@ -7426,6 +9276,15 @@
         <target>Tu estantería personal es la base de las recomendaciones.</target>
       </segment>
     </unit>
+    <unit id="7933138725764944793">
+      <notes>
+        <note category="description">Description of the Reviews card on the Collection page</note>
+      </notes>
+      <segment state="translated">
+        <source>Rate and review the games you’ve played</source>
+        <target>Puntúa y reseña los juegos que has jugado</target>
+      </segment>
+    </unit>
     <unit id="793404508160933332">
       <notes>
         <note category="description">Line under Invite your people on a group card on Home</note>
@@ -7444,6 +9303,15 @@
         <target>Reintentar</target>
       </segment>
     </unit>
+    <unit id="7945882739909775586">
+      <notes>
+        <note category="description">Hidden label of the title filter on My Games</note>
+      </notes>
+      <segment state="translated">
+        <source>Filter your games by title</source>
+        <target>Filtrar tus juegos por título</target>
+      </segment>
+    </unit>
     <unit id="7951797225520953806">
       <notes>
         <note category="description">Shown on the group page to a member who is not one of the group&apos;s people yet</note>
@@ -7451,6 +9319,15 @@
       <segment state="translated">
         <source>You’re not in this group’s game nights yet</source>
         <target>Aún no estás en las noches de juegos de este grupo</target>
+      </segment>
+    </unit>
+    <unit id="7952806382632077864">
+      <notes>
+        <note category="description">Label on a game proposal: the tags it suggests</note>
+      </notes>
+      <segment state="translated">
+        <source>Tags:</source>
+        <target>Etiquetas:</target>
       </segment>
     </unit>
     <unit id="7993075846461665643">
@@ -7478,6 +9355,15 @@
       <segment state="translated">
         <source>Games for <ph id="0" equiv="count" disp="count"/> player</source>
         <target>Juegos para <ph id="0" equiv="count" disp="count"/> persona</target>
+      </segment>
+    </unit>
+    <unit id="8007270136741325199">
+      <notes>
+        <note category="description">Option of the player count filter on Browse: no filter</note>
+      </notes>
+      <segment state="translated">
+        <source>Any number</source>
+        <target>Cualquier número</target>
       </segment>
     </unit>
     <unit id="8025228332068674164">
@@ -7541,6 +9427,33 @@
       <segment state="translated">
         <source>Wishlist</source>
         <target>Lista de deseos</target>
+      </segment>
+    </unit>
+    <unit id="806687413567338644">
+      <notes>
+        <note category="description">Error under the price of your copy of a game</note>
+      </notes>
+      <segment state="translated">
+        <source>Enter a positive number.</source>
+        <target>Introduce un número positivo.</target>
+      </segment>
+    </unit>
+    <unit id="8069381234431267529">
+      <notes>
+        <note category="description">Game page when you have not played the game yet</note>
+      </notes>
+      <segment state="translated">
+        <source>You haven’t played it in a recorded session yet.</source>
+        <target>Aún no lo has jugado en ninguna sesión registrada.</target>
+      </segment>
+    </unit>
+    <unit id="8079081579901316861">
+      <notes>
+        <note category="description">Toast after adding a game to your wishlist</note>
+      </notes>
+      <segment state="translated">
+        <source>Added to your wishlist</source>
+        <target>Añadido a tu lista de deseos</target>
       </segment>
     </unit>
     <unit id="8079749885136931375">
@@ -7648,6 +9561,15 @@
         <target>No se pudo completar esta acción. Vuelve a intentarlo más tarde o, si sigue pasando, contacta con soporte.</target>
       </segment>
     </unit>
+    <unit id="8150877423272259603">
+      <notes>
+        <note category="description">Toast after saving the details of your copy of a game</note>
+      </notes>
+      <segment state="translated">
+        <source>Purchase details updated</source>
+        <target>Datos de compra actualizados</target>
+      </segment>
+    </unit>
     <unit id="8156419267003636846">
       <notes>
         <note category="description">Error under the invite field on the group&apos;s settings page, after sending</note>
@@ -7655,6 +9577,24 @@
       <segment state="translated">
         <source>We could not send the email invitation. Check the address and try again; your entry is still here.</source>
         <target>No hemos podido enviar la invitación por correo. Revisa la dirección e inténtalo de nuevo; lo que escribiste sigue aquí.</target>
+      </segment>
+    </unit>
+    <unit id="8158713888154048491">
+      <notes>
+        <note category="description">Error under the duration field of the game proposal form</note>
+      </notes>
+      <segment state="translated">
+        <source>Duration must be less than 1440 minutes (24 hours)</source>
+        <target>La duración debe ser menor que 1440 minutos (24 horas)</target>
+      </segment>
+    </unit>
+    <unit id="8164725114168136425">
+      <notes>
+        <note category="description">Label of the title field of the game proposal form; the asterisk marks it as required</note>
+      </notes>
+      <segment state="translated">
+        <source>Game Title *</source>
+        <target>Título del juego *</target>
       </segment>
     </unit>
     <unit id="8168067472567053049">
@@ -7693,6 +9633,15 @@
         <target>La verificación no terminó a tiempo. Vuelve a intentarlo.</target>
       </segment>
     </unit>
+    <unit id="8205808185021288898">
+      <notes>
+        <note category="description">Error on the Wishlist page</note>
+      </notes>
+      <segment state="translated">
+        <source>Wishlist could not be loaded.</source>
+        <target>No se ha podido cargar la lista de deseos.</target>
+      </segment>
+    </unit>
     <unit id="8206579759218160395">
       <notes>
         <note category="description">No game can be recommended</note>
@@ -7700,6 +9649,15 @@
       <segment state="translated">
         <source>No games owned by the selected attendees support <ph id="0" equiv="players" disp="players"/> players.</source>
         <target>Ningún juego de quienes vienen admite <ph id="0" equiv="players" disp="players"/> jugadores.</target>
+      </segment>
+    </unit>
+    <unit id="8208743343075501136">
+      <notes>
+        <note category="description">Label under your score as someone who proposes games</note>
+      </notes>
+      <segment state="translated">
+        <source>Reputation Score</source>
+        <target>Puntuación de reputación</target>
       </segment>
     </unit>
     <unit id="8212439177512998248">
@@ -7796,11 +9754,20 @@
     </unit>
     <unit id="82738627210580164">
       <notes>
-        <note category="description">Button on a game the group might buy</note>
+        <note category="description">Link under a game on Browse that takes it off your picks for the group&apos;s shortlist</note>
       </notes>
       <segment state="translated">
         <source>Remove my interest</source>
         <target>Ya no me interesa</target>
+      </segment>
+    </unit>
+    <unit id="8277394468476112564">
+      <notes>
+        <note category="description">Button on Browse when the search finds nothing: opens the game proposal form</note>
+      </notes>
+      <segment state="translated">
+        <source>Propose this game</source>
+        <target>Proponer este juego</target>
       </segment>
     </unit>
     <unit id="827835624569020544">
@@ -7810,6 +9777,15 @@
       <segment state="translated">
         <source>Preferences kept</source>
         <target>Preferencias conservadas</target>
+      </segment>
+    </unit>
+    <unit id="8289651811489672468">
+      <notes>
+        <note category="description">Toast when taking a game off My Games failed</note>
+      </notes>
+      <segment state="translated">
+        <source>Error removing game from collection</source>
+        <target>No se ha podido quitar el juego de tu colección</target>
       </segment>
     </unit>
     <unit id="8310536808546035769">
@@ -7837,6 +9813,15 @@
       <segment state="translated">
         <source>You are interested</source>
         <target>Te interesa</target>
+      </segment>
+    </unit>
+    <unit id="8337423371720399951">
+      <notes>
+        <note category="description">Title of the Browse page</note>
+      </notes>
+      <segment state="translated">
+        <source>Browse Games</source>
+        <target>Explorar juegos</target>
       </segment>
     </unit>
     <unit id="8344394793747735234">
@@ -7903,6 +9888,15 @@
         <target>¿Necesito un grupo para usarlo?</target>
       </segment>
     </unit>
+    <unit id="8399056526492416069">
+      <notes>
+        <note category="description">Line in Recent Activity: you changed the purchase details of your copy; the link is the game title</note>
+      </notes>
+      <segment state="translated">
+        <source>You updated <pc id="0" equivStart="START_LINK" equivEnd="CLOSE_LINK" type="link" dispStart="&lt;a [routerLink]=&quot;[&apos;/games/&apos;, activity.gameData.id]&quot; class=&quot;font-medium hover:underline&quot; [attr.lang]=&quot;titleLanguage(activity.gameData)&quot;&gt;" dispEnd="&lt;/a&gt;"><ph id="1" equiv="INTERPOLATION" disp="{{ activity.gameData | gameTitle }}"/></pc> in your collection</source>
+        <target>Has actualizado <pc id="0" equivStart="START_LINK" equivEnd="CLOSE_LINK" type="link" dispStart="&lt;a [routerLink]=&quot;[&apos;/games/&apos;, activity.gameData.id]&quot; class=&quot;font-medium hover:underline&quot; [attr.lang]=&quot;titleLanguage(activity.gameData)&quot;&gt;" dispEnd="&lt;/a&gt;"><ph id="1" equiv="INTERPOLATION" disp="{{ activity.gameData | gameTitle }}"/></pc> en tu colección</target>
+      </segment>
+    </unit>
     <unit id="8411650238871966394">
       <notes>
         <note category="description">Tagline in the footer of the public pages</note>
@@ -7930,6 +9924,15 @@
         <target>Opcional. El mismo juego con su nombre en otros idiomas, si los conoces.</target>
       </segment>
     </unit>
+    <unit id="8421971980013015956">
+      <notes>
+        <note category="description">Label on a game proposal: the notes you wrote</note>
+      </notes>
+      <segment state="translated">
+        <source>Notes:</source>
+        <target>Notas:</target>
+      </segment>
+    </unit>
     <unit id="8431469809481222374">
       <notes>
         <note category="description">Browser tab title of the My submissions page</note>
@@ -7946,6 +9949,24 @@
       <segment state="translated">
         <source>We could not finish joining this group. The invitation may have expired, already been used, or the group may no longer be available. Try again, or sign out and ask the group owner for a fresh invitation.</source>
         <target>No hemos podido terminar de unirte a este grupo. Puede que la invitación haya caducado, ya se haya usado o que el grupo ya no esté disponible. Inténtalo de nuevo, o cierra sesión y pide una invitación nueva a quien creó el grupo.</target>
+      </segment>
+    </unit>
+    <unit id="8451961759523973606">
+      <notes>
+        <note category="description">Subtitle of the page that lists your game proposals</note>
+      </notes>
+      <segment state="translated">
+        <source>Track your game proposals and their review status</source>
+        <target>Sigue tus propuestas de juego y el estado de su revisión</target>
+      </segment>
+    </unit>
+    <unit id="8460407039056617859">
+      <notes>
+        <note category="description">Error under the notes field of the game proposal form</note>
+      </notes>
+      <segment state="translated">
+        <source>Notes must be less than 500 characters</source>
+        <target>Las notas deben tener menos de 500 caracteres</target>
       </segment>
     </unit>
     <unit id="8464136353884896070">
@@ -7984,6 +10005,15 @@
         <target><ph id="0" equiv="count" disp="wins"/> victoria</target>
       </segment>
     </unit>
+    <unit id="8478983120204577028">
+      <notes>
+        <note category="description">Empty state of My Games</note>
+      </notes>
+      <segment state="translated">
+        <source>A few real games make group suggestions useful. Add your first five, then invite friends or choose what to play together.</source>
+        <target>Unos pocos juegos reales hacen que las sugerencias del grupo sean útiles. Añade tus cinco primeros y luego invita a tus amistades o elige a qué jugar en grupo.</target>
+      </segment>
+    </unit>
     <unit id="8479252312260874856">
       <notes>
         <note category="description">How many people in the group said Not for us to a suggested game</note>
@@ -8009,6 +10039,15 @@
       <segment state="translated">
         <source>an uppercase letter</source>
         <target>Al menos una letra mayúscula</target>
+      </segment>
+    </unit>
+    <unit id="8491186692526032527">
+      <notes>
+        <note category="description">Description of the Browse card on the Collection page</note>
+      </notes>
+      <segment state="translated">
+        <source>Find new games to add to your collection</source>
+        <target>Encuentra juegos nuevos para añadir a tu colección</target>
       </segment>
     </unit>
     <unit id="8506230638457254442">
@@ -8038,6 +10077,24 @@
         <target>Historial completo</target>
       </segment>
     </unit>
+    <unit id="8511784820739424015">
+      <notes>
+        <note category="description">Stands for the group&apos;s name on Browse while it is unknown; it goes into sentences such as Find a game for this group</note>
+      </notes>
+      <segment state="translated">
+        <source>this group</source>
+        <target>este grupo</target>
+      </segment>
+    </unit>
+    <unit id="8518343511045645438">
+      <notes>
+        <note category="description">Error under the title field of the game proposal form</note>
+      </notes>
+      <segment state="translated">
+        <source>Title must be less than 100 characters</source>
+        <target>El título debe tener menos de 100 caracteres</target>
+      </segment>
+    </unit>
     <unit id="8526482226417637721">
       <notes>
         <note category="description">Notification, someone changing their own games or preferences in a group; person is a name, game is a game title</note>
@@ -8056,6 +10113,24 @@
         <target>Falta tu respuesta</target>
       </segment>
     </unit>
+    <unit id="8533835645084933826">
+      <notes>
+        <note category="description">Subtitle of the Collection page</note>
+      </notes>
+      <segment state="translated">
+        <source>Manage your board games, wishlist and reviews</source>
+        <target>Gestiona tus juegos de mesa, tu lista de deseos y tus reseñas</target>
+      </segment>
+    </unit>
+    <unit id="8549716072171275937">
+      <notes>
+        <note category="description">Sort option on the Reviews page: the games you rated last first</note>
+      </notes>
+      <segment state="translated">
+        <source>Recently rated</source>
+        <target>Puntuados recientemente</target>
+      </segment>
+    </unit>
     <unit id="8564202903947049539">
       <notes>
         <note category="description">Main section of the app, with game nights</note>
@@ -8072,6 +10147,15 @@
       <segment state="translated">
         <source>People around your table</source>
         <target>Las personas de tu mesa</target>
+      </segment>
+    </unit>
+    <unit id="8572464073636497356">
+      <notes>
+        <note category="description">Description of the Wishlist card on the Collection page</note>
+      </notes>
+      <segment state="translated">
+        <source>Keep track of games you want to add to your collection</source>
+        <target>Ten a mano los juegos que quieres añadir a tu colección</target>
       </segment>
     </unit>
     <unit id="8609256983948872272">
@@ -8137,6 +10221,15 @@
         <target>Inicio del grupo</target>
       </segment>
     </unit>
+    <unit id="863944651405968016">
+      <notes>
+        <note category="description">Button under Recent Activity that shows every change</note>
+      </notes>
+      <segment state="translated">
+        <source>View all activity</source>
+        <target>Ver toda la actividad</target>
+      </segment>
+    </unit>
     <unit id="8654642196646765162">
       <notes>
         <note category="description">Password strength in Clerk, the sign-in provider</note>
@@ -8153,6 +10246,24 @@
       <segment state="translated">
         <source><ph id="0" equiv="count" disp="count"/> selected attendees marked this as interesting</source>
         <target><ph id="0" equiv="count" disp="count"/> personas que vienen lo marcaron como interesante</target>
+      </segment>
+    </unit>
+    <unit id="8675176265050343606">
+      <notes>
+        <note category="description">Label of the picture address field of the game proposal form</note>
+      </notes>
+      <segment state="translated">
+        <source>Image URL</source>
+        <target>URL de la imagen</target>
+      </segment>
+    </unit>
+    <unit id="8681250242487608593">
+      <notes>
+        <note category="description">Label of your stars on a game page once you rated it</note>
+      </notes>
+      <segment state="translated">
+        <source>Your rating</source>
+        <target>Tu puntuación</target>
       </segment>
     </unit>
     <unit id="8694180754500384388">
@@ -8182,6 +10293,15 @@
         <target>Evita palabras comunes escritas al revés.</target>
       </segment>
     </unit>
+    <unit id="8711874869220899767">
+      <notes>
+        <note category="description">Button in the empty state of My Games that opens Browse</note>
+      </notes>
+      <segment state="translated">
+        <source>Add your first game</source>
+        <target>Añadir tu primer juego</target>
+      </segment>
+    </unit>
     <unit id="871235372571809921">
       <notes>
         <note category="description">Help under an error when joining a group from an invitation link failed</note>
@@ -8198,6 +10318,15 @@
       <segment state="translated">
         <source>See your proposals</source>
         <target>Ver tus propuestas</target>
+      </segment>
+    </unit>
+    <unit id="8721411222547745166">
+      <notes>
+        <note category="description">Subtitle of the Propose a game page</note>
+      </notes>
+      <segment state="translated">
+        <source>Submit a game proposal to be added to our collection</source>
+        <target>Envía una propuesta de juego para que se añada a nuestra colección</target>
       </segment>
     </unit>
     <unit id="8725224299321680590">
@@ -8278,6 +10407,15 @@
         <target>Comparte la estantería con tu grupo</target>
       </segment>
     </unit>
+    <unit id="8829512013052837608">
+      <notes>
+        <note category="description">Empty state of the Wishlist page</note>
+      </notes>
+      <segment state="translated">
+        <source>Tap the heart on any game’s cover to save it here.</source>
+        <target>Toca el corazón de la portada de cualquier juego para guardarlo aquí.</target>
+      </segment>
+    </unit>
     <unit id="883260183433123422">
       <notes>
         <note category="description">Under the number of games on the group&apos;s settings page</note>
@@ -8341,6 +10479,15 @@
         <target>Solo recuentos con un seudónimo, en nuestra propia base de datos. Sin cookies, sin anuncios, sin compartir nada.</target>
       </segment>
     </unit>
+    <unit id="8871481276519293061">
+      <notes>
+        <note category="description">Under the title of the game proposal dialog</note>
+      </notes>
+      <segment state="translated">
+        <source>Help us expand our game collection! Submit a proposal for a game you’d like to see added to BoardVault.</source>
+        <target>¡Ayúdanos a ampliar nuestra colección de juegos! Envía una propuesta de un juego que te gustaría ver en BoardVault.</target>
+      </segment>
+    </unit>
     <unit id="8873512080778685444">
       <notes>
         <note category="description">Label before the title of the edition of a game you own, on the game page</note>
@@ -8348,6 +10495,24 @@
       <segment state="translated">
         <source>Your copy:</source>
         <target>Tu copia:</target>
+      </segment>
+    </unit>
+    <unit id="8881851115595994876">
+      <notes>
+        <note category="description">Toast when adding a game to My Games from its page failed</note>
+      </notes>
+      <segment state="translated">
+        <source>Error adding game to collection</source>
+        <target>No se ha podido añadir el juego a tu colección</target>
+      </segment>
+    </unit>
+    <unit id="8891667033965826221">
+      <notes>
+        <note category="description">Title of the game proposal dialog</note>
+      </notes>
+      <segment state="translated">
+        <source>Submit Game Proposal</source>
+        <target>Enviar propuesta de juego</target>
       </segment>
     </unit>
     <unit id="8894032101147847060">
@@ -8402,6 +10567,15 @@
       <segment state="translated">
         <source>Invitation removed</source>
         <target>Invitación retirada</target>
+      </segment>
+    </unit>
+    <unit id="8978604435370885043">
+      <notes>
+        <note category="description">Toast when marking a wishlist game as bought failed</note>
+      </notes>
+      <segment state="translated">
+        <source>Could not add this game to My Games. Try again.</source>
+        <target>No se ha podido añadir este juego a Mis juegos. Inténtalo de nuevo.</target>
       </segment>
     </unit>
     <unit id="8990201165371153225">
@@ -8567,6 +10741,15 @@
         <target>{VAR_PLURAL, plural, one {<ph id="0" equiv="INTERPOLATION"/> noche jugada} other {<ph id="1" equiv="INTERPOLATION"/> noches jugadas}}</target>
       </segment>
     </unit>
+    <unit id="9089568708335960906">
+      <notes>
+        <note category="description">Line in Recent Activity; the link is the game title</note>
+      </notes>
+      <segment state="translated">
+        <source>You removed <pc id="0" equivStart="START_LINK" equivEnd="CLOSE_LINK" type="link" dispStart="&lt;a [routerLink]=&quot;[&apos;/games/&apos;, activity.gameData.id]&quot; class=&quot;font-medium hover:underline&quot; [attr.lang]=&quot;titleLanguage(activity.gameData)&quot;&gt;" dispEnd="&lt;/a&gt;"><ph id="1" equiv="INTERPOLATION" disp="{{ activity.gameData | gameTitle }}"/></pc> from your collection</source>
+        <target>Has quitado <pc id="0" equivStart="START_LINK" equivEnd="CLOSE_LINK" type="link" dispStart="&lt;a [routerLink]=&quot;[&apos;/games/&apos;, activity.gameData.id]&quot; class=&quot;font-medium hover:underline&quot; [attr.lang]=&quot;titleLanguage(activity.gameData)&quot;&gt;" dispEnd="&lt;/a&gt;"><ph id="1" equiv="INTERPOLATION" disp="{{ activity.gameData | gameTitle }}"/></pc> de tu colección</target>
+      </segment>
+    </unit>
     <unit id="9094138907373085589">
       <notes>
         <note category="description">Example group name in the field on the page that creates a group</note>
@@ -8583,6 +10766,15 @@
       <segment state="translated">
         <source>No invitations waiting.</source>
         <target>No tienes invitaciones pendientes.</target>
+      </segment>
+    </unit>
+    <unit id="9110191921904867816">
+      <notes>
+        <note category="description">Error under the fewest players field of the game proposal form</note>
+      </notes>
+      <segment state="translated">
+        <source>Minimum players must be at least 1</source>
+        <target>El mínimo de personas debe ser al menos 1</target>
       </segment>
     </unit>
     <unit id="9115957101123254722">
@@ -8655,6 +10847,15 @@
       <segment state="translated">
         <source>Going</source>
         <target>Va</target>
+      </segment>
+    </unit>
+    <unit id="9145452598104602008">
+      <notes>
+        <note category="description">Toast when rating a game failed</note>
+      </notes>
+      <segment state="translated">
+        <source>Error saving review</source>
+        <target>No se ha podido guardar la puntuación</target>
       </segment>
     </unit>
     <unit id="9174716236566498100">
@@ -8735,6 +10936,25 @@
         <target>Board Vault mantiene tu colección organizada. Añade un juego en segundos, filtra por número de jugadores, puntúa lo que has jugado y comparte la estantería con la gente con la que juegas.</target>
       </segment>
     </unit>
+    <unit id="930048184672258456">
+      <notes>
+        <note category="description">Line in Recent Activity; the link is the game title, then the number of stars out of 5, more than one</note>
+        <note category="meaning">rated with stars, other</note>
+      </notes>
+      <segment state="translated">
+        <source>You rated <pc id="0" equivStart="START_LINK" equivEnd="CLOSE_LINK" type="link" dispStart="&lt;a [routerLink]=&quot;[&apos;/games/&apos;, activity.gameData.id]&quot; class=&quot;font-medium hover:underline&quot; [attr.lang]=&quot;titleLanguage(activity.gameData)&quot;&gt;" dispEnd="&lt;/a&gt;"><ph id="1" equiv="INTERPOLATION" disp="{{ activity.gameData | gameTitle }}"/></pc> with <ph id="2" equiv="INTERPOLATION_1" disp="{{ formatStars(stars) }}"/> stars</source>
+        <target>Has puntuado <pc id="0" equivStart="START_LINK" equivEnd="CLOSE_LINK" type="link" dispStart="&lt;a [routerLink]=&quot;[&apos;/games/&apos;, activity.gameData.id]&quot; class=&quot;font-medium hover:underline&quot; [attr.lang]=&quot;titleLanguage(activity.gameData)&quot;&gt;" dispEnd="&lt;/a&gt;"><ph id="1" equiv="INTERPOLATION" disp="{{ activity.gameData | gameTitle }}"/></pc> con <ph id="2" equiv="INTERPOLATION_1" disp="{{ formatStars(stars) }}"/> estrellas</target>
+      </segment>
+    </unit>
+    <unit id="940628803239907847">
+      <notes>
+        <note category="description">Toast when your recent collection activity could not be loaded</note>
+      </notes>
+      <segment state="translated">
+        <source>Error retrieving user’s collection activity</source>
+        <target>No se ha podido cargar la actividad reciente de tu colección</target>
+      </segment>
+    </unit>
     <unit id="943724676430178154">
       <notes>
         <note category="description">Toast when deleting a group fails</note>
@@ -8771,6 +10991,15 @@
         <target>Esta noche de juegos está en curso.</target>
       </segment>
     </unit>
+    <unit id="972737146753537235">
+      <notes>
+        <note category="description">Placeholder of the title field of the game proposal form</note>
+      </notes>
+      <segment state="translated">
+        <source>Enter the game title</source>
+        <target>Escribe el título del juego</target>
+      </segment>
+    </unit>
     <unit id="973229230754703715">
       <notes>
         <note category="description">Error under the invite field on the group&apos;s settings page, after sending</note>
@@ -8787,6 +11016,15 @@
       <segment state="translated">
         <source>Show games for</source>
         <target>Mostrar juegos para</target>
+      </segment>
+    </unit>
+    <unit id="978150370327024691">
+      <notes>
+        <note category="description">Button under a game on Browse while the group&apos;s shortlist of games to buy loads</note>
+      </notes>
+      <segment state="translated">
+        <source>Checking group shortlist…</source>
+        <target>Consultando la lista de compra…</target>
       </segment>
     </unit>
     <unit id="983700320592848340">

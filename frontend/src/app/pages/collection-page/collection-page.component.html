@@ -1,35 +1,67 @@
-<app-page-header titleText="Collection" [showActionButton]="true">
-    Manage your board games, wishlist and reviews
-    <a appButton class="action-button text-center" routerLink="/collection/browse">Add games</a>
+<app-page-header i18n-titleText="Title of the Collection page" titleText="Collection" [showActionButton]="true">
+    <ng-container i18n="Subtitle of the Collection page">Manage your board games, wishlist and reviews</ng-container>
+    <a appButton class="action-button text-center" routerLink="/collection/browse" i18n="Button on the Collection and My Games pages that opens Browse">Add games</a>
 </app-page-header>
 
 <container-wrapper>
     <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
-        <app-card-section icon="collection-fill" tone="primary" titleText="My Games" description="Browse and manage your board game collection" cardLink="/collection/games">
-            <app-badge class="app-card-section-badge" tone="primary" [text]="isLoadingUserGames() ? 'Loading…' : countLabel(userGames$().length, 'game')" />
+        <app-card-section
+            icon="collection-fill"
+            tone="primary"
+            i18n-titleText="Title of the My Games card on the Collection page"
+            titleText="My Games"
+            i18n-description="Description of the My Games card on the Collection page"
+            description="Browse and manage your board game collection"
+            cardLink="/collection/games"
+        >
+            <app-badge class="app-card-section-badge" tone="primary" [text]="isLoadingUserGames() ? loadingLabel : gamesLabel(userGames$().length)" />
             <div></div>
-            <span class="flex items-center text-sm font-medium text-bv-primary group-hover:underline">View all &gt;</span>
+            <span class="flex items-center text-sm font-medium text-bv-primary group-hover:underline" i18n="Link at the bottom of a card on the Collection page">View all &gt;</span>
         </app-card-section>
 
-        <app-card-section icon="search" tone="success" titleText="Browse and discover" description="Find new games to add to your collection" cardLink="/collection/browse">
+        <app-card-section
+            icon="search"
+            tone="success"
+            i18n-titleText="Title of the Browse card on the Collection page"
+            titleText="Browse and discover"
+            i18n-description="Description of the Browse card on the Collection page"
+            description="Find new games to add to your collection"
+            cardLink="/collection/browse"
+        >
             <div></div>
-            <span class="flex items-center text-sm font-medium text-bv-primary group-hover:underline">Browse games &gt;</span>
+            <span class="flex items-center text-sm font-medium text-bv-primary group-hover:underline" i18n="Link at the bottom of the Browse card on the Collection page">Browse games &gt;</span>
         </app-card-section>
 
-        <app-card-section icon="star-fill" tone="warning" titleText="Reviews" description="Rate and review the games you've played" cardLink="/collection/reviews">
-            <app-badge class="app-card-section-badge" tone="warning" [text]="isLoadingReviews() ? 'Loading…' : countLabel(userReviews$().length, 'review')" />
+        <app-card-section
+            icon="star-fill"
+            tone="warning"
+            i18n-titleText="Title of the Reviews card on the Collection page"
+            titleText="Reviews"
+            i18n-description="Description of the Reviews card on the Collection page"
+            description="Rate and review the games you’ve played"
+            cardLink="/collection/reviews"
+        >
+            <app-badge class="app-card-section-badge" tone="warning" [text]="isLoadingReviews() ? loadingLabel : reviewsLabel(userReviews$().length)" />
             <div></div>
-            <span class="flex items-center text-nowrap text-sm font-medium text-bv-primary group-hover:underline">View all &gt;</span>
+            <span class="flex items-center text-nowrap text-sm font-medium text-bv-primary group-hover:underline" i18n="Link at the bottom of a card on the Collection page">View all &gt;</span>
         </app-card-section>
 
-        <app-card-section icon="suit-heart-fill" tone="danger" titleText="Wishlist" description="Keep track of games you want to add to your collection" cardLink="/collection/wishlist">
-            <app-badge class="app-card-section-badge" tone="danger" [text]="isLoadingWishlist() ? 'Loading…' : countLabel(userWishlist$().length, 'game')" />
+        <app-card-section
+            icon="suit-heart-fill"
+            tone="danger"
+            i18n-titleText="Title of the Wishlist card on the Collection page"
+            titleText="Wishlist"
+            i18n-description="Description of the Wishlist card on the Collection page"
+            description="Keep track of games you want to add to your collection"
+            cardLink="/collection/wishlist"
+        >
+            <app-badge class="app-card-section-badge" tone="danger" [text]="isLoadingWishlist() ? loadingLabel : gamesLabel(userWishlist$().length)" />
             <div></div>
-            <span class="flex items-center text-sm font-medium text-bv-primary group-hover:underline">View all &gt;</span>
+            <span class="flex items-center text-sm font-medium text-bv-primary group-hover:underline" i18n="Link at the bottom of a card on the Collection page">View all &gt;</span>
         </app-card-section>
     </div>
 
-    <section class="py-12" aria-label="Recent collection activity">
+    <section class="py-12" i18n-aria-label="Accessible name of the recent activity section on the Collection page" aria-label="Recent collection activity">
         <app-collection-activity />
     </section>
 </container-wrapper>

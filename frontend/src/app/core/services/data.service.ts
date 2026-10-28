@@ -205,7 +205,7 @@ export class DataService {
                 },
                 error: () => {
                     this.userGamesError.set(true)
-                    this.toastService.error('Error retrieving user games')
+                    this.toastService.error($localize`:Toast when My Games could not be loaded:Error retrieving user games`)
                 },
             })
     }
@@ -352,7 +352,7 @@ export class DataService {
                 },
                 error: () => {
                     this.userReviewsError.set(true)
-                    this.toastService.error("Error retrieving user's reviews")
+                    this.toastService.error($localize`:Toast when your ratings could not be loaded:Error retrieving user’s reviews`)
                 },
             })
     }
@@ -452,7 +452,7 @@ export class DataService {
                 },
                 error: () => {
                     this.userWishlistError.set(true)
-                    this.toastService.error("Error retrieving user's wishlist")
+                    this.toastService.error($localize`:Toast when your wishlist could not be loaded:Error retrieving user’s wishlist`)
                 },
             })
     }
@@ -470,7 +470,9 @@ export class DataService {
                     this.userCollectionActivity.set(collectionActivity)
                 },
                 error: () => {
-                    this.toastService.error("Error retrieving user's collection activity")
+                    this.toastService.error(
+                        $localize`:Toast when your recent collection activity could not be loaded:Error retrieving user’s collection activity`,
+                    )
                 },
             })
     }
@@ -898,10 +900,10 @@ export class DataService {
                 this._getUserReviews(accountId)
                 this._getUserCollectionActivity(accountId)
 
-                this.toastService.success('Review saved')
+                this.toastService.success($localize`:Toast after rating a game:Review saved`)
             },
             error: () => {
-                this.toastService.error('Error saving review')
+                this.toastService.error($localize`:Toast when rating a game failed:Error saving review`)
             },
         })
     }
@@ -1007,7 +1009,9 @@ export class DataService {
                 },
                 error: () => {
                     this.userProposalsError.set(true)
-                    this.toastService.error("Error retrieving user's proposals")
+                    this.toastService.error(
+                        $localize`:Toast when your game proposals could not be loaded:Error retrieving user’s proposals`,
+                    )
                 },
             })
     }
@@ -1027,7 +1031,9 @@ export class DataService {
                 },
                 error: () => {
                     this.userProposalStatsError.set(true)
-                    this.toastService.error("Error retrieving user's proposal stats")
+                    this.toastService.error(
+                        $localize`:Toast when the numbers about your game proposals could not be loaded:Error retrieving user’s proposal stats`,
+                    )
                 },
             })
     }

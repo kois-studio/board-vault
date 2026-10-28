@@ -410,7 +410,7 @@
                                         }
                                     </div>
                                     @if (groupLibraryContextComputed()[game.id]; as libraryContext) {
-                                        <p class="mt-3 truncate text-xs text-secondary" i18n="Who owns a game in the group's library; the placeholder is a list of names">Owned by {{ libraryContext.ownerNames.join(', ') }}</p>
+                                        <p class="mt-3 truncate text-xs text-secondary" i18n="Who owns a game in the group's library; the placeholder is a list of names">Owned by {{ formatList(libraryContext.ownerNames) }}</p>
                                     }
                                     @if (groupLibraryContextComputed()[game.id]; as libraryContext) {
                                         @if (libraryContext.lastPlayedAt; as lastPlayedAt) {

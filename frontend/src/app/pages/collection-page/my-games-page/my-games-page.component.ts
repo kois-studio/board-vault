@@ -7,7 +7,7 @@ import { ContainerWrapperComponent } from '../../../components/ui/container-wrap
 import { IconComponent } from '../../../components/ui/icon/icon.component'
 import { PageHeaderComponent } from '../../../components/ui/page-header/page-header.component'
 import { LOADING_KEYS } from '../../../core/enums/loading-keys-enum'
-import { CountPipe } from '../../../core/pipes/count.pipe'
+import { intlLocale } from '../../../core/i18n/format'
 import { GameTitlePipe } from '../../../core/pipes/game-title.pipe'
 import { DataService } from '../../../core/services/data.service'
 import { LoadingService } from '../../../core/services/loading.service'
@@ -15,7 +15,6 @@ import { gameTitle } from '../../../core/utils/gameTitle'
 @Component({
     imports: [
         GameTitlePipe,
-        CountPipe,
         ButtonComponent,
         CardGameComponent,
         ContainerWrapperComponent,
@@ -57,7 +56,7 @@ export class MyGamesPageComponent {
                 (!query || Object.values(game.titleTranslations).some((title) => title?.toLowerCase().includes(query))) &&
                 (players === null || (game.minPlayers <= players && players <= game.maxPlayers)),
         )
-        const byTitle = (a: (typeof games)[number], b: (typeof games)[number]) => gameTitle(a).localeCompare(gameTitle(b))
+        const byTitle = (a: (typeof games)[number], b: (typeof games)[number]) => gameTitle(a).localeCompare(gameTitle(b), intlLocale())
         return [...games].sort((a, b) => {
             if (toolbar && this.sortBy() === 'duration') return (a.gameAvgDuration ?? 0) - (b.gameAvgDuration ?? 0) || byTitle(a, b)
             return byTitle(a, b)

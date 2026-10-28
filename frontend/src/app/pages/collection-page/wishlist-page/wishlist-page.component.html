@@ -1,7 +1,7 @@
-<app-page-header titleText="Wishlist" [showActionButton]="true">
-    Games you'd like to own. When you get one, mark it as bought and it moves to My Games.
+<app-page-header i18n-titleText="Title of the Wishlist page" titleText="Wishlist" [showActionButton]="true">
+    <ng-container i18n="Subtitle of the Wishlist page">Games you’d like to own. When you get one, mark it as bought and it moves to My Games.</ng-container>
 
-    <a appButton class="action-button" icon="plus-lg" routerLink="/collection/browse">Explore Games</a>
+    <a appButton class="action-button" icon="plus-lg" routerLink="/collection/browse" i18n="Button on the Reviews and Wishlist pages that opens Browse">Explore Games</a>
 </app-page-header>
 
 <container-wrapper>
@@ -14,17 +14,17 @@
         </section>
     } @else if (wishlistError()) {
         <div class="text-center text-secondary" role="alert">
-            <p>Wishlist could not be loaded.</p>
-            <p class="mt-2 text-sm">Check your connection and try again.</p>
-            <button appButton class="mt-4" icon="arrow-repeat" (click)="retryWishlist()">Retry</button>
+            <p i18n="Error on the Wishlist page">Wishlist could not be loaded.</p>
+            <p class="mt-2 text-sm" i18n="Under an error when a page could not load">Check your connection and try again.</p>
+            <button appButton class="mt-4" icon="arrow-repeat" (click)="retryWishlist()" i18n="Button under an error">Retry</button>
         </div>
     } @else if (userWishlist$().length === 0) {
         <!-- no data -->
         <section class="rounded-2xl border border-dashed border-bv-border p-8 text-center" aria-labelledby="empty-wishlist-heading">
             <app-icon name="heart" [size]="40" className="text-bv-danger" aria-hidden="true" />
-            <h2 id="empty-wishlist-heading" class="mt-3 text-xl font-semibold">Nothing on your wishlist yet</h2>
-            <p class="mx-auto mt-2 max-w-xl text-secondary">Tap the heart on any game's cover to save it here.</p>
-            <a appButton class="mt-5" routerLink="/collection/browse">Browse games</a>
+            <h2 id="empty-wishlist-heading" class="mt-3 text-xl font-semibold" i18n="Heading of the empty state of the Wishlist page">Nothing on your wishlist yet</h2>
+            <p class="mx-auto mt-2 max-w-xl text-secondary" i18n="Empty state of the Wishlist page">Tap the heart on any game’s cover to save it here.</p>
+            <a appButton class="mt-5" routerLink="/collection/browse" i18n="Button in the empty state of the Wishlist page that opens Browse">Browse games</a>
         </section>
     } @else {
         <section class="grid grid-cols-2 gap-4 py-6 sm:grid-cols-3 lg:grid-cols-5">
@@ -47,10 +47,10 @@
                         icon="shopping-bag"
                         class="mt-2 w-full"
                         [loading]="buyingGameId() === game.id"
-                        [attr.aria-label]="'I bought ' + (game | gameTitle) + ': move it to My Games'"
+                        [attr.aria-label]="boughtLabel(game)"
                         (click)="markAsBought(game)"
                     >
-                        I bought it
+                        <ng-container i18n="Button under a game on the Wishlist page: you bought it, so it moves to My Games">I bought it</ng-container>
                     </button>
                 </div>
             }
