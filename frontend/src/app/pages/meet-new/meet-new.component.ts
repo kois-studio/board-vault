@@ -15,6 +15,7 @@ import { PageHeaderComponent } from '../../components/ui/page-header/page-header
 import { LOADING_KEYS } from '../../core/enums/loading-keys-enum'
 import { formatDateTime } from '../../core/i18n/format'
 import { PlayersPipe } from '../../core/pipes/count.pipe'
+import { CoverAltPipe } from '../../core/pipes/game-title.pipe'
 import { DataService } from '../../core/services/data.service'
 import { LoadingService } from '../../core/services/loading.service'
 import { gameTitle } from '../../core/utils/gameTitle'
@@ -58,6 +59,7 @@ function initialsAvatar(name: string): PublicUserType['avatar'] {
 
 @Component({
     imports: [
+        CoverAltPipe,
         PlayersPipe,
         ReactiveFormsModule,
         RouterLink,
@@ -178,19 +180,23 @@ export class MeetNewComponent {
             return localDate(new Date(now.getTime() + (days + extraWeeks * 7) * DAY_MS))
         }
         return [
-            { label: 'Today', value: this.today },
-            { label: 'Friday', value: nextWeekday(5) },
-            { label: 'Saturday', value: nextWeekday(6) },
-            { label: 'Next Friday', value: nextWeekday(5, 1) },
+            { label: $localize`:Quick date button when planning a game night:Today`, value: this.today },
+            { label: $localize`:Quick date button when planning a game night, the coming Friday:Friday`, value: nextWeekday(5) },
+            { label: $localize`:Quick date button when planning a game night, the coming Saturday:Saturday`, value: nextWeekday(6) },
+            {
+                label: $localize`:Quick date button when planning a game night, the Friday after the coming one:Next Friday`,
+                value: nextWeekday(5, 1),
+            },
         ].filter((option, index, options) => options.findIndex((other) => other.value === option.value) === index)
     })
 
     public readonly whenSummary = computed(() => {
         const date = this.dateValue()
         const time = this.timeValue()
-        if (!date || !time) return 'Choose a day and time'
+        const missing = $localize`:Summary at the bottom of the plan form before a day and time are chosen:Choose a day and time`
+        if (!date || !time) return missing
         const start = new Date(`${date}T${time}`)
-        if (Number.isNaN(start.getTime())) return 'Choose a day and time'
+        if (Number.isNaN(start.getTime())) return missing
         const day = formatDateTime(start, { weekday: 'short', day: 'numeric', month: 'short' })
         return `${day} · ${time}`
     })
@@ -266,9 +272,15 @@ export class MeetNewComponent {
     }
 
     ownersLabel(entry: PlanGame): string {
-        if (entry.owners.length === 0) return 'Nobody invited owns it'
-        if (entry.owners.length <= 2) return `Bring: ${entry.owners.join(', ')}`
-        return `Bring: ${entry.owners.slice(0, 2).join(', ')} +${entry.owners.length - 2}`
+        if (entry.owners.length === 0) {
+            return $localize`:Under a game in the plan form's shortlist when none of the invited people own it:Nobody invited owns it`
+        }
+        // Commas only, as the list may be cut short before the "+2".
+        const names = entry.owners.slice(0, 2).join(', ')
+        if (entry.owners.length <= 2) {
+            return $localize`:Under a game in the plan form's shortlist, who can bring it; the placeholder is one or two names:Bring: ${names}:names:`
+        }
+        return $localize`:Under a game in the plan form's shortlist, who can bring it; one or two names, then how many more:Bring: ${names}:names: +${entry.owners.length - 2}:count:`
     }
 
     retryGroups(): void {
@@ -303,10 +315,12 @@ export class MeetNewComponent {
                 }),
             )
             this.dataService.refreshUserMeets()
-            this.toastService.success('Game night planned.')
+            this.toastService.success($localize`:Toast after planning a game night:Game night planned.`)
             await this.router.navigate(['/play/upcoming-sessions'])
         } catch {
-            this.toastService.error('Could not plan the game night. Please try again.')
+            this.toastService.error(
+                $localize`:Toast when a game night could not be planned:Could not plan the game night. Please try again.`,
+            )
         } finally {
             this.isCreating.set(false)
         }

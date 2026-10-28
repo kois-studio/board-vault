@@ -26,8 +26,10 @@ import { IconComponent } from '../../components/ui/icon/icon.component'
 import { ImageBackgroundComponent } from '../../components/ui/image-background/image-background.component'
 import { InPageLinkDirective } from '../../components/ui/in-page-link/in-page-link.directive'
 import { StarRatingComponent } from '../../components/ui/star-rating/star-rating.component'
-import { CountPipe, PlayersPipe } from '../../core/pipes/count.pipe'
+import { formatList, intlLocale } from '../../core/i18n/format'
+import { PlayersPipe } from '../../core/pipes/count.pipe'
 import { CustomDatePipe } from '../../core/pipes/customDate.pipe'
+import { CoverAltPipe } from '../../core/pipes/game-title.pipe'
 import { DataService } from '../../core/services/data.service'
 import { ShelfEditionService } from '../../core/services/shelf-edition.service'
 import type { Nullable } from '../../core/types/commons.type'
@@ -36,7 +38,7 @@ import { canTakePart } from '../../core/utils/groupPeople'
 import { formatWinners, nameWithStanding } from '../../core/utils/historyParticipants'
 import { rsvpToast } from '../../core/utils/rsvp'
 import { downloadSessionIcs, googleCalendarUrl } from '../../core/utils/sessionCalendar'
-import { relativeDay, type SessionDateParts, sessionDateParts } from '../../core/utils/sessionTiming'
+import { relativeDay, type SessionDateParts, sessionDate, sessionDateParts } from '../../core/utils/sessionTiming'
 /** Someone in this session: a member account, or a group person in sessions recorded with group people. */
 export type SessionPerson = {
     /** `a<accountId>` or `p<groupPersonId>`, the same key the results use. */
@@ -58,7 +60,7 @@ const resultKey = (entry: Pick<GameResultEntryType, 'accountId' | 'groupPersonId
 @Component({
     imports: [
         InPageLinkDirective,
-        CountPipe,
+        CoverAltPipe,
         PlayersPipe,
         ButtonComponent,
         SessionSummaryComponent,
@@ -276,7 +278,9 @@ export class MeetViewComponent {
             score: this.roundResultDraft[index]?.score ?? null,
         }))
         if (results.some((result) => result.score !== null && (!Number.isInteger(result.score) || Math.abs(result.score) > 1000000))) {
-            this.toastService.error('Scores must be whole numbers between −1000000 and 1000000.')
+            this.toastService.error(
+                $localize`:Toast when a score on a game night is not a whole number or is too big:Scores must be whole numbers between −1000000 and 1000000.`,
+            )
             return
         }
         this.savingRound = true
@@ -286,9 +290,13 @@ export class MeetViewComponent {
             )
             this.resultPlay = null
             this.dataService.refreshUserHistory()
-            this.toastService.success('Results saved for this play.')
+            this.toastService.success(
+                $localize`:Toast after saving who won one play of a game on a game night:Results saved for this play.`,
+            )
         } catch {
-            this.actionError.set('The results could not be saved. The session may have changed; reload it before trying again.')
+            this.actionError.set(
+                $localize`:Error on a game night's page when the results of one play could not be saved:The results could not be saved. The session may have changed; reload it before trying again.`,
+            )
         } finally {
             this.savingRound = false
             this.changeDetector.markForCheck()
@@ -300,8 +308,9 @@ export class MeetViewComponent {
     ownershipTargetName(gameId: number): string {
         const target = this.ownershipTarget[gameId]
         return target === 'me'
-            ? 'My Games'
-            : (this.ownershipPeople.find((person) => String(person.person.id) === target)?.person.displayName ?? 'Choose an owner')
+            ? $localize`:Your own collection, as a choice of owner for a game played on a game night:My Games`
+            : (this.ownershipPeople.find((person) => String(person.person.id) === target)?.person.displayName ??
+                  $localize`:First choice of the owner list for a game played on a game night:Choose an owner`)
     }
     async recordOwnership(gameId: number): Promise<void> {
         const target = this.ownershipTarget[gameId]
@@ -318,9 +327,13 @@ export class MeetViewComponent {
             this.ownershipSaved[gameId] = true
             this.dataService.refreshUserGames()
             this.dataService.refreshUserGroups()
-            this.toastService.success(`Ownership recorded for ${this.ownershipTargetName(gameId)}.`)
+            this.toastService.success(
+                $localize`:Toast after recording who owns a game played on a game night; the placeholder is a name or My Games:Ownership recorded for ${this.ownershipTargetName(gameId)}:owner:.`,
+            )
         } catch {
-            this.toastService.error('Could not record ownership. Your session is already saved; try again.')
+            this.toastService.error(
+                $localize`:Toast when the owner of a game played on a game night could not be recorded:Could not record ownership. Your session is already saved; try again.`,
+            )
         } finally {
             this.ownershipSaving[gameId] = false
             this.changeDetector.markForCheck()
@@ -417,11 +430,18 @@ export class MeetViewComponent {
     get sessionStats(): Array<SessionStat> {
         const upcoming = this.meetData?.status === 'scheduled' || this.meetData?.status === 'active'
         return [
-            { label: 'Invited', value: this.attendeeCount },
-            upcoming ? { label: 'Going', value: this.goingCount } : { label: 'Attended', value: this.attendedCount },
-            { label: 'Shortlisted', value: this.plannedGames.length },
-            { label: 'Played', value: this.playedGamesCount },
-            ...(this.skippedGamesCount > 0 ? [{ label: 'Skipped', value: this.skippedGamesCount }] : []),
+            { label: $localize`:Count at the top of a game night's page, people invited:Invited`, value: this.attendeeCount },
+            upcoming
+                ? {
+                      label: $localize`:going count|Count at the top of a game night's page, people who said they are going:Going`,
+                      value: this.goingCount,
+                  }
+                : { label: $localize`:Count at the top of a game night's page, people who came:Attended`, value: this.attendedCount },
+            { label: $localize`:Count on a game night's page, games on the shortlist:Shortlisted`, value: this.plannedGames.length },
+            { label: $localize`:Count on a game night's page, games played:Played`, value: this.playedGamesCount },
+            ...(this.skippedGamesCount > 0
+                ? [{ label: $localize`:Count on a game night's page, shortlisted games not played:Skipped`, value: this.skippedGamesCount }]
+                : []),
         ]
     }
 
@@ -431,6 +451,11 @@ export class MeetViewComponent {
 
     get relativeDate(): string {
         return this.meetData ? relativeDay(this.meetData.meetDate) : ''
+    }
+
+    /** "Sat 24 Oct", for the dialog that starts a night early. */
+    get plannedDayLabel(): string {
+        return this.meetData ? sessionDate(this.meetData, { weekday: 'short', day: 'numeric', month: 'short' }) : ''
     }
 
     // #region People
@@ -487,16 +512,20 @@ export class MeetViewComponent {
 
     rsvpLabel(person: SessionPerson): string {
         const rsvp = this.rsvpOf(person)
-        if (rsvp === 'accepted') return 'Going'
-        if (rsvp === 'declined') return 'Can’t make it'
+        if (rsvp === 'accepted') return $localize`:Answer of a person invited to a game night:Going`
+        if (rsvp === 'declined') return $localize`:Answer of a person invited to a game night:Can’t make it`
         // Group people without an account can't answer; the organizer speaks for them.
-        return person.personId !== null && person.accountId === null ? 'No reply needed' : 'Hasn’t answered'
+        return person.personId !== null && person.accountId === null
+            ? $localize`:Under a person without an account invited to a game night, who cannot answer:No reply needed`
+            : $localize`:Under a person invited to a game night who has not answered:Hasn’t answered`
     }
 
     attended(person: SessionPerson): boolean {
-        return person.personId !== null
-            ? this.getGroupPersonAttendanceStatus(person.personId) === 'Was there'
-            : this.getMemberAttendanceStatus(person.accountId ?? 0) === 'Was there'
+        const statuses =
+            person.personId !== null
+                ? this.meetData?.participantStatuses?.find((attendee) => attendee.groupPersonId === person.personId)
+                : this.meetData?.attendeeStatuses.find((attendee) => attendee.accountId === person.accountId)
+        return statuses?.attendanceStatus === 'attended'
     }
 
     toggleAttended(person: SessionPerson): void {
@@ -531,7 +560,7 @@ export class MeetViewComponent {
                         key: `a${id}`,
                         accountId: id,
                         personId: null,
-                        displayName: 'Former player',
+                        displayName: $localize`:Name shown for someone who played on a game night and has left the group:Former player`,
                         standing: 'left',
                         avatar: { type: 'initials', initials: '?', backgroundColor: '#64748b', iconName: null, emoji: null },
                     } satisfies SessionPerson)
@@ -540,7 +569,7 @@ export class MeetViewComponent {
                 key: `a${id}`,
                 personId: null,
                 displayName: people.some((entry) => entry.accountId === id)
-                    ? `${person.displayName} (separate account entry)`
+                    ? $localize`:A name on a game night recorded twice, once by account and once as a group person:${person.displayName}:name: (separate account entry)`
                     : person.displayName,
             }
         })
@@ -595,7 +624,62 @@ export class MeetViewComponent {
     }
 
     namesOf(people: Array<SessionPerson>): string {
-        return people.map((person) => person.displayName).join(', ')
+        return formatList(people.map((person) => person.displayName))
+    }
+
+    // #region Labels
+
+    private readonly customDate = new CustomDatePipe()
+
+    viewLabel(title: string): string {
+        return $localize`:Accessible name of a game's cover link in a recorded game night; the placeholder is the game title:View ${title}:title:`
+    }
+
+    playedByLabel(names: string): string {
+        return $localize`:Who played a game in a recorded night; the placeholder is a list of names:Played by ${names}:names:`
+    }
+
+    unmarkLabel(title: string): string {
+        return $localize`:Accessible name of the Unmark button of a played game; the placeholder is the game title:Unmark ${title}:title: as played`
+    }
+
+    whoPlayedLabel(title: string): string {
+        return $localize`:Accessible name of the people buttons of a played game; the placeholder is the game title:Who played ${title}:title:`
+    }
+
+    scoreLabel(name: string): string {
+        return $localize`:Accessible name of a person's score field; the placeholder is their name:Score for ${name}:name:`
+    }
+
+    wonLabel(name: string): string {
+        return $localize`:Accessible name of the Won button of a person; the placeholder is their name:${name}:name: won`
+    }
+
+    wasThereLabel(name: string): string {
+        return $localize`:Accessible name of the There button of a person on a game night; the placeholder is their name:${name}:name: was there`
+    }
+
+    readonly playedSoThereLabel =
+        $localize`:Tooltip of the There button of a person who played a game on the night, so it cannot be unmarked:Played a game, so was there`
+
+    /** "Take back your vote for Catan, 2 votes" / "I’d play Catan, 1 vote", for the vote button. */
+    voteLabel(title: string, voted: boolean, count: number): string {
+        const one = new Intl.PluralRules(intlLocale()).select(count) === 'one'
+        if (voted) {
+            return one
+                ? $localize`:vote button with your vote, one|Accessible name of the vote button of a shortlisted game you voted for; the game title, then how many votes:Take back your vote for ${title}:title:, ${count}:count: vote`
+                : $localize`:vote button with your vote, other|Accessible name of the vote button of a shortlisted game you voted for; the game title, then how many votes:Take back your vote for ${title}:title:, ${count}:count: votes`
+        }
+        return one
+            ? $localize`:vote button without your vote, one|Accessible name of the vote button of a shortlisted game; the game title, then how many votes:I’d play ${title}:title:, ${count}:count: vote`
+            : $localize`:vote button without your vote, other|Accessible name of the vote button of a shortlisted game; the game title, then how many votes:I’d play ${title}:title:, ${count}:count: votes`
+    }
+
+    /** "Last played 2 October 2026", or "New to this group", on a suggestion's card. */
+    lastPlayedLabel(lastPlayedAt: string | null): string {
+        return lastPlayedAt
+            ? $localize`:On a suggested game's card; the placeholder is the date the group last played it:Last played ${this.customDate.transform(lastPlayedAt)}:date:`
+            : $localize`:On a suggested game's card when the group has never played it:New to this group`
     }
 
     winnersSummary(gameId: number): string {
@@ -656,10 +740,14 @@ export class MeetViewComponent {
             this.cancelEditingResults()
             // Winners show in Play › History and the group page.
             this.dataService.refreshUserHistory()
-            this.toastService.success('Results saved.')
+            this.toastService.success($localize`:Toast after saving who won a game on a game night:Results saved.`)
         } catch {
-            this.actionError.set('Could not save the results. Your changes are still in the form; try again.')
-            this.toastService.error('Could not save the results.')
+            this.actionError.set(
+                $localize`:Error on a game night's page when the results could not be saved:Could not save the results. Your changes are still in the form; try again.`,
+            )
+            this.toastService.error(
+                $localize`:Toast when the results of a game on a game night could not be saved:Could not save the results.`,
+            )
         } finally {
             this.changeDetector.markForCheck()
             this.isSavingResults = false
@@ -804,29 +892,13 @@ export class MeetViewComponent {
             await firstValueFrom(this.api.saveGameReview(this.userData.id, gameId, review))
             this.postSessionRatings[gameId] = review
             this.dataService.refreshGameReviews()
-            this.toastService.success('Your rating was saved.')
+            this.toastService.success($localize`:Toast after rating a game you played on a game night:Your rating was saved.`)
         } catch {
-            this.toastService.error('Could not save your rating.')
+            this.toastService.error($localize`:Toast when your rating of a game could not be saved:Could not save your rating.`)
         } finally {
             this.changeDetector.markForCheck()
             this.savingPostSessionRatings[gameId] = false
         }
-    }
-
-    getMemberAttendanceStatus(memberId: number): string {
-        const attendanceStatus = this.meetData?.attendeeStatuses.find((attendee) => attendee.accountId === memberId)?.attendanceStatus
-        if (attendanceStatus === 'attended') return 'Was there'
-        if (attendanceStatus === 'absent') return 'Was absent'
-        return 'Not recorded'
-    }
-
-    getGroupPersonAttendanceStatus(personId: number): string {
-        const attendanceStatus = this.meetData?.participantStatuses?.find(
-            (attendee) => attendee.groupPersonId === personId,
-        )?.attendanceStatus
-        if (attendanceStatus === 'attended') return 'Was there'
-        if (attendanceStatus === 'absent') return 'Was absent'
-        return 'Not recorded'
     }
 
     isGroupPersonAttendeeRemovalBlocked(personId: number): boolean {
@@ -837,13 +909,15 @@ export class MeetViewComponent {
 
     getGroupPersonToggleLabel(personId: number): string {
         const person = this.groupPeople.find((candidate) => candidate.person.id === personId)
-        const name = person?.person.displayName ?? 'this person'
-        if (!this.meetData?.participants?.includes(personId)) return `Add ${name} to session attendees`
-        if (this.meetData.participants.length <= 1) return `Keep ${name} as the session attendee`
+        const name =
+            person?.person.displayName ??
+            $localize`:Stands for a person whose name is not known, in a button label such as Add this person to session attendees:this person`
+        if (!this.meetData?.participants?.includes(personId)) return inviteAddLabel(name)
+        if (this.meetData.participants.length <= 1) return inviteLastLabel(name)
         if (this.meetData.playedGamePersonParticipants?.some((game) => game.participantIds.includes(personId))) {
-            return `Keep ${name} as an attendee because they are recorded for a played game`
+            return invitePlayedLabel(name)
         }
-        return `Remove ${name} from session attendees`
+        return inviteRemoveLabel(name)
     }
 
     isAttendeeRemovalBlocked(memberId: number): boolean {
@@ -862,14 +936,17 @@ export class MeetViewComponent {
 
     getAttendeeToggleLabel(memberId: number): string {
         const member = this.groupData?.members.find((candidate) => candidate.id === memberId)
-        const name = member?.displayName || member?.username || 'this member'
+        const name =
+            member?.displayName ||
+            member?.username ||
+            $localize`:Stands for a member whose name is not known, in a button label such as Add this member to session attendees:this member`
 
-        if (!this.meetData?.attendees.includes(memberId)) return `Add ${name} to session attendees`
-        if (this.meetData.attendees.length <= 1) return `Keep ${name} as the session attendee`
+        if (!this.meetData?.attendees.includes(memberId)) return inviteAddLabel(name)
+        if (this.meetData.attendees.length <= 1) return inviteLastLabel(name)
         if (this.meetData.playedGameParticipants.some((game) => game.participantIds.includes(memberId))) {
-            return `Keep ${name} as an attendee because they are recorded for a played game`
+            return invitePlayedLabel(name)
         }
-        return `Remove ${name} from session attendees`
+        return inviteRemoveLabel(name)
     }
 
     async updateStatus(status: 'active' | 'completed' | 'cancelled', noGamesPlayed = false): Promise<void> {
@@ -887,10 +964,14 @@ export class MeetViewComponent {
             this.dataService.refreshUserMeets()
             // A completed session joins the history shown in Play › History and on Home.
             if (result.status === 'completed') this.dataService.refreshUserHistory()
-            this.toastService.success(`Session marked as ${status}.`)
+            this.toastService.success(statusToast(status))
         } catch {
-            this.actionError.set('Could not update the session status. Try again from this page.')
-            this.toastService.error('Could not update the session status.')
+            this.actionError.set(
+                $localize`:Error on a game night's page when it could not be started, finished or cancelled:Could not update the session status. Try again from this page.`,
+            )
+            this.toastService.error(
+                $localize`:Toast when a game night could not be started, finished or cancelled:Could not update the session status.`,
+            )
         } finally {
             this.changeDetector.markForCheck()
             this.isUpdatingStatus = false
@@ -917,8 +998,10 @@ export class MeetViewComponent {
             this.dataService.refreshUserMeets()
             void this.loadSuggestions()
         } catch {
-            this.actionError.set('Could not save your RSVP. Try again from this page.')
-            this.toastService.error('Could not save your RSVP.')
+            this.actionError.set(
+                $localize`:Error on a game night's page when your answer could not be saved:Could not save your RSVP. Try again from this page.`,
+            )
+            this.toastService.error($localize`:Toast when your answer to a game night could not be saved:Could not save your RSVP.`)
         } finally {
             this.changeDetector.markForCheck()
             this.isUpdatingRsvp = false
@@ -942,11 +1025,13 @@ export class MeetViewComponent {
         this.isUpdatingAttendance = true
         try {
             await firstValueFrom(this.api.updateSessionAttendance(this.meetData.id, { attendedIds: nextAttendedIds }))
-            this.toastService.success('Attendance saved.')
+            this.toastService.success($localize`:Toast after saving who came to a game night:Attendance saved.`)
         } catch {
             this.meetData.attendeeStatuses = previousStatuses
-            this.actionError.set('Could not save attendance. Your previous attendance state was restored; try again.')
-            this.toastService.error('Could not save attendance.')
+            this.actionError.set(
+                $localize`:Error on a game night's page when who came could not be saved:Could not save attendance. Your previous attendance state was restored; try again.`,
+            )
+            this.toastService.error($localize`:Toast when who came to a game night could not be saved:Could not save attendance.`)
         } finally {
             this.changeDetector.markForCheck()
             this.isUpdatingAttendance = false
@@ -970,11 +1055,13 @@ export class MeetViewComponent {
         this.isUpdatingAttendance = true
         try {
             await firstValueFrom(this.api.updateSessionAttendance(this.meetData.id, { attendedPersonIds: nextAttendedIds }))
-            this.toastService.success('Attendance saved.')
+            this.toastService.success($localize`:Toast after saving who came to a game night:Attendance saved.`)
         } catch {
             this.meetData.participantStatuses = previousStatuses
-            this.actionError.set('Could not save attendance. Your previous attendance state was restored; try again.')
-            this.toastService.error('Could not save attendance.')
+            this.actionError.set(
+                $localize`:Error on a game night's page when who came could not be saved:Could not save attendance. Your previous attendance state was restored; try again.`,
+            )
+            this.toastService.error($localize`:Toast when who came to a game night could not be saved:Could not save attendance.`)
         } finally {
             this.changeDetector.markForCheck()
             this.isUpdatingAttendance = false
@@ -1108,9 +1195,12 @@ export class MeetViewComponent {
     /** "Ana, Bo" for the people who voted, by their names in the group. */
     voterNames(gameId: number): string {
         const members = new Map((this.groupData?.members ?? []).map((member) => [member.id, member.displayName || member.username]))
-        return this.votesFor(gameId)
-            .map((accountId) => (accountId === this.userData?.id ? 'you' : (members.get(accountId) ?? 'Someone')))
-            .join(', ')
+        const names = this.votesFor(gameId).map((accountId) =>
+            accountId === this.userData?.id
+                ? $localize`:You, in the list of who wants to play a game on a game night, such as Wanted by Ana and you:you`
+                : (members.get(accountId) ?? $localize`:Name shown for a person whose name is not known:Someone`),
+        )
+        return formatList(names)
     }
 
     // #region who brings what (#115)
@@ -1143,10 +1233,18 @@ export class MeetViewComponent {
                 : null
         if (bringer.accountId !== null) {
             const member = this.groupData?.members.find((entry) => entry.id === bringer.accountId)
-            return { name: member?.displayName || member?.username || 'Someone', isMe: bringer.accountId === this.userData?.id, copy }
+            return {
+                name: member?.displayName || member?.username || $localize`:Name shown for a person whose name is not known:Someone`,
+                isMe: bringer.accountId === this.userData?.id,
+                copy,
+            }
         }
         const person = this.groupPeople.find((entry) => entry.person.id === bringer.groupPersonId)
-        return { name: person?.person.displayName ?? 'Someone', isMe: false, copy }
+        return {
+            name: person?.person.displayName ?? $localize`:Name shown for a person whose name is not known:Someone`,
+            isMe: false,
+            copy,
+        }
     }
 
     /** You are coming and own the game, so you can say you'll bring it. */
@@ -1171,7 +1269,9 @@ export class MeetViewComponent {
             // Home lists what you are bringing.
             this.dataService.refreshUserMeets()
         } catch {
-            this.toastService.error('Could not save who brings the game. Try again.')
+            this.toastService.error(
+                $localize`:Toast when who brings a game to a game night could not be saved:Could not save who brings the game. Try again.`,
+            )
         } finally {
             this.bringingGameId.set(null)
             this.changeDetector.markForCheck()
@@ -1194,7 +1294,9 @@ export class MeetViewComponent {
             const result = await firstValueFrom(this.api.setSessionGameVote(this.meetData.id, gameId, !this.hasMyVote(gameId)))
             this.meetData.gameVotes = result.gameVotes
         } catch {
-            this.toastService.error('Your vote could not be saved. Try again.')
+            this.toastService.error(
+                $localize`:Toast when your vote for a shortlisted game could not be saved:Your vote could not be saved. Try again.`,
+            )
         } finally {
             this.votingGameId.set(null)
             this.changeDetector.markForCheck()
@@ -1229,11 +1331,13 @@ export class MeetViewComponent {
             )
             this.meetData.plannedGames = result.plannedGameIds
             this.meetDataCopyOriginal = JSON.parse(JSON.stringify(this.meetData))
-            this.toastService.success('Shortlist saved.')
+            this.toastService.success($localize`:Toast after saving a game night's shortlist:Shortlist saved.`)
         } catch {
             this.plannedGameIdsDraft = previousIds
-            this.actionError.set('Could not save the shortlist. Your previous shortlist is still active; try again.')
-            this.toastService.error('Could not save the shortlist.')
+            this.actionError.set(
+                $localize`:Error on a game night's page when the shortlist could not be saved:Could not save the shortlist. Your previous shortlist is still active; try again.`,
+            )
+            this.toastService.error($localize`:Toast when a game night's shortlist could not be saved:Could not save the shortlist.`)
         } finally {
             this.changeDetector.markForCheck()
             this.isUpdatingShortlist = false
@@ -1287,9 +1391,13 @@ export class MeetViewComponent {
             this.meetData.gameVotes = result.gameVotes
             this.plannedGameIdsDraft = [...result.plannedGameIds]
             this.meetDataCopyOriginal = JSON.parse(JSON.stringify(this.meetData))
-            this.toastService.success('Added to the shortlist, with your vote.')
+            this.toastService.success(
+                $localize`:Toast after adding a suggested game to a game night's shortlist:Added to the shortlist, with your vote.`,
+            )
         } catch {
-            this.toastService.error('Could not add the game to the shortlist.')
+            this.toastService.error(
+                $localize`:Toast when a suggested game could not be added to a game night's shortlist:Could not add the game to the shortlist.`,
+            )
         } finally {
             this.isUpdatingShortlist = false
             this.changeDetector.markForCheck()
@@ -1315,8 +1423,8 @@ export class MeetViewComponent {
         if (this.isAttendeeRemovalBlocked(memberId)) {
             this.toastService.error(
                 this.meetData.attendees.length <= 1
-                    ? 'A session must retain at least one attendee.'
-                    : 'Remove this person from played games before removing them from the session.',
+                    ? $localize`:Toast when you try to uninvite the only person invited to a game night:A session must retain at least one attendee.`
+                    : $localize`:Toast when you try to uninvite a person who played a game on the night:Remove this person from played games before removing them from the session.`,
             )
             return
         }
@@ -1346,8 +1454,8 @@ export class MeetViewComponent {
         if (this.isGroupPersonAttendeeRemovalBlocked(personId)) {
             this.toastService.error(
                 this.meetData.participants?.length === 1
-                    ? 'A session must retain at least one attendee.'
-                    : 'Remove this person from played games before removing them from the session.',
+                    ? $localize`:Toast when you try to uninvite the only person invited to a game night:A session must retain at least one attendee.`
+                    : $localize`:Toast when you try to uninvite a person who played a game on the night:Remove this person from played games before removing them from the session.`,
             )
             return
         }
@@ -1412,7 +1520,9 @@ export class MeetViewComponent {
             this.meetData.playedGames = previousPlayedGames
             this.meetData.playedGameParticipants = previousParticipants
             this.meetData.playedGamePersonParticipants = previousPersonParticipants
-            this.actionError.set('Could not save the played-game state. Your previous state was restored; try again.')
+            this.actionError.set(
+                $localize`:Error on a game night's page when marking a game as played could not be saved:Could not save the played-game state. Your previous state was restored; try again.`,
+            )
         } finally {
             this.changeDetector.markForCheck()
             this.isPersistingChanges = false
@@ -1424,7 +1534,9 @@ export class MeetViewComponent {
 
         const currentParticipantIds = this.getGameParticipantIds(gameId)
         if (currentParticipantIds.includes(memberId) && currentParticipantIds.length === 1) {
-            this.toastService.error('Keep at least one participant for each played game.')
+            this.toastService.error(
+                $localize`:Toast when you try to take the last player out of a played game:Keep at least one participant for each played game.`,
+            )
             return
         }
 
@@ -1446,8 +1558,12 @@ export class MeetViewComponent {
             await this.#saveGamesPlayedSelection()
         } catch {
             this.meetData.playedGameParticipants = previousParticipants
-            this.actionError.set('Could not save the played-game participants. Your previous state was restored; try again.')
-            this.toastService.error('Could not save the played game changes.')
+            this.actionError.set(
+                $localize`:Error on a game night's page when who played a game could not be saved:Could not save the played-game participants. Your previous state was restored; try again.`,
+            )
+            this.toastService.error(
+                $localize`:Toast when who played a game on a game night could not be saved:Could not save the played game changes.`,
+            )
         } finally {
             this.changeDetector.markForCheck()
             this.isPersistingChanges = false
@@ -1466,7 +1582,9 @@ export class MeetViewComponent {
 
         const currentParticipantIds = this.getGameParticipantPersonIds(gameId)
         if (currentParticipantIds.includes(personId) && currentParticipantIds.length === 1) {
-            this.toastService.error('Keep at least one participant for each played game.')
+            this.toastService.error(
+                $localize`:Toast when you try to take the last player out of a played game:Keep at least one participant for each played game.`,
+            )
             return
         }
 
@@ -1488,8 +1606,12 @@ export class MeetViewComponent {
             await this.#saveGamesPlayedSelection()
         } catch {
             this.meetData.playedGamePersonParticipants = previousParticipants
-            this.actionError.set('Could not save the played-game participants. Your previous state was restored; try again.')
-            this.toastService.error('Could not save the played game changes.')
+            this.actionError.set(
+                $localize`:Error on a game night's page when who played a game could not be saved:Could not save the played-game participants. Your previous state was restored; try again.`,
+            )
+            this.toastService.error(
+                $localize`:Toast when who played a game on a game night could not be saved:Could not save the played game changes.`,
+            )
         } finally {
             this.changeDetector.markForCheck()
             this.isPersistingChanges = false
@@ -1616,6 +1738,28 @@ export class MeetViewComponent {
         this.meetDataCopyOriginal.plannedGames = [...this.meetData.plannedGames]
         this.meetDataCopyOriginal.skippedGames = [...result.skippedGameIds]
     }
+}
+
+function inviteAddLabel(name: string): string {
+    return $localize`:Accessible name of a person's button in the invite list of a game night:Add ${name}:name: to session attendees`
+}
+
+function inviteLastLabel(name: string): string {
+    return $localize`:Accessible name of the button of the only person invited to a game night, which cannot be removed:Keep ${name}:name: as the session attendee`
+}
+
+function invitePlayedLabel(name: string): string {
+    return $localize`:Accessible name of the button of a person invited to a game night who played a game, so cannot be removed:Keep ${name}:name: as an attendee because they are recorded for a played game`
+}
+
+function inviteRemoveLabel(name: string): string {
+    return $localize`:Accessible name of a person's button in the invite list of a game night:Remove ${name}:name: from session attendees`
+}
+
+function statusToast(status: 'active' | 'completed' | 'cancelled'): string {
+    if (status === 'active') return $localize`:Toast after starting a game night:Session marked as active.`
+    if (status === 'completed') return $localize`:Toast after finishing a game night:Session marked as completed.`
+    return $localize`:Toast after cancelling a game night:Session marked as cancelled.`
 }
 
 function initialsOf(name: string): string {

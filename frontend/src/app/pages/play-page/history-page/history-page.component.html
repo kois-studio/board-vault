@@ -1,36 +1,36 @@
 <app-page-header [titleText]="historyTitle()" [showActionButton]="true">
     @if (groupIdFilter()) {
-        The game nights this group has recorded, newest first.
+        <ng-container i18n="Subtitle of the History page filtered to one group">The game nights this group has recorded, newest first.</ng-container>
     } @else {
-        The game nights your groups have recorded, newest first.
+        <ng-container i18n="Subtitle of the History page">The game nights your groups have recorded, newest first.</ng-container>
     }
-    <a appButton class="action-button text-center" icon="plus-lg" routerLink="/play/log-session" [queryParams]="{ groupId: groupIdFilter() }">Record a session</a>
+    <a appButton class="action-button text-center" icon="plus-lg" routerLink="/play/log-session" [queryParams]="{ groupId: groupIdFilter() }" i18n="Button on History that opens the form to record a game night">Record a session</a>
 </app-page-header>
 
 <container-wrapper>
     @if (isLoadingHistory()) {
-        <div role="status" aria-live="polite"><span class="sr-only">Loading history…</span><app-skeleton-history /></div>
+        <div role="status" aria-live="polite"><span class="sr-only" i18n="History page while it loads, for screen readers">Loading history…</span><app-skeleton-history /></div>
     } @else if (historyError()) {
         <div class="py-8 text-center text-bv-text-muted" role="alert">
-            <p>History could not be loaded.</p>
-            <p class="mb-4 mt-2 text-sm">Check your connection and try again.</p>
-            <button appButton icon="arrow-repeat" (click)="retryHistory()">Retry</button>
+            <p i18n="History page when the history could not load">History could not be loaded.</p>
+            <p class="mb-4 mt-2 text-sm" i18n="Under an error that a list could not load">Check your connection and try again.</p>
+            <button appButton icon="arrow-repeat" (click)="retryHistory()" i18n="Button that loads the history again">Retry</button>
         </div>
     } @else {
-        <section class="mb-8 flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between" aria-label="History summary">
+        <section class="mb-8 flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between" i18n-aria-label="Accessible name of the numbers at the top of History" aria-label="History summary">
             @if (hasFilteredHistory()) {
                 <dl class="grid grid-cols-2 gap-3 sm:grid-cols-4 lg:flex-1">
-                    <div class="rounded-lg border border-bv-border bg-bv-surface px-4 py-3"><dt class="text-xs text-bv-text-muted">Sessions</dt><dd class="text-2xl font-bold">{{ historySummary().sessions }}</dd></div>
-                    <div class="rounded-lg border border-bv-border bg-bv-surface px-4 py-3"><dt class="text-xs text-bv-text-muted">Games played</dt><dd class="text-2xl font-bold">{{ historySummary().gamesPlayed }}</dd></div>
-                    <div class="rounded-lg border border-bv-border bg-bv-surface px-4 py-3"><dt class="text-xs text-bv-text-muted">Different games</dt><dd class="text-2xl font-bold">{{ historySummary().uniqueGames }}</dd></div>
-                    <div class="rounded-lg border border-bv-border bg-bv-surface px-4 py-3"><dt class="text-xs text-bv-text-muted">People</dt><dd class="text-2xl font-bold">{{ historySummary().people }}</dd></div>
+                    <div class="rounded-lg border border-bv-border bg-bv-surface px-4 py-3"><dt class="text-xs text-bv-text-muted" i18n="history stat sessions|Number at the top of History: game nights recorded">Sessions</dt><dd class="text-2xl font-bold">{{ historySummary().sessions }}</dd></div>
+                    <div class="rounded-lg border border-bv-border bg-bv-surface px-4 py-3"><dt class="text-xs text-bv-text-muted" i18n="history stat plays|Number at the top of History: games played, counting each play">Games played</dt><dd class="text-2xl font-bold">{{ historySummary().gamesPlayed }}</dd></div>
+                    <div class="rounded-lg border border-bv-border bg-bv-surface px-4 py-3"><dt class="text-xs text-bv-text-muted" i18n="Number at the top of History: how many different games were played">Different games</dt><dd class="text-2xl font-bold">{{ historySummary().uniqueGames }}</dd></div>
+                    <div class="rounded-lg border border-bv-border bg-bv-surface px-4 py-3"><dt class="text-xs text-bv-text-muted" i18n="history stat people|Number at the top of History: how many people came">People</dt><dd class="text-2xl font-bold">{{ historySummary().people }}</dd></div>
                 </dl>
             }
             @if (userGroups$().length > 1 || groupIdFilter()) {
                 <label class="grid gap-1 text-sm lg:w-64">
-                    <span class="font-medium">Group</span>
+                    <span class="font-medium" i18n="Label of the group filter on History">Group</span>
                     <select id="history-group-filter" class="app-input" [value]="groupIdFilter() ?? ''" (change)="setGroupFilter($event)">
-                        <option value="" [selected]="!groupIdFilter()">All groups</option>
+                        <option value="" [selected]="!groupIdFilter()" i18n="Option of the group filter on History">All groups</option>
                         @for (group of userGroups$(); track group.id) {
                             <option [value]="group.id" [selected]="group.id === groupIdFilter()">{{ group.name }}</option>
                         }
@@ -42,10 +42,10 @@
         @if (hasFilteredHistory() && (mostPlayedSummary() || groupIdFilter())) {
             <div class="-mt-4 mb-8 flex flex-wrap items-center justify-between gap-3 text-sm">
                 @if (mostPlayedSummary(); as mostPlayed) {
-                    <p class="text-bv-text-muted">Most played: <strong class="text-bv-text">{{ mostPlayed }}</strong></p>
+                    <p class="text-bv-text-muted" i18n="On History; the placeholder is a game title and how many game nights it was played in">Most played: <strong class="text-bv-text">{{ mostPlayed }}</strong></p>
                 }
                 @if (groupIdFilter()) {
-                    <a class="font-medium text-bv-primary underline underline-offset-2" routerLink="/play/recommendations" [queryParams]="{ groupId: groupIdFilter() }">What should this group play next?</a>
+                    <a class="font-medium text-bv-primary underline underline-offset-2" routerLink="/play/recommendations" [queryParams]="{ groupId: groupIdFilter() }" i18n="Link on History filtered to one group, to What to play">What should this group play next?</a>
                 }
             </div>
         }
@@ -53,26 +53,26 @@
         @if (isUnknownGroupFilter()) {
             <div class="rounded-lg border border-dashed border-bv-border px-6 py-12 text-center" role="alert">
                 <div class="mx-auto flex h-14 w-14 items-center justify-center rounded-lg bg-bv-warning/10 text-bv-warning" aria-hidden="true"><app-icon name="lock" [size]="28" /></div>
-                <h2 class="mt-5 text-xl font-bold">That group is not available</h2>
-                <p class="mx-auto mt-2 max-w-lg text-sm leading-6 text-bv-text-muted">This link may be out of date, or you may no longer belong to that private group.</p>
-                <a appButton class="mt-6" routerLink="/dashboard">Back to your groups</a>
+                <h2 class="mt-5 text-xl font-bold" i18n="History page for a group you cannot see">That group is not available</h2>
+                <p class="mx-auto mt-2 max-w-lg text-sm leading-6 text-bv-text-muted" i18n="History page for a group you cannot see, under That group is not available">This link may be out of date, or you may no longer belong to that private group.</p>
+                <a appButton class="mt-6" routerLink="/dashboard" i18n="Button that opens Home, where your groups are">Back to your groups</a>
             </div>
         } @else if (!hasFilteredHistory()) {
             <div class="rounded-lg border border-dashed border-bv-border px-6 py-12 text-center">
                 <div class="mx-auto flex h-14 w-14 items-center justify-center rounded-lg bg-bv-success/15 text-bv-success" aria-hidden="true"><app-icon name="history" [size]="28" /></div>
                 @if (groupIdFilter()) {
-                    <h2 class="mt-5 text-xl font-bold wrap-anywhere">{{ historyGroupName() }} has no recorded sessions yet</h2>
-                    <p class="mx-auto mt-2 max-w-lg text-sm leading-6 text-bv-text-muted">Plan the first night with this group, or record one you already played.</p>
+                    <h2 class="mt-5 text-xl font-bold wrap-anywhere" i18n="History filtered to a group with nothing recorded; the placeholder is the group name">{{ historyGroupName() }} has no recorded sessions yet</h2>
+                    <p class="mx-auto mt-2 max-w-lg text-sm leading-6 text-bv-text-muted" i18n="History filtered to a group with nothing recorded">Plan the first night with this group, or record one you already played.</p>
                     <div class="mt-6 flex flex-col justify-center gap-3 sm:flex-row">
-                        <a appButton class="text-center" [routerLink]="['/groups', groupIdFilter(), 'sessions', 'new']">Plan the first session</a>
-                        <a appButton variant="secondary" class="text-center" routerLink="/play/log-session" [queryParams]="{ groupId: groupIdFilter() }">Record a past session</a>
+                        <a appButton class="text-center" [routerLink]="['/groups', groupIdFilter(), 'sessions', 'new']" i18n="Button on History that opens the form to plan the first game night of a group">Plan the first session</a>
+                        <a appButton variant="secondary" class="text-center" routerLink="/play/log-session" [queryParams]="{ groupId: groupIdFilter() }" i18n="Button that opens the form to record a game night that already happened">Record a past session</a>
                     </div>
                 } @else {
-                    <h2 class="mt-5 text-xl font-bold">No game nights recorded yet</h2>
-                    <p class="mx-auto mt-2 max-w-lg text-sm leading-6 text-bv-text-muted">Once a session is complete it shows up here: who came, what you played, and any notes.</p>
+                    <h2 class="mt-5 text-xl font-bold" i18n="History page with nothing recorded">No game nights recorded yet</h2>
+                    <p class="mx-auto mt-2 max-w-lg text-sm leading-6 text-bv-text-muted" i18n="History page with nothing recorded, under No game nights recorded yet">Once a session is complete it shows up here: who came, what you played, and any notes.</p>
                     <div class="mt-6 flex flex-col justify-center gap-3 sm:flex-row">
-                        <a appButton class="text-center" routerLink="/play/upcoming-sessions" [queryParams]="{ plan: 1 }">Plan a session</a>
-                        <a appButton variant="secondary" class="text-center" routerLink="/play/log-session" [queryParams]="{ groupId: groupIdFilter() }">Record a past session</a>
+                        <a appButton class="text-center" routerLink="/play/upcoming-sessions" [queryParams]="{ plan: 1 }" i18n="Button that opens the form to plan a game night">Plan a session</a>
+                        <a appButton variant="secondary" class="text-center" routerLink="/play/log-session" [queryParams]="{ groupId: groupIdFilter() }" i18n="Button that opens the form to record a game night that already happened">Record a past session</a>
                     </div>
                 }
             </div>
@@ -82,7 +82,7 @@
                     <section [attr.aria-labelledby]="'history-month-' + month.key">
                         <h2 class="mb-3 flex items-baseline gap-3 text-lg font-semibold" [id]="'history-month-' + month.key">
                             {{ month.label }}
-                            <span class="text-sm font-normal text-bv-text-muted">{{ month.records.length }} session{{ month.records.length === 1 ? '' : 's' }}</span>
+                            <span class="text-sm font-normal text-bv-text-muted" i18n="Next to a month on History: how many game nights were recorded in it">{month.records.length, plural, one {{{ month.records.length }} session} other {{{ month.records.length }} sessions}}</span>
                         </h2>
                         <ul class="space-y-4">
                             @for (historyRecord of month.records; track historyRecord.meetData.id) {
@@ -96,7 +96,7 @@
             </div>
             @if (hiddenCount() > 0) {
                 <div class="mt-8 text-center">
-                    <button appButton variant="secondary" (click)="showMore()">Show older sessions ({{ hiddenCount() }})</button>
+                    <button appButton variant="secondary" (click)="showMore()" i18n="Button at the end of History; the placeholder is how many older game nights are hidden">Show older sessions ({{ hiddenCount() }})</button>
                 </div>
             }
         }

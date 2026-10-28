@@ -23,38 +23,37 @@ import { IconComponent } from '../../../components/ui/icon/icon.component'
 import { PageHeaderComponent } from '../../../components/ui/page-header/page-header.component'
 import { SpinnerComponent } from '../../../components/ui/spinner/spinner.component'
 import { LOADING_KEYS } from '../../../core/enums/loading-keys-enum'
-import { CountPipe } from '../../../core/pipes/count.pipe'
+import { formatList, intlLocale } from '../../../core/i18n/format'
 import { CustomDatePipe } from '../../../core/pipes/customDate.pipe'
 import { DataService } from '../../../core/services/data.service'
 import { LoadingService } from '../../../core/services/loading.service'
 import { gameTitle } from '../../../core/utils/gameTitle'
 import { canTakePart } from '../../../core/utils/groupPeople'
-import { sessionDateParts, upcomingState } from '../../../core/utils/sessionTiming'
+import { sessionDate, upcomingState } from '../../../core/utils/sessionTiming'
 
 type RecommendationDecisionLens = 'balanced' | 'fresh' | 'favorite'
 
 type AttendeeOption = { id: number; name: string; avatar: UserType['avatar'] | null; games: number }
 
 const DURATION_OPTIONS: Array<{ label: string; minutes: number | null }> = [
-    { label: '30 min', minutes: 30 },
-    { label: '1 h', minutes: 60 },
-    { label: '1½ h', minutes: 90 },
-    { label: '2 h', minutes: 120 },
-    { label: '3 h', minutes: 180 },
-    { label: 'No limit', minutes: null },
+    { label: $localize`:Time you have to play, a button on What to play:30 min`, minutes: 30 },
+    { label: $localize`:Time you have to play, a button on What to play, one hour:1 h`, minutes: 60 },
+    { label: $localize`:Time you have to play, a button on What to play, an hour and a half:1½ h`, minutes: 90 },
+    { label: $localize`:Time you have to play, a button on What to play, two hours:2 h`, minutes: 120 },
+    { label: $localize`:Time you have to play, a button on What to play, three hours:3 h`, minutes: 180 },
+    { label: $localize`:Time you have to play, a button on What to play, any length:No limit`, minutes: null },
 ]
 const LENS_OPTIONS: Array<RecommendationDecisionLens> = ['balanced', 'fresh', 'favorite']
 const LENS_HINTS: Record<RecommendationDecisionLens, string> = {
-    balanced: 'A mix of proven hits and games you have not played much.',
-    fresh: 'Favours games this group has not played yet.',
-    favorite: 'Favours the games this group rates and plays the most.',
+    balanced: $localize`:Hint under the mood buttons on What to play, for Balanced:A mix of proven hits and games you have not played much.`,
+    fresh: $localize`:Hint under the mood buttons on What to play, for Something new:Favours games this group has not played yet.`,
+    favorite: $localize`:Hint under the mood buttons on What to play, for Group favorite:Favours the games this group rates and plays the most.`,
 }
 /** Wait this long after the last change before asking for suggestions. */
 const RELOAD_DELAY_MS = 300
 
 @Component({
     imports: [
-        CountPipe,
         RouterLink,
         ButtonComponent,
         ContainerWrapperComponent,
@@ -63,7 +62,6 @@ const RELOAD_DELAY_MS = 300
         RecommendationCardComponent,
         PageHeaderComponent,
         SpinnerComponent,
-        CustomDatePipe,
     ],
     templateUrl: 'recommendations-page.component.html',
 })
@@ -118,10 +116,10 @@ export class RecommendationsPageComponent {
     public readonly nextNightLabel = computed(() => {
         const night = this.nextNight()
         if (!night) return ''
-        const parts = sessionDateParts(night)
-        return `${parts.weekday} ${parts.day} ${parts.month}`
+        return sessionDate(night, { weekday: 'short', day: 'numeric', month: 'short' })
     })
     public readonly addingToNight = signal<number | null>(null)
+    private readonly customDate = new CustomDatePipe()
     public readonly addedToNight = signal<Record<number, boolean>>({})
 
     /** Puts a suggestion on the next night's shortlist, with your vote. */
@@ -132,12 +130,17 @@ export class RecommendationsPageComponent {
         try {
             await firstValueFrom(this.api.proposeSessionGame(night.id, gameId))
             this.addedToNight.update((added) => ({ ...added, [gameId]: true }))
-            this.toastService.success(`Added to the ${this.nextNightLabel()} shortlist.`, {
-                label: 'Open',
-                run: () => void this.router.navigate(['/sessions', night.id]),
-            })
+            this.toastService.success(
+                $localize`:Toast after putting a suggested game on a planned night; the placeholder is its date, such as Sat 24 Oct:Added to the ${this.nextNightLabel()}:date: shortlist.`,
+                {
+                    label: $localize`:Toast button that opens the game night:Open`,
+                    run: () => void this.router.navigate(['/sessions', night.id]),
+                },
+            )
         } catch {
-            this.toastService.error('Could not add the game to that night.')
+            this.toastService.error(
+                $localize`:Toast when a suggested game could not be put on a planned night:Could not add the game to that night.`,
+            )
         } finally {
             this.addingToNight.set(null)
         }
@@ -145,9 +148,11 @@ export class RecommendationsPageComponent {
     public readonly lensHint = computed(() => LENS_HINTS[this.decisionLens()])
     public readonly durationLabel = computed(() => {
         const minutes = this.availableMinutes()
-        return minutes
-            ? `up to ${DURATION_OPTIONS.find((option) => option.minutes === minutes)?.label ?? `${minutes} min`}`
-            : 'no time limit'
+        if (!minutes) return $localize`:In the line above the suggestions on What to play, when any length is fine:no time limit`
+        const label =
+            DURATION_OPTIONS.find((option) => option.minutes === minutes)?.label ??
+            $localize`:Time you have to play, a button on What to play:${minutes}:minutes: min`
+        return $localize`:In the line above the suggestions on What to play; the placeholder is a time such as 2 h:up to ${label}:time:`
     })
     /** The group's active people, or its members when the people list is unavailable. */
     public readonly attendeeOptions = computed((): Array<AttendeeOption> => {
@@ -271,11 +276,11 @@ export class RecommendationsPageComponent {
     public getDecisionLensLabel(lens: RecommendationsType['decisionLens']): string {
         switch (lens) {
             case 'fresh':
-                return 'Something new'
+                return $localize`:Mood button on What to play, favouring games the group has not played:Something new`
             case 'favorite':
-                return 'Group favorite'
+                return $localize`:Mood button on What to play, favouring the group's best-loved games:Group favorite`
             default:
-                return 'Balanced'
+                return $localize`:Mood button on What to play, mixing favourites and new games:Balanced`
         }
     }
 
@@ -298,7 +303,7 @@ export class RecommendationsPageComponent {
         const groupId = this.selectedGroupId()
         const attendeeIds = this.selectedAttendeeIds()
         if (!groupId || attendeeIds.length === 0) {
-            this.errorMessage.set('Select a group and at least one attendee.')
+            this.errorMessage.set($localize`:Error on What to play when nobody is chosen:Select a group and at least one attendee.`)
             return
         }
 
@@ -329,7 +334,9 @@ export class RecommendationsPageComponent {
         } catch {
             if (requestId !== this.requestId) return
             this.recommendations.set(null)
-            this.errorMessage.set('Suggestions could not be loaded. Check your connection and try again.')
+            this.errorMessage.set(
+                $localize`:Error on What to play when the suggestions could not load:Suggestions could not be loaded. Check your connection and try again.`,
+            )
         } finally {
             if (requestId === this.requestId) this.isLoading.set(false)
         }
@@ -368,14 +375,20 @@ export class RecommendationsPageComponent {
     }
 
     public getInterestedMemberNames(signal: RecommendationSignalsType['signals'][number]): string {
-        return signal.interestedBy
-            .slice(0, 3)
-            .map((member) => member.displayName || member.username)
-            .join(', ')
+        return formatList(signal.interestedBy.slice(0, 3).map((member) => member.displayName || member.username))
     }
 
     public getRecommendationHistoryLabel(lastPlayedAt: string | null): string {
-        return lastPlayedAt ? 'Last played by this group' : 'Not played by this group yet'
+        return lastPlayedAt
+            ? $localize`:Whether the group has played a suggested game:Last played by this group`
+            : $localize`:Recommendation reason:Not played by this group yet`
+    }
+
+    /** "Last played 2 October 2026", or "New to this group", on a suggestion's card. */
+    public lastPlayedLabel(lastPlayedAt: string | null): string {
+        return lastPlayedAt
+            ? $localize`:On a suggested game's card; the placeholder is the date the group last played it:Last played ${this.customDate.transform(lastPlayedAt)}:date:`
+            : $localize`:On a suggested game's card when the group has never played it:New to this group`
     }
 
     public getRecommendationParticipantIds(result: RecommendationsType): string {
@@ -383,7 +396,9 @@ export class RecommendationsPageComponent {
     }
 
     public getDecisionTitle(group: Pick<GroupWithMembersAndGames, 'name'> | null): string {
-        return group ? `What should ${group.name} play?` : 'Decide what to play'
+        return group
+            ? $localize`:Title of What to play for a group; the placeholder is the group name:What should ${group.name}:group: play?`
+            : $localize`:Title of What to play before a group is chosen:Decide what to play`
     }
 
     public async saveFeedback(gameId: number, feedback: 'interested' | 'not_for_us'): Promise<void> {
@@ -428,8 +443,23 @@ export class RecommendationsPageComponent {
                 delete nextState[gameId]
                 return nextState
             })
-            this.feedbackErrors.update((state) => ({ ...state, [gameId]: 'Feedback could not be saved. Try again.' }))
+            this.feedbackErrors.update((state) => ({
+                ...state,
+                [gameId]: $localize`:Under a suggested game when your Interested or Not for us vote could not be saved:Feedback could not be saved. Try again.`,
+            }))
         }
+    }
+
+    /** A person chip's tooltip: their name and how many games they own. */
+    public personTitle(person: AttendeeOption): string {
+        return new Intl.PluralRules(intlLocale()).select(person.games) === 'one'
+            ? $localize`:person games tooltip, one|Tooltip of a person on What to play; their name and how many games they own, one:${person.name}:name: · ${person.games}:count: game`
+            : $localize`:person games tooltip, other|Tooltip of a person on What to play; their name and how many games they own, more than one:${person.name}:name: · ${person.games}:count: games`
+    }
+
+    /** The name of a suggestion's two vote buttons for screen readers. */
+    public opinionLabel(title: string): string {
+        return $localize`:Accessible name of the vote buttons on a suggested game; the placeholder is the game title:Your opinion on ${title}:title:`
     }
 
     public getGameTitle(recommendation: RecommendationType): string {

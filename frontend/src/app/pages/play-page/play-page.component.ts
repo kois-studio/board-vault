@@ -6,6 +6,7 @@ import { ButtonComponent } from '../../components/ui/button/button.component'
 import { ContainerWrapperComponent } from '../../components/ui/container-wrapper/container-wrapper.component'
 import { PageHeaderComponent } from '../../components/ui/page-header/page-header.component'
 import { LOADING_KEYS } from '../../core/enums/loading-keys-enum'
+import { intlLocale } from '../../core/i18n/format'
 import { DataService } from '../../core/services/data.service'
 import { LoadingService } from '../../core/services/loading.service'
 import { relativeDay, upcomingState } from '../../core/utils/sessionTiming'
@@ -45,11 +46,20 @@ export class PlayPageComponent {
 
     public readonly relativeDay = relativeDay
 
+    public readonly loadingLabel = $localize`:Badge on a Play card while its count loads:Loading…`
+    public readonly unavailableLabel = $localize`:Badge on a Play card when its count could not load:Unavailable`
+
     public getGroupName(groupId: number): string {
-        return this.userGroups$().find((group) => group.id === groupId)?.name ?? `Group ${groupId}`
+        return (
+            this.userGroups$().find((group) => group.id === groupId)?.name ??
+            $localize`:Stands for the name of a group you are no longer in; the placeholder is its number:Group ${groupId}:id:`
+        )
     }
 
-    public countLabel(count: number, noun: string): string {
-        return `${count} ${noun}${count === 1 ? '' : 's'}`
+    /** "1 session", "3 sessions". */
+    public sessionsLabel(count: number): string {
+        return new Intl.PluralRules(intlLocale()).select(count) === 'one'
+            ? $localize`:play sessions badge, one|Badge on a Play card counting game nights, one:${count}:count: session`
+            : $localize`:play sessions badge, other|Badge on a Play card counting game nights, more than one:${count}:count: sessions`
     }
 }
