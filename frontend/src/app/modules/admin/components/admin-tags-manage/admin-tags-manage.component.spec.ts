@@ -53,6 +53,33 @@ describe('AdminTagsManageComponent', () => {
         expect(component.sections().map((section) => section.category.name)).toEqual(['Players'])
     })
 
+    it('offers each tag icon buttons named after the action and the tag', async () => {
+        const fixture = await render()
+        const component = fixture.componentInstance
+        const element = fixture.nativeElement as HTMLElement
+        const button = (name: string) => element.querySelector(`button[aria-label="${name}"]`) as HTMLButtonElement
+
+        for (const name of ['Edit Abstract', 'Merge Abstract into another tag', 'Delete Abstract']) {
+            expect(button(name)).not.toBeNull()
+            expect(button(name).textContent?.trim()).toBe('')
+            expect(button(name).querySelector('app-icon')).not.toBeNull()
+        }
+        expect(button('Edit Abstract').title).toBe('Edit')
+        expect(button('Merge Abstract into another tag').title).toBe('Merge into another tag')
+        expect(button('Delete Abstract').title).toBe('Delete')
+
+        const onEditTag = vi.spyOn(component, 'onEditTag').mockImplementation(() => undefined)
+        const onDeleteTag = vi.spyOn(component, 'onDeleteTag').mockImplementation(() => undefined)
+        button('Edit Abstract').click()
+        button('Delete Abstract').click()
+        button('Merge Abstract into another tag').click()
+        fixture.detectChanges()
+
+        expect(onEditTag).toHaveBeenCalledWith(expect.objectContaining({ id: 1, name: 'Abstract' }))
+        expect(onDeleteTag).toHaveBeenCalledWith(expect.objectContaining({ id: 1, name: 'Abstract' }))
+        expect(component.mergingTag()).toEqual(expect.objectContaining({ id: 1, name: 'Abstract' }))
+    })
+
     it('says how many games a merge changes, then merges', async () => {
         const fixture = await render()
         const component = fixture.componentInstance

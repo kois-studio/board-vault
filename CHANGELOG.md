@@ -113,6 +113,9 @@ operational details.
 
 ### Changed
 
+- Administration → Tags shows Edit, Merge and Delete on each tag as icon
+  buttons (pencil, merge, bin) that name the action on hover, and on phones
+  they stay on the right of a long tag name.
 - Home shows every group as its full card, stacked, when there are several:
   people, the invite nudge, and What to play, Library and History for each,
   with the last or next night under the name and the pin on the card's
@@ -297,6 +300,10 @@ operational details.
 
 ### Fixed
 
+- The not-found page keeps the header and footer, so there is a way on, and
+  reads as one centred column on any screen instead of leaving an empty
+  column on desktop and a misaligned text on phones. Its button goes to
+  Home once you are signed in.
 - A member shows with the same name and avatar everywhere in a group. Group
   people, standings, the group's history and notifications showed the name
   they had when they joined (sometimes their username) after they changed it
