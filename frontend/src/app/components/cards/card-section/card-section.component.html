@@ -5,7 +5,7 @@
     [class.cursor-not-allowed]="comingSoon()"
 >
     @if (comingSoon()) {
-        <div class="absolute right-0 top-0 z-10 rounded-bl-lg bg-bv-text px-3 py-1 text-sm font-medium text-bv-surface">Coming Soon</div>
+        <div class="absolute right-0 top-0 z-10 rounded-bl-lg bg-bv-text px-3 py-1 text-sm font-medium text-bv-surface" i18n="Ribbon on a card for a section that is not available yet">Coming Soon</div>
     }
 
     <a [routerLink]="comingSoon() ? null : cardLink()" [attr.aria-disabled]="comingSoon() || null" class="block h-full p-6">

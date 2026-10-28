@@ -1,7 +1,7 @@
-<app-page-header titleText="Game Reviews" [showActionButton]="true">
-    Your ratings, and the games from your groups you haven't rated yet
+<app-page-header i18n-titleText="Title of the Reviews page" titleText="Game Reviews" [showActionButton]="true">
+    <ng-container i18n="Subtitle of the Reviews page">Your ratings, and the games from your groups you haven’t rated yet</ng-container>
 
-    <a appButton class="action-button" icon="plus-lg" routerLink="/collection/browse">Explore Games</a>
+    <a appButton class="action-button" icon="plus-lg" routerLink="/collection/browse" i18n="Button on the Reviews and Wishlist pages that opens Browse">Explore Games</a>
 </app-page-header>
 
 <container-wrapper>
@@ -14,15 +14,15 @@
         </section>
     } @else if (reviewsError()) {
         <div class="text-center text-secondary" role="alert">
-            <p>Reviews could not be loaded.</p>
-            <p class="mt-2 text-sm">Check your connection and try again.</p>
-            <button appButton class="mt-4" icon="arrow-repeat" (click)="retryReviews()">Retry</button>
+            <p i18n="Error on the Reviews page">Reviews could not be loaded.</p>
+            <p class="mt-2 text-sm" i18n="Under an error when a page could not load">Check your connection and try again.</p>
+            <button appButton class="mt-4" icon="arrow-repeat" (click)="retryReviews()" i18n="Button under an error">Retry</button>
         </div>
     } @else {
         @if (pendingReviews().length > 0) {
             <section class="py-6" aria-labelledby="pending-heading">
-                <h2 id="pending-heading" class="text-2xl font-bold tracking-wide">Waiting for your rating</h2>
-                <p class="pb-4 text-secondary">Games someone in your groups owns that you haven't rated yet.</p>
+                <h2 id="pending-heading" class="text-2xl font-bold tracking-wide" i18n="Heading of the games you have not rated yet on the Reviews page">Waiting for your rating</h2>
+                <p class="pb-4 text-secondary" i18n="Under the heading Waiting for your rating">Games someone in your groups owns that you haven’t rated yet.</p>
                 <div class="grid grid-cols-1 gap-4 lg:grid-cols-2">
                     @for (game of pendingReviews(); track game.id) {
                         <app-review-row [game]="game" [review]="0" />
@@ -33,25 +33,21 @@
 
         <section class="py-6" aria-labelledby="reviewed-heading">
             <div class="flex flex-wrap items-end justify-between gap-3 pb-4">
-                <h2 id="reviewed-heading" class="text-2xl font-bold tracking-wide">
-                    Your ratings <span class="text-base font-normal text-secondary">({{ userReviews$().length }})</span>
-                </h2>
+                <h2 id="reviewed-heading" class="text-2xl font-bold tracking-wide" i18n="Heading of the games you have rated on the Reviews page, with how many">Your ratings <span class="text-base font-normal text-secondary">({{ userReviews$().length }})</span></h2>
                 @if (userReviews$().length > 1) {
                     <label class="flex items-center gap-2 text-sm">
-                        <span class="text-secondary">Sort</span>
+                        <span class="text-secondary" i18n="Label of the sort order menu">Sort</span>
                         <select class="rounded-lg border border-bv-border bg-bv-surface px-3 py-2" [value]="sortBy()" (change)="setSort($any($event.target).value)">
-                            <option value="title">A–Z</option>
-                            <option value="rating">Highest rated</option>
-                            <option value="recent">Recently rated</option>
+                            <option value="title" i18n="Sort option: alphabetical by title">A–Z</option>
+                            <option value="rating" i18n="Sort option on the Reviews page: your best rated games first">Highest rated</option>
+                            <option value="recent" i18n="Sort option on the Reviews page: the games you rated last first">Recently rated</option>
                         </select>
                     </label>
                 }
             </div>
 
             @if (userReviews$().length === 0) {
-                <p class="rounded-2xl border border-dashed border-bv-border p-8 text-center text-secondary">
-                    You haven't rated any games yet. Tap the stars on a game to rate it.
-                </p>
+                <p class="rounded-2xl border border-dashed border-bv-border p-8 text-center text-secondary" i18n="Empty state of the Reviews page">You haven’t rated any games yet. Tap the stars on a game to rate it.</p>
             } @else {
                 <div class="grid grid-cols-1 gap-4 lg:grid-cols-2">
                     @for (review of sortedReviews(); track review.gameId) {

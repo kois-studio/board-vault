@@ -48,3 +48,8 @@ export function otherGameTitles(game: TitledGame, locale: Locale = pageLocale())
         return [{ title, lang }]
     })
 }
+
+/** A cover's description for screen readers, from the title `gameTitle` shows: "Codenames cover". */
+export function gameCoverAlt(title: string): string {
+    return $localize`:Description of a game's cover picture; the placeholder is the game title:${title}:title: cover`
+}

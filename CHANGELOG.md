@@ -41,6 +41,10 @@ operational details.
 - Home and the group pages (group, settings, new group, a person of the
   group, taking over a person, the group's history) in Spanish, French,
   German, and Italian, with counts that agree in every language.
+- Collection (My Games, Browse and its filters, Reviews, Wishlist, proposing
+  a game, your proposals, recent activity) and the game page in Spanish,
+  French, German, and Italian. Owner names read as a list in each language
+  ("Ana, Luis and Marta"), and a rating of one star says "1 star".
 - Home always offers recording and planning. With several groups each has a
   corner pin that appears on hover; pinned groups lead.
 - Recording keeps its group context, offers Today/Yesterday and same-day

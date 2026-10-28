@@ -1,6 +1,6 @@
 @if (!isSubmitted()) {
-    <app-page-header titleText="Propose a Game">
-        Submit a game proposal to be added to our collection
+    <app-page-header i18n-titleText="Title of the Propose a game page" titleText="Propose a Game">
+        <ng-container i18n="Subtitle of the Propose a game page">Submit a game proposal to be added to our collection</ng-container>
     </app-page-header>
     <container-wrapper>
         <form-game-submission 
@@ -15,14 +15,10 @@
                 <div class="text-6xl text-bv-success mb-4">
                     <app-icon name="circle-check" [size]="20" />
                 </div>
-                <h2 class="text-2xl font-bold text-bv-text">Thank You!</h2>
-                <p class="text-lg text-bv-text-muted max-w-md">
-                    Thanks for your proposal! We will review it as soon as possible and let you know the outcome.
-                </p>
+                <h2 class="text-2xl font-bold text-bv-text" i18n="Heading after sending a game proposal">Thank You!</h2>
+                <p class="text-lg text-bv-text-muted max-w-md" i18n="After sending a game proposal">Thanks for your proposal! We will review it as soon as possible and let you know the outcome.</p>
             </div>
-            <button appButton (click)="navigateBack()">
-                Back to Collection
-            </button>
+            <button appButton (click)="navigateBack()" i18n="Button after sending a game proposal that opens the Collection page">Back to Collection</button>
         </div>
     </container-wrapper>
 }

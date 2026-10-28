@@ -1,7 +1,7 @@
-<app-page-header titleText="My Games" [showActionButton]="true">
-    The games you can bring. Only you see this list; groups use it when you decide together.
+<app-page-header i18n-titleText="Title of the My Games page" titleText="My Games" [showActionButton]="true">
+    <ng-container i18n="Subtitle of the My Games page">The games you can bring. Only you see this list; groups use it when you decide together.</ng-container>
 
-    <a appButton class="action-button text-center" routerLink="/collection/browse">Add games</a>
+    <a appButton class="action-button text-center" routerLink="/collection/browse" i18n="Button on the Collection and My Games pages that opens Browse">Add games</a>
 </app-page-header>
 <container-wrapper>
 
@@ -13,50 +13,50 @@
         </section>
     } @else if (userGamesError()) {
         <div class="rounded-lg border border-bv-warning/30 bg-bv-warning/10 p-8 text-center" role="alert">
-            <p class="text-lg font-medium">Your collection could not be loaded.</p>
-            <p class="text-secondary mt-2">Try again without losing your saved games.</p>
-            <button appButton type="button" class="mt-4" (click)="retryGames()">Retry</button>
+            <p class="text-lg font-medium" i18n="Error on My Games when your games could not be loaded">Your collection could not be loaded.</p>
+            <p class="text-secondary mt-2" i18n="Under the error on My Games">Try again without losing your saved games.</p>
+            <button appButton type="button" class="mt-4" (click)="retryGames()" i18n="Button under an error">Retry</button>
         </div>
     } @else if (userGames$().length === 0) {
         <section class="rounded-2xl border border-dashed border-bv-border p-8 text-center" aria-labelledby="empty-collection-heading">
             <app-icon name="library" [size]="40" className="text-bv-primary" aria-hidden="true" />
-            <h2 id="empty-collection-heading" class="mt-3 text-xl font-semibold">Start with the games you actually bring to the table</h2>
-            <p class="mx-auto mt-2 max-w-xl text-secondary">A few real games make group suggestions useful. Add your first five, then invite friends or choose what to play together.</p>
+            <h2 id="empty-collection-heading" class="mt-3 text-xl font-semibold" i18n="Heading of the empty state of My Games">Start with the games you actually bring to the table</h2>
+            <p class="mx-auto mt-2 max-w-xl text-secondary" i18n="Empty state of My Games">A few real games make group suggestions useful. Add your first five, then invite friends or choose what to play together.</p>
             <div class="mt-5 flex flex-wrap justify-center gap-3">
-                <a appButton routerLink="/collection/browse">Add your first game</a>
-                <a appButton variant="secondary" routerLink="/dashboard">Go to groups</a>
+                <a appButton routerLink="/collection/browse" i18n="Button in the empty state of My Games that opens Browse">Add your first game</a>
+                <a appButton variant="secondary" routerLink="/dashboard" i18n="Button in the empty state of My Games that opens Home">Go to groups</a>
             </div>
         </section>
     } @else {
-        <section class="flex flex-col gap-3 py-6 lg:flex-row lg:items-center lg:justify-between" aria-label="Filter your games">
+        <section class="flex flex-col gap-3 py-6 lg:flex-row lg:items-center lg:justify-between" i18n-aria-label="Accessible name of the count and filters above your games on My Games" aria-label="Filter your games">
             <p class="font-semibold">
                 @if (visibleGames().length === userGames$().length) {
-                    {{ userGames$().length }} game{{ userGames$().length === 1 ? '' : 's' }}
+                    <ng-container i18n="Number of games on My Games">{userGames$().length, plural, one {{{ userGames$().length }} game} other {{{ userGames$().length }} games}}</ng-container>
                 } @else {
-                    {{ visibleGames().length }} of {{ userGames$().length | count: 'game' }}
+                    <ng-container i18n="Number of games on My Games that match the filters, out of all of them">{userGames$().length, plural, one {{{ visibleGames().length }} of {{ userGames$().length }} game} other {{{ visibleGames().length }} of {{ userGames$().length }} games}}</ng-container>
                 }
             </p>
             @if (showToolbar()) {
                 <div class="flex flex-col gap-2 sm:flex-row sm:flex-wrap sm:items-center">
                     <label class="relative block">
-                        <span class="sr-only">Filter your games by title</span>
+                        <span class="sr-only" i18n="Hidden label of the title filter on My Games">Filter your games by title</span>
                         <app-icon name="search" [size]="16" className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-bv-text-muted" />
-                        <input type="search" placeholder="Filter by title" autocomplete="off" class="w-full rounded-lg border border-bv-border bg-bv-surface py-2 pl-9 pr-3 sm:w-56" [value]="filterText()" (input)="filterText.set($any($event.target).value)" />
+                        <input type="search" i18n-placeholder="Title filter on My Games" placeholder="Filter by title" autocomplete="off" class="w-full rounded-lg border border-bv-border bg-bv-surface py-2 pl-9 pr-3 sm:w-56" [value]="filterText()" (input)="filterText.set($any($event.target).value)" />
                     </label>
                     <label class="flex items-center gap-2 text-sm">
-                        <span class="text-secondary">Players</span>
+                        <span class="text-secondary" i18n="Label of the player count filter on My Games">Players</span>
                         <select class="rounded-lg border border-bv-border bg-bv-surface px-3 py-2" [value]="playerCount() ?? ''" (change)="setPlayerCount($any($event.target).value)">
-                            <option value="">Any</option>
+                            <option value="" i18n="player count|Option of the player count filter: no filter">Any</option>
                             @for (count of PLAYER_OPTIONS; track count) {
                                 <option [value]="count">{{ count }}</option>
                             }
                         </select>
                     </label>
                     <label class="flex items-center gap-2 text-sm">
-                        <span class="text-secondary">Sort</span>
+                        <span class="text-secondary" i18n="Label of the sort order menu">Sort</span>
                         <select class="rounded-lg border border-bv-border bg-bv-surface px-3 py-2" [value]="sortBy()" (change)="setSort($any($event.target).value)">
-                            <option value="title">A–Z</option>
-                            <option value="duration">Shortest first</option>
+                            <option value="title" i18n="Sort option: alphabetical by title">A–Z</option>
+                            <option value="duration" i18n="Sort option: shortest games first">Shortest first</option>
                         </select>
                     </label>
                 </div>
@@ -64,11 +64,11 @@
         </section>
         @if (visibleGames().length === 0) {
             <div class="rounded-2xl border border-dashed border-bv-border p-8 text-center text-secondary">
-                <p>None of your games match these filters.</p>
-                <button appButton variant="secondary" size="small" class="mt-3" (click)="clearFilters()">Clear filters</button>
+                <p i18n="My Games when no game matches the filters">None of your games match these filters.</p>
+                <button appButton variant="secondary" size="small" class="mt-3" (click)="clearFilters()" i18n="Button that turns off every filter">Clear filters</button>
             </div>
         }
-        <section class="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-5" aria-label="Your games">
+        <section class="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-5" i18n-aria-label="Accessible name of the grid of your games on My Games" aria-label="Your games">
             @for (game of visibleGames(); track game.id) {
                 <a [routerLink]="['/games', game.id]" class="block h-full rounded-2xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-bv-primary">
                     <app-card-game

@@ -1,19 +1,19 @@
-<app-page-header titleText="Browse Games">
+<app-page-header i18n-titleText="Title of the Browse page" titleText="Browse Games">
     @if (acquisitionGroupId()) {
-        Find a game for {{ acquisitionGroupName() }} to consider acquiring. Your shortlist is shared with the group.
+        <ng-container i18n="Subtitle of Browse when you look for a game a group could buy; the placeholder is the group name">Find a game for {{ acquisitionGroupName() }} to consider acquiring. Your shortlist is shared with the group.</ng-container>
     } @else {
-        Every game in Board Vault. Add the ones you own, or save the ones you want.
+        <ng-container i18n="Subtitle of the Browse page">Every game in Board Vault. Add the ones you own, or save the ones you want.</ng-container>
     }
 </app-page-header>
 <container-wrapper>
     <!-- Search Bar -->
     <div class="search-container pt-6 pb-4">
         <div class="relative">
-            <label for="game-search" class="sr-only">Search games</label>
+            <label for="game-search" class="sr-only" i18n="Hidden label of the search field on Browse">Search games</label>
             <input
                 id="game-search"
                 type="search"
-                placeholder="Search by title, in English or Spanish"
+                i18n-placeholder="Placeholder of the search field on Browse" placeholder="Search by title"
                 class="w-full rounded-xl border border-bv-border bg-bv-surface py-3 pl-11 pr-10 text-base focus:outline-none focus:ring-2 focus:ring-bv-primary"
                 [formControl]="searchControl"
                 autocomplete="off"
@@ -39,7 +39,7 @@
             (click)="filtersOpen.set(!filtersOpen())"
         >
             <app-icon name="sliders-horizontal" [size]="16" aria-hidden="true" />
-            Filters
+            <ng-container i18n="Button on phones that shows the Browse filters">Filters</ng-container>
             @if (activeFilterCount()) {
                 <span class="rounded-full bg-bv-primary px-2 text-xs text-bv-on-primary">{{ activeFilterCount() }}</span>
             }
@@ -47,33 +47,33 @@
         <div id="browse-filters" class="mt-3 flex-col gap-4 sm:mt-0 sm:flex" [class.flex]="filtersOpen()" [class.hidden]="!filtersOpen()">
             <div class="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4 lg:items-end">
                 <label class="flex flex-col gap-1 text-sm font-medium">
-                    Players
+                    <ng-container i18n="Label of the player count filter on Browse">Players</ng-container>
                     <select
                         #playersSelect
                         class="min-h-11 rounded border border-bv-border bg-bv-surface px-3 text-base focus:outline-none focus:ring-2 focus:ring-bv-primary"
                         (change)="setPlayers(playersSelect.value)"
                     >
-                        <option value="" [selected]="filters$().players === null">Any number</option>
+                        <option value="" [selected]="filters$().players === null" i18n="Option of the player count filter on Browse: no filter">Any number</option>
                         @for (count of playerOptions; track count) {
-                            <option [value]="count" [selected]="filters$().players === count">Plays with {{ count }}</option>
+                            <option [value]="count" [selected]="filters$().players === count" i18n="Option of the player count filter on Browse: games for this many people">Plays with {{ count }}</option>
                         }
                     </select>
                 </label>
                 <label class="flex flex-col gap-1 text-sm font-medium">
-                    Length
+                    <ng-container i18n="Label of the game length filter on Browse">Length</ng-container>
                     <select
                         #lengthSelect
                         class="min-h-11 rounded border border-bv-border bg-bv-surface px-3 text-base focus:outline-none focus:ring-2 focus:ring-bv-primary"
                         (change)="setLength(lengthSelect.value)"
                     >
-                        <option value="" [selected]="filters$().length === null">Any length</option>
+                        <option value="" [selected]="filters$().length === null" i18n="Option of the game length filter on Browse: no filter">Any length</option>
                         @for (option of lengthOptions; track option.value) {
                             <option [value]="option.value" [selected]="filters$().length === option.value">{{ option.label }}</option>
                         }
                     </select>
                 </label>
                 <label class="flex flex-col gap-1 text-sm font-medium">
-                    Sort by
+                    <ng-container i18n="Label of the sort order menu on Browse">Sort by</ng-container>
                     <select
                         #sortSelect
                         class="min-h-11 rounded border border-bv-border bg-bv-surface px-3 text-base focus:outline-none focus:ring-2 focus:ring-bv-primary"
@@ -92,7 +92,7 @@
                         [checked]="filters$().hideOwned"
                         (change)="setHideOwned(hideOwnedInput.checked)"
                     />
-                    Hide games I own
+                    <ng-container i18n="Checkbox on Browse that hides the games on My Games">Hide games I own</ng-container>
                 </label>
             </div>
             @if (tagGroups().length) {
@@ -104,13 +104,17 @@
                         [attr.aria-expanded]="tagsOpen()"
                         (click)="tagsOpen.set(!tagsOpen())"
                     >
-                        {{ tagsOpen() ? 'Hide tags' : 'Filter by tags' }}
+                        @if (tagsOpen()) {
+                            <ng-container i18n="Button on Browse that hides the tag filters">Hide tags</ng-container>
+                        } @else {
+                            <ng-container i18n="Button on Browse that shows the tag filters">Filter by tags</ng-container>
+                        }
                     </button>
                     @for (tag of selectedTags(); track tag.id) {
                         <button
                             type="button"
                             class="min-h-9 rounded-full border border-bv-primary bg-bv-primary px-3 text-sm text-bv-on-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-bv-primary"
-                            [attr.aria-label]="'Remove tag ' + tag.name"
+                            [attr.aria-label]="removeTagLabel(tag.name)"
                             (click)="toggleTag(tag.id)"
                         >
                             {{ tag.name }} ×
@@ -119,7 +123,7 @@
                 </div>
                 @if (tagsOpen()) {
                     <fieldset id="browse-tags" class="min-w-0 rounded-lg border border-bv-border bg-bv-surface p-4">
-                        <legend class="px-1 text-sm font-medium">Tags <span class="font-normal text-bv-text-muted">(games with all of the chosen tags)</span></legend>
+                        <legend class="px-1 text-sm font-medium" i18n="Legend of the tag filters on Browse; the part in brackets explains how several tags combine">Tags <span class="font-normal text-bv-text-muted">(games with all of the chosen tags)</span></legend>
                         <div class="flex flex-col gap-3">
                             @for (group of tagGroups(); track group.category) {
                                 <div class="flex flex-wrap items-center gap-2">
@@ -143,9 +147,7 @@
             }
             @if (activeFilterCount()) {
                 <div>
-                    <button type="button" class="min-h-11 text-sm font-semibold text-bv-primary hover:underline" (click)="clearFilters()">
-                        Clear filters ({{ activeFilterCount() }})
-                    </button>
+                    <button type="button" class="min-h-11 text-sm font-semibold text-bv-primary hover:underline" (click)="clearFilters()" i18n="Button on Browse that turns off every filter, with how many are on">Clear filters ({{ activeFilterCount() }})</button>
                 </div>
             }
         </div>
@@ -154,8 +156,8 @@
     <!-- Loading state -->
     @if (!isSearching$() && searchError()) {
         <div class="text-center text-secondary space-y-4" role="alert">
-            <p>We couldn't load games right now.</p>
-            <button appButton (click)="retrySearch()">Try again</button>
+            <p i18n="Error on Browse when the games could not be loaded">We couldn’t load games right now.</p>
+            <button appButton (click)="retrySearch()" i18n="Button under an error on Browse">Try again</button>
         </div>
     } @else if (!isSearching$() && gamesListComputed().length === 0) {
         <!-- no data -->
@@ -163,26 +165,24 @@
             @if (searchTermIsValid$()) {
                 <div>
                     @if (acquisitionGroupId() && acquisitionBoardError()) {
-                        <p class="mb-2">We couldn't check {{ acquisitionGroupName() }}'s shortlist.</p>
-                        <p class="text-sm text-bv-text-muted mb-4">Try again before adding a game so the group decision stays accurate.</p>
-                        <button appButton (click)="retryAcquisitionBoard()">Try again</button>
+                        <p class="mb-2" i18n="Error on Browse when the group's shortlist of games to buy could not be loaded; the placeholder is the group name">We couldn’t check {{ acquisitionGroupName() }}’s shortlist.</p>
+                        <p class="text-sm text-bv-text-muted mb-4" i18n="Under the shortlist error on Browse">Try again before adding a game so the group decision stays accurate.</p>
+                        <button appButton (click)="retryAcquisitionBoard()" i18n="Button under an error on Browse">Try again</button>
                     } @else if (allSearchResultsOwnedByGroup()) {
-                        <p class="mb-2">Your group already owns every matching game</p>
-                        <p class="text-sm text-bv-text-muted mb-4">Search for another game if you want to grow the group’s acquisition shortlist.</p>
+                        <p class="mb-2" i18n="Browse, looking for a game a group could buy, when the group owns every result">Your group already owns every matching game</p>
+                        <p class="text-sm text-bv-text-muted mb-4" i18n="Under the message that your group owns every result">Search for another game if you want to grow the group’s acquisition shortlist.</p>
                     } @else if (activeFilterCount()) {
-                        <p class="mb-2">No games match these filters</p>
-                        <p class="text-sm text-bv-text-muted mb-4">Try fewer filters, or another number of players.</p>
-                        <button appButton (click)="clearFilters()">Clear filters</button>
+                        <p class="mb-2" i18n="Browse when no game matches the filters">No games match these filters</p>
+                        <p class="text-sm text-bv-text-muted mb-4" i18n="Under the message that no game matches the filters">Try fewer filters, or another number of players.</p>
+                        <button appButton (click)="clearFilters()" i18n="Button that turns off every filter">Clear filters</button>
                     } @else {
-                        <p class="mb-2">No games found matching "{{searchTerm$().trim()}}"</p>
-                        <p class="text-sm text-bv-text-muted mb-4">Please review the spelling</p>
-                        <button appButton (click)="navigateToProposeGame()">
-                            Propose this game
-                        </button>
+                        <p class="mb-2" i18n="Browse when the search finds nothing; the placeholder is what you typed">No games found matching “{{ searchTerm$().trim() }}”</p>
+                        <p class="text-sm text-bv-text-muted mb-4" i18n="Under the message that the search found nothing">Please review the spelling</p>
+                        <button appButton (click)="navigateToProposeGame()" i18n="Button on Browse when the search finds nothing: opens the game proposal form">Propose this game</button>
                     }
                 </div>
             } @else {
-                <p>Keep typing: search starts at two letters.</p>
+                <p i18n="Browse while the search has fewer than two letters">Keep typing: search starts at two letters.</p>
             }
         </div>
     } @else {
@@ -199,7 +199,7 @@
                         />
                     </a>
                     @if (game.isInCollection || collectionState()[game.id] === 'saved') {
-                        <div title="In your games" class="absolute right-2 top-2 rounded-full bg-bv-surface/90 p-1.5 text-bv-success shadow-sm" role="img" aria-label="In your games">
+                        <div i18n-title="Mark on a game cover on Browse: the game is on My Games" title="In your games" class="absolute right-2 top-2 rounded-full bg-bv-surface/90 p-1.5 text-bv-success shadow-sm" role="img" i18n-aria-label="Mark on a game cover on Browse: the game is on My Games" aria-label="In your games">
                             <app-icon name="bookmark-check" [size]="16" aria-hidden="true" />
                         </div>
                     } @else if (!acquisitionGroupId()) {
@@ -211,15 +211,15 @@
                             class="mt-2 w-full rounded-lg border px-3 py-2 text-sm font-semibold transition disabled:cursor-default"
                             [class]="game.isInCollection || collectionState()[game.id] === 'saved' ? 'border-bv-success/30 bg-bv-success/10 text-bv-success' : 'border-bv-border bg-bv-surface hover:border-bv-primary hover:bg-bv-primary-soft'"
                             [disabled]="game.isInCollection || !!collectionState()[game.id]"
-                            [attr.aria-label]="game.isInCollection ? (game | gameTitle) + ' is already in your collection' : 'Add ' + (game | gameTitle) + ' to your collection'"
+                            [attr.aria-label]="collectionLabel(game)"
                             (click)="addGameToCollection(game)"
                         >
                             @if (game.isInCollection || collectionState()[game.id] === 'saved') {
-                                In your games ✓
+                                <ng-container i18n="Button under a game on Browse once the game is on My Games">In your games ✓</ng-container>
                             } @else if (collectionState()[game.id] === 'saving') {
-                                Adding…
+                                <ng-container i18n="Button under a game on Browse while it is being added">Adding…</ng-container>
                             } @else {
-                                I own it
+                                <ng-container i18n="Button under a game on Browse that adds it to My Games">I own it</ng-container>
                             }
                         </button>
                     }
@@ -231,17 +231,17 @@
                             (click)="addGameToAcquisitionBoard(game.id)"
                         >
                             @if (acquisitionBoardLoading()) {
-                                Checking group shortlist…
+                                <ng-container i18n="Button under a game on Browse while the group's shortlist of games to buy loads">Checking group shortlist…</ng-container>
                             } @else if (acquisitionBoardError()) {
-                                Shortlist unavailable
+                                <ng-container i18n="Button under a game on Browse when the group's shortlist could not be loaded">Shortlist unavailable</ng-container>
                             } @else if (acquisitionActionState(game.id) === 'saved') {
-                                On group shortlist ✓
+                                <ng-container i18n="Button under a game on Browse once the game is on the group's shortlist of games to buy">On group shortlist ✓</ng-container>
                             } @else if (acquisitionActionState(game.id) === 'removing') {
-                                Removing…
+                                <ng-container i18n="Button under a game on Browse while your interest is being removed">Removing…</ng-container>
                             } @else if (acquisitionActionState(game.id) === 'saving') {
-                                Adding…
+                                <ng-container i18n="Button under a game on Browse while it is being added">Adding…</ng-container>
                             } @else {
-                                Add for {{ acquisitionGroupName() }}
+                                <ng-container i18n="Button under a game on Browse that adds it to the group's shortlist of games to buy; the placeholder is the group name">Add for {{ acquisitionGroupName() }}</ng-container>
                             }
                         </button>
                         @if (acquisitionActionState(game.id) === 'saved') {
@@ -250,9 +250,7 @@
                                 class="mt-1 w-full text-xs text-secondary underline"
                                 [disabled]="acquisitionActionState(game.id) === 'removing'"
                                 (click)="removeGameFromAcquisitionBoard(game.id)"
-                            >
-                                Remove my interest
-                            </button>
+                                i18n="Link under a game on Browse that takes it off your picks for the group's shortlist">Remove my interest</button>
                         }
                     }
                 </div>
@@ -269,15 +267,9 @@
         <!-- Pagination controls if needed -->
         @if (hasMoreGames$()) {
             <div class="flex justify-center mt-6">
-                <button appButton (click)="loadMoreGames()">
-                    Load More
-                </button>
+                <button appButton (click)="loadMoreGames()" i18n="Button at the end of Browse that shows more games">Load More</button>
             </div>
         }
     }
-    <p class="py-10 text-center text-sm text-secondary">
-        Can't find a game?
-        <button type="button" class="font-semibold text-bv-primary hover:underline" (click)="navigateToProposeGame()">Propose it</button>
-        and an admin will add it to the catalogue.
-    </p>
+    <p class="py-10 text-center text-sm text-secondary" i18n="At the bottom of Browse; the button opens the game proposal form">Can’t find a game? <button type="button" class="font-semibold text-bv-primary hover:underline" (click)="navigateToProposeGame()">Propose it</button> and an admin will add it to the catalogue.</p>
 </container-wrapper>
