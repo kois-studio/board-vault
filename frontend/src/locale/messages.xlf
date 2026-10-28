@@ -478,6 +478,15 @@
         <source><ph id="0" equiv="actor" disp="actor"/> changed the shortlist of a game night</source>
       </segment>
     </unit>
+    <unit id="1248678079199715255">
+      <notes>
+        <note category="location">src/app/components/session-summary/session-summary.component.ts</note>
+        <note category="description">On the page of a planned game night whose day has passed and nothing is recorded yet, under its title</note>
+      </notes>
+      <segment>
+        <source>This night is over. Record who came and what you played, or cancel it if it didn’t happen.</source>
+      </segment>
+    </unit>
     <unit id="1251428933558875497">
       <notes>
         <note category="location">src/app/components/add-person-game/add-person-game.component.ts</note>
@@ -4656,6 +4665,15 @@
       </notes>
       <segment>
         <source>Background Color</source>
+      </segment>
+    </unit>
+    <unit id="3474910394658676010">
+      <notes>
+        <note category="location">src/app/pages/meet-view/meet-view.component.html</note>
+        <note category="description">Hint under Record results on a planned game night whose day has passed</note>
+      </notes>
+      <segment>
+        <source>The night keeps its date. Mark the games you played, who played, and who won, then finish it.</source>
       </segment>
     </unit>
     <unit id="347726722080737708">
@@ -10362,6 +10380,7 @@
     </unit>
     <unit id="641656785674590331">
       <notes>
+        <note category="location">src/app/components/session-summary/session-summary.component.ts</note>
         <note category="location">src/app/pages/play-page/upcoming-sessions-page/upcoming-sessions-page.component.ts</note>
         <note category="description">Heading on Upcoming for game nights that are over but have no results yet</note>
       </notes>
@@ -11259,15 +11278,6 @@
         <source>Owns? –</source>
       </segment>
     </unit>
-    <unit id="6930216235586087894">
-      <notes>
-        <note category="location">src/app/core/i18n/recommendation-text.ts</note>
-        <note category="description">Recommendation reason, a rating out of 10</note>
-      </notes>
-      <segment>
-        <source>Selected-attendee rating: <ph id="0" equiv="rating" disp="formatNumber(values[&apos;rating&apos;] ?? 0, { minimumFractionDigits: 1, maximumFractionDigits: 1 })"/>/10</source>
-      </segment>
-    </unit>
     <unit id="693316950352117213">
       <notes>
         <note category="location">src/app/pages/group-view/group-view.component.html</note>
@@ -11840,7 +11850,7 @@
       <notes>
         <note category="location">src/app/pages/meet-view/meet-view.component.html</note>
         <note category="location">src/app/pages/play-page/upcoming-sessions-page/upcoming-sessions-page.component.ts</note>
-        <note category="description">Button that opens the form for who won one play</note>
+        <note category="description">Button on a planned game night whose day has passed: opens it to mark what was played</note>
       </notes>
       <segment>
         <source>Record results</source>
@@ -12647,6 +12657,15 @@
         <source>Pending invitations</source>
       </segment>
     </unit>
+    <unit id="7668323527725129528">
+      <notes>
+        <note category="location">src/app/core/i18n/recommendation-text.ts</note>
+        <note category="description">Recommendation reason, a rating out of 5 stars</note>
+      </notes>
+      <segment>
+        <source>Selected-attendee rating: <ph id="0" equiv="rating" disp="formatNumber((values[&apos;rating&apos;] ?? 0) / 2, { minimumFractionDigits: 1, maximumFractionDigits: 1 })"/> out of 5</source>
+      </segment>
+    </unit>
     <unit id="7668815026368992788">
       <notes>
         <note category="location">src/app/pages/meet-view/meet-view.component.html</note>
@@ -13261,6 +13280,15 @@
       </notes>
       <segment>
         <source>Your personal shelf becomes the source for recommendations.</source>
+      </segment>
+    </unit>
+    <unit id="7930581890544594087">
+      <notes>
+        <note category="location">src/app/pages/group-view/group-view.component.html</note>
+        <note category="description">Average rating of a game in a group&apos;s library, for screen readers; the placeholder is the rating out of 5, such as 4.5</note>
+      </notes>
+      <segment>
+        <source>Group rating <ph id="0" equiv="INTERPOLATION" disp="{{ outOfFive(review.average) }}"/> out of 5</source>
       </segment>
     </unit>
     <unit id="7932939814717653761">

@@ -396,7 +396,10 @@
                                     <div class="flex items-start justify-between gap-3">
                                         <a [routerLink]="['/games', game.id]" class="font-semibold hover:underline">{{ game | gameTitle }}</a>
                                         @if (avgReviewsIndexComputed()[game.id]; as review) {
-                                            <span class="shrink-0 text-sm font-medium text-bv-warning">★ {{ formatNumber(review.average) }}</span>
+                                            <span class="shrink-0 text-sm font-medium text-bv-warning">
+                                                <span aria-hidden="true">★ {{ outOfFive(review.average) }}</span>
+                                                <span class="sr-only" i18n="Average rating of a game in a group's library, for screen readers; the placeholder is the rating out of 5, such as 4.5">Group rating {{ outOfFive(review.average) }} out of 5</span>
+                                            </span>
                                         }
                                     </div>
                                     <p class="mt-2 text-sm text-secondary"><ng-container i18n="How long a game lasts, in minutes">{{ game.gameAvgDuration }} min</ng-container> · {{ game | players }}</p>

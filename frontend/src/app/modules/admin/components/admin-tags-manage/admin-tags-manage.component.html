@@ -40,17 +40,24 @@
                 </header>
                 <ul class="divide-y divide-bv-border">
                     @for (tag of section.tags; track tag.id) {
-                        <li class="flex flex-wrap items-center justify-between gap-x-3 gap-y-1 px-4 py-2">
-                            <span class="min-w-0">
+                        <li class="flex items-center justify-between gap-3 px-4 py-2">
+                            <span class="min-w-0 flex-1 wrap-anywhere">
                                 <span class="font-medium">{{ tag.name }}</span>
-                                <span class="ml-2 text-sm text-bv-text-muted" [class.text-bv-warning]="tag.gameCount === 0">
+                                <span class="ml-2 whitespace-nowrap text-sm text-bv-text-muted" [class.text-bv-warning]="tag.gameCount === 0">
                                     {{ tag.gameCount === 0 ? 'unused' : tag.gameCount + (tag.gameCount === 1 ? ' game' : ' games') }}
                                 </span>
                             </span>
-                            <span class="flex gap-1">
-                                <button type="button" class="min-h-9 rounded-md px-2 text-sm font-medium text-bv-primary hover:bg-bv-surface-2" (click)="onEditTag(tag)" [attr.aria-label]="'Edit ' + tag.name">Edit</button>
-                                <button type="button" class="min-h-9 rounded-md px-2 text-sm font-medium text-bv-primary hover:bg-bv-surface-2" (click)="onMergeTag(tag)" [attr.aria-label]="'Merge ' + tag.name + ' into another tag'">Merge</button>
-                                <button type="button" class="min-h-9 rounded-md px-2 text-sm font-medium text-bv-danger hover:bg-bv-surface-2" (click)="onDeleteTag(tag)" [attr.aria-label]="'Delete ' + tag.name">Delete</button>
+                            <!-- Icon-only: the accessible name says which tag, the title shows the action on hover. -->
+                            <span class="flex shrink-0 gap-1">
+                                <button type="button" class="flex h-10 w-10 cursor-pointer items-center justify-center rounded-lg transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-bv-primary text-bv-primary hover:bg-bv-primary-soft" (click)="onEditTag(tag)" [attr.aria-label]="'Edit ' + tag.name" title="Edit">
+                                    <app-icon name="pencil" [size]="18" aria-hidden="true" />
+                                </button>
+                                <button type="button" class="flex h-10 w-10 cursor-pointer items-center justify-center rounded-lg transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-bv-primary text-bv-primary hover:bg-bv-primary-soft" (click)="onMergeTag(tag)" [attr.aria-label]="'Merge ' + tag.name + ' into another tag'" title="Merge into another tag">
+                                    <app-icon name="merge" [size]="18" aria-hidden="true" />
+                                </button>
+                                <button type="button" class="flex h-10 w-10 cursor-pointer items-center justify-center rounded-lg transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-bv-primary text-bv-danger hover:bg-bv-danger/10" (click)="onDeleteTag(tag)" [attr.aria-label]="'Delete ' + tag.name" title="Delete">
+                                    <app-icon name="trash" [size]="18" aria-hidden="true" />
+                                </button>
                             </span>
                         </li>
                     } @empty {

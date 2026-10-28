@@ -28,6 +28,7 @@
             [accessibleDate]="meet.meetDate | customDate: false: meet.timezone"
             [notes]="meet.notes"
             [stats]="sessionStats"
+            [awaitingResults]="isAwaitingResults"
         >
 
             @if (canRespondToRsvp) {
@@ -47,7 +48,9 @@
             @if (canRunNight || canShapeNight || canAddToCalendar || canCorrectRecording) {
                 <div class="mt-5 flex flex-wrap items-center gap-3 border-t border-bv-border pt-5">
                     @if (canRunNight) {
-                        @if (meet.status === 'scheduled') {
+                        @if (meet.status === 'scheduled' && isAwaitingResults) {
+                            <button appButton type="button" icon="notebook-pen" [disabled]="isUpdatingStatus" (click)="requestStart()" i18n="Button on a planned game night whose day has passed: opens it to mark what was played">Record results</button>
+                        } @else if (meet.status === 'scheduled') {
                             <button appButton type="button" icon="dice-5" [disabled]="isUpdatingStatus" (click)="requestStart()" i18n="Button that starts a planned game night">Start game night</button>
                         } @else {
                             <button appButton type="button" icon="check" [disabled]="isUpdatingStatus" (click)="requestStatusUpdate('completed')" i18n="Button that finishes a game night going on now">Finish game night</button>
@@ -82,7 +85,9 @@
                         <button type="button" class="ml-auto rounded text-sm font-medium text-bv-danger underline-offset-2 hover:underline disabled:opacity-60" [disabled]="isUpdatingStatus" (click)="requestStatusUpdate('cancelled')" i18n="Button that cancels a game night">Cancel game night</button>
                     }
                 </div>
-                @if (canRunNight && meet.status === 'scheduled') {
+                @if (canRunNight && meet.status === 'scheduled' && isAwaitingResults) {
+                    <p class="mt-3 text-sm text-bv-text-muted" i18n="Hint under Record results on a planned game night whose day has passed">The night keeps its date. Mark the games you played, who played, and who won, then finish it.</p>
+                } @else if (canRunNight && meet.status === 'scheduled') {
                     <p class="mt-3 text-sm text-bv-text-muted" i18n="Hint under Start game night">Start the night when the group sits down to play. Then mark the games you play, who played, and who won.</p>
                 }
             }

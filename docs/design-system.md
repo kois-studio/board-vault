@@ -224,6 +224,8 @@ not the only label for an action.
 - **Session timing:** `core/utils/sessionTiming.ts` says whether a scheduled
   session is `planned`, `live`, or waiting for results (`wrap-up`, 12 hours
   after it started), and formats date blocks and "in 6 days" labels.
+  Upcoming and the game night page both use it: a `wrap-up` night asks for
+  results (Record results) instead of answers and Start.
 - **The way back:** `<a appBackLink [routerLink]="…">Back to the group</a>`
   (`components/ui/back-link/`) is an arrow and where it goes, in muted text,
   above the page heading. Every focused page (`LayoutBasicComponent`, which

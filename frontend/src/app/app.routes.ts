@@ -246,7 +246,15 @@ export const routes: Routes = [
         ],
     },
     {
-        path: '**',
-        loadComponent: () => import('./pages/errors/page-not-found/page-not-found.component').then((m) => m.PageNotFoundComponent),
-    }, // Wildcard route for a 404 page
+        // The 404 page, with the app's header and footer so there is a way on. It is its own parent, after the
+        // two above, so the wildcard only matches once no page in either layout did.
+        path: '',
+        component: LayoutCompleteComponent,
+        children: [
+            {
+                path: '**',
+                loadComponent: () => import('./pages/errors/page-not-found/page-not-found.component').then((m) => m.PageNotFoundComponent),
+            },
+        ],
+    },
 ]

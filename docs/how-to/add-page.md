@@ -10,7 +10,8 @@
 2. **Register the route** in `frontend/src/app/app.routes.ts` with
    `loadComponent`. Signed-in pages use `canActivate: [AuthOnlyGuard]`. Use
    `LayoutCompleteComponent` for browsing and `LayoutBasicComponent` for a
-   focused action. A focused page has no navigation, so it starts with an
+   focused action, inside that layout's parent, never after the not-found
+   wildcard at the end. A focused page has no navigation, so it starts with an
    `<a appBackLink>` to the page it belongs to
    ([Shared controls](../design-system.md#shared-controls)), and its own
    wrapper is a `<div>`: the layout already gives the page its `<main>`.
