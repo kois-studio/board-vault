@@ -279,6 +279,12 @@ operational details.
 
 ### Fixed
 
+- Every page without the navigation bar (create a group, plan a game night,
+  group settings, claim a person, propose a game) starts with the same "Back
+  to …" link above its heading. Plan a game night and Propose a game had no
+  way out but the browser's Back button; Propose a game now goes back to
+  Browse with the same search. Those pages no longer put a second `<main>`
+  inside the layout's.
 - Game titles on Home and the group pages show in the page's language, and
   a few Spanish, French, German, and Italian texts there read more naturally
   and without gendered forms.

@@ -12892,6 +12892,15 @@
         <target>Wir konnten dich nicht fertig zu dieser Gruppe hinzufügen. Vielleicht ist die Einladung abgelaufen oder schon benutzt, oder die Gruppe ist nicht mehr verfügbar. Versuch es noch einmal, oder melde dich ab und bitte die Person, die die Gruppe erstellt hat, um eine neue Einladung.</target>
       </segment>
     </unit>
+    <unit id="8439160099000475740">
+      <notes>
+        <note category="description">Link above the form that proposes a game, back to the Browse page</note>
+      </notes>
+      <segment state="translated">
+        <source>Back to Browse</source>
+        <target>Zurück zu Entdecken</target>
+      </segment>
+    </unit>
     <unit id="8444895551001949986">
       <notes>
         <note category="description">Mood button on What to play, favouring games the group has not played</note>

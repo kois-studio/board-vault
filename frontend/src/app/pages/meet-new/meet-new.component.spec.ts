@@ -80,6 +80,16 @@ describe('MeetNewComponent social handoff', () => {
         return { fixture, component: fixture.componentInstance, api, dataService, loadingService }
     }
 
+    it('starts with the way back to the group, above the heading', async () => {
+        const { fixture } = await setup()
+
+        const back = fixture.nativeElement.querySelector('a[appBackLink]') as HTMLAnchorElement
+        const heading = fixture.nativeElement.querySelector('h1') as HTMLHeadingElement
+        expect(back.getAttribute('href')).toBe('/groups/7')
+        expect(back.textContent?.trim()).toBe('Back to the group')
+        expect(back.compareDocumentPosition(heading) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy()
+    })
+
     it('invites everyone by default and keeps a long name on one line', async () => {
         const longName = '⸻'.repeat(20)
         const { fixture, component } = await setup({}, { ...group, members: [organizer, { ...member, displayName: longName }] })

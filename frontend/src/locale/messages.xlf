@@ -2708,6 +2708,7 @@
     <unit id="2540335529357116363">
       <notes>
         <note category="location">src/app/pages/group-person/group-person-page.component.html</note>
+        <note category="location">src/app/pages/meet-new/meet-new.component.html</note>
         <note category="description">Link on the page of a person of a group back to the group page, before the group name loads</note>
       </notes>
       <segment>
@@ -13095,6 +13096,15 @@
       </notes>
       <segment>
         <source>We could not finish joining this group. The invitation may have expired, already been used, or the group may no longer be available. Try again, or sign out and ask the group owner for a fresh invitation.</source>
+      </segment>
+    </unit>
+    <unit id="8439160099000475740">
+      <notes>
+        <note category="location">src/app/pages/collection-page/propose-game-page/propose-game-page.component.html</note>
+        <note category="description">Link above the form that proposes a game, back to the Browse page</note>
+      </notes>
+      <segment>
+        <source>Back to Browse</source>
       </segment>
     </unit>
     <unit id="8444895551001949986">

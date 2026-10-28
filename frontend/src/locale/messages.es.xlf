@@ -12892,6 +12892,15 @@
         <target>No hemos podido terminar de unirte a este grupo. Puede que la invitación haya caducado, ya se haya usado o que el grupo ya no esté disponible. Inténtalo de nuevo, o cierra sesión y pide una invitación nueva a quien creó el grupo.</target>
       </segment>
     </unit>
+    <unit id="8439160099000475740">
+      <notes>
+        <note category="description">Link above the form that proposes a game, back to the Browse page</note>
+      </notes>
+      <segment state="translated">
+        <source>Back to Browse</source>
+        <target>Volver a Explorar</target>
+      </segment>
+    </unit>
     <unit id="8444895551001949986">
       <notes>
         <note category="description">Mood button on What to play, favouring games the group has not played</note>

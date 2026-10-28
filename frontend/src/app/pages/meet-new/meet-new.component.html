@@ -1,4 +1,5 @@
 <app-page-header i18n-titleText="Title of the page that plans a game night" titleText="Plan a game night" [showActionButton]="false">
+    <a appBackLink [routerLink]="['/groups', groupId]" i18n="Link above the form that plans a game night, back to the group page">Back to the group</a>
     @if (groupData(); as group) {
         <ng-container i18n="Subtitle of the plan form; the link is the group name">For <a class="font-medium text-bv-primary underline underline-offset-2 wrap-anywhere" [routerLink]="['/groups', group.id]">{{ group.name }}</a>. Everyone invited can answer, and you can change the plan later.</ng-container>
     } @else {

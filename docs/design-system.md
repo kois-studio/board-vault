@@ -224,6 +224,14 @@ not the only label for an action.
 - **Session timing:** `core/utils/sessionTiming.ts` says whether a scheduled
   session is `planned`, `live`, or waiting for results (`wrap-up`, 12 hours
   after it started), and formats date blocks and "in 6 days" labels.
+- **The way back:** `<a appBackLink [routerLink]="…">Back to the group</a>`
+  (`components/ui/back-link/`) is an arrow and where it goes, in muted text,
+  above the page heading. Every focused page (`LayoutBasicComponent`, which
+  has no navigation) starts with one, so there is always a way out that
+  looks the same. Inside `<app-page-header>` it goes in the slot above the
+  title. Go back to the page it belongs to (the group, Home for a new group,
+  Browse), and keep what the person had there (Propose a game goes back to
+  Browse with the same search).
 - **Undo:** for a quick, reversible action, act at once and pass an action
   to the toast instead of asking for confirmation first:
   `toastService.success('Removed from your wishlist', { label: 'Undo', run: () => … })`.

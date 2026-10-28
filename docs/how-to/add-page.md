@@ -10,7 +10,11 @@
 2. **Register the route** in `frontend/src/app/app.routes.ts` with
    `loadComponent`. Signed-in pages use `canActivate: [AuthOnlyGuard]`. Use
    `LayoutCompleteComponent` for browsing and `LayoutBasicComponent` for a
-   focused action. Add its title and description to `getPageMetadata()` in
+   focused action. A focused page has no navigation, so it starts with an
+   `<a appBackLink>` to the page it belongs to
+   ([Shared controls](../design-system.md#shared-controls)), and its own
+   wrapper is a `<div>`: the layout already gives the page its `<main>`.
+   Add its title and description to `getPageMetadata()` in
    `app.component.ts`.
 3. **Load data through `Api`** (`frontend/src/app/api/api.ts`). Every
    response is parsed by a zod schema in `api.schemas.ts`; add one for new

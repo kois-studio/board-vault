@@ -12892,6 +12892,15 @@
         <target>Non siamo riusciti a completare il tuo ingresso nel gruppo. L’invito potrebbe essere scaduto o già usato, oppure il gruppo non è più disponibile. Riprova, oppure esci e chiedi un nuovo invito a chi ha creato il gruppo.</target>
       </segment>
     </unit>
+    <unit id="8439160099000475740">
+      <notes>
+        <note category="description">Link above the form that proposes a game, back to the Browse page</note>
+      </notes>
+      <segment state="translated">
+        <source>Back to Browse</source>
+        <target>Torna a Esplora</target>
+      </segment>
+    </unit>
     <unit id="8444895551001949986">
       <notes>
         <note category="description">Mood button on What to play, favouring games the group has not played</note>
