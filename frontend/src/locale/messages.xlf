@@ -763,15 +763,6 @@
         <source>Collection</source>
       </segment>
     </unit>
-    <unit id="1687843960576683654">
-      <notes>
-        <note category="location">src/app/components/card-group/card-group.component.html</note>
-        <note category="description">Name of the list of faces on a group card on Home</note>
-      </notes>
-      <segment>
-        <source>People in this group</source>
-      </segment>
-    </unit>
     <unit id="1688683156203780908">
       <notes>
         <note category="location">src/app/pages/dashboard-page/dashboard-page.component.html</note>
@@ -2783,6 +2774,15 @@
       </notes>
       <segment>
         <source>Getting set up</source>
+      </segment>
+    </unit>
+    <unit id="3614057461352661644">
+      <notes>
+        <note category="location">src/app/components/card-group/card-group.component.ts</note>
+        <note category="description">Name of the list of faces on a group card on Home</note>
+      </notes>
+      <segment>
+        <source>People in <ph id="0" equiv="group" disp="this.group().name"/></source>
       </segment>
     </unit>
     <unit id="3635224618020757014">
