@@ -240,7 +240,7 @@ compliance:
       next_action: None.
     - id: DEP-003
       status: compliant
-      evidence: 'npm 11.12.1 everywhere: it ships with the Node in .nvmrc (local and CI), packageManager records it, and both vercel.json files install with npx npm@11.12.1.'
+      evidence: 'npm 11.19.1 everywhere: it ships with the Node in .nvmrc (local and CI), packageManager records it, and both vercel.json files install with npx npm@11.19.1.'
       priority: high
     - id: DEP-004
       status: compliant

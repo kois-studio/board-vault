@@ -9,7 +9,9 @@ minutes. The steps are the same on macOS, Windows, and Linux.
   [nvm](https://github.com/nvm-sh/nvm), run `nvm install` then `nvm use` from
   the repository root. [nvm-windows](https://github.com/coreybutler/nvm-windows)
   does not read `.nvmrc`, so pass the version from that file:
-  `nvm install 24.15.0` then `nvm use 24.15.0`.
+  `nvm install 24.22.1` then `nvm use 24.22.1`. With
+  [fnm](https://github.com/Schniz/fnm), run `fnm install` then `fnm use`.
+  GitHub Actions reads the same `.nvmrc` file to keep CI on this patch.
 - **npm** comes with Node. The project uses npm and its lockfiles; don't use
   pnpm or yarn.
 - **Git** and a Chromium browser (Chrome or Edge) for tests.

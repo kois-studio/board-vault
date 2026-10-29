@@ -120,6 +120,8 @@ operational details.
   people, the invite nudge, and What to play, Library and History for each,
   with the last or next night under the name and the pin on the card's
   corner. Pinned groups still lead.
+- Development and CI use the Node.js 24.22.1 security release; npm 11.19.1
+  stays aligned across local development, CI, and Vercel installs.
 - Names have at most 20 characters, for accounts and for people without one,
   and the API enforces it. Longer names saved before are shown cut the same
   way everywhere ("Bartholomew Montgom…"), notifications included. Names stay
@@ -201,7 +203,7 @@ operational details.
   in dark mode), next to the name in the header and footer. The app can be
   installed on phones: a web manifest with app icons, an adaptive Android
   icon, and an iOS home-screen icon.
-- Vercel installs exactly like CI: npm 11.12.1 and no dependency install
+- Vercel installs exactly like CI: npm 11.19.1 and no dependency install
   scripts.
 - The frontend validates API responses with zod 4 (`zod/mini`), which also
   makes the first download slightly smaller.
