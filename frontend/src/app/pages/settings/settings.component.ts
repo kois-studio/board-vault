@@ -1,17 +1,25 @@
-import { Component, computed, inject } from '@angular/core'
+import { Component, computed, DOCUMENT, inject } from '@angular/core'
+import { environment } from '../../../environments/environment'
 import { CardAccountComponent } from '../../components/card-account/card-account.component'
 import { DataService } from '../../core/services/data.service'
 import { LoginService } from '../../core/services/login.service'
 import { PendingProposalsService } from '../../core/services/pending-proposals.service'
+import { languageMenuLocales } from '../../layout/language-menu/language-menu.component'
 import { SidebarGroup, SidebarLayoutComponent } from '../../layout/sidebar-layout/sidebar-layout.component'
 
-export const SETTINGS_SECTIONS: SidebarGroup = {
-    items: [
-        { label: $localize`:Section of the Settings menu:Profile`, icon: 'user-circle', link: '/settings/profile' },
-        { label: $localize`:Section of the Settings menu:Appearance`, icon: 'palette', link: '/settings/appearance' },
-        { label: $localize`:Section of the Settings menu:Account`, icon: 'lock', link: '/settings/account' },
-        { label: $localize`:Section of the Settings menu:Privacy`, icon: 'shield-lock', link: '/settings/privacy' },
-    ],
+/** The Settings sections; Language only when the page has languages to choose from (not on a development server). */
+export function settingsSections(withLanguage: boolean): SidebarGroup {
+    return {
+        items: [
+            { label: $localize`:Section of the Settings menu:Profile`, icon: 'user-circle', link: '/settings/profile' },
+            { label: $localize`:Section of the Settings menu:Appearance`, icon: 'palette', link: '/settings/appearance' },
+            ...(withLanguage
+                ? [{ label: $localize`:Section of the Settings menu:Language`, icon: 'languages', link: '/settings/language' }]
+                : []),
+            { label: $localize`:Section of the Settings menu:Account`, icon: 'lock', link: '/settings/account' },
+            { label: $localize`:Section of the Settings menu:Privacy`, icon: 'shield-lock', link: '/settings/privacy' },
+        ],
+    }
 }
 
 @Component({
@@ -22,15 +30,18 @@ export class SettingsPageComponent {
     private readonly dataService = inject(DataService)
     private readonly loginService = inject(LoginService)
     private readonly pendingProposals = inject(PendingProposalsService)
+    private readonly sections = settingsSections(
+        languageMenuLocales(inject(DOCUMENT).location.pathname, environment.previewLocales).length > 0,
+    )
 
     public readonly currentUser$ = this.dataService.currentUser
 
     public readonly groups = computed<Array<SidebarGroup>>(() => {
-        if (!this.loginService.isCurrentUserAdmin()) return [SETTINGS_SECTIONS]
+        if (!this.loginService.isCurrentUserAdmin()) return [this.sections]
 
         // Administration stays in English (ADR-0024).
         return [
-            SETTINGS_SECTIONS,
+            this.sections,
             {
                 label: 'Administration',
                 items: [

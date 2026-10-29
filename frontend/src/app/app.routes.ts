@@ -177,6 +177,12 @@ export const routes: Routes = [
                         canActivate: [AuthOnlyGuard],
                     },
                     {
+                        path: 'language',
+                        loadComponent: () =>
+                            import('./pages/settings/language/settings-language.component').then((m) => m.SettingsLanguageComponent),
+                        canActivate: [AuthOnlyGuard],
+                    },
+                    {
                         path: 'account',
                         loadComponent: () =>
                             import('./pages/settings/account/settings-account.component').then((m) => m.SettingsAccountComponent),

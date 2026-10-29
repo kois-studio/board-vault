@@ -3492,8 +3492,9 @@
     </unit>
     <unit id="2826581353496868063">
       <notes>
-        <note category="location">src/app/pages/settings/appearance/settings-appearance.component.html</note>
-        <note category="description">Heading of the language choice in the Appearance settings</note>
+        <note category="location">src/app/pages/settings/language/settings-language.component.html</note>
+        <note category="location">src/app/pages/settings/settings.component.ts</note>
+        <note category="description">Heading of the Language settings</note>
       </notes>
       <segment>
         <source>Language</source>
@@ -7160,6 +7161,15 @@
       </notes>
       <segment>
         <source>Your password meets all the necessary requirements.</source>
+      </segment>
+    </unit>
+    <unit id="4723857933690757033">
+      <notes>
+        <note category="location">src/app/pages/settings/appearance/settings-appearance.component.html</note>
+        <note category="description">Subtitle of the Appearance settings</note>
+      </notes>
+      <segment>
+        <source>Choose how Board Vault looks. Your choices are saved on this device.</source>
       </segment>
     </unit>
     <unit id="4727820324063038637">
@@ -14277,15 +14287,6 @@
         <source>My submissions — Board Vault</source>
       </segment>
     </unit>
-    <unit id="8431906120837794890">
-      <notes>
-        <note category="location">src/app/pages/settings/appearance/settings-appearance.component.html</note>
-        <note category="description">Subtitle of the Appearance settings</note>
-      </notes>
-      <segment>
-        <source>Choose how Board Vault looks. Except for the language, your choices are saved on this device.</source>
-      </segment>
-    </unit>
     <unit id="8435038262958370080">
       <notes>
         <note category="location">src/app/core/services/login.service.ts</note>
@@ -15131,8 +15132,8 @@
     </unit>
     <unit id="8823677903532501631">
       <notes>
-        <note category="location">src/app/pages/settings/appearance/settings-appearance.component.html</note>
-        <note category="description">Hint under the language heading in the Appearance settings</note>
+        <note category="location">src/app/pages/settings/language/settings-language.component.html</note>
+        <note category="description">Subtitle of the Language settings</note>
       </notes>
       <segment>
         <source>The language of Board Vault’s menus and messages. Saved on your account.</source>
