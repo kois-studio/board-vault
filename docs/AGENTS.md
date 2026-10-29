@@ -74,6 +74,7 @@ npm run lint              # backend eslint + frontend biome
 npm run test:unit         # backend and frontend Vitest
 npm run build
 npm run test:e2e          # backend e2e + Playwright public journeys
+npm --prefix frontend run e2e:locales  # language switching, after npm run build
 npm run verify:migrations # empty-database migration chain
 npm run verify:restore    # restore + migrate rehearsal
 npm run verify:rollback   # rollback rehearsal

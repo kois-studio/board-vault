@@ -13,6 +13,7 @@
         "dev": "ng serve",
         "e2e": "playwright test",
         "e2e:ui": "playwright test --ui",
+        "e2e:locales": "playwright test --config playwright.locales.config.ts",
         "prebuild": "node scripts/generate-runtime-config.mjs && node scripts/i18n-translations.mjs check",
         "build": "ng build",
         "postbuild": "node scripts/assemble-locales.mjs",

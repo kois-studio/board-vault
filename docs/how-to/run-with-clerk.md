@@ -110,3 +110,27 @@ recording of an unowned catalogue game, repeated plays, corrections, and a
 spontaneous live night at desktop and phone widths. Screenshots stay in the
 ignored Playwright results directory. Run this only against disposable local
 fixtures; it creates sessions.
+
+## Language switching
+
+`frontend/e2e/locales/switch-signed-in.spec.ts` checks that choosing a
+language in Settings saves it on the account, and that signing in on a fresh
+browser opens the app in that language. `ng serve` serves one language, so it
+runs against a development build with every language, served by
+`scripts/serve-dist.mjs` with the build's own runtime config (your Clerk
+development key). With the local API on port 3000:
+
+```shell
+cd frontend
+npm run build -- --configuration=development --localize
+set -a; source ../backend/.env; set +a
+SERVE_DIST_RUNTIME_CONFIG=build PLAYWRIGHT_CLERK_TESTING=1 \
+PLAYWRIGHT_LOCALES_SIGN_IN_EMAIL=organizer+clerk_test@example.com \
+  npm run e2e:locales -- --workers=1
+```
+
+The site is served on `http://127.0.0.1:4400`, so the API needs
+`CORS_ORIGINS=http://127.0.0.1:4400` and that origin in
+`CLERK_AUTHORIZED_PARTIES`. The spec fails on any request to the production
+API, which a production build (`npm run build` alone) would make. It sets the
+account's language to Spanish and back to English.
