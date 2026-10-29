@@ -38,9 +38,9 @@ Production runs in Europe, close together: the API in Vercel `dub1`
 A request makes several database queries in a row, so the API must stay next
 to Turso; move them together.
 
-Every install uses npm 11.12.1, the npm that ships with the Node in `.nvmrc`
+Every install uses npm 11.19.1, the npm that ships with the Node in `.nvmrc`
 (`packageManager` records it; both `vercel.json` files run
-`npx npm@11.12.1 ci`). CI and Vercel install with `--ignore-scripts`: neither
+`npx npm@11.19.1 ci`). CI and Vercel install with `--ignore-scripts`: neither
 app needs a dependency's install script to build or run, so none may run on
 a deploy. If a new dependency needs one, list it here and run it explicitly
 in the install command.

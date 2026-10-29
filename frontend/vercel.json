@@ -1,6 +1,6 @@
 {
     "$schema": "https://openapi.vercel.sh/vercel.json",
-    "installCommand": "npx --yes npm@11.12.1 ci --ignore-scripts",
+    "installCommand": "npx --yes npm@11.19.1 ci --ignore-scripts",
     "headers": [
         {
             "source": "/:locale(en|es|fr|de|it)/:file((?:main|polyfills|chunk|styles)-[A-Za-z0-9_-]{8}\\.(?:js|css))",
