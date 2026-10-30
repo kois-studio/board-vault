@@ -35,10 +35,13 @@ describe('SettingsLanguageComponent', () => {
         expect(element.querySelector('fieldset legend')?.textContent?.trim()).toBe('Language')
         expect(radios(element).map((radio) => [radio.value, radio.closest('label')?.textContent?.trim()])).toEqual([
             ['en', 'English'],
+            ['es', 'Español'],
             ['fr', 'Français'],
+            ['de', 'Deutsch'],
+            ['it', 'Italiano'],
         ])
         expect(radios(element).find((radio) => radio.checked)?.value).toBe('fr')
-        expect(radios(element)[1]?.closest('label')?.querySelector('[lang="fr"]')).not.toBeNull()
+        expect(radios(element)[2]?.closest('label')?.querySelector('[lang="fr"]')).not.toBeNull()
     })
 
     it('saves a chosen language through the account language service', () => {

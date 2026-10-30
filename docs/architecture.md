@@ -223,7 +223,7 @@ are written without the prefix; the base address adds it.
   offered languages and the page's own; locally and in Vercel previews
   (`previewLocales` in the runtime config) it lists every supported language.
   It shows only under a prefix and when there is more than one language to
-  choose, so today's production English pages have no menu.
+  choose; production offers all five languages.
 - The account's language: signed in, choosing a language (in the menu or in
   Settings → Language) first saves it on the account
   (`PUT /users/:id` with `locale`; a failed save is logged and the page still

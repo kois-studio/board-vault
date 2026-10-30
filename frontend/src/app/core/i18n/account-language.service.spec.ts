@@ -140,12 +140,11 @@ describe('AccountLanguageService', () => {
             expect(location.replace).not.toHaveBeenCalled()
         })
 
-        it('does not move anyone into a language that is not offered yet', () => {
+        it('moves into an offered language in production', () => {
             environment.previewLocales = false
             follow(setup('/en/dashboard', false), 'es')
 
-            expect(location.replace).not.toHaveBeenCalled()
-            expect(fakeDocument.cookie).toBe('')
+            expect(location.replace).toHaveBeenCalledWith('/es/dashboard?tab=games#top')
         })
 
         it('moves from an unfinished language to an offered one', () => {

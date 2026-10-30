@@ -21,8 +21,11 @@ test.describe('choosing a language signed out', () => {
         await expect(page.locator('html')).toHaveAttribute('lang', 'es')
         await expect(page.getByRole('heading', { level: 1, name: /Todos tus juegos, en una estantería ordenada/i })).toBeVisible()
         await expect(page.getByRole('button', { name: 'Idioma: Español' })).toBeVisible()
-        // An address without a prefix follows the cookie once the language is offered; locales.spec.ts covers that rule.
         expect((await context.cookies()).find((cookie) => cookie.name === 'bv_lang')?.value).toBe('es')
+
+        // The cookie wins over the browser's language for an address without a prefix.
+        await page.goto('/login')
+        await expect(page).toHaveURL(/\/es\/login$/)
     })
 
     test('keeps the page and its query when switching', async ({ page }) => {
