@@ -54,7 +54,8 @@ editions people own, not only the interface language (ADR-0025).
   build contains every language, but the list of offered languages
   (`OFFERED_LOCALES`) grows as each one is finished, so a half-translated
   language is never shown to anyone who did not type its address. A native
-  speaker reviews French, German, and Italian before launch.
+  speaker reviews French, German, and Italian before launch (amended
+  2026-10-30: a model review instead, see below).
 - More languages (Portuguese, Dutch, …) follow the same path later.
 - The Administration area stays English. It is internal tooling for a few
   people, and leaving it out keeps 1.0 smaller.
@@ -223,3 +224,17 @@ fork its translations and have to follow every Clerk update. The text Board
 Vault adds there (its own names, and the strings Clerk leaves in English)
 follows Clerk's address, so each panel reads consistently. The native-speaker
 review (#189) checks these panels too; revisit if they read badly.
+
+## Amendment (2026-10-30)
+
+The owner has no French, German, or Italian reviewers and decided not to
+recruit outside ones, so the native-speaker review (#189) became a model
+review: two independent passes (Claude Sonnet and Claude Haiku) over every
+message in each language, against [i18n.md](../i18n.md)'s rules and glossary,
+then a final check of the findings and every change. It fixed wrong meanings
+(swapped names in one history line, also in Spanish; "Daten" for dates;
+"Sblocca" for unpin), the neutral-wording rule (player counts as people,
+"who was there"), button mood, French no-break spaces, typographic quotes,
+and the shortlist term. Clerk's formal address stays, as decided above. A
+native speaker who later reports a problem gets an issue like any other bug;
+the translations are not re-reviewed before launch.

@@ -1263,6 +1263,15 @@
         <target>La verificación no funciona en este entorno. Continúa en un navegador habitual o contacta con soporte.</target>
       </segment>
     </unit>
+    <unit id="1703203867793276344">
+      <notes>
+        <note category="description">Under the title of the game proposal dialog</note>
+      </notes>
+      <segment state="translated">
+        <source>Help us expand our game collection! Submit a proposal for a game you’d like to see added to Board Vault.</source>
+        <target>¡Ayúdanos a ampliar nuestra colección de juegos! Envía una propuesta de un juego que te gustaría ver en Board Vault.</target>
+      </segment>
+    </unit>
     <unit id="1703497912367663985">
       <notes>
         <note category="description">Group history line; actor and person are names</note>
@@ -6834,7 +6843,7 @@
       </notes>
       <segment state="translated">
         <source><ph id="0" equiv="actor" disp="actor"/> marked <ph id="1" equiv="game" disp="game"/> as not sure for <ph id="2" equiv="person" disp="person"/></source>
-        <target><ph id="0" equiv="actor" disp="actor"/> ha indicado que no está claro si <ph id="1" equiv="game" disp="game"/> tiene <ph id="2" equiv="person" disp="person"/></target>
+        <target><ph id="0" equiv="actor" disp="actor"/> ha indicado que no está claro si <ph id="2" equiv="person" disp="person"/> tiene <ph id="1" equiv="game" disp="game"/></target>
       </segment>
     </unit>
     <unit id="4601097269481283590">
@@ -14997,15 +15006,6 @@
       <segment state="translated">
         <source>Just counts under a pseudonym, in our own database. No cookies, no ads, nothing shared.</source>
         <target>Solo recuentos con un seudónimo, en nuestra propia base de datos. Sin cookies, sin anuncios, sin compartir nada.</target>
-      </segment>
-    </unit>
-    <unit id="8871481276519293061">
-      <notes>
-        <note category="description">Under the title of the game proposal dialog</note>
-      </notes>
-      <segment state="translated">
-        <source>Help us expand our game collection! Submit a proposal for a game you’d like to see added to BoardVault.</source>
-        <target>¡Ayúdanos a ampliar nuestra colección de juegos! Envía una propuesta de un juego que te gustaría ver en BoardVault.</target>
       </segment>
     </unit>
     <unit id="8873512080778685444">

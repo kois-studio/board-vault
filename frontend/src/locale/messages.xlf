@@ -1289,6 +1289,15 @@
         <source>Verification isn&apos;t supported in this environment. Please continue in a standard browser or contact support.</source>
       </segment>
     </unit>
+    <unit id="1703203867793276344">
+      <notes>
+        <note category="location">src/app/components/modals/modal-game-submission/modal-game-submission.component.html</note>
+        <note category="description">Under the title of the game proposal dialog</note>
+      </notes>
+      <segment>
+        <source>Help us expand our game collection! Submit a proposal for a game you’d like to see added to Board Vault.</source>
+      </segment>
+    </unit>
     <unit id="1703497912367663985">
       <notes>
         <note category="location">src/app/core/utils/groupActivity.ts</note>
@@ -15246,15 +15255,6 @@
       </notes>
       <segment>
         <source>Just counts under a pseudonym, in our own database. No cookies, no ads, nothing shared.</source>
-      </segment>
-    </unit>
-    <unit id="8871481276519293061">
-      <notes>
-        <note category="location">src/app/components/modals/modal-game-submission/modal-game-submission.component.html</note>
-        <note category="description">Under the title of the game proposal dialog</note>
-      </notes>
-      <segment>
-        <source>Help us expand our game collection! Submit a proposal for a game you’d like to see added to BoardVault.</source>
       </segment>
     </unit>
     <unit id="8873512080778685444">

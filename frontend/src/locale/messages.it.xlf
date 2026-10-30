@@ -6,7 +6,7 @@
       </notes>
       <segment state="translated">
         <source>Fits <ph id="0" equiv="players" disp="players"/> players</source>
-        <target>Per <ph id="0" equiv="players" disp="players"/> giocatori</target>
+        <target>Per <ph id="0" equiv="players" disp="players"/> persone</target>
       </segment>
     </unit>
     <unit id="1006147056168230215">
@@ -267,7 +267,7 @@
       </notes>
       <segment state="translated">
         <source>On your shelf</source>
-        <target>Nel tuo scaffale</target>
+        <target>Sul tuo scaffale</target>
       </segment>
     </unit>
     <unit id="1146149502161554104">
@@ -471,7 +471,7 @@
       </notes>
       <segment state="translated">
         <source>This night is over. Record who came and what you played, or cancel it if it didn’t happen.</source>
-        <target>Questa serata è passata. Registra chi è venuto e a cosa avete giocato, oppure annullala se non c’è stata.</target>
+        <target>Questa serata è passata. Registra chi c’era e a cosa avete giocato, oppure annullala se non c’è stata.</target>
       </segment>
     </unit>
     <unit id="1251428933558875497">
@@ -1263,6 +1263,15 @@
         <target>La verifica non è supportata in questo ambiente. Continua in un browser standard o contatta l’assistenza.</target>
       </segment>
     </unit>
+    <unit id="1703203867793276344">
+      <notes>
+        <note category="description">Under the title of the game proposal dialog</note>
+      </notes>
+      <segment state="translated">
+        <source>Help us expand our game collection! Submit a proposal for a game you’d like to see added to Board Vault.</source>
+        <target>Aiutaci ad ampliare la nostra collezione di giochi! Invia una proposta per un gioco che vorresti vedere su Board Vault.</target>
+      </segment>
+    </unit>
     <unit id="1703497912367663985">
       <notes>
         <note category="description">Group history line; actor and person are names</note>
@@ -1395,7 +1404,7 @@
       </notes>
       <segment state="translated">
         <source>{VAR_PLURAL, plural, one {<ph id="0" equiv="INTERPOLATION"/> passed} other {<ph id="1" equiv="INTERPOLATION"/> passed}}</source>
-        <target>{VAR_PLURAL, plural, one {<ph id="0" equiv="INTERPOLATION"/> passa} other {<ph id="1" equiv="INTERPOLATION"/> passano}}</target>
+        <target>{VAR_PLURAL, plural, one {<ph id="0" equiv="INTERPOLATION"/> dice no} other {<ph id="1" equiv="INTERPOLATION"/> dicono no}}</target>
       </segment>
     </unit>
     <unit id="180215682275041064">
@@ -1890,7 +1899,7 @@
       </notes>
       <segment state="translated">
         <source>Find a game for <ph id="0" equiv="INTERPOLATION" disp="{{ acquisitionGroupName() }}"/> to consider acquiring. Your shortlist is shared with the group.</source>
-        <target>Trova un gioco che <ph id="0" equiv="INTERPOLATION" disp="{{ acquisitionGroupName() }}"/> potrebbe valutare di comprare. La tua selezione è condivisa con il gruppo.</target>
+        <target>Trova un gioco che <ph id="0" equiv="INTERPOLATION" disp="{{ acquisitionGroupName() }}"/> potrebbe valutare di comprare. La tua preselezione è condivisa con il gruppo.</target>
       </segment>
     </unit>
     <unit id="2039576617926281033">
@@ -2038,7 +2047,7 @@
       </notes>
       <segment state="translated">
         <source>Unpin <ph id="0" equiv="group" disp="group.name"/></source>
-        <target>Sblocca <ph id="0" equiv="group" disp="group.name"/> dall’alto</target>
+        <target>Togli <ph id="0" equiv="group" disp="group.name"/> dall’alto</target>
       </segment>
     </unit>
     <unit id="2134897893235836867">
@@ -2886,7 +2895,7 @@
       </notes>
       <segment state="translated">
         <source>Filter the example games by players</source>
-        <target>Filtra i giochi di esempio per numero di giocatori</target>
+        <target>Filtra i giochi di esempio per numero di persone</target>
       </segment>
     </unit>
     <unit id="2561326148159407958">
@@ -3595,7 +3604,7 @@
       </notes>
       <segment state="translated">
         <source>Color scheme</source>
-        <target>Tema dei colori</target>
+        <target>Modalità colore</target>
       </segment>
     </unit>
     <unit id="294020379407135853">
@@ -3849,7 +3858,7 @@
       </notes>
       <segment state="translated">
         <source>Fits <ph id="0" equiv="players" disp="players"/> player</source>
-        <target>Per <ph id="0" equiv="players" disp="players"/> giocatore</target>
+        <target>Per <ph id="0" equiv="players" disp="players"/> persona</target>
       </segment>
     </unit>
     <unit id="30921813512214027">
@@ -4243,7 +4252,7 @@
       </notes>
       <segment state="translated">
         <source>Add a game to My Games</source>
-        <target>Aggiungi un gioco a I miei giochi</target>
+        <target>Aggiungi un gioco a «I miei giochi»</target>
       </segment>
     </unit>
     <unit id="3304588630694305065">
@@ -4604,7 +4613,7 @@
       </notes>
       <segment state="translated">
         <source>Mark the games you played before finishing. If the night didn’t happen, ask the organizer to cancel it. You can also finish it with nothing played.</source>
-        <target>Segna i giochi a cui avete giocato prima di concludere. Se la serata non c’è stata, chiedi a chi la organizza di annullarla. Puoi anche concluderla senza niente di giocato.</target>
+        <target>Segna i giochi a cui avete giocato prima di concludere. Se la serata non c’è stata, chiedi a chi la organizza di annullarla. Puoi anche concluderla senza aver giocato a niente.</target>
       </segment>
     </unit>
     <unit id="3489766120253960513">
@@ -5470,7 +5479,7 @@
       </notes>
       <segment state="translated">
         <source>Games you add to or remove from My Games</source>
-        <target>Giochi che aggiungi a I miei giochi o che ne togli</target>
+        <target>Giochi che aggiungi a «I miei giochi» o che ne togli</target>
       </segment>
     </unit>
     <unit id="3915956426984272003">
@@ -6356,7 +6365,7 @@
       </notes>
       <segment state="translated">
         <source>Rate what you play, wish for what’s next</source>
-        <target>Valuta ciò che giochi, desidera il prossimo</target>
+        <target>Valuta ciò che giochi, desidera il prossimo gioco</target>
       </segment>
     </unit>
     <unit id="4283753181038891402">
@@ -6689,7 +6698,7 @@
       </notes>
       <segment state="translated">
         <source>Add to My Games</source>
-        <target>Aggiungi a I miei giochi</target>
+        <target>Aggiungi a «I miei giochi»</target>
       </segment>
     </unit>
     <unit id="4505288544316005654">
@@ -6834,7 +6843,7 @@
       </notes>
       <segment state="translated">
         <source><ph id="0" equiv="actor" disp="actor"/> marked <ph id="1" equiv="game" disp="game"/> as not sure for <ph id="2" equiv="person" disp="person"/></source>
-        <target><ph id="0" equiv="actor" disp="actor"/> ha indicato che non è chiaro se <ph id="1" equiv="game" disp="game"/> ha <ph id="2" equiv="person" disp="person"/></target>
+        <target><ph id="0" equiv="actor" disp="actor"/> ha indicato che non è chiaro se <ph id="2" equiv="person" disp="person"/> ha <ph id="1" equiv="game" disp="game"/></target>
       </segment>
     </unit>
     <unit id="4601097269481283590">
@@ -7105,7 +7114,7 @@
       </notes>
       <segment state="translated">
         <source>I bought <ph id="0" equiv="title" disp="gameTitle(game)"/>: move it to My Games</source>
-        <target>Ho comprato <ph id="0" equiv="title" disp="gameTitle(game)"/>: spostalo in I miei giochi</target>
+        <target>Ho comprato <ph id="0" equiv="title" disp="gameTitle(game)"/>: spostalo in «I miei giochi»</target>
       </segment>
     </unit>
     <unit id="475317156489631945">
@@ -7115,7 +7124,7 @@
       </notes>
       <segment state="translated">
         <source><ph id="0" equiv="count" disp="min"/> player</source>
-        <target><ph id="0" equiv="count" disp="min"/> giocatore</target>
+        <target><ph id="0" equiv="count" disp="min"/> persona</target>
       </segment>
     </unit>
     <unit id="4754161652314426063">
@@ -7193,7 +7202,7 @@
       </notes>
       <segment state="translated">
         <source>Who came?</source>
-        <target>Chi è venuto?</target>
+        <target>Chi c’era?</target>
       </segment>
     </unit>
     <unit id="4792646961216411565">
@@ -7202,7 +7211,7 @@
       </notes>
       <segment state="translated">
         <source>Owner controls</source>
-        <target>Controlli di gestione</target>
+        <target>Strumenti di gestione</target>
       </segment>
     </unit>
     <unit id="4795116780009039673">
@@ -7229,7 +7238,7 @@
       </notes>
       <segment state="translated">
         <source><ph id="0" equiv="title" disp="gameTitle(game)"/> moved to My Games</source>
-        <target><ph id="0" equiv="title" disp="gameTitle(game)"/> è stato spostato in I miei giochi</target>
+        <target><ph id="0" equiv="title" disp="gameTitle(game)"/> è stato spostato in «I miei giochi»</target>
       </segment>
     </unit>
     <unit id="48053915100877658">
@@ -7545,7 +7554,7 @@
       </notes>
       <segment state="translated">
         <source>Mark the games you played before finishing. If the night didn’t happen, cancel it instead. You can also finish it with nothing played.</source>
-        <target>Segna i giochi a cui avete giocato prima di concludere. Se la serata non c’è stata, annullala. Puoi anche concluderla senza niente di giocato.</target>
+        <target>Segna i giochi a cui avete giocato prima di concludere. Se la serata non c’è stata, annullala. Puoi anche concluderla senza aver giocato a niente.</target>
       </segment>
     </unit>
     <unit id="4981888108895107782">
@@ -7798,7 +7807,7 @@
       </notes>
       <segment state="translated">
         <source>Search the catalogue and tap Add. The box art, player count and play time come with it.</source>
-        <target>Cerca nel catalogo e tocca Aggiungi. Copertina, numero di giocatori e durata arrivano da soli.</target>
+        <target>Cerca nel catalogo e tocca Aggiungi. Copertina, numero di persone e durata arrivano da soli.</target>
       </segment>
     </unit>
     <unit id="513045381948130029">
@@ -9576,7 +9585,7 @@
       </notes>
       <segment state="translated">
         <source>Games you’d like to own. When you get one, mark it as bought and it moves to My Games.</source>
-        <target>Giochi che vorresti avere. Quando ne prendi uno, segnalo come comprato e passa in I miei giochi.</target>
+        <target>Giochi che vorresti avere. Quando ne prendi uno, segnalo come comprato e passa in «I miei giochi».</target>
       </segment>
     </unit>
     <unit id="6089732731840432109">
@@ -10105,7 +10114,7 @@
       </notes>
       <segment state="translated">
         <source><ph id="0" equiv="count" disp="min"/> players</source>
-        <target><ph id="0" equiv="count" disp="min"/> giocatori</target>
+        <target><ph id="0" equiv="count" disp="min"/> persone</target>
       </segment>
     </unit>
     <unit id="6369425269629738896">
@@ -10895,7 +10904,7 @@
       </notes>
       <segment state="translated">
         <source>Choose a group, who came, and at least one game before saving.</source>
-        <target>Scegli un gruppo, chi è venuto e almeno un gioco prima di salvare.</target>
+        <target>Scegli un gruppo, chi c’era e almeno un gioco prima di salvare.</target>
       </segment>
     </unit>
     <unit id="6816993684404109637">
@@ -11075,7 +11084,7 @@
       </notes>
       <segment state="translated">
         <source>{VAR_PLURAL, plural, one {<ph id="0" equiv="INTERPOLATION"/> player} other {<ph id="1" equiv="INTERPOLATION"/> players}}</source>
-        <target>{VAR_PLURAL, plural, one {<ph id="0" equiv="INTERPOLATION"/> giocatore} other {<ph id="1" equiv="INTERPOLATION"/> giocatori}}</target>
+        <target>{VAR_PLURAL, plural, one {<ph id="0" equiv="INTERPOLATION"/> persona} other {<ph id="1" equiv="INTERPOLATION"/> persone}}</target>
       </segment>
     </unit>
     <unit id="691103730541896005">
@@ -12232,7 +12241,7 @@
       </notes>
       <segment state="translated">
         <source>Mark who actually came. Anyone who played a game counts as there.</source>
-        <target>Segna chi è venuto davvero. Chi ha giocato a un gioco conta come presente.</target>
+        <target>Segna chi c’era davvero. Chi ha giocato a un gioco conta come presente.</target>
       </segment>
     </unit>
     <unit id="7585826646011739428">
@@ -12666,7 +12675,7 @@
       </notes>
       <segment state="translated">
         <source>No games for <ph id="0" equiv="players" disp="players"/> players fit within <ph id="1" equiv="minutes" disp="values[&apos;minutes&apos;] ?? 0"/> minutes.</source>
-        <target>Nessun gioco per <ph id="0" equiv="players" disp="players"/> giocatori sta in <ph id="1" equiv="minutes" disp="values[&apos;minutes&apos;] ?? 0"/> minuti.</target>
+        <target>Nessun gioco per <ph id="0" equiv="players" disp="players"/> persone sta in <ph id="1" equiv="minutes" disp="values[&apos;minutes&apos;] ?? 0"/> minuti.</target>
       </segment>
     </unit>
     <unit id="7779255236836032869">
@@ -13616,7 +13625,7 @@
       </notes>
       <segment state="translated">
         <source>No games owned by the selected attendees support <ph id="0" equiv="players" disp="players"/> players.</source>
-        <target>Nessun gioco di chi viene va bene per <ph id="0" equiv="players" disp="players"/> giocatori.</target>
+        <target>Nessun gioco di chi viene va bene per <ph id="0" equiv="players" disp="players"/> persone.</target>
       </segment>
     </unit>
     <unit id="8208743343075501136">
@@ -13680,7 +13689,7 @@
       </notes>
       <segment state="translated">
         <source><ph id="0" equiv="min" disp="min"/>–<ph id="1" equiv="max" disp="max"/> players</source>
-        <target><ph id="0" equiv="min" disp="min"/>–<ph id="1" equiv="max" disp="max"/> giocatori</target>
+        <target><ph id="0" equiv="min" disp="min"/>–<ph id="1" equiv="max" disp="max"/> persone</target>
       </segment>
     </unit>
     <unit id="8240050429696370605">
@@ -14375,7 +14384,7 @@
       </notes>
       <segment state="translated">
         <source>Pick the group, the day, and who came.</source>
-        <target>Scegli il gruppo, il giorno e chi è venuto.</target>
+        <target>Scegli il gruppo, il giorno e chi c’era.</target>
       </segment>
     </unit>
     <unit id="8572464073636497356">
@@ -14565,7 +14574,7 @@
       </notes>
       <segment state="translated">
         <source>Who came</source>
-        <target>Chi è venuto</target>
+        <target>Chi c’era</target>
       </segment>
     </unit>
     <unit id="8679593512332583129">
@@ -14999,15 +15008,6 @@
         <target>Solo conteggi con uno pseudonimo, nel nostro database. Niente cookie, niente pubblicità, niente condiviso.</target>
       </segment>
     </unit>
-    <unit id="8871481276519293061">
-      <notes>
-        <note category="description">Under the title of the game proposal dialog</note>
-      </notes>
-      <segment state="translated">
-        <source>Help us expand our game collection! Submit a proposal for a game you’d like to see added to BoardVault.</source>
-        <target>Aiutaci ad ampliare la nostra collezione di giochi! Invia una proposta per un gioco che vorresti vedere su BoardVault.</target>
-      </segment>
-    </unit>
     <unit id="8873512080778685444">
       <notes>
         <note category="description">Label before the title of the edition of a game you own, on the game page</note>
@@ -15150,7 +15150,7 @@
       </notes>
       <segment state="translated">
         <source>Could not add this game to My Games. Try again.</source>
-        <target>Impossibile aggiungere questo gioco a I miei giochi. Riprova.</target>
+        <target>Impossibile aggiungere questo gioco a «I miei giochi». Riprova.</target>
       </segment>
     </unit>
     <unit id="8979242506501499321">
@@ -15168,7 +15168,7 @@
       </notes>
       <segment state="translated">
         <source>Record who came and what you played</source>
-        <target>Registra chi è venuto e a cosa avete giocato</target>
+        <target>Registra chi c’era e a cosa avete giocato</target>
       </segment>
     </unit>
     <unit id="8981392061253349616">
@@ -15241,7 +15241,7 @@
       </notes>
       <segment state="translated">
         <source>Codenames</source>
-        <target>Nome in codice</target>
+        <target>Codenames</target>
       </segment>
     </unit>
     <unit id="9028732455014719985">
@@ -15608,7 +15608,7 @@
       </notes>
       <segment state="translated">
         <source> Board Vault keeps your collection organised. Add a game in seconds, filter by players, rate what you’ve played, and share the shelf with the people you play with. </source>
-        <target>Board Vault tiene in ordine la tua collezione. Aggiungi un gioco in pochi secondi, filtra per numero di giocatori, dai un voto a ciò che hai giocato e condividi lo scaffale con le persone con cui giochi.</target>
+        <target>Board Vault tiene in ordine la tua collezione. Aggiungi un gioco in pochi secondi, filtra per numero di persone, dai un voto a ciò che hai giocato e condividi lo scaffale con le persone con cui giochi.</target>
       </segment>
     </unit>
     <unit id="930048184672258456">

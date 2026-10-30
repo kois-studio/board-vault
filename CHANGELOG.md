@@ -302,6 +302,13 @@ operational details.
 
 ### Fixed
 
+- French, German, and Italian were reviewed before they are offered: the
+  history line about someone not being sure whether a person has a game
+  named them the wrong way round (Spanish too), player counts and "who was
+  there" no longer default to masculine forms, and wrong words were fixed
+  (unpin, dates, the shortlist). French has its no-break spaces, and
+  Codenames keeps its published Italian title. The game proposal dialog
+  spells Board Vault correctly.
 - The not-found page keeps the header and footer, so there is a way on, and
   reads as one centred column on any screen instead of leaving an empty
   column on desktop and a misaligned text on phones. Its button goes to
