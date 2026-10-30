@@ -435,7 +435,7 @@
       </notes>
       <segment state="translated">
         <source>Repeated characters like &quot;aaa&quot; are easy to guess.</source>
-        <target>Sich wiederholende Zeichen wie &quot;aaa&quot; sind leicht zu erraten.</target>
+        <target>Sich wiederholende Zeichen wie „aaa“ sind leicht zu erraten.</target>
       </segment>
     </unit>
     <unit id="1240703596390339740">
@@ -444,7 +444,7 @@
       </notes>
       <segment state="translated">
         <source>Nobody coming has games in Board Vault yet.</source>
-        <target>Noch hat niemand, der kommt, Spiele in Board Vault.</target>
+        <target>Von den Personen, die kommen, hat noch niemand Spiele in Board Vault.</target>
       </segment>
     </unit>
     <unit id="1243346624386644018">
@@ -1251,7 +1251,7 @@
       </notes>
       <segment state="translated">
         <source>Match your device, and switch when it does.</source>
-        <target>Wie dein Gerät, und wechselt, wenn es wechselt.</target>
+        <target>Folgt deinem Gerät und wechselt mit ihm.</target>
       </segment>
     </unit>
     <unit id="1696742461752095316">
@@ -1261,6 +1261,15 @@
       <segment state="translated">
         <source>Verification isn&apos;t supported in this environment. Please continue in a standard browser or contact support.</source>
         <target>Die Überprüfung wird in dieser Umgebung nicht unterstützt. Fahren Sie in einem üblichen Browser fort oder wenden Sie sich an den Support.</target>
+      </segment>
+    </unit>
+    <unit id="1703203867793276344">
+      <notes>
+        <note category="description">Under the title of the game proposal dialog</note>
+      </notes>
+      <segment state="translated">
+        <source>Help us expand our game collection! Submit a proposal for a game you’d like to see added to Board Vault.</source>
+        <target>Hilf uns, unsere Spielesammlung zu erweitern! Schlag ein Spiel vor, das du gern in Board Vault sehen würdest.</target>
       </segment>
     </unit>
     <unit id="1703497912367663985">
@@ -1395,7 +1404,7 @@
       </notes>
       <segment state="translated">
         <source>{VAR_PLURAL, plural, one {<ph id="0" equiv="INTERPOLATION"/> passed} other {<ph id="1" equiv="INTERPOLATION"/> passed}}</source>
-        <target>{VAR_PLURAL, plural, one {<ph id="0" equiv="INTERPOLATION"/> passt} other {<ph id="1" equiv="INTERPOLATION"/> passen}}</target>
+        <target>{VAR_PLURAL, plural, one {<ph id="0" equiv="INTERPOLATION"/> sagt Nein} other {<ph id="1" equiv="INTERPOLATION"/> sagen Nein}}</target>
       </segment>
     </unit>
     <unit id="180215682275041064">
@@ -1836,7 +1845,7 @@
       </notes>
       <segment state="translated">
         <source>Common character sequences like &quot;abc&quot; are easy to guess.</source>
-        <target>Häufige Zeichenfolgen wie &quot;abc&quot; sind leicht zu erraten.</target>
+        <target>Häufige Zeichenfolgen wie „abc“ sind leicht zu erraten.</target>
       </segment>
     </unit>
     <unit id="2020251203842006487">
@@ -1890,7 +1899,7 @@
       </notes>
       <segment state="translated">
         <source>Find a game for <ph id="0" equiv="INTERPOLATION" disp="{{ acquisitionGroupName() }}"/> to consider acquiring. Your shortlist is shared with the group.</source>
-        <target>Finde ein Spiel, dessen Kauf für <ph id="0" equiv="INTERPOLATION" disp="{{ acquisitionGroupName() }}"/> infrage kommt. Deine Auswahl wird mit der Gruppe geteilt.</target>
+        <target>Finde ein Spiel, dessen Kauf für <ph id="0" equiv="INTERPOLATION" disp="{{ acquisitionGroupName() }}"/> infrage kommt. Deine Vorauswahl wird mit der Gruppe geteilt.</target>
       </segment>
     </unit>
     <unit id="2039576617926281033">
@@ -2038,7 +2047,7 @@
       </notes>
       <segment state="translated">
         <source>Unpin <ph id="0" equiv="group" disp="group.name"/></source>
-        <target><ph id="0" equiv="group" disp="group.name"/> lösen</target>
+        <target><ph id="0" equiv="group" disp="group.name"/> nicht mehr anheften</target>
       </segment>
     </unit>
     <unit id="2134897893235836867">
@@ -2633,7 +2642,7 @@
       </notes>
       <segment state="translated">
         <source>Avoid dates and years that are associated with you.</source>
-        <target>Daten, die mit persönlichen Daten in Verbindung gebracht werden können, vermeiden.</target>
+        <target>Datumsangaben und Jahreszahlen, die mit Ihnen in Verbindung stehen, vermeiden.</target>
       </segment>
     </unit>
     <unit id="2457172734414079986">
@@ -2886,7 +2895,7 @@
       </notes>
       <segment state="translated">
         <source>Filter the example games by players</source>
-        <target>Beispielspiele nach Spielerzahl filtern</target>
+        <target>Beispielspiele nach Personenzahl filtern</target>
       </segment>
     </unit>
     <unit id="2561326148159407958">
@@ -3985,7 +3994,7 @@
       </notes>
       <segment state="translated">
         <source>We could not complete this invitation. The link may have expired, been used already, or the group may no longer be available. Ask the group owner for a fresh invitation and try again.</source>
-        <target>Wir konnten diese Einladung nicht abschließen. Vielleicht ist der Link abgelaufen oder schon benutzt, oder die Gruppe ist nicht mehr verfügbar. Bitte die Person, die die Gruppe erstellt hat, um eine neue Einladung und versuch es noch einmal.</target>
+        <target>Wir konnten diese Einladung nicht abschließen. Vielleicht ist der Link abgelaufen oder schon benutzt, oder die Gruppe ist nicht mehr verfügbar. Frag die Person, die die Gruppe erstellt hat, nach einer neuen Einladung, und versuch es noch einmal.</target>
       </segment>
     </unit>
     <unit id="3186477898571897739">
@@ -4243,7 +4252,7 @@
       </notes>
       <segment state="translated">
         <source>Add a game to My Games</source>
-        <target>Ein Spiel zu Meine Spiele hinzufügen</target>
+        <target>Ein Spiel zu „Meine Spiele“ hinzufügen</target>
       </segment>
     </unit>
     <unit id="3304588630694305065">
@@ -4893,7 +4902,7 @@
       </notes>
       <segment state="translated">
         <source>Invite your people</source>
-        <target>Lade deine Leute ein</target>
+        <target>Deine Leute einladen</target>
       </segment>
     </unit>
     <unit id="3671754034428223474">
@@ -5056,7 +5065,7 @@
       </notes>
       <segment state="translated">
         <source>We could not finish joining this group</source>
-        <target>Wir konnten dich nicht fertig zu dieser Gruppe hinzufügen</target>
+        <target>Wir konnten den Beitritt zu dieser Gruppe nicht abschließen</target>
       </segment>
     </unit>
     <unit id="374534302404164936">
@@ -5470,7 +5479,7 @@
       </notes>
       <segment state="translated">
         <source>Games you add to or remove from My Games</source>
-        <target>Spiele, die du zu Meine Spiele hinzufügst oder daraus entfernst</target>
+        <target>Spiele, die du zu „Meine Spiele“ hinzufügst oder daraus entfernst</target>
       </segment>
     </unit>
     <unit id="3915956426984272003">
@@ -5543,7 +5552,7 @@
       </notes>
       <segment state="translated">
         <source>{VAR_PLURAL_2, plural, one {From <ph id="0" equiv="INTERPOLATION"/> finished game night and {VAR_PLURAL, plural, one {<ph id="1" equiv="INTERPOLATION_1"/> game played.} other {<ph id="2" equiv="INTERPOLATION_1"/> games played.}}} other {From <ph id="3" equiv="INTERPOLATION"/> finished game nights and {VAR_PLURAL_1, plural, one {<ph id="4" equiv="INTERPOLATION_1"/> game played.} other {<ph id="5" equiv="INTERPOLATION_1"/> games played.}}}}</source>
-        <target>{VAR_PLURAL_2, plural, one {Aus <ph id="0" equiv="INTERPOLATION"/> beendeten Spieleabend und {VAR_PLURAL, plural, one {<ph id="1" equiv="INTERPOLATION_1"/> gespielten Partie.} other {<ph id="2" equiv="INTERPOLATION_1"/> gespielten Partien.}}} other {Aus <ph id="3" equiv="INTERPOLATION"/> beendeten Spieleabenden und {VAR_PLURAL_1, plural, one {<ph id="4" equiv="INTERPOLATION_1"/> gespielten Partie.} other {<ph id="5" equiv="INTERPOLATION_1"/> gespielten Partien.}}}}</target>
+        <target>{VAR_PLURAL_2, plural, one {Aus <ph id="0" equiv="INTERPOLATION"/> beendetem Spieleabend und {VAR_PLURAL, plural, one {<ph id="1" equiv="INTERPOLATION_1"/> gespielter Partie.} other {<ph id="2" equiv="INTERPOLATION_1"/> gespielten Partien.}}} other {Aus <ph id="3" equiv="INTERPOLATION"/> beendeten Spieleabenden und {VAR_PLURAL_1, plural, one {<ph id="4" equiv="INTERPOLATION_1"/> gespielter Partie.} other {<ph id="5" equiv="INTERPOLATION_1"/> gespielten Partien.}}}}</target>
       </segment>
     </unit>
     <unit id="3946427312574060813">
@@ -5770,7 +5779,7 @@
       </notes>
       <segment state="translated">
         <source>There should not be any personal or page related data.</source>
-        <target>Es sollten keine persönlichen oder Seiten relevanten Daten vorkommen.</target>
+        <target>Es sollten keine persönlichen oder seitenbezogenen Daten vorkommen.</target>
       </segment>
     </unit>
     <unit id="4051782036181015256">
@@ -6428,7 +6437,7 @@
       </notes>
       <segment state="translated">
         <source>Common names and surnames are easy to guess.</source>
-        <target>Vornamen und Nachnamen sind leicht zu erraten.</target>
+        <target>Häufige Vor- und Nachnamen sind leicht zu erraten.</target>
       </segment>
     </unit>
     <unit id="4347387488433031517">
@@ -6689,7 +6698,7 @@
       </notes>
       <segment state="translated">
         <source>Add to My Games</source>
-        <target>Zu Meine Spiele hinzufügen</target>
+        <target>Zu „Meine Spiele“ hinzufügen</target>
       </segment>
     </unit>
     <unit id="4505288544316005654">
@@ -7105,7 +7114,7 @@
       </notes>
       <segment state="translated">
         <source>I bought <ph id="0" equiv="title" disp="gameTitle(game)"/>: move it to My Games</source>
-        <target>Ich habe <ph id="0" equiv="title" disp="gameTitle(game)"/> gekauft: zu Meine Spiele verschieben</target>
+        <target>Ich habe <ph id="0" equiv="title" disp="gameTitle(game)"/> gekauft: zu „Meine Spiele“ verschieben</target>
       </segment>
     </unit>
     <unit id="475317156489631945">
@@ -7229,7 +7238,7 @@
       </notes>
       <segment state="translated">
         <source><ph id="0" equiv="title" disp="gameTitle(game)"/> moved to My Games</source>
-        <target><ph id="0" equiv="title" disp="gameTitle(game)"/> wurde zu Meine Spiele verschoben</target>
+        <target><ph id="0" equiv="title" disp="gameTitle(game)"/> wurde zu „Meine Spiele“ verschoben</target>
       </segment>
     </unit>
     <unit id="48053915100877658">
@@ -7798,7 +7807,7 @@
       </notes>
       <segment state="translated">
         <source>Search the catalogue and tap Add. The box art, player count and play time come with it.</source>
-        <target>Such im Katalog und tipp auf Hinzufügen. Schachtelbild, Spielerzahl und Spieldauer sind gleich dabei.</target>
+        <target>Such im Katalog und tipp auf Hinzufügen. Schachtelbild, Personenzahl und Spieldauer sind gleich dabei.</target>
       </segment>
     </unit>
     <unit id="513045381948130029">
@@ -9345,7 +9354,7 @@
       </notes>
       <segment state="translated">
         <source>Board Vault is still invite-only</source>
-        <target>Board Vault gibt es noch nur auf Einladung</target>
+        <target>Board Vault gibt es bisher nur auf Einladung</target>
       </segment>
     </unit>
     <unit id="5983207055609138296">
@@ -9576,7 +9585,7 @@
       </notes>
       <segment state="translated">
         <source>Games you’d like to own. When you get one, mark it as bought and it moves to My Games.</source>
-        <target>Spiele, die du gern hättest. Wenn du eins bekommst, markier es als gekauft, dann wandert es zu Meine Spiele.</target>
+        <target>Spiele, die du gern hättest. Wenn du eins bekommst, markier es als gekauft, dann wandert es zu „Meine Spiele“.</target>
       </segment>
     </unit>
     <unit id="6089732731840432109">
@@ -9927,7 +9936,7 @@
       </notes>
       <segment state="translated">
         <source>Ask a friend or group organizer who already uses Board Vault to invite you. Once invited, use the secure Clerk sign-up link they provide.</source>
-        <target>Bitte eine Person, die Board Vault schon nutzt oder eine Gruppe organisiert, dich einzuladen. Danach nutzt du den sicheren Registrierungslink von Clerk, den du bekommst.</target>
+        <target>Frag eine Person, die Board Vault schon nutzt oder eine Gruppe organisiert, ob sie dich einlädt. Danach nutzt du den sicheren Registrierungslink von Clerk, den du bekommst.</target>
       </segment>
     </unit>
     <unit id="6295691601911869403">
@@ -10032,7 +10041,7 @@
       </notes>
       <segment state="translated">
         <source>Avoid predictable letter substitutions like &apos;@&apos; for &apos;a&apos;.</source>
-        <target>Vorhersehbare Buchstabenersetzungen wie &apos;@&apos; für &apos;a&apos; vermeiden.</target>
+        <target>Vorhersehbare Buchstabenersetzungen wie „@“ für „a“ vermeiden.</target>
       </segment>
     </unit>
     <unit id="6324699833795224945">
@@ -10231,7 +10240,7 @@
       </notes>
       <segment state="translated">
         <source>Your account has not been created. Please try again shortly or ask your group owner to send a fresh invitation.</source>
-        <target>Dein Konto wurde nicht erstellt. Versuch es gleich noch einmal oder bitte die Person, die die Gruppe erstellt hat, um eine neue Einladung.</target>
+        <target>Dein Konto wurde nicht erstellt. Versuch es gleich noch einmal oder frag die Person, die die Gruppe erstellt hat, nach einer neuen Einladung.</target>
       </segment>
     </unit>
     <unit id="641656785674590331">
@@ -11562,7 +11571,7 @@
       </notes>
       <segment state="translated">
         <source>Create a group</source>
-        <target>Erstelle eine Gruppe</target>
+        <target>Gruppe erstellen</target>
       </segment>
     </unit>
     <unit id="7148495897092943876">
@@ -12015,7 +12024,7 @@
       </notes>
       <segment state="translated">
         <source>Unpin</source>
-        <target>Lösen</target>
+        <target>Nicht mehr anheften</target>
       </segment>
     </unit>
     <unit id="7434447101665682282">
@@ -14060,7 +14069,7 @@
       </notes>
       <segment state="translated">
         <source>We could not finish joining this group. The invitation may have expired, already been used, or the group may no longer be available. Try again, or sign out and ask the group owner for a fresh invitation.</source>
-        <target>Wir konnten dich nicht fertig zu dieser Gruppe hinzufügen. Vielleicht ist die Einladung abgelaufen oder schon benutzt, oder die Gruppe ist nicht mehr verfügbar. Versuch es noch einmal, oder melde dich ab und bitte die Person, die die Gruppe erstellt hat, um eine neue Einladung.</target>
+        <target>Wir konnten den Beitritt zu dieser Gruppe nicht abschließen. Vielleicht ist die Einladung abgelaufen oder schon benutzt, oder die Gruppe ist nicht mehr verfügbar. Versuch es noch einmal, oder melde dich ab und frag die Person, die die Gruppe erstellt hat, nach einer neuen Einladung.</target>
       </segment>
     </unit>
     <unit id="8439160099000475740">
@@ -14258,7 +14267,7 @@
       </notes>
       <segment state="translated">
         <source>Avoid years that are associated with you.</source>
-        <target>Jahre, die mit persönlichen Daten in Verbindung gebracht werden können, vermeiden.</target>
+        <target>Jahreszahlen, die mit Ihnen in Verbindung stehen, vermeiden.</target>
       </segment>
     </unit>
     <unit id="8508093510746909105">
@@ -14682,7 +14691,7 @@
       </notes>
       <segment state="translated">
         <source>Ask the group owner for a fresh invitation if this link has expired or the group is no longer available.</source>
-        <target>Bitte die Person, die die Gruppe erstellt hat, um eine neue Einladung, wenn dieser Link abgelaufen ist oder die Gruppe nicht mehr verfügbar ist.</target>
+        <target>Frag die Person, die die Gruppe erstellt hat, nach einer neuen Einladung, wenn dieser Link abgelaufen ist oder die Gruppe nicht mehr verfügbar ist.</target>
       </segment>
     </unit>
     <unit id="8715838975991436163">
@@ -14999,15 +15008,6 @@
         <target>Nur Zählungen unter einem Pseudonym, in unserer eigenen Datenbank. Keine Cookies, keine Werbung, nichts wird geteilt.</target>
       </segment>
     </unit>
-    <unit id="8871481276519293061">
-      <notes>
-        <note category="description">Under the title of the game proposal dialog</note>
-      </notes>
-      <segment state="translated">
-        <source>Help us expand our game collection! Submit a proposal for a game you’d like to see added to BoardVault.</source>
-        <target>Hilf uns, unsere Spielesammlung zu erweitern! Schlag ein Spiel vor, das du gern in BoardVault sehen würdest.</target>
-      </segment>
-    </unit>
     <unit id="8873512080778685444">
       <notes>
         <note category="description">Label before the title of the edition of a game you own, on the game page</note>
@@ -15150,7 +15150,7 @@
       </notes>
       <segment state="translated">
         <source>Could not add this game to My Games. Try again.</source>
-        <target>Dieses Spiel konnte nicht zu Meine Spiele hinzugefügt werden. Versuch es noch einmal.</target>
+        <target>Dieses Spiel konnte nicht zu „Meine Spiele“ hinzugefügt werden. Versuch es noch einmal.</target>
       </segment>
     </unit>
     <unit id="8979242506501499321">
@@ -15431,7 +15431,7 @@
       </notes>
       <segment state="translated">
         <source>Repeated character patterns like &quot;abcabcabc&quot; are easy to guess.</source>
-        <target>Sich wiederholende Zeichenmuster wie &quot;abcabcabc&quot; sind leicht zu erraten.</target>
+        <target>Sich wiederholende Zeichenmuster wie „abcabcabc“ sind leicht zu erraten.</target>
       </segment>
     </unit>
     <unit id="9116646801822299506">
@@ -15518,7 +15518,7 @@
       </notes>
       <segment state="translated">
         <source>Ask the group owner to invite the rest of your table.</source>
-        <target>Bitte die Person, die die Gruppe verwaltet, den Rest deiner Runde einzuladen.</target>
+        <target>Frag die Person, die die Gruppe verwaltet, ob sie den Rest deiner Runde einlädt.</target>
       </segment>
     </unit>
     <unit id="9195472737674660999">
@@ -15608,7 +15608,7 @@
       </notes>
       <segment state="translated">
         <source> Board Vault keeps your collection organised. Add a game in seconds, filter by players, rate what you’ve played, and share the shelf with the people you play with. </source>
-        <target>Board Vault hält deine Sammlung in Ordnung. Füge ein Spiel in Sekunden hinzu, filtere nach Spielerzahl, bewerte, was du gespielt hast, und teile dein Regal mit den Leuten, mit denen du spielst.</target>
+        <target>Board Vault hält deine Sammlung in Ordnung. Füge ein Spiel in Sekunden hinzu, filtere nach Personenzahl, bewerte, was du gespielt hast, und teile dein Regal mit den Leuten, mit denen du spielst.</target>
       </segment>
     </unit>
     <unit id="930048184672258456">
