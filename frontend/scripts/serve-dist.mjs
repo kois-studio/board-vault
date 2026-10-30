@@ -2,6 +2,8 @@
 // language's index.html for its own routes, and the middleware's redirect for an address without a language.
 // It also serves a runtime config with a Clerk key, as production has (#92), so the audit downloads and
 // runs Clerk's bundle. The key is fake: its frontend API is on `.invalid`, so Clerk's next request fails at once.
+// SERVE_DIST_RUNTIME_CONFIG=build serves the build's own runtime config instead, for signed-in browser checks
+// against a development build (docs/how-to/run-with-clerk.md#language-switching).
 import { createReadStream, existsSync, statSync } from 'node:fs'
 import { createServer } from 'node:http'
 import { extname, join, posix, resolve, sep } from 'node:path'
@@ -25,6 +27,7 @@ const types = {
     '.woff2': 'font/woff2',
 }
 
+const useBuildRuntimeConfig = process.env.SERVE_DIST_RUNTIME_CONFIG === 'build'
 const runtimeConfig = `globalThis.__BOARD_VAULT_RUNTIME_CONFIG__ = ${JSON.stringify({
     clerkPublishableKey: `pk_test_${Buffer.from('clerk.board-vault.invalid$').toString('base64')}`,
     selfRegistrationEnabled: false,
@@ -39,7 +42,7 @@ if (!existsSync(join(root, 'en/index.html'))) {
 createServer((request, response) => {
     // A URL path, so POSIX on every system: Windows' normalize() would turn /es/login into \es\login.
     const path = posix.normalize(decodeURIComponent(new URL(request.url ?? '/', 'http://localhost').pathname))
-    if (path === '/runtime-config.js') {
+    if (path === '/runtime-config.js' && !useBuildRuntimeConfig) {
         response.writeHead(200, { 'Content-Type': 'text/javascript' })
         response.end(runtimeConfig)
         return

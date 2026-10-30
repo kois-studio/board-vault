@@ -6,7 +6,8 @@ const useClerkTesting = process.env['PLAYWRIGHT_CLERK_TESTING'] === '1'
 
 const chromiumProject = {
     name: 'chromium',
-    testIgnore: useClerkTesting ? undefined : /clerk-testing\.setup\.ts/,
+    // e2e/locales/ needs every language under its prefix: playwright.locales.config.ts runs it against the build.
+    testIgnore: useClerkTesting ? [/\/locales\//] : [/clerk-testing\.setup\.ts/, /\/locales\//],
     dependencies: useClerkTesting ? ['clerk-testing-setup'] : undefined,
     use: { ...devices['Desktop Chrome'] },
 }

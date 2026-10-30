@@ -1,6 +1,6 @@
 import { join } from 'node:path'
-import { setupClerkTestingToken } from '@clerk/testing/playwright'
 import { expect, test } from '@playwright/test'
+import { signInWithEmailCode } from './fixtures/clerk-sign-in'
 
 // Opt-in helper: signs in the local fixture accounts through the real sign-in
 // page and saves their Clerk sessions for the authenticated journeys.
@@ -18,19 +18,7 @@ test.describe('save Clerk storage states', () => {
     ] as const) {
         test(`saves the ${name} session`, async ({ page }) => {
             test.setTimeout(90_000)
-            await setupClerkTestingToken({ page })
-            await page.goto('/login')
-            await page.getByRole('button', { name: 'Continue with secure sign-in' }).click()
-            await page.getByLabel(/email/i).first().fill(email)
-            await page.getByRole('button', { name: 'Continue', exact: true }).click()
-
-            const code = page.getByRole('textbox', { name: /code|digit/i }).first()
-            await code.waitFor({ timeout: 30_000 })
-            // Typing before Clerk has sent the code fails with "send a code first".
-            await page.waitForResponse((response) => response.url().includes('prepare_first_factor'), { timeout: 30_000 }).catch(() => undefined)
-            await page.waitForTimeout(1500)
-            await code.click()
-            await page.keyboard.type('424242')
+            await signInWithEmailCode(page, email)
 
             await expect(page.getByRole('heading', { level: 1, name: /^(Hi|Welcome)\b/ })).toBeVisible({ timeout: 30_000 })
             await page.context().storageState({ path: join(outputDirectory ?? '', `${name}.json`) })

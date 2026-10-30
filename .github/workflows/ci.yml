@@ -115,6 +115,9 @@ jobs:
               run: npx playwright install --with-deps chromium
             - name: Run browser checks
               run: npm run e2e
+            # Switching languages needs every language under its prefix: the build above, served like Vercel.
+            - name: Run language-switching checks
+              run: npm run e2e:locales
             - name: Keep browser failure evidence
               if: failure()
               uses: actions/upload-artifact@v7
