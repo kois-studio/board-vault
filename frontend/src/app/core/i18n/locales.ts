@@ -11,7 +11,7 @@ export const SUPPORTED_LOCALES = ['en', 'es', 'fr', 'de', 'it'] as const
 export type Locale = (typeof SUPPORTED_LOCALES)[number]
 
 export const SOURCE_LOCALE: Locale = 'en'
-export const OFFERED_LOCALES: ReadonlyArray<Locale> = ['en']
+export const OFFERED_LOCALES: ReadonlyArray<Locale> = ['en', 'es', 'fr', 'de', 'it']
 
 /** Each language by its own name, as the language menu lists it: never translated. */
 export const LOCALE_NAMES: Record<Locale, string> = {

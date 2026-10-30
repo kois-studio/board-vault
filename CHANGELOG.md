@@ -13,6 +13,9 @@ operational details.
 
 ### Added
 
+- Board Vault speaks Spanish, French, German, and Italian as well as
+  English. The language menu in the header lists all five, and an address
+  without a language opens in the one you chose last, or else your browser's.
 - Your language choice is saved on your account: choose it in the language
   menu or in its own Settings section, Language, and Board Vault opens in it
   when you sign in on another device.

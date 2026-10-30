@@ -15,12 +15,9 @@ describe('languageMenuLocales', () => {
         expect(languageMenuLocales('/xx/dashboard', true)).toEqual([])
     })
 
-    it('offers nothing in production while English is the only finished language', () => {
-        expect(languageMenuLocales('/en/dashboard', false)).toEqual([])
-    })
-
-    it('lets someone on an unfinished language’s address go back to a finished one', () => {
-        expect(languageMenuLocales('/fr/dashboard', false)).toEqual(['en', 'fr'])
+    // Which languages are finished, and the way back from an unfinished one, is menuLocales() in locales.spec.ts.
+    it('offers every finished language in production', () => {
+        expect(languageMenuLocales('/fr/dashboard', false)).toEqual(['en', 'es', 'fr', 'de', 'it'])
     })
 
     it('offers every language in preview', () => {
