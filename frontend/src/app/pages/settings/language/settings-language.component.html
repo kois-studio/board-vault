@@ -1,0 +1,28 @@
+<h2 class="pb-2 text-2xl font-bold tracking-wide" i18n="Heading of the Language settings">Language</h2>
+<p class="pb-8 text-bv-text-muted" i18n="Subtitle of the Language settings">The language of Board Vault’s menus and messages. Saved on your account.</p>
+
+@if (languages.length) {
+<fieldset class="min-w-0">
+    <legend class="sr-only" i18n="Name of the list of languages in the Language settings">Language</legend>
+    <div class="grid gap-4 sm:grid-cols-3">
+        @for (option of languages; track option.locale) {
+        <label [class]="optionClass(currentLanguage === option.locale)">
+            <input
+                type="radio"
+                name="language"
+                class="sr-only"
+                [value]="option.locale"
+                [checked]="currentLanguage === option.locale"
+                (change)="choose(option.locale)"
+            />
+            <span class="flex items-center gap-2 px-1 py-1 font-semibold" [attr.lang]="option.locale">
+                {{ option.name }}
+                @if (currentLanguage === option.locale) {
+                <app-icon name="check" [size]="18" className="ml-auto text-bv-primary" />
+                }
+            </span>
+        </label>
+        }
+    </div>
+</fieldset>
+}

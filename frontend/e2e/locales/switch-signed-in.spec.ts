@@ -18,7 +18,7 @@ async function localOnlyPage(browser: Browser): Promise<Page> {
 }
 
 async function chooseInSettings(page: Page, prefix: string, language: string): Promise<void> {
-    await page.goto(`/${prefix}/settings/appearance`)
+    await page.goto(`/${prefix}/settings/language`)
     await page.getByRole('group', { name: /^(Language|Idioma)$/ }).getByText(language, { exact: true }).click()
 }
 
@@ -35,9 +35,9 @@ test.describe.serial('choosing a language signed in', () => {
         await chooseInSettings(page, 'en', 'Español')
         expect((await saved).ok()).toBe(true)
 
-        await expect(page).toHaveURL(/\/es\/settings\/appearance$/)
+        await expect(page).toHaveURL(/\/es\/settings\/language$/)
         await expect(page.locator('html')).toHaveAttribute('lang', 'es')
-        await expect(page.getByRole('heading', { level: 2, name: 'Apariencia' })).toBeVisible()
+        await expect(page.getByRole('heading', { level: 2, name: 'Idioma' })).toBeVisible()
         await expect(page.getByRole('radio', { name: 'Español' })).toBeChecked()
         await page.context().close()
     })
@@ -51,10 +51,10 @@ test.describe.serial('choosing a language signed in', () => {
 
         // Choosing again within the session is not undone by the account's language.
         await chooseInSettings(page, 'es', 'English')
-        await expect(page).toHaveURL(/\/en\/settings\/appearance$/)
-        await expect(page.getByRole('heading', { level: 2, name: 'Appearance' })).toBeVisible()
+        await expect(page).toHaveURL(/\/en\/settings\/language$/)
+        await expect(page.getByRole('heading', { level: 2, name: 'Language' })).toBeVisible()
         await page.reload()
-        await expect(page).toHaveURL(/\/en\/settings\/appearance$/)
+        await expect(page).toHaveURL(/\/en\/settings\/language$/)
         await page.context().close()
     })
 })

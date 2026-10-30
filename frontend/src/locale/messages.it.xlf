@@ -3428,7 +3428,7 @@
     </unit>
     <unit id="2826581353496868063">
       <notes>
-        <note category="description">Heading of the language choice in the Appearance settings</note>
+        <note category="description">Heading of the Language settings</note>
       </notes>
       <segment state="translated">
         <source>Language</source>
@@ -7052,6 +7052,15 @@
       <segment state="translated">
         <source>Your password meets all the necessary requirements.</source>
         <target>La tua password soddisfa tutti i requisiti.</target>
+      </segment>
+    </unit>
+    <unit id="4723857933690757033">
+      <notes>
+        <note category="description">Subtitle of the Appearance settings</note>
+      </notes>
+      <segment state="translated">
+        <source>Choose how Board Vault looks. Your choices are saved on this device.</source>
+        <target>Scegli l’aspetto di Board Vault. Le tue scelte sono salvate su questo dispositivo.</target>
       </segment>
     </unit>
     <unit id="4727820324063038637">
@@ -14045,15 +14054,6 @@
         <target>Le mie proposte — Board Vault</target>
       </segment>
     </unit>
-    <unit id="8431906120837794890">
-      <notes>
-        <note category="description">Subtitle of the Appearance settings</note>
-      </notes>
-      <segment state="translated">
-        <source>Choose how Board Vault looks. Except for the language, your choices are saved on this device.</source>
-        <target>Scegli l’aspetto di Board Vault. Tranne la lingua, le tue scelte sono salvate su questo dispositivo.</target>
-      </segment>
-    </unit>
     <unit id="8435038262958370080">
       <notes>
         <note category="description">Error when joining a group from an invitation link failed</note>
@@ -14883,7 +14883,7 @@
     </unit>
     <unit id="8823677903532501631">
       <notes>
-        <note category="description">Hint under the language heading in the Appearance settings</note>
+        <note category="description">Subtitle of the Language settings</note>
       </notes>
       <segment state="translated">
         <source>The language of Board Vault’s menus and messages. Saved on your account.</source>

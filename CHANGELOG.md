@@ -14,8 +14,8 @@ operational details.
 ### Added
 
 - Your language choice is saved on your account: choose it in the language
-  menu or in Settings → Appearance, and Board Vault opens in it when you sign
-  in on another device.
+  menu or in its own Settings section, Language, and Board Vault opens in it
+  when you sign in on another device.
 - Games now store their titles as editions, one per language. Nothing
   changes on screen yet.
 - Administration edits a game's editions: a language, a title and a primary

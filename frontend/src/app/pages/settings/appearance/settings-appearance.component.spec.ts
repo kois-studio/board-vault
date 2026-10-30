@@ -1,13 +1,9 @@
 import { TestBed } from '@angular/core/testing'
-import { AccountLanguageService } from '../../../core/i18n/account-language.service'
 import { ThemeService } from '../../../core/services/theme.service'
 import { SettingsAppearanceComponent } from './settings-appearance.component'
 
 describe('SettingsAppearanceComponent', () => {
-    const originalPath = window.location.pathname
-
     afterEach(() => {
-        window.history.replaceState(null, '', originalPath)
         localStorage.clear()
         delete document.documentElement.dataset['theme']
         delete document.documentElement.dataset['textSize']
@@ -50,50 +46,6 @@ describe('SettingsAppearanceComponent', () => {
         expect(labels(element, 'scheme')).toEqual(['System', 'Light', 'Dark'])
         expect(labels(element, 'palette')).toEqual(['Ciruela', 'Felt', 'Harbor', 'Graphite'])
         expect(labels(element, 'text-size')).toEqual(['Default', 'Large', 'Larger'])
-    })
-
-    describe('language', () => {
-        const save = vi.fn()
-
-        function renderAt(path: string) {
-            window.history.replaceState(null, '', path)
-            TestBed.configureTestingModule({ providers: [{ provide: AccountLanguageService, useValue: { choose: save } }] })
-            return render()
-        }
-
-        afterEach(() => save.mockClear())
-
-        it('has no language fieldset when the page has nothing to choose, as on a development server', () => {
-            const element: HTMLElement = renderAt('/dashboard').nativeElement
-
-            expect(radios(element, 'language')).toEqual([])
-            expect(element.querySelector('legend')?.textContent?.trim()).toBe('Color scheme')
-        })
-
-        it('leads with the language, listing the header’s languages by their own names with the page’s checked', () => {
-            const element: HTMLElement = renderAt('/fr/settings/appearance').nativeElement
-
-            expect(Array.from(element.querySelectorAll('legend')).map((legend) => legend.textContent?.trim())).toEqual([
-                'Language',
-                'Color scheme',
-                'Theme',
-                'Text size',
-            ])
-            expect(radios(element, 'language').map((radio) => [radio.value, radio.closest('label')?.textContent?.trim()])).toEqual([
-                ['en', 'English'],
-                ['fr', 'Français'],
-            ])
-            expect(radios(element, 'language').find((radio) => radio.checked)?.value).toBe('fr')
-            expect(radios(element, 'language')[1]?.closest('label')?.querySelector('[lang="fr"]')).not.toBeNull()
-        })
-
-        it('saves a chosen language through the account language service', () => {
-            const fixture = renderAt('/fr/settings/appearance')
-
-            choose(fixture, 'language', 'en')
-
-            expect(save).toHaveBeenCalledWith('en')
-        })
     })
 
     it('starts on System, Ciruela and the default size', () => {
