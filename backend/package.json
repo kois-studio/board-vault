@@ -69,7 +69,8 @@
     "@nestjs/swagger": {
       "js-yaml": "5.4.2"
     },
-    "multer": "2.5.0"
+    "multer": "2.5.0",
+    "minimatch@^10.0.0": "11.0.4"
   },
   "packageManager": "npm@11.19.1",
   "engines": {
