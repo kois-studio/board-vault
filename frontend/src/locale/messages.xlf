@@ -3799,15 +3799,6 @@
         <source>Your new avatar wasn’t saved. Try again.</source>
       </segment>
     </unit>
-    <unit id="2902114558601258232">
-      <notes>
-        <note category="location">src/app/pages/privacy/privacy-page.component.html</note>
-        <note category="description">How long data is kept, on the privacy page</note>
-      </notes>
-      <segment>
-        <source><pc id="0" equivStart="START_TAG_STRONG" equivEnd="CLOSE_TAG_STRONG" type="other" dispStart="&lt;strong&gt;" dispEnd="&lt;/strong&gt;">Backups:</pc> before a change to the database, a copy is taken, kept privately and deleted after 90 days. The database company also keeps its own short-term backups. </source>
-      </segment>
-    </unit>
     <unit id="290594620278715699">
       <notes>
         <note category="location">src/app/core/utils/groupActivity.ts</note>
@@ -10414,6 +10405,15 @@
       </notes>
       <segment>
         <source>Your rights</source>
+      </segment>
+    </unit>
+    <unit id="6162928345085918552">
+      <notes>
+        <note category="location">src/app/pages/privacy/privacy-page.component.html</note>
+        <note category="description">How long data is kept, on the privacy page</note>
+      </notes>
+      <segment>
+        <source><pc id="0" equivStart="START_TAG_STRONG" equivEnd="CLOSE_TAG_STRONG" type="other" dispStart="&lt;strong&gt;" dispEnd="&lt;/strong&gt;">Backups:</pc> before a change to the database, a copy is taken and kept privately, only while it may be needed to undo a mistake. The database company also keeps its own short-term backups. </source>
       </segment>
     </unit>
     <unit id="6165219619684566053">
