@@ -1,0 +1,167 @@
+<!-- A plain reading page: one column, headings for each question a reader has. The layout gives the header, the footer and the page's <main>. -->
+<div class="mx-auto max-w-3xl px-4 py-12 text-bv-text sm:px-6 lg:py-16">
+    <h1 class="text-4xl font-bold tracking-tight" i18n="Heading of the privacy page">Privacy</h1>
+    <p class="mt-4 text-lg leading-8 text-bv-text-muted" i18n="Introduction at the top of the privacy page">
+        Board Vault is a free side project. This page explains in plain words what it keeps about you, why, who helps run it, and how to ask about it.
+    </p>
+    <p class="mt-2 text-sm text-bv-text-muted" i18n="Date the privacy page last changed; the placeholder is a date such as 7 November 2026">Last updated: {{ lastUpdated }}</p>
+
+    <section class="mt-12" aria-labelledby="privacy-who">
+        <h2 id="privacy-who" class="text-2xl font-bold" i18n="Heading on the privacy page">Who is responsible</h2>
+        <p class="mt-3 leading-7" i18n="On the privacy page; the first placeholder is the full name of the person responsible, the second the contact email address">
+            Board Vault is made by Kois Studio. Kois Studio is not a company: the person responsible for your data is {{ controllerName }}, in Spain. For anything about
+            your data, write to <a class="font-medium text-bv-primary underline" [href]="contactLink">{{ contactEmail }}</a>. A person reads and answers every message.
+        </p>
+    </section>
+
+    <section class="mt-10" aria-labelledby="privacy-what">
+        <h2 id="privacy-what" class="text-2xl font-bold" i18n="Heading on the privacy page">What Board Vault keeps, and why</h2>
+        <ul class="mt-3 list-disc space-y-3 pl-5 leading-7">
+            <li i18n="What Board Vault keeps, on the privacy page; Clerk is the sign-in service">
+                <strong>Your account:</strong> your email, username, display name, avatar and the language you use. Clerk keeps your password and how you sign in;
+                Board Vault never sees your password.
+            </li>
+            <li i18n="What Board Vault keeps, on the privacy page">
+                <strong>Your collection:</strong> the games on your shelf, with the price and date you bought them if you enter them, your wishlist, your ratings and
+                your reviews.
+            </li>
+            <li i18n="What Board Vault keeps, on the privacy page">
+                <strong>Your groups:</strong> the groups you are in and their game nights: the date, who comes, what is played, winners, scores and notes. Also your
+                votes, the games you bring, the games you are interested in, and the group history, which records who changed what in the group.
+            </li>
+            <li i18n="What Board Vault keeps, on the privacy page">
+                <strong>Notifications</strong> about your groups and about the games you propose for the catalogue.
+            </li>
+            <li i18n="What Board Vault keeps, on the privacy page; Settings → Privacy names the place in the app">
+                <strong>Usage statistics:</strong> which pages you open and which features you use, under a pseudonym instead of your name, never what you write. You
+                can turn them off in <a class="font-medium text-bv-primary underline" routerLink="/settings/privacy">Settings → Privacy</a>.
+            </li>
+            <li i18n="What Board Vault keeps, on the privacy page; Vercel is the hosting company">
+                <strong>Technical records:</strong> for each request, the server notes the address asked for, the answer and your account number. Vercel keeps these
+                for about an hour. Your IP address is used only to stop abuse and is forgotten within minutes.
+            </li>
+            <li i18n="What Board Vault keeps, on the privacy page">
+                <strong>Your emails to us:</strong> kept while they are useful to answer you and follow up.
+            </li>
+        </ul>
+        <p class="mt-4 leading-7" i18n="Legal bases on the privacy page; GDPR is the EU data protection law">
+            Most of this is needed to give you the service you sign up for (GDPR, Article 6(1)(b)). Usage statistics and technical records rest on our legitimate
+            interest in keeping Board Vault working, safe and getting better (Article 6(1)(f)), and you can object to them at any time.
+        </p>
+        <p class="mt-4 leading-7" i18n="On the privacy page">Board Vault shows no ads, sells no data, does not track you on other sites and builds no profiles of you.</p>
+    </section>
+
+    <section class="mt-10" aria-labelledby="privacy-see">
+        <h2 id="privacy-see" class="text-2xl font-bold" i18n="Heading on the privacy page">What other people see</h2>
+        <ul class="mt-3 list-disc space-y-3 pl-5 leading-7">
+            <li i18n="What other people see, on the privacy page">
+                Members of your groups see your display name, username and avatar, the games on your shelf, the game nights you take part in, and what you change in the
+                group's history.
+            </li>
+            <li i18n="What other people see, on the privacy page">Your email, wishlist, prices and purchase dates stay private. Your ratings count towards your groups' average rating of a game.</li>
+            <li i18n="What other people see, on the privacy page; the person responsible is the one named under Who is responsible">
+                The person responsible can see accounts and game proposals to run the service, and usage statistics only as totals.
+            </li>
+        </ul>
+    </section>
+
+    <section class="mt-10" aria-labelledby="privacy-people">
+        <h2 id="privacy-people" class="text-2xl font-bold" i18n="Heading on the privacy page about the people in a group who have no account">People without an account</h2>
+        <p class="mt-3 leading-7" i18n="On the privacy page, about the people in a group who have no account">
+            A group can include people who have no account yet. Members can record their name, the games they own or like, and the game nights they come to. To invite
+            one of them to take over that history, the group owner can enter their email: it is used only for that invitation and kept for 30 days at most.
+        </p>
+        <p class="mt-3 leading-7" i18n="On the privacy page, about the people in a group who have no account; the placeholder is the contact email address">
+            If you are one of these people and want to see, correct or remove what was recorded about you, ask the group owner or write to
+            <a class="font-medium text-bv-primary underline" [href]="contactLink">{{ contactEmail }}</a>.
+        </p>
+    </section>
+
+    <section class="mt-10" aria-labelledby="privacy-providers">
+        <h2 id="privacy-providers" class="text-2xl font-bold" i18n="Heading on the privacy page about the companies that process data for Board Vault">Who helps run Board Vault</h2>
+        <p class="mt-3 leading-7" i18n="On the privacy page, before the list of companies that process data for Board Vault">These companies process data for Board Vault, only to provide their service:</p>
+        <ul class="mt-3 list-disc space-y-3 pl-5 leading-7">
+            <li i18n="Company that processes data for Board Vault, on the privacy page; the EU-US Data Privacy Framework and standard contractual clauses are the legal names of two transfer mechanisms">
+                <strong>Clerk</strong> (Clerk, Inc., United States): accounts and sign-in, and the emails with sign-in codes and invitations. It may process data outside
+                the EU, under the EU-US Data Privacy Framework and standard contractual clauses.
+            </li>
+            <li i18n="Company that processes data for Board Vault, on the privacy page; the EU-US Data Privacy Framework is the legal name of a transfer mechanism">
+                <strong>Vercel</strong> (Vercel Inc., United States): runs the website and the server. The server runs in Dublin, Ireland. Transfers to the United
+                States follow the EU-US Data Privacy Framework.
+            </li>
+            <li i18n="Company that processes data for Board Vault, on the privacy page">
+                <strong>Turso</strong> (ChiselStrike Inc., United States): the database, stored in Ireland.
+            </li>
+            <li i18n="Company that processes data for Board Vault, on the privacy page; the EU-US Data Privacy Framework is the legal name of a transfer mechanism">
+                <strong>Upstash</strong> (Upstash, Inc., United States): short-lived copies of data that make pages load faster, stored in Frankfurt, Germany, and
+                deleted within a day. It follows the EU-US Data Privacy Framework.
+            </li>
+            <li i18n="Company that processes data for Board Vault, on the privacy page; an adequacy decision is the EU's legal recognition that a country protects data as well as the EU">
+                <strong>Proton</strong> (Proton AG, Switzerland): the inbox for emails to us. The EU recognises Switzerland's data protection as adequate.
+            </li>
+        </ul>
+    </section>
+
+    <section class="mt-10" aria-labelledby="privacy-retention">
+        <h2 id="privacy-retention" class="text-2xl font-bold" i18n="Heading on the privacy page">How long it is kept</h2>
+        <ul class="mt-3 list-disc space-y-3 pl-5 leading-7">
+            <li i18n="How long data is kept, on the privacy page; Settings → Account names the place in the app; Deleted account is the name shown instead of a deleted account">
+                <strong>Your account</strong> stays until you delete it in <a class="font-medium text-bv-primary underline" routerLink="/settings/account">Settings → Account</a>.
+                Deleting it is immediate and permanent. Game nights you took part in still count you, shown as “Deleted account”, because they belong to the group too.
+            </li>
+            <li i18n="How long data is kept, on the privacy page">
+                <strong>A group's data</strong> stays as long as the group. Deleting a group deletes its game nights and its history.
+            </li>
+            <li i18n="How long data is kept, on the privacy page">
+                <strong>Usage statistics</strong> are deleted after 30 days. Only daily totals that belong to nobody are kept.
+            </li>
+            <li i18n="How long data is kept, on the privacy page">
+                <strong>Technical records</strong> last about an hour, and the short-lived copies up to a day.
+            </li>
+            <li i18n="How long data is kept, on the privacy page">
+                <strong>Backups:</strong> before a change to the database, a copy is taken, kept privately and deleted after 90 days. The database company also keeps
+                its own short-term backups.
+            </li>
+        </ul>
+    </section>
+
+    <section class="mt-10" aria-labelledby="privacy-rights">
+        <h2 id="privacy-rights" class="text-2xl font-bold" i18n="Heading on the privacy page">Your rights</h2>
+        <p class="mt-3 leading-7" i18n="On the privacy page; Settings, Settings → Privacy and Settings → Account name places in the app">
+            You can ask to see, correct, delete or take a copy of your data, to limit how it is used, or object to it. You can do most of it yourself: change your profile in
+            <a class="font-medium text-bv-primary underline" routerLink="/settings/profile">Settings</a>, turn off usage statistics in
+            <a class="font-medium text-bv-primary underline" routerLink="/settings/privacy">Settings → Privacy</a>, and delete your account in
+            <a class="font-medium text-bv-primary underline" routerLink="/settings/account">Settings → Account</a>.
+        </p>
+        <p class="mt-3 leading-7" i18n="On the privacy page; the placeholder is the contact email address; AEPD is the Spanish data protection authority">
+            For anything else, write to <a class="font-medium text-bv-primary underline" [href]="contactLink">{{ contactEmail }}</a> and you will get an answer within a
+            month. If you think your data is handled wrongly, you can complain to the Spanish data protection authority
+            (<a class="font-medium text-bv-primary underline" href="https://www.aepd.es" target="_blank" rel="noopener">AEPD</a>) or to the one where you live.
+        </p>
+    </section>
+
+    <section class="mt-10" aria-labelledby="privacy-cookies">
+        <h2 id="privacy-cookies" class="text-2xl font-bold" i18n="Heading on the privacy page">Cookies and your browser</h2>
+        <p class="mt-3 leading-7" i18n="On the privacy page, before the list of what is stored in the browser">Board Vault stores only what it needs to work, so there is no cookie banner:</p>
+        <ul class="mt-3 list-disc space-y-3 pl-5 leading-7">
+            <li i18n="What is stored in the browser, on the privacy page; Clerk is the sign-in service">Clerk's sign-in cookies, to keep you signed in.</li>
+            <li i18n="What is stored in the browser, on the privacy page; bv_lang is the name of the cookie and stays as it is">A cookie named <code>bv_lang</code> that remembers your language for a year.</li>
+            <li i18n="What is stored in the browser, on the privacy page">In your browser's storage: your theme, colours and text size, and whether the language follows your account.</li>
+        </ul>
+        <p class="mt-3 leading-7" i18n="On the privacy page, after the list of what is stored in the browser">There are no analytics, advertising or tracking cookies.</p>
+    </section>
+
+    <section class="mt-10" aria-labelledby="privacy-security">
+        <h2 id="privacy-security" class="text-2xl font-bold" i18n="Heading on the privacy page">Security</h2>
+        <p class="mt-3 leading-7" i18n="On the privacy page; Clerk is the sign-in service">
+            Connections are encrypted. Passwords are handled by Clerk, never by Board Vault. The server checks every request against what you are allowed to see. Board
+            Vault's code is <a class="font-medium text-bv-primary underline" href="https://github.com/kois-studio/board-vault" target="_blank" rel="noopener">public on GitHub</a>,
+            so anyone can check how it works.
+        </p>
+    </section>
+
+    <section class="mt-10" aria-labelledby="privacy-changes">
+        <h2 id="privacy-changes" class="text-2xl font-bold" i18n="Heading on the privacy page">Changes to this page</h2>
+        <p class="mt-3 leading-7" i18n="On the privacy page">When this page changes, so does the date at the top. If a change matters to you, Board Vault tells you in the app before it applies.</p>
+    </section>
+</div>

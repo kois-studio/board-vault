@@ -1,7 +1,7 @@
 import { expect, test } from '@playwright/test'
 import { showLandingSamples } from './fixtures/landing'
 
-const routes = ['/', '/login', '/register', '/route-that-does-not-exist']
+const routes = ['/', '/login', '/register', '/privacy', '/route-that-does-not-exist']
 
 function publicSurfaceAudit() {
     return () => {

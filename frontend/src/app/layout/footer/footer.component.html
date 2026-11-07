@@ -4,12 +4,16 @@
     <div class="container mx-auto flex max-w-6xl items-center gap-3 px-4">
         <p>&copy; {{ date }} Board Vault</p>
         <span aria-hidden="true">·</span>
+        <a routerLink="/privacy" class="transition hover:text-bv-primary" i18n="Footer link to the privacy page">Privacy</a>
+        <span aria-hidden="true">·</span>
+        <a [href]="contactLink" class="transition hover:text-bv-primary" i18n="Footer link that writes an email to Board Vault">Contact</a>
+        <span aria-hidden="true">·</span>
         <a href="https://github.com/kois-studio/board-vault" target="_blank" rel="noopener" class="inline-flex items-center gap-1.5 transition hover:text-bv-primary"><app-github-mark [size]="14" /><ng-container i18n="Footer link to the project repository">Source code on GitHub</ng-container></a>
     </div>
 </footer>
 } @else {
 <footer class="mt-24 border-t border-bv-border bg-bv-surface px-4 py-12 text-bv-text-muted sm:px-6 lg:px-8">
-    <div class="mx-auto grid grid-cols-1 max-w-6xl gap-10 md:grid-cols-[1.4fr_1fr_1fr]">
+    <div class="mx-auto grid grid-cols-1 max-w-6xl gap-10 md:grid-cols-[1.4fr_1fr_1fr_1fr]">
         <div>
             <div class="flex items-center gap-2">
                 <app-logo class="text-bv-primary" [size]="24" />
@@ -34,7 +38,15 @@
                 <li><a routerLink="/login" class="transition hover:text-bv-primary" i18n="Footer link to the sign-in page">Sign in</a></li>
                 <li><a routerLink="/register" class="transition hover:text-bv-primary" i18n="Footer link to the sign-up page">Create an account</a></li>
             </ul>
-            <p class="mt-6 text-sm" i18n="Note in the footer of the public pages">Board Vault is an early product; privacy, terms, and support content will be added before public launch.</p>
+        </div>
+
+        <div>
+            <h2 class="text-sm font-semibold uppercase tracking-wider text-bv-text-muted" i18n="Heading of the footer column of links to the privacy page and to contact Board Vault">Help</h2>
+            <ul class="mt-4 space-y-3">
+                <li><a routerLink="/privacy" class="transition hover:text-bv-primary" i18n="Footer link to the privacy page">Privacy</a></li>
+                <li><a [href]="contactLink" class="transition hover:text-bv-primary" i18n="Footer link that writes an email to Board Vault">Contact</a></li>
+            </ul>
+            <p class="mt-4 text-sm" i18n="Under the contact link in the footer of the public pages; the placeholder is the contact email address">Questions or ideas? Write to {{ contactEmail }}. A person reads every email.</p>
         </div>
     </div>
 </footer>

@@ -4,6 +4,7 @@ import { ImageProfileComponent } from '../../components/image-profile/image-prof
 import { GithubMarkComponent } from '../../components/ui/github-mark/github-mark.component'
 import { IconComponent } from '../../components/ui/icon/icon.component'
 import { ThemeSwitchComponent } from '../../components/ui/theme-switch/theme-switch.component'
+import { contactMailto } from '../../core/contact'
 import { intlLocale } from '../../core/i18n/format'
 import { DataService } from '../../core/services/data.service'
 import { LoginService } from '../../core/services/login.service'
@@ -27,6 +28,9 @@ export class ProfileMenuComponent {
     public readonly userProposalStats$ = this.dataService.userProposalStats
     public readonly isAdmin = this.loginService.isCurrentUserAdmin
     public readonly pendingProposalCount = inject(PendingProposalsService).count
+    protected readonly contactLink = contactMailto(
+        $localize`:Subject of the email a reader starts from the contact link in the avatar menu:Board Vault`,
+    )
 
     /** Admins hear how many game proposals wait, which the dot on the avatar shows. */
     public readonly triggerLabel = computed(() => {

@@ -1,6 +1,6 @@
 import { signal } from '@angular/core'
 import { TestBed } from '@angular/core/testing'
-import { Router } from '@angular/router'
+import { provideRouter, Router } from '@angular/router'
 import { of } from 'rxjs'
 import { Api } from '../../../api/api'
 import { ClerkService } from '../../../core/services/clerk.service'
@@ -17,17 +17,20 @@ describe('RegisterComponent invitation onboarding', () => {
             clearInvitationState: vi.fn().mockName('clearInvitationState'),
             completeInvitationSignUp: vi.fn().mockName('completeInvitationSignUp').mockResolvedValue(undefined),
         }
-        const router = { navigateByUrl: vi.fn().mockName('navigateByUrl').mockResolvedValue(true) }
         const api = { updatePrivacySettings: vi.fn((body: { usageAnalytics: boolean }) => of({ ...body, noticeAnswered: true })) }
 
         TestBed.configureTestingModule({
             imports: [RegisterComponent],
             providers: [
+                // A real router: the page has sign-in and privacy links.
+                provideRouter([]),
                 { provide: ClerkService, useValue: clerkService },
-                { provide: Router, useValue: router },
                 { provide: Api, useValue: api },
             ],
         })
+
+        const router = TestBed.inject(Router)
+        vi.spyOn(router, 'navigateByUrl').mockResolvedValue(true)
 
         return {
             fixture: TestBed.createComponent(RegisterComponent),
