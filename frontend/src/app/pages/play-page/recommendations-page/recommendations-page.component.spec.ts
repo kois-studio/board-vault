@@ -1,7 +1,7 @@
 import { signal } from '@angular/core'
 import { TestBed } from '@angular/core/testing'
 import { ActivatedRoute, convertToParamMap, provideRouter } from '@angular/router'
-import { of } from 'rxjs'
+import { type Observable, of, Subject, throwError } from 'rxjs'
 import { Api } from '../../../api/api'
 import { ToastService } from '../../../components/toast/toast.service'
 import { DataService } from '../../../core/services/data.service'
@@ -157,5 +157,202 @@ describe('RecommendationsPageComponent and the next game night', () => {
         const { component } = setup([night({ myRsvpStatus: 'declined' }), night({ id: 30, myRsvpStatus: null })])
 
         expect(component.nextNight()).toBeNull()
+    })
+})
+
+describe('RecommendationsPageComponent when the group people cannot be loaded', () => {
+    type PeopleAnswer = { people: Array<unknown> }
+    const down = () => throwError(() => new Error('Board Vault could not be reached'))
+    const member = (id: number, name: string) => ({ id, username: name.toLowerCase(), displayName: name, avatar: null, games: [] })
+    const fridays = { id: 7, name: 'Fridays', createdBy: 1, members: [member(1, 'Organizer'), member(2, 'Member')] }
+    const sundays = { id: 8, name: 'Sundays', createdBy: 1, members: [member(1, 'Organizer')] }
+    const person = (id: number, accountId: number | null, displayName: string) => ({
+        person: { id, accountId, displayName, status: 'active', avatar: null },
+        ownership: [],
+        preferences: [],
+        claimable: false,
+    })
+    const people = [person(11, 1, 'Organizer'), person(13, null, 'Guest')]
+
+    const setup = (answer: Observable<PeopleAnswer>, groups: Array<typeof fridays> = [fridays], query: Record<string, string> = {}) => {
+        const api = {
+            getGroupPeople: vi.fn().mockReturnValue(answer),
+            getParticipantRecommendations: vi.fn().mockReturnValue(of({ recommendations: [], noResultReason: 'Nothing fits' })),
+            getRecommendations: vi.fn().mockReturnValue(of({ recommendations: [], noResultReason: 'Nothing fits' })),
+            getParticipantRecommendationSignals: vi.fn().mockReturnValue(of(null)),
+            getRecommendationSignals: vi.fn().mockReturnValue(of(null)),
+        }
+        TestBed.configureTestingModule({
+            providers: [
+                provideRouter([]),
+                { provide: Api, useValue: api },
+                { provide: ActivatedRoute, useValue: { snapshot: { queryParamMap: convertToParamMap(query) } } },
+                {
+                    provide: DataService,
+                    useValue: {
+                        currentUser: signal({ id: 1 }),
+                        userGroups: signal(groups),
+                        userGroupsError: signal(false),
+                        userMeets: signal([]),
+                    },
+                },
+                { provide: LoadingService, useValue: { loadingStatesIndex: signal({}) } },
+                { provide: ToastService, useValue: { success: vi.fn(), error: vi.fn() } },
+            ],
+        })
+        const fixture = TestBed.createComponent(RecommendationsPageComponent)
+        fixture.detectChanges()
+        const page = () => fixture.nativeElement as HTMLElement
+        const byTestId = (id: string) => page().querySelector<HTMLElement>(`[data-testid="${id}"]`)
+        return { fixture, component: fixture.componentInstance, api, page, byTestId }
+    }
+    // Suggestions reload a moment after the choices settle.
+    const afterReloadDelay = () => new Promise((resolve) => setTimeout(resolve, 600))
+
+    it('says so and asks for no suggestions, instead of suggesting for the member accounts alone', async () => {
+        const { fixture, component, api, page, byTestId } = setup(down())
+        await afterReloadDelay()
+        fixture.detectChanges()
+
+        expect(byTestId('people-error')?.getAttribute('role')).toBe('alert')
+        expect(byTestId('people-error')?.textContent).toContain('The group’s people couldn’t be loaded')
+        expect(byTestId('people-chips')).toBeNull()
+        expect(byTestId('suggestions-wait')).not.toBeNull()
+        expect(page().textContent).not.toContain('Choose who is coming to see what fits')
+        expect(component.selectedAttendeeIds()).toEqual([])
+        expect(api.getRecommendations).not.toHaveBeenCalled()
+        expect(api.getParticipantRecommendations).not.toHaveBeenCalled()
+
+        await component.loadRecommendations()
+        expect(api.getRecommendations).not.toHaveBeenCalled()
+    })
+
+    it('loads them again on Retry with the people the link asked for, then suggests for them and moves focus to the first person', async () => {
+        const { fixture, component, api, byTestId } = setup(down(), [fridays], { participantIds: '13' })
+        const retried = new Subject<PeopleAnswer>()
+        api.getGroupPeople.mockReturnValue(retried)
+        fixture.detectChanges()
+
+        byTestId('people-retry')?.click()
+        fixture.detectChanges()
+        expect(api.getGroupPeople).toHaveBeenCalledTimes(2)
+        expect(byTestId('people-error')).not.toBeNull()
+        expect(byTestId('people-retry')?.getAttribute('aria-busy')).toBe('true')
+        expect(byTestId('people-loading')).not.toBeNull()
+        byTestId('people-retry')?.click()
+        expect(api.getGroupPeople).toHaveBeenCalledTimes(2)
+
+        retried.next({ people })
+        retried.complete()
+        fixture.detectChanges()
+        await fixture.whenStable()
+
+        expect(byTestId('people-error')).toBeNull()
+        expect(component.selectedAttendeeIds()).toEqual([13])
+        expect(document.activeElement).toBe(byTestId('people-chips')?.querySelector('button'))
+        await afterReloadDelay()
+        expect(api.getParticipantRecommendations).toHaveBeenCalledWith(expect.objectContaining({ groupId: 7, groupPersonIds: [13] }))
+    })
+
+    it('shows the message again when Retry fails too', async () => {
+        const { fixture, component, api, byTestId } = setup(down())
+        api.getGroupPeople.mockReturnValue(down())
+        fixture.detectChanges()
+        byTestId('people-retry')?.click()
+        fixture.detectChanges()
+
+        expect(byTestId('people-error')).not.toBeNull()
+        expect(byTestId('people-loading')).toBeNull()
+        expect(component.groupPeopleLoading()).toBe(false)
+    })
+
+    it('ignores a slow answer for a group that is no longer chosen', async () => {
+        const slow = new Subject<PeopleAnswer>()
+        const { fixture, component, api, byTestId } = setup(slow, [fridays, sundays])
+        api.getGroupPeople.mockReturnValue(of({ people: [person(21, 1, 'Organizer')] }))
+        component.selectGroup(8)
+        fixture.detectChanges()
+        slow.error(new Error('late failure'))
+        fixture.detectChanges()
+
+        expect(byTestId('people-error')).toBeNull()
+        expect(component.selectedAttendeeIds()).toEqual([21])
+
+        // A late success for the first group doesn't replace the second group's people either.
+        const slowAgain = new Subject<PeopleAnswer>()
+        api.getGroupPeople.mockReturnValue(slowAgain)
+        component.selectGroup(7)
+        api.getGroupPeople.mockReturnValue(of({ people: [person(21, 1, 'Organizer')] }))
+        component.selectGroup(8)
+        slowAgain.next({ people })
+        expect(component.selectedAttendeeIds()).toEqual([21])
+    })
+
+    it('clears the message when another group is chosen', async () => {
+        const { fixture, component, api, byTestId } = setup(down(), [fridays, sundays])
+        api.getGroupPeople.mockReturnValue(of({ people: [person(21, 1, 'Organizer')] }))
+        component.selectGroup(8)
+        fixture.detectChanges()
+
+        expect(byTestId('people-error')).toBeNull()
+        expect(byTestId('people-chips')).not.toBeNull()
+    })
+
+    it('suggests for the member accounts in a group that has no group people', async () => {
+        const { fixture, component, api, byTestId } = setup(of({ people: [] }))
+        fixture.detectChanges()
+
+        expect(byTestId('people-error')).toBeNull()
+        expect(component.selectedAttendeeIds()).toEqual([1, 2])
+        await afterReloadDelay()
+        expect(api.getRecommendations).toHaveBeenCalledWith(expect.objectContaining({ groupId: 7, attendeeIds: [1, 2] }))
+    })
+
+    it('takes the message away as soon as another group is chosen, while its people load', async () => {
+        const { fixture, component, api, byTestId } = setup(down(), [fridays, sundays])
+        api.getGroupPeople.mockReturnValue(new Subject<PeopleAnswer>())
+        component.selectGroup(8)
+        fixture.detectChanges()
+
+        expect(byTestId('people-error')).toBeNull()
+        expect(byTestId('people-loading')).not.toBeNull()
+    })
+
+    it('asks nothing of a person who presses for suggestions while the people are missing', async () => {
+        const { fixture, component, page } = setup(down())
+        await component.loadRecommendations()
+        fixture.detectChanges()
+
+        expect(component.errorMessage()).toBeNull()
+        expect(page().textContent).not.toContain('Select a group and at least one attendee')
+    })
+
+    it('keeps the accounts a link asked for when Retry loads the people', async () => {
+        const { fixture, component, api, byTestId } = setup(down(), [fridays], { attendeeIds: '1' })
+        api.getGroupPeople.mockReturnValue(of({ people }))
+        fixture.detectChanges()
+        byTestId('people-retry')?.click()
+        fixture.detectChanges()
+
+        // Account 1 is the organizer, group person 11.
+        expect(component.selectedAttendeeIds()).toEqual([11])
+    })
+
+    it('suggests by member account when none of the group people can take part, never sending account ids as people', async () => {
+        const archived = { ...person(11, 1, 'Organizer'), person: { ...person(11, 1, 'Organizer').person, status: 'archived' } }
+        const { api } = setup(of({ people: [archived] }))
+        await afterReloadDelay()
+
+        expect(api.getRecommendations).toHaveBeenCalledWith(expect.objectContaining({ groupId: 7, attendeeIds: [1, 2] }))
+        expect(api.getParticipantRecommendations).not.toHaveBeenCalled()
+    })
+
+    it('does not keep loading for a group that is no longer listed', async () => {
+        const { component, api } = setup(of({ people }))
+        api.getGroupPeople.mockClear()
+        component.selectGroup(99)
+
+        expect(api.getGroupPeople).not.toHaveBeenCalled()
+        expect(component.groupPeopleLoading()).toBe(false)
     })
 })

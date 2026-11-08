@@ -1,4 +1,4 @@
-import { Component, computed, effect, inject, signal, untracked } from '@angular/core'
+import { afterNextRender, Component, computed, DestroyRef, ElementRef, effect, Injector, inject, signal, untracked } from '@angular/core'
 import { toSignal } from '@angular/core/rxjs-interop'
 import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms'
 import { ActivatedRoute, Router, RouterLink } from '@angular/router'
@@ -81,6 +81,9 @@ export class MeetNewComponent {
     private readonly router = inject(Router)
     private readonly toastService = inject(ToastService)
     private readonly loadingService = inject(LoadingService)
+    private readonly destroyRef = inject(DestroyRef)
+    private readonly injector = inject(Injector)
+    private readonly host = inject<ElementRef<HTMLElement>>(ElementRef)
 
     public readonly today = localDate(new Date())
     public readonly localTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone
@@ -108,6 +111,14 @@ export class MeetNewComponent {
     public readonly gameQuery = signal('')
     public readonly isCreating = signal(false)
     private initializedGroupId: number | null = null
+    /** The group's people (and the games only they own) are on their way; who to invite can't be settled yet. */
+    public readonly peopleLoading = signal(false)
+    /** The group's people couldn't be loaded, so people without an account would be missing from the list. */
+    public readonly peopleError = signal(false)
+    /** People asked for by a recommendation ("Plan this"), kept so Retry can pick them again. */
+    private requestedIds: Array<number> = []
+    /** Bumped on every load, so only the newest answer is applied. */
+    private peopleLoadVersion = 0
 
     protected readonly groupId = Number.parseInt(this.route.snapshot.paramMap.get('groupId') || '', 10)
 
@@ -210,6 +221,8 @@ export class MeetNewComponent {
             Boolean(this.timeValue()) &&
             (this.dateValue() ?? '') >= this.today &&
             !this.startsInThePast() &&
+            !this.peopleLoading() &&
+            !this.peopleError() &&
             this.selectedAttendeeIds().length > 0,
     )
 
@@ -223,6 +236,9 @@ export class MeetNewComponent {
             untracked(() => {
                 if (!group) {
                     this.initializedGroupId = null
+                    this.peopleLoadVersion++
+                    this.peopleLoading.set(false)
+                    this.peopleError.set(false)
                     this.groupPeople.set([])
                     this.personCatalog.set([])
                     this.selectedAttendeeIds.set([])
@@ -283,6 +299,13 @@ export class MeetNewComponent {
             return $localize`:Under a game in the plan form's shortlist, who can bring it; the placeholder is one or two names:Bring: ${names}:names:`
         }
         return $localize`:Under a game in the plan form's shortlist, who can bring it; one or two names, then how many more:Bring: ${names}:names: +${entry.owners.length - 2}:count:`
+    }
+
+    /** Loads the group's people again after it failed. */
+    retryGroupPeople(): void {
+        const group = this.groupData()
+        if (!group || this.peopleLoading()) return
+        void this.loadGroupPeople(group.id, this.requestedIds, true)
     }
 
     retryGroups(): void {
@@ -347,21 +370,51 @@ export class MeetNewComponent {
             Number.isInteger(requestedGameId) && this.availableGames().some((game) => game.id === requestedGameId) ? [requestedGameId] : [],
         )
 
+        this.requestedIds = requestedIds
+        this.peopleError.set(false)
         void this.loadGroupPeople(group.id, requestedIds)
     }
 
-    private async loadGroupPeople(groupId: number, requestedIds: Array<number>): Promise<void> {
+    /**
+     * Loads the group's people and the games only they own, and applies both at once. If either
+     * can't be loaded, the page says so rather than inviting only the member accounts.
+     */
+    private async loadGroupPeople(groupId: number, requestedIds: Array<number>, retrying = false): Promise<void> {
+        const version = ++this.peopleLoadVersion
+        const isCurrent = () => this.peopleLoadVersion === version && this.initializedGroupId === groupId
+        this.peopleLoading.set(true)
         try {
             const { people } = await firstValueFrom(this.api.getGroupPeople(groupId))
+            // A group without people (yet) invites member accounts, as before.
+            const catalog = people.length === 0 ? [] : await firstValueFrom(this.api.getGroupPersonCatalog(groupId))
+            if (!isCurrent()) return
+            this.peopleLoading.set(false)
+            this.peopleError.set(false)
+            if (retrying) this.#focusFirstPerson()
             if (people.length === 0) return
             this.groupPeople.set(people)
+            this.personCatalog.set(catalog)
 
             const activeIds = this.people().map((person) => person.id)
             const requested = requestedIds.filter((id) => activeIds.includes(id))
             this.selectedAttendeeIds.set(requested.length > 0 ? [...new Set(requested)] : activeIds)
-            this.personCatalog.set(await firstValueFrom(this.api.getGroupPersonCatalog(groupId)))
         } catch {
-            // Without group people, the plan invites member accounts.
+            if (!isCurrent()) return
+            this.peopleLoading.set(false)
+            this.peopleError.set(true)
         }
+    }
+
+    /** The Retry button goes away once the people load: put focus on the first person instead of losing it. */
+    #focusFirstPerson(): void {
+        afterNextRender(
+            () => {
+                if (this.destroyRef.destroyed) return
+                const active = document.activeElement
+                if (active !== null && active !== document.body) return
+                this.host.nativeElement.querySelector<HTMLElement>('[data-testid="people-grid"] button')?.focus()
+            },
+            { injector: this.injector },
+        )
     }
 }

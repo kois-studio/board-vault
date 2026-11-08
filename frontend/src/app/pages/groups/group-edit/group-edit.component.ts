@@ -1,5 +1,5 @@
 import { HttpErrorResponse } from '@angular/common/http'
-import { Component, computed, effect, inject, signal } from '@angular/core'
+import { afterNextRender, Component, computed, DestroyRef, ElementRef, effect, Injector, inject, signal, untracked } from '@angular/core'
 import { toSignal } from '@angular/core/rxjs-interop'
 import { FormControl, ReactiveFormsModule } from '@angular/forms'
 import { ActivatedRoute, Router, RouterLink } from '@angular/router'
@@ -35,6 +35,9 @@ import { groupGameCount, groupPeopleCount } from '../../../core/utils/groupCount
 export class GroupEditComponent {
     private readonly api = inject(Api)
     private readonly toastService = inject(ToastService)
+    private readonly destroyRef = inject(DestroyRef)
+    private readonly injector = inject(Injector)
+    private readonly host = inject<ElementRef<HTMLElement>>(ElementRef)
     /** From the address, so the way back works before the group has loaded. */
     protected readonly groupId = inject(ActivatedRoute).snapshot.paramMap.get('groupId')
     // --------------------------------------------------------------------------
@@ -62,6 +65,24 @@ export class GroupEditComponent {
     public readonly pendingClerkRevokeId = signal<string | null>(null)
     public readonly groupPeople = signal<Array<GroupPersonWorkspaceType>>([])
     public readonly selectedClaimPersonId = signal<number | null>(null)
+    /** The group's people are on their way, so it isn't known yet who can be linked to an invitation. */
+    public readonly peopleLoading = signal(false)
+    /** The group's people couldn't be loaded, so an invitation can't be linked to someone without an account. */
+    public readonly peopleError = signal(false)
+    /** The group whose people were loaded; later runs of the page's effect only refresh them quietly. */
+    private loadedPeopleGroupId: number | null = null
+    /** Bumped on every load, so only the newest answer is applied. */
+    private peopleLoadVersion = 0
+    /** The person asked for in the address is picked once; after an invitation is sent, the menu stays cleared. */
+    private requestedClaimPersonApplied = false
+    /** A list has been loaded: only then can a refresh keep it on screen when it fails. */
+    private peopleLoadedOnce = false
+    /** "Invite" on a person without an account opens this page for them (?person=<id>). */
+    private readonly requestedClaimPersonId = Number(inject(ActivatedRoute).snapshot.queryParamMap.get('person')) || null
+    /** Coming to invite a particular person: wait for the people, or the invitation would not be linked to them. */
+    public readonly inviteWaitsForPeople = computed(
+        () => this.requestedClaimPersonId !== null && (this.peopleLoading() || this.peopleError()),
+    )
     /** People without an account an invitation can hand over (ADR-0010: the invitee reviews and claims). */
     public readonly claimablePeople = computed(() =>
         this.groupPeople().filter(({ person }) => person.kind === 'placeholder' && person.status === 'active'),
@@ -107,7 +128,11 @@ export class GroupEditComponent {
 
             if (this.isGroupOwner) {
                 this.loadClerkInvitations(groupData.id)
-                this.loadGroupPeople(groupData.id)
+                // The effect runs again whenever groups or invitations change, e.g. after an invitation is sent.
+                const firstLoad = this.loadedPeopleGroupId !== groupData.id
+                this.loadedPeopleGroupId = groupData.id
+                // Untracked: the signals the load reads and writes must not run this effect again.
+                untracked(() => this.loadGroupPeople(groupData.id, firstLoad ? 'first' : 'refresh'))
             }
         })
     }
@@ -148,7 +173,7 @@ export class GroupEditComponent {
     public onInviteSubmit(event: SubmitEvent): void {
         event.preventDefault()
         this.inviteTarget.markAsTouched()
-        if (this.inviteProblem() !== null) return
+        if (this.inviteProblem() !== null || this.inviteWaitsForPeople()) return
         void (this.inviteKind() === 'email' ? this.onInviteNewPerson() : this.onInviteUser())
     }
 
@@ -214,18 +239,60 @@ export class GroupEditComponent {
         }
     }
 
-    private loadGroupPeople(groupId: number): void {
+    /** Loads the group's people again after it failed, keeping the message until the answer comes. */
+    public retryGroupPeople(): void {
+        if (!this.groupData || this.peopleLoading()) return
+        this.loadGroupPeople(this.groupData.id, 'retry')
+    }
+
+    /**
+     * 'first' and 'retry' show that the people are loading and say when they fail. A quiet
+     * 'refresh' keeps a loaded list on screen: Send stays available, and a failure keeps the list shown.
+     */
+    private loadGroupPeople(groupId: number, mode: 'first' | 'refresh' | 'retry'): void {
         const loader = this.api.getGroupPeople
         if (typeof loader !== 'function') return
+        const version = ++this.peopleLoadVersion
+        // While the first load is still on its way (the effect runs several times as the page loads), nothing is shown yet to keep.
+        const quiet = mode === 'refresh' && this.peopleLoadedOnce && !this.peopleError()
+        if (!quiet) this.peopleLoading.set(true)
         loader.call(this.api, groupId).subscribe({
             next: (response) => {
+                if (version !== this.peopleLoadVersion) return
                 this.groupPeople.set(response.people)
-                // "Invite" on a person without an account opens this page for them (?person=<id>).
-                const requested = Number(this.route.snapshot.queryParamMap.get('person'))
-                if (this.claimablePeople().some(({ person }) => person.id === requested)) this.selectedClaimPersonId.set(requested)
+                this.peopleLoadedOnce = true
+                this.peopleLoading.set(false)
+                this.peopleError.set(false)
+                const requested = this.requestedClaimPersonId
+                if (!this.requestedClaimPersonApplied && this.claimablePeople().some(({ person }) => person.id === requested)) {
+                    this.requestedClaimPersonApplied = true
+                    this.selectedClaimPersonId.set(requested)
+                }
+                if (mode === 'retry') this.#focusAfterRetry()
             },
-            error: () => this.groupPeople.set([]),
+            error: () => {
+                if (version !== this.peopleLoadVersion) return
+                this.peopleLoading.set(false)
+                if (quiet) return
+                this.groupPeople.set([])
+                this.peopleError.set(true)
+            },
         })
+    }
+
+    /** The Retry button goes away once the people load: put focus on the person menu, or the invite field. */
+    #focusAfterRetry(): void {
+        afterNextRender(
+            () => {
+                if (this.destroyRef.destroyed) return
+                const active = document.activeElement
+                if (active !== null && active !== document.body) return
+                const host = this.host.nativeElement
+                const target = host.querySelector<HTMLElement>('#group-invite-person') ?? host.querySelector<HTMLElement>('#group-invite')
+                target?.focus()
+            },
+            { injector: this.injector },
+        )
     }
 
     private async loadClerkInvitations(groupId: number): Promise<void> {

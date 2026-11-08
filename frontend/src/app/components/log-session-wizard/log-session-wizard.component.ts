@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common'
-import { Component, computed, effect, inject, signal, untracked } from '@angular/core'
+import { afterNextRender, Component, computed, DestroyRef, ElementRef, effect, Injector, inject, signal, untracked } from '@angular/core'
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
 import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms'
 import { ActivatedRoute, Router, RouterLink } from '@angular/router'
@@ -104,6 +104,9 @@ export class LogSessionWizardComponent {
     private readonly api = inject(Api)
     private readonly toastService = inject(ToastService)
     private readonly route = inject(ActivatedRoute)
+    private readonly destroyRef = inject(DestroyRef)
+    private readonly injector = inject(Injector)
+    private readonly host = inject<ElementRef<HTMLElement>>(ElementRef)
     readonly editingId = Number(this.route.snapshot.queryParamMap.get('sessionId')) || null
     readonly isLive = signal(this.route.snapshot.queryParamMap.get('mode') === 'live' && !this.editingId)
     readonly requestedGroupId = Number(this.route.snapshot.queryParamMap.get('groupId')) || null
@@ -184,6 +187,12 @@ export class LogSessionWizardComponent {
     public groupPeople = signal<Array<GroupPersonWorkspaceType>>([])
     public groupPersonCatalog = signal<Array<GameCompleteType>>([])
     public usesGroupPeople = signal(false)
+    /** The group's people (and the games only they own) are on their way; who came can't be settled yet. */
+    public readonly peopleLoading = signal(false)
+    /** The group's people couldn't be loaded, so people without an account would be missing from the list. */
+    public readonly peopleError = signal(false)
+    /** The night being corrected lists group people, but none of them came back with the group. */
+    public readonly recordingPeopleMissing = signal(false)
     public readonly today = todayInputValue()
 
     public sessionDate = new FormControl(this.today, [
@@ -378,6 +387,8 @@ export class LogSessionWizardComponent {
         this.groupPersonCatalog.set([])
         this.groupPeople.set([])
         this.usesGroupPeople.set(false)
+        this.peopleError.set(false)
+        this.recordingPeopleMissing.set(false)
         this.additionalPlays.set([])
         this.primaryResults.set({})
         if (!this.pendingRecording) this.extras.set([])
@@ -385,13 +396,45 @@ export class LogSessionWizardComponent {
         this.restoreRecording()
     }
 
-    private loadGroupPeople(group: GroupWithMembersAndGames): void {
+    /** Loads the group's people again after it failed, keeping who is already ticked. */
+    public retryGroupPeople(): void {
+        const group = this.selectedGroup()
+        if (!group || this.peopleLoading()) return
+        // A newer load wins over any answer still on its way.
+        this.groupLoadVersion++
+        this.loadGroupPeople(group, true)
+    }
+
+    /** The Retry button goes away once the people load: put focus on the first person instead of losing it. */
+    #focusFirstPerson(): void {
+        afterNextRender(
+            () => {
+                if (this.destroyRef.destroyed) return
+                const active = document.activeElement
+                if (active !== null && active !== document.body) return
+                this.host.nativeElement.querySelector<HTMLElement>('[data-testid="people-grid"] button')?.focus()
+            },
+            { injector: this.injector },
+        )
+    }
+
+    private loadGroupPeople(group: GroupWithMembersAndGames, retrying = false): void {
         const loader = this.api.getGroupPeople
-        if (typeof loader !== 'function') return
+        if (typeof loader !== 'function') {
+            this.peopleLoading.set(false)
+            this.peopleError.set(false)
+            return
+        }
+        this.peopleLoading.set(true)
 
         // Ignore a slow response for a group that is no longer selected.
         const version = this.groupLoadVersion
         const isCurrentGroup = () => this.selectedGroup()?.id === group.id && this.groupLoadVersion === version
+        const fail = () => {
+            if (!isCurrentGroup()) return
+            this.peopleLoading.set(false)
+            this.peopleError.set(true)
+        }
 
         loader.call(this.api, group.id, Boolean(this.editingId)).subscribe({
             next: (response) => {
@@ -399,7 +442,14 @@ export class LogSessionWizardComponent {
                 const activePeople = response.people.filter(
                     (person) => canTakePart(person) || this.pendingRecording?.groupPersonIds?.includes(person.person.id),
                 )
-                if (activePeople.length === 0) return
+                if (activePeople.length === 0) {
+                    // A group without people (yet) is recorded by member accounts, as before.
+                    this.peopleLoading.set(false)
+                    this.peopleError.set(false)
+                    this.recordingPeopleMissing.set(Boolean(this.pendingRecording?.groupPersonIds?.length))
+                    if (retrying) this.#focusFirstPerson()
+                    return
+                }
 
                 const groupGames = new Map<number, GameCompleteType>()
                 for (const member of group.members) {
@@ -408,6 +458,9 @@ export class LogSessionWizardComponent {
 
                 const applyPeople = (catalog: Array<GameCompleteType>) => {
                     if (!isCurrentGroup()) return
+                    this.peopleLoading.set(false)
+                    this.peopleError.set(false)
+                    if (retrying) this.#focusFirstPerson()
                     // Members ticked before the people list arrived stay selected as their linked person.
                     const selectedAccountIds = new Set(
                         this.usesGroupPeople()
@@ -503,17 +556,14 @@ export class LogSessionWizardComponent {
                 if (typeof this.api.getGroupPersonCatalog === 'function') {
                     this.api.getGroupPersonCatalog(group.id).subscribe({
                         next: (catalog) => applyPeople(catalog),
-                        error: () => applyPeople([]),
+                        // Without the catalogue, games only group people own would be missing: say so instead.
+                        error: fail,
                     })
                 } else {
                     applyPeople([])
                 }
             },
-            error: () => {
-                if (!isCurrentGroup()) return
-                this.groupPeople.set([])
-                this.usesGroupPeople.set(false)
-            },
+            error: fail,
         })
     }
 
@@ -522,7 +572,14 @@ export class LogSessionWizardComponent {
     // --------------------------------------------------------------------------
     public canProceedToNextStep(): boolean {
         if (this.isLive() && this.liveSession()) return false
-        return !this.loadingRecording() && (!this.editingId || this.recordingRestored) && this.isStepValid(this.currentStep())
+        return (
+            !this.loadingRecording() &&
+            !this.peopleLoading() &&
+            !this.peopleError() &&
+            !this.recordingPeopleMissing() &&
+            (!this.editingId || this.recordingRestored) &&
+            this.isStepValid(this.currentStep())
+        )
     }
 
     public nextStep(): void {

@@ -1460,6 +1460,15 @@
         <source>Your numbers</source>
       </segment>
     </unit>
+    <unit id="1807929065026295643">
+      <notes>
+        <note category="location">src/app/components/log-session-wizard/log-session-wizard.component.html</note>
+        <note category="description">Correcting a recorded game night whose people are no longer in the group</note>
+      </notes>
+      <segment>
+        <source>The people who came to this night are no longer in the group, so it can’t be corrected here.</source>
+      </segment>
+    </unit>
     <unit id="1815859193587155677">
       <notes>
         <note category="location">src/app/pages/group-view/group-view.component.html</note>
@@ -4397,6 +4406,15 @@
         <source>Shortlisted</source>
       </segment>
     </unit>
+    <unit id="3290850575958930357">
+      <notes>
+        <note category="location">src/app/pages/play-page/recommendations-page/recommendations-page.component.html</note>
+        <note category="description">What to play when the group&apos;s people could not load, in place of the suggestions</note>
+      </notes>
+      <segment>
+        <source>Suggestions show once the group’s people load.</source>
+      </segment>
+    </unit>
     <unit id="3292157637371198074">
       <notes>
         <note category="location">src/app/components/ui/star-rating/star-rating.component.ts</note>
@@ -5064,8 +5082,10 @@
         <note category="location">src/app/pages/collection-page/reviews-page/reviews-page.component.html</note>
         <note category="location">src/app/pages/collection-page/wishlist-page/wishlist-page.component.html</note>
         <note category="location">src/app/pages/games/game-view/game-view.component.html</note>
+        <note category="location">src/app/pages/groups/group-edit/group-edit.component.html</note>
         <note category="location">src/app/pages/meet-new/meet-new.component.html</note>
         <note category="location">src/app/pages/play-page/history-page/history-page.component.html</note>
+        <note category="location">src/app/pages/play-page/recommendations-page/recommendations-page.component.html</note>
         <note category="location">src/app/pages/play-page/upcoming-sessions-page/upcoming-sessions-page.component.html</note>
         <note category="description">Under an error that a list could not load</note>
       </notes>
@@ -9487,6 +9507,15 @@
       </notes>
       <segment>
         <source>I bought it</source>
+      </segment>
+    </unit>
+    <unit id="5931433535515087128">
+      <notes>
+        <note category="location">src/app/pages/groups/group-edit/group-edit.component.html</note>
+        <note category="description">On the group&apos;s settings page when the group&apos;s people could not load</note>
+      </notes>
+      <segment>
+        <source>The group’s people couldn’t be loaded, so this invitation can’t be linked to someone already in the group.</source>
       </segment>
     </unit>
     <unit id="5932472253314714718">
@@ -15750,6 +15779,17 @@
         <source>No games match.</source>
       </segment>
     </unit>
+    <unit id="9072009555900081959">
+      <notes>
+        <note category="location">src/app/components/log-session-wizard/log-session-wizard.component.html</note>
+        <note category="location">src/app/pages/meet-new/meet-new.component.html</note>
+        <note category="location">src/app/pages/play-page/recommendations-page/recommendations-page.component.html</note>
+        <note category="description">Form that records a game night when the group&apos;s people could not load</note>
+      </notes>
+      <segment>
+        <source>The group’s people couldn’t be loaded, so some of them would be missing here.</source>
+      </segment>
+    </unit>
     <unit id="9080646370302975451">
       <notes>
         <note category="location">src/app/pages/dashboard-page/dashboard-page.component.html</note>
@@ -16163,8 +16203,11 @@
     </unit>
     <unit id="979088133584050694">
       <notes>
+        <note category="location">src/app/components/log-session-wizard/log-session-wizard.component.html</note>
+        <note category="location">src/app/pages/groups/group-edit/group-edit.component.html</note>
+        <note category="location">src/app/pages/meet-new/meet-new.component.html</note>
         <note category="location">src/app/pages/play-page/recommendations-page/recommendations-page.component.html</note>
-        <note category="description">What to play while the group&apos;s people load</note>
+        <note category="description">Form that records a game night while the group&apos;s people load</note>
       </notes>
       <segment>
         <source>Loading the group’s people…</source>

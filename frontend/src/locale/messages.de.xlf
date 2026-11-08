@@ -1434,6 +1434,15 @@
         <target>Deine Zahlen</target>
       </segment>
     </unit>
+    <unit id="1807929065026295643">
+      <notes>
+        <note category="description">Correcting a recorded game night whose people are no longer in the group</note>
+      </notes>
+      <segment state="translated">
+        <source>The people who came to this night are no longer in the group, so it can’t be corrected here.</source>
+        <target>Die Personen, die an diesem Abend dabei waren, sind nicht mehr in der Gruppe. Er lässt sich hier deshalb nicht korrigieren.</target>
+      </segment>
+    </unit>
     <unit id="1815859193587155677">
       <notes>
         <note category="description">Shown on the group page when a person without an account was prepared for you; the placeholder is that person&apos;s name</note>
@@ -4316,6 +4325,15 @@
       <segment state="translated">
         <source>Shortlisted</source>
         <target>In der Vorauswahl</target>
+      </segment>
+    </unit>
+    <unit id="3290850575958930357">
+      <notes>
+        <note category="description">What to play when the group&apos;s people could not load, in place of the suggestions</note>
+      </notes>
+      <segment state="translated">
+        <source>Suggestions show once the group’s people load.</source>
+        <target>Die Vorschläge erscheinen, sobald die Personen der Gruppe geladen sind.</target>
       </segment>
     </unit>
     <unit id="3292157637371198074">
@@ -9344,6 +9362,15 @@
       <segment state="translated">
         <source>I bought it</source>
         <target>Ich habe es gekauft</target>
+      </segment>
+    </unit>
+    <unit id="5931433535515087128">
+      <notes>
+        <note category="description">On the group&apos;s settings page when the group&apos;s people could not load</note>
+      </notes>
+      <segment state="translated">
+        <source>The group’s people couldn’t be loaded, so this invitation can’t be linked to someone already in the group.</source>
+        <target>Die Personen der Gruppe konnten nicht geladen werden. Diese Einladung lässt sich deshalb nicht mit jemandem verknüpfen, der schon in der Gruppe ist.</target>
       </segment>
     </unit>
     <unit id="5932472253314714718">
@@ -15497,6 +15524,15 @@
         <target>Kein Spiel passt.</target>
       </segment>
     </unit>
+    <unit id="9072009555900081959">
+      <notes>
+        <note category="description">Form that records a game night when the group&apos;s people could not load</note>
+      </notes>
+      <segment state="translated">
+        <source>The group’s people couldn’t be loaded, so some of them would be missing here.</source>
+        <target>Die Personen der Gruppe konnten nicht geladen werden. Einige würden hier fehlen.</target>
+      </segment>
+    </unit>
     <unit id="9080646370302975451">
       <notes>
         <note category="description">Step on Home that leads to Browse</note>
@@ -15902,7 +15938,7 @@
     </unit>
     <unit id="979088133584050694">
       <notes>
-        <note category="description">What to play while the group&apos;s people load</note>
+        <note category="description">Form that records a game night while the group&apos;s people load</note>
       </notes>
       <segment state="translated">
         <source>Loading the group’s people…</source>

@@ -1,4 +1,4 @@
-import { Component, computed, effect, inject, signal, untracked } from '@angular/core'
+import { afterNextRender, Component, computed, DestroyRef, ElementRef, effect, Injector, inject, signal, untracked } from '@angular/core'
 import { ActivatedRoute, Router, RouterLink } from '@angular/router'
 import { firstValueFrom } from 'rxjs'
 import { Api } from '../../../api/api'
@@ -72,6 +72,9 @@ export class RecommendationsPageComponent {
     private readonly loadingService = inject(LoadingService)
     private readonly toastService = inject(ToastService)
     private readonly router = inject(Router)
+    private readonly destroyRef = inject(DestroyRef)
+    private readonly injector = inject(Injector)
+    private readonly host = inject<ElementRef<HTMLElement>>(ElementRef)
 
     public readonly userGroups = this.dataService.userGroups
     public readonly userGroupsError = this.dataService.userGroupsError
@@ -80,6 +83,14 @@ export class RecommendationsPageComponent {
     public readonly selectedAttendeeIds = signal<Array<number>>([])
     public readonly groupPeople = signal<Array<GroupPersonWorkspaceType>>([])
     public readonly groupPeopleLoading = signal(false)
+    /** The group's people couldn't be loaded: suggestions wait, rather than leaving out the people without an account. */
+    public readonly groupPeopleError = signal(false)
+    /** Suggestions go by group person once the group has people who can take part; otherwise by member account. */
+    private readonly usesGroupPeople = computed(() => this.groupPeople().some(canTakePart))
+    /** Accounts asked for by the link that opened the page, kept so Retry can pick them again. */
+    private requestedAttendeeIds: Array<number> | undefined
+    /** Bumped on every load of the group's people, so a slow answer for an older choice is ignored. */
+    private peopleLoadVersion = 0
     public readonly availableMinutes = signal<number | null>(120)
     public readonly decisionLens = signal<RecommendationDecisionLens>('balanced')
     public readonly recommendations = signal<RecommendationsType | null>(null)
@@ -199,7 +210,11 @@ export class RecommendationsPageComponent {
 
         // Suggestions follow the choices: reload shortly after the group, people, time, or lens change.
         effect((onCleanup) => {
-            const ready = this.selectedGroupId() !== null && !this.groupPeopleLoading() && this.selectedAttendeeIds().length > 0
+            const ready =
+                this.selectedGroupId() !== null &&
+                !this.groupPeopleLoading() &&
+                !this.groupPeopleError() &&
+                this.selectedAttendeeIds().length > 0
             this.availableMinutes()
             this.decisionLens()
             if (!ready) return
@@ -211,28 +226,73 @@ export class RecommendationsPageComponent {
     public selectGroup(groupId: number, requestedAttendeeIds?: Array<number>): void {
         const group = this.userGroups().find((candidate) => candidate.id === groupId)
         this.selectedGroupId.set(group?.id ?? null)
-        this.groupPeopleLoading.set(true)
-        this.api.getGroupPeople(groupId).subscribe({
-            next: (response) => {
-                this.groupPeople.set(response.people)
-                const people = response.people.filter(canTakePart)
-                const requestedParticipantIds = this.readRequestedParticipantIds(group, requestedAttendeeIds, people)
-                this.selectedAttendeeIds.set(requestedParticipantIds ?? people.map((person) => person.person.id))
-            },
-            error: () => {
-                const memberIds = new Set(group?.members.map((member) => member.id) ?? [])
-                const attendeeIds = requestedAttendeeIds?.filter((accountId) => memberIds.has(accountId)) ?? [...memberIds]
-                this.selectedAttendeeIds.set([...new Set(attendeeIds)])
-                this.groupPeople.set([])
-                this.groupPeopleLoading.set(false)
-            },
-            complete: () => this.groupPeopleLoading.set(false),
-        })
+        this.requestedAttendeeIds = requestedAttendeeIds
+        this.groupPeopleError.set(false)
+        this.groupPeople.set([])
+        this.selectedAttendeeIds.set([])
+        // Only listed groups are offered; one that went away during a refresh has no people to load.
+        if (group) this.#loadGroupPeople(groupId)
+        else this.groupPeopleLoading.set(false)
         this.recommendations.set(null)
         this.recommendationSignals.set(null)
         this.feedbackState.set({})
         this.feedbackErrors.set({})
         this.errorMessage.set(null)
+    }
+
+    /** Loads the group's people again after it failed, keeping the message until the answer comes. */
+    public retryGroupPeople(): void {
+        const groupId = this.selectedGroupId()
+        if (groupId === null || this.groupPeopleLoading()) return
+        this.#loadGroupPeople(groupId, true)
+    }
+
+    #loadGroupPeople(groupId: number, retrying = false): void {
+        const group = this.userGroups().find((candidate) => candidate.id === groupId)
+        const requestedAttendeeIds = this.requestedAttendeeIds
+        const version = ++this.peopleLoadVersion
+        const isCurrent = () => this.peopleLoadVersion === version && this.selectedGroupId() === groupId
+        this.groupPeopleLoading.set(true)
+        this.api.getGroupPeople(groupId).subscribe({
+            next: (response) => {
+                if (!isCurrent()) return
+                this.groupPeople.set(response.people)
+                const people = response.people.filter(canTakePart)
+                if (people.length === 0) {
+                    // A group without people (yet) suggests for its member accounts.
+                    const memberIds = new Set(group?.members.map((member) => member.id) ?? [])
+                    const attendeeIds = requestedAttendeeIds?.filter((accountId) => memberIds.has(accountId)) ?? [...memberIds]
+                    this.selectedAttendeeIds.set([...new Set(attendeeIds)])
+                } else {
+                    const requestedParticipantIds = this.readRequestedParticipantIds(group, requestedAttendeeIds, people)
+                    this.selectedAttendeeIds.set(requestedParticipantIds ?? people.map((person) => person.person.id))
+                }
+                this.groupPeopleError.set(false)
+                this.groupPeopleLoading.set(false)
+                if (retrying) this.#focusFirstPerson()
+            },
+            error: () => {
+                if (!isCurrent()) return
+                // Suggesting for the member accounts alone would quietly leave out everyone without one.
+                this.groupPeople.set([])
+                this.selectedAttendeeIds.set([])
+                this.groupPeopleError.set(true)
+                this.groupPeopleLoading.set(false)
+            },
+        })
+    }
+
+    /** The Retry button goes away once the people load: put focus on the first person instead of losing it. */
+    #focusFirstPerson(): void {
+        afterNextRender(
+            () => {
+                if (this.destroyRef.destroyed) return
+                const active = document.activeElement
+                if (active !== null && active !== document.body) return
+                this.host.nativeElement.querySelector<HTMLElement>('[data-testid="people-chips"] button')?.focus()
+            },
+            { injector: this.injector },
+        )
     }
 
     public toggleAttendee(accountId: number): void {
@@ -302,6 +362,7 @@ export class RecommendationsPageComponent {
     public async loadRecommendations(): Promise<void> {
         const groupId = this.selectedGroupId()
         const attendeeIds = this.selectedAttendeeIds()
+        if (this.groupPeopleLoading() || this.groupPeopleError()) return
         if (!groupId || attendeeIds.length === 0) {
             this.errorMessage.set($localize`:Error on What to play when nobody is chosen:Select a group and at least one attendee.`)
             return
@@ -312,9 +373,8 @@ export class RecommendationsPageComponent {
         this.errorMessage.set(null)
         try {
             const availableMinutes = this.availableMinutes()
-            const groupPeople = this.groupPeople()
             const result = await firstValueFrom(
-                groupPeople.length > 0
+                this.usesGroupPeople()
                     ? this.api.getParticipantRecommendations({
                           groupId,
                           groupPersonIds: attendeeIds,
@@ -421,7 +481,7 @@ export class RecommendationsPageComponent {
         })
         try {
             await firstValueFrom(
-                this.groupPeople().length > 0
+                this.usesGroupPeople()
                     ? this.api.createParticipantRecommendationFeedback({
                           groupId,
                           gameId,

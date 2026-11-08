@@ -1,7 +1,7 @@
 import { signal } from '@angular/core'
 import { TestBed } from '@angular/core/testing'
 import { ActivatedRoute, convertToParamMap, provideRouter } from '@angular/router'
-import { of } from 'rxjs'
+import { type Observable, of, Subject, throwError } from 'rxjs'
 import { Api } from '../../api/api'
 import type { GroupPersonWorkspaceType } from '../../api/api.types'
 import { ToastService } from '../../components/toast/toast.service'
@@ -36,14 +36,22 @@ describe('MeetNewComponent social handoff', () => {
     const member = { id: 2, displayName: 'Member', username: 'member', avatar: null, games: [] as typeof organizer.games }
     const group = { id: 7, name: 'Friday Crew', createdBy: 1, members: [organizer, member] }
 
-    const setup = async (queryParams: Record<string, string> = {}, groupData = group, people: Array<GroupPersonWorkspaceType> = []) => {
+    const setup = async (
+        queryParams: Record<string, string> = {},
+        groupData = group,
+        people: Array<GroupPersonWorkspaceType> | Observable<{ people: Array<GroupPersonWorkspaceType> }> = [],
+        catalog: Observable<Array<unknown>> = of([]),
+    ) => {
         const api = {
             scheduleSession: vi
                 .fn()
                 .mockName('scheduleSession')
                 .mockReturnValue(of({ id: 99 })),
-            getGroupPeople: vi.fn().mockName('getGroupPeople').mockReturnValue(of({ people })),
-            getGroupPersonCatalog: vi.fn().mockName('getGroupPersonCatalog').mockReturnValue(of([])),
+            getGroupPeople: vi
+                .fn()
+                .mockName('getGroupPeople')
+                .mockReturnValue(Array.isArray(people) ? of({ people }) : people),
+            getGroupPersonCatalog: vi.fn().mockName('getGroupPersonCatalog').mockReturnValue(catalog),
         }
         const routerData = {
             snapshot: {
@@ -254,5 +262,152 @@ describe('MeetNewComponent social handoff', () => {
         expect(component.selectedAttendeeIds()).toEqual([])
         expect(component.selectedPlannedGameIds()).toEqual([])
         expect(component.groupUnavailable()).toBe(true)
+    })
+    describe('when the group people cannot be loaded', () => {
+        type PeopleAnswer = { people: Array<GroupPersonWorkspaceType> }
+        const down = () => throwError(() => new Error('Board Vault could not be reached'))
+        const guest = {
+            person: { id: 13, accountId: null, displayName: 'Guest', status: 'active', avatar: null },
+            ownership: [{ gameId: 42, status: 'asserted' }],
+            preferences: [],
+            claimable: false,
+        } as unknown as GroupPersonWorkspaceType
+        const organizerPerson = {
+            person: { id: 12, accountId: 1, displayName: 'Organizer', status: 'active', avatar: null },
+            ownership: [],
+            preferences: [],
+            claimable: false,
+        } as unknown as GroupPersonWorkspaceType
+        const page = (fixture: { nativeElement: unknown }) => fixture.nativeElement as HTMLElement
+        const byTestId = (fixture: { nativeElement: unknown }, id: string) =>
+            page(fixture).querySelector<HTMLElement>(`[data-testid="${id}"]`)
+        const planButton = (fixture: { nativeElement: unknown }) =>
+            [...page(fixture).querySelectorAll('button')].find((button) =>
+                button.textContent?.includes('Plan game night'),
+            ) as HTMLButtonElement
+
+        it('says so instead of inviting only the member accounts, and keeps Plan game night locked', async () => {
+            const { fixture, component, api } = await setup({}, group, down())
+            fixture.detectChanges()
+
+            expect(byTestId(fixture, 'people-error')?.getAttribute('role')).toBe('alert')
+            expect(byTestId(fixture, 'people-error')?.textContent).toContain('The group’s people couldn’t be loaded')
+            expect(byTestId(fixture, 'people-grid')).toBeNull()
+            expect(page(fixture).textContent).not.toContain('2 of 2')
+            expect(component.canCreate()).toBe(false)
+            expect(planButton(fixture).disabled).toBe(true)
+
+            await component.onClickCreateMeeting()
+            expect(api.scheduleSession).not.toHaveBeenCalled()
+        })
+
+        it('treats a catalogue that cannot be loaded the same way, and applies nothing half-loaded', async () => {
+            const { fixture, component } = await setup({}, group, [organizerPerson, guest], down())
+            fixture.detectChanges()
+
+            expect(byTestId(fixture, 'people-error')).not.toBeNull()
+            expect(component.useGroupPeople()).toBe(false)
+            expect(component.canCreate()).toBe(false)
+        })
+
+        it('keeps Plan game night locked while the people are on their way, without showing a list that will change', async () => {
+            const slowPeople = new Subject<PeopleAnswer>()
+            const { fixture, component } = await setup({}, group, slowPeople)
+            fixture.detectChanges()
+
+            expect(byTestId(fixture, 'people-loading')?.getAttribute('role')).toBe('status')
+            expect(byTestId(fixture, 'people-grid')).toBeNull()
+            expect(component.canCreate()).toBe(false)
+
+            slowPeople.next({ people: [organizerPerson, guest] })
+            slowPeople.complete()
+            await fixture.whenStable()
+            fixture.detectChanges()
+
+            expect(byTestId(fixture, 'people-loading')).toBeNull()
+            expect(component.selectedAttendeeIds()).toEqual([12, 13])
+            expect(component.canCreate()).toBe(true)
+        })
+
+        it('loads them again on Retry, keeping the message and the requested people, then moves focus to the first person', async () => {
+            const { fixture, component, api } = await setup({ participantIds: '13' }, group, down())
+            const retried = new Subject<PeopleAnswer>()
+            api.getGroupPeople.mockReturnValue(retried)
+            fixture.detectChanges()
+
+            byTestId(fixture, 'people-retry')?.click()
+            fixture.detectChanges()
+            expect(api.getGroupPeople).toHaveBeenCalledTimes(2)
+            expect(byTestId(fixture, 'people-error')).not.toBeNull()
+            expect(byTestId(fixture, 'people-retry')?.getAttribute('aria-busy')).toBe('true')
+            expect(byTestId(fixture, 'people-loading')).not.toBeNull()
+            byTestId(fixture, 'people-retry')?.click()
+            expect(api.getGroupPeople).toHaveBeenCalledTimes(2)
+
+            retried.next({ people: [organizerPerson, guest] })
+            retried.complete()
+            await fixture.whenStable()
+            fixture.detectChanges()
+            await fixture.whenStable()
+
+            expect(byTestId(fixture, 'people-error')).toBeNull()
+            expect(component.useGroupPeople()).toBe(true)
+            // The recommendation asked for the guest only; that choice survives the failed first load.
+            expect(component.selectedAttendeeIds()).toEqual([13])
+            expect(component.canCreate()).toBe(true)
+            expect(document.activeElement).toBe(byTestId(fixture, 'people-grid')?.querySelector('button'))
+        })
+
+        it('leaves focus alone when the person moved it while the people were loading again', async () => {
+            const { fixture, api } = await setup({}, group, down())
+            const retried = new Subject<PeopleAnswer>()
+            api.getGroupPeople.mockReturnValue(retried)
+            fixture.detectChanges()
+            byTestId(fixture, 'people-retry')?.click()
+            const elsewhere = page(fixture).querySelector<HTMLInputElement>('input[type="date"]') as HTMLInputElement
+            elsewhere.focus()
+
+            retried.next({ people: [organizerPerson, guest] })
+            retried.complete()
+            await fixture.whenStable()
+            fixture.detectChanges()
+            await fixture.whenStable()
+            expect(document.activeElement).toBe(elsewhere)
+        })
+
+        it('shows the message again when Retry fails too', async () => {
+            const { fixture, component, api } = await setup({}, group, down())
+            api.getGroupPeople.mockReturnValue(down())
+            fixture.detectChanges()
+            byTestId(fixture, 'people-retry')?.click()
+            await fixture.whenStable()
+            fixture.detectChanges()
+
+            expect(byTestId(fixture, 'people-error')).not.toBeNull()
+            expect(byTestId(fixture, 'people-loading')).toBeNull()
+            expect(component.canCreate()).toBe(false)
+        })
+
+        it('ignores an answer that arrives after the group went away', async () => {
+            const slowPeople = new Subject<PeopleAnswer>()
+            const { fixture, component, dataService } = await setup({}, group, slowPeople)
+            dataService.userGroups.set([])
+            fixture.detectChanges()
+            slowPeople.error(new Error('late failure'))
+            await fixture.whenStable()
+
+            expect(component.peopleError()).toBe(false)
+            expect(component.peopleLoading()).toBe(false)
+        })
+
+        it('still invites member accounts in a group that has no group people', async () => {
+            const { fixture, component, api } = await setup()
+            fixture.detectChanges()
+
+            expect(byTestId(fixture, 'people-error')).toBeNull()
+            expect(byTestId(fixture, 'people-grid')).not.toBeNull()
+            expect(api.getGroupPersonCatalog).not.toHaveBeenCalled()
+            expect(component.canCreate()).toBe(true)
+        })
     })
 })

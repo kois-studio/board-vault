@@ -217,6 +217,28 @@ A save never leaves a value on screen that is not stored (#242):
   again. Answers and attendance save on their own, so the re-read leaves them
   alone.
 
+A list of a group's people is never quietly swapped for its member accounts
+(#243). The group people include everyone without an account, so a page that
+cannot load them would leave those people out without saying so:
+
+- Recording a night, planning one, What to play, and the invite form in Manage
+  group each keep a "people loading" and a "people failed" state for
+  `GET /groups/:id/people`. Recording and planning also load the catalogue of
+  games only group people own, and a failure there counts as the same failure.
+  Planning applies the people and the catalogue together.
+- While the people load, Next, Plan game night, and the suggestions wait. When
+  the load fails, the people list gives way to a message (`role="alert"`) with
+  Retry, and nothing can be saved with the member accounts alone. In Manage
+  group, a plain invitation can still be sent; one opened for a particular
+  person (`?person=`) waits, so it is not sent unlinked.
+- Retry keeps the message on screen until the answer comes and ignores a
+  second press. On success, focus moves to the first person (the person menu,
+  or the invite field, in Manage group) unless it was moved meanwhile. A newer
+  load or a change of group makes an older answer count for nothing.
+- A group with no group people (an empty list, not a failure) still works with
+  its member accounts, as before. Correcting a night whose group people are
+  all gone says so instead of leaving Next locked.
+
 ### Routes
 
 | Route | Guard | Page |

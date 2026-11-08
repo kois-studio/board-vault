@@ -1,7 +1,7 @@
 import { signal } from '@angular/core'
 import { ComponentFixture, TestBed } from '@angular/core/testing'
 import { ActivatedRoute, convertToParamMap, provideRouter, Router } from '@angular/router'
-import { isObservable, type Observable, of, Subject } from 'rxjs'
+import { isObservable, type Observable, of, Subject, throwError } from 'rxjs'
 import { Api } from '../../api/api'
 import type { GameCompleteType, GroupWithMembersAndGames, SessionRecording } from '../../api/api.types'
 import { DataService } from '../../core/services/data.service'
@@ -460,5 +460,202 @@ describe('LogSessionWizardComponent games step', () => {
         component.sessionDate.setValue('2999-01-01')
 
         expect(component.sessionDate.hasError('futureDate')).toBe(true)
+    })
+    describe('when the group people cannot be loaded', () => {
+        type PeopleAnswer = { people: Array<ReturnType<typeof linkedPerson>> }
+        const down = () => throwError(() => new Error('Board Vault could not be reached'))
+        const page = () => fixture.nativeElement as HTMLElement
+        const byTestId = (id: string) => page().querySelector<HTMLElement>(`[data-testid="${id}"]`)
+        const nextButton = () =>
+            [...page().querySelectorAll('button')].find((button) => button.textContent?.trim() === 'Next') as HTMLButtonElement
+        const people = [linkedPerson(1, 1, 'David', [10]), linkedPerson(3, 6, 'Bloody', [48])]
+
+        it('says so instead of showing only the member accounts, and keeps Next locked', async () => {
+            await setup(down())
+            component.toggleAttendee(6)
+            fixture.detectChanges()
+
+            expect(byTestId('people-error')?.getAttribute('role')).toBe('alert')
+            expect(byTestId('people-error')?.textContent).toContain('The group’s people couldn’t be loaded')
+            expect(byTestId('people-grid')).toBeNull()
+            expect(page().textContent).not.toContain('1 of 2')
+            expect(component.usesGroupPeople()).toBe(false)
+            expect(component.canProceedToNextStep()).toBe(false)
+            expect(nextButton().disabled).toBe(true)
+        })
+
+        it('treats a catalogue that cannot be loaded the same way, since games only group people own would be missing', async () => {
+            await setup(people)
+            const api = TestBed.inject(Api)
+            vi.mocked(api.getGroupPersonCatalog).mockReturnValue(down() as never)
+            component.selectedGroup.set(null)
+            fixture.detectChanges()
+            component.selectGroup(group)
+            fixture.detectChanges()
+
+            expect(api.getGroupPersonCatalog).toHaveBeenCalledTimes(2)
+            expect(byTestId('people-error')).not.toBeNull()
+            expect(component.usesGroupPeople()).toBe(false)
+            expect(component.canProceedToNextStep()).toBe(false)
+        })
+
+        it('keeps Next locked while the people are on their way, and says they are loading', async () => {
+            const slowPeople = new Subject<PeopleAnswer>()
+            await setup(slowPeople)
+            component.toggleAttendee(6)
+            fixture.detectChanges()
+
+            expect(byTestId('people-loading')?.getAttribute('role')).toBe('status')
+            expect(component.canProceedToNextStep()).toBe(false)
+
+            slowPeople.next({ people })
+            fixture.detectChanges()
+            expect(byTestId('people-loading')).toBeNull()
+            expect(byTestId('people-error')).toBeNull()
+            expect(component.canProceedToNextStep()).toBe(true)
+        })
+
+        it('loads them again on Retry, keeping the message until they arrive, then moves focus to the first person', async () => {
+            await setup(down())
+            const api = TestBed.inject(Api)
+            const retried = new Subject<PeopleAnswer>()
+            vi.mocked(api.getGroupPeople).mockReturnValue(retried as never)
+            component.toggleAttendee(6)
+            fixture.detectChanges()
+
+            byTestId('people-retry')?.click()
+            fixture.detectChanges()
+            expect(api.getGroupPeople).toHaveBeenCalledTimes(2)
+            expect(byTestId('people-error')).not.toBeNull()
+            expect(byTestId('people-retry')?.getAttribute('aria-busy')).toBe('true')
+            expect(byTestId('people-loading')).not.toBeNull()
+            // A second press while it is loading doesn't start another load.
+            byTestId('people-retry')?.click()
+            expect(api.getGroupPeople).toHaveBeenCalledTimes(2)
+
+            retried.next({ people })
+            fixture.detectChanges()
+            await fixture.whenStable()
+
+            expect(byTestId('people-error')).toBeNull()
+            expect(component.usesGroupPeople()).toBe(true)
+            // Bloody was ticked as an account before the error; the choice is kept as their group person.
+            expect(component.getSelectedAttendeeNames()).toBe('Bloody')
+            expect(component.canProceedToNextStep()).toBe(true)
+            expect(document.activeElement).toBe(byTestId('people-grid')?.querySelector('button'))
+        })
+
+        it('leaves focus alone when the person moved it while the people were loading again', async () => {
+            await setup(down())
+            const api = TestBed.inject(Api)
+            const retried = new Subject<PeopleAnswer>()
+            vi.mocked(api.getGroupPeople).mockReturnValue(retried as never)
+            fixture.detectChanges()
+            byTestId('people-retry')?.click()
+            const elsewhere = page().querySelector<HTMLInputElement>('input[type="date"]') as HTMLInputElement
+            elsewhere.focus()
+
+            retried.next({ people })
+            fixture.detectChanges()
+            await fixture.whenStable()
+            expect(document.activeElement).toBe(elsewhere)
+        })
+
+        it('shows the message again when Retry fails too', async () => {
+            await setup(down())
+            const api = TestBed.inject(Api)
+            const retried = new Subject<PeopleAnswer>()
+            vi.mocked(api.getGroupPeople).mockReturnValue(retried as never)
+            fixture.detectChanges()
+            byTestId('people-retry')?.click()
+            retried.error(new Error('still down'))
+            fixture.detectChanges()
+
+            expect(byTestId('people-error')).not.toBeNull()
+            expect(byTestId('people-loading')).toBeNull()
+            expect(byTestId('people-retry')?.getAttribute('aria-busy')).toBeNull()
+            expect(component.canProceedToNextStep()).toBe(false)
+        })
+
+        it('ignores a failure for a group that is no longer selected', async () => {
+            const slowPeople = new Subject<PeopleAnswer>()
+            await setup(slowPeople)
+            vi.mocked(TestBed.inject(Api).getGroupPeople).mockReturnValue(of({ people: [] }) as never)
+            component.selectGroup({ ...group, id: 2, name: 'Other group' })
+            fixture.detectChanges()
+            slowPeople.error(new Error('late failure'))
+            fixture.detectChanges()
+
+            expect(byTestId('people-error')).toBeNull()
+            expect(byTestId('people-grid')).not.toBeNull()
+        })
+
+        it('clears the message when another group is chosen', async () => {
+            await setup(down())
+            vi.mocked(TestBed.inject(Api).getGroupPeople).mockReturnValue(of({ people: [] }) as never)
+            component.selectGroup({ ...group, id: 2, name: 'Other group' })
+            fixture.detectChanges()
+
+            expect(byTestId('people-error')).toBeNull()
+            component.toggleAttendee(6)
+            expect(component.canProceedToNextStep()).toBe(true)
+        })
+
+        it('still records by member accounts in a group that has no group people', async () => {
+            await setup([])
+            component.toggleAttendee(6)
+            fixture.detectChanges()
+
+            expect(byTestId('people-error')).toBeNull()
+            expect(byTestId('people-loading')).toBeNull()
+            expect(component.usesGroupPeople()).toBe(false)
+            expect(component.canProceedToNextStep()).toBe(true)
+        })
+
+        const recordingWithPeople: SessionRecording = {
+            groupId: 1,
+            sessionDate: '2026-10-03T12:00:00Z',
+            timezone: 'Europe/Madrid',
+            attendeeIds: [],
+            groupPersonIds: [3],
+            games: [{ gameId: 48, participantIds: [], participantPersonIds: [3], results: [] }],
+            revision: 4,
+        }
+
+        it('lets a night with group people be corrected once Retry loads them', async () => {
+            await setup(down(), recordingWithPeople)
+            await fixture.whenStable()
+            fixture.detectChanges()
+            expect(byTestId('people-error')).not.toBeNull()
+            expect(component.canProceedToNextStep()).toBe(false)
+
+            vi.mocked(TestBed.inject(Api).getGroupPeople).mockReturnValue(of({ people }) as never)
+            byTestId('people-retry')?.click()
+            fixture.detectChanges()
+
+            expect(byTestId('people-error')).toBeNull()
+            expect(component.getSelectedAttendeeNames()).toBe('Bloody')
+            expect(component.canProceedToNextStep()).toBe(true)
+        })
+
+        it('explains why a night whose group people are all gone cannot be corrected', async () => {
+            await setup([], recordingWithPeople)
+            await fixture.whenStable()
+            fixture.detectChanges()
+
+            expect(byTestId('people-missing')?.getAttribute('role')).toBe('alert')
+            expect(byTestId('people-grid')).toBeNull()
+            expect(component.canProceedToNextStep()).toBe(false)
+        })
+
+        it('takes the message away as soon as another group is chosen, while its people load', async () => {
+            await setup(down())
+            vi.mocked(TestBed.inject(Api).getGroupPeople).mockReturnValue(new Subject<PeopleAnswer>() as never)
+            component.selectGroup({ ...group, id: 2, name: 'Other group' })
+            fixture.detectChanges()
+
+            expect(byTestId('people-error')).toBeNull()
+            expect(byTestId('people-loading')).not.toBeNull()
+        })
     })
 })
