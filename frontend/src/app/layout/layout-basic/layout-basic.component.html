@@ -1,6 +1,7 @@
 @if (isClerkAuthHandoffActive()) {
 <app-auth-handoff [fillsViewport]="true" />
 } @else {
+<app-connectivity-banner />
 <main id="main-content" tabindex="-1" class="outline-none">
     <router-outlet />
 </main>

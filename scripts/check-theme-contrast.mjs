@@ -73,6 +73,10 @@ const pairs = mode => [
     ['on-success', 'success', 4.5],
     ['on-warning', 'warning', 4.5],
     ['on-danger', 'danger', 4.5],
+    // Notices tinted with `bg-bv-warning/10` on the page, such as the "can't reach Board Vault" banner: text, and the icon.
+    ['text', 'warning/10', 4.5],
+    ['text-muted', 'warning/10', 4.5],
+    ['warning', 'warning/10', 3],
     // Rating stars: warning in light mode, Sunglow in dark mode.
     ...surfaces.map(surface => [mode === 'light' ? 'warning' : 'accent', surface, 3]),
 ]
@@ -82,6 +86,7 @@ for (const [name, theme] of Object.entries(themes)) {
     for (const mode of ['light', 'dark']) {
         const tokens = { ...themes.ciruela[mode], ...theme[mode] }
         tokens['on-primary/80'] = tokens['on-primary'] && tokens.primary && mix(tokens['on-primary'], tokens.primary, 0.8)
+        tokens['warning/10'] = tokens.warning && tokens.bg && mix(tokens.warning, tokens.bg, 0.1)
         let lowest = Number.POSITIVE_INFINITY
         for (const [foreground, background, minimum] of pairs(mode)) {
             if (!tokens[foreground] || !tokens[background]) {

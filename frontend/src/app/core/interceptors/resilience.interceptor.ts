@@ -7,7 +7,9 @@ import {
     HttpInterceptorFn,
     HttpRequest,
 } from '@angular/common/http'
-import { catchError, Observable, retry, throwError, timer } from 'rxjs'
+import { inject } from '@angular/core'
+import { catchError, Observable, retry, tap, throwError, timer } from 'rxjs'
+import { ConnectivityService } from '../services/connectivity.service'
 import { ApiUnavailableError } from '../utils/apiUnavailable'
 
 /** A read with no answer after this long gives up (#240). */
@@ -51,8 +53,11 @@ const RETRYABLE_STATUSES = new Set([0, 502, 503, 504])
  * events (an upload) it is the longest wait between two of them. A failure without a usable answer becomes an
  * `ApiUnavailableError`; every other error passes through untouched. Registered first, so a retry goes through
  * the other interceptors again (a fresh token).
+ *
+ * The final outcome, after the retry, tells `ConnectivityService` whether Board Vault can be reached (#241).
  */
 export const resilienceInterceptor: HttpInterceptorFn = (req, next) => {
+    const connectivity = inject(ConnectivityService)
     const isRead = READ_METHODS.has(req.method) || req.context.get(READ_ONLY)
     const limit = req.context.get(REQUEST_TIMEOUT_MS) ?? (isRead ? READ_TIMEOUT_MS : WRITE_TIMEOUT_MS)
 
@@ -61,14 +66,37 @@ export const resilienceInterceptor: HttpInterceptorFn = (req, next) => {
         catchError((error: unknown) => throwError(() => asUnavailable(error, req, isRead))),
     )
 
-    if (!isRead || !req.context.get(RETRY_READ)) return attempt
+    const outcome =
+        !isRead || !req.context.get(RETRY_READ)
+            ? attempt
+            : attempt.pipe(
+                  retry({
+                      count: 1,
+                      delay: (error: unknown) => (isRetryable(error) ? timer(READ_RETRY_DELAY_MS) : throwError(() => error)),
+                  }),
+              )
 
-    return attempt.pipe(
-        retry({
-            count: 1,
-            delay: (error: unknown) => (isRetryable(error) ? timer(READ_RETRY_DELAY_MS) : throwError(() => error)),
+    return outcome.pipe(
+        tap({
+            next: (event) => {
+                if (event.type === HttpEventType.Response) connectivity.reportAnswered()
+            },
+            error: (error: unknown) => reportFailure(connectivity, error),
         }),
     )
+}
+
+/**
+ * Before the caller hears of it, so its error handling already knows (no toast while the banner shows). A failure a
+ * retry could fix means Board Vault cannot be reached; a 4xx is an answer. A 500 is neither: Board Vault answered,
+ * but with a bug in one place, which is no reason to say it cannot be reached nor that it is back. Errors that are
+ * not HTTP answers (Clerk failing to give a token) say nothing about Board Vault. Either way, a Try again in
+ * progress is over.
+ */
+function reportFailure(connectivity: ConnectivityService, error: unknown): void {
+    if (isRetryable(error)) connectivity.reportUnreachable()
+    else if (error instanceof HttpErrorResponse && error.status > 0 && error.status < 500) connectivity.reportAnswered()
+    else connectivity.reportInconclusive()
 }
 
 /**

@@ -1999,6 +1999,15 @@
         <target><ph id="0" equiv="names" disp="formatList(names)"/> haben gewonnen</target>
       </segment>
     </unit>
+    <unit id="2095165617934939659">
+      <notes>
+        <note category="description">Notice under the header while Board Vault cannot be reached, below the heading</note>
+      </notes>
+      <segment state="translated">
+        <source>What you see may be out of date, and changes won’t save until we’re back.</source>
+        <target>Was du siehst, ist vielleicht nicht mehr aktuell, und Änderungen werden erst gespeichert, wenn wir wieder verbunden sind.</target>
+      </segment>
+    </unit>
     <unit id="2096195057815684171">
       <notes>
         <note category="description">Password warning in Clerk, the sign-in provider</note>
@@ -3750,6 +3759,15 @@
       <segment state="translated">
         <source>The games you can bring. Only you see this list; groups use it when you decide together.</source>
         <target>Die Spiele, die du mitbringen kannst. Nur du siehst diese Liste; Gruppen nutzen sie, wenn ihr gemeinsam entscheidet.</target>
+      </segment>
+    </unit>
+    <unit id="3009050505374532841">
+      <notes>
+        <note category="description">Notice under the header while Board Vault cannot be reached</note>
+      </notes>
+      <segment state="translated">
+        <source>We can’t reach Board Vault right now.</source>
+        <target>Wir erreichen Board Vault gerade nicht.</target>
       </segment>
     </unit>
     <unit id="3014251220941715703">

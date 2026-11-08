@@ -1,0 +1,16 @@
+<div role="status">
+    @if (isShown()) {
+    <div class="border-b border-bv-warning/30 bg-bv-warning/10" data-testid="connectivity-banner">
+        <div class="container mx-auto flex max-w-6xl flex-wrap items-center gap-x-4 gap-y-3 px-4 py-3">
+            <div class="flex min-w-0 flex-1 basis-64 items-start gap-3">
+                <app-icon name="cloud-off" class="mt-0.5 shrink-0 text-bv-warning" aria-hidden="true" />
+                <p class="min-w-0 text-sm leading-6 text-bv-text">
+                    <strong class="block font-semibold" i18n="Notice under the header while Board Vault cannot be reached">We can’t reach Board Vault right now.</strong>
+                    <span class="text-bv-text-muted" i18n="Notice under the header while Board Vault cannot be reached, below the heading">What you see may be out of date, and changes won’t save until we’re back.</span>
+                </p>
+            </div>
+            <button #retryButton appButton type="button" variant="secondary" icon="refresh" [loading]="isChecking()" (click)="retry()" i18n="Button on the notice while Board Vault cannot be reached; reloads what could not load">Try again</button>
+        </div>
+    </div>
+    }
+</div>

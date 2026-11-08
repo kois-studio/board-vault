@@ -1,4 +1,5 @@
-import { effect, Injectable, inject, signal } from '@angular/core'
+import { effect, Injectable, inject, signal, untracked } from '@angular/core'
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
 import {
     catchError,
     concatMap,
@@ -35,6 +36,7 @@ import { LOADING_KEYS } from '../enums/loading-keys-enum'
 import { intlLocale } from '../i18n/format'
 import { withoutReadRetry } from '../interceptors/resilience.interceptor'
 import { rsvpToast } from '../utils/rsvp'
+import { ConnectivityService } from './connectivity.service'
 import { LoadingService } from './loading.service'
 import { LogService } from './log.service'
 
@@ -44,6 +46,7 @@ export class DataService {
     private readonly logger = inject(LogService)
     private readonly toastService = inject(ToastService)
     private readonly loadingService = inject(LoadingService)
+    private readonly connectivity = inject(ConnectivityService)
 
     // --------------------------------------------------------------------------
     //        signals definition
@@ -113,15 +116,50 @@ export class DataService {
         // Effect to react to currentUser changes (login/logout)
         effect(() => {
             const user = this.currentUser()
-            this.userChanged.next()
-            if (user?.id) {
-                this.logger.log(`DataService: currentUser updated (ID: ${user.id}). Fetching derived data.`)
-                this._fetchAllDerivedUserData(user.id)
-            } else {
-                this.logger.log('DataService: currentUser is null (logout or initial state). Clearing derived data.')
-                this._clearAllDerivedUserData()
-            }
+            // Only the user drives this: a load that fails at once reads other signals (`isDegraded`), and a change
+            // of connection must not fetch everything again (#241).
+            untracked(() => {
+                this.userChanged.next()
+                this.failedLoads.clear()
+                if (user?.id) {
+                    this.logger.log(`DataService: currentUser updated (ID: ${user.id}). Fetching derived data.`)
+                    this._fetchAllDerivedUserData(user.id)
+                } else {
+                    this.logger.log('DataService: currentUser is null (logout or initial state). Clearing derived data.')
+                    this._clearAllDerivedUserData()
+                }
+            })
         })
+
+        // Try again on the "can't reach Board Vault" banner, or the connection coming back (#241).
+        this.connectivity.refreshes.pipe(takeUntilDestroyed()).subscribe(() => this.reloadAfterOutage())
+    }
+
+    /**
+     * Loads that failed, by name, with how to run them again. A load takes itself off when it starts again, so
+     * Try again never reloads what has loaded since; cleared when the user changes.
+     */
+    private readonly failedLoads = new Map<string, () => void>()
+
+    /**
+     * A load failed: `reloadAfterOutage` runs it again. The toast is left out while Board Vault cannot be reached,
+     * since the banner already says so and an outage would otherwise stack a dozen of them (#241).
+     */
+    private loadFailed(name: string, reload: () => void, message: string): void {
+        this.failedLoads.set(name, reload)
+        if (!this.connectivity.isDegraded()) this.toastService.error(message)
+    }
+
+    /**
+     * Runs the failed loads again and quietly refreshes what other people change. The refresh always sends a
+     * request, so Try again also finds out whether Board Vault answers again.
+     */
+    private reloadAfterOutage(): void {
+        if (!this.currentUser()) return
+        const reloads = [...this.failedLoads.values()]
+        this.failedLoads.clear()
+        for (const reload of reloads) reload()
+        this.refreshSharedActivity(true)
     }
     private _fetchAllDerivedUserData(userId: number): void {
         this._getUserGames(userId)
@@ -186,6 +224,7 @@ export class DataService {
     }
 
     private _getUserGames(userId: number) {
+        this.failedLoads.delete('games')
         this.userGamesError.set(false)
         this.loadingService.start(LOADING_KEYS.USER_GAMES)
         this.api
@@ -206,12 +245,17 @@ export class DataService {
                 },
                 error: () => {
                     this.userGamesError.set(true)
-                    this.toastService.error($localize`:Toast when My Games could not be loaded:Error retrieving user games`)
+                    this.loadFailed(
+                        'games',
+                        () => this._getUserGames(userId),
+                        $localize`:Toast when My Games could not be loaded:Error retrieving user games`,
+                    )
                 },
             })
     }
 
     private _getUserInvitations(userId: number) {
+        this.failedLoads.delete('invitations')
         this.userInvitationsLoading.set(true)
         this.userInvitationsError.set(false)
         this.api
@@ -226,7 +270,9 @@ export class DataService {
                 },
                 error: () => {
                     this.userInvitationsError.set(true)
-                    this.toastService.error(
+                    this.loadFailed(
+                        'invitations',
+                        () => this._getUserInvitations(userId),
                         $localize`:Toast when the inbox could not load group invitations:Error retrieving user’s invitations`,
                     )
                 },
@@ -239,6 +285,7 @@ export class DataService {
     }
 
     private _getUserNotifications(userId: number) {
+        this.failedLoads.delete('notifications')
         this.userNotificationsLoading.set(true)
         this.userNotificationsError.set(false)
         this.api
@@ -253,7 +300,9 @@ export class DataService {
                 },
                 error: () => {
                     this.userNotificationsError.set(true)
-                    this.toastService.error(
+                    this.loadFailed(
+                        'notifications',
+                        () => this._getUserNotifications(userId),
                         $localize`:Toast when the inbox could not load notifications:Error retrieving user’s notifications`,
                     )
                 },
@@ -342,6 +391,7 @@ export class DataService {
     }
 
     private _getUserReviews(accountId: number) {
+        this.failedLoads.delete('reviews')
         this.userReviewsError.set(false)
         this.loadingService.start(LOADING_KEYS.USER_REVIEWS)
         this.api
@@ -356,12 +406,17 @@ export class DataService {
                 },
                 error: () => {
                     this.userReviewsError.set(true)
-                    this.toastService.error($localize`:Toast when your ratings could not be loaded:Error retrieving user’s reviews`)
+                    this.loadFailed(
+                        'reviews',
+                        () => this._getUserReviews(accountId),
+                        $localize`:Toast when your ratings could not be loaded:Error retrieving user’s reviews`,
+                    )
                 },
             })
     }
 
     private _getUserGroups(accountId: number) {
+        this.failedLoads.delete('groups')
         this.userGroupsError.set(false)
         this.loadingService.start(LOADING_KEYS.USER_GROUPS)
         this.api
@@ -380,32 +435,45 @@ export class DataService {
                             continue
                         }
 
-                        this.api
-                            .getGroupInvitations(group.id)
-                            .pipe(takeUntil(this.userChanged))
-                            .subscribe({
-                                next: (invitations) => {
-                                    this.invitationsGroupIndex.update((index) => ({
-                                        ...index,
-                                        [group.id]: invitations,
-                                    }))
-                                },
-                                error: () => {
-                                    this.toastService.error(
-                                        $localize`:Toast when the invitations of a group could not load; the placeholder is the group name:Error retrieving invited members for group: ${group.name}:group:`,
-                                    )
-                                },
-                            })
+                        this._getGroupInvitations(group)
                     }
                 },
                 error: () => {
                     this.userGroupsError.set(true)
-                    this.toastService.error($localize`:Toast when your groups could not load:Error retrieving user’s groups`)
+                    this.loadFailed(
+                        'groups',
+                        () => this._getUserGroups(accountId),
+                        $localize`:Toast when your groups could not load:Error retrieving user’s groups`,
+                    )
+                },
+            })
+    }
+
+    /** The pending invitations of a group the user owns. */
+    private _getGroupInvitations(group: GroupWithMembersAndGames) {
+        this.failedLoads.delete(`groupInvitations:${group.id}`)
+        this.api
+            .getGroupInvitations(group.id)
+            .pipe(takeUntil(this.userChanged))
+            .subscribe({
+                next: (invitations) => {
+                    this.invitationsGroupIndex.update((index) => ({
+                        ...index,
+                        [group.id]: invitations,
+                    }))
+                },
+                error: () => {
+                    this.loadFailed(
+                        `groupInvitations:${group.id}`,
+                        () => this._getGroupInvitations(group),
+                        $localize`:Toast when the invitations of a group could not load; the placeholder is the group name:Error retrieving invited members for group: ${group.name}:group:`,
+                    )
                 },
             })
     }
 
     private _getUserMeets(userId: number) {
+        this.failedLoads.delete('meets')
         this.userMeetsError.set(false)
         this.loadingService.start(LOADING_KEYS.USER_MEETS)
         this.api
@@ -418,12 +486,17 @@ export class DataService {
                 next: (meets) => this.userMeets.set(meets),
                 error: () => {
                     this.userMeetsError.set(true)
-                    this.toastService.error($localize`:Toast when your game nights could not load:Error retrieving user’s meets`)
+                    this.loadFailed(
+                        'meets',
+                        () => this._getUserMeets(userId),
+                        $localize`:Toast when your game nights could not load:Error retrieving user’s meets`,
+                    )
                 },
             })
     }
 
     private _getUserHistory(userId: number) {
+        this.failedLoads.delete('history')
         this.userHistoryError.set(false)
         this.loadingService.start(LOADING_KEYS.USER_GAMES_HISTORY)
         this.api
@@ -436,12 +509,17 @@ export class DataService {
                 next: (history) => this.userHistory.set(history),
                 error: () => {
                     this.userHistoryError.set(true)
-                    this.toastService.error($localize`:Toast when your game night history could not load:Error retrieving user’s history`)
+                    this.loadFailed(
+                        'history',
+                        () => this._getUserHistory(userId),
+                        $localize`:Toast when your game night history could not load:Error retrieving user’s history`,
+                    )
                 },
             })
     }
 
     private _getUserWishlist(userId: number) {
+        this.failedLoads.delete('wishlist')
         this.userWishlistError.set(false)
         this.loadingService.start(LOADING_KEYS.USER_WISHLIST)
         this.api
@@ -456,12 +534,17 @@ export class DataService {
                 },
                 error: () => {
                     this.userWishlistError.set(true)
-                    this.toastService.error($localize`:Toast when your wishlist could not be loaded:Error retrieving user’s wishlist`)
+                    this.loadFailed(
+                        'wishlist',
+                        () => this._getUserWishlist(userId),
+                        $localize`:Toast when your wishlist could not be loaded:Error retrieving user’s wishlist`,
+                    )
                 },
             })
     }
 
     private _getUserCollectionActivity(userId: number) {
+        this.failedLoads.delete('collectionActivity')
         this.loadingService.start(LOADING_KEYS.USER_COLLECTION_ACTIVITY)
         this.api
             .getUserCollectionActivity(userId)
@@ -474,7 +557,9 @@ export class DataService {
                     this.userCollectionActivity.set(collectionActivity)
                 },
                 error: () => {
-                    this.toastService.error(
+                    this.loadFailed(
+                        'collectionActivity',
+                        () => this._getUserCollectionActivity(userId),
                         $localize`:Toast when your recent collection activity could not be loaded:Error retrieving user’s collection activity`,
                     )
                 },
@@ -482,6 +567,7 @@ export class DataService {
     }
 
     private _getUserStats(userId: number) {
+        this.failedLoads.delete('stats')
         this.userStatsError.set(false)
         this.loadingService.start(LOADING_KEYS.USER_STATS)
         this.api
@@ -496,7 +582,11 @@ export class DataService {
                 },
                 error: () => {
                     this.userStatsError.set(true)
-                    this.toastService.error($localize`:Toast when your numbers could not be loaded:Error retrieving user’s stats`)
+                    this.loadFailed(
+                        'stats',
+                        () => this._getUserStats(userId),
+                        $localize`:Toast when your numbers could not be loaded:Error retrieving user’s stats`,
+                    )
                 },
             })
     }
@@ -1005,6 +1095,7 @@ export class DataService {
     }
 
     private _getUserProposals(userId: number) {
+        this.failedLoads.delete('proposals')
         this.userProposalsLoading.set(true)
         this.userProposalsError.set(false)
         this.api
@@ -1019,7 +1110,9 @@ export class DataService {
                 },
                 error: () => {
                     this.userProposalsError.set(true)
-                    this.toastService.error(
+                    this.loadFailed(
+                        'proposals',
+                        () => this._getUserProposals(userId),
                         $localize`:Toast when your game proposals could not be loaded:Error retrieving user’s proposals`,
                     )
                 },
@@ -1027,6 +1120,7 @@ export class DataService {
     }
 
     private _getUserProposalStats(userId: number) {
+        this.failedLoads.delete('proposalStats')
         this.userProposalStatsLoading.set(true)
         this.userProposalStatsError.set(false)
         this.api
@@ -1041,7 +1135,9 @@ export class DataService {
                 },
                 error: () => {
                     this.userProposalStatsError.set(true)
-                    this.toastService.error(
+                    this.loadFailed(
+                        'proposalStats',
+                        () => this._getUserProposalStats(userId),
                         $localize`:Toast when the numbers about your game proposals could not be loaded:Error retrieving user’s proposal stats`,
                     )
                 },

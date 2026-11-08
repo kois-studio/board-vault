@@ -9,7 +9,8 @@ import {
 } from '@angular/common/http'
 import { HttpTestingController, provideHttpClientTesting, TestRequest } from '@angular/common/http/testing'
 import { TestBed } from '@angular/core/testing'
-import { Observable, switchMap, timer } from 'rxjs'
+import { Observable, switchMap, throwError, timer } from 'rxjs'
+import { ConnectivityService } from '../services/connectivity.service'
 import { ApiUnavailableError, isSaveOutcomeUnknown } from '../utils/apiUnavailable'
 import { isServerUnreachable } from '../utils/serverUnreachable'
 import {
@@ -356,5 +357,123 @@ describe('resilienceInterceptor (#240)', () => {
         vi.advanceTimersByTime(60_000)
 
         expect(result.error).toBe(tokenFailed)
+    })
+
+    describe('telling whether Board Vault can be reached (#241)', () => {
+        const connectivity = () => TestBed.inject(ConnectivityService)
+
+        it('reports a read only after its retry failed too, before the caller hears of it', () => {
+            setup()
+            let degradedWhenTheCallerHeard: boolean | undefined
+            http.get('/api/groups').subscribe({ error: () => (degradedWhenTheCallerHeard = connectivity().isDegraded()) })
+
+            fail('/api/groups', 503)
+            // A blip the retry may still fix shows nothing.
+            expect(connectivity().isDegraded()).toBe(false)
+            vi.advanceTimersByTime(READ_RETRY_DELAY_MS)
+            fail('/api/groups', 503)
+
+            expect(degradedWhenTheCallerHeard).toBe(true)
+        })
+
+        it('reports nothing for a blip the retry fixed', () => {
+            setup()
+            send(http.get('/api/groups'))
+
+            noAnswer('/api/groups')
+            vi.advanceTimersByTime(READ_RETRY_DELAY_MS)
+            backend.expectOne('/api/groups').flush([])
+
+            expect(connectivity().isDegraded()).toBe(false)
+        })
+
+        it.each([
+            ['no answer', (url: string) => noAnswer(url)],
+            ['a 502', (url: string) => fail(url, 502)],
+            ['a 504', (url: string) => fail(url, 504)],
+        ])('reports a write that got %s', (_name, failure) => {
+            setup()
+            send(http.post('/api/groups', {}))
+
+            failure('/api/groups')
+
+            expect(connectivity().isDegraded()).toBe(true)
+        })
+
+        it('reports a request that timed out', () => {
+            setup()
+            send(http.get('/api/groups', { context: withoutReadRetry() }))
+            backend.expectOne('/api/groups')
+
+            vi.advanceTimersByTime(READ_TIMEOUT_MS)
+
+            expect(connectivity().isDegraded()).toBe(true)
+        })
+
+        it.each([
+            ['an answer', (url: string) => backend.expectOne(url).flush([])],
+            ['a 404', (url: string) => fail(url, 404)],
+            ['a 401', (url: string) => fail(url, 401)],
+        ])('counts %s as Board Vault being back', (_name, answer) => {
+            setup()
+            connectivity().reportUnreachable()
+            send(http.get('/api/groups'))
+
+            answer('/api/groups')
+
+            expect(connectivity().isDegraded()).toBe(false)
+        })
+
+        it('neither raises nor clears the notice for a 500, a bug in one place', () => {
+            setup()
+            send(http.get('/api/a'))
+            fail('/api/a', 500)
+            expect(connectivity().isDegraded()).toBe(false)
+
+            connectivity().reportUnreachable()
+            send(http.get('/api/b'))
+            fail('/api/b', 500)
+            expect(connectivity().isDegraded()).toBe(true)
+        })
+
+        it.each([
+            ['a 500', () => fail('/api/groups', 500)],
+            ['a missing sign-in token', () => undefined],
+        ])('ends a Try again in progress on %s, so its button works again', (name, outcome) => {
+            // Like authInterceptor, which waits for the token: its failure arrives as an error, after the request started.
+            const brokenToken: HttpInterceptorFn = () => throwError(() => new Error('Clerk could not fetch a token'))
+            setup(name === 'a 500' ? [] : [brokenToken])
+            connectivity().reportUnreachable()
+            connectivity().retry()
+            send(http.get('/api/groups'))
+
+            outcome()
+            vi.advanceTimersByTime(1)
+
+            expect(connectivity().isChecking()).toBe(false)
+            expect(connectivity().isDegraded()).toBe(true)
+        })
+
+        it('says nothing about Board Vault when the request failed before leaving (no sign-in token)', () => {
+            const brokenToken: HttpInterceptorFn = () => {
+                throw new Error('Clerk could not fetch a token')
+            }
+            setup([brokenToken])
+            send(http.get('/api/groups'))
+            vi.advanceTimersByTime(60_000)
+
+            expect(connectivity().isDegraded()).toBe(false)
+        })
+
+        it('reports nothing for a request the caller stopped waiting for', () => {
+            setup()
+            const subscription = http.get('/api/groups').subscribe()
+            backend.expectOne('/api/groups')
+
+            subscription.unsubscribe()
+            vi.advanceTimersByTime(60_000)
+
+            expect(connectivity().isDegraded()).toBe(false)
+        })
     })
 })

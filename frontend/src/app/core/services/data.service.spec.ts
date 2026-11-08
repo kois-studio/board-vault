@@ -1,10 +1,11 @@
-import { HttpContext } from '@angular/common/http'
+import { HttpContext, HttpErrorResponse } from '@angular/common/http'
 import { TestBed } from '@angular/core/testing'
 import { firstValueFrom, of, Subject, throwError } from 'rxjs'
 import { Api } from '../../api/api'
 import type { UserType } from '../../api/api.types'
 import { ToastService } from '../../components/toast/toast.service'
 import { RETRY_READ } from '../interceptors/resilience.interceptor'
+import { ConnectivityService } from './connectivity.service'
 import { DataService } from './data.service'
 
 describe('DataService account refresh', () => {
@@ -280,5 +281,160 @@ describe('DataService inbox', () => {
         expect(service.userNotifications().map((item) => item.id)).toEqual([9])
         expect(service.userInvitations()).toEqual([{ id: 5 }])
         expect(toast.error).not.toHaveBeenCalled()
+    })
+})
+
+describe('DataService while Board Vault cannot be reached (#241)', () => {
+    const unavailable = () => throwError(() => new HttpErrorResponse({ status: 503, statusText: 'Service Unavailable' }))
+
+    /** Every read answers empty except those in `failing`, which answer 503 while `down.value` is true. */
+    const setup = (failing: Array<string>, extra: Record<string, unknown> = {}) => {
+        const down = { value: true }
+        const calls: Record<string, number> = {}
+        const toast = { success: vi.fn(), error: vi.fn() }
+        const fake = new Proxy(extra, {
+            get: (target, name) => {
+                const key = name as string
+                if (key in target) return target[key]
+                return () => {
+                    calls[key] = (calls[key] ?? 0) + 1
+                    return failing.includes(key) && down.value ? unavailable() : of([])
+                }
+            },
+        })
+        TestBed.configureTestingModule({
+            providers: [
+                { provide: Api, useValue: fake },
+                { provide: ToastService, useValue: toast },
+            ],
+        })
+        const service = TestBed.inject(DataService)
+        const connectivity = TestBed.inject(ConnectivityService)
+        const signIn = (id = 1) => {
+            service.currentUser.set({ id } as never)
+            TestBed.tick()
+        }
+        return { service, connectivity, toast, calls, down, signIn }
+    }
+
+    const allLists = [
+        'getUserGames',
+        'getUserGroups',
+        'getUserNotifications',
+        'getUserInvitations',
+        'getUserReviews',
+        'getUserMeets',
+        'getUserGamesHistory',
+        'getUserWishlist',
+        'getUserCollectionActivity',
+        'getUserProposals',
+        'getUserProposalStats',
+        'getUserStats',
+    ]
+
+    it('still toasts a list that failed while Board Vault is reachable', () => {
+        const { toast, signIn } = setup(['getUserGames'])
+
+        signIn()
+
+        expect(toast.error).toHaveBeenCalledTimes(1)
+        expect(toast.error).toHaveBeenCalledWith('Error retrieving user games')
+    })
+
+    it('shows no toast stack when every list fails during an outage: the banner says it', () => {
+        const { service, connectivity, toast, signIn } = setup(allLists)
+        connectivity.reportUnreachable()
+
+        signIn()
+
+        expect(toast.error).not.toHaveBeenCalled()
+        // Each list still knows it failed, so its page can say so in place.
+        expect(service.userGamesError()).toBe(true)
+        expect(service.userGroupsError()).toBe(true)
+        expect(service.userStatsError()).toBe(true)
+    })
+
+    it('leaves out the toast for a group’s invitations during an outage', () => {
+        const { connectivity, toast, signIn } = setup(['getGroupInvitations'], {
+            getUserGroups: () => of([{ id: 10, name: 'Friday Crew', createdBy: 1, members: [] }]),
+        })
+        connectivity.reportUnreachable()
+
+        signIn()
+
+        expect(toast.error).not.toHaveBeenCalled()
+    })
+
+    it('loads what failed again on Try again, and nothing that loaded', () => {
+        const { service, connectivity, calls, down, signIn } = setup(['getUserGames', 'getUserStats'])
+        connectivity.reportUnreachable()
+        signIn()
+        expect(service.userGamesError()).toBe(true)
+        down.value = false
+
+        connectivity.retry()
+
+        expect(calls['getUserGames']).toBe(2)
+        expect(calls['getUserStats']).toBe(2)
+        expect(calls['getUserReviews']).toBe(1)
+        expect(service.userGamesError()).toBe(false)
+        expect(service.userStatsError()).toBe(false)
+        // The quiet refresh always asks, so Try again also finds out whether Board Vault answers.
+        expect(calls['getUserMeets']).toBe(2)
+    })
+
+    it('loads only that group’s invitations again, not the groups', () => {
+        const { connectivity, calls, down, signIn } = setup(['getGroupInvitations'], {
+            getUserGroups: vi.fn(() => of([{ id: 10, name: 'Friday Crew', createdBy: 1, members: [] }])),
+        })
+        signIn()
+        down.value = false
+
+        connectivity.retry()
+
+        expect(calls['getGroupInvitations']).toBe(2)
+    })
+
+    it('keeps trying what still fails, without repeating anything else', () => {
+        const { connectivity, calls, signIn } = setup(['getUserGames'])
+        connectivity.reportUnreachable()
+        signIn()
+
+        connectivity.retry()
+        connectivity.retry()
+
+        expect(calls['getUserGames']).toBe(3)
+        expect(calls['getUserStats']).toBe(1)
+    })
+
+    it('does not reload a list that loaded again by other means since it failed', () => {
+        const { service, connectivity, calls, down, signIn } = setup(['getUserStats'])
+        signIn()
+        down.value = false
+        service.refreshUserStats()
+
+        connectivity.retry()
+
+        expect(calls['getUserStats']).toBe(2)
+    })
+
+    it('forgets what failed for one person once another signs in', () => {
+        const { connectivity, calls, down, signIn } = setup(['getUserGames'])
+        signIn(1)
+        down.value = false
+        signIn(2)
+
+        connectivity.retry()
+
+        // Sign-in for each person, and no reload for the first one.
+        expect(calls['getUserGames']).toBe(2)
+    })
+
+    it('does nothing on Try again when nobody is signed in', () => {
+        const { connectivity, calls } = setup(allLists)
+
+        connectivity.retry()
+
+        expect(Object.keys(calls)).toEqual([])
     })
 })

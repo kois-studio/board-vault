@@ -2038,6 +2038,15 @@
         <source><ph id="0" equiv="names" disp="formatList(names)"/> won</source>
       </segment>
     </unit>
+    <unit id="2095165617934939659">
+      <notes>
+        <note category="location">src/app/layout/connectivity-banner/connectivity-banner.component.html</note>
+        <note category="description">Notice under the header while Board Vault cannot be reached, below the heading</note>
+      </notes>
+      <segment>
+        <source>What you see may be out of date, and changes won’t save until we’re back.</source>
+      </segment>
+    </unit>
     <unit id="2096195057815684171">
       <notes>
         <note category="location">src/app/core/i18n/clerk-localization.ts</note>
@@ -3822,6 +3831,15 @@
       </notes>
       <segment>
         <source>The games you can bring. Only you see this list; groups use it when you decide together.</source>
+      </segment>
+    </unit>
+    <unit id="3009050505374532841">
+      <notes>
+        <note category="location">src/app/layout/connectivity-banner/connectivity-banner.component.html</note>
+        <note category="description">Notice under the header while Board Vault cannot be reached</note>
+      </notes>
+      <segment>
+        <source>We can’t reach Board Vault right now.</source>
       </segment>
     </unit>
     <unit id="3014251220941715703">
@@ -10732,6 +10750,7 @@
       <notes>
         <note category="location">src/app/core/i18n/clerk-localization.ts</note>
         <note category="location">src/app/layout/auth-handoff/auth-handoff.component.html</note>
+        <note category="location">src/app/layout/connectivity-banner/connectivity-banner.component.html</note>
         <note category="location">src/app/pages/collection-page/browse-page/browse-page.component.html</note>
         <note category="location">src/app/pages/play-page/recommendations-page/recommendations-page.component.html</note>
         <note category="description">Button from Clerk, the sign-in provider, after its check that a sign-in is not automated failed</note>

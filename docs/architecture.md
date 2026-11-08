@@ -103,12 +103,13 @@ List `AuthGuard` first; the others read `request.user`.
 | `core/services/clerk.service.ts` | Clerk lifecycle, sign-in and sign-up modals, invitation tickets, session token. |
 | `core/services/login.service.ts` | Board Vault session state: verifies Clerk sessions with `/auth/clerk/status` and loads the current user. |
 | `core/services/data.service.ts` | Shared signals for the current user and loaded data. |
+| `core/services/connectivity.service.ts` | Whether Board Vault can be reached; drives the "can't reach Board Vault" banner ([Slow and failed requests](#slow-and-failed-requests)). |
 | `core/guards/` | `AuthOnlyGuard`, `GuestOnlyGuard`, `AdminGuard`. |
 | `core/interceptors/resilience.interceptor.ts` | Registered first. No request waits forever: reads give up after 12 s and are tried once more after 1 s on no answer, a timeout, or a 502/503/504; writes give up after 20 s and are never tried again. Failures without a usable answer become an `ApiUnavailableError` (`core/utils/apiUnavailable.ts`). |
 | `core/interceptors/auth.interceptor.ts` | Adds the Clerk token; on 401 signs out and redirects to `/login`. |
 | `pages/` | One folder per route (landing, auth, dashboard, groups, group view, collection, games, play, sessions, settings, errors). |
 | `components/` | Reusable UI: cards, modals, forms, `ui/` primitives (button, icon, dialog). |
-| `layout/` | `layout-complete` (header, footer, handoff) and `layout-basic` (focused actions). |
+| `layout/` | `layout-complete` (header, footer, handoff) and `layout-basic` (focused actions). Both show `connectivity-banner` above the page. |
 | `modules/admin/` | Lazy-loaded admin area. |
 
 ### Shared state
@@ -165,6 +166,27 @@ Pages read failures like this:
   "outcome unknown".
 - An operation that may legitimately take longer than its limit, including a
   slow write, sets `REQUEST_TIMEOUT_MS`. The artwork upload uses 90 s.
+
+When Board Vault cannot be reached, the app shows one banner instead of a
+toast per failed list (#241):
+
+- `ConnectivityService` is degraded while the browser is offline, or since a
+  request ended with no answer, a timeout, or a 502, 503, or 504.
+  `resilienceInterceptor` reports the final outcome, after its retry, before
+  the caller hears of it.
+- It recovers on the next answer from Board Vault, a 4xx included. A 500 is
+  neither: Board Vault answered, but with a bug in one place.
+- `<app-connectivity-banner>` sits under the header in `layout-complete` and
+  above the page in `layout-basic`, once the account is known. Before that,
+  the sign-in handoff screen says it.
+- Its Try again, the next answer, and the browser coming back online make
+  `ConnectivityService.refreshes` emit, once per recovery. `DataService`
+  then reloads the lists that failed and quietly refreshes the inbox and
+  game nights. A page that loads its own data and shows an error can listen
+  too, as the game page does.
+- While degraded, `DataService` and the game page leave out their
+  load-failure toasts. The lists still set their error signals, so pages
+  keep saying in place what is missing. A failed save still says so.
 
 ### Routes
 

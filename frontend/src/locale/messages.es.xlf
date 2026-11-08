@@ -1999,6 +1999,15 @@
         <target>Ganaron <ph id="0" equiv="names" disp="formatList(names)"/></target>
       </segment>
     </unit>
+    <unit id="2095165617934939659">
+      <notes>
+        <note category="description">Notice under the header while Board Vault cannot be reached, below the heading</note>
+      </notes>
+      <segment state="translated">
+        <source>What you see may be out of date, and changes won’t save until we’re back.</source>
+        <target>Puede que lo que ves no esté actualizado, y los cambios no se guardarán hasta que volvamos a conectar.</target>
+      </segment>
+    </unit>
     <unit id="2096195057815684171">
       <notes>
         <note category="description">Password warning in Clerk, the sign-in provider</note>
@@ -3750,6 +3759,15 @@
       <segment state="translated">
         <source>The games you can bring. Only you see this list; groups use it when you decide together.</source>
         <target>Los juegos que puedes llevar. Solo tú ves esta lista; los grupos la usan cuando decidís en grupo.</target>
+      </segment>
+    </unit>
+    <unit id="3009050505374532841">
+      <notes>
+        <note category="description">Notice under the header while Board Vault cannot be reached</note>
+      </notes>
+      <segment state="translated">
+        <source>We can’t reach Board Vault right now.</source>
+        <target>Ahora mismo no podemos conectar con Board Vault.</target>
       </segment>
     </unit>
     <unit id="3014251220941715703">

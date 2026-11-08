@@ -3,6 +3,7 @@ import { RouterOutlet } from '@angular/router'
 import { LoginService } from '../../core/services/login.service'
 import { AuthHandoffComponent } from '../auth-handoff/auth-handoff.component'
 import { LayoutBottomTabsComponent } from '../bottom-tabs/bottom-tabs.component'
+import { ConnectivityBannerComponent } from '../connectivity-banner/connectivity-banner.component'
 import { LayoutFooterComponent } from '../footer/footer.component'
 import { LayoutHeaderComponent } from '../header/header.component'
 import { LayoutSectionTabsComponent } from '../section-tabs/section-tabs.component'
@@ -20,6 +21,7 @@ import { UsageNoticeComponent } from '../usage-notice/usage-notice.component'
         LayoutBottomTabsComponent,
         AuthHandoffComponent,
         UsageNoticeComponent,
+        ConnectivityBannerComponent,
     ],
     selector: 'app-layout-complete',
     templateUrl: 'layout-complete.component.html',

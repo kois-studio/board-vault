@@ -19,6 +19,7 @@ import { WishlistToggleComponent } from '../../../components/wishlist-toggle/wis
 import { formatList, formatNumber } from '../../../core/i18n/format'
 import { CustomDatePipe } from '../../../core/pipes/customDate.pipe'
 import { CoverAltPipe, GameTitlePipe } from '../../../core/pipes/game-title.pipe'
+import { ConnectivityService } from '../../../core/services/connectivity.service'
 import { DataService } from '../../../core/services/data.service'
 import { ShelfEditionService } from '../../../core/services/shelf-edition.service'
 import { gameTitle, gameTitleLanguage, otherGameTitles } from '../../../core/utils/gameTitle'
@@ -54,6 +55,7 @@ export class GameViewPageComponent {
     private readonly route = inject(ActivatedRoute)
     private readonly dataService = inject(DataService)
     private readonly toastService = inject(ToastService)
+    private readonly connectivity = inject(ConnectivityService)
     private readonly shelfEditions = inject(ShelfEditionService)
 
     // Custom validator for positive number (including 0)
@@ -143,6 +145,11 @@ export class GameViewPageComponent {
                 this._loadGameData(currentUser.id, gameId)
             }
         })
+
+        // Once Board Vault answers again, or on Try again in the banner, a game that could not load loads (#241).
+        this.connectivity.refreshes.pipe(takeUntilDestroyed()).subscribe(() => {
+            if (this.gameLoadError()) this.retryGameLoad()
+        })
     }
 
     private _loadGameData(userId: undefined | number, gameId: number, force = false) {
@@ -177,7 +184,9 @@ export class GameViewPageComponent {
             error: () => {
                 this.isLoadingGameData.set(false)
                 this.gameLoadError.set(true)
-                this.toastService.error($localize`:Toast when a game page could not load:Error loading game data`)
+                // The page says it failed; while Board Vault cannot be reached the banner says why, so no toast (#241).
+                if (!this.connectivity.isDegraded())
+                    this.toastService.error($localize`:Toast when a game page could not load:Error loading game data`)
             },
         })
     }

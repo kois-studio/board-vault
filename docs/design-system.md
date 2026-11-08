@@ -161,7 +161,9 @@ text, muted text, and primary on the bg and both surfaces; status colours on
 the bg and surface; each `on-*` colour on its fill; and rating stars at 3:1.
 Two known exceptions: Sunglow as an icon on a light surface (1.4:1), which
 the rules above forbid, and status text on surface-2 (4.2:1 in Ciruela
-light), so keep success, warning, and danger text off surface-2. Add new
+light), so keep success, warning, and danger text off surface-2. Notices
+tinted `bg-bv-warning/10` on the page are checked for text, muted text, and
+the warning icon. Add new
 pairs to the script before using them.
 
 Use `lucide-angular` icons alongside text; icons are supporting language,
@@ -234,6 +236,11 @@ not the only label for an action.
   title. Go back to the page it belongs to (the group, Home for a new group,
   Browse), and keep what the person had there (Propose a game goes back to
   Browse with the same search).
+- **Board Vault unreachable:** `<app-connectivity-banner>` is the one notice
+  for it, shown by both layouts (see
+  [architecture](architecture.md#slow-and-failed-requests)). Do not toast a
+  failed load while `ConnectivityService.isDegraded()` is true. Say in place
+  what is missing, and keep reporting failed saves.
 - **Undo:** for a quick, reversible action, act at once and pass an action
   to the toast instead of asking for confirmation first:
   `toastService.success('Removed from your wishlist', { label: 'Undo', run: () => … })`.

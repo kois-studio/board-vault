@@ -305,6 +305,7 @@ operational details.
 
 ### Fixed
 
+- When Board Vault can’t be reached, one notice under the header says so, and that what you see may be out of date, instead of a pile of error messages. It goes away by itself once Board Vault answers, and Try again reloads what failed. Going offline shows it at once.
 - No page waits forever for Board Vault. When it doesn't answer, a page
   stops trying after a few seconds, tries once more, and then shows its
   error with Retry. A brief blip no longer shows an error at all. Saving

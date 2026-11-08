@@ -1,10 +1,12 @@
+import { HttpErrorResponse } from '@angular/common/http'
 import { signal } from '@angular/core'
 import { TestBed } from '@angular/core/testing'
 import { ActivatedRoute, convertToParamMap, provideRouter } from '@angular/router'
-import { of } from 'rxjs'
+import { of, throwError } from 'rxjs'
 import { Api } from '../../../api/api'
 import type { GameCompleteType, GameViewType, HistoryRecordType, PublicUserType } from '../../../api/api.types'
 import { ToastService } from '../../../components/toast/toast.service'
+import { ConnectivityService } from '../../../core/services/connectivity.service'
 import { DataService } from '../../../core/services/data.service'
 import { GameViewPageComponent } from './game-view.component'
 
@@ -89,12 +91,13 @@ describe('GameViewPageComponent plays', () => {
         similarGames: [],
     }
 
-    const setup = async () => {
+    const setup = async (getGameView = vi.fn().mockReturnValue(of(view)), beforeCreate = () => {}) => {
+        const toast = { success: vi.fn(), error: vi.fn() }
         await TestBed.configureTestingModule({
             imports: [GameViewPageComponent],
             providers: [
                 provideRouter([]),
-                { provide: Api, useValue: { getGameView: vi.fn().mockReturnValue(of(view)) } },
+                { provide: Api, useValue: { getGameView } },
                 {
                     provide: ActivatedRoute,
                     useValue: {
@@ -112,15 +115,16 @@ describe('GameViewPageComponent plays', () => {
                         userWishlist: signal([]),
                     },
                 },
-                { provide: ToastService, useValue: { success: vi.fn(), error: vi.fn() } },
+                { provide: ToastService, useValue: toast },
             ],
         }).compileComponents()
 
+        beforeCreate()
         const fixture = TestBed.createComponent(GameViewPageComponent)
         fixture.detectChanges()
         await fixture.whenStable()
         fixture.detectChanges()
-        return { fixture, component: fixture.componentInstance, element: fixture.nativeElement as HTMLElement }
+        return { fixture, toast, component: fixture.componentInstance, element: fixture.nativeElement as HTMLElement }
     }
 
     const listedNights = (element: HTMLElement) =>
@@ -162,5 +166,37 @@ describe('GameViewPageComponent plays', () => {
         expect(rows[0]?.querySelectorAll('app-image-profile')).toHaveLength(2)
         expect(rows[2]?.querySelectorAll('app-image-profile')).toHaveLength(5)
         expect(rows[2]?.textContent).toContain('+1')
+    })
+
+    describe('while Board Vault cannot be reached (#241)', () => {
+        const unavailable = () => throwError(() => new HttpErrorResponse({ status: 503 }))
+
+        it('says in place that the game could not load, with no toast, and loads it once Board Vault answers', async () => {
+            const getGameView = vi.fn().mockReturnValueOnce(unavailable()).mockReturnValue(of(view))
+            const { component, toast } = await setup(getGameView, () => TestBed.inject(ConnectivityService).reportUnreachable())
+
+            expect(component.gameLoadError()).toBe(true)
+            expect(toast.error).not.toHaveBeenCalled()
+
+            TestBed.inject(ConnectivityService).reportAnswered()
+
+            expect(component.gameLoadError()).toBe(false)
+            expect(getGameView).toHaveBeenCalledTimes(2)
+        })
+
+        it('still toasts when Board Vault is reachable', async () => {
+            const { toast } = await setup(vi.fn().mockReturnValue(unavailable()))
+
+            expect(toast.error).toHaveBeenCalledTimes(1)
+        })
+
+        it('does not load again a game that loaded', async () => {
+            const getGameView = vi.fn().mockReturnValue(of(view))
+            await setup(getGameView)
+
+            TestBed.inject(ConnectivityService).retry()
+
+            expect(getGameView).toHaveBeenCalledTimes(1)
+        })
     })
 })
