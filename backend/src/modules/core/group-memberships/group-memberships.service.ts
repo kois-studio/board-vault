@@ -60,12 +60,16 @@ export class GroupMembershipsService {
         return membership
     }
 
+    /**
+     * The membership, or `null` when the account is not in the group. Any other failure (a database timeout or
+     * error) is thrown as is, so it answers 503/500 instead of passing for "not a member" (#245).
+     */
     async getSafeGroupMembershipById(accountId: number, groupId: number): Promise<null | GroupMembershipDto> {
         try {
             return await this.getGroupMembershipById(accountId, groupId)
-        } catch {
-            this.LOGGER.error('Failed to get safe group membership by id')
-            return null
+        } catch (error) {
+            if (error instanceof NotFoundException) return null
+            throw error
         }
     }
 

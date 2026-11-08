@@ -86,7 +86,7 @@ screen of the app. New routes usually belong in a `features` module.
 | `AuthGuard` | Requires a resolved account. Rethrows the middleware's error (for example `409 ACCOUNT_EMAIL_CONFLICT`), otherwise 401. On every controller except `health`. |
 | `UserOwnershipGuard` | The `:userId` route parameter must be the caller. |
 | `AdminGuard` | Requires `Account.isAdmin`. |
-| `UserInGroupGuard` | The caller must be a member of `:groupId`. |
+| `UserInGroupGuard` | The caller must be a member of `:groupId`, otherwise 403. A failed membership lookup (a database timeout or error) is rethrown, so it answers 503 `DATABASE_TIMEOUT` (or 500), never 403 (#245). |
 | `GroupOwnerGuard` | The caller must own `:groupId`. |
 | `GroupPeopleFeatureGuard` | 404 when `BOARD_VAULT_GROUP_PEOPLE_ENABLED=false`. |
 | `RateLimitGuard` | `@RateLimit(limit, seconds)` per endpoint and account (or IP when anonymous). Used on invitation and game-proposal creation, and on shelf changes (they notify the person's groups). Fails open without Redis. |

@@ -20,19 +20,23 @@ export class UserInGroupGuard implements CanActivate {
             throw new ForbiddenException('Missing user or group information')
         }
 
+        // Only a missing membership means "not in the group" (403). A failed lookup, such as a database timeout, is
+        // rethrown as is so ApiErrorFilter answers 503 (or 500) and a member is never told they are not one (#245).
+        let membership: Awaited<ReturnType<GroupMembershipsService['getSafeGroupMembershipById']>>
+
         try {
-            // Check if the user is a member of the group
-            const membership = await this.groupMembershipsService.getSafeGroupMembershipById(userId, groupId)
-
-            if (!membership) {
-                this.LOGGER.error('A user attempted to access a group without membership')
-                throw new ForbiddenException('You are not a member of this group and do not have permission to access this information')
-            }
-
-            return true // User is in the group
+            membership = await this.groupMembershipsService.getSafeGroupMembershipById(userId, groupId)
         } catch (error) {
-            this.LOGGER.error(`Error checking group membership (${safeErrorName(error)})`)
-            throw new ForbiddenException('Error verifying group membership')
+            // A warning: ApiErrorFilter logs the failure itself (provider.timeout or http.request.failed).
+            this.LOGGER.warn(`Error checking group membership (${safeErrorName(error)})`)
+            throw error
         }
+
+        if (!membership) {
+            this.LOGGER.error('A user attempted to access a group without membership')
+            throw new ForbiddenException('You are not a member of this group and do not have permission to access this information')
+        }
+
+        return true // User is in the group
     }
 }

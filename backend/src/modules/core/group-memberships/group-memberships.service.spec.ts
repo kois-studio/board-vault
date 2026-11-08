@@ -2,6 +2,7 @@ import { BadRequestException, ForbiddenException, NotFoundException } from '@nes
 
 import { fakeActivityNotifier } from '../../../../test/fake-activity-notifier.js'
 import { fakeDatabase } from '../../../../test/fake-database.js'
+import { ProviderTimeoutError } from '../../../common/http/provider-timeout.js'
 
 import { GroupMembershipsService } from './group-memberships.service.js'
 
@@ -86,5 +87,36 @@ describe('GroupMembershipsService leaving through DELETE /memberships', () => {
 
         await expect(service.deleteGroupMembershipById(7, 12)).rejects.toThrow(NotFoundException)
         expect(leaveGroup).not.toHaveBeenCalled()
+    })
+})
+
+describe('GroupMembershipsService getSafeGroupMembershipById (#245)', () => {
+    const serviceWith = (getGroupMembershipById: ReturnType<typeof vi.fn>) =>
+        new GroupMembershipsService(fakeDatabase({ getGroupMembershipById }), fakeActivityNotifier())
+
+    it('returns the membership of a member', async () => {
+        const service = serviceWith(vi.fn().mockResolvedValue({ rows: [[7, 12, '2026-01-01 10:00:00']] }))
+
+        await expect(service.getSafeGroupMembershipById(7, 12)).resolves.toEqual({
+            accountId: 7,
+            groupId: 12,
+            joinedAt: '2026-01-01 10:00:00',
+        })
+    })
+
+    it('returns null when the account is not in the group', async () => {
+        await expect(serviceWith(vi.fn().mockResolvedValue({ rows: [] })).getSafeGroupMembershipById(7, 12)).resolves.toBeNull()
+    })
+
+    it('throws a database timeout instead of passing it off as "not a member"', async () => {
+        const service = serviceWith(vi.fn().mockRejectedValue(new ProviderTimeoutError('database')))
+
+        await expect(service.getSafeGroupMembershipById(7, 12)).rejects.toBeInstanceOf(ProviderTimeoutError)
+    })
+
+    it('throws any other database error too', async () => {
+        const failure = new Error('SQLITE_BUSY')
+
+        await expect(serviceWith(vi.fn().mockRejectedValue(failure)).getSafeGroupMembershipById(7, 12)).rejects.toBe(failure)
     })
 })
