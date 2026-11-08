@@ -1,3 +1,4 @@
+import { HttpErrorResponse } from '@angular/common/http'
 import { signal } from '@angular/core'
 import { TestBed } from '@angular/core/testing'
 import { ActivatedRoute, convertToParamMap, provideRouter } from '@angular/router'
@@ -6,6 +7,7 @@ import { Api } from '../../api/api'
 import type { MeetWithAttendeesAndGamesType } from '../../api/api.types'
 import { ToastService } from '../../components/toast/toast.service'
 import { DataService } from '../../core/services/data.service'
+import { ApiUnavailableError } from '../../core/utils/apiUnavailable'
 import { MeetViewComponent } from './meet-view.component'
 
 describe('MeetViewComponent participant safeguards', () => {
@@ -389,7 +391,7 @@ describe('MeetViewComponent participant safeguards', () => {
         meetData.attendees = [1]
         meetData.playedGameParticipants = []
 
-        await component.onClickMember(1)
+        expect(await component.onClickMember(1)).toBe(false)
 
         expect(component.isAttendeeRemovalBlocked(1)).toBe(true)
         expect(component.hasPlayedGameAttendeeLock).toBe(false)
@@ -400,7 +402,7 @@ describe('MeetViewComponent participant safeguards', () => {
     it('blocks removing an attendee recorded for a played game', async () => {
         const { component, dataService, toastService } = await setup()
 
-        await component.onClickMember(1)
+        expect(await component.onClickMember(1)).toBe(false)
 
         expect(component.isAttendeeRemovalBlocked(1)).toBe(true)
         expect(component.hasPlayedGameAttendeeLock).toBe(true)
@@ -441,6 +443,58 @@ describe('MeetViewComponent participant safeguards', () => {
 
         expect(api.updateSessionAttendees).toHaveBeenCalledWith(99, { groupPersonIds: [13] })
         expect(component.meetData?.participants).toEqual([13])
+    })
+
+    it('keeps the group people invited as stored when a change is not saved, and says so', async () => {
+        const { component, api, toastService } = await setup()
+        const meetData = component.meetData
+        if (!meetData) throw new Error('no night')
+        meetData.participants = [12, 13]
+        meetData.playedGamePersonParticipants = []
+        component.groupPeople = [
+            { person: { id: 12, accountId: null, displayName: 'Ana' } as never, ownership: [], preferences: [], claimable: false },
+            { person: { id: 13, accountId: 1, displayName: 'Carlos' } as never, ownership: [], preferences: [], claimable: false },
+        ]
+        api.updateSessionAttendees.mockReturnValue(throwError(() => new HttpErrorResponse({ status: 503 })))
+
+        await component.onClickGroupPerson(12)
+
+        expect(api.updateSessionAttendees).toHaveBeenCalledWith(99, { groupPersonIds: [13] })
+        expect(component.meetData?.participants).toEqual([12, 13])
+        expect(component.inviteSaveError()).toEqual({ key: 'p12', name: 'Ana', adding: false, maybeSaved: false, checked: false })
+        expect(component.inviteSaveErrorMessage).toBe('Couldn’t take Ana off the night. Try again.')
+        expect(component.isPersistingChanges).toBe(false)
+        expect(toastService.error).not.toHaveBeenCalled()
+    })
+
+    it('reads the group people invited again when it could not confirm the save', async () => {
+        const { component, api } = await setup()
+        const meetData = component.meetData
+        if (!meetData) throw new Error('no night')
+        meetData.participants = [12, 13]
+        meetData.participantStatuses = [
+            { groupPersonId: 12, rsvpStatus: 'accepted', attendanceStatus: 'unknown' },
+            { groupPersonId: 13, rsvpStatus: 'pending', attendanceStatus: 'unknown' },
+        ]
+        meetData.playedGamePersonParticipants = []
+        component.groupPeople = [
+            { person: { id: 12, accountId: null, displayName: 'Ana' } as never, ownership: [], preferences: [], claimable: false },
+            { person: { id: 13, accountId: 1, displayName: 'Carlos' } as never, ownership: [], preferences: [], claimable: false },
+        ]
+        // The removal was saved after all: the night as stored no longer has Ana.
+        const stored = { ...structuredClone(meetData), participants: [13] }
+        const getSessionDetailsById = vi.fn().mockReturnValue(of(stored))
+        Object.assign(api, { getSessionDetailsById })
+        api.updateSessionAttendees.mockReturnValue(
+            throwError(() => new ApiUnavailableError({ kind: 'timeout', outcomeUnknown: true, url: '/sessions/99/attendees' })),
+        )
+
+        expect(await component.onClickGroupPerson(12)).toBe(true)
+
+        expect(getSessionDetailsById).toHaveBeenCalledWith(99)
+        expect(component.meetData?.participants).toEqual([13])
+        expect(component.meetDataCopyOriginal?.participants).toEqual([13])
+        expect(component.inviteSaveErrorMessage).toBe('We couldn’t confirm the change for Ana was saved. The list shows what is stored.')
     })
 
     it('sends group-person participants for a played game and blocks the last one', async () => {
@@ -752,5 +806,286 @@ describe('MeetViewComponent rendered lifecycle actions', () => {
         // Home and Upcoming list your answer too.
         expect(dataService.refreshUserMeets).toHaveBeenCalled()
         vi.useRealTimers()
+    })
+})
+
+describe('MeetViewComponent invite changes that are not saved', () => {
+    const night = (attendees: Array<number>): MeetWithAttendeesAndGamesType => ({
+        id: 59,
+        groupId: 7,
+        createdBy: 1,
+        meetDate: '2026-12-14T17:00:00.000Z',
+        isConfirmed: false,
+        status: 'scheduled',
+        timezone: 'Europe/Madrid',
+        notes: null,
+        attendees,
+        attendeeStatuses: attendees.map((accountId) => ({
+            accountId,
+            rsvpStatus: 'pending' as const,
+            attendanceStatus: 'unknown' as const,
+        })),
+        playedGames: [],
+        plannedGames: [],
+        skippedGames: [],
+        playedGameParticipants: [],
+        gameVotes: [],
+        gameBringers: [],
+    })
+
+    const setup = async (attendees: Array<number> = [1]) => {
+        const saveResponse = new Subject<{ sessionId: number; attendeeIds: Array<number> }>()
+        const api = {
+            getSessionDetailsById: vi.fn().mockReturnValue(of(night(attendees))),
+            getGroupPeople: vi.fn().mockReturnValue(of({ people: [] })),
+            getGroupPersonCatalog: vi.fn().mockReturnValue(of({ people: [] })),
+            updateSessionAttendees: vi.fn().mockReturnValue(saveResponse),
+        }
+        const toastService = { success: vi.fn(), error: vi.fn() }
+        await TestBed.configureTestingModule({
+            imports: [MeetViewComponent],
+            providers: [
+                provideRouter([]),
+                { provide: Api, useValue: api },
+                { provide: ActivatedRoute, useValue: { snapshot: { paramMap: convertToParamMap({ sessionId: '59' }) } } },
+                {
+                    provide: DataService,
+                    useValue: {
+                        currentUser: signal({ id: 1, username: 'ana', displayName: 'Ana', avatar: null }),
+                        userGroups: signal([
+                            {
+                                id: 7,
+                                name: 'Thursday group',
+                                createdBy: 1,
+                                members: [
+                                    { id: 1, username: 'ana', displayName: 'Ana', avatar: null, games: [], reviews: [] },
+                                    { id: 2, username: 'bo', displayName: 'Bo', avatar: null, games: [], reviews: [] },
+                                ],
+                                games: [],
+                            },
+                        ]),
+                        userReviews: signal([]),
+                        refreshUserMeets: vi.fn(),
+                        refreshUserHistory: vi.fn(),
+                    },
+                },
+                { provide: ToastService, useValue: toastService },
+            ],
+        }).compileComponents()
+
+        const fixture = TestBed.createComponent(MeetViewComponent)
+        fixture.autoDetectChanges()
+        /** Lets the answers pushed by a test reach the page (they resolve in microtasks), then renders. */
+        const settle = async () => {
+            await new Promise((resolve) => setTimeout(resolve))
+            await fixture.whenStable()
+        }
+        await settle()
+        const element = fixture.nativeElement as HTMLElement
+        const people = element.querySelector('[aria-labelledby="people-heading"]') as HTMLElement
+        const editorToggle = people.querySelector('button[aria-expanded]') as HTMLButtonElement
+        editorToggle.click()
+        await settle()
+        const chip = (name: string) =>
+            [...people.querySelectorAll<HTMLButtonElement>('[role="group"] button')].find(
+                (button) => button.textContent?.trim() === name,
+            ) as HTMLButtonElement
+        const message = () => people.querySelector('[data-testid="invite-save-error"]')
+        /**
+         * Presses a chip the way a person does: saving disables it, and the browser then moves focus to the page.
+         * jsdom keeps focus on a disabled button and won't blur it, so focus goes to a passing button that leaves.
+         */
+        const press = async (name: string) => {
+            chip(name).focus()
+            chip(name).click()
+            const elsewhere = document.body.appendChild(document.createElement('button'))
+            elsewhere.focus()
+            elsewhere.remove()
+            expect(document.activeElement).toBe(document.body)
+            await settle()
+        }
+        return { fixture, settle, people, editorToggle, chip, message, press, api, saveResponse, toastService }
+    }
+
+    it('keeps the chip as stored while it saves, then shows the saved invite and gives focus back', async () => {
+        const { settle, chip, message, press, saveResponse } = await setup()
+
+        await press('Bo')
+
+        expect(chip('Bo').getAttribute('aria-pressed')).toBe('false')
+        expect(chip('Bo').getAttribute('aria-busy')).toBe('true')
+        expect(chip('Bo').disabled).toBe(true)
+        expect(chip('Ana').getAttribute('aria-busy')).toBeNull()
+
+        saveResponse.next({ sessionId: 59, attendeeIds: [1, 2] })
+        saveResponse.complete()
+        await settle()
+
+        expect(chip('Bo').getAttribute('aria-pressed')).toBe('true')
+        expect(chip('Bo').getAttribute('aria-busy')).toBeNull()
+        expect(chip('Bo').disabled).toBe(false)
+        expect(message()).toBeNull()
+        expect(document.activeElement).toBe(chip('Bo'))
+    })
+
+    it('says an invite that was not saved, keeps the chips as stored and gives focus back', async () => {
+        const { settle, chip, message, press, api, saveResponse, toastService } = await setup()
+
+        await press('Bo')
+        saveResponse.error(new HttpErrorResponse({ status: 503, url: '/sessions/59/attendees' }))
+        await settle()
+
+        expect(chip('Bo').getAttribute('aria-pressed')).toBe('false')
+        expect(chip('Bo').disabled).toBe(false)
+        expect(message()?.getAttribute('role')).toBe('alert')
+        expect(message()?.textContent?.trim()).toBe('Couldn’t add Bo to the night. Try again.')
+        expect(chip('Bo').getAttribute('aria-describedby')).toBe(message()?.id)
+        expect(chip('Ana').getAttribute('aria-describedby')).toBeNull()
+        expect(document.activeElement).toBe(chip('Bo'))
+        // Not read again: the change was not saved, so the chips already show what is stored.
+        expect(api.getSessionDetailsById).toHaveBeenCalledTimes(1)
+        expect(toastService.error).not.toHaveBeenCalled()
+    })
+
+    it('says a removal that was not saved and keeps the person invited', async () => {
+        const { settle, people, chip, message, press, saveResponse } = await setup([1, 2])
+
+        await press('Bo')
+        saveResponse.error(new HttpErrorResponse({ status: 500 }))
+        await settle()
+
+        expect(chip('Bo').getAttribute('aria-pressed')).toBe('true')
+        expect(message()?.textContent?.trim()).toBe('Couldn’t take Bo off the night. Try again.')
+        expect(people.querySelector('ul')?.textContent).toContain('Bo')
+    })
+
+    it('reads the night again when it could not confirm the save, and keeps the chips locked meanwhile', async () => {
+        const { fixture, settle, chip, message, press, api, saveResponse } = await setup()
+        const stored = new Subject<MeetWithAttendeesAndGamesType>()
+        api.getSessionDetailsById.mockReturnValue(stored)
+
+        await press('Bo')
+        saveResponse.error(new ApiUnavailableError({ kind: 'timeout', outcomeUnknown: true, url: '/sessions/59/attendees' }))
+        await settle()
+
+        expect(api.getSessionDetailsById).toHaveBeenCalledTimes(2)
+        expect(api.getSessionDetailsById).toHaveBeenLastCalledWith(59)
+        expect(chip('Bo').disabled).toBe(true)
+        expect(message()).toBeNull()
+        // No change goes out while the night is read again: it would be based on a list that may be out of date.
+        await fixture.componentInstance.onClickMember(2)
+        expect(api.updateSessionAttendees).toHaveBeenCalledTimes(1)
+        // An answer saved meanwhile (RSVP and attendance save on their own) is not undone by the re-read.
+        const ana = fixture.componentInstance.meetData?.attendeeStatuses.find((status) => status.accountId === 1)
+        if (ana) ana.rsvpStatus = 'accepted'
+
+        stored.next(night([1, 2]))
+        stored.complete()
+        await settle()
+
+        expect(fixture.componentInstance.meetData?.attendeeStatuses.find((status) => status.accountId === 1)?.rsvpStatus).toBe('accepted')
+
+        expect(chip('Bo').getAttribute('aria-pressed')).toBe('true')
+        expect(chip('Bo').disabled).toBe(false)
+        expect(message()?.textContent?.trim()).toBe('We couldn’t confirm the change for Bo was saved. The list shows what is stored.')
+        expect(document.activeElement).toBe(chip('Bo'))
+    })
+
+    it('asks for a reload when the night cannot be read again either', async () => {
+        const { settle, chip, message, press, api, saveResponse } = await setup()
+        api.getSessionDetailsById.mockReturnValue(throwError(() => new HttpErrorResponse({ status: 0 })))
+
+        await press('Bo')
+        saveResponse.error(new ApiUnavailableError({ kind: 'network', outcomeUnknown: true, url: '/sessions/59/attendees' }))
+        await settle()
+
+        expect(chip('Bo').getAttribute('aria-pressed')).toBe('false')
+        expect(message()?.textContent?.trim()).toBe(
+            'We couldn’t confirm the change for Bo was saved. Reload the page to see what is stored.',
+        )
+    })
+
+    it('puts the message away on the next change and when the editor closes', async () => {
+        const { settle, editorToggle, chip, message, press, api, saveResponse } = await setup()
+        await press('Bo')
+        saveResponse.error(new HttpErrorResponse({ status: 503 }))
+        await settle()
+        expect(message()).not.toBeNull()
+
+        const retry = new Subject<{ sessionId: number; attendeeIds: Array<number> }>()
+        api.updateSessionAttendees.mockReturnValue(retry)
+        await press('Bo')
+        expect(message()).toBeNull()
+        retry.error(new HttpErrorResponse({ status: 503 }))
+        await settle()
+        expect(message()).not.toBeNull()
+
+        editorToggle.click()
+        await settle()
+        editorToggle.click()
+        await settle()
+        expect(chip('Bo')).toBeDefined()
+        expect(message()).toBeNull()
+    })
+
+    it('still says a change was not saved when the editor was closed while it saved', async () => {
+        const { settle, people, editorToggle, message, press, saveResponse } = await setup()
+        await press('Bo')
+        editorToggle.click()
+        await settle()
+        expect(people.querySelector('[role="group"]')).toBeNull()
+
+        saveResponse.error(new HttpErrorResponse({ status: 503 }))
+        await settle()
+
+        expect(message()?.textContent?.trim()).toBe('Couldn’t add Bo to the night. Try again.')
+    })
+
+    it('gives no focus back when no save ran', async () => {
+        const { fixture, settle, api } = await setup()
+        const component = fixture.componentInstance
+        const ana = component.invitablePeople.find((person) => person.displayName === 'Ana')
+        if (!ana) throw new Error('Ana is not in the invite editor')
+        // Ana's own chip is disabled (she can't be taken off), and a disabled button takes no focus anyway: an enabled
+        // stand-in shows whether focus would be given back.
+        const standIn = document.body.appendChild(document.createElement('button'))
+
+        // Ana is the only one invited, so she can't be taken off: nothing is sent.
+        await component.toggleInvite(ana, standIn)
+        const elsewhere = document.body.appendChild(document.createElement('button'))
+        elsewhere.focus()
+        elsewhere.remove()
+        fixture.changeDetectorRef.markForCheck()
+        await settle()
+
+        expect(api.updateSessionAttendees).not.toHaveBeenCalled()
+        expect(document.activeElement).toBe(document.body)
+        standIn.remove()
+    })
+
+    it('leaves focus where it was moved while it saved', async () => {
+        const { settle, editorToggle, chip, press, saveResponse } = await setup()
+        await press('Bo')
+        editorToggle.focus()
+
+        saveResponse.error(new HttpErrorResponse({ status: 503 }))
+        await settle()
+
+        expect(chip('Bo').disabled).toBe(false)
+        expect(document.activeElement).toBe(editorToggle)
+    })
+
+    it('answers quietly when the page was left while it saved', async () => {
+        const { fixture, chip, saveResponse } = await setup()
+        const component = fixture.componentInstance
+        const bo = component.invitablePeople.find((person) => person.displayName === 'Bo')
+        if (!bo) throw new Error('Bo is not in the invite editor')
+        const saved = component.toggleInvite(bo, chip('Bo'))
+
+        fixture.destroy()
+        saveResponse.error(new ApiUnavailableError({ kind: 'timeout', outcomeUnknown: true, url: '/sessions/59/attendees' }))
+
+        // No focus is scheduled on the page that was left (afterNextRender would throw NG0911 there).
+        await expect(saved).resolves.toBeUndefined()
     })
 })

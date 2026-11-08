@@ -4697,6 +4697,15 @@
         <target>Segna i giochi a cui avete giocato prima di concludere. Se la serata non c’è stata, chiedi a chi la organizza di annullarla. Puoi anche concluderla senza aver giocato a niente.</target>
       </segment>
     </unit>
+    <unit id="3480233108656276643">
+      <notes>
+        <note category="description">Under the invite editor of a game night, when adding a person to the night could not be saved; the list did not change</note>
+      </notes>
+      <segment state="translated">
+        <source>Couldn’t add <ph id="0" equiv="name" disp="error.name"/> to the night. Try again.</source>
+        <target>Non è stato possibile aggiungere <ph id="0" equiv="name" disp="error.name"/> alla serata. Riprova.</target>
+      </segment>
+    </unit>
     <unit id="3489766120253960513">
       <notes>
         <note category="description">Accessible name of the Open link on a recorded game night; the placeholder is its date</note>
@@ -11313,6 +11322,15 @@
         <target><ph id="0" equiv="actor" disp="actor"/> ha tolto <ph id="1" equiv="uninvited" disp="uninvited"/> dalla lista di una serata di gioco</target>
       </segment>
     </unit>
+    <unit id="6988528602252556074">
+      <notes>
+        <note category="description">Under the invite editor of a game night, when Board Vault did not answer in time, so inviting or removing the person may or may not be saved, and the night could not be read again</note>
+      </notes>
+      <segment state="translated">
+        <source>We couldn’t confirm the change for <ph id="0" equiv="name" disp="error.name"/> was saved. Reload the page to see what is stored.</source>
+        <target>Non siamo riusciti a confermare che la modifica per <ph id="0" equiv="name" disp="error.name"/> sia stata salvata. Ricarica la pagina per vedere ciò che è salvato.</target>
+      </segment>
+    </unit>
     <unit id="6997602168024654529">
       <notes>
         <note category="description">Choice of the menu that says whether a person owns a game on the group page</note>
@@ -13610,6 +13628,15 @@
         <target>Punti di <ph id="0" equiv="name" disp="name"/></target>
       </segment>
     </unit>
+    <unit id="8145709801792704957">
+      <notes>
+        <note category="description">Under the invite editor of a game night, when Board Vault did not answer in time, so inviting or removing the person may or may not be saved; the night was read again and the list shows what is stored</note>
+      </notes>
+      <segment state="translated">
+        <source>We couldn’t confirm the change for <ph id="0" equiv="name" disp="error.name"/> was saved. The list shows what is stored.</source>
+        <target>Non siamo riusciti a confermare che la modifica per <ph id="0" equiv="name" disp="error.name"/> sia stata salvata. L’elenco mostra ciò che è salvato.</target>
+      </segment>
+    </unit>
     <unit id="8150877423272259603">
       <notes>
         <note category="description">Toast after saving the details of your copy of a game</note>
@@ -14960,6 +14987,15 @@
       <segment state="translated">
         <source>Your sign-in is fine. We’ll keep trying and carry on as soon as Board Vault answers.</source>
         <target>Il tuo accesso è a posto. Continuiamo a riprovare e andremo avanti appena Board Vault risponde.</target>
+      </segment>
+    </unit>
+    <unit id="8805101352735554623">
+      <notes>
+        <note category="description">Under the invite editor of a game night, when taking a person off the night could not be saved; the list did not change</note>
+      </notes>
+      <segment state="translated">
+        <source>Couldn’t take <ph id="0" equiv="name" disp="error.name"/> off the night. Try again.</source>
+        <target>Non è stato possibile togliere <ph id="0" equiv="name" disp="error.name"/> dalla serata. Riprova.</target>
       </segment>
     </unit>
     <unit id="8809247468668978302">

@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, effect, inject, signal } from '@angular/core'
+import { afterNextRender, ChangeDetectorRef, Component, DestroyRef, effect, Injector, inject, signal } from '@angular/core'
 import { ActivatedRoute, Router, RouterLink } from '@angular/router'
 import { firstValueFrom } from 'rxjs'
 import { Api } from '../../api/api'
@@ -13,6 +13,7 @@ import type {
     MeetWithAttendeesAndGamesType,
     PublicUserType,
     RecommendationsType,
+    UpdateSessionAttendeesRequest,
     UserType,
 } from '../../api/api.types'
 import { ImageProfileComponent } from '../../components/image-profile/image-profile.component'
@@ -33,6 +34,7 @@ import { CoverAltPipe } from '../../core/pipes/game-title.pipe'
 import { DataService } from '../../core/services/data.service'
 import { ShelfEditionService } from '../../core/services/shelf-edition.service'
 import type { Nullable } from '../../core/types/commons.type'
+import { isSaveOutcomeUnknown } from '../../core/utils/apiUnavailable'
 import { gameTitle } from '../../core/utils/gameTitle'
 import { canTakePart } from '../../core/utils/groupPeople'
 import { formatWinners, nameWithStanding } from '../../core/utils/historyParticipants'
@@ -51,6 +53,12 @@ export type SessionPerson = {
     /** Past sessions keep people who left or deleted their account (ADR-0018). */
     standing: GroupStanding
 }
+
+/**
+ * Why the last change to who is invited was not saved, or may not have been. The message sits under the invite
+ * chips and the chip that was pressed points to it. `checked` says whether the night could be read again afterwards.
+ */
+export type InviteSaveError = { key: string; name: string; adding: boolean; maybeSaved: boolean; checked: boolean }
 
 type ResultDraft = Record<string, { isWinner: boolean; score: number | null }>
 
@@ -111,6 +119,11 @@ export class MeetViewComponent {
     public isUpdatingAttendance = false
     public isUpdatingShortlist = false
     public isPersistingChanges = false
+    /** The invite chip whose change is being saved; it says it is busy until the answer comes. */
+    public readonly invitePendingKey = signal<string | null>(null)
+    public readonly inviteSaveError = signal<InviteSaveError | null>(null)
+    private readonly destroyRef = inject(DestroyRef)
+    private readonly injector = inject(Injector)
     public readonly actionError = signal<string | null>(null)
     public readonly pendingStatus = signal<'active' | 'completed' | 'cancelled' | null>(null)
     public plannedGameIdsDraft: Array<number> = []
@@ -493,9 +506,34 @@ export class MeetViewComponent {
             : Boolean(person.accountId !== null && this.meetData?.attendees.includes(person.accountId))
     }
 
-    toggleInvite(person: SessionPerson): void {
-        if (person.personId !== null) void this.onClickGroupPerson(person.personId)
-        else if (person.accountId !== null) void this.onClickMember(person.accountId)
+    /** `chip` is the button pressed: saving disables it, so focus goes back to it once the answer comes. */
+    async toggleInvite(person: SessionPerson, chip: EventTarget | null = null): Promise<void> {
+        const saved =
+            person.personId !== null
+                ? await this.onClickGroupPerson(person.personId)
+                : person.accountId !== null && (await this.onClickMember(person.accountId))
+        // Nothing to give back when no save ran (a removal that is not allowed, or another change still saving).
+        if (saved && chip instanceof HTMLElement) this.#refocusInviteChip(chip)
+    }
+
+    /** Opens or closes the invite editor; closing it puts away the message about a change that wasn't saved. */
+    toggleInviteEditor(): void {
+        this.isEditingInvites = !this.isEditingInvites
+        if (!this.isEditingInvites) this.inviteSaveError.set(null)
+    }
+
+    /** The message under the invite chips; `null` when the last change was saved. */
+    get inviteSaveErrorMessage(): string | null {
+        const error = this.inviteSaveError()
+        if (!error) return null
+        if (error.maybeSaved) {
+            return error.checked
+                ? $localize`:Under the invite editor of a game night, when Board Vault did not answer in time, so inviting or removing the person may or may not be saved; the night was read again and the list shows what is stored:We couldn’t confirm the change for ${error.name}:name: was saved. The list shows what is stored.`
+                : $localize`:Under the invite editor of a game night, when Board Vault did not answer in time, so inviting or removing the person may or may not be saved, and the night could not be read again:We couldn’t confirm the change for ${error.name}:name: was saved. Reload the page to see what is stored.`
+        }
+        return error.adding
+            ? $localize`:Under the invite editor of a game night, when adding a person to the night could not be saved; the list did not change:Couldn’t add ${error.name}:name: to the night. Try again.`
+            : $localize`:Under the invite editor of a game night, when taking a person off the night could not be saved; the list did not change:Couldn’t take ${error.name}:name: off the night. Try again.`
     }
 
     isInviteLocked(person: SessionPerson): boolean {
@@ -916,10 +954,7 @@ export class MeetViewComponent {
     }
 
     getGroupPersonToggleLabel(personId: number): string {
-        const person = this.groupPeople.find((candidate) => candidate.person.id === personId)
-        const name =
-            person?.person.displayName ??
-            $localize`:Stands for a person whose name is not known, in a button label such as Add this person to session attendees:this person`
+        const name = this.#groupPersonName(personId)
         if (!this.meetData?.participants?.includes(personId)) return inviteAddLabel(name)
         if (this.meetData.participants.length <= 1) return inviteLastLabel(name)
         if (this.meetData.playedGamePersonParticipants?.some((game) => game.participantIds.includes(personId))) {
@@ -943,12 +978,7 @@ export class MeetViewComponent {
     }
 
     getAttendeeToggleLabel(memberId: number): string {
-        const member = this.groupData?.members.find((candidate) => candidate.id === memberId)
-        const name =
-            member?.displayName ||
-            member?.username ||
-            $localize`:Stands for a member whose name is not known, in a button label such as Add this member to session attendees:this member`
-
+        const name = this.#memberName(memberId)
         if (!this.meetData?.attendees.includes(memberId)) return inviteAddLabel(name)
         if (this.meetData.attendees.length <= 1) return inviteLastLabel(name)
         if (this.meetData.playedGameParticipants.some((game) => game.participantIds.includes(memberId))) {
@@ -1423,9 +1453,9 @@ export class MeetViewComponent {
     // #region Button Clicks
     // TODO: rethink the click system, it should be done with a straightforward click(id) instead of so much logic
 
-    async onClickMember(memberId: number): Promise<void> {
+    async onClickMember(memberId: number): Promise<boolean> {
         if (!this.meetData || !this.canShapeNight || this.isPersistingChanges) {
-            return
+            return false
         }
 
         if (this.isAttendeeRemovalBlocked(memberId)) {
@@ -1434,30 +1464,16 @@ export class MeetViewComponent {
                     ? $localize`:Toast when you try to uninvite the only person invited to a game night:A session must retain at least one attendee.`
                     : $localize`:Toast when you try to uninvite a person who played a game on the night:Remove this person from played games before removing them from the session.`,
             )
-            return
+            return false
         }
 
-        const previousAttendees = [...this.meetData.attendees]
-        if (this.meetData.attendees.includes(memberId)) {
-            this.meetData.attendees = this.meetData.attendees.filter((id) => id !== memberId)
-        } else {
-            this.meetData.attendees.push(memberId)
-        }
-
-        this.isPersistingChanges = true
-        try {
-            await this.#saveAttendeesSelection()
-            void this.loadSuggestions()
-        } catch {
-            this.meetData.attendees = previousAttendees
-        } finally {
-            this.changeDetector.markForCheck()
-            this.isPersistingChanges = false
-        }
+        const adding = !this.meetData.attendees.includes(memberId)
+        const attendeeIds = adding ? [...this.meetData.attendees, memberId] : this.meetData.attendees.filter((id) => id !== memberId)
+        return this.#saveInvites({ key: `a${memberId}`, name: this.#memberName(memberId), adding }, { attendeeIds })
     }
 
-    async onClickGroupPerson(personId: number): Promise<void> {
-        if (!this.meetData || !this.isGroupPersonSession || !this.canShapeNight || this.isPersistingChanges) return
+    async onClickGroupPerson(personId: number): Promise<boolean> {
+        if (!this.meetData || !this.isGroupPersonSession || !this.canShapeNight || this.isPersistingChanges) return false
 
         if (this.isGroupPersonAttendeeRemovalBlocked(personId)) {
             this.toastService.error(
@@ -1465,24 +1481,97 @@ export class MeetViewComponent {
                     ? $localize`:Toast when you try to uninvite the only person invited to a game night:A session must retain at least one attendee.`
                     : $localize`:Toast when you try to uninvite a person who played a game on the night:Remove this person from played games before removing them from the session.`,
             )
-            return
+            return false
         }
 
-        const previousParticipants = [...(this.meetData.participants ?? [])]
-        this.meetData.participants = this.meetData.participants?.includes(personId)
-            ? this.meetData.participants.filter((id) => id !== personId)
-            : [...(this.meetData.participants ?? []), personId]
+        const participants = this.meetData.participants ?? []
+        const adding = !participants.includes(personId)
+        const groupPersonIds = adding ? [...participants, personId] : participants.filter((id) => id !== personId)
+        return this.#saveInvites({ key: `p${personId}`, name: this.#groupPersonName(personId), adding }, { groupPersonIds })
+    }
 
+    /**
+     * Saves who is invited. The chips keep showing what is stored until the answer comes, and only then change. A
+     * change that wasn't saved leaves them as they were and says so under them. When the outcome is unknown (no
+     * answer in time), the night is read again so they show what is stored. True once a save was sent and answered.
+     */
+    async #saveInvites(change: Pick<InviteSaveError, 'key' | 'name' | 'adding'>, body: UpdateSessionAttendeesRequest): Promise<boolean> {
+        const meet = this.meetData
+        if (!meet) return false
+
+        this.inviteSaveError.set(null)
+        this.invitePendingKey.set(change.key)
         this.isPersistingChanges = true
         try {
-            await this.#saveAttendeesSelection()
+            const result = await firstValueFrom(this.api.updateSessionAttendees(meet.id, body))
+            if (this.meetData !== meet) return true
+            if (body.groupPersonIds) meet.participants = [...(result.groupPersonIds ?? body.groupPersonIds)]
+            else meet.attendees = [...result.attendeeIds]
+            if (this.meetDataCopyOriginal) {
+                this.meetDataCopyOriginal.attendees = [...meet.attendees]
+                this.meetDataCopyOriginal.participants = [...(meet.participants ?? [])]
+            }
             void this.loadSuggestions()
-        } catch {
-            this.meetData.participants = previousParticipants
+        } catch (error) {
+            const maybeSaved = isSaveOutcomeUnknown(error)
+            const checked = maybeSaved && (await this.#readInvitesAgain(meet))
+            if (this.meetData !== meet) return true
+            this.inviteSaveError.set({ ...change, maybeSaved, checked })
         } finally {
-            this.changeDetector.markForCheck()
+            this.invitePendingKey.set(null)
             this.isPersistingChanges = false
+            this.changeDetector.markForCheck()
         }
+        return true
+    }
+
+    /**
+     * Reads who is invited again after a change whose outcome is unknown. False if it failed. Only the invite lists
+     * are taken: the answers and who was there may be changing meanwhile (attendance and RSVP save on their own).
+     */
+    async #readInvitesAgain(meet: MeetWithAttendeesAndGamesType): Promise<boolean> {
+        try {
+            const stored = await firstValueFrom(this.api.getSessionDetailsById(meet.id))
+            if (this.meetData !== meet) return false
+            meet.attendees = [...stored.attendees]
+            meet.participants = stored.participants ? [...stored.participants] : stored.participants
+            if (this.meetDataCopyOriginal) {
+                this.meetDataCopyOriginal.attendees = [...meet.attendees]
+                this.meetDataCopyOriginal.participants = [...(meet.participants ?? [])]
+            }
+            void this.loadSuggestions()
+            return true
+        } catch {
+            return false
+        }
+    }
+
+    /** Gives focus back to the invite chip that saving disabled, unless focus has moved somewhere else meanwhile. */
+    #refocusInviteChip(chip: HTMLElement): void {
+        if (this.destroyRef.destroyed) return
+        afterNextRender(
+            () => {
+                const active = document.activeElement
+                if (chip.isConnected && (active === null || active === document.body)) chip.focus()
+            },
+            { injector: this.injector },
+        )
+    }
+
+    #memberName(memberId: number): string {
+        const member = this.groupData?.members.find((candidate) => candidate.id === memberId)
+        return (
+            member?.displayName ||
+            member?.username ||
+            $localize`:Stands for a member whose name is not known, in a button label such as Add this member to session attendees:this member`
+        )
+    }
+
+    #groupPersonName(personId: number): string {
+        return (
+            this.groupPeople.find((candidate) => candidate.person.id === personId)?.person.displayName ??
+            $localize`:Stands for a person whose name is not known, in a button label such as Add this person to session attendees:this person`
+        )
     }
 
     async onClickGame(gameId: number): Promise<void> {
@@ -1678,24 +1767,6 @@ export class MeetViewComponent {
                 }
             })
             .filter((game) => game.results.length > 0)
-    }
-
-    async #saveAttendeesSelection(): Promise<void> {
-        if (!this.meetData || !this.meetDataCopyOriginal) {
-            return
-        }
-
-        const result = await firstValueFrom(
-            this.api.updateSessionAttendees(
-                this.meetData.id,
-                this.isGroupPersonSession ? { groupPersonIds: this.meetData.participants ?? [] } : { attendeeIds: this.meetData.attendees },
-            ),
-        )
-
-        // update the original copy for future comparisons
-        this.meetDataCopyOriginal.attendees = [...this.meetData.attendees]
-        this.meetDataCopyOriginal.participants = [...(this.meetData.participants ?? [])]
-        if (result.groupPersonIds) this.meetData.participants = [...result.groupPersonIds]
     }
 
     async #saveGamesPlayedSelection(): Promise<void> {

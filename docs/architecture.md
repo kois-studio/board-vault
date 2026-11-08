@@ -210,6 +210,12 @@ A save never leaves a value on screen that is not stored (#242):
   so the open editor keeps its place, and focus goes back to the menu that
   saving had locked. A save answered after the page was left changes nothing
   and moves no focus.
+- A game night's invite chips change only once the server has stored the new
+  list. When a change fails, the message naming the person sits under the
+  people list, outside the editor, so it still shows if Done was pressed
+  while saving. When the outcome is unknown, only the invite lists are read
+  again. Answers and attendance save on their own, so the re-read leaves them
+  alone.
 
 ### Routes
 

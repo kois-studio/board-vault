@@ -595,7 +595,7 @@
                             }
                         </h2>
                         @if (canShapeNight) {
-                            <button type="button" class="rounded text-sm font-semibold text-bv-primary hover:underline" [attr.aria-expanded]="isEditingInvites" (click)="isEditingInvites = !isEditingInvites">
+                            <button type="button" class="rounded text-sm font-semibold text-bv-primary hover:underline" [attr.aria-expanded]="isEditingInvites" (click)="toggleInviteEditor()">
                                 @if (isEditingInvites) {
                                     <ng-container i18n="Button that closes the invite editor of a game night">Done</ng-container>
                                 } @else {
@@ -608,7 +608,16 @@
                     @if (isEditingInvites && canShapeNight) {
                         <div class="mt-3 flex flex-wrap gap-2" role="group" i18n-aria-label="Accessible name of the invite editor of a game night" aria-label="Who is invited">
                             @for (person of invitablePeople; track person.key) {
-                                <button type="button" class="app-chip max-w-full" [attr.aria-pressed]="isInvited(person)" [attr.aria-label]="inviteToggleLabel(person)" [disabled]="isPersistingChanges || isInviteLocked(person)" (click)="toggleInvite(person)">
+                                <button
+                                    type="button"
+                                    class="app-chip max-w-full"
+                                    [attr.aria-pressed]="isInvited(person)"
+                                    [attr.aria-label]="inviteToggleLabel(person)"
+                                    [attr.aria-busy]="invitePendingKey() === person.key ? 'true' : null"
+                                    [attr.aria-describedby]="inviteSaveError()?.key === person.key ? 'invite-save-error' : null"
+                                    [disabled]="isPersistingChanges || isInviteLocked(person)"
+                                    (click)="toggleInvite(person, $event.currentTarget)"
+                                >
                                     <span class="truncate">{{ person.displayName }}</span>
                                 </button>
                             }
@@ -618,6 +627,12 @@
                         } @else if (hasPlayedGameAttendeeLock || isGroupPersonSession) {
                             <p class="mt-3 text-xs text-bv-text-muted" i18n="Hint in the invite editor of a game night">People who played a game stay invited. Take them out of that game first.</p>
                         }
+                    }
+                    <!-- Outside the editor: a change answered after Done was pressed still says it wasn't saved. -->
+                    @if (inviteSaveErrorMessage; as inviteSaveMessage) {
+                        <p id="invite-save-error" class="mt-3 flex gap-1.5 text-xs text-bv-danger" role="alert" data-testid="invite-save-error">
+                            <app-icon name="circle-alert" [size]="14" className="mt-px shrink-0" aria-hidden="true" /><span>{{ inviteSaveMessage }}</span>
+                        </p>
                     }
 
                     <ul class="mt-3 divide-y divide-bv-border">

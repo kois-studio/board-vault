@@ -4777,6 +4777,15 @@
         <source>Mark the games you played before finishing. If the night didn’t happen, ask the organizer to cancel it. You can also finish it with nothing played.</source>
       </segment>
     </unit>
+    <unit id="3480233108656276643">
+      <notes>
+        <note category="location">src/app/pages/meet-view/meet-view.component.ts</note>
+        <note category="description">Under the invite editor of a game night, when adding a person to the night could not be saved; the list did not change</note>
+      </notes>
+      <segment>
+        <source>Couldn’t add <ph id="0" equiv="name" disp="error.name"/> to the night. Try again.</source>
+      </segment>
+    </unit>
     <unit id="3489766120253960513">
       <notes>
         <note category="location">src/app/components/history-entry/history-entry.component.ts</note>
@@ -11493,6 +11502,15 @@
         <source><ph id="0" equiv="actor" disp="actor"/> took <ph id="1" equiv="uninvited" disp="uninvited"/> off the list for a game night</source>
       </segment>
     </unit>
+    <unit id="6988528602252556074">
+      <notes>
+        <note category="location">src/app/pages/meet-view/meet-view.component.ts</note>
+        <note category="description">Under the invite editor of a game night, when Board Vault did not answer in time, so inviting or removing the person may or may not be saved, and the night could not be read again</note>
+      </notes>
+      <segment>
+        <source>We couldn’t confirm the change for <ph id="0" equiv="name" disp="error.name"/> was saved. Reload the page to see what is stored.</source>
+      </segment>
+    </unit>
     <unit id="6997602168024654529">
       <notes>
         <note category="location">src/app/pages/group-view/group-view.component.html</note>
@@ -13844,6 +13862,15 @@
         <source>Score for <ph id="0" equiv="name" disp="name"/></source>
       </segment>
     </unit>
+    <unit id="8145709801792704957">
+      <notes>
+        <note category="location">src/app/pages/meet-view/meet-view.component.ts</note>
+        <note category="description">Under the invite editor of a game night, when Board Vault did not answer in time, so inviting or removing the person may or may not be saved; the night was read again and the list shows what is stored</note>
+      </notes>
+      <segment>
+        <source>We couldn’t confirm the change for <ph id="0" equiv="name" disp="error.name"/> was saved. The list shows what is stored.</source>
+      </segment>
+    </unit>
     <unit id="8150877423272259603">
       <notes>
         <note category="location">src/app/pages/games/game-view/game-view.component.ts</note>
@@ -15212,6 +15239,15 @@
       </notes>
       <segment>
         <source>Your sign-in is fine. We’ll keep trying and carry on as soon as Board Vault answers.</source>
+      </segment>
+    </unit>
+    <unit id="8805101352735554623">
+      <notes>
+        <note category="location">src/app/pages/meet-view/meet-view.component.ts</note>
+        <note category="description">Under the invite editor of a game night, when taking a person off the night could not be saved; the list did not change</note>
+      </notes>
+      <segment>
+        <source>Couldn’t take <ph id="0" equiv="name" disp="error.name"/> off the night. Try again.</source>
       </segment>
     </unit>
     <unit id="8809247468668978302">
