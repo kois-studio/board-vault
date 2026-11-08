@@ -186,7 +186,7 @@
             }
         </div>
     } @else {
-        <section class="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-5">
+        <section class="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-5" data-testid="browse-games">
             @for (game of gamesListComputed(); track game.id) {
                 <div class="relative flex flex-col">
                     <a [routerLink]="['/games', game.id]" class="block flex-1 rounded-2xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-bv-primary">
@@ -265,9 +265,15 @@
         </section>
         
         <!-- Pagination controls if needed -->
-        @if (hasMoreGames$()) {
+        @if (loadMoreError()) {
+            <!-- The games above stay; Try again asks for the page that failed. -->
+            <div class="mt-6 space-y-4 text-center text-secondary" role="alert" data-testid="load-more-error">
+                <p i18n="Error at the end of Browse when the next games could not be loaded; the games above stay">We couldn’t load more games.</p>
+                <button appButton [attr.aria-busy]="isSearching$() ? 'true' : null" (click)="loadMoreGames()" data-testid="load-more-retry" i18n="Button under an error on Browse">Try again</button>
+            </div>
+        } @else if (hasMoreGames$()) {
             <div class="flex justify-center mt-6">
-                <button appButton (click)="loadMoreGames()" i18n="Button at the end of Browse that shows more games">Load More</button>
+                <button appButton (click)="loadMoreGames()" data-testid="load-more" i18n="Button at the end of Browse that shows more games">Load More</button>
             </div>
         }
     }

@@ -1,4 +1,4 @@
-import { Component, computed, effect, inject, signal, untracked } from '@angular/core'
+import { afterNextRender, Component, computed, DestroyRef, ElementRef, effect, Injector, inject, signal, untracked } from '@angular/core'
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
 import { ReactiveFormsModule } from '@angular/forms'
 import { ActivatedRoute, ParamMap, Router, RouterLink } from '@angular/router'
@@ -77,6 +77,9 @@ export class BrowsePageComponent {
     private readonly shelfEditions = inject(ShelfEditionService)
     private readonly browsePageService = inject(BrowsePageService)
     private readonly router = inject(Router)
+    private readonly destroyRef = inject(DestroyRef)
+    private readonly injector = inject(Injector)
+    private readonly host = inject<ElementRef<HTMLElement>>(ElementRef)
     // --------------------------------------------------------------------------
     //        Services signals
     // --------------------------------------------------------------------------
@@ -101,6 +104,8 @@ export class BrowsePageComponent {
     public readonly tagsOpen = signal(false)
     private searchRequest?: Subscription
     public readonly searchError = signal(false)
+    /** The next page failed: the games already shown stay, and "Try again" asks for that page only. */
+    public readonly loadMoreError = signal(false)
     private initialLoadStarted = false
     public readonly acquisitionGroupId = signal<number | null>(null)
     public readonly acquisitionGroupName = computed(
@@ -188,17 +193,27 @@ export class BrowsePageComponent {
                 this.searchTerm$.set(trimmedValue)
                 this.currentPage$.set(1) // Reset page when search changes
                 this.searchError.set(false)
+                this.loadMoreError.set(false)
                 this.syncUrl()
 
                 // Search when empty (whole catalogue) or from two letters
                 if (trimmedValue.length === 0 || trimmedValue.length >= 2) {
                     this._searchGames()
                 } else {
-                    // Clear results if search term is too short
+                    // Clear results if search term is too short; an answer still on its way must not come back.
+                    this.searchRequest?.unsubscribe()
+                    this.isSearching$.set(false)
                     this.browseGamesList$.set([])
                     this.hasMoreGames$.set(false)
                 }
             })
+
+        // The list lives in a root service: an answer arriving after the page was left must not change it, nor be
+        // missed by the next visit's search, which could not cancel it.
+        this.destroyRef.onDestroy(() => {
+            this.searchRequest?.unsubscribe()
+            this.isSearching$.set(false)
+        })
 
         // Show the catalogue as soon as the user is known, before any typing.
         effect(() => {
@@ -234,7 +249,7 @@ export class BrowsePageComponent {
             return
         }
 
-        this.currentPage$.update((page) => page + 1)
+        // The page only moves on once its games arrive, so a failed page can be asked for again.
         this._searchGames(true)
     }
 
@@ -414,33 +429,63 @@ export class BrowsePageComponent {
         }
         this.searchRequest?.unsubscribe()
 
+        const page = isNextPage ? this.currentPage$() + 1 : this.currentPage$()
+        // Asking again for a page that failed: its message stays, busy, until the answer comes.
+        const retryingPage = isNextPage && this.loadMoreError()
         // set the loading state
         this.isSearching$.set(true)
         this.searchError.set(false)
         if (!isNextPage) {
+            this.loadMoreError.set(false)
             this.browseGamesList$.set([])
         }
 
         // Fetch games with search term
         this.searchRequest = this.api
-            .browseGamesNotOwnedByUser(userId, this.searchTerm$().trim(), this.currentPage$(), BROWSE_PAGE_SIZE, this.filters$())
+            .browseGamesNotOwnedByUser(userId, this.searchTerm$().trim(), page, BROWSE_PAGE_SIZE, this.filters$())
             .subscribe({
                 next: (result) => {
                     if (!isNextPage) {
                         this.browseGamesList$.set(result.games)
                     } else {
+                        const shown = this.gamesListComputed().length
                         this.browseGamesList$.update((games) => [...games, ...result.games])
+                        this.currentPage$.set(page)
+                        this.loadMoreError.set(false)
+                        if (retryingPage) this.#focusGameAt(shown)
                     }
                 },
                 error: (error) => {
                     console.error(error)
-                    this.searchError.set(true)
+                    // A failed next page keeps the games already shown; only a new search empties the list.
+                    if (isNextPage) this.loadMoreError.set(true)
+                    else this.searchError.set(true)
                     this.isSearching$.set(false)
                 },
                 complete: () => {
                     this.isSearching$.set(false)
                 },
             })
+    }
+
+    /**
+     * After a page that failed loads on "Try again", that button is gone: focus moves to the first new game, or to
+     * "Load More" when the group already owns every new one, or to the last game when that was the last page. It stays
+     * put when it was moved elsewhere meanwhile.
+     */
+    #focusGameAt(index: number): void {
+        afterNextRender(
+            () => {
+                if (this.destroyRef.destroyed) return
+                const active = document.activeElement
+                if (active !== null && active !== document.body) return
+                const host = this.host.nativeElement
+                const games = host.querySelectorAll<HTMLElement>('[data-testid="browse-games"] > div > a')
+                const target = games[index] ?? host.querySelector<HTMLElement>('[data-testid="load-more"]') ?? games[games.length - 1]
+                target?.focus()
+            },
+            { injector: this.injector },
+        )
     }
 
     /** The URL decides what Browse shows, so a filtered view survives a reload and can be shared. */

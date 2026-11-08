@@ -1,4 +1,4 @@
-import { afterNextRender, ChangeDetectorRef, Component, DestroyRef, effect, Injector, inject, signal } from '@angular/core'
+import { afterNextRender, ChangeDetectorRef, Component, DestroyRef, effect, Injector, inject, signal, untracked } from '@angular/core'
 import { ActivatedRoute, Router, RouterLink } from '@angular/router'
 import { firstValueFrom } from 'rxjs'
 import { Api } from '../../api/api'
@@ -27,11 +27,13 @@ import { IconComponent } from '../../components/ui/icon/icon.component'
 import { ImageBackgroundComponent } from '../../components/ui/image-background/image-background.component'
 import { InPageLinkDirective } from '../../components/ui/in-page-link/in-page-link.directive'
 import { StarRatingComponent } from '../../components/ui/star-rating/star-rating.component'
+import { LOADING_KEYS } from '../../core/enums/loading-keys-enum'
 import { formatList, intlLocale } from '../../core/i18n/format'
 import { PlayersPipe } from '../../core/pipes/count.pipe'
 import { CustomDatePipe } from '../../core/pipes/customDate.pipe'
 import { CoverAltPipe } from '../../core/pipes/game-title.pipe'
 import { DataService } from '../../core/services/data.service'
+import { LoadingService } from '../../core/services/loading.service'
 import { ShelfEditionService } from '../../core/services/shelf-edition.service'
 import type { Nullable } from '../../core/types/commons.type'
 import { isSaveOutcomeUnknown } from '../../core/utils/apiUnavailable'
@@ -92,6 +94,14 @@ export class MeetViewComponent {
     public readonly isLoading = signal(true)
     public readonly loadError = signal(false)
     private requestedMeetId: number | null = null
+    private readonly loadingService = inject(LoadingService)
+    /**
+     * The last failure came from the groups: they failed to load, or the night's group was not among them. Retry then
+     * loads the groups again and waits for them before loading the night (#244).
+     */
+    private retryReloadsGroups = false
+    /** Retry asked for fresh groups: the night waits for them even while older ones are listed. */
+    private awaitingFreshGroups = false
 
     // DataService data (filled on init -> effect)
     public userData: ReturnType<typeof this.dataService.currentUser> = null
@@ -160,15 +170,32 @@ export class MeetViewComponent {
         effect(() => {
             this.userData = this.dataService.currentUser()
             this.userGroups = this.dataService.userGroups()
+            // Read on every run, before any early return: the end of a groups load must always run this again, even
+            // one that fails without changing the list (Retry waits for it).
+            const groupsLoading = Boolean(this.loadingService.loadingStatesIndex()[LOADING_KEYS.USER_GROUPS])
 
             // Get Meet Details
             const sessionId = Number.parseInt(this.route.snapshot.paramMap.get('sessionId') || '', 10)
-            if (!this.userData || this.userGroups.length === 0 || Number.isNaN(sessionId) || this.requestedMeetId === sessionId) {
+            if (!this.userData || Number.isNaN(sessionId) || this.requestedMeetId === sessionId) {
                 return
             }
 
+            // The night needs its group. Listed groups are enough, unless Retry asked for fresh ones; with none listed,
+            // wait until the groups have loaded: a failure, or no group at all, must not leave "Loading session…" up.
+            if (this.userGroups.length === 0 || this.awaitingFreshGroups) {
+                if (groupsLoading) return
+                this.awaitingFreshGroups = false
+                if (this.userGroups.length === 0 && this.dataService.userGroupsError()) {
+                    this.retryReloadsGroups = true
+                    this.loaded = false
+                    this.loadError.set(true)
+                    this.isLoading.set(false)
+                    return
+                }
+            }
+
             this.requestedMeetId = sessionId
-            void this.loadMeetDetails(sessionId)
+            untracked(() => void this.loadMeetDetails(sessionId))
         })
     }
 
@@ -180,6 +207,14 @@ export class MeetViewComponent {
         this.loaded = false
         this.loadError.set(false)
         this.isLoading.set(true)
+        if (this.retryReloadsGroups) {
+            // The page's effect loads the night once the groups answer. A load already on its way (the connection
+            // notice, another action) is waited for instead of starting a second one.
+            this.retryReloadsGroups = false
+            this.awaitingFreshGroups = true
+            if (!this.loadingService.loadingStatesIndex()[LOADING_KEYS.USER_GROUPS]) this.dataService.refreshUserGroups()
+            return
+        }
         this.requestedMeetId = sessionId
         void this.loadMeetDetails(sessionId)
     }
@@ -187,6 +222,7 @@ export class MeetViewComponent {
     private async loadMeetDetails(meetId: number): Promise<void> {
         this.isLoading.set(true)
         this.loadError.set(false)
+        this.retryReloadsGroups = false
         try {
             // Get Meet Details
             this.meetData = await firstValueFrom(this.api.getSessionDetailsById(meetId))
@@ -202,6 +238,8 @@ export class MeetViewComponent {
             const groupData = this.userGroups.find((group) => group.id === this.meetData?.groupId)
 
             if (!this.userData || !groupData) {
+                // Perhaps the groups are out of date (just joined, or they failed to load): Retry loads them again.
+                this.retryReloadsGroups = true
                 this.loadError.set(true)
                 return
             }

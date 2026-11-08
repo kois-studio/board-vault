@@ -2,13 +2,20 @@
     <div class="mx-auto max-w-3xl">
         <a appBackLink [routerLink]="['/groups', route.snapshot.paramMap.get('groupId')]" i18n="Link on the page where you take over a person prepared for you in a group, back to the group page">Back to group</a>
 
-        @if (isLoading()) {
+        @if (isLoading() && !loadFailed()) {
             <section class="mt-8 rounded-3xl border border-bv-border bg-bv-surface p-8 text-center shadow-sm" role="status" aria-live="polite">
                 <p class="text-lg font-semibold" i18n="Shown while the page loads where you take over a person prepared for you">Loading your group-person handoff…</p>
             </section>
+        } @else if (loadFailed()) {
+            <!-- Board Vault did not answer: Retry, never "join as new", which would change who you are in the group. -->
+            <section class="mt-8 rounded-3xl border border-bv-warning/30 bg-bv-warning/10 p-8" role="alert" data-testid="claim-load-failed">
+                <h1 class="text-2xl font-bold" i18n="Error on the page where you take over a person prepared for you in a group, when Board Vault did not answer">This handoff couldn’t be loaded</h1>
+                <p class="mt-2 text-secondary">{{ error() }}</p>
+                <button appButton type="button" class="mt-5" icon="arrow-repeat" [attr.aria-busy]="isLoading() ? 'true' : null" (click)="retryLoad()" data-testid="claim-retry" i18n="Button under an error on the page where you take over a person prepared for you in a group, that loads it again">Retry</button>
+            </section>
         } @else if (error() && !person()) {
             <section class="mt-8 rounded-3xl border border-bv-warning/30 bg-bv-warning/10 p-8" role="alert">
-                <h1 class="text-2xl font-bold" i18n="Error on the page where you take over a person prepared for you in a group">This handoff is unavailable</h1>
+                <h1 id="claim-unavailable-heading" tabindex="-1" class="text-2xl font-bold outline-none" i18n="Error on the page where you take over a person prepared for you in a group">This handoff is unavailable</h1>
                 <p class="mt-2 text-secondary">{{ error() }}</p>
                 <button appButton type="button" class="mt-5" (click)="joinAsNewPerson()" i18n="Button under an error on the page where you take over a person prepared for you in a group">Join as a new person</button>
             </section>
@@ -16,7 +23,7 @@
             @if (person(); as groupPerson) {
             <header class="mt-8 rounded-3xl border border-bv-primary/30 bg-bv-primary-soft p-6 sm:p-8">
                 <p class="text-sm font-semibold uppercase tracking-[0.18em] text-bv-primary" i18n="Label on the page where you take over a person prepared for you in a group">Continue your group history</p>
-                <h1 class="mt-2 text-3xl font-bold text-bv-text wrap-anywhere" i18n="Heading on the page where you take over a person prepared for you in a group; the placeholder is that person's name">Is this {{ groupPerson.person.displayName }}?</h1>
+                <h1 id="claim-heading" tabindex="-1" class="mt-2 text-3xl font-bold text-bv-text wrap-anywhere outline-none" i18n="Heading on the page where you take over a person prepared for you in a group; the placeholder is that person's name">Is this {{ groupPerson.person.displayName }}?</h1>
                 <p class="mt-3 leading-7 text-secondary" i18n="Text on the page where you take over a person prepared for you in a group">Someone in this group prepared this profile before you joined. Keep the entries that are yours, remove mistakes, and your old sessions will stay connected to you.</p>
             </header>
 

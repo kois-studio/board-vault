@@ -239,6 +239,26 @@ cannot load them would leave those people out without saying so:
   its member accounts, as before. Correcting a night whose group people are
   all gone says so instead of leaving Next locked.
 
+An error never leaves a page without a way on (#244):
+
+- A game night's page needs the night's group. It waits for the groups only
+  while none are listed and they are still loading. When they failed, or the
+  night's group is not among them, the page says the night couldn't be loaded,
+  and Retry loads the groups again (`refreshUserGroups`) before the night. A
+  groups refresh that fails after the night is shown leaves it on screen.
+  Waiting for no groups at all is #258.
+- Taking over a person prepared for you tells two failures apart. "Not there
+  for you" (a 403 or 404, or a person you can't claim) still offers joining as
+  a new person. Board Vault not answering offers only Retry, since joining as
+  new would change who you are in the group.
+- Browse asks for the next page without moving to it. When that page fails,
+  the games already shown stay, and a message under them offers Try again for
+  that page only; Load More comes back once it loads. A new search or filter
+  forgets the failed page.
+- As in #243, Retry and Try again keep the message, busy, until the answer
+  comes, and on success focus moves to what appeared (the heading of the
+  person to take over, or the first new game) unless it was moved meanwhile.
+
 ### Routes
 
 | Route | Guard | Page |

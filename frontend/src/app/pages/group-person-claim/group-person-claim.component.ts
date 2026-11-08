@@ -1,4 +1,5 @@
-import { Component, inject, signal } from '@angular/core'
+import { HttpErrorResponse } from '@angular/common/http'
+import { afterNextRender, Component, DestroyRef, ElementRef, Injector, inject, signal } from '@angular/core'
 import { ActivatedRoute, Router, RouterLink } from '@angular/router'
 import { firstValueFrom } from 'rxjs'
 import { Api } from '../../api/api'
@@ -25,10 +26,19 @@ export class GroupPersonClaimComponent {
     public readonly route = inject(ActivatedRoute)
     private readonly router = inject(Router)
     private readonly toastService = inject(ToastService)
+    private readonly destroyRef = inject(DestroyRef)
+    private readonly injector = inject(Injector)
+    private readonly host = inject<ElementRef<HTMLElement>>(ElementRef)
 
     public readonly isLoading = signal(true)
     public readonly isSaving = signal(false)
     public readonly error = signal<string | null>(null)
+    /**
+     * The handoff could not be loaded because Board Vault did not answer (network, time limit, server error). Unlike
+     * "unavailable" (403/404, or a person who is not for you), this offers Retry, not joining as a new person, which
+     * would change who you are in the group.
+     */
+    public readonly loadFailed = signal(false)
     public readonly person = signal<GroupPersonWorkspaceType | null>(null)
     public readonly games = signal<Array<GameCompleteType>>([])
     public readonly selectedOwnership = signal<Set<number>>(new Set())
@@ -54,6 +64,12 @@ export class GroupPersonClaimComponent {
 
     constructor() {
         void this.load()
+    }
+
+    /** Loads the handoff again; the message stays, busy, until the answer comes. */
+    public retryLoad(): void {
+        if (this.isLoading()) return
+        void this.load(true)
     }
 
     public gameTitle(gameId: number): string {
@@ -144,7 +160,7 @@ export class GroupPersonClaimComponent {
         }
     }
 
-    private async load(): Promise<void> {
+    private async load(retrying = false): Promise<void> {
         const groupId = Number.parseInt(this.route.snapshot.paramMap.get('groupId') || '', 10)
         const personId = Number.parseInt(this.route.snapshot.paramMap.get('personId') || '', 10)
         if (Number.isNaN(groupId) || Number.isNaN(personId)) {
@@ -155,30 +171,60 @@ export class GroupPersonClaimComponent {
             return
         }
 
+        this.isLoading.set(true)
         try {
             const [peopleResponse, games] = await Promise.all([
                 firstValueFrom(this.api.getGroupPeople(groupId)),
                 firstValueFrom(this.api.getGroupPersonCatalog(groupId)),
             ])
             const candidate = peopleResponse.people.find((item) => item.person.id === personId)
+            this.loadFailed.set(false)
             if (!candidate?.claimable || candidate.person.kind !== 'placeholder') {
                 this.error.set(
                     $localize`:Error on the page where you take over a person prepared for you, when that person is not for you:This group person is not available for your account.`,
                 )
+                if (retrying) this.#focusHeading('#claim-unavailable-heading')
                 return
             }
 
+            this.error.set(null)
             this.person.set(candidate)
             this.games.set(games)
             this.selectedOwnership.set(new Set(candidate.ownership.filter((item) => item.status === 'asserted').map((item) => item.gameId)))
             this.selectedPreferences.set(new Set(candidate.preferences.map((item) => item.gameId)))
-        } catch {
-            this.error.set(
-                $localize`:Error on the page where you take over a person prepared for you, when it fails to load:We could not load the group person data. Please try again.`,
-            )
+            if (retrying) this.#focusHeading('#claim-heading')
+        } catch (error) {
+            if (isUnavailable(error)) {
+                this.loadFailed.set(false)
+                this.error.set(
+                    $localize`:Error on the page where you take over a person prepared for you, when that person is not for you:This group person is not available for your account.`,
+                )
+                if (retrying) this.#focusHeading('#claim-unavailable-heading')
+            } else {
+                this.loadFailed.set(true)
+                this.error.set(
+                    $localize`:Error on the page where you take over a person prepared for you, when it fails to load:We could not load the group person data. Please try again.`,
+                )
+            }
         } finally {
             this.isLoading.set(false)
         }
+    }
+
+    /**
+     * After Retry answers, its button is gone: focus goes to the heading of what replaced it (the person to take over,
+     * or "unavailable"), unless it was moved elsewhere meanwhile.
+     */
+    #focusHeading(selector: '#claim-heading' | '#claim-unavailable-heading'): void {
+        afterNextRender(
+            () => {
+                if (this.destroyRef.destroyed) return
+                const active = document.activeElement
+                if (active !== null && active !== document.body) return
+                this.host.nativeElement.querySelector<HTMLElement>(selector)?.focus()
+            },
+            { injector: this.injector },
+        )
     }
 
     private toggle(current: Set<number>, gameId: number): Set<number> {
@@ -187,4 +233,9 @@ export class GroupPersonClaimComponent {
         else next.add(gameId)
         return next
     }
+}
+
+/** The API says the handoff is not there for this account: the group or person is gone, or it is not yours. */
+function isUnavailable(error: unknown): boolean {
+    return error instanceof HttpErrorResponse && (error.status === 403 || error.status === 404)
 }

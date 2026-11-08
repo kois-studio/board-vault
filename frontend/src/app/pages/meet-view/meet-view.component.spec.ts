@@ -6,7 +6,9 @@ import { of, Subject, throwError } from 'rxjs'
 import { Api } from '../../api/api'
 import type { MeetWithAttendeesAndGamesType } from '../../api/api.types'
 import { ToastService } from '../../components/toast/toast.service'
+import { LOADING_KEYS } from '../../core/enums/loading-keys-enum'
 import { DataService } from '../../core/services/data.service'
+import { LoadingService } from '../../core/services/loading.service'
 import { ApiUnavailableError } from '../../core/utils/apiUnavailable'
 import { MeetViewComponent } from './meet-view.component'
 
@@ -1087,5 +1089,282 @@ describe('MeetViewComponent invite changes that are not saved', () => {
 
         // No focus is scheduled on the page that was left (afterNextRender would throw NG0911 there).
         await expect(saved).resolves.toBeUndefined()
+    })
+})
+
+describe('MeetViewComponent when its group is not known (#244)', () => {
+    const night = (): MeetWithAttendeesAndGamesType => ({
+        id: 59,
+        groupId: 7,
+        createdBy: 1,
+        meetDate: '2026-12-14T17:00:00.000Z',
+        isConfirmed: false,
+        status: 'scheduled',
+        timezone: 'Europe/Madrid',
+        notes: null,
+        attendees: [1],
+        attendeeStatuses: [{ accountId: 1, rsvpStatus: 'pending', attendanceStatus: 'unknown' }],
+        playedGames: [],
+        plannedGames: [],
+        skippedGames: [],
+        playedGameParticipants: [],
+        gameVotes: [],
+        gameBringers: [],
+    })
+    const group = (id: number, name: string) => ({
+        id,
+        name,
+        createdBy: 1,
+        members: [{ id: 1, username: 'ana', displayName: 'Ana', avatar: null, games: [], reviews: [] }],
+        games: [],
+    })
+    type Group = ReturnType<typeof group>
+    type Groups = { list: Array<Group>; error?: boolean; loading?: boolean }
+
+    const setup = async ({ list, error = false, loading = false }: Groups, details = of(night())) => {
+        const api = {
+            getSessionDetailsById: vi.fn().mockReturnValue(details),
+            getGroupPeople: vi.fn().mockReturnValue(of({ people: [] })),
+            getGroupPersonCatalog: vi.fn().mockReturnValue(of([])),
+        }
+        const userGroups = signal<Array<Group>>(list)
+        const userGroupsError = signal(error)
+        // As DataService does: a refresh clears the error and marks the groups as loading.
+        const refreshUserGroups = vi.fn(() => {
+            userGroupsError.set(false)
+            TestBed.inject(LoadingService).start(LOADING_KEYS.USER_GROUPS)
+        })
+        await TestBed.configureTestingModule({
+            imports: [MeetViewComponent],
+            providers: [
+                provideRouter([]),
+                { provide: Api, useValue: api },
+                { provide: ActivatedRoute, useValue: { snapshot: { paramMap: convertToParamMap({ sessionId: '59' }) } } },
+                {
+                    provide: DataService,
+                    useValue: {
+                        currentUser: signal({ id: 1, username: 'ana', displayName: 'Ana', avatar: null }),
+                        userGroups,
+                        userGroupsError,
+                        refreshUserGroups,
+                        userReviews: signal([]),
+                        refreshUserMeets: vi.fn(),
+                        refreshUserHistory: vi.fn(),
+                    },
+                },
+                { provide: ToastService, useValue: { success: vi.fn(), error: vi.fn() } },
+            ],
+        }).compileComponents()
+        const loadingService = TestBed.inject(LoadingService)
+        if (loading) loadingService.start(LOADING_KEYS.USER_GROUPS)
+        else loadingService.finish(LOADING_KEYS.USER_GROUPS)
+
+        const fixture = TestBed.createComponent(MeetViewComponent)
+        fixture.autoDetectChanges()
+        const settle = async () => {
+            await new Promise((resolve) => setTimeout(resolve))
+            await fixture.whenStable()
+        }
+        await settle()
+        const element = fixture.nativeElement as HTMLElement
+        const text = () => element.textContent ?? ''
+        const retry = () => [...element.querySelectorAll('button')].find((button) => button.textContent?.trim() === 'Retry')
+        /** The groups answer, as DataService records it. */
+        const groupsAnswer = async (answer: Groups) => {
+            userGroups.set(answer.list)
+            userGroupsError.set(answer.error ?? false)
+            loadingService.finish(LOADING_KEYS.USER_GROUPS)
+            await settle()
+        }
+        /** The groups fail, as DataService records it: the error is set and the list is left as it was. */
+        const groupsFail = async () => {
+            userGroupsError.set(true)
+            loadingService.finish(LOADING_KEYS.USER_GROUPS)
+            await settle()
+        }
+        return {
+            fixture,
+            component: fixture.componentInstance,
+            api,
+            text,
+            retry,
+            settle,
+            groupsAnswer,
+            groupsFail,
+            refreshUserGroups,
+            userGroupsError,
+        }
+    }
+
+    it('says the night could not be loaded when the groups failed, instead of loading forever', async () => {
+        const { component, api, text, retry } = await setup({ list: [], error: true })
+
+        expect(text()).not.toContain('Loading session…')
+        expect(text()).toContain('This session could not be loaded.')
+        expect(retry()).toBeDefined()
+        expect(component.loadError()).toBe(true)
+        expect(api.getSessionDetailsById).not.toHaveBeenCalled()
+    })
+
+    it('keeps loading while the groups are still on their way', async () => {
+        const { api, text } = await setup({ list: [], loading: true })
+
+        expect(text()).toContain('Loading session…')
+        expect(api.getSessionDetailsById).not.toHaveBeenCalled()
+    })
+
+    it('loads the night once groups that were still loading arrive', async () => {
+        const { component, api, groupsAnswer } = await setup({ list: [], loading: true })
+        await groupsAnswer({ list: [group(7, 'Thursday group')] })
+
+        expect(api.getSessionDetailsById).toHaveBeenCalledWith(59)
+        expect(component.loaded).toBe(true)
+    })
+
+    it('says so for a person with no group at all', async () => {
+        const { component, api, text } = await setup({ list: [] })
+
+        expect(api.getSessionDetailsById).toHaveBeenCalledWith(59)
+        expect(component.loadError()).toBe(true)
+        expect(text()).toContain('This session could not be loaded.')
+    })
+
+    it('says so when the night belongs to a group that is not listed', async () => {
+        const { component, text } = await setup({ list: [group(8, 'Sunday group')] })
+
+        expect(component.loadError()).toBe(true)
+        expect(text()).not.toContain('Loading session…')
+    })
+
+    it('loads the groups again on Retry after they failed, then the night', async () => {
+        const { component, api, text, retry, settle, groupsAnswer, refreshUserGroups } = await setup({ list: [], error: true })
+
+        retry()?.click()
+        await settle()
+        expect(refreshUserGroups).toHaveBeenCalledTimes(1)
+        expect(text()).toContain('Loading session…')
+        expect(api.getSessionDetailsById).not.toHaveBeenCalled()
+
+        await groupsAnswer({ list: [group(7, 'Thursday group')] })
+        expect(api.getSessionDetailsById).toHaveBeenCalledTimes(1)
+        expect(component.loaded).toBe(true)
+        expect(component.loadError()).toBe(false)
+    })
+
+    it('says so again when the groups fail on Retry too', async () => {
+        const { component, api, text, retry, settle, groupsAnswer } = await setup({ list: [], error: true })
+
+        retry()?.click()
+        await settle()
+        await groupsAnswer({ list: [], error: true })
+
+        expect(text()).not.toContain('Loading session…')
+        expect(component.loadError()).toBe(true)
+        expect(retry()).toBeDefined()
+        expect(api.getSessionDetailsById).not.toHaveBeenCalled()
+    })
+
+    it('waits for fresh groups on Retry when the night’s group was not listed', async () => {
+        const { component, api, retry, settle, groupsAnswer, refreshUserGroups } = await setup({ list: [group(8, 'Sunday group')] })
+        expect(api.getSessionDetailsById).toHaveBeenCalledTimes(1)
+
+        retry()?.click()
+        await settle()
+        expect(refreshUserGroups).toHaveBeenCalledTimes(1)
+        // The groups listed are out of date: the night waits for the fresh ones.
+        expect(api.getSessionDetailsById).toHaveBeenCalledTimes(1)
+
+        await groupsAnswer({ list: [group(8, 'Sunday group'), group(7, 'Thursday group')] })
+        expect(api.getSessionDetailsById).toHaveBeenCalledTimes(2)
+        expect(component.loaded).toBe(true)
+    })
+
+    it('does not stay loading when the fresh groups fail and older ones are still listed', async () => {
+        const { component, text, retry, settle, groupsFail } = await setup({ list: [group(8, 'Sunday group')] })
+        // Any other list loading meanwhile re-runs the page's effect; it must keep listening for the groups.
+        TestBed.inject(LoadingService).start(LOADING_KEYS.USER_MEETS)
+        await settle()
+        TestBed.inject(LoadingService).finish(LOADING_KEYS.USER_MEETS)
+        await settle()
+
+        retry()?.click()
+        await settle()
+        await groupsFail()
+
+        expect(text()).not.toContain('Loading session…')
+        expect(component.loadError()).toBe(true)
+        expect(retry()).toBeDefined()
+    })
+
+    it('loads only the night again on Retry when the night itself failed', async () => {
+        const details = new Subject<MeetWithAttendeesAndGamesType>()
+        const { component, api, retry, settle, refreshUserGroups } = await setup({ list: [group(7, 'Thursday group')] }, details)
+        details.error(new ApiUnavailableError({ kind: 'network', outcomeUnknown: false, url: '/sessions/59' }))
+        await settle()
+        expect(component.loadError()).toBe(true)
+
+        api.getSessionDetailsById.mockReturnValue(of(night()))
+        retry()?.click()
+        await settle()
+
+        expect(refreshUserGroups).not.toHaveBeenCalled()
+        expect(api.getSessionDetailsById).toHaveBeenCalledTimes(2)
+        expect(component.loaded).toBe(true)
+    })
+
+    it('keeps a loaded night on screen when a later groups refresh fails', async () => {
+        const { component, text, groupsAnswer } = await setup({ list: [group(7, 'Thursday group')] })
+        expect(component.loaded).toBe(true)
+
+        TestBed.inject(LoadingService).start(LOADING_KEYS.USER_GROUPS)
+        await groupsAnswer({ list: [], error: true })
+
+        expect(component.loadError()).toBe(false)
+        expect(component.loaded).toBe(true)
+        expect(text()).not.toContain('This session could not be loaded.')
+    })
+
+    it('recovers by itself when the groups load again from elsewhere (the connection notice)', async () => {
+        const { component, api, groupsAnswer } = await setup({ list: [], error: true })
+
+        TestBed.inject(LoadingService).start(LOADING_KEYS.USER_GROUPS)
+        await groupsAnswer({ list: [group(7, 'Thursday group')] })
+
+        expect(api.getSessionDetailsById).toHaveBeenCalledTimes(1)
+        expect(component.loaded).toBe(true)
+        expect(component.loadError()).toBe(false)
+    })
+
+    it('loads only the night on Retry when the groups recovered by themselves and then the night failed', async () => {
+        const details = new Subject<MeetWithAttendeesAndGamesType>()
+        const { component, api, retry, settle, groupsAnswer, refreshUserGroups } = await setup({ list: [], error: true }, details)
+        TestBed.inject(LoadingService).start(LOADING_KEYS.USER_GROUPS)
+        await groupsAnswer({ list: [group(7, 'Thursday group')] })
+        details.error(new ApiUnavailableError({ kind: 'network', outcomeUnknown: false, url: '/sessions/59' }))
+        await settle()
+        expect(component.loadError()).toBe(true)
+
+        api.getSessionDetailsById.mockReturnValue(of(night()))
+        retry()?.click()
+        await settle()
+
+        expect(refreshUserGroups).not.toHaveBeenCalled()
+        expect(component.loaded).toBe(true)
+    })
+
+    it('waits for a groups load already on its way instead of starting another on Retry', async () => {
+        const { component, api, retry, settle, groupsAnswer, refreshUserGroups } = await setup({ list: [], error: true })
+        // The connection notice started loading the groups again.
+        TestBed.inject(LoadingService).start(LOADING_KEYS.USER_GROUPS)
+        await settle()
+
+        retry()?.click()
+        await settle()
+        expect(refreshUserGroups).not.toHaveBeenCalled()
+        expect(api.getSessionDetailsById).not.toHaveBeenCalled()
+
+        await groupsAnswer({ list: [group(7, 'Thursday group')] })
+        expect(api.getSessionDetailsById).toHaveBeenCalledTimes(1)
+        expect(component.loaded).toBe(true)
     })
 })

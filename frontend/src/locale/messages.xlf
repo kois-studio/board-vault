@@ -1721,6 +1721,15 @@
         <source>Submitted: <ph id="0" equiv="INTERPOLATION" disp="{{ formatDate(proposal.submittedAt) }}"/></source>
       </segment>
     </unit>
+    <unit id="1927423799537799428">
+      <notes>
+        <note category="location">src/app/pages/collection-page/browse-page/browse-page.component.html</note>
+        <note category="description">Error at the end of Browse when the next games could not be loaded; the games above stay</note>
+      </notes>
+      <segment>
+        <source>We couldn’t load more games.</source>
+      </segment>
+    </unit>
     <unit id="1934485409059405046">
       <notes>
         <note category="location">src/app/pages/group-person/group-person-page.component.html</note>
@@ -10563,6 +10572,15 @@
         <source>We couldn’t confirm your new name was saved. Try again.</source>
       </segment>
     </unit>
+    <unit id="6443459836257752618">
+      <notes>
+        <note category="location">src/app/pages/group-person-claim/group-person-claim.component.html</note>
+        <note category="description">Error on the page where you take over a person prepared for you in a group, when Board Vault did not answer</note>
+      </notes>
+      <segment>
+        <source>This handoff couldn’t be loaded</source>
+      </segment>
+    </unit>
     <unit id="6444163938950057626">
       <notes>
         <note category="location">src/app/pages/you-page/you-page.component.html</note>
@@ -13506,6 +13524,7 @@
         <note category="location">src/app/pages/dashboard-page/dashboard-page.component.html</note>
         <note category="location">src/app/pages/dashboard-page/submissions-page/submissions-page.component.html</note>
         <note category="location">src/app/pages/games/game-view/game-view.component.html</note>
+        <note category="location">src/app/pages/group-person-claim/group-person-claim.component.html</note>
         <note category="location">src/app/pages/group-person/group-person-page.component.html</note>
         <note category="location">src/app/pages/group-view/group-view.component.html</note>
         <note category="location">src/app/pages/groups/group-edit/group-edit.component.html</note>
