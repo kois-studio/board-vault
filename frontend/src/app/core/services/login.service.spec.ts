@@ -1,17 +1,19 @@
-import { HttpErrorResponse } from '@angular/common/http'
+import { HttpContext, HttpErrorResponse } from '@angular/common/http'
 import { signal } from '@angular/core'
 import { TestBed } from '@angular/core/testing'
 import { Router } from '@angular/router'
-import { NEVER, of, Subject, throwError } from 'rxjs'
+import { of, Subject, throwError } from 'rxjs'
 import { Api } from '../../api/api'
 import { ToastService } from '../../components/toast/toast.service'
 import { LOADING_KEYS } from '../enums/loading-keys-enum'
+import { RETRY_READ } from '../interceptors/resilience.interceptor'
+import { ApiUnavailableError } from '../utils/apiUnavailable'
 import { ClerkService } from './clerk.service'
 import { DataService } from './data.service'
 import { LoadingService } from './loading.service'
 import { LocalStorageService } from './local-storage.service'
 import { LogService } from './log.service'
-import { LoginService, SIGN_IN_REQUEST_TIMEOUT_MS } from './login.service'
+import { LoginService } from './login.service'
 
 describe('LoginService account readiness', () => {
     it('does not activate the protected route until the local account is loaded', async () => {
@@ -213,6 +215,8 @@ describe('LoginService after the account is deleted', () => {
 
 describe('LoginService when Board Vault cannot be reached (#238)', () => {
     const status = (code: number) => throwError(() => new HttpErrorResponse({ status: code, url: '/auth/clerk/status' }))
+    /** A hung request, as resilienceInterceptor ends it (#240). */
+    const timedOut = () => throwError(() => new ApiUnavailableError({ kind: 'timeout', outcomeUnknown: false, url: '/auth/clerk/status' }))
     const linked = () => of({ isValid: true as const, userId: 7, isAdmin: false, clerkUserId: 'clerk_7' })
     let visibility: DocumentVisibilityState
 
@@ -267,29 +271,37 @@ describe('LoginService when Board Vault cannot be reached (#238)', () => {
     }
 
     it('shows the can’t-reach state for a 5xx, a refused connection, or a timeout on the session check', () => {
-        for (const failure of [status(503), status(500), status(0), NEVER]) {
+        for (const failure of [status(503), status(500), status(0), timedOut()]) {
             TestBed.resetTestingModule()
             const context = setup()
             context.api.clerkAuthStatus.mockReturnValue(failure)
             const results: Array<boolean> = []
 
             context.service.verifyClerkSession().subscribe((ready) => results.push(ready))
-            vi.advanceTimersByTime(SIGN_IN_REQUEST_TIMEOUT_MS)
 
             expect(results).toEqual([false])
             expectNotSignedOut(context)
         }
     })
 
+    it('leaves retrying its requests to its own schedule, not the interceptor’s (#240)', () => {
+        const context = setup()
+        context.api.clerkAuthStatus.mockReturnValue(linked())
+
+        context.service.verifyClerkSession().subscribe()
+
+        const [, requestContext] = context.api.getUserById.mock.calls[0] as unknown as [number, HttpContext]
+        expect(requestContext.get(RETRY_READ)).toBe(false)
+    })
+
     it('keeps the session and the account id when loading the account fails the same way', () => {
-        for (const failure of [status(503), status(0), NEVER]) {
+        for (const failure of [status(503), status(0), timedOut()]) {
             TestBed.resetTestingModule()
             const context = setup()
             context.api.clerkAuthStatus.mockReturnValue(linked())
             context.api.getUserById.mockReturnValue(failure as never)
 
             context.service.verifyClerkSession().subscribe()
-            vi.advanceTimersByTime(SIGN_IN_REQUEST_TIMEOUT_MS)
 
             expectNotSignedOut(context)
             expect(context.service.currentUserId()).toBe(7)

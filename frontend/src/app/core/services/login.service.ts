@@ -2,12 +2,12 @@ import { DOCUMENT } from '@angular/common'
 import { computed, DestroyRef, effect, Injectable, inject, signal } from '@angular/core'
 import { Router } from '@angular/router'
 import { from, Observable, of, throwError } from 'rxjs'
-import { catchError, finalize, map, shareReplay, switchMap, tap, timeout } from 'rxjs/operators'
-
+import { catchError, finalize, map, shareReplay, switchMap, tap } from 'rxjs/operators'
 import { Api } from '../../api/api'
 import { ToastService } from '../../components/toast/toast.service'
 import { LOADING_KEYS } from '../enums/loading-keys-enum'
 import { AccountLanguageService } from '../i18n/account-language.service'
+import { withoutReadRetry } from '../interceptors/resilience.interceptor'
 import { isServerUnreachable } from '../utils/serverUnreachable'
 import { ClerkService } from './clerk.service'
 import { DataService } from './data.service'
@@ -22,12 +22,6 @@ export type ClerkAuthHandoffState = 'idle' | 'linking' | 'ready' | 'error' | 'un
 
 /** Waits between automatic tries while Board Vault cannot be reached; the last one repeats. */
 export const RECONNECT_DELAYS_MS = [2_000, 5_000, 10_000, 30_000] as const
-
-/**
- * A sign-in request with no answer by then counts as Board Vault being unreachable, so "Connecting you…"
- * never lasts forever. Above the API's own bound (5 s per provider call, a read tried twice).
- */
-export const SIGN_IN_REQUEST_TIMEOUT_MS = 15_000
 
 @Injectable({ providedIn: 'root' })
 export class LoginService {
@@ -113,8 +107,9 @@ export class LoginService {
         else this.clerkAuthHandoffState.set('linking')
         this.clerkAuthHandoffError.set(null)
 
+        // Both requests give up after 12 s (resilienceInterceptor, #240) and are not tried again there: the
+        // reconnect schedule here is the retry.
         const verification$ = this.api.clerkAuthStatus().pipe(
-            timeout(SIGN_IN_REQUEST_TIMEOUT_MS),
             switchMap((response) => {
                 if (!response?.isValid || response.userId === undefined) {
                     this.reconnectAttempt = 0
@@ -189,8 +184,7 @@ export class LoginService {
         this.logger.log(`LoginService: Triggering USER_DATA load for user ID: ${userId}`)
         this.loadingService.start(LOADING_KEYS.USER_DATA)
 
-        return this.api.getUserById(userId).pipe(
-            timeout(SIGN_IN_REQUEST_TIMEOUT_MS),
+        return this.api.getUserById(userId, withoutReadRetry()).pipe(
             tap((userData) => {
                 this.logger.log('LoginService: USER_DATA fetched successfully.')
                 this.dataService.currentUser.set(userData)

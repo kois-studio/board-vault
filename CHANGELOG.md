@@ -305,6 +305,10 @@ operational details.
 
 ### Fixed
 
+- No page waits forever for Board Vault. When it doesn't answer, a page
+  stops trying after a few seconds, tries once more, and then shows its
+  error with Retry. A brief blip no longer shows an error at all. Saving
+  is never repeated behind your back.
 - Opening a focused page (a new group, a new game night, editing a group,
   claiming a person, proposing a game) while you are signed in shows
   "Connecting you…", or that Board Vault cannot be reached, instead of a

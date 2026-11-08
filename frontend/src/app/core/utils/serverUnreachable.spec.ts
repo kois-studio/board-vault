@@ -1,5 +1,5 @@
 import { HttpErrorResponse } from '@angular/common/http'
-import { TimeoutError } from 'rxjs'
+import { ApiUnavailableError } from './apiUnavailable'
 import { isServerUnreachable } from './serverUnreachable'
 
 describe('isServerUnreachable', () => {
@@ -13,7 +13,7 @@ describe('isServerUnreachable', () => {
         expect(isServerUnreachable(http(502))).toBe(true)
         expect(isServerUnreachable(http(503))).toBe(true)
         expect(isServerUnreachable(http(504))).toBe(true)
-        expect(isServerUnreachable(new TimeoutError())).toBe(true)
+        expect(isServerUnreachable(new ApiUnavailableError({ kind: 'timeout', outcomeUnknown: false, url: '/groups' }))).toBe(true)
     })
 
     it('leaves answers about the request or the session to their own handling', () => {

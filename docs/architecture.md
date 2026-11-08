@@ -11,7 +11,9 @@ persists. Frontend guards and hidden buttons are UX only.
 
 ## Request lifecycle
 
-1. The Angular [`auth.interceptor.ts`](../frontend/src/app/core/interceptors/auth.interceptor.ts)
+1. The Angular [`resilience.interceptor.ts`](../frontend/src/app/core/interceptors/resilience.interceptor.ts)
+   bounds the request ([Slow and failed requests](#slow-and-failed-requests)), then
+   [`auth.interceptor.ts`](../frontend/src/app/core/interceptors/auth.interceptor.ts)
    adds the Clerk session token as `Authorization: Bearer …`.
 2. [`LoggerMiddleware`](../backend/src/common/middlewares/logger.middleware.ts) assigns a request ID;
    [`ClerkSessionMiddleware`](../backend/src/common/middlewares/clerk-session.middleware.ts)
@@ -102,6 +104,7 @@ List `AuthGuard` first; the others read `request.user`.
 | `core/services/login.service.ts` | Board Vault session state: verifies Clerk sessions with `/auth/clerk/status` and loads the current user. |
 | `core/services/data.service.ts` | Shared signals for the current user and loaded data. |
 | `core/guards/` | `AuthOnlyGuard`, `GuestOnlyGuard`, `AdminGuard`. |
+| `core/interceptors/resilience.interceptor.ts` | Registered first. No request waits forever: reads give up after 12 s and are tried once more after 1 s on no answer, a timeout, or a 502/503/504; writes give up after 20 s and are never tried again. Failures without a usable answer become an `ApiUnavailableError` (`core/utils/apiUnavailable.ts`). |
 | `core/interceptors/auth.interceptor.ts` | Adds the Clerk token; on 401 signs out and redirects to `/login`. |
 | `pages/` | One folder per route (landing, auth, dashboard, groups, group view, collection, games, play, sessions, settings, errors). |
 | `components/` | Reusable UI: cards, modals, forms, `ui/` primitives (button, icon, dialog). |
@@ -127,6 +130,41 @@ for the previous account are cancelled, so the next account starts empty
 Page state lives in the page component. Subscriptions that do not complete on
 their own (router events, route params, form value changes) end with the
 component through `takeUntilDestroyed` or `toSignal`.
+
+### Slow and failed requests
+
+`resilienceInterceptor` makes sure no request waits forever (#240):
+
+- A read (GET, HEAD, or a request marked `asReadOnly()`) gives up after 12 s. It is tried once more after 1 s
+  when there was no answer, a timeout, or a 502, 503, or 504. It is never
+  retried after a 4xx or a 500.
+- Every other request is a write. It gives up after 20 s and is sent only
+  once. Retrying writes needs the idempotency of #246.
+- The time limit includes fetching the Clerk token. With progress events it
+  is the longest silence between two of them.
+
+Pages read failures like this:
+
+- `ApiUnavailableError` (`core/utils/apiUnavailable.ts`) means Board Vault
+  did not answer. Its `kind` is `timeout`, `network` (status 0) or
+  `server` (5xx).
+  - It is still an `HttpErrorResponse` with the same status and body, so
+    code that reads `status` keeps working.
+  - `isServerUnreachable()` is true for it. A 401, 403, 404, 409, or 422
+    passes through unchanged.
+- For a write that timed out after it was sent, lost its connection, or got
+  a 504, the outcome is unknown and it may have been saved. A write that
+  timed out while still waiting for the Clerk token was never sent, so its
+  outcome is known. `isSaveOutcomeUnknown(error)` is
+  true, and the page should say so rather than "it failed".
+- A caller that retries on its own schedule passes `withoutReadRetry()` as
+  the request's `HttpContext`. The quiet inbox refreshes and the sign-in
+  handoff do this.
+- A `POST` that only reads, such as the recommendations, passes
+  `asReadOnly()`. It then gets the read limit and retry and is never
+  "outcome unknown".
+- An operation that may legitimately take longer than its limit, including a
+  slow write, sets `REQUEST_TIMEOUT_MS`. The artwork upload uses 90 s.
 
 ### Routes
 

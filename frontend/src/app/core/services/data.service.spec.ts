@@ -1,8 +1,10 @@
+import { HttpContext } from '@angular/common/http'
 import { TestBed } from '@angular/core/testing'
 import { firstValueFrom, of, Subject, throwError } from 'rxjs'
 import { Api } from '../../api/api'
 import type { UserType } from '../../api/api.types'
 import { ToastService } from '../../components/toast/toast.service'
+import { RETRY_READ } from '../interceptors/resilience.interceptor'
 import { DataService } from './data.service'
 
 describe('DataService account refresh', () => {
@@ -183,6 +185,26 @@ describe('DataService inbox', () => {
 
         expect(service.userNotifications().every((item) => item.isRead)).toBe(true)
         expect(toast.success).toHaveBeenCalledWith('All notifications marked as read')
+    })
+
+    it('leaves retrying quiet refreshes to the next refresh, but lets the first load be tried again (#240)', () => {
+        const api = {
+            getUserNotifications: vi.fn((_id: number, _context?: HttpContext) => of([])),
+            getUserInvitations: vi.fn((_id: number, _context?: HttpContext) => of([])),
+            getUserMeets: vi.fn((_id: number, _context?: HttpContext) => of([])),
+        }
+        const { service } = setup(api)
+        service.currentUser.set({ id: 1 } as never)
+        TestBed.tick()
+        const retried = (mock: (typeof api)['getUserMeets']) => mock.mock.calls.map(([, context]) => context?.get(RETRY_READ) ?? true)
+
+        service.refreshSharedActivity(true)
+
+        for (const mock of [api.getUserNotifications, api.getUserInvitations, api.getUserMeets]) {
+            expect(retried(mock).at(-1)).toBe(false)
+        }
+        // The loads at sign-in show an error when they fail, so they keep the one retry.
+        expect(retried(api.getUserNotifications)[0]).toBe(true)
     })
 
     it('counts an arrival only when a look brings an unread notification or invitation it did not have', () => {

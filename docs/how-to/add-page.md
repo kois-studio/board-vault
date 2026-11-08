@@ -21,7 +21,9 @@
    `app.component.ts`.
 3. **Load data through `Api`** (`frontend/src/app/api/api.ts`). Every
    response is parsed by a zod schema in `api.schemas.ts`; add one for new
-   endpoints.
+   endpoints. Requests time out and reads are retried once for you
+   ([Slow and failed requests](../architecture.md#slow-and-failed-requests));
+   a page shows its error state when they still fail.
 4. **Handle every state**: loading, empty, error with retry, no permission,
    and mobile width ([ux-flows.md](../ux-flows.md)). Hidden buttons are not
    security; the API must still reject the action.

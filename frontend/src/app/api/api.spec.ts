@@ -6,6 +6,7 @@ import { firstValueFrom } from 'rxjs'
 import openapi from '../../../../docs/api/openapi.json'
 import { environment } from '../../environments/environment'
 
+import { READ_ONLY, REQUEST_TIMEOUT_MS, RETRY_READ, WRITE_TIMEOUT_MS } from '../core/interceptors/resilience.interceptor'
 import { Api } from './api'
 
 describe('Api response contracts', () => {
@@ -31,6 +32,32 @@ describe('Api response contracts', () => {
         request.flush({ isValid: true, userId: 7, isAdmin: false, clerkUserId: 'user_member' })
 
         await expect(response).resolves.toEqual({ isValid: true, userId: 7, isAdmin: false, clerkUserId: 'user_member' })
+    })
+
+    it('leaves retrying the Clerk session status to the sign-in handoff, and lets other reads be tried again (#240)', () => {
+        api.clerkAuthStatus().subscribe()
+        api.getUserById(7).subscribe()
+
+        expect(http.expectOne(`${environment.apiUrl}/auth/clerk/status`).request.context.get(RETRY_READ)).toBe(false)
+        expect(http.expectOne(`${environment.apiUrl}/profile/users/7`).request.context.get(RETRY_READ)).toBe(true)
+    })
+
+    it('gives an artwork upload longer than an ordinary write (#240)', () => {
+        api.uploadGameArtwork(4, new Blob(['x'], { type: 'image/png' })).subscribe()
+        const limit = http.expectOne(`${environment.apiUrl}/admin/games/4/artwork`).request.context.get(REQUEST_TIMEOUT_MS)
+
+        expect(limit).toBeGreaterThan(WRITE_TIMEOUT_MS)
+    })
+
+    it('treats the recommendation POSTs as reads, and their feedback as writes (#240)', () => {
+        const body = { groupId: 1, attendeeIds: [2], gameId: 3, feedback: 'played' as const }
+        api.getRecommendations(body).subscribe()
+        api.getParticipantRecommendations({ groupId: 1, groupPersonIds: [2] }).subscribe()
+        api.createRecommendationFeedback(body).subscribe()
+
+        expect(http.expectOne(`${environment.apiUrl}/play/recommendations`).request.context.get(READ_ONLY)).toBe(true)
+        expect(http.expectOne(`${environment.apiUrl}/play/recommendations/participants`).request.context.get(READ_ONLY)).toBe(true)
+        expect(http.expectOne(`${environment.apiUrl}/play/recommendations/feedback`).request.context.get(READ_ONLY)).toBe(false)
     })
 
     it('rejects a Clerk session status with an invalid user id before it reaches the app', async () => {

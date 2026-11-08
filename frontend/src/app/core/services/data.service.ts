@@ -33,6 +33,7 @@ import type {
 import { ToastService } from '../../components/toast/toast.service'
 import { LOADING_KEYS } from '../enums/loading-keys-enum'
 import { intlLocale } from '../i18n/format'
+import { withoutReadRetry } from '../interceptors/resilience.interceptor'
 import { rsvpToast } from '../utils/rsvp'
 import { LoadingService } from './loading.service'
 import { LogService } from './log.service'
@@ -277,7 +278,7 @@ export class DataService {
         if (!currentUser || (!force && now - this.lastQuietRefresh < 60_000)) return
         this.lastQuietRefresh = now
         this.refreshInbox()
-        this.quietly(this.api.getUserMeets(currentUser.id), (meets) => {
+        this.quietly(this.api.getUserMeets(currentUser.id, withoutReadRetry()), (meets) => {
             this.userMeets.set(meets)
             this.userMeetsError.set(false)
         })
@@ -301,7 +302,7 @@ export class DataService {
             if (fresh > 0) this.inboxArrivals.update((count) => count + 1)
         }
         this.quietly(
-            this.api.getUserNotifications(currentUser.id),
+            this.api.getUserNotifications(currentUser.id, withoutReadRetry()),
             (notifications) => {
                 this.userNotifications.set(notifications)
                 this.userNotificationsError.set(false)
@@ -310,7 +311,7 @@ export class DataService {
             stop,
         )
         this.quietly(
-            this.api.getUserInvitations(currentUser.id),
+            this.api.getUserInvitations(currentUser.id, withoutReadRetry()),
             (invitations) => {
                 this.userInvitations.set(invitations)
                 this.userInvitationsError.set(false)
@@ -332,7 +333,10 @@ export class DataService {
         this.inboxRefreshStopped = new Subject<void>()
     }
 
-    /** A read whose failure keeps what is shown; it stops when the user changes, or when `stop` emits. */
+    /**
+     * A read whose failure keeps what is shown; it stops when the user changes, or when `stop` emits.
+     * Callers pass `withoutReadRetry()`: the next quiet refresh is the retry (#240).
+     */
     private quietly<T>(read: Observable<T>, apply: (value: T) => void, stop?: Observable<void>): void {
         read.pipe(takeUntil(this.userChanged), takeUntil(stop ?? this.userChanged)).subscribe({ next: apply, error: () => undefined })
     }

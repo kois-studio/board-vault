@@ -1,9 +1,10 @@
-import { HttpClient } from '@angular/common/http'
+import { HttpClient, HttpContext } from '@angular/common/http'
 import { Injectable } from '@angular/core'
 import { map } from 'rxjs'
 import * as z from 'zod/mini'
 import { environment } from '../../environments/environment'
 import type { Locale } from '../core/i18n/locales'
+import { asReadOnly, REQUEST_TIMEOUT_MS, withoutReadRetry } from '../core/interceptors/resilience.interceptor'
 import {
     adminApprovalResponseSchema,
     adminGameProposalSchema,
@@ -150,6 +151,9 @@ import type {
     UserType,
 } from './api.types'
 
+/** An artwork upload is up to 4 MB, resized by the API: 90 s instead of the 20 s of an ordinary write (#240). */
+const ARTWORK_UPLOAD_TIMEOUT_MS = 90_000
+
 @Injectable({ providedIn: 'root' })
 export class Api {
     private readonly url = environment.apiUrl
@@ -158,6 +162,7 @@ export class Api {
 
     // #region auth
 
+    /** Not tried again on failure: the sign-in handoff tries again on its own schedule (#238, #240). */
     clerkAuthStatus() {
         return this.http
             .get<{
@@ -165,7 +170,7 @@ export class Api {
                 userId: number
                 isAdmin: boolean
                 clerkUserId: string
-            }>(`${this.url}/auth/clerk/status`)
+            }>(`${this.url}/auth/clerk/status`, { context: withoutReadRetry() })
             .pipe(map((response) => clerkAuthStatusSchema.parse(response)))
     }
 
@@ -489,7 +494,11 @@ export class Api {
     /** Replaces a game's artwork with an image file, such as a photo of the box. */
     uploadGameArtwork(gameId: number, image: Blob) {
         return this.http
-            .put<AdminGameType>(`${this.url}/admin/games/${gameId}/artwork`, image, { headers: { 'Content-Type': image.type } })
+            .put<AdminGameType>(`${this.url}/admin/games/${gameId}/artwork`, image, {
+                headers: { 'Content-Type': image.type },
+                // Up to 4 MB on a slow connection, then resized by the API: longer than an ordinary write.
+                context: new HttpContext().set(REQUEST_TIMEOUT_MS, ARTWORK_UPLOAD_TIMEOUT_MS),
+            })
             .pipe(map((response) => adminGameSchema.parse(response)))
     }
 
@@ -784,12 +793,14 @@ export class Api {
             .pipe(map((response) => userHistorySchema.parse(response)))
     }
 
-    getUserMeets(userId: number) {
+    /** `context`: see `withoutReadRetry` for a quiet refresh. */
+    getUserMeets(userId: number, context?: HttpContext) {
         return this.http
-            .get<Array<AccountMeetType>>(`${this.url}/play/users/${userId}/meets`)
+            .get<Array<AccountMeetType>>(`${this.url}/play/users/${userId}/meets`, { context })
             .pipe(map((response) => userMeetsSchema.parse(response)))
     }
 
+    /** A `POST` that only reads: treated as a read by `resilienceInterceptor` (`asReadOnly`). */
     getRecommendations(body: {
         groupId: number
         attendeeIds: Array<number>
@@ -797,10 +808,11 @@ export class Api {
         decisionLens?: 'balanced' | 'fresh' | 'favorite'
     }) {
         return this.http
-            .post<RecommendationsType>(`${this.url}/play/recommendations`, body)
+            .post<RecommendationsType>(`${this.url}/play/recommendations`, body, { context: asReadOnly() })
             .pipe(map((response) => recommendationsSchema.parse(response)))
     }
 
+    /** A `POST` that only reads; see `getRecommendations`. */
     getParticipantRecommendations(body: {
         groupId: number
         groupPersonIds: Array<number>
@@ -808,7 +820,7 @@ export class Api {
         decisionLens?: 'balanced' | 'fresh' | 'favorite'
     }) {
         return this.http
-            .post<RecommendationsType>(`${this.url}/play/recommendations/participants`, body)
+            .post<RecommendationsType>(`${this.url}/play/recommendations/participants`, body, { context: asReadOnly() })
             .pipe(map((response) => recommendationsSchema.parse(response)))
     }
 
@@ -843,19 +855,19 @@ export class Api {
     // --------------------------------------------------------------------------
     // #region profile
     // --------------------------------------------------------------------------
-    getUserById(id: number) {
-        return this.http.get<UserType>(`${this.url}/profile/users/${id}`).pipe(map((response) => userSchema.parse(response)))
+    getUserById(id: number, context?: HttpContext) {
+        return this.http.get<UserType>(`${this.url}/profile/users/${id}`, { context }).pipe(map((response) => userSchema.parse(response)))
     }
 
-    getUserNotifications(userId: number) {
+    getUserNotifications(userId: number, context?: HttpContext) {
         return this.http
-            .get<Array<NotificationType>>(`${this.url}/profile/users/${userId}/notifications`)
+            .get<Array<NotificationType>>(`${this.url}/profile/users/${userId}/notifications`, { context })
             .pipe(map((response) => userNotificationsSchema.parse(response)))
     }
 
-    getUserInvitations(userId: number) {
+    getUserInvitations(userId: number, context?: HttpContext) {
         return this.http
-            .get<Array<InvitationWithExtraData>>(`${this.url}/profile/users/${userId}/invitations`)
+            .get<Array<InvitationWithExtraData>>(`${this.url}/profile/users/${userId}/invitations`, { context })
             .pipe(map((response) => userInvitationsSchema.parse(response)))
     }
 
