@@ -203,6 +203,8 @@ export const routes: Routes = [
     {
         path: '',
         component: LayoutBasicComponent,
+        // Focused pages show the same handoff screen while the account is resolved, never a blank page (#239).
+        data: { [SHOWS_AUTH_HANDOFF]: true },
         children: [
             // accessible to authenticated users
             {

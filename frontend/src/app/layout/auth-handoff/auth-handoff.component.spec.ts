@@ -55,6 +55,22 @@ describe('AuthHandoffComponent', () => {
         expect(fixture.nativeElement.querySelectorAll('button').length).toBe(0)
     })
 
+    it('is the skip link’s target, sized below the header unless the layout has none', () => {
+        const main = fixture.nativeElement.querySelector('main') as HTMLElement
+
+        expect(main.id).toBe('main-content')
+        expect(main.getAttribute('tabindex')).toBe('-1')
+        expect(main.classList).toContain('min-h-[calc(100vh-9rem)]')
+        expect(main.classList).toContain('flex')
+
+        fixture.componentRef.setInput('fillsViewport', true)
+        fixture.detectChanges()
+
+        expect(main.classList).toContain('min-h-dvh')
+        expect(main.classList).not.toContain('min-h-[calc(100vh-9rem)]')
+        expect(main.classList).toContain('flex')
+    })
+
     it('offers explicit retry and sign-out recovery when linking fails', () => {
         error.set('The local account could not be loaded.')
         state.set('error')

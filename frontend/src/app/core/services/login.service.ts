@@ -55,6 +55,8 @@ export class LoginService {
     private clerkVerificationInFlight: Observable<boolean> | null = null
     private reconnectAttempt = 0
     private reconnectTimer: ReturnType<typeof setTimeout> | null = null
+    /** A page that could not open before the account was known (Administration); see openOnceAccountIsKnown. */
+    private pageToOpenOnceKnown: string | null = null
 
     constructor() {
         // Coming back to the tab, or the browser going back online, is the best moment to try again.
@@ -116,6 +118,7 @@ export class LoginService {
             switchMap((response) => {
                 if (!response?.isValid || response.userId === undefined) {
                     this.reconnectAttempt = 0
+                    this.pageToOpenOnceKnown = null
                     this.clerkAuthHandoffState.set('error')
                     this.clerkAuthHandoffError.set(this.clerkHandoffErrorMessage)
                     return of(false)
@@ -130,6 +133,7 @@ export class LoginService {
                         this.isAuthenticated.set(isReady)
                         this.clerkAuthHandoffState.set(isReady ? 'ready' : 'error')
                         if (!isReady) this.clerkAuthHandoffError.set(this.clerkHandoffErrorMessage)
+                        this.openPageWaitingForAccount(isReady)
                     }),
                 )
             }),
@@ -223,6 +227,7 @@ export class LoginService {
         this.logger.log('LoginService: Performing logout cleanup.')
         this.cancelReconnect()
         this.reconnectAttempt = 0
+        this.pageToOpenOnceKnown = null
 
         this.isAuthenticated.set(false)
         this.currentUserId.set(null)
@@ -253,6 +258,26 @@ export class LoginService {
         }
 
         return $localize`:Error when finishing sign-in failed:We could not finish connecting this sign-in to Board Vault. Try again, or sign out and use your invitation link.`
+    }
+
+    /**
+     * For a guard that cannot let anyone through until the account is known (Administration): it sends the
+     * person to Home, where the handoff screen shows "Connecting you…" or that Board Vault cannot be reached,
+     * and asks for its page to open once the account is known. Leaving Home in the meantime drops the request.
+     */
+    public openOnceAccountIsKnown(url: string): void {
+        this.pageToOpenOnceKnown = url
+    }
+
+    private openPageWaitingForAccount(isReady: boolean): void {
+        const url = this.pageToOpenOnceKnown
+        if (url === null) return
+        this.pageToOpenOnceKnown = null
+        // The account can be known while the router is still opening Home (its page chunk loading): use where it is going.
+        const navigation = this.router.currentNavigation?.()
+        const current = (navigation?.finalUrl ?? navigation?.extractedUrl)?.toString() ?? this.router.url
+        // Home was only a waiting room, so the page replaces it in the history.
+        if (isReady && current.split(/[?#]/)[0] === '/dashboard') void this.router.navigateByUrl(url, { replaceUrl: true })
     }
 
     private shouldOpenDashboardAfterHandoff(): boolean {

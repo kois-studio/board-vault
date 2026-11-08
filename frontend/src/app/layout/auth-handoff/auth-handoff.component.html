@@ -1,4 +1,4 @@
-<main class="flex min-h-[calc(100vh-9rem)] items-center justify-center bg-gradient-to-b from-bv-primary-soft to-bv-surface px-4 py-12 sm:px-6" aria-labelledby="auth-handoff-title">
+<main id="main-content" tabindex="-1" [class]="fillsViewport() ? 'min-h-dvh' : 'min-h-[calc(100vh-9rem)]'" class="flex items-center outline-none justify-center bg-gradient-to-b from-bv-primary-soft to-bv-surface px-4 py-12 sm:px-6" aria-labelledby="auth-handoff-title">
     <section class="w-full max-w-xl rounded-3xl border border-bv-border bg-bv-surface p-8 text-center shadow-xl sm:p-12" [attr.aria-busy]="isReconnecting() || (state() !== 'error' && state() !== 'unavailable')">
         @if (state() === 'unavailable') {
             <!-- Board Vault did not answer: the sign-in is fine, so signing out is not the way forward (#238). -->

@@ -1,9 +1,10 @@
 // src/app/core/guards/admin.guard.ts
 import { inject } from '@angular/core'
-import { CanActivateFn, Router } from '@angular/router'
-import { Observable, of } from 'rxjs'
+import { CanActivateFn, Router, UrlTree } from '@angular/router'
+import { from, Observable, of } from 'rxjs'
 import { switchMap } from 'rxjs/operators'
 import { ToastService } from '../../components/toast/toast.service'
+import { ClerkService } from '../services/clerk.service'
 import { LogService } from '../services/log.service'
 import { LoginService } from '../services/login.service'
 
@@ -11,16 +12,16 @@ import { LoginService } from '../services/login.service'
 const accessDenied = () =>
     $localize`:Toast when someone who isn't an operator opens an Administration address:Access Denied: You do not have permission to view this page.`
 
-export const AdminGuard: CanActivateFn = (_route, state): Observable<boolean> | boolean => {
+export const AdminGuard: CanActivateFn = (_route, state): Observable<boolean | UrlTree> | boolean => {
     const loginService = inject(LoginService)
+    const clerkService = inject(ClerkService)
     const router = inject(Router)
     const toastService = inject(ToastService)
     const logger = inject(LogService)
 
-    // 1. Check if already authenticated in this session
-    if (loginService.isAuthenticated()) {
+    const decideForKnownAccount = (): boolean => {
         if (loginService.isCurrentUserAdmin()) {
-            logger.log('AdminGuard: Access granted (already authenticated as admin).')
+            logger.log('AdminGuard: Access granted (authenticated as admin).')
             return true
         }
 
@@ -30,43 +31,36 @@ export const AdminGuard: CanActivateFn = (_route, state): Observable<boolean> | 
         return false
     }
 
-    // 2. If not authenticated in this session, try to verify the Clerk session
-    logger.log('AdminGuard: Not authenticated in session, attempting session verification.')
-    return loginService.verifySession().pipe(
-        switchMap((isAuthenticated) => {
-            if (isAuthenticated) {
-                // Session was valid, user data (including admin status) is now loaded
-                if (loginService.isCurrentUserAdmin()) {
-                    logger.log('AdminGuard: Access granted (session verified, user is admin).')
-                    return of(true)
-                }
+    // 1. Already authenticated in this session
+    if (loginService.isAuthenticated()) return decideForKnownAccount()
 
-                logger.warn('AdminGuard: Access denied (session verified, but user is not admin).')
-                toastService.error(accessDenied())
-                router.navigate(['/dashboard'])
-                return of(false)
+    return from(clerkService.whenLoaded()).pipe(
+        switchMap((): Observable<boolean | UrlTree> => {
+            if (loginService.isAuthenticated()) return of(decideForKnownAccount())
+
+            // 2. Signed in, account still being resolved. Administration cannot open before the admin flag is
+            // known, and waiting here would leave a blank page for as long as Board Vault takes to answer, up to
+            // the request timeout, or for the whole outage (#239). Home shows the handoff screen ("Connecting
+            // you…" or "can't reach Board Vault") meanwhile, and this page opens again once the account is known,
+            // which runs this guard again with the admin flag.
+            if (clerkService.isSignedIn()) {
+                logger.log('AdminGuard: Account still being resolved; opening Administration once it is known.')
+                loginService.openOnceAccountIsKnown(state.url)
+                return of(router.createUrlTree(['/dashboard']))
             }
 
-            // Board Vault could not be reached: the person is still signed in, and the handoff screen says so
-            // and keeps trying. Asking them to log in would be wrong (#238); returning to /admin afterwards is #239.
-            if (loginService.clerkAuthHandoffState() === 'unavailable') {
-                logger.log('AdminGuard: Board Vault could not be reached; not asking to sign in again.')
-                router.navigate(['/dashboard'])
-                return of(false)
-            }
-
-            // verifySession returned false (e.g., no session, rejected session, API error)
-            // LoginService should have handled navigation to login/root and appropriate toasts
-            // for session expiry or invalid session.
-            // We add a specific toast for the admin access attempt.
-            logger.log('AdminGuard: Session verification failed or user not authenticated. Redirecting to login.')
-            toastService.info(
-                $localize`:Toast when someone signed out opens an Administration address:Please log in with admin credentials to access this area.`,
+            // 3. Not signed in. LoginService clears the session and opens the landing page; send the person
+            // to sign in instead, with a word on why.
+            logger.log('AdminGuard: Not signed in. Redirecting to login.')
+            return loginService.verifySession().pipe(
+                switchMap(() => {
+                    toastService.info(
+                        $localize`:Toast when someone signed out opens an Administration address:Please log in with admin credentials to access this area.`,
+                    )
+                    router.navigate(['/login'], { queryParams: { returnUrl: state.url } })
+                    return of(false)
+                }),
             )
-            router.navigate(['/login'], { queryParams: { returnUrl: state.url } })
-            return of(false)
         }),
-        // No catchError needed here usually, as verifySession
-        // should handle its own errors and return Observable<false>
     )
 }

@@ -36,6 +36,10 @@ keeps trying on its own; the session is kept and nobody is signed out for it.
 A 401, or an account that cannot be linked (a 409 or another 4xx), shows the
 linking error, which offers signing out
 ([ADR-0012](adr/0012-clerk-only-authentication.md#amendment-2026-11-08)).
+Focused pages show the same screen. Administration cannot open until the
+account is known, so a signed-in link to it shows the screen on Home and
+opens Administration once the account is known, unless the person went
+elsewhere; `AdminGuard` then checks the admin flag as usual.
 
 `CLERK_SECRET_KEY` is required in every environment, and
 `CLERK_AUTHORIZED_PARTIES` in production ([environments.md](environments.md)).

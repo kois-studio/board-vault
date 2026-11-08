@@ -1,7 +1,7 @@
 // auth.guard.ts
 import { inject } from '@angular/core'
-import { ActivatedRouteSnapshot, CanActivateFn } from '@angular/router'
-import { from, Observable, of, switchMap } from 'rxjs'
+import { ActivatedRouteSnapshot, CanActivateFn, Router, UrlTree } from '@angular/router'
+import { from, map, Observable, of, switchMap } from 'rxjs'
 
 import { ClerkService } from '../services/clerk.service'
 import { LoginService } from '../services/login.service'
@@ -15,27 +15,36 @@ export const SHOWS_AUTH_HANDOFF = 'showsAuthHandoff'
  * A signed-in Clerk user whose Board Vault account is still being resolved is
  * let through on routes whose layout renders the handoff screen: the layout
  * shows "Connecting…" (or retry and sign-out controls on failure) instead of
- * a blank page while /auth/clerk/status answers. Other routes wait for the
+ * a blank page while /auth/clerk/status answers. Both layouts render it, so
+ * every page behind this guard does (#239). Other routes wait for the
  * verification.
  */
-export const AuthOnlyGuard: CanActivateFn = (route: ActivatedRouteSnapshot): Observable<boolean> => {
+export const AuthOnlyGuard: CanActivateFn = (route: ActivatedRouteSnapshot): Observable<boolean | UrlTree> => {
     const loginService = inject(LoginService)
     const clerkService = inject(ClerkService)
+    const router = inject(Router)
 
     if (loginService.isAuthenticated()) {
         return of(true)
     }
 
-    return from(clerkService.whenLoaded()).pipe(switchMap(() => afterClerkLoaded(route, loginService, clerkService)))
+    return from(clerkService.whenLoaded()).pipe(switchMap(() => afterClerkLoaded(route, loginService, clerkService, router)))
 }
 
-function afterClerkLoaded(route: ActivatedRouteSnapshot, loginService: LoginService, clerkService: ClerkService): Observable<boolean> {
+function afterClerkLoaded(
+    route: ActivatedRouteSnapshot,
+    loginService: LoginService,
+    clerkService: ClerkService,
+    router: Router,
+): Observable<boolean | UrlTree> {
     const layoutShowsHandoff = route.pathFromRoot.some((snapshot) => snapshot.data?.[SHOWS_AUTH_HANDOFF] === true)
     if (clerkService.isSignedIn() && layoutShowsHandoff) {
         loginService.verifySession().subscribe()
         return of(true)
     }
 
-    // Navigation to '/' on failure is handled within LoginService.
-    return loginService.verifySession()
+    // LoginService usually navigates to '/' itself when there is no session. If it did not, refusing the very
+    // first navigation would leave nothing on screen, so open the landing page instead; later navigations just
+    // stay on the page that is already showing.
+    return loginService.verifySession().pipe(map((verified) => verified || (router.navigated ? false : router.createUrlTree(['/']))))
 }

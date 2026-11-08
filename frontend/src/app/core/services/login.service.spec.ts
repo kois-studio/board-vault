@@ -219,6 +219,8 @@ describe('LoginService when Board Vault cannot be reached (#238)', () => {
     const setup = (url = '/groups/3') => {
         const api = { clerkAuthStatus: vi.fn(), getUserById: vi.fn(() => of({ id: 7 })) }
         const navigate = vi.fn().mockResolvedValue(true)
+        const navigation = signal<{ finalUrl?: { toString(): string }; extractedUrl?: { toString(): string } } | null>(null)
+        const router = { navigate, navigateByUrl: vi.fn().mockResolvedValue(true), url, currentNavigation: navigation }
         const toast = { error: vi.fn(), success: vi.fn() }
         const loading = { start: vi.fn(), finish: vi.fn(), setAllLoadingTo: vi.fn() }
         const dataService = { currentUser: signal<{ id: number } | null>(null) }
@@ -227,7 +229,7 @@ describe('LoginService when Board Vault cannot be reached (#238)', () => {
             providers: [
                 LoginService,
                 { provide: Api, useValue: api },
-                { provide: Router, useValue: { navigate, url } },
+                { provide: Router, useValue: router },
                 { provide: LogService, useValue: { log: vi.fn(), error: vi.fn() } },
                 { provide: ToastService, useValue: toast },
                 { provide: LoadingService, useValue: loading },
@@ -243,7 +245,7 @@ describe('LoginService when Board Vault cannot be reached (#238)', () => {
                 { provide: DataService, useValue: dataService },
             ],
         })
-        return { service: TestBed.inject(LoginService), api, navigate, toast, loading, dataService }
+        return { service: TestBed.inject(LoginService), api, navigate, router, navigation, toast, loading, dataService }
     }
 
     beforeEach(() => {
@@ -466,5 +468,90 @@ describe('LoginService when Board Vault cannot be reached (#238)', () => {
         const before = context.api.clerkAuthStatus.mock.calls.length
         vi.advanceTimersByTime(2_000)
         expect(context.api.clerkAuthStatus).toHaveBeenCalledTimes(before + 1)
+    })
+
+    describe('a page waiting for the account to be known (Administration)', () => {
+        it('opens after a sign-in that went through at once', () => {
+            const context = setup('/dashboard')
+            context.api.clerkAuthStatus.mockReturnValue(linked())
+            context.service.openOnceAccountIsKnown('/admin/games')
+            context.service.verifyClerkSession().subscribe()
+
+            expect(context.router.navigateByUrl).toHaveBeenCalledWith('/admin/games', { replaceUrl: true })
+        })
+
+        it('opens when the account is known before the router has worked out the page it is opening', () => {
+            const context = setup('/')
+            context.navigation.set({ extractedUrl: { toString: () => '/dashboard' } })
+            context.api.clerkAuthStatus.mockReturnValue(linked())
+            context.service.openOnceAccountIsKnown('/admin/games')
+            context.service.verifyClerkSession().subscribe()
+
+            expect(context.router.navigateByUrl).toHaveBeenCalledWith('/admin/games', { replaceUrl: true })
+        })
+
+        const outageThenAnswer = (url: string) => {
+            const context = setup(url)
+            context.api.clerkAuthStatus.mockReturnValueOnce(status(503)).mockReturnValue(linked())
+            context.service.verifyClerkSession().subscribe()
+            context.service.openOnceAccountIsKnown('/admin/games')
+            return context
+        }
+
+        it('opens once Board Vault answers, from Home where the guard sent the person', () => {
+            const context = outageThenAnswer('/dashboard')
+            vi.advanceTimersByTime(2_000)
+
+            expect(context.service.isAuthenticated()).toBe(true)
+            expect(context.router.navigateByUrl).toHaveBeenCalledWith('/admin/games', { replaceUrl: true })
+            expect(context.navigate).not.toHaveBeenCalled()
+        })
+
+        it('opens when Board Vault answers while the router is still opening Home', () => {
+            const context = outageThenAnswer('/')
+            context.navigation.set({ finalUrl: { toString: () => '/dashboard' } })
+            vi.advanceTimersByTime(2_000)
+
+            expect(context.router.navigateByUrl).toHaveBeenCalledWith('/admin/games', { replaceUrl: true })
+        })
+
+        it('does not pull the person back after they went to another page', () => {
+            const context = outageThenAnswer('/dashboard')
+            context.router.url = '/groups/3'
+            vi.advanceTimersByTime(2_000)
+
+            expect(context.service.isAuthenticated()).toBe(true)
+            expect(context.router.navigateByUrl).not.toHaveBeenCalled()
+        })
+
+        it('opens it only once', () => {
+            const context = outageThenAnswer('/dashboard')
+            vi.advanceTimersByTime(2_000)
+            context.service.isAuthenticated.set(false)
+            context.service.verifyClerkSession().subscribe()
+
+            expect(context.router.navigateByUrl).toHaveBeenCalledTimes(1)
+        })
+
+        it('forgets it when the person signs out', async () => {
+            const context = outageThenAnswer('/dashboard')
+            await context.service.logOut()
+            context.service.verifyClerkSession().subscribe()
+
+            expect(context.router.navigateByUrl).not.toHaveBeenCalled()
+        })
+
+        it('forgets it when the session turns out not to be usable', () => {
+            const context = outageThenAnswer('/dashboard')
+            context.api.clerkAuthStatus
+                .mockReset()
+                .mockReturnValueOnce(of({ isValid: false }))
+                .mockReturnValue(linked())
+            vi.advanceTimersByTime(2_000)
+            context.service.verifyClerkSession().subscribe()
+
+            expect(context.service.clerkAuthHandoffState()).toBe('ready')
+            expect(context.router.navigateByUrl).not.toHaveBeenCalled()
+        })
     })
 })

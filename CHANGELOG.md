@@ -305,6 +305,11 @@ operational details.
 
 ### Fixed
 
+- Opening a focused page (a new group, a new game night, editing a group,
+  claiming a person, proposing a game) while you are signed in shows
+  "Connecting you…", or that Board Vault cannot be reached, instead of a
+  blank page. A link to Administration does the same and opens it once your
+  account is known, instead of a blank page or a request to sign in again.
 - When Board Vault cannot be reached as you open the app signed in, it says
   so and keeps trying until it answers, then opens the page you asked for.
   It used to call this a failed sign-in, suggest signing out, or sign you out.

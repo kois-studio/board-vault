@@ -11,7 +11,9 @@
    `loadComponent`. Signed-in pages use `canActivate: [AuthOnlyGuard]`. Use
    `LayoutCompleteComponent` for browsing and `LayoutBasicComponent` for a
    focused action, inside that layout's parent, never after the not-found
-   wildcard at the end. A focused page has no navigation, so it starts with an
+   wildcard at the end. Both parents carry `SHOWS_AUTH_HANDOFF`, so a
+   signed-in deep link shows "Connecting you…" rather than a blank page; a
+   new layout for signed-in pages needs it too. A focused page has no navigation, so it starts with an
    `<a appBackLink>` to the page it belongs to
    ([Shared controls](../design-system.md#shared-controls)), and its own
    wrapper is a `<div>`: the layout already gives the page its `<main>`.

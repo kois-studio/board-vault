@@ -1,4 +1,4 @@
-import { afterNextRender, Component, ElementRef, effect, Injector, inject, viewChild } from '@angular/core'
+import { afterNextRender, Component, ElementRef, effect, Injector, inject, input, viewChild } from '@angular/core'
 import { ButtonComponent } from '../../components/ui/button/button.component'
 import { IconComponent } from '../../components/ui/icon/icon.component'
 import { SpinnerComponent } from '../../components/ui/spinner/spinner.component'
@@ -19,6 +19,9 @@ export class AuthHandoffComponent {
     public readonly error = this.loginService.clerkAuthHandoffError
     public readonly isInvitationFlow = this.clerkService.isInvitationFlow
     public readonly isReconnecting = this.loginService.isReconnecting
+
+    /** True in layouts without a header and footer (focused pages), so the screen fills the whole height. */
+    public readonly fillsViewport = input(false)
 
     private readonly retryButton = viewChild('retryButton', { read: ElementRef<HTMLButtonElement> })
     private focusRetryWhenDone = false
