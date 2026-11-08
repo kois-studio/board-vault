@@ -79,7 +79,10 @@ export class GroupsService {
             await this.databaseService.groups.createGroup(groupBody)
 
             return { success: true }
-        } catch {
+        } catch (error) {
+            // Only a creator that is not an account is "user not found". A timeout or any other database error is
+            // rethrown, so ApiErrorFilter answers 503 DATABASE_TIMEOUT (or 500) instead of a misleading 404.
+            if (!isForeignKeyViolation(error)) throw error
             this.LOGGER.error('Failed to create group')
             throw new NotFoundException('User not found')
         }
@@ -134,4 +137,15 @@ export class GroupsService {
                 },
             }))
     }
+}
+
+/** SQLite refused the row because a referenced row (here the creator's account) does not exist. */
+function isForeignKeyViolation(error: unknown): boolean {
+    const { code, extendedCode, message } = (error ?? {}) as { code?: unknown; extendedCode?: unknown; message?: unknown }
+
+    return (
+        extendedCode === 'SQLITE_CONSTRAINT_FOREIGNKEY' ||
+        code === 'SQLITE_CONSTRAINT_FOREIGNKEY' ||
+        String(message ?? '').includes('FOREIGN KEY constraint failed')
+    )
 }
