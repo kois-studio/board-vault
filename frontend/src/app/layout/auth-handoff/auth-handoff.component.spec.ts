@@ -8,18 +8,20 @@ import { AuthHandoffComponent } from './auth-handoff.component'
 
 describe('AuthHandoffComponent', () => {
     let fixture: ComponentFixture<AuthHandoffComponent>
-    let state: ReturnType<typeof signal<'idle' | 'linking' | 'ready' | 'error'>>
+    let state: ReturnType<typeof signal<'idle' | 'linking' | 'ready' | 'error' | 'unavailable'>>
     let error: ReturnType<typeof signal<string | null>>
     let retry: Mock
     let signOut: Mock
     let invitationFlow: ReturnType<typeof signal<boolean>>
+    let reconnecting: ReturnType<typeof signal<boolean>>
 
     beforeEach(() => {
-        state = signal<'idle' | 'linking' | 'ready' | 'error'>('linking')
+        state = signal<'idle' | 'linking' | 'ready' | 'error' | 'unavailable'>('linking')
         error = signal<string | null>(null)
         retry = vi.fn().mockName('retry')
         signOut = vi.fn().mockName('signOut').mockResolvedValue(undefined)
         invitationFlow = signal(false)
+        reconnecting = signal(false)
 
         TestBed.configureTestingModule({
             imports: [AuthHandoffComponent],
@@ -32,6 +34,7 @@ describe('AuthHandoffComponent', () => {
                         clerkAuthHandoffError: error,
                         retryClerkSession: retry,
                         signOutClerk: signOut,
+                        isReconnecting: reconnecting,
                     },
                 },
                 { provide: ClerkService, useValue: { isInvitationFlow: invitationFlow } },
@@ -78,5 +81,39 @@ describe('AuthHandoffComponent', () => {
         expect(fixture.nativeElement.textContent).toContain('We could not finish joining this group')
         expect(fixture.nativeElement.textContent).toContain('Ask the group owner for a fresh invitation')
         expect(fixture.nativeElement.textContent).not.toContain('setting up your sign-in')
+    })
+
+    it('says Board Vault cannot be reached, without blaming the sign-in, and keeps a way to try now', () => {
+        state.set('unavailable')
+        fixture.detectChanges()
+
+        const element = fixture.nativeElement as HTMLElement
+        const [tryAgain, signOutButton] = Array.from(element.querySelectorAll('button'))
+        expect(element.querySelector('h1')?.textContent).toContain('We can’t reach Board Vault right now')
+        expect(element.querySelector('[role="alert"]')?.textContent).toContain('Your sign-in is fine')
+        expect(element.textContent).not.toContain('setting up your sign-in')
+        expect(element.textContent).not.toContain('invitation link')
+        expect(element.querySelector('section')?.getAttribute('aria-busy')).toBe('false')
+
+        // Try again is the main action; signing out is still there, but not as a button of the same weight.
+        expect(tryAgain?.textContent).toContain('Try again')
+        expect(tryAgain?.classList).toContain('app-btn-primary')
+        expect(signOutButton?.textContent).toContain('Sign out')
+        expect(signOutButton?.hasAttribute('appButton')).toBe(false)
+        tryAgain?.click()
+        expect(retry).toHaveBeenCalled()
+
+        reconnecting.set(true)
+        fixture.detectChanges()
+        expect(tryAgain?.getAttribute('aria-busy')).toBe('true')
+        expect(tryAgain?.hasAttribute('disabled')).toBe(true)
+        expect(element.querySelector('section')?.getAttribute('aria-busy')).toBe('true')
+
+        // The try failed: the button is usable again and has keyboard focus back.
+        reconnecting.set(false)
+        fixture.detectChanges()
+        TestBed.tick()
+        expect(tryAgain?.hasAttribute('disabled')).toBe(false)
+        expect(document.activeElement).toBe(tryAgain)
     })
 })

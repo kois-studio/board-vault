@@ -1,19 +1,33 @@
-import { HttpErrorResponse } from '@angular/common/http'
-import { computed, effect, Injectable, inject, signal } from '@angular/core'
+import { DOCUMENT } from '@angular/common'
+import { computed, DestroyRef, effect, Injectable, inject, signal } from '@angular/core'
 import { Router } from '@angular/router'
-import { from, Observable, of } from 'rxjs'
-import { catchError, finalize, map, shareReplay, switchMap, tap } from 'rxjs/operators'
+import { from, Observable, of, throwError } from 'rxjs'
+import { catchError, finalize, map, shareReplay, switchMap, tap, timeout } from 'rxjs/operators'
 
 import { Api } from '../../api/api'
 import { ToastService } from '../../components/toast/toast.service'
 import { LOADING_KEYS } from '../enums/loading-keys-enum'
 import { AccountLanguageService } from '../i18n/account-language.service'
+import { isServerUnreachable } from '../utils/serverUnreachable'
 import { ClerkService } from './clerk.service'
 import { DataService } from './data.service'
 import { LoadingService } from './loading.service'
 import { LogService } from './log.service'
 
-export type ClerkAuthHandoffState = 'idle' | 'linking' | 'ready' | 'error'
+/**
+ * Where finishing a sign-in stands. `error`: the account cannot be linked (an invitation problem, a 409).
+ * `unavailable`: Board Vault could not be reached; the sign-in is fine and the app keeps trying.
+ */
+export type ClerkAuthHandoffState = 'idle' | 'linking' | 'ready' | 'error' | 'unavailable'
+
+/** Waits between automatic tries while Board Vault cannot be reached; the last one repeats. */
+export const RECONNECT_DELAYS_MS = [2_000, 5_000, 10_000, 30_000] as const
+
+/**
+ * A sign-in request with no answer by then counts as Board Vault being unreachable, so "Connecting you…"
+ * never lasts forever. Above the API's own bound (5 s per provider call, a read tried twice).
+ */
+export const SIGN_IN_REQUEST_TIMEOUT_MS = 15_000
 
 @Injectable({ providedIn: 'root' })
 export class LoginService {
@@ -26,6 +40,7 @@ export class LoginService {
     private readonly loadingService = inject(LoadingService)
     private readonly clerkService = inject(ClerkService)
     private readonly accountLanguage = inject(AccountLanguageService)
+    private readonly document = inject(DOCUMENT)
 
     // --- Signals for Authentication State ---
     public readonly isAuthenticated = signal<boolean>(false)
@@ -34,10 +49,27 @@ export class LoginService {
     public readonly clerkAuthHandoffState = signal<ClerkAuthHandoffState>('idle')
     public readonly clerkAuthHandoffError = signal<string | null>(null)
     public readonly isClerkAuthHandoffActive = computed(() => this.clerkService.isSignedIn() && !this.isAuthenticated())
+    /** A new try is running while Board Vault was unreachable; the screen stays put instead of going back to "Connecting you…". */
+    public readonly isReconnecting = signal(false)
 
     private clerkVerificationInFlight: Observable<boolean> | null = null
+    private reconnectAttempt = 0
+    private reconnectTimer: ReturnType<typeof setTimeout> | null = null
 
     constructor() {
+        // Coming back to the tab, or the browser going back online, is the best moment to try again.
+        const view = this.document.defaultView
+        const tryNow = () => {
+            if (this.clerkAuthHandoffState() === 'unavailable' && this.document.visibilityState !== 'hidden') this.retryClerkSession()
+        }
+        this.document.addEventListener('visibilitychange', tryNow)
+        view?.addEventListener('online', tryNow)
+        inject(DestroyRef).onDestroy(() => {
+            this.document.removeEventListener('visibilitychange', tryNow)
+            view?.removeEventListener('online', tryNow)
+            this.cancelReconnect()
+        })
+
         effect(() => {
             const clerkUserId = this.clerkService.userId()
 
@@ -73,12 +105,17 @@ export class LoginService {
     public verifyClerkSession(): Observable<boolean> {
         if (this.clerkVerificationInFlight) return this.clerkVerificationInFlight
 
-        this.clerkAuthHandoffState.set('linking')
+        // A try made by hand, by a guard, or by the tab coming back replaces the one that was waiting.
+        this.cancelReconnect()
+        if (this.clerkAuthHandoffState() === 'unavailable') this.isReconnecting.set(true)
+        else this.clerkAuthHandoffState.set('linking')
         this.clerkAuthHandoffError.set(null)
 
         const verification$ = this.api.clerkAuthStatus().pipe(
+            timeout(SIGN_IN_REQUEST_TIMEOUT_MS),
             switchMap((response) => {
                 if (!response?.isValid || response.userId === undefined) {
+                    this.reconnectAttempt = 0
                     this.clerkAuthHandoffState.set('error')
                     this.clerkAuthHandoffError.set(this.clerkHandoffErrorMessage)
                     return of(false)
@@ -89,13 +126,22 @@ export class LoginService {
                 this.isCurrentUserAdmin.set(response.isAdmin)
                 return this._fetchInitialUserData(response.userId).pipe(
                     tap((isReady) => {
+                        if (isReady) this.reconnectAttempt = 0
                         this.isAuthenticated.set(isReady)
                         this.clerkAuthHandoffState.set(isReady ? 'ready' : 'error')
                         if (!isReady) this.clerkAuthHandoffError.set(this.clerkHandoffErrorMessage)
                     }),
                 )
             }),
-            catchError((error: HttpErrorResponse) => {
+            catchError((error: unknown) => {
+                if (isServerUnreachable(error)) {
+                    // Nothing is wrong with the sign-in: keep the Clerk session and the account id, and try again.
+                    this.logger.error('LoginService: Board Vault could not be reached while finishing sign-in.', error)
+                    this.clerkAuthHandoffState.set('unavailable')
+                    this.scheduleReconnect()
+                    return of(false)
+                }
+
                 this.logger.error('LoginService: Error validating Clerk session.', error)
                 this._performLogoutCleanup()
                 this.clerkAuthHandoffState.set('error')
@@ -104,8 +150,11 @@ export class LoginService {
             }),
             finalize(() => {
                 this.clerkVerificationInFlight = null
+                this.isReconnecting.set(false)
             }),
-            shareReplay({ bufferSize: 1, refCount: true }),
+            // Runs to the end even if every caller stops listening (a guard whose navigation was replaced, say):
+            // otherwise the request is dropped mid-way, no outcome is set, and the screen waits for nothing.
+            shareReplay({ bufferSize: 1, refCount: false }),
         )
 
         this.clerkVerificationInFlight = verification$
@@ -113,7 +162,7 @@ export class LoginService {
     }
 
     public retryClerkSession(): void {
-        if (!this.clerkService.isSignedIn() || this.clerkVerificationInFlight) return
+        if (!this.clerkService.isSignedIn() || this.isAuthenticated() || this.clerkVerificationInFlight) return
         this.verifyClerkSession().subscribe((isReady) => {
             if (isReady && this.shouldOpenDashboardAfterHandoff()) {
                 void this.router.navigate(['/dashboard'])
@@ -137,6 +186,7 @@ export class LoginService {
         this.loadingService.start(LOADING_KEYS.USER_DATA)
 
         return this.api.getUserById(userId).pipe(
+            timeout(SIGN_IN_REQUEST_TIMEOUT_MS),
             tap((userData) => {
                 this.logger.log('LoginService: USER_DATA fetched successfully.')
                 this.dataService.currentUser.set(userData)
@@ -145,6 +195,12 @@ export class LoginService {
             }),
             map(() => true),
             catchError((err: unknown) => {
+                // Board Vault could not be reached: the sign-in is fine, so verifyClerkSession keeps it and tries again.
+                if (isServerUnreachable(err)) {
+                    this.loadingService.finish(LOADING_KEYS.USER_DATA)
+                    return throwError(() => err)
+                }
+
                 this.logger.error('LoginService: Critical error - Failed to fetch USER_DATA after successful auth. Logging out.', err)
                 this.toastService.error(
                     // Specific toast for this critical failure
@@ -165,12 +221,30 @@ export class LoginService {
      */
     private _performLogoutCleanup(): void {
         this.logger.log('LoginService: Performing logout cleanup.')
+        this.cancelReconnect()
+        this.reconnectAttempt = 0
 
         this.isAuthenticated.set(false)
         this.currentUserId.set(null)
         this.isCurrentUserAdmin.set(false)
         this.dataService.currentUser.set(null) // Clear currentUser in DataService
         this.loadingService.setAllLoadingTo(true) // Reset all loading states
+    }
+
+    /** The next automatic try: 2 s, 5 s, 10 s, then every 30 s. A hidden tab waits until it is shown again. */
+    private scheduleReconnect(): void {
+        const delay = RECONNECT_DELAYS_MS[Math.min(this.reconnectAttempt, RECONNECT_DELAYS_MS.length - 1)]
+        this.reconnectAttempt++
+        this.reconnectTimer = setTimeout(() => {
+            this.reconnectTimer = null
+            if (this.document.visibilityState !== 'hidden') this.retryClerkSession()
+        }, delay)
+    }
+
+    private cancelReconnect(): void {
+        if (this.reconnectTimer === null) return
+        clearTimeout(this.reconnectTimer)
+        this.reconnectTimer = null
     }
 
     private get clerkHandoffErrorMessage(): string {

@@ -1167,6 +1167,15 @@
         <target>Ver personas y juegos</target>
       </segment>
     </unit>
+    <unit id="1665985414369291010">
+      <notes>
+        <note category="description">Heading when Board Vault cannot be reached while finishing sign-in</note>
+      </notes>
+      <segment state="translated">
+        <source>We can’t reach Board Vault right now</source>
+        <target>Ahora mismo no podemos conectar con Board Vault</target>
+      </segment>
+    </unit>
     <unit id="1668741725934731983">
       <notes>
         <note category="description">Label of the notes field of the game proposal form</note>
@@ -3460,6 +3469,15 @@
       <segment state="translated">
         <source>Can’t find a game? <pc id="0" equivStart="START_TAG_BUTTON" equivEnd="CLOSE_TAG_BUTTON" type="other" dispStart="&lt;button type=&quot;button&quot; class=&quot;font-semibold text-bv-primary hover:underline&quot; (click)=&quot;navigateToProposeGame()&quot;&gt;" dispEnd="&lt;/button&gt;">Propose it</pc> and an admin will add it to the catalogue.</source>
         <target>¿No encuentras un juego? <pc id="0" equivStart="START_TAG_BUTTON" equivEnd="CLOSE_TAG_BUTTON" type="other" dispStart="&lt;button type=&quot;button&quot; class=&quot;font-semibold text-bv-primary hover:underline&quot; (click)=&quot;navigateToProposeGame()&quot;&gt;" dispEnd="&lt;/button&gt;">Propónlo</pc> y el equipo de administración lo añadirá al catálogo.</target>
+      </segment>
+    </unit>
+    <unit id="2844127741372543827">
+      <notes>
+        <note category="description">Help when Board Vault cannot be reached while finishing sign-in</note>
+      </notes>
+      <segment state="translated">
+        <source>If other websites don’t load either, check your internet connection.</source>
+        <target>Si otras webs tampoco cargan, revisa tu conexión a internet.</target>
       </segment>
     </unit>
     <unit id="2844405936658894411">
@@ -14852,6 +14870,15 @@
       <segment state="translated">
         <source>Your profile could not be updated. Please try again.</source>
         <target>No se ha podido actualizar tu perfil. Inténtalo de nuevo.</target>
+      </segment>
+    </unit>
+    <unit id="8803251561253539363">
+      <notes>
+        <note category="description">Text when Board Vault cannot be reached while finishing sign-in; the app keeps trying on its own</note>
+      </notes>
+      <segment state="translated">
+        <source>Your sign-in is fine. We’ll keep trying and carry on as soon as Board Vault answers.</source>
+        <target>Tu inicio de sesión está bien. Seguiremos intentándolo y continuaremos en cuanto Board Vault responda.</target>
       </segment>
     </unit>
     <unit id="8809247468668978302">

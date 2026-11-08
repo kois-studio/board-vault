@@ -1,6 +1,18 @@
 <main class="flex min-h-[calc(100vh-9rem)] items-center justify-center bg-gradient-to-b from-bv-primary-soft to-bv-surface px-4 py-12 sm:px-6" aria-labelledby="auth-handoff-title">
-    <section class="w-full max-w-xl rounded-3xl border border-bv-border bg-bv-surface p-8 text-center shadow-xl sm:p-12" [attr.aria-busy]="state() !== 'error'">
-        @if (state() === 'error') {
+    <section class="w-full max-w-xl rounded-3xl border border-bv-border bg-bv-surface p-8 text-center shadow-xl sm:p-12" [attr.aria-busy]="isReconnecting() || (state() !== 'error' && state() !== 'unavailable')">
+        @if (state() === 'unavailable') {
+            <!-- Board Vault did not answer: the sign-in is fine, so signing out is not the way forward (#238). -->
+            <div class="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-bv-warning/10 text-bv-warning" aria-hidden="true">
+                <app-icon name="cloud-off" [size]="30" />
+            </div>
+            <h1 id="auth-handoff-title" class="mt-6 text-3xl font-bold tracking-tight text-bv-text" i18n="Heading when Board Vault cannot be reached while finishing sign-in">We can’t reach Board Vault right now</h1>
+            <p class="mt-5 leading-7 text-bv-text-muted" role="alert" i18n="Text when Board Vault cannot be reached while finishing sign-in; the app keeps trying on its own">Your sign-in is fine. We’ll keep trying and carry on as soon as Board Vault answers.</p>
+            <div class="mt-8 flex flex-col items-center gap-3">
+                <button #retryButton appButton type="button" icon="refresh" [loading]="isReconnecting()" (click)="retry()" i18n="Button that tries to finish sign-in again after an error">Try again</button>
+                <button type="button" class="min-h-11 rounded px-2 text-sm text-bv-text-muted underline underline-offset-2 hover:text-bv-text" (click)="signOut()" i18n="Button at the bottom of the avatar menu">Sign out</button>
+            </div>
+            <p class="mt-4 text-sm text-bv-text-muted" i18n="Help when Board Vault cannot be reached while finishing sign-in">If other websites don’t load either, check your internet connection.</p>
+        } @else if (state() === 'error') {
             <div class="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-bv-warning/10 text-3xl text-bv-warning" aria-hidden="true">
                 <app-icon name="refresh" [size]="30" />
             </div>

@@ -47,6 +47,14 @@ export const AdminGuard: CanActivateFn = (_route, state): Observable<boolean> | 
                 return of(false)
             }
 
+            // Board Vault could not be reached: the person is still signed in, and the handoff screen says so
+            // and keeps trying. Asking them to log in would be wrong (#238); returning to /admin afterwards is #239.
+            if (loginService.clerkAuthHandoffState() === 'unavailable') {
+                logger.log('AdminGuard: Board Vault could not be reached; not asking to sign in again.')
+                router.navigate(['/dashboard'])
+                return of(false)
+            }
+
             // verifySession returned false (e.g., no session, rejected session, API error)
             // LoginService should have handled navigation to login/root and appropriate toasts
             // for session expiry or invalid session.

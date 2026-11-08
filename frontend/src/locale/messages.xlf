@@ -1190,6 +1190,15 @@
         <source>View people and games</source>
       </segment>
     </unit>
+    <unit id="1665985414369291010">
+      <notes>
+        <note category="location">src/app/layout/auth-handoff/auth-handoff.component.html</note>
+        <note category="description">Heading when Board Vault cannot be reached while finishing sign-in</note>
+      </notes>
+      <segment>
+        <source>We can’t reach Board Vault right now</source>
+      </segment>
+    </unit>
     <unit id="1668741725934731983">
       <notes>
         <note category="location">src/app/components/forms/form-game-submission/form-game-submission.component.html</note>
@@ -3525,6 +3534,15 @@
       </notes>
       <segment>
         <source>Can’t find a game? <pc id="0" equivStart="START_TAG_BUTTON" equivEnd="CLOSE_TAG_BUTTON" type="other" dispStart="&lt;button type=&quot;button&quot; class=&quot;font-semibold text-bv-primary hover:underline&quot; (click)=&quot;navigateToProposeGame()&quot;&gt;" dispEnd="&lt;/button&gt;">Propose it</pc> and an admin will add it to the catalogue.</source>
+      </segment>
+    </unit>
+    <unit id="2844127741372543827">
+      <notes>
+        <note category="location">src/app/layout/auth-handoff/auth-handoff.component.html</note>
+        <note category="description">Help when Board Vault cannot be reached while finishing sign-in</note>
+      </notes>
+      <segment>
+        <source>If other websites don’t load either, check your internet connection.</source>
       </segment>
     </unit>
     <unit id="2844405936658894411">
@@ -15101,6 +15119,15 @@
       </notes>
       <segment>
         <source>Your profile could not be updated. Please try again.</source>
+      </segment>
+    </unit>
+    <unit id="8803251561253539363">
+      <notes>
+        <note category="location">src/app/layout/auth-handoff/auth-handoff.component.html</note>
+        <note category="description">Text when Board Vault cannot be reached while finishing sign-in; the app keeps trying on its own</note>
+      </notes>
+      <segment>
+        <source>Your sign-in is fine. We’ll keep trying and carry on as soon as Board Vault answers.</source>
       </segment>
     </unit>
     <unit id="8809247468668978302">

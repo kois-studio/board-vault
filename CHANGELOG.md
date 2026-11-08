@@ -305,6 +305,9 @@ operational details.
 
 ### Fixed
 
+- When Board Vault cannot be reached as you open the app signed in, it says
+  so and keeps trying until it answers, then opens the page you asked for.
+  It used to call this a failed sign-in, suggest signing out, or sign you out.
 - French, German, and Italian were reviewed before they are offered: the
   history line about someone not being sure whether a person has a game
   named them the wrong way round (Spanish too), player counts and "who was

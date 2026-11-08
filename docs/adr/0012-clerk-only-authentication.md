@@ -52,3 +52,15 @@ Clerk is the only way to sign in to Board Vault.
   point for the old hashes.
 - Future account-linking features (for example, merging a duplicate account)
   need an explicit, audited operator or user flow, not an automatic email match.
+
+## Amendment (2026-11-08)
+
+Finishing a sign-in (`GET /auth/clerk/status`, then the account) now tells a
+server outage from a failed sign-in (#238). No answer, a timeout (15 seconds
+per request), or a 5xx means Board Vault could not be reached: the Clerk
+session and the account id are kept, nobody is signed out, and the handoff
+screen says so and tries again by itself after 2, 5, and 10 seconds, then
+every 30 seconds while the tab is shown, and at once when the tab is shown
+again or the browser comes back online. When it answers, the page that was
+asked for opens without a reload. A 401, a `409 ACCOUNT_EMAIL_CONFLICT`, and
+other 4xx answers keep the linking error and its advice to sign out.

@@ -30,6 +30,13 @@ Provider failures, account-resolution errors, expired sessions, and network
 errors must produce actionable retry or sign-out states. They must not expose
 provider payloads, tokens, or account-enumeration details.
 
+When the API cannot be reached (no answer, a timeout, or a 5xx) while a
+sign-in finishes, the handoff screen says Board Vault cannot be reached and
+keeps trying on its own; the session is kept and nobody is signed out for it.
+A 401, or an account that cannot be linked (a 409 or another 4xx), shows the
+linking error, which offers signing out
+([ADR-0012](adr/0012-clerk-only-authentication.md#amendment-2026-11-08)).
+
 `CLERK_SECRET_KEY` is required in every environment, and
 `CLERK_AUTHORIZED_PARTIES` in production ([environments.md](environments.md)).
 The browser receives only the publishable key through generated runtime
