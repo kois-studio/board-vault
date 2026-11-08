@@ -4,7 +4,7 @@ import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms'
 import { ActivatedRoute, Router, RouterLink } from '@angular/router'
 import { firstValueFrom } from 'rxjs'
 import { Api } from '../../api/api'
-import type { GameCompleteType, GroupPersonWorkspaceType, PublicUserType } from '../../api/api.types'
+import type { GameCompleteType, GroupPersonWorkspaceType, PublicUserType, ScheduleSessionRequest } from '../../api/api.types'
 import { ImageProfileComponent } from '../../components/image-profile/image-profile.component'
 import { ToastService } from '../../components/toast/toast.service'
 import { BackLinkComponent } from '../../components/ui/back-link/back-link.component'
@@ -19,8 +19,10 @@ import { PlayersPipe } from '../../core/pipes/count.pipe'
 import { CoverAltPipe } from '../../core/pipes/game-title.pipe'
 import { DataService } from '../../core/services/data.service'
 import { LoadingService } from '../../core/services/loading.service'
+import { isSaveOutcomeUnknown } from '../../core/utils/apiUnavailable'
 import { gameTitle } from '../../core/utils/gameTitle'
 import { canTakePart } from '../../core/utils/groupPeople'
+import { SubmissionKey } from '../../core/utils/submissionKey'
 
 /** Someone who can be invited: a member account, or a group person when the group has them. */
 export type PlanPerson = { id: number; name: string; avatar: PublicUserType['avatar']; gameIds: Set<number> }
@@ -110,6 +112,8 @@ export class MeetNewComponent {
     public readonly notes = signal('')
     public readonly gameQuery = signal('')
     public readonly isCreating = signal(false)
+    /** Keeps one key for every try of the same plan, so a retry after an unconfirmed save never plans it twice (#246). */
+    private readonly submission = new SubmissionKey<ScheduleSessionRequest>()
     private initializedGroupId: number | null = null
     /** The group's people (and the games only they own) are on their way; who to invite can't be settled yet. */
     public readonly peopleLoading = signal(false)
@@ -325,27 +329,36 @@ export class MeetNewComponent {
         this.checkedAt.set(Date.now())
         if (!this.canCreate()) return
 
+        const body: ScheduleSessionRequest = {
+            groupId: group.id,
+            sessionDate: new Date(`${sessionDate}T${sessionTime}`).toISOString(),
+            timezone: this.localTimezone,
+            notes: this.notes().trim() || undefined,
+            ...(this.useGroupPeople() ? { groupPersonIds: this.selectedAttendeeIds() } : { attendeeIds: this.selectedAttendeeIds() }),
+            plannedGameIds: this.selectedPlannedGameIds(),
+        }
+        const { key, request } = this.submission.prepare(body, () => body)
+
         this.isCreating.set(true)
         try {
-            await firstValueFrom(
-                this.api.scheduleSession({
-                    groupId: group.id,
-                    sessionDate: new Date(`${sessionDate}T${sessionTime}`).toISOString(),
-                    timezone: this.localTimezone,
-                    notes: this.notes().trim() || undefined,
-                    ...(this.useGroupPeople()
-                        ? { groupPersonIds: this.selectedAttendeeIds() }
-                        : { attendeeIds: this.selectedAttendeeIds() }),
-                    plannedGameIds: this.selectedPlannedGameIds(),
-                }),
-            )
+            await firstValueFrom(this.api.scheduleSession(request, key))
+            this.submission.clear()
             this.dataService.refreshUserMeets()
             this.toastService.success($localize`:Toast after planning a game night:Game night planned.`)
             await this.router.navigate(['/play/upcoming-sessions'])
-        } catch {
-            this.toastService.error(
-                $localize`:Toast when a game night could not be planned:Could not plan the game night. Please try again.`,
-            )
+        } catch (error) {
+            if (isSaveOutcomeUnknown(error)) {
+                this.submission.keep()
+                this.dataService.refreshUserMeets()
+                this.toastService.error(
+                    $localize`:Toast when Board Vault did not answer in time after planning a game night, so it may or may not be planned:We couldn’t confirm the game night was planned. Try again without changing anything and it won’t be planned twice.`,
+                )
+            } else {
+                this.submission.clear()
+                this.toastService.error(
+                    $localize`:Toast when a game night could not be planned:Could not plan the game night. Please try again.`,
+                )
+            }
         } finally {
             this.isCreating.set(false)
         }

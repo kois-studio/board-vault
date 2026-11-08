@@ -161,6 +161,36 @@ revision, by any group member. Legacy per-game editors refuse repeated games.
 `POST /sessions/live` creates an active spontaneous night with server time.
 See [ADR-0022](adr/0022-everyday-play-and-corrections.md).
 
+## Creating safely twice
+
+A write the API cannot confirm (a timeout, a lost connection, a 504, or a 503
+`DATABASE_TIMEOUT`) may still have been saved (#246). Creating a game night
+accepts an optional `Idempotency-Key` header so the app can send the same
+submission again without recording the night twice:
+
+- `POST /sessions`, `POST /sessions/scheduled` and `POST /sessions/live` read
+  it. Its value is a UUID (any case); anything else answers `400`
+  `IDEMPOTENCY_KEY_INVALID`.
+- The key is stored per account, in the same transaction as the night, for
+  24 hours. A repeat with the same key, route and body answers like the first
+  request, with the same session id, and changes nothing: no second night, no
+  second notification, and no second usage event. It is answered before the
+  request is checked again, so it works even if the group or its games
+  changed since. Two requests racing with one key also create one night.
+- People are told and the creation is counted by one request only: the first
+  one past the write. When the write committed but the answer timed out
+  (`503 DATABASE_TIMEOUT`), the retry does it instead (`completedAt`), so
+  nobody is told twice and nobody is left untold.
+- A repeat answers the id it first created even if that night was deleted
+  since; reading it then answers `404`.
+- The same key with another route or body answers `422`
+  `IDEMPOTENCY_KEY_REUSED`. After 24 hours the key can be used again.
+- Without the header a request creates as before, so older clients keep
+  working. CORS allows the header.
+
+The app makes a key for each submission and keeps it while the person retries
+the same submission; changing the night makes a new one.
+
 ## Changing a route or DTO
 
 1. update the source contract and relevant response schemas;

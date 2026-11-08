@@ -13,6 +13,8 @@ type UsageRequest = {
     headers: Record<string, string | Array<string> | undefined>
     body?: Record<string, unknown>
     user?: { userId?: number }
+    /** Set when the answer repeats an earlier creation with the same Idempotency-Key (#246). */
+    idempotentReplay?: boolean
 }
 
 const SESSION_STATUS_EVENTS: Record<string, UsageEventName> = {
@@ -75,7 +77,8 @@ export class UsageInterceptor implements NestInterceptor {
                 const header = request.headers['x-board-vault-view']
                 const view = typeof header === 'string' && isView(header) ? header : null
 
-                if (accountId && name) await this.usageService.record(accountId, name, view)
+                // A repeat of the same Idempotency-Key was already counted the first time (#246).
+                if (accountId && name && !request.idempotentReplay) await this.usageService.record(accountId, name, view)
                 return response
             }),
         )

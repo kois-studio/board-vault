@@ -17,8 +17,9 @@ function sameSecret(given: string, expected: string): boolean {
 
 /**
  * The daily job, called by Vercel Cron (`backend/vercel.json`) with `Authorization: Bearer
- * $CRON_SECRET`. Without `CRON_SECRET` the route does not exist. It rolls up usage events and
- * forgets the emails of expired group person claims.
+ * $CRON_SECRET`. Without `CRON_SECRET` the route does not exist. It rolls up usage events,
+ * forgets the emails of expired group person claims, and deletes Idempotency-Key records older
+ * than 24 hours (#246).
  */
 @ApiExcludeController()
 @Controller('internal')
@@ -39,8 +40,10 @@ export class MaintenanceController {
 
         const usage = await this.usageService.runDailyMaintenance()
         const expiredClaims = (await this.databaseService.groups.clearExpiredClaimEmails()).rowsAffected
+        const expiredIdempotencyKeys = (await this.databaseService.idempotency.deleteExpired()).rowsAffected
 
         this.LOGGER.log(structuredLog('group_person.expired_claims_cleared', { expiredClaims }))
-        return { usage, expiredClaims }
+        this.LOGGER.log(structuredLog('idempotency.expired_keys_deleted', { expiredIdempotencyKeys }))
+        return { usage, expiredClaims, expiredIdempotencyKeys }
     }
 }

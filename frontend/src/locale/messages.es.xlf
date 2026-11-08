@@ -4228,6 +4228,15 @@
         <target>Puntúa</target>
       </segment>
     </unit>
+    <unit id="3225746291117416435">
+      <notes>
+        <note category="description">Error when Board Vault did not answer in time after recording a game night, so it may or may not be saved</note>
+      </notes>
+      <segment state="translated">
+        <source>We couldn’t confirm the session was saved. Your choices are still here: try again without changing them and it won’t be saved twice.</source>
+        <target>No hemos podido confirmar que la noche se haya guardado. Tus elecciones siguen aquí: inténtalo de nuevo sin cambiarlas y no se guardará dos veces.</target>
+      </segment>
+    </unit>
     <unit id="3225921922249100905">
       <notes>
         <note category="description">Button that opens the form to change the games and players of a game night</note>
@@ -4795,6 +4804,15 @@
       <segment state="translated">
         <source>Search <ph id="0" equiv="count" disp="count"/> game</source>
         <target>Buscar en <ph id="0" equiv="count" disp="count"/> juego</target>
+      </segment>
+    </unit>
+    <unit id="3516978214110164548">
+      <notes>
+        <note category="description">Toast when Board Vault did not answer in time after planning a game night, so it may or may not be planned</note>
+      </notes>
+      <segment state="translated">
+        <source>We couldn’t confirm the game night was planned. Try again without changing anything and it won’t be planned twice.</source>
+        <target>No hemos podido confirmar que la noche de juegos se haya planificado. Inténtalo de nuevo sin cambiar nada y no se planificará dos veces.</target>
       </segment>
     </unit>
     <unit id="3517550046701184661">
@@ -13118,6 +13136,15 @@
       <segment state="translated">
         <source>Could not save your rating.</source>
         <target>No se ha podido guardar tu puntuación.</target>
+      </segment>
+    </unit>
+    <unit id="7884142265622725022">
+      <notes>
+        <note category="description">Error when Board Vault did not answer in time after starting a game night, so it may or may not have started</note>
+      </notes>
+      <segment state="translated">
+        <source>We couldn’t confirm the night was started. Your choices are still here: try again without changing them and it won’t be started twice.</source>
+        <target>No hemos podido confirmar que la noche haya empezado. Tus elecciones siguen aquí: inténtalo de nuevo sin cambiarlas y no se empezará dos veces.</target>
       </segment>
     </unit>
     <unit id="7884742361510661371">

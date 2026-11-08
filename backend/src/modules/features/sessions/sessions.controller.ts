@@ -1,4 +1,5 @@
 import {
+    applyDecorators,
     Body,
     Controller,
     Delete,
@@ -13,9 +14,10 @@ import {
     UsePipes,
     ValidationPipe,
 } from '@nestjs/common'
-import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger'
+import { ApiBearerAuth, ApiHeader, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger'
 
 import { AuthGuard } from '../../../common/guards/auth.guard.js'
+import { IDEMPOTENCY_KEY_HEADER, readIdempotencyKey, type IdempotentRequest } from '../../../common/http/idempotency.js'
 import { MeetWithAttendeesAndGames } from '../../../common/types/meet.type.js'
 import {
     CorrectSessionBody,
@@ -89,9 +91,11 @@ export class SessionsController {
     }
 
     @Post('live')
+    @IdempotencyKeyHeader()
     @ApiResponse({ status: 201, type: LiveSessionCreatedDto })
-    startLive(@Req() request: { user: { userId: number } }, @Body() body: CreateScheduledSessionBody) {
-        return this.sessionsService.createScheduledSession(request.user.userId, body, true)
+    @IdempotencyResponses()
+    startLive(@Req() request: CreatingRequest, @Body() body: CreateScheduledSessionBody) {
+        return this.sessionsService.createScheduledSession(request.user.userId, body, true, idempotencyOf(request))
     }
 
     @Get(':sessionId')
@@ -104,17 +108,20 @@ export class SessionsController {
 
     @Post()
     @ApiOperation({ summary: 'Create a completed play session from selected attendees and games' })
+    @IdempotencyKeyHeader()
     @ApiResponse({ status: 201, type: SessionCreatedDto })
-    @ApiResponse({ status: 400, description: 'The selected group, attendees, games, or participants are invalid.' })
-    createCompletedSession(@Req() request: { user: { userId: number } }, @Body() body: CreatePlaySessionBody) {
-        return this.sessionsService.createCompletedSession(request.user.userId, body)
+    @IdempotencyResponses('The selected group, attendees, games, or participants are invalid.')
+    createCompletedSession(@Req() request: CreatingRequest, @Body() body: CreatePlaySessionBody) {
+        return this.sessionsService.createCompletedSession(request.user.userId, body, idempotencyOf(request))
     }
 
     @Post('scheduled')
     @ApiOperation({ summary: 'Schedule a session for a group' })
+    @IdempotencyKeyHeader()
     @ApiResponse({ status: 201, type: ScheduledSessionCreatedDto })
-    createScheduledSession(@Req() request: { user: { userId: number } }, @Body() body: CreateScheduledSessionBody) {
-        return this.sessionsService.createScheduledSession(request.user.userId, body)
+    @IdempotencyResponses()
+    createScheduledSession(@Req() request: CreatingRequest, @Body() body: CreateScheduledSessionBody) {
+        return this.sessionsService.createScheduledSession(request.user.userId, body, false, idempotencyOf(request))
     }
 
     @Patch(':sessionId/attendees')
@@ -268,4 +275,33 @@ export class SessionsController {
     ) {
         return this.sessionsService.updateGameResults(request.user.userId, sessionId, gameId, body)
     }
+}
+
+type CreatingRequest = IdempotentRequest & { user: { userId: number }; headers: Record<string, string | Array<string> | undefined> }
+
+/** The request's `Idempotency-Key` (#246); a repeat is marked on the request so it is not counted again. */
+function idempotencyOf(request: CreatingRequest) {
+    return {
+        key: readIdempotencyKey(request.headers['idempotency-key']),
+        onReplay: () => {
+            request.idempotentReplay = true
+        },
+    }
+}
+
+function IdempotencyKeyHeader() {
+    return ApiHeader({
+        name: IDEMPOTENCY_KEY_HEADER,
+        required: false,
+        schema: { type: 'string', format: 'uuid' },
+        description:
+            'A UUID created once per submission. Sending the same request again with the same key (within 24 hours) returns the first result instead of creating another.',
+    })
+}
+
+function IdempotencyResponses(invalidBody = 'The request body is invalid.') {
+    return applyDecorators(
+        ApiResponse({ status: 400, description: `${invalidBody} Or the Idempotency-Key header is not a UUID (IDEMPOTENCY_KEY_INVALID).` }),
+        ApiResponse({ status: 422, description: 'The Idempotency-Key was already used for a different request (IDEMPOTENCY_KEY_REUSED).' }),
+    )
 }

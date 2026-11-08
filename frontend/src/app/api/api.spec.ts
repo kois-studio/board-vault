@@ -60,6 +60,21 @@ describe('Api response contracts', () => {
         expect(http.expectOne(`${environment.apiUrl}/play/recommendations/feedback`).request.context.get(READ_ONLY)).toBe(false)
     })
 
+    it('sends the Idempotency-Key with a game night it creates, and no header without one (#246)', () => {
+        const key = '3f2b8c1e-9a4d-4e6f-8b7a-1c2d3e4f5a6b'
+        const body = { groupId: 1, sessionDate: '2026-10-06T17:00:00.000Z', timezone: 'Europe/Madrid', plannedGameIds: [] }
+        api.createPlaySession({ ...body, games: [] }, key).subscribe()
+        api.scheduleSession(body, key).subscribe()
+        api.startLiveSession(body, key).subscribe()
+        api.scheduleSession(body).subscribe()
+
+        expect(http.expectOne(`${environment.apiUrl}/sessions`).request.headers.get('Idempotency-Key')).toBe(key)
+        expect(http.expectOne(`${environment.apiUrl}/sessions/live`).request.headers.get('Idempotency-Key')).toBe(key)
+        const [keyed, unkeyed] = http.match(`${environment.apiUrl}/sessions/scheduled`)
+        expect(keyed?.request.headers.get('Idempotency-Key')).toBe(key)
+        expect(unkeyed?.request.headers.has('Idempotency-Key')).toBe(false)
+    })
+
     it('rejects a Clerk session status with an invalid user id before it reaches the app', async () => {
         const response = firstValueFrom(api.clerkAuthStatus())
         const request = http.expectOne(`${environment.apiUrl}/auth/clerk/status`)

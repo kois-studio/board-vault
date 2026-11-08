@@ -66,7 +66,8 @@ async function bootstrap() {
         origin: corsOrigins,
         methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
         // The view header says which screen a request came from, for usage statistics (ADR-0021).
-        allowedHeaders: ['Authorization', 'Content-Type', 'X-Board-Vault-View'],
+        // Idempotency-Key makes creating a game night safe to send again (#246).
+        allowedHeaders: ['Authorization', 'Content-Type', 'X-Board-Vault-View', 'Idempotency-Key'],
         credentials: false,
         maxAge: 86400,
     })

@@ -141,6 +141,12 @@ function asUnavailable(error: unknown, req: HttpRequest<unknown>, isRead: boolea
     return error
 }
 
+/** The API's 503 when the database stopped answering: a write may have committed before it did. */
+function isDatabaseTimeout(response: HttpErrorResponse | null): boolean {
+    const body: unknown = response?.error
+    return response?.status === 503 && typeof body === 'object' && body !== null && (body as { code?: unknown }).code === 'DATABASE_TIMEOUT'
+}
+
 function unavailable(
     req: HttpRequest<unknown>,
     isRead: boolean,
@@ -148,8 +154,10 @@ function unavailable(
 ): ApiUnavailableError {
     const from = 'from' in cause ? cause.from : null
     // A write that may have reached the API before the answer was lost. Not one that timed out before it left the
-    // browser (still waiting for the sign-in token), nor a 5xx other than a gateway's 504: the API saying it did not do it.
-    const mayHaveArrived = cause.kind === 'timeout' ? cause.sent : cause.kind === 'network' || from?.status === 504
+    // browser (still waiting for the sign-in token), nor a 5xx other than a gateway's 504 or the database timing out:
+    // the API saying it did not do it. A database timeout may come after the write committed (#246).
+    const mayHaveArrived =
+        cause.kind === 'timeout' ? cause.sent : cause.kind === 'network' || from?.status === 504 || isDatabaseTimeout(from)
     const outcomeUnknown = !isRead && mayHaveArrived
     return new ApiUnavailableError({
         kind: cause.kind,

@@ -5183,7 +5183,18 @@
     "/sessions/live": {
       "post": {
         "operationId": "SessionsController_startLive",
-        "parameters": [],
+        "parameters": [
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "description": "A UUID created once per submission. Sending the same request again with the same key (within 24 hours) returns the first result instead of creating another.",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
         "requestBody": {
           "required": true,
           "content": {
@@ -5204,6 +5215,12 @@
                 }
               }
             }
+          },
+          "400": {
+            "description": "The request body is invalid. Or the Idempotency-Key header is not a UUID (IDEMPOTENCY_KEY_INVALID)."
+          },
+          "422": {
+            "description": "The Idempotency-Key was already used for a different request (IDEMPOTENCY_KEY_REUSED)."
           }
         },
         "security": [
@@ -5258,7 +5275,18 @@
     "/sessions": {
       "post": {
         "operationId": "SessionsController_createCompletedSession",
-        "parameters": [],
+        "parameters": [
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "description": "A UUID created once per submission. Sending the same request again with the same key (within 24 hours) returns the first result instead of creating another.",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
         "requestBody": {
           "required": true,
           "content": {
@@ -5281,7 +5309,10 @@
             }
           },
           "400": {
-            "description": "The selected group, attendees, games, or participants are invalid."
+            "description": "The selected group, attendees, games, or participants are invalid. Or the Idempotency-Key header is not a UUID (IDEMPOTENCY_KEY_INVALID)."
+          },
+          "422": {
+            "description": "The Idempotency-Key was already used for a different request (IDEMPOTENCY_KEY_REUSED)."
           }
         },
         "security": [
@@ -5298,7 +5329,18 @@
     "/sessions/scheduled": {
       "post": {
         "operationId": "SessionsController_createScheduledSession",
-        "parameters": [],
+        "parameters": [
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "description": "A UUID created once per submission. Sending the same request again with the same key (within 24 hours) returns the first result instead of creating another.",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
         "requestBody": {
           "required": true,
           "content": {
@@ -5319,6 +5361,12 @@
                 }
               }
             }
+          },
+          "400": {
+            "description": "The request body is invalid. Or the Idempotency-Key header is not a UUID (IDEMPOTENCY_KEY_INVALID)."
+          },
+          "422": {
+            "description": "The Idempotency-Key was already used for a different request (IDEMPOTENCY_KEY_REUSED)."
           }
         },
         "security": [

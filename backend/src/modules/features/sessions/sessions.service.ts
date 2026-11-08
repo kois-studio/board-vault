@@ -1,5 +1,6 @@
 import { BadRequestException, ConflictException, ForbiddenException, Injectable, NotFoundException } from '@nestjs/common'
 
+import { createOnce } from '../../../common/http/idempotency.js'
 import { mapMeetDetailsResult } from '../../../common/mappers/meet-details.mapper.js'
 import { parseStoredDate, toIsoDate } from '../../../common/utils/stored-date.js'
 import { DatabaseService } from '../../common/database/database.service.js'
@@ -34,6 +35,7 @@ import type {
     UpdateGameResultsBody,
     GameResultsUpdatedDto,
 } from '../../../common/types/session.type.js'
+import type { IdempotencyRecord } from '../../common/database/queries/idempotency.queries.js'
 
 const STATUS_ACTIVITY: Record<'active' | 'completed' | 'cancelled', GroupActivityType> = {
     active: 'session_started',
@@ -84,7 +86,26 @@ export class SessionsService {
         return session
     }
 
-    async createCompletedSession(actorAccountId: number, body: CreatePlaySessionBody): Promise<SessionCreatedDto> {
+    async createCompletedSession(
+        actorAccountId: number,
+        body: CreatePlaySessionBody,
+        idempotency: SessionIdempotency = {},
+    ): Promise<SessionCreatedDto> {
+        const { id: sessionId } = await createOnce(
+            this.databaseService,
+            { accountId: actorAccountId, idempotencyKey: idempotency.key, route: 'POST /sessions', body, onReplay: idempotency.onReplay },
+            record => this.insertCompletedSession(actorAccountId, body, record),
+        )
+
+        return { sessionId, status: 'completed' }
+    }
+
+    /** Validates a recorded night and saves it, with `record` in the same transaction; answers its id. */
+    private async insertCompletedSession(
+        actorAccountId: number,
+        body: CreatePlaySessionBody,
+        record: IdempotencyRecord | undefined,
+    ): Promise<number> {
         const group = await this.databaseService.groups.getGroupById(body.groupId)
 
         if (group.rows.length === 0) {
@@ -155,6 +176,7 @@ export class SessionsService {
         }
 
         const result = await this.databaseService.sessions.createCompletedSession({
+            idempotency: record,
             groupId: body.groupId,
             createdBy: actorAccountId,
             sessionDate: body.sessionDate,
@@ -168,17 +190,47 @@ export class SessionsService {
             activity: { groupId: body.groupId, actorAccountId, type: 'session_recorded' },
         })
 
-        return {
-            sessionId: Number(result.lastInsertRowid),
-            status: 'completed',
-        }
+        return Number(result.lastInsertRowid)
     }
 
     async createScheduledSession(
         actorAccountId: number,
         body: CreateScheduledSessionBody,
         live = false,
+        idempotency: SessionIdempotency = {},
     ): Promise<ScheduledSessionCreatedDto | LiveSessionCreatedDto> {
+        const { id: sessionId, completes } = await createOnce(
+            this.databaseService,
+            {
+                accountId: actorAccountId,
+                idempotencyKey: idempotency.key,
+                route: live ? 'POST /sessions/live' : 'POST /sessions/scheduled',
+                body,
+                onReplay: idempotency.onReplay,
+            },
+            record => this.insertScheduledSession(actorAccountId, body, live, record),
+        )
+
+        // Only one request with an Idempotency-Key tells people: the first one past the write, or the retry of one
+        // that timed out after it committed.
+        if (!completes) return { sessionId, status: live ? 'active' : 'scheduled' }
+
+        if (live) await this.activityNotifier.sessionChanged(sessionId, actorAccountId, 'active')
+        else await this.activityNotifier.sessionPlanned(sessionId, actorAccountId)
+
+        return {
+            sessionId,
+            status: live ? 'active' : 'scheduled',
+        }
+    }
+
+    /** Validates a planned or live night and saves it, with `record` in the same transaction; answers its id. */
+    private async insertScheduledSession(
+        actorAccountId: number,
+        body: CreateScheduledSessionBody,
+        live: boolean,
+        record: IdempotencyRecord | undefined,
+    ): Promise<number> {
         const group = await this.databaseService.groups.getGroupById(body.groupId)
 
         if (group.rows.length === 0) {
@@ -230,6 +282,7 @@ export class SessionsService {
         }
 
         const result = await this.databaseService.sessions.createScheduledSession({
+            idempotency: record,
             groupId: body.groupId,
             createdBy: actorAccountId,
             sessionDate: live ? new Date().toISOString() : body.sessionDate,
@@ -242,15 +295,7 @@ export class SessionsService {
             activity: { groupId: body.groupId, actorAccountId, type: live ? 'session_started' : 'session_planned' },
         })
 
-        const sessionId = Number(result.lastInsertRowid)
-
-        if (live) await this.activityNotifier.sessionChanged(sessionId, actorAccountId, 'active')
-        else await this.activityNotifier.sessionPlanned(sessionId, actorAccountId)
-
-        return {
-            sessionId,
-            status: live ? 'active' : 'scheduled',
-        }
+        return Number(result.lastInsertRowid)
     }
 
     async updateSessionStatus(actorAccountId: number, sessionId: number, body: UpdateSessionStatusBody): Promise<SessionStatusUpdatedDto> {
@@ -1015,3 +1060,6 @@ export class SessionsService {
             : []
     }
 }
+
+/** The `Idempotency-Key` of a creation, and what to do when it repeats an earlier one (#246). */
+export type SessionIdempotency = { key?: string; onReplay?: () => void }

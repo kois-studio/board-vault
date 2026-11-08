@@ -4306,6 +4306,15 @@
         <source>Rate it</source>
       </segment>
     </unit>
+    <unit id="3225746291117416435">
+      <notes>
+        <note category="location">src/app/components/log-session-wizard/log-session-wizard.component.ts</note>
+        <note category="description">Error when Board Vault did not answer in time after recording a game night, so it may or may not be saved</note>
+      </notes>
+      <segment>
+        <source>We couldn’t confirm the session was saved. Your choices are still here: try again without changing them and it won’t be saved twice.</source>
+      </segment>
+    </unit>
     <unit id="3225921922249100905">
       <notes>
         <note category="location">src/app/pages/meet-view/meet-view.component.html</note>
@@ -4876,6 +4885,15 @@
       </notes>
       <segment>
         <source>Search <ph id="0" equiv="count" disp="count"/> game</source>
+      </segment>
+    </unit>
+    <unit id="3516978214110164548">
+      <notes>
+        <note category="location">src/app/pages/meet-new/meet-new.component.ts</note>
+        <note category="description">Toast when Board Vault did not answer in time after planning a game night, so it may or may not be planned</note>
+      </notes>
+      <segment>
+        <source>We couldn’t confirm the game night was planned. Try again without changing anything and it won’t be planned twice.</source>
       </segment>
     </unit>
     <unit id="3517550046701184661">
@@ -13331,6 +13349,15 @@
       </notes>
       <segment>
         <source>Could not save your rating.</source>
+      </segment>
+    </unit>
+    <unit id="7884142265622725022">
+      <notes>
+        <note category="location">src/app/components/log-session-wizard/log-session-wizard.component.ts</note>
+        <note category="description">Error when Board Vault did not answer in time after starting a game night, so it may or may not have started</note>
+      </notes>
+      <segment>
+        <source>We couldn’t confirm the night was started. Your choices are still here: try again without changing them and it won’t be started twice.</source>
       </segment>
     </unit>
     <unit id="7884742361510661371">

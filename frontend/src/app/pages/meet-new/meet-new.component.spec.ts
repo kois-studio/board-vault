@@ -8,6 +8,7 @@ import { ToastService } from '../../components/toast/toast.service'
 import { LOADING_KEYS } from '../../core/enums/loading-keys-enum'
 import { DataService } from '../../core/services/data.service'
 import { LoadingService } from '../../core/services/loading.service'
+import { ApiUnavailableError } from '../../core/utils/apiUnavailable'
 import { defaultSessionDay, MeetNewComponent } from './meet-new.component'
 
 describe('defaultSessionDay', () => {
@@ -168,7 +169,7 @@ describe('MeetNewComponent social handoff', () => {
         await component.onClickCreateMeeting()
         await fixture.whenStable()
 
-        expect(api.scheduleSession).toHaveBeenCalledWith(expect.objectContaining({ groupPersonIds: [12, 13] }))
+        expect(api.scheduleSession).toHaveBeenCalledWith(expect.objectContaining({ groupPersonIds: [12, 13] }), expect.any(String))
     })
 
     it('plans the night only after at least one person is invited', async () => {
@@ -190,9 +191,68 @@ describe('MeetNewComponent social handoff', () => {
                 notes: 'Try the group recommendation.',
                 timezone: expect.any(String),
             }),
+            expect.stringMatching(/^[0-9a-f-]{36}$/),
         )
         expect(dataService.refreshUserMeets).toHaveBeenCalled()
         expect(component.isCreating()).toBe(false)
+    })
+
+    describe('when Board Vault cannot confirm the night was planned (#246)', () => {
+        const maybeSaved = () => new ApiUnavailableError({ kind: 'timeout', outcomeUnknown: true, url: '/sessions/scheduled', status: 0 })
+        const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/
+
+        it('says so, and a retry sends the same night with the same key so it is planned once', async () => {
+            const { component, api, dataService } = await setup()
+            const toast = TestBed.inject(ToastService)
+            api.scheduleSession.mockReturnValueOnce(throwError(maybeSaved))
+
+            await component.onClickCreateMeeting()
+            expect(toast.error).toHaveBeenCalledWith(
+                'We couldn’t confirm the game night was planned. Try again without changing anything and it won’t be planned twice.',
+            )
+            // A night that was saved after all shows up.
+            expect(dataService.refreshUserMeets).toHaveBeenCalled()
+
+            await component.onClickCreateMeeting()
+            const [first, retry] = api.scheduleSession.mock.calls
+            const [firstBody, firstKey] = first ?? []
+            const [retryBody, retryKey] = retry ?? []
+            expect(firstKey).toMatch(UUID)
+            expect(retryKey).toBe(firstKey)
+            expect(retryBody).toEqual(firstBody)
+            expect(toast.success).toHaveBeenCalledWith('Game night planned.')
+        })
+
+        it('uses a new key once the night changed, and after it was planned', async () => {
+            const { component, api } = await setup()
+            api.scheduleSession.mockReturnValueOnce(throwError(maybeSaved))
+
+            await component.onClickCreateMeeting()
+            component.notes.set('Bring snacks.')
+            await component.onClickCreateMeeting()
+            await component.onClickCreateMeeting()
+
+            const keys = api.scheduleSession.mock.calls.map(([, key]) => key)
+            expect(new Set(keys).size).toBe(3)
+        })
+
+        it('uses a new key after a failure that certainly saved nothing, and says it failed', async () => {
+            const { component, api } = await setup()
+            const toast = TestBed.inject(ToastService)
+            api.scheduleSession.mockReturnValueOnce(
+                throwError(
+                    () => new ApiUnavailableError({ kind: 'server', outcomeUnknown: false, url: '/sessions/scheduled', status: 503 }),
+                ),
+            )
+
+            await component.onClickCreateMeeting()
+            await component.onClickCreateMeeting()
+
+            expect(toast.error).toHaveBeenCalledWith('Could not plan the game night. Please try again.')
+            const [first, retry] = api.scheduleSession.mock.calls
+            const [firstKey, retryKey] = [first?.[1], retry?.[1]]
+            expect(retryKey).not.toBe(firstKey)
+        })
     })
 
     it('rejects a day in the past', async () => {

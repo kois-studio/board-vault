@@ -13,6 +13,7 @@ import { GameQueries } from './queries/games.queries.js'
 import { GroupActivityQueries } from './queries/group-activity.queries.js'
 import { GroupQueries } from './queries/groups.queries.js'
 import { HomeQueries } from './queries/home.queries.js'
+import { IdempotencyQueries } from './queries/idempotency.queries.js'
 import { InvitationQueries } from './queries/invitations.queries.js'
 import { NotificationQueries } from './queries/notifications.queries.js'
 import { RecommendationQueries } from './queries/recommendations.queries.js'
@@ -20,7 +21,7 @@ import { RecordingQueries } from './queries/session-recording.queries.js'
 import { SessionQueries } from './queries/sessions.queries.js'
 import { UsageQueries } from './queries/usage.queries.js'
 
-export const CURRENT_SCHEMA_VERSION = '0030'
+export const CURRENT_SCHEMA_VERSION = '0031'
 
 /** Statements that only read, so running them twice is harmless. Any write keyword, even inside a `WITH`, makes it a write. */
 const READ_ONLY_SQL = /^\s*(SELECT|WITH)\b/i
@@ -49,6 +50,7 @@ export class DatabaseService implements OnModuleInit, OnModuleDestroy {
     readonly games = new GameQueries(this)
     readonly groupActivity = new GroupActivityQueries(this)
     readonly groups = new GroupQueries(this)
+    readonly idempotency = new IdempotencyQueries(this)
     readonly invitations = new InvitationQueries(this)
     readonly notifications = new NotificationQueries(this)
     readonly recommendations = new RecommendationQueries(this)

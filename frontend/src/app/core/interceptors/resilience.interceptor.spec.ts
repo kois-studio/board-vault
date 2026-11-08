@@ -331,6 +331,23 @@ describe('resilienceInterceptor (#240)', () => {
             expect(refused.error).not.toBeInstanceOf(ApiUnavailableError)
         })
 
+        it('says the outcome of a write is unknown when the database timed out, which may be after it committed (#246)', () => {
+            setup()
+            const timedOut = send(http.post('/api/sessions', {}))
+            fail('/api/sessions', 503, { status: 503, code: 'DATABASE_TIMEOUT', message: 'The database did not answer in time.' })
+            const unavailable = send(http.post('/api/sessions', {}))
+            fail('/api/sessions', 503, { status: 503, code: 'DATABASE_UNAVAILABLE' })
+            const read = send(http.get('/api/sessions', { context: withoutReadRetry() }))
+            fail('/api/sessions', 503, { status: 503, code: 'DATABASE_TIMEOUT' })
+
+            vi.advanceTimersByTime(60_000)
+            backend.expectNone('/api/sessions')
+            expect((timedOut.error as ApiUnavailableError).kind).toBe('server')
+            expect(isSaveOutcomeUnknown(timedOut.error)).toBe(true)
+            expect(isSaveOutcomeUnknown(unavailable.error)).toBe(false)
+            expect(isSaveOutcomeUnknown(read.error)).toBe(false)
+        })
+
         it('keeps an upload alive while it makes progress, and gives up once it stalls', () => {
             setup()
             const result = send(http.post('/api/upload', new Blob(['x']), { reportProgress: true, observe: 'events' }) as never)

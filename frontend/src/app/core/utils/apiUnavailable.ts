@@ -17,8 +17,8 @@ export type ApiUnavailableKind = 'timeout' | 'network' | 'server'
 export class ApiUnavailableError extends HttpErrorResponse {
     readonly kind: ApiUnavailableKind
     /**
-     * A write whose outcome is unknown: it timed out, lost its connection, or a gateway gave up (504) after it may
-     * have reached the API. It may have been saved, so the page says so instead of "it failed". Never set for reads.
+     * A write whose outcome is unknown: it timed out, lost its connection, a gateway gave up (504), or the database
+     * timed out (503 `DATABASE_TIMEOUT`, #246) after it may have reached the API. It may have been saved, so the page says so instead of "it failed". Never set for reads.
      */
     readonly outcomeUnknown: boolean
 

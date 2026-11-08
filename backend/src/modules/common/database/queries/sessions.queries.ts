@@ -1,4 +1,5 @@
 import { activityStatements, recordInTransaction } from './group-activity.queries.js'
+import { idempotencyStatement } from './idempotency.queries.js'
 import { forgetWhoIsNotComing } from './session-cleanup.js'
 import { writePlays } from './session-recording.queries.js'
 
@@ -6,9 +7,12 @@ import type { GroupActivityEntry } from '../../../../common/types/group-activity
 import type { PlaySessionGameBody } from '../../../../common/types/session.type.js'
 import type { MeetAccountGameQueryOptions } from '../../../../modules/core/meet-account-games/meet-account-games.types.js'
 import type { DatabaseService } from '../database.service.js'
+import type { IdempotencyRecord } from './idempotency.queries.js'
 import type { InStatement } from '@libsql/client'
 
 type CompletedSessionInput = {
+    /** Recorded in the same transaction, so a repeat of the key creates nothing (#246). */
+    idempotency?: IdempotencyRecord
     plays?: PlaySessionGameBody[]
     groupId: number
     createdBy: number
@@ -24,6 +28,8 @@ type CompletedSessionInput = {
 }
 
 type ScheduledSessionInput = {
+    /** Recorded in the same transaction, so a repeat of the key creates nothing (#246). */
+    idempotency?: IdempotencyRecord
     status?: 'scheduled' | 'active'
     groupId: number
     createdBy: number
@@ -1112,7 +1118,8 @@ export class SessionQueries {
                 args: [input.groupId, input.createdBy, input.sessionDate, input.timezone, input.notes ?? null],
             })
             const meetId = Number(meetResult.lastInsertRowid)
-            const statements: Array<InStatement> = []
+            // First, so a repeat of the same key fails here and its transaction creates nothing (#246).
+            const statements: Array<InStatement> = input.idempotency ? [idempotencyStatement(input.idempotency, meetId)] : []
 
             for (const accountId of input.attendeeIds) {
                 statements.push({
@@ -1172,7 +1179,8 @@ export class SessionQueries {
 
             return { lastInsertRowid: meetId }
         } catch (error) {
-            await transaction.rollback()
+            // A failed rollback must not hide why the write failed: a key conflict or a timeout decides what happens next.
+            await transaction.rollback().catch(() => undefined)
             throw error
         } finally {
             transaction.close()
@@ -1191,13 +1199,18 @@ export class SessionQueries {
                 args: [input.groupId, input.createdBy, input.sessionDate, input.status ?? 'scheduled', input.timezone, input.notes ?? null],
             })
             const meetId = Number(meetResult.lastInsertRowid)
-            const statements: Array<InStatement> = input.attendeeIds.map(accountId => ({
-                sql: `
+            // First, so a repeat of the same key fails here and its transaction creates nothing (#246).
+            const statements: Array<InStatement> = input.idempotency ? [idempotencyStatement(input.idempotency, meetId)] : []
+
+            statements.push(
+                ...input.attendeeIds.map(accountId => ({
+                    sql: `
                     INSERT INTO MeetAttendee (meetId, accountId, rsvpStatus, attendanceStatus)
                     VALUES (?, ?, ${input.status === 'active' ? "'accepted', 'attended'" : "'pending', 'unknown'"})
                 `,
-                args: [meetId, accountId],
-            }))
+                    args: [meetId, accountId],
+                })),
+            )
 
             for (const groupPersonId of input.groupPersonIds ?? []) {
                 statements.push({
@@ -1224,7 +1237,8 @@ export class SessionQueries {
 
             return { lastInsertRowid: meetId }
         } catch (error) {
-            await transaction.rollback()
+            // A failed rollback must not hide why the write failed: a key conflict or a timeout decides what happens next.
+            await transaction.rollback().catch(() => undefined)
             throw error
         } finally {
             transaction.close()

@@ -154,6 +154,11 @@ import type {
 /** An artwork upload is up to 4 MB, resized by the API: 90 s instead of the 20 s of an ordinary write (#240). */
 const ARTWORK_UPLOAD_TIMEOUT_MS = 90_000
 
+/** The `Idempotency-Key` header for a creation, or no header without a key (#246). */
+function idempotencyHeaders(idempotencyKey: string | undefined): Record<string, string> {
+    return idempotencyKey ? { 'Idempotency-Key': idempotencyKey } : {}
+}
+
 @Injectable({ providedIn: 'root' })
 export class Api {
     private readonly url = environment.apiUrl
@@ -338,19 +343,22 @@ export class Api {
             .pipe(map((response) => sessionRecordingSchema.parse(response)))
     }
 
-    startLiveSession(body: ScheduleSessionRequest) {
-        return this.http.post<unknown>(`${this.url}/sessions/live`, body).pipe(map((response) => liveSessionCreatedSchema.parse(response)))
+    /** `idempotencyKey`: the same UUID for every try of one submission, so a retry never creates the night twice (#246). */
+    startLiveSession(body: ScheduleSessionRequest, idempotencyKey?: string) {
+        return this.http
+            .post<unknown>(`${this.url}/sessions/live`, body, { headers: idempotencyHeaders(idempotencyKey) })
+            .pipe(map((response) => liveSessionCreatedSchema.parse(response)))
     }
 
-    createPlaySession(body: CreatePlaySessionRequest) {
+    createPlaySession(body: CreatePlaySessionRequest, idempotencyKey?: string) {
         return this.http
-            .post<SessionCreatedType>(`${this.url}/sessions`, body)
+            .post<SessionCreatedType>(`${this.url}/sessions`, body, { headers: idempotencyHeaders(idempotencyKey) })
             .pipe(map((response) => sessionCreatedSchema.parse(response)))
     }
 
-    scheduleSession(body: ScheduleSessionRequest) {
+    scheduleSession(body: ScheduleSessionRequest, idempotencyKey?: string) {
         return this.http
-            .post<ScheduledSessionCreatedType>(`${this.url}/sessions/scheduled`, body)
+            .post<ScheduledSessionCreatedType>(`${this.url}/sessions/scheduled`, body, { headers: idempotencyHeaders(idempotencyKey) })
             .pipe(map((response) => scheduledSessionCreatedSchema.parse(response)))
     }
 

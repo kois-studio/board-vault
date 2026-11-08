@@ -5,6 +5,7 @@ import { CollectionQueries } from '../src/modules/common/database/queries/collec
 import { GameQueries } from '../src/modules/common/database/queries/games.queries.js'
 import { GroupActivityQueries } from '../src/modules/common/database/queries/group-activity.queries.js'
 import { GroupQueries } from '../src/modules/common/database/queries/groups.queries.js'
+import { IdempotencyQueries } from '../src/modules/common/database/queries/idempotency.queries.js'
 import { InvitationQueries } from '../src/modules/common/database/queries/invitations.queries.js'
 import { NotificationQueries } from '../src/modules/common/database/queries/notifications.queries.js'
 import { RecommendationQueries } from '../src/modules/common/database/queries/recommendations.queries.js'
@@ -19,6 +20,7 @@ const DOMAINS = {
     games: GameQueries,
     groupActivity: GroupActivityQueries,
     groups: GroupQueries,
+    idempotency: IdempotencyQueries,
     invitations: InvitationQueries,
     notifications: NotificationQueries,
     recommendations: RecommendationQueries,

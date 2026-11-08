@@ -140,7 +140,9 @@ component through `takeUntilDestroyed` or `toSignal`.
   when there was no answer, a timeout, or a 502, 503, or 504. It is never
   retried after a 4xx or a 500.
 - Every other request is a write. It gives up after 20 s and is sent only
-  once. Retrying writes needs the idempotency of #246.
+  once. A write is only sent again by the page, when the person asks, and
+  creating a game night then carries the same `Idempotency-Key` (#246; see
+  [api.md](api.md#creating-safely-twice)).
 - The time limit includes fetching the Clerk token. With progress events it
   is the longest silence between two of them.
 
@@ -154,7 +156,8 @@ Pages read failures like this:
   - `isServerUnreachable()` is true for it. A 401, 403, 404, 409, or 422
     passes through unchanged.
 - For a write that timed out after it was sent, lost its connection, or got
-  a 504, the outcome is unknown and it may have been saved. A write that
+  a 504, or a 503 `DATABASE_TIMEOUT` (the database may have committed before
+  it stopped answering), the outcome is unknown and it may have been saved. A write that
   timed out while still waiting for the Clerk token was never sent, so its
   outcome is known. `isSaveOutcomeUnknown(error)` is
   true, and the page should say so rather than "it failed".

@@ -12,6 +12,7 @@ import type {
     GroupPersonWorkspaceType,
     GroupWithMembersAndGames,
     PublicUserType,
+    ScheduleSessionRequest,
     SessionRecording,
 } from '../../api/api.types'
 import { ButtonComponent } from '../../components/ui/button/button.component'
@@ -24,8 +25,10 @@ import { formatDateTime, formatList, intlLocale, isoDay } from '../../core/i18n/
 import { PlayersPipe } from '../../core/pipes/count.pipe'
 import { DataService } from '../../core/services/data.service'
 import { LoadingService } from '../../core/services/loading.service'
+import { isSaveOutcomeUnknown } from '../../core/utils/apiUnavailable'
 import { gameTitle } from '../../core/utils/gameTitle'
 import { canTakePart } from '../../core/utils/groupPeople'
+import { SubmissionKey } from '../../core/utils/submissionKey'
 import { ImageProfileComponent } from '../image-profile/image-profile.component'
 import { ToastService } from '../toast/toast.service'
 import { ImageBackgroundComponent } from '../ui/image-background/image-background.component'
@@ -111,6 +114,9 @@ export class LogSessionWizardComponent {
     readonly isLive = signal(this.route.snapshot.queryParamMap.get('mode') === 'live' && !this.editingId)
     readonly requestedGroupId = Number(this.route.snapshot.queryParamMap.get('groupId')) || null
     readonly recordingError = signal('')
+    /** One key for every try of the same night, so a retry after an unconfirmed save never creates it twice (#246). */
+    private readonly recordSubmission = new SubmissionKey<CreatePlaySessionRequest>()
+    private readonly liveSubmission = new SubmissionKey<ScheduleSessionRequest>()
     readonly loadingRecording = signal(Boolean(this.editingId))
     readonly catalogLoading = signal(false)
     readonly catalogError = signal(false)
@@ -732,7 +738,11 @@ export class LogSessionWizardComponent {
             if (this.editingId) {
                 await firstValueFrom(this.api.correctSession(this.editingId, { ...body, revision: this.revision }))
                 sessionId = this.editingId
-            } else sessionId = (await firstValueFrom(this.api.createPlaySession(body))).sessionId
+            } else {
+                const { key, request } = this.recordSubmission.prepare(body, () => body)
+                sessionId = (await firstValueFrom(this.api.createPlaySession(request, key))).sessionId
+                this.recordSubmission.clear()
+            }
 
             this.toastService.success($localize`:Toast after recording a game night:Session saved.`)
             // Play › History and Home read these cached lists; reload them so the new session shows up.
@@ -741,10 +751,18 @@ export class LogSessionWizardComponent {
             await this.router.navigate(['/sessions', sessionId], { queryParams: { saved: 1 } })
         } catch (error) {
             const status = (error as { status?: number }).status
+            const maybeCreated = !this.editingId && isSaveOutcomeUnknown(error)
+            if (maybeCreated) {
+                this.recordSubmission.keep()
+                this.dataService.refreshUserHistory()
+                this.dataService.refreshUserMeets()
+            } else if (!this.editingId) this.recordSubmission.clear()
             this.recordingError.set(
                 status === 409
                     ? $localize`:Error when a recorded game night changed while you corrected it:This session changed while you were editing. Your changes have not been saved. Reload the recording before trying again.`
-                    : $localize`:Error when a game night could not be recorded:Could not save the session. Your choices are still here; check your connection and try again.`,
+                    : maybeCreated
+                      ? $localize`:Error when Board Vault did not answer in time after recording a game night, so it may or may not be saved:We couldn’t confirm the session was saved. Your choices are still here: try again without changing them and it won’t be saved twice.`
+                      : $localize`:Error when a game night could not be recorded:Could not save the session. Your choices are still here; check your connection and try again.`,
             )
             this.toastService.error(this.recordingError())
         } finally {
@@ -961,20 +979,29 @@ export class LogSessionWizardComponent {
         this.isLoading.set(true)
         try {
             const ids = this.getSelectedAttendees().map((attendee) => attendee.user.id)
-            const session = await firstValueFrom(
-                this.api.startLiveSession({
-                    groupId: group.id,
-                    sessionDate: new Date().toISOString(),
-                    timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
-                    plannedGameIds: [],
-                    ...(this.usesGroupPeople() ? { groupPersonIds: ids } : { attendeeIds: ids }),
-                }),
-            )
+            const people = this.usesGroupPeople() ? { groupPersonIds: ids } : { attendeeIds: ids }
+            // A retry resends the first try's start time: the API refuses the key with a different request.
+            const { key, request } = this.liveSubmission.prepare({ groupId: group.id, ...people }, () => ({
+                groupId: group.id,
+                sessionDate: new Date().toISOString(),
+                timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+                plannedGameIds: [],
+                ...people,
+            }))
+            const session = await firstValueFrom(this.api.startLiveSession(request, key))
+            this.liveSubmission.clear()
             this.dataService.refreshUserMeets()
             await this.router.navigate(['/sessions', session.sessionId])
-        } catch {
+        } catch (error) {
+            const maybeStarted = isSaveOutcomeUnknown(error)
+            if (maybeStarted) {
+                this.liveSubmission.keep()
+                this.dataService.refreshUserMeets()
+            } else this.liveSubmission.clear()
             this.recordingError.set(
-                $localize`:Error when a game night could not be started:Could not start the night. Your choices are still here; try again.`,
+                maybeStarted
+                    ? $localize`:Error when Board Vault did not answer in time after starting a game night, so it may or may not have started:We couldn’t confirm the night was started. Your choices are still here: try again without changing them and it won’t be started twice.`
+                    : $localize`:Error when a game night could not be started:Could not start the night. Your choices are still here; try again.`,
             )
         } finally {
             this.isLoading.set(false)

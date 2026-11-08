@@ -6,6 +6,7 @@ import { Api } from '../../api/api'
 import type { GameCompleteType, GroupWithMembersAndGames, SessionRecording } from '../../api/api.types'
 import { DataService } from '../../core/services/data.service'
 import { LoadingService } from '../../core/services/loading.service'
+import { ApiUnavailableError } from '../../core/utils/apiUnavailable'
 import { ToastService } from '../toast/toast.service'
 import { LogSessionWizardComponent } from './log-session-wizard.component'
 
@@ -109,6 +110,8 @@ describe('LogSessionWizardComponent games step', () => {
                         getGroupPeople: vi.fn().mockReturnValue(isObservable(people) ? people : of({ people })),
                         getGroupPersonCatalog: vi.fn().mockReturnValue(of([])),
                         createPlaySession: vi.fn(),
+                        startLiveSession: vi.fn(),
+                        correctSession: vi.fn(),
                         getSessionRecording: vi.fn().mockReturnValue(of(recording)),
                         getGameView: vi.fn().mockReturnValue(of({ gameData: nekoSyndicate })),
                     },
@@ -247,6 +250,7 @@ describe('LogSessionWizardComponent games step', () => {
         expect(api.createPlaySession).toHaveBeenCalledOnce()
         expect(api.createPlaySession).toHaveBeenCalledWith(
             expect.objectContaining({ groupId: 1, groupPersonIds: [3], games: [{ gameId: 48, participantPersonIds: [3] }] }),
+            expect.stringMatching(/^[0-9a-f-]{36}$/),
         )
         expect(navigate).toHaveBeenCalledWith(['/sessions', 99], { queryParams: { saved: 1 } })
         // The cached history (Play › History, Home) must include the new session without a reload.
@@ -461,6 +465,131 @@ describe('LogSessionWizardComponent games step', () => {
 
         expect(component.sessionDate.hasError('futureDate')).toBe(true)
     })
+
+    describe('when Board Vault cannot confirm the night was saved (#246)', () => {
+        const maybeSaved = () => new ApiUnavailableError({ kind: 'timeout', outcomeUnknown: true, url: '/sessions', status: 0 })
+        const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/
+
+        it('says so, keeps the choices, and a retry sends the same session with the same key', async () => {
+            await setup([linkedPerson(1, 1, 'David', [10]), linkedPerson(3, 6, 'Bloody', [48])])
+            const api = TestBed.inject(Api)
+            vi.mocked(api.createPlaySession)
+                .mockReturnValueOnce(throwError(maybeSaved) as never)
+                .mockReturnValueOnce(of({ sessionId: 99 }) as never)
+            const navigate = vi.spyOn(TestBed.inject(Router), 'navigate').mockResolvedValue(true)
+            reachReviewStep()
+
+            saveButton().click()
+            await fixture.whenStable()
+            expect(component.recordingError()).toBe(
+                'We couldn’t confirm the session was saved. Your choices are still here: try again without changing them and it won’t be saved twice.',
+            )
+            expect(component.currentStep()).toBe('save')
+            // A session that was saved after all shows up in the cached lists.
+            expect(TestBed.inject(DataService).refreshUserHistory).toHaveBeenCalledOnce()
+
+            saveButton().click()
+            await fixture.whenStable()
+            const [first, retry] = vi.mocked(api.createPlaySession).mock.calls
+            const [firstBody, firstKey] = first ?? []
+            const [retryBody, retryKey] = retry ?? []
+            expect(firstKey).toMatch(UUID)
+            expect(retryKey).toBe(firstKey)
+            expect(retryBody).toEqual(firstBody)
+            expect(navigate).toHaveBeenCalledWith(['/sessions', 99], { queryParams: { saved: 1 } })
+        })
+
+        it('uses a new key after a failure that certainly saved nothing', async () => {
+            await setup([linkedPerson(1, 1, 'David', [10]), linkedPerson(3, 6, 'Bloody', [48])])
+            const api = TestBed.inject(Api)
+            vi.mocked(api.createPlaySession).mockReturnValue(
+                throwError(
+                    () => new ApiUnavailableError({ kind: 'server', outcomeUnknown: false, url: '/sessions', status: 500 }),
+                ) as never,
+            )
+            reachReviewStep()
+
+            saveButton().click()
+            await fixture.whenStable()
+            saveButton().click()
+            await fixture.whenStable()
+
+            expect(component.recordingError()).toBe(
+                'Could not save the session. Your choices are still here; check your connection and try again.',
+            )
+            const [first, retry] = vi.mocked(api.createPlaySession).mock.calls
+            const [firstKey, retryKey] = [first?.[1], retry?.[1]]
+            expect(retryKey).not.toBe(firstKey)
+        })
+
+        it('starts a live night once: a retry resends the first start time with the same key', async () => {
+            vi.useFakeTimers({ toFake: ['Date'] })
+            try {
+                vi.setSystemTime(new Date('2026-10-06T19:00:00Z'))
+                await setup([linkedPerson(1, 1, 'David', [10]), linkedPerson(3, 6, 'Bloody', [48])], undefined, { mode: 'live' })
+                const api = TestBed.inject(Api)
+                vi.mocked(api.startLiveSession)
+                    .mockReturnValueOnce(throwError(maybeSaved) as never)
+                    .mockReturnValueOnce(of({ sessionId: 77, status: 'active' }) as never)
+                const navigate = vi.spyOn(TestBed.inject(Router), 'navigate').mockResolvedValue(true)
+                component.selectGroup(group)
+                component.toggleAttendee(3)
+                fixture.detectChanges()
+
+                component.nextStep()
+                await fixture.whenStable()
+                expect(component.recordingError()).toBe(
+                    'We couldn’t confirm the night was started. Your choices are still here: try again without changing them and it won’t be started twice.',
+                )
+
+                vi.setSystemTime(new Date('2026-10-06T19:02:00Z'))
+                component.nextStep()
+                await fixture.whenStable()
+
+                const [first, retry] = vi.mocked(api.startLiveSession).mock.calls
+
+                const [firstBody, firstKey] = first ?? []
+
+                const [retryBody, retryKey] = retry ?? []
+                expect(firstKey).toMatch(UUID)
+                expect(retryKey).toBe(firstKey)
+                expect(retryBody).toEqual(firstBody)
+                expect(retryBody?.sessionDate).toBe('2026-10-06T19:00:00.000Z')
+                expect(navigate).toHaveBeenCalledWith(['/sessions', 77])
+            } finally {
+                vi.useRealTimers()
+            }
+        })
+
+        it('corrects a recorded session without a key and without saying it may have been created', async () => {
+            const recording: SessionRecording = {
+                groupId: 1,
+                sessionDate: '2026-10-03T12:00:00Z',
+                timezone: 'Europe/Madrid',
+                attendeeIds: [],
+                groupPersonIds: [3],
+                games: [{ gameId: 48, participantIds: [], participantPersonIds: [3], results: [] }],
+                revision: 4,
+            }
+            await setup([linkedPerson(1, 1, 'David', [10]), linkedPerson(3, 6, 'Bloody', [48])], recording)
+            const api = TestBed.inject(Api)
+            vi.mocked(api.correctSession).mockReturnValue(throwError(maybeSaved) as never)
+            await fixture.whenStable()
+            fixture.detectChanges()
+
+            component.currentStep.set('save')
+            fixture.detectChanges()
+            component.nextStep()
+            await fixture.whenStable()
+
+            expect(api.createPlaySession).not.toHaveBeenCalled()
+            expect(vi.mocked(api.correctSession).mock.calls[0]).toHaveLength(2)
+            expect(component.recordingError()).toBe(
+                'Could not save the session. Your choices are still here; check your connection and try again.',
+            )
+        })
+    })
+
     describe('when the group people cannot be loaded', () => {
         type PeopleAnswer = { people: Array<ReturnType<typeof linkedPerson>> }
         const down = () => throwError(() => new Error('Board Vault could not be reached'))

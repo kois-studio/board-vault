@@ -48,6 +48,15 @@ describe('UsageInterceptor', () => {
         ])
     })
 
+    it('counts a night created once, not again when the same Idempotency-Key repeats it (#246)', async () => {
+        const created = { method: 'POST', route: { path: '/sessions/scheduled' }, headers: {}, user: { userId: 4 } }
+
+        await run(created)
+        await run({ ...created, idempotentReplay: true })
+
+        expect(record.mock.calls).toEqual([[4, 'session_planned', null]])
+    })
+
     it('records nothing for unlisted routes, anonymous requests, or a wishlist removal', async () => {
         await run({ method: 'GET', route: { path: '/play/users/:userId/meets' }, headers: {}, user: { userId: 4 } })
         await run({ method: 'POST', route: { path: '/collection/users/:userId/games/:gameId' }, headers: {} })

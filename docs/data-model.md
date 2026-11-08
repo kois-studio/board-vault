@@ -10,7 +10,7 @@ The database is SQLite through libSQL: a local file in development, Turso in
 production. The schema is
 [`database/schema/schema.sql`](../database/schema/schema.sql) (the 0001–0005
 baseline) plus the numbered files in
-[`database/migrations/`](../database/migrations/). Current version: **0030**.
+[`database/migrations/`](../database/migrations/). Current version: **0031**.
 All SQL lives in the per-domain query classes in
 [`database/queries/`](../backend/src/modules/common/database/queries/).
 
@@ -77,6 +77,7 @@ sessions they created, and more.
 | `GroupGameInterest` | A member's interest in a game for the group. | `UserGroup`, `Account`, `Game` (cascade) |
 | `GroupAcquisitionDecision` | The group's acquisition decision for a game: `open`, `planned`, or `not_now`, with an optional note. | `UserGroup`, `Game`, deciding `Account` (cascade) |
 | `AccountHomePreference` | Per-account pins, pin order, group sort and dismissed rating reminders as validated JSON; removed on account deletion. | `Account` (cascade) |
+| `IdempotencyKey` | The game night a creation sent with an `Idempotency-Key` header made (#246): the account, the key (a UUID), the `route`, a SHA-256 `requestHash` of the body, and the new `resourceId`. Written in the same transaction as the night, so a repeat returns that night instead of creating another; `completedAt` is set by the one request that then tells people and counts the creation, which is the retry when the write committed but timed out; the same key with another route or body is refused. Kept 24 hours: an expired key is forgotten when it is used again, and the daily job deletes the rest. Nothing personal; removed on account deletion. | `Account` (cascade) |
 | `MeetPlay` | Individual plays by session and position, with catalogue game id and JSON containing validated participant ids and optional winners/scores; no names or free text. Existing session relations hold compatibility projections. Legacy sessions derive one play per game. See ADR-0022. | `Meet`, `Game` (cascade) |
 | `Meet` | A session (named `Meet` for historical reasons): date, status, timezone, notes, and a recording revision incremented by triggers on relevant changes. | `UserGroup`, creator `Account` (cascade) |
 | `MeetAttendee`, `MeetPersonAttendee` | Account and group-person attendance, RSVP. | `Meet` (cascade); `Account` (cascade) / `GroupPerson` (restrict) |
@@ -101,6 +102,10 @@ sessions they created, and more.
   queries on other tables.
 - Multi-record writes define transaction, duplicate, and partial-failure
   behavior.
+- A write is never retried by the API: one that times out may have committed.
+  Creating a game night is made safe to send again with an `Idempotency-Key`
+  recorded in the same transaction (`IdempotencyKey`, `createOnce` in
+  `common/http/idempotency.ts`).
 - Fixtures and verification databases use synthetic data only.
 
 To change the schema, follow [how-to/add-migration.md](how-to/add-migration.md).
