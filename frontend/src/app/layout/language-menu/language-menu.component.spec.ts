@@ -1,7 +1,8 @@
 import { Component, signal } from '@angular/core'
 import { ComponentFixture, TestBed } from '@angular/core/testing'
 import { provideRouter, Router } from '@angular/router'
-import { AccountLanguageService } from '../../core/i18n/account-language.service'
+import { AccountLanguageService, type LanguageSaveFailure } from '../../core/i18n/account-language.service'
+import type { Locale } from '../../core/i18n/locales'
 import { DataService } from '../../core/services/data.service'
 import { LanguageMenuComponent, languageMenuLocales } from './language-menu.component'
 
@@ -31,6 +32,9 @@ describe('LanguageMenuComponent', () => {
     const originalPath = window.location.pathname
     const currentUser = signal<unknown>(null)
     const choose = vi.fn()
+    const saving = signal<Locale | null>(null)
+    const failure = signal<LanguageSaveFailure | null>(null)
+    const dismissFailure = vi.fn()
 
     const element = () => fixture.nativeElement as HTMLElement
     const trigger = () => element().querySelector('button') as HTMLButtonElement
@@ -44,7 +48,7 @@ describe('LanguageMenuComponent', () => {
             providers: [
                 provideRouter([{ path: '**', component: EmptyPageComponent }]),
                 { provide: DataService, useValue: { currentUser } },
-                { provide: AccountLanguageService, useValue: { choose } },
+                { provide: AccountLanguageService, useValue: { choose, saving, failure, dismissFailure, switchForNow: vi.fn() } },
             ],
         }).compileComponents()
         await TestBed.inject(Router).navigateByUrl('/groups/12?tab=games#library')
@@ -57,6 +61,9 @@ describe('LanguageMenuComponent', () => {
     afterEach(() => {
         currentUser.set(null)
         choose.mockClear()
+        dismissFailure.mockClear()
+        saving.set(null)
+        failure.set(null)
         window.history.replaceState(null, '', originalPath)
         // biome-ignore lint/suspicious/noDocumentCookie: removes the cookie a test chose.
         document.cookie = 'bv_lang=; Path=/; Max-Age=0'
@@ -125,6 +132,53 @@ describe('LanguageMenuComponent', () => {
                 .find((link) => link.hreflang === 'de')
                 ?.getAttribute('href'),
         ).toBe('/de/groups/12?tab=games#library')
+    })
+
+    describe('when the language is not saved on the account (#242)', () => {
+        it('stays on the page and says why inside the open menu', () => {
+            currentUser.set({ id: 7 })
+            trigger().click()
+            fixture.detectChanges()
+
+            failure.set({ locale: 'de', maybeSaved: false })
+            fixture.detectChanges()
+
+            expect(element().querySelector('#language-menu [data-testid="language-save-error"]')?.textContent).toContain(
+                'We couldn’t save Deutsch on your account.',
+            )
+        })
+
+        it('shows the links waiting while a choice is being saved', () => {
+            trigger().click()
+            saving.set('de')
+            fixture.detectChanges()
+
+            expect(element().querySelector('#language-menu ul')?.getAttribute('aria-busy')).toBe('true')
+            expect(links().every((link) => link.getAttribute('aria-disabled') === 'true')).toBe(true)
+        })
+
+        it('puts the message away when the menu closes, not before', () => {
+            expect(dismissFailure).not.toHaveBeenCalled()
+            trigger().click()
+            fixture.detectChanges()
+            expect(dismissFailure).not.toHaveBeenCalled()
+
+            document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape' }))
+            fixture.detectChanges()
+
+            expect(dismissFailure).toHaveBeenCalledTimes(1)
+        })
+
+        it('keeps the answer for a choice still saving when the menu closes, so reopening it shows why', () => {
+            trigger().click()
+            fixture.detectChanges()
+            saving.set('de')
+
+            document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape' }))
+            fixture.detectChanges()
+
+            expect(dismissFailure).not.toHaveBeenCalled()
+        })
     })
 
     it('closes with Escape and gives focus back to the button', () => {

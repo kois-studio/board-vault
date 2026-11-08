@@ -2,12 +2,13 @@
 <p class="pb-8 text-bv-text-muted" i18n="Subtitle of the Language settings">The language of Board Vault’s menus and messages. Saved on your account.</p>
 
 @if (languages.length) {
-<fieldset class="min-w-0">
+<fieldset class="min-w-0" [disabled]="saving() !== null" [attr.aria-busy]="saving() !== null || null">
     <legend class="sr-only" i18n="Name of the list of languages in the Language settings">Language</legend>
     <div class="grid gap-4 sm:grid-cols-3">
         @for (option of languages; track option.locale) {
         <label [class]="optionClass(currentLanguage === option.locale)">
             <input
+                #radio
                 type="radio"
                 name="language"
                 class="sr-only"
@@ -25,4 +26,5 @@
         }
     </div>
 </fieldset>
+<app-language-save-error class="mt-4 block max-w-xl" />
 }

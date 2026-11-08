@@ -1,7 +1,8 @@
-import { Component, computed, DOCUMENT, ElementRef, inject, input, viewChild } from '@angular/core'
+import { Component, computed, DOCUMENT, ElementRef, effect, inject, input, untracked, viewChild } from '@angular/core'
 import { toSignal } from '@angular/core/rxjs-interop'
 import { NavigationEnd, Router } from '@angular/router'
 import { filter, map } from 'rxjs/operators'
+import { LanguageSaveErrorComponent } from '../../components/language-save-error/language-save-error.component'
 import { IconComponent } from '../../components/ui/icon/icon.component'
 import { AccountLanguageService } from '../../core/i18n/account-language.service'
 import { LOCALE_NAMES, type Locale, localeCookie, localeOfPath, localizedUrl, menuLocales, SOURCE_LOCALE } from '../../core/i18n/locales'
@@ -26,7 +27,7 @@ export function languageMenuLocales(pathname: string, preview: boolean): Array<L
  * `bv_lang` cookie for addresses without a prefix. Signed in, the choice is also saved on the account first.
  */
 @Component({
-    imports: [IconComponent],
+    imports: [IconComponent, LanguageSaveErrorComponent],
     selector: 'app-language-menu',
     templateUrl: 'language-menu.component.html',
 })
@@ -41,6 +42,8 @@ export class LanguageMenuComponent {
     readonly locales = input.required<ReadonlyArray<Locale>>()
 
     public readonly disclosure = injectDisclosure(() => this.trigger())
+    /** The language being saved on the account: the links wait for it. */
+    public readonly saving = this.accountLanguage.saving
     public readonly current: Locale = localeOfPath(this.document.location.pathname) ?? SOURCE_LOCALE
 
     private readonly url = toSignal(
@@ -59,6 +62,17 @@ export class LanguageMenuComponent {
         $localize`:Button in the header that opens the language menu; the placeholder is the current language in itself, such as "Español":Language: ${LOCALE_NAMES[this.current]}:language:`
     public readonly listLabel = $localize`:Name of the list of languages in the header's language menu:Choose a language`
 
+    constructor() {
+        // A message about a language that was not saved belongs to the open menu; closing it puts that away (#242).
+        // Closed while a choice is still saving, the answer is kept: reopening the menu shows it.
+        let wasOpen = false
+        effect(() => {
+            const isOpen = this.disclosure.isOpen()
+            if (wasOpen && !isOpen && !untracked(this.accountLanguage.saving)) untracked(() => this.accountLanguage.dismissFailure())
+            wasOpen = isOpen
+        })
+    }
+
     /**
      * Signed out, the link goes on to load the page in that language and the cookie makes the choice stick.
      * Signed in, the link waits: the save finishes before the page unloads, and the service then loads the page.
@@ -69,6 +83,7 @@ export class LanguageMenuComponent {
             return
         }
         event.preventDefault()
+        // Not saved, the page stays and the menu says why (#242).
         void this.accountLanguage.choose(locale)
     }
 }

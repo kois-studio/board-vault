@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common'
-import { afterNextRender, Component, computed, effect, Injector, inject, signal } from '@angular/core'
+import { afterNextRender, Component, computed, DestroyRef, effect, Injector, inject, signal } from '@angular/core'
 import { toSignal } from '@angular/core/rxjs-interop'
 import { ActivatedRoute, Router, RouterLink } from '@angular/router'
 import { firstValueFrom, map } from 'rxjs'
@@ -34,6 +34,7 @@ import { CustomDatePipe } from '../../core/pipes/customDate.pipe'
 import { GameTitlePipe } from '../../core/pipes/game-title.pipe'
 import { DataService } from '../../core/services/data.service'
 import { LoadingService } from '../../core/services/loading.service'
+import { isSaveOutcomeUnknown } from '../../core/utils/apiUnavailable'
 import { attendeeNames, formatAttendeeSummary } from '../../core/utils/formatAttendeeSummary'
 import { gameCoverAlt, gameTitle } from '../../core/utils/gameTitle'
 import { groupGameCount, groupPeopleCount } from '../../core/utils/groupCounts'
@@ -102,6 +103,7 @@ export class GroupViewComponent {
     /** A section to open on, `/groups/1#library` from Home's group card. */
     private readonly routeFragment = toSignal(this.route.fragment, { initialValue: null })
     private readonly injector = inject(Injector)
+    private readonly destroyRef = inject(DestroyRef)
     private scrolledToFragment: string | null = null
 
     // --------------------------------------------------------------------------
@@ -163,6 +165,8 @@ export class GroupViewComponent {
     public readonly includeArchivedGroupPeople = signal(false)
     public readonly newGroupPersonName = signal('')
     public readonly groupPersonMutationId = signal<number | null>(null)
+    /** The last change in a person's games editor that did not go through (#242), shown under its row. */
+    public readonly groupPersonSaveError = signal<{ personId: number; gameId: number; maybeSaved: boolean } | null>(null)
     public readonly isLeaveDialogOpen = signal(false)
     public readonly isLeavingGroup = signal(false)
 
@@ -550,6 +554,7 @@ export class GroupViewComponent {
 
     public toggleGroupPersonEditor(personId: number): void {
         this.groupPersonGameFilter.set('')
+        this.groupPersonSaveError.set(null)
         this.editingGroupPersonId.update((current) => (current === personId ? null : personId))
     }
 
@@ -576,26 +581,38 @@ export class GroupViewComponent {
         return person.ownership.filter((ownership) => ownership.status === 'asserted').length
     }
 
-    public async setGroupPersonOwnership(person: GroupPersonWorkspaceType, gameId: number, event: Event): Promise<void> {
-        const groupId = this.groupData$()?.id
-        if (!groupId || this.groupPersonMutationId()) return
+    /** The row's message when its last change did not go through (#242). */
+    public groupPersonSaveErrorFor(personId: number, gameId: number): { maybeSaved: boolean } | null {
+        const error = this.groupPersonSaveError()
+        return error?.personId === personId && error.gameId === gameId ? error : null
+    }
 
-        const status = (event.target as HTMLSelectElement).value
-        if (!['asserted', 'rejected', 'disputed'].includes(status)) return
+    public async setGroupPersonOwnership(person: GroupPersonWorkspaceType, gameId: number, event: Event): Promise<void> {
+        const select = event.target as HTMLSelectElement
+        // The menu shows what was picked; anything not stored puts it back (`[value]` alone would not: it did not change).
+        const showStored = () => {
+            select.value = this.getGroupPersonOwnershipStatus(person, gameId) ?? ''
+        }
+        const groupId = this.groupData$()?.id
+        const status = select.value
+        if (!groupId || this.groupPersonMutationId() || !['asserted', 'rejected', 'disputed'].includes(status)) {
+            showStored()
+            return
+        }
 
         this.groupPersonMutationId.set(person.person.id)
+        this.groupPersonSaveError.set(null)
         try {
             await firstValueFrom(
                 this.api.updateGroupPersonOwnership(groupId, person.person.id, gameId, status as 'asserted' | 'rejected' | 'disputed'),
             )
-            this.loadGroupPeople(groupId)
+            this.loadGroupPeople(groupId, { quiet: true })
             this.dataService.refreshUserGroups()
-        } catch {
-            this.toastService.error(
-                $localize`:Toast when whether a group person owns a game could not be saved:Could not update this person’s game ownership.`,
-            )
+        } catch (error) {
+            this.groupPersonSaveFailed(groupId, person, gameId, error, showStored)
         } finally {
             this.groupPersonMutationId.set(null)
+            this.refocusGroupPersonMenu(select)
         }
     }
 
@@ -604,13 +621,19 @@ export class GroupViewComponent {
     }
 
     public async setGroupPersonPreference(person: GroupPersonWorkspaceType, gameId: number, event: Event): Promise<void> {
+        const select = event.target as HTMLSelectElement
+        const showStored = () => {
+            select.value = this.getGroupPersonPreference(person, gameId) ?? ''
+        }
         const groupId = this.groupData$()?.id
-        if (!groupId || this.groupPersonMutationId()) return
-
-        const preference = (event.target as HTMLSelectElement).value
-        if (!['', 'favorite', 'like', 'neutral', 'avoid'].includes(preference)) return
+        const preference = select.value
+        if (!groupId || this.groupPersonMutationId() || !['', 'favorite', 'like', 'neutral', 'avoid'].includes(preference)) {
+            showStored()
+            return
+        }
 
         this.groupPersonMutationId.set(person.person.id)
+        this.groupPersonSaveError.set(null)
         try {
             if (preference === '') {
                 await firstValueFrom(this.api.deleteGroupPersonPreference(groupId, person.person.id, gameId))
@@ -624,14 +647,46 @@ export class GroupViewComponent {
                     ),
                 )
             }
-            this.loadGroupPeople(groupId)
-        } catch {
-            this.toastService.error(
-                $localize`:Toast when what a group person thinks of a game could not be saved:Could not update this person’s game preference.`,
-            )
+            this.loadGroupPeople(groupId, { quiet: true })
+        } catch (error) {
+            this.groupPersonSaveFailed(groupId, person, gameId, error, showStored)
         } finally {
             this.groupPersonMutationId.set(null)
+            this.refocusGroupPersonMenu(select)
         }
+    }
+
+    /**
+     * A change in a person's games editor did not go through (#242): the menu goes back to the stored value and the
+     * row says so. When Board Vault did not answer in time the change may be stored after all, so the people are
+     * read again and the menus then show whichever it is.
+     */
+    private groupPersonSaveFailed(
+        groupId: number,
+        person: GroupPersonWorkspaceType,
+        gameId: number,
+        error: unknown,
+        showStored: () => void,
+    ): void {
+        showStored()
+        const maybeSaved = isSaveOutcomeUnknown(error)
+        this.groupPersonSaveError.set({ personId: person.person.id, gameId, maybeSaved })
+        if (maybeSaved) this.loadGroupPeople(groupId, { quiet: true })
+    }
+
+    /**
+     * The menus are locked while a change saves, and a locked menu loses focus; once they are open again it goes back
+     * to the menu that was used, unless the person has moved on or left the page.
+     */
+    private refocusGroupPersonMenu(select: HTMLSelectElement): void {
+        if (this.destroyRef.destroyed) return
+        afterNextRender(
+            () => {
+                const focused = document.activeElement
+                if (select.isConnected && (!focused || focused === document.body)) select.focus()
+            },
+            { injector: this.injector },
+        )
     }
 
     public async joinAsNewGroupPerson(): Promise<void> {
@@ -883,8 +938,12 @@ export class GroupViewComponent {
             : $localize`:Badge on a person of the group page who has no account:No account yet`
     }
 
-    public loadGroupPeople(groupId: number): void {
-        this.groupPeopleLoading.set(true)
+    /**
+     * Reads the group's people. `quiet` keeps the list on screen while it reads (after a change in a person's games
+     * editor), so the open editor keeps its place and focus; a failed read still says so in place of the list.
+     */
+    public loadGroupPeople(groupId: number, { quiet = false }: { quiet?: boolean } = {}): void {
+        if (!quiet) this.groupPeopleLoading.set(true)
         this.groupPeopleError.set(false)
         this.api.getGroupPeople(groupId, this.includeArchivedGroupPeople()).subscribe({
             next: (response) => this.isShowing(groupId) && this.groupPeople$.set(response.people),

@@ -188,6 +188,29 @@ toast per failed list (#241):
   load-failure toasts. The lists still set their error signals, so pages
   keep saying in place what is missing. A failed save still says so.
 
+A save never leaves a value on screen that is not stored (#242):
+
+- A control shows the stored value until the save succeeds. While it saves,
+  it is locked and its button shows it is busy; when it fails, the reason
+  sits next to the control (`role="alert"`), not only in a toast, and focus
+  goes back to where trying again starts.
+- `isSaveOutcomeUnknown(error)` picks the message: "wasn't saved" or "we
+  couldn't confirm it was saved". Where the page can read the value back, it
+  does, and shows whichever it is.
+- `DataService.updateCurrentUserData` (display name, avatar) resolves once
+  stored and rejects when not, changing nothing; the display-name form and
+  the avatar dialog say why. The avatar dialog saves on Save, not on each
+  pick. A save that went through but could not be read back is applied as
+  sent.
+- A native `<select>` or radio keeps what was picked even when its
+  `[value]`/`[checked]` binding did not change, so a failed save puts it
+  back by hand (the group page's person editor, Settings → Language).
+- The group page's person editor reads the people again after each change
+  without taking the list off screen (`loadGroupPeople(id, { quiet: true })`),
+  so the open editor keeps its place, and focus goes back to the menu that
+  saving had locked. A save answered after the page was left changes nothing
+  and moves no focus.
+
 ### Routes
 
 | Route | Guard | Page |
@@ -290,8 +313,12 @@ are written without the prefix; the base address adds it.
   choose; production offers all five languages.
 - The account's language: signed in, choosing a language (in the menu or in
   Settings → Language) first saves it on the account
-  (`PUT /users/:id` with `locale`; a failed save is logged and the page still
-  changes), then loads the page in it. Both go through
+  (`PUT /users/:id` with `locale`), and loads the page in it only once it is
+  saved. A failed save leaves the page in its language and says so under the
+  choices (#242), with Try again and Switch for now. Switching for now loads
+  the language without saving it, and marks the session as followed so it
+  sticks until the next sign-in, which goes back to the account's language.
+  Both go through
   [`AccountLanguageService`](../frontend/src/app/core/i18n/account-language.service.ts).
   When the account is loaded after sign-in, the same service moves the page to
   the account's language once per browser session (the `bv_lang_followed` flag

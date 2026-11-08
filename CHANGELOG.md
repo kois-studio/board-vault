@@ -305,6 +305,7 @@ operational details.
 
 ### Fixed
 
+- A change that couldn’t be saved no longer looks saved. Your display name stays open with what you typed and says it wasn’t saved; the avatar editor saves once, on Save, and stays open if it fails; a person’s games and preferences on the group page go back to what is stored, with a note under the game; and a language that couldn’t be saved on your account keeps the page as it was, with Try again or Switch for now.
 - When Board Vault can’t be reached, one notice under the header says so, and that what you see may be out of date, instead of a pile of error messages. It goes away by itself once Board Vault answers, and Try again reloads what failed. Going offline shows it at once.
 - No page waits forever for Board Vault. When it doesn't answer, a page
   stops trying after a few seconds, tries once more, and then shows its

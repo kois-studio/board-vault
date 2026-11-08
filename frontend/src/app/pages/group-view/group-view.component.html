@@ -665,6 +665,7 @@
                                                             [attr.aria-label]="ownershipLabel(game, person.person.displayName)"
                                                             [value]="getGroupPersonOwnershipStatus(person, game.id) ?? ''"
                                                             [disabled]="groupPersonMutationId() !== null"
+                                                            [attr.aria-describedby]="groupPersonSaveErrorFor(person.person.id, game.id) ? 'group-person-save-error-' + person.person.id + '-' + game.id : null"
                                                             (change)="setGroupPersonOwnership(person, game.id, $event)"
                                                         >
                                                             <option value="" [disabled]="getGroupPersonOwnershipStatus(person, game.id) !== null" i18n="Empty choice of the menu that says whether a person owns a game on the group page">Owns? –</option>
@@ -677,6 +678,7 @@
                                                             [attr.aria-label]="preferenceLabel(game, person.person.displayName)"
                                                             [value]="getGroupPersonPreference(person, game.id) ?? ''"
                                                             [disabled]="groupPersonMutationId() !== null"
+                                                            [attr.aria-describedby]="groupPersonSaveErrorFor(person.person.id, game.id) ? 'group-person-save-error-' + person.person.id + '-' + game.id : null"
                                                             (change)="setGroupPersonPreference(person, game.id, $event)"
                                                         >
                                                             <option value="" i18n="Empty choice of the menu that says what a person thinks of a game on the group page">Likes? –</option>
@@ -685,6 +687,16 @@
                                                             <option value="neutral" i18n="Choice of the menu that says what a person thinks of a game on the group page">Neutral</option>
                                                             <option value="avoid" i18n="Choice of the menu that says what a person thinks of a game on the group page">Avoids</option>
                                                         </select>
+                                                        @if (groupPersonSaveErrorFor(person.person.id, game.id); as saveError) {
+                                                            <p
+                                                                role="alert"
+                                                                class="col-span-3 flex gap-1.5 text-xs text-bv-danger"
+                                                                data-testid="group-person-save-error"
+                                                                [id]="'group-person-save-error-' + person.person.id + '-' + game.id"
+                                                            >
+                                                                <app-icon name="circle-alert" [size]="14" className="mt-px shrink-0" aria-hidden="true" /><span>@if (saveError.maybeSaved) {<ng-container i18n="Under a game in the editor of a person's games on the group page, when Board Vault did not answer in time, so the change may or may not be saved; the menus show what is stored">We couldn’t confirm that change was saved. The menus show what is stored.</ng-container>} @else {<ng-container i18n="Under a game in the editor of a person's games on the group page, when a change could not be saved; the menus went back to what is stored">That change wasn’t saved. Try again.</ng-container>}</span>
+                                                            </p>
+                                                        }
                                                     </li>
                                                 } @empty {
                                                     <li class="p-4 text-center text-sm text-secondary" i18n="Shown in the editor of a person's games on the group page when the filter matches nothing">No games match.</li>

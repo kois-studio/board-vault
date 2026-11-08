@@ -2,22 +2,25 @@
 @if (isVisible()) {
 <div class="fixed inset-0 bg-black/50 flex justify-center items-center z-50" (click)="hideDialog()">
     <!-- Dialog box -->
-    <div appDialog (dialogClosed)="hideDialog()" class="bg-bv-surface rounded border border-bv-text-muted w-full h-full sm:h-auto sm:w-3/4 max-w-xl relative pt-4" (click)="$event.stopPropagation()">
+    <div appDialog (dialogClosed)="hideDialog()" class="bg-bv-surface rounded border border-bv-text-muted w-full h-full sm:h-auto sm:w-3/4 max-w-xl relative pt-4 flex flex-col overflow-y-auto" (click)="$event.stopPropagation()">
         <!-- Close button -->
-        <button (click)="hideDialog()" i18n-aria-label="Accessible name of the button that closes the avatar editor" aria-label="Close avatar editor" class="py-2 px-4 rounded-lg hover:bg-bv-surface-2 absolute top-2 right-2 cursor-pointer">
+        <button (click)="hideDialog()" [disabled]="isSaving()" i18n-aria-label="Accessible name of the button that closes the avatar editor" aria-label="Close avatar editor" class="py-2 px-4 rounded-lg hover:bg-bv-surface-2 absolute top-2 right-2 cursor-pointer disabled:cursor-default disabled:opacity-60">
             <app-icon name="x" [size]="18" />
         </button>
         <!-- Dialog content -->
-        <app-avatar-editor
-            [avatar]="currentUser$()?.avatar ?? {
-                backgroundColor: '#3B82F6',
-                iconName: 'person-fill',
-                emoji: null,
-                type: 'icon',
-                initials: '',
-            }"
-            (configChange)="updateAvatar($event)">
-        </app-avatar-editor>
+        <app-avatar-editor [avatar]="startAvatar()" (configChange)="pick($event)" />
+
+        <div class="mt-auto border-t border-bv-border p-4">
+            @if (saveError(); as reason) {
+            <p id="avatar-save-error" role="alert" class="flex gap-2 pb-3 text-sm text-bv-danger" data-testid="avatar-save-error">
+                <app-icon name="circle-alert" [size]="16" className="mt-0.5 shrink-0" aria-hidden="true" /><span>@if (reason === 'maybe-saved') {<ng-container i18n="Error in the avatar editor when Board Vault did not answer in time, so the new avatar may or may not be saved">We couldn’t confirm your new avatar was saved. Try again.</ng-container>} @else {<ng-container i18n="Error in the avatar editor when the new avatar could not be saved">Your new avatar wasn’t saved. Try again.</ng-container>}</span>
+            </p>
+            }
+            <div class="flex justify-end gap-3">
+                <button appButton variant="secondary" type="button" [disabled]="isSaving()" (click)="hideDialog()" i18n="Button in the avatar editor that closes it without saving">Cancel</button>
+                <button #saveButton appButton variant="primary" type="button" [disabled]="!canSave()" [loading]="isSaving()" [attr.aria-describedby]="saveError() ? 'avatar-save-error' : null" (click)="save()" i18n="Button in the avatar editor that saves the new avatar">Save avatar</button>
+            </div>
+        </div>
     </div>
 </div>
 }

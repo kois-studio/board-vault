@@ -633,45 +633,40 @@ export class DataService {
 
     // #region form-update-profile
 
-    public updateCurrentUserData(requestBody: { displayName?: string; avatar?: UserType['avatar'] }) {
+    /**
+     * Saves the signed-in account's display name or avatar (#242). Resolves once it is stored, with the account
+     * updated everywhere it shows; rejects when it was not, changing nothing, so the caller can say so next to its
+     * control instead of in a toast. A save that went through but could not be read back is applied as sent: it is
+     * stored, and the next read of the account brings anything the server changed.
+     */
+    public async updateCurrentUserData(requestBody: { displayName?: string; avatar?: UserType['avatar'] }): Promise<void> {
         const currentUser = this.currentUser()
-        if (!currentUser) {
-            return
+        if (!currentUser) throw new Error('No authenticated user')
+
+        await firstValueFrom(this.api.updateUser(currentUser.id, requestBody))
+        let storedUser: UserType | null
+        try {
+            storedUser = await firstValueFrom(this.api.getUserById(currentUser.id))
+        } catch {
+            storedUser = null
         }
 
-        // 1.
-        this.api
-            .updateUser(currentUser.id, requestBody)
-            .pipe(concatMap(() => this.api.getUserById(currentUser.id)))
-            .subscribe({
-                next: (updatedUser) => {
-                    // 2.
-                    this.currentUser.set(updatedUser)
-                    this.userGroups.update((groups) =>
-                        groups.map((group) => {
-                            const member = group.members.find((candidate) => candidate.id === currentUser.id)
-                            if (!member) return group
-
-                            // update the user data inside that group
-                            if (requestBody.displayName) {
-                                member.displayName = requestBody.displayName
-                            }
-                            if (requestBody.avatar) {
-                                member.avatar = requestBody.avatar
-                            }
-
-                            return group
-                        }),
-                    )
-                    // 3.
-                    this.toastService.success($localize`:Toast after your profile is saved:User data updated`)
-                },
-                error: () => {
-                    this.toastService.error(
-                        $localize`:Toast when your profile could not be saved:Your profile could not be updated. Please try again.`,
-                    )
-                },
-            })
+        // Signed out, or someone else signed in, while it saved: that account is not the one shown.
+        const shownUser = this.currentUser()
+        if (shownUser?.id !== currentUser.id) return
+        // Saved but not read back: the account as shown now (it may have been re-read meanwhile) with what was sent.
+        this.currentUser.set(storedUser ?? { ...shownUser, ...requestBody })
+        this.userGroups.update((groups) =>
+            groups.map((group) =>
+                group.members.some((member) => member.id === currentUser.id)
+                    ? {
+                          ...group,
+                          members: group.members.map((member) => (member.id === currentUser.id ? { ...member, ...requestBody } : member)),
+                      }
+                    : group,
+            ),
+        )
+        this.toastService.success($localize`:Toast after your profile is saved:User data updated`)
     }
 
     // #region group-edit

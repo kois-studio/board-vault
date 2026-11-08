@@ -14,7 +14,7 @@
 
     @if (disclosure.isOpen()) {
     <div id="language-menu" class="absolute right-0 z-50 mt-2 w-56 overflow-hidden rounded-xl border border-bv-border bg-bv-surface text-bv-text shadow-xl">
-        <ul class="p-1.5" [attr.aria-label]="listLabel">
+        <ul class="p-1.5" [attr.aria-label]="listLabel" [attr.aria-busy]="saving() !== null || null">
             @for (link of links(); track link.locale) {
             <li>
                 @if (link.locale === current) {
@@ -23,11 +23,12 @@
                     <app-icon name="check" [size]="18" class="ml-auto" aria-hidden="true" />
                 </span>
                 } @else {
-                <a class="app-menu-item" [href]="link.href" [attr.hreflang]="link.locale" [attr.lang]="link.locale" (click)="choose($event, link.locale)">{{ link.name }}</a>
+                <a class="app-menu-item" [class.opacity-60]="saving() !== null" [href]="link.href" [attr.hreflang]="link.locale" [attr.lang]="link.locale" [attr.aria-disabled]="saving() !== null || null" (click)="choose($event, link.locale)">{{ link.name }}</a>
                 }
             </li>
             }
         </ul>
+        <app-language-save-error class="block px-1.5 pb-1.5" />
     </div>
     }
 </div>

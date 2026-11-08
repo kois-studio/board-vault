@@ -661,15 +661,6 @@
         <target>{VAR_PLURAL, plural, one {<ph id="0" equiv="INTERPOLATION"/> vote} other {<ph id="1" equiv="INTERPOLATION"/> votes}}</target>
       </segment>
     </unit>
-    <unit id="1347111254607194490">
-      <notes>
-        <note category="description">Toast when whether a group person owns a game could not be saved</note>
-      </notes>
-      <segment state="translated">
-        <source>Could not update this person’s game ownership.</source>
-        <target>Impossible de mettre à jour si cette personne possède le jeu.</target>
-      </segment>
-    </unit>
     <unit id="1349974898394084972">
       <notes>
         <note category="description">One of the group&apos;s numbers on the group&apos;s settings page</note>
@@ -804,6 +795,15 @@
       <segment state="translated">
         <source>Use secure sign-in</source>
         <target>Utilise la connexion sécurisée</target>
+      </segment>
+    </unit>
+    <unit id="1424105709982529287">
+      <notes>
+        <note category="description">Error under the display name field when the new name could not be saved</note>
+      </notes>
+      <segment state="translated">
+        <source>Your new name wasn’t saved. Try again.</source>
+        <target>Ton nouveau nom n’a pas été enregistré. Réessaie.</target>
       </segment>
     </unit>
     <unit id="1464671133091144057">
@@ -1650,6 +1650,15 @@
         <target><ph id="0" equiv="minutes" disp="minutes"/> min</target>
       </segment>
     </unit>
+    <unit id="1915929786728836008">
+      <notes>
+        <note category="description">Under a game in the editor of a person&apos;s games on the group page, when Board Vault did not answer in time, so the change may or may not be saved; the menus show what is stored</note>
+      </notes>
+      <segment state="translated">
+        <source>We couldn’t confirm that change was saved. The menus show what is stored.</source>
+        <target>Impossible de confirmer que cette modification a été enregistrée. Les menus affichent ce qui est enregistré.</target>
+      </segment>
+    </unit>
     <unit id="1922586940816531681">
       <notes>
         <note category="description">Accessible name of the grid of your games on My Games</note>
@@ -2129,6 +2138,15 @@
       <segment state="translated">
         <source>Cancel</source>
         <target>Annuler</target>
+      </segment>
+    </unit>
+    <unit id="2167244937727396241">
+      <notes>
+        <note category="description">Under the language choices when Board Vault did not answer in time, so the chosen language may or may not be saved on the account; the placeholder is the language&apos;s name in itself, such as Español</note>
+      </notes>
+      <segment state="translated">
+        <source>We couldn’t confirm <ph id="0" equiv="INTERPOLATION" disp="{{ languageName() }}"/> was saved on your account.</source>
+        <target>Impossible de confirmer que <ph id="0" equiv="INTERPOLATION" disp="{{ languageName() }}"/> a été enregistré dans ton compte.</target>
       </segment>
     </unit>
     <unit id="2167597038819055618">
@@ -3588,6 +3606,15 @@
         <target><ph id="0" equiv="INTERPOLATION" disp="{{ hasGames() ? 1 : 0 }}"/> sur 3 faites</target>
       </segment>
     </unit>
+    <unit id="2892987275385116225">
+      <notes>
+        <note category="description">Error in the avatar editor when the new avatar could not be saved</note>
+      </notes>
+      <segment state="translated">
+        <source>Your new avatar wasn’t saved. Try again.</source>
+        <target>Ton nouvel avatar n’a pas été enregistré. Réessaie.</target>
+      </segment>
+    </unit>
     <unit id="290594620278715699">
       <notes>
         <note category="description">Group history line; actor and person are names</note>
@@ -3979,6 +4006,15 @@
         <target>Nombre minimum de personnes</target>
       </segment>
     </unit>
+    <unit id="3146136720193552750">
+      <notes>
+        <note category="description">Button under the language choices that changes the page&apos;s language without saving it on the account</note>
+      </notes>
+      <segment state="translated">
+        <source>Switch for now</source>
+        <target>Changer pour l’instant</target>
+      </segment>
+    </unit>
     <unit id="3146348002114324720">
       <notes>
         <note category="description">Button on the invitation sign-up page while it joins the group</note>
@@ -4118,6 +4154,15 @@
       <segment state="translated">
         <source>There</source>
         <target>Était là</target>
+      </segment>
+    </unit>
+    <unit id="321443318776127238">
+      <notes>
+        <note category="description">Under the language choices after a language could not be saved on the account, explaining the Switch for now button</note>
+      </notes>
+      <segment state="translated">
+        <source>If you switch for now, your next sign-in goes back to your account’s language.</source>
+        <target>Si tu changes pour l’instant, ta prochaine connexion reviendra à la langue de ton compte.</target>
       </segment>
     </unit>
     <unit id="3216448677786204093">
@@ -5707,6 +5752,15 @@
       <segment state="translated">
         <source>Private collection import</source>
         <target>Import dans la collection privée</target>
+      </segment>
+    </unit>
+    <unit id="3993006783264733272">
+      <notes>
+        <note category="description">Button in the avatar editor that saves the new avatar</note>
+      </notes>
+      <segment state="translated">
+        <source>Save avatar</source>
+        <target>Enregistrer l’avatar</target>
       </segment>
     </unit>
     <unit id="3995378846861632522">
@@ -10306,6 +10360,15 @@
         <target>Inviter tes proches</target>
       </segment>
     </unit>
+    <unit id="6434338276809295262">
+      <notes>
+        <note category="description">Error under the display name field when Board Vault did not answer in time, so the new name may or may not be saved</note>
+      </notes>
+      <segment state="translated">
+        <source>We couldn’t confirm your new name was saved. Try again.</source>
+        <target>Impossible de confirmer que ton nouveau nom a été enregistré. Réessaie.</target>
+      </segment>
+    </unit>
     <unit id="6444163938950057626">
       <notes>
         <note category="description">Under a group&apos;s name on your own page when its numbers could not load</note>
@@ -10584,7 +10647,7 @@
     </unit>
     <unit id="6650633628037596693">
       <notes>
-        <note category="description">Button from Clerk, the sign-in provider, after its check that a sign-in is not automated failed</note>
+        <note category="description">Button under the language choices that tries again to save the chosen language on the account</note>
       </notes>
       <segment state="translated">
         <source>Try again</source>
@@ -13127,6 +13190,15 @@
         <target>Ton étagère personnelle devient la source des recommandations.</target>
       </segment>
     </unit>
+    <unit id="7930437057400214832">
+      <notes>
+        <note category="description">Under the language choices when the chosen language could not be saved on the account; the placeholder is the language&apos;s name in itself, such as Español</note>
+      </notes>
+      <segment state="translated">
+        <source>We couldn’t save <ph id="0" equiv="INTERPOLATION" disp="{{ languageName() }}"/> on your account.</source>
+        <target>Impossible d’enregistrer <ph id="0" equiv="INTERPOLATION" disp="{{ languageName() }}"/> dans ton compte.</target>
+      </segment>
+    </unit>
     <unit id="7930581890544594087">
       <notes>
         <note category="description">Average rating of a game in a group&apos;s library, for screen readers; the placeholder is the rating out of 5, such as 4.5</note>
@@ -13873,15 +13945,6 @@
         <target>Impossible d’ajouter le jeu à cette soirée.</target>
       </segment>
     </unit>
-    <unit id="8310536808546035769">
-      <notes>
-        <note category="description">Toast when what a group person thinks of a game could not be saved</note>
-      </notes>
-      <segment state="translated">
-        <source>Could not update this person’s game preference.</source>
-        <target>Impossible de mettre à jour l’avis de cette personne sur le jeu.</target>
-      </segment>
-    </unit>
     <unit id="8314285816173386293">
       <notes>
         <note category="description">Pin button on a group in the list on Home</note>
@@ -14586,6 +14649,15 @@
         <target>Apparence</target>
       </segment>
     </unit>
+    <unit id="8673633616922710669">
+      <notes>
+        <note category="description">Under a game in the editor of a person&apos;s games on the group page, when a change could not be saved; the menus went back to what is stored</note>
+      </notes>
+      <segment state="translated">
+        <source>That change wasn’t saved. Try again.</source>
+        <target>Cette modification n’a pas été enregistrée. Réessaie.</target>
+      </segment>
+    </unit>
     <unit id="8675176265050343606">
       <notes>
         <note category="description">Label of the picture address field of the game proposal form</note>
@@ -14879,15 +14951,6 @@
       <segment state="translated">
         <source>Nobody is bringing it yet · owned by <ph id="0" equiv="INTERPOLATION" disp="{{ namesOf(owners) }}"/></source>
         <target>Personne ne l’apporte encore · à : <ph id="0" equiv="INTERPOLATION" disp="{{ namesOf(owners) }}"/></target>
-      </segment>
-    </unit>
-    <unit id="880297634309685750">
-      <notes>
-        <note category="description">Toast when your profile could not be saved</note>
-      </notes>
-      <segment state="translated">
-        <source>Your profile could not be updated. Please try again.</source>
-        <target>Impossible de mettre à jour ton profil. Réessaie.</target>
       </segment>
     </unit>
     <unit id="8803251561253539363">
@@ -15673,6 +15736,15 @@
       <segment state="translated">
         <source>No limit</source>
         <target>Sans limite</target>
+      </segment>
+    </unit>
+    <unit id="932331021190354028">
+      <notes>
+        <note category="description">Error in the avatar editor when Board Vault did not answer in time, so the new avatar may or may not be saved</note>
+      </notes>
+      <segment state="translated">
+        <source>We couldn’t confirm your new avatar was saved. Try again.</source>
+        <target>Impossible de confirmer que ton nouvel avatar a été enregistré. Réessaie.</target>
       </segment>
     </unit>
     <unit id="939181440005684591">

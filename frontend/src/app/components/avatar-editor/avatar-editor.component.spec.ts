@@ -32,12 +32,16 @@ describe('AvatarEditorComponent', () => {
         expect(avatar.emoji).toBe('📱')
     })
 
-    it('does not save an initials avatar until it has initials', () => {
-        component.setInitials('')
-        expect(saved).toEqual([])
+    it('reports every change to the initials, even emptied, so the caller’s copy always matches the preview (#242)', () => {
+        const initials = { backgroundColor: '#EF4444', iconName: null, emoji: null, type: 'initials' as const }
 
         component.setInitials('bl')
-        expect(saved).toEqual([{ backgroundColor: '#EF4444', iconName: null, emoji: null, type: 'initials', initials: 'BL' }])
+        component.setInitials('')
+
+        expect(saved).toEqual([
+            { ...initials, initials: 'BL' },
+            { ...initials, initials: '' },
+        ])
         expect(avatar.type).toBe('emoji')
     })
 })

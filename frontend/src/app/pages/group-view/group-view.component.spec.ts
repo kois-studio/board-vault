@@ -1,3 +1,4 @@
+import { HttpErrorResponse } from '@angular/common/http'
 import { signal } from '@angular/core'
 import { TestBed } from '@angular/core/testing'
 import { ActivatedRoute, convertToParamMap, provideRouter } from '@angular/router'
@@ -5,6 +6,7 @@ import { BehaviorSubject, type Observable, of, Subject, throwError } from 'rxjs'
 import { Api } from '../../api/api'
 import { DataService } from '../../core/services/data.service'
 import { LoadingService } from '../../core/services/loading.service'
+import { ApiUnavailableError } from '../../core/utils/apiUnavailable'
 import { formatAttendeeSummary } from '../../core/utils/formatAttendeeSummary'
 import { GroupViewComponent, shouldShowFirstGroupSetup } from './group-view.component'
 
@@ -443,6 +445,126 @@ describe('GroupViewComponent page layout', () => {
         await component.setGroupPersonOwnership(person, 42, event)
 
         expect(api['updateGroupPersonOwnership']).toHaveBeenCalledWith(1, 3, 42, 'rejected')
+    })
+
+    describe("when a change to a person's games is not saved (#242)", () => {
+        const person = {
+            person: { id: 3, displayName: 'Sam', kind: 'placeholder', status: 'active' },
+            ownership: [{ gameId: 42, status: 'asserted', source: null }],
+            preferences: [{ gameId: 42, preference: 'like' }],
+            claimable: false,
+        }
+
+        const openEditor = async (fail: unknown) => {
+            const fixture = await render(7)
+            const component = fixture.componentInstance
+            const api = TestBed.inject(Api) as unknown as Record<string, ReturnType<typeof vi.fn>>
+            const refused = vi.fn(() => throwError(() => fail))
+            api['updateGroupPersonOwnership'] = refused
+            api['updateGroupPersonPreference'] = refused
+            api['deleteGroupPersonPreference'] = refused
+            api['getGroupPeople'] = vi.fn(() => of({ people: [person] }))
+            component.groupPeople$.set([person] as never)
+            component.toggleGroupPersonEditor(3)
+            fixture.detectChanges()
+            const element = fixture.nativeElement as HTMLElement
+            const row = () =>
+                [...element.querySelectorAll('li:has(select)')].find((item) => item.textContent?.includes('Game 42')) as HTMLLIElement
+            const [ownership, preference] = [...row().querySelectorAll('select')] as Array<HTMLSelectElement>
+            const pick = async (select: HTMLSelectElement | undefined, value: string) => {
+                if (!select) throw new Error('no menu')
+                select.value = value
+                select.dispatchEvent(new Event('change'))
+                await fixture.whenStable()
+                fixture.detectChanges()
+            }
+            return { fixture, component, api, row, ownership, preference, pick }
+        }
+
+        it('puts the ownership menu back to what is stored and says so under the row', async () => {
+            const { row, ownership, pick } = await openEditor(new HttpErrorResponse({ status: 503 }))
+
+            await pick(ownership, 'rejected')
+
+            expect(ownership?.value).toBe('asserted')
+            const message = row().querySelector('[data-testid="group-person-save-error"]')
+            expect(message?.getAttribute('role')).toBe('alert')
+            expect(message?.textContent).toContain('That change wasn’t saved. Try again.')
+        })
+
+        it('ties the message to the menus and gives focus back to the menu used, which saving had locked', async () => {
+            const { fixture, row, ownership, preference, pick } = await openEditor(new HttpErrorResponse({ status: 503 }))
+            const element = fixture.nativeElement as HTMLElement
+            document.body.append(element)
+            try {
+                await pick(ownership, 'rejected')
+                await fixture.whenStable()
+
+                const message = row().querySelector('[data-testid="group-person-save-error"]')
+                expect(message?.id).toBe('group-person-save-error-3-42')
+                expect(ownership?.getAttribute('aria-describedby')).toBe('group-person-save-error-3-42')
+                expect(preference?.getAttribute('aria-describedby')).toBe('group-person-save-error-3-42')
+                expect(document.activeElement).toBe(ownership)
+            } finally {
+                element.remove()
+            }
+        })
+
+        it('puts the preference menu back too, including clearing it', async () => {
+            const { row, preference, pick } = await openEditor(new HttpErrorResponse({ status: 503 }))
+
+            await pick(preference, 'avoid')
+            expect(preference?.value).toBe('like')
+
+            await pick(preference, '')
+            expect(preference?.value).toBe('like')
+            expect(row().querySelector('[data-testid="group-person-save-error"]')).not.toBeNull()
+        })
+
+        it('reads the people again when Board Vault did not answer in time, since it may be saved', async () => {
+            const { row, ownership, api, pick } = await openEditor(
+                new ApiUnavailableError({ kind: 'timeout', outcomeUnknown: true, url: '/groups/1/people/3' }),
+            )
+            api['getGroupPeople']?.mockClear()
+
+            await pick(ownership, 'rejected')
+
+            expect(api['getGroupPeople']).toHaveBeenCalledTimes(1)
+            expect(row().querySelector('[data-testid="group-person-save-error"]')?.textContent).toContain(
+                'We couldn’t confirm that change was saved.',
+            )
+        })
+
+        it('keeps the open editor, its menu and focus on screen while it reads the people again', async () => {
+            const { fixture, ownership, api, pick } = await openEditor(
+                new ApiUnavailableError({ kind: 'timeout', outcomeUnknown: true, url: '/groups/1/people/3' }),
+            )
+            const people = new Subject<{ people: unknown[] }>()
+            api['getGroupPeople'] = vi.fn(() => people)
+            const element = fixture.nativeElement as HTMLElement
+            document.body.append(element)
+            try {
+                await pick(ownership, 'rejected')
+                await fixture.whenStable()
+
+                expect(element.textContent).not.toContain('Loading group people…')
+                expect(ownership?.isConnected).toBe(true)
+                expect(document.activeElement).toBe(ownership)
+            } finally {
+                element.remove()
+            }
+        })
+
+        it('no longer shows the message once the editor is closed and opened again', async () => {
+            const { fixture, component, row, ownership, pick } = await openEditor(new HttpErrorResponse({ status: 503 }))
+            await pick(ownership, 'rejected')
+
+            component.toggleGroupPersonEditor(3)
+            component.toggleGroupPersonEditor(3)
+            fixture.detectChanges()
+
+            expect(row().querySelector('[data-testid="group-person-save-error"]')).toBeNull()
+        })
     })
 
     it('lays the sections out in the order they read, with no throwaway member picker', async () => {

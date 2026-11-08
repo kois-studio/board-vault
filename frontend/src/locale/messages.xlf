@@ -679,15 +679,6 @@
         <source>{VAR_PLURAL, plural, one {<ph id="0" equiv="INTERPOLATION"/> vote} other {<ph id="1" equiv="INTERPOLATION"/> votes}}</source>
       </segment>
     </unit>
-    <unit id="1347111254607194490">
-      <notes>
-        <note category="location">src/app/pages/group-view/group-view.component.ts</note>
-        <note category="description">Toast when whether a group person owns a game could not be saved</note>
-      </notes>
-      <segment>
-        <source>Could not update this person’s game ownership.</source>
-      </segment>
-    </unit>
     <unit id="1349974898394084972">
       <notes>
         <note category="location">src/app/pages/groups/group-edit/group-edit.component.html</note>
@@ -822,6 +813,15 @@
       </notes>
       <segment>
         <source>Use secure sign-in</source>
+      </segment>
+    </unit>
+    <unit id="1424105709982529287">
+      <notes>
+        <note category="location">src/app/components/forms/form-update-display-name/form-update-display-name.component.html</note>
+        <note category="description">Error under the display name field when the new name could not be saved</note>
+      </notes>
+      <segment>
+        <source>Your new name wasn’t saved. Try again.</source>
       </segment>
     </unit>
     <unit id="1464671133091144057">
@@ -1685,6 +1685,15 @@
         <source><ph id="0" equiv="minutes" disp="minutes"/> min</source>
       </segment>
     </unit>
+    <unit id="1915929786728836008">
+      <notes>
+        <note category="location">src/app/pages/group-view/group-view.component.html</note>
+        <note category="description">Under a game in the editor of a person&apos;s games on the group page, when Board Vault did not answer in time, so the change may or may not be saved; the menus show what is stored</note>
+      </notes>
+      <segment>
+        <source>We couldn’t confirm that change was saved. The menus show what is stored.</source>
+      </segment>
+    </unit>
     <unit id="1922586940816531681">
       <notes>
         <note category="location">src/app/pages/collection-page/my-games-page/my-games-page.component.html</note>
@@ -2169,12 +2178,22 @@
       <notes>
         <note category="location">src/app/components/edition-choice-dialog/edition-choice-dialog.component.html</note>
         <note category="location">src/app/components/forms/form-update-display-name/form-update-display-name.component.html</note>
+        <note category="location">src/app/components/modals/modal-avatar-editor/modal-avatar-editor.component.html</note>
         <note category="location">src/app/pages/meet-view/meet-view.component.html</note>
         <note category="location">src/app/pages/play-page/upcoming-sessions-page/upcoming-sessions-page.component.html</note>
         <note category="description">Button that closes the edition chooser without saving</note>
       </notes>
       <segment>
         <source>Cancel</source>
+      </segment>
+    </unit>
+    <unit id="2167244937727396241">
+      <notes>
+        <note category="location">src/app/components/language-save-error/language-save-error.component.ts</note>
+        <note category="description">Under the language choices when Board Vault did not answer in time, so the chosen language may or may not be saved on the account; the placeholder is the language&apos;s name in itself, such as Español</note>
+      </notes>
+      <segment>
+        <source>We couldn’t confirm <ph id="0" equiv="INTERPOLATION" disp="{{ languageName() }}"/> was saved on your account.</source>
       </segment>
     </unit>
     <unit id="2167597038819055618">
@@ -3654,6 +3673,15 @@
         <source><ph id="0" equiv="INTERPOLATION" disp="{{ hasGames() ? 1 : 0 }}"/> of 3 done</source>
       </segment>
     </unit>
+    <unit id="2892987275385116225">
+      <notes>
+        <note category="location">src/app/components/modals/modal-avatar-editor/modal-avatar-editor.component.html</note>
+        <note category="description">Error in the avatar editor when the new avatar could not be saved</note>
+      </notes>
+      <segment>
+        <source>Your new avatar wasn’t saved. Try again.</source>
+      </segment>
+    </unit>
     <unit id="290594620278715699">
       <notes>
         <note category="location">src/app/core/utils/groupActivity.ts</note>
@@ -4052,6 +4080,15 @@
         <source>Minimum Players</source>
       </segment>
     </unit>
+    <unit id="3146136720193552750">
+      <notes>
+        <note category="location">src/app/components/language-save-error/language-save-error.component.ts</note>
+        <note category="description">Button under the language choices that changes the page&apos;s language without saving it on the account</note>
+      </notes>
+      <segment>
+        <source>Switch for now</source>
+      </segment>
+    </unit>
     <unit id="3146348002114324720">
       <notes>
         <note category="location">src/app/pages/auth/register/register.component.html</note>
@@ -4195,6 +4232,15 @@
       </notes>
       <segment>
         <source>There</source>
+      </segment>
+    </unit>
+    <unit id="321443318776127238">
+      <notes>
+        <note category="location">src/app/components/language-save-error/language-save-error.component.ts</note>
+        <note category="description">Under the language choices after a language could not be saved on the account, explaining the Switch for now button</note>
+      </notes>
+      <segment>
+        <source>If you switch for now, your next sign-in goes back to your account’s language.</source>
       </segment>
     </unit>
     <unit id="3216448677786204093">
@@ -5801,6 +5847,15 @@
       </notes>
       <segment>
         <source>Private collection import</source>
+      </segment>
+    </unit>
+    <unit id="3993006783264733272">
+      <notes>
+        <note category="location">src/app/components/modals/modal-avatar-editor/modal-avatar-editor.component.html</note>
+        <note category="description">Button in the avatar editor that saves the new avatar</note>
+      </notes>
+      <segment>
+        <source>Save avatar</source>
       </segment>
     </unit>
     <unit id="3995378846861632522">
@@ -10461,6 +10516,15 @@
         <source>Invite friends</source>
       </segment>
     </unit>
+    <unit id="6434338276809295262">
+      <notes>
+        <note category="location">src/app/components/forms/form-update-display-name/form-update-display-name.component.html</note>
+        <note category="description">Error under the display name field when Board Vault did not answer in time, so the new name may or may not be saved</note>
+      </notes>
+      <segment>
+        <source>We couldn’t confirm your new name was saved. Try again.</source>
+      </segment>
+    </unit>
     <unit id="6444163938950057626">
       <notes>
         <note category="location">src/app/pages/you-page/you-page.component.html</note>
@@ -10748,12 +10812,13 @@
     </unit>
     <unit id="6650633628037596693">
       <notes>
+        <note category="location">src/app/components/language-save-error/language-save-error.component.ts</note>
         <note category="location">src/app/core/i18n/clerk-localization.ts</note>
         <note category="location">src/app/layout/auth-handoff/auth-handoff.component.html</note>
         <note category="location">src/app/layout/connectivity-banner/connectivity-banner.component.html</note>
         <note category="location">src/app/pages/collection-page/browse-page/browse-page.component.html</note>
         <note category="location">src/app/pages/play-page/recommendations-page/recommendations-page.component.html</note>
-        <note category="description">Button from Clerk, the sign-in provider, after its check that a sign-in is not automated failed</note>
+        <note category="description">Button under the language choices that tries again to save the chosen language on the account</note>
       </notes>
       <segment>
         <source>Try again</source>
@@ -13338,6 +13403,15 @@
         <source>Your personal shelf becomes the source for recommendations.</source>
       </segment>
     </unit>
+    <unit id="7930437057400214832">
+      <notes>
+        <note category="location">src/app/components/language-save-error/language-save-error.component.ts</note>
+        <note category="description">Under the language choices when the chosen language could not be saved on the account; the placeholder is the language&apos;s name in itself, such as Español</note>
+      </notes>
+      <segment>
+        <source>We couldn’t save <ph id="0" equiv="INTERPOLATION" disp="{{ languageName() }}"/> on your account.</source>
+      </segment>
+    </unit>
     <unit id="7930581890544594087">
       <notes>
         <note category="location">src/app/pages/group-view/group-view.component.html</note>
@@ -14107,15 +14181,6 @@
         <source>Could not add the game to that night.</source>
       </segment>
     </unit>
-    <unit id="8310536808546035769">
-      <notes>
-        <note category="location">src/app/pages/group-view/group-view.component.ts</note>
-        <note category="description">Toast when what a group person thinks of a game could not be saved</note>
-      </notes>
-      <segment>
-        <source>Could not update this person’s game preference.</source>
-      </segment>
-    </unit>
     <unit id="8314285816173386293">
       <notes>
         <note category="location">src/app/pages/dashboard-page/dashboard-page.component.ts</note>
@@ -14826,6 +14891,15 @@
         <source>Appearance</source>
       </segment>
     </unit>
+    <unit id="8673633616922710669">
+      <notes>
+        <note category="location">src/app/pages/group-view/group-view.component.html</note>
+        <note category="description">Under a game in the editor of a person&apos;s games on the group page, when a change could not be saved; the menus went back to what is stored</note>
+      </notes>
+      <segment>
+        <source>That change wasn’t saved. Try again.</source>
+      </segment>
+    </unit>
     <unit id="8675176265050343606">
       <notes>
         <note category="location">src/app/components/forms/form-game-submission/form-game-submission.component.html</note>
@@ -15129,15 +15203,6 @@
       </notes>
       <segment>
         <source>Nobody is bringing it yet · owned by <ph id="0" equiv="INTERPOLATION" disp="{{ namesOf(owners) }}"/></source>
-      </segment>
-    </unit>
-    <unit id="880297634309685750">
-      <notes>
-        <note category="location">src/app/core/services/data.service.ts</note>
-        <note category="description">Toast when your profile could not be saved</note>
-      </notes>
-      <segment>
-        <source>Your profile could not be updated. Please try again.</source>
       </segment>
     </unit>
     <unit id="8803251561253539363">
@@ -15932,6 +15997,15 @@
       </notes>
       <segment>
         <source>No limit</source>
+      </segment>
+    </unit>
+    <unit id="932331021190354028">
+      <notes>
+        <note category="location">src/app/components/modals/modal-avatar-editor/modal-avatar-editor.component.html</note>
+        <note category="description">Error in the avatar editor when Board Vault did not answer in time, so the new avatar may or may not be saved</note>
+      </notes>
+      <segment>
+        <source>We couldn’t confirm your new avatar was saved. Try again.</source>
       </segment>
     </unit>
     <unit id="939181440005684591">

@@ -97,10 +97,8 @@ export class AvatarEditorComponent implements OnInit {
             type: 'initials',
         }))
 
-        // An initials avatar needs initials; wait until there is something to save.
-        if (this.draft().initials.trim()) {
-            this.emitChange()
-        }
+        // Even when empty, so the caller's copy matches the preview; the caller does not save an initials avatar without initials.
+        this.emitChange()
     }
 
     switchTab(tab: 'icon' | 'emoji' | 'initials'): void {

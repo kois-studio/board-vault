@@ -3,6 +3,7 @@
     <form [formGroup]="updateProfileFormGroup">
       <div>
         <input
+          #nameInput
           type="text"
           formControlName="displayName"
           i18n-aria-label="Accessible name of the display name field in Profile settings" aria-label="Display name"
@@ -10,6 +11,8 @@
           class="app-input"
           [class]="displayNameClass"
           required
+          [attr.aria-invalid]="saveError() ? 'true' : null"
+          [attr.aria-describedby]="saveError() ? 'display-name-save-error' : null"
           />
         @if (displayName?.invalid && (displayName?.dirty || displayName?.touched)) {
           <div>
@@ -25,16 +28,21 @@
             }
           </div>
         }
+        @if (saveError(); as reason) {
+          <div id="display-name-save-error" role="alert" class="flex gap-2 text-sm text-bv-danger py-1" data-testid="display-name-save-error">
+            <app-icon name="circle-alert" [size]="16" className="mt-0.5 shrink-0" aria-hidden="true" /><span>@if (reason === 'maybe-saved') {<ng-container i18n="Error under the display name field when Board Vault did not answer in time, so the new name may or may not be saved">We couldn’t confirm your new name was saved. Try again.</ng-container>} @else {<ng-container i18n="Error under the display name field when the new name could not be saved">Your new name wasn’t saved. Try again.</ng-container>}</span>
+          </div>
+        }
       </div>
     </form>
   </div>
 
   @if (!isEditing){
-    <button appButton variant="secondary" (click)="toggleEditing()" i18n="Button in Profile settings that lets you edit your display name">Change display name</button>
+    <button #editButton appButton variant="secondary" (click)="toggleEditing()" i18n="Button in Profile settings that lets you edit your display name">Change display name</button>
     }@else {
     <div class="flex gap-4">
-      <button appButton variant="secondary" (click)="onCancel()" i18n="Button that stops editing your display name without saving">Cancel</button>
-      <button appButton variant="primary" [disabled]="disableSubmit" (click)="onSave()" i18n="Button that saves your new display name">Save</button>
+      <button appButton variant="secondary" [disabled]="isSaving()" (click)="onCancel()" i18n="Button that stops editing your display name without saving">Cancel</button>
+      <button appButton variant="primary" [disabled]="disableSubmit" [loading]="isSaving()" (click)="onSave()" i18n="Button that saves your new display name">Save</button>
     </div>
   }
 </div>

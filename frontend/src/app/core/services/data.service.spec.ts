@@ -438,3 +438,126 @@ describe('DataService while Board Vault cannot be reached (#241)', () => {
         expect(Object.keys(calls)).toEqual([])
     })
 })
+
+describe('DataService saving the profile (#242)', () => {
+    const user: UserType = {
+        id: 1,
+        email: 'organizer+clerk_test@example.com',
+        username: 'organizer',
+        displayName: 'Organizer',
+        avatar: { backgroundColor: '#3B82F6', iconName: 'person-fill', emoji: null, type: 'icon', initials: 'OR' },
+        createdAt: '2026-09-01T10:00:00.000Z',
+    }
+    const group = {
+        id: 4,
+        members: [
+            { id: 1, displayName: 'Organizer', avatar: user.avatar },
+            { id: 2, displayName: 'Friend', avatar: user.avatar },
+        ],
+    }
+
+    const setup = (update: () => ReturnType<Api['updateUser']>, read: () => ReturnType<Api['getUserById']>) => {
+        const updateUser = vi.fn(update)
+        const getUserById = vi.fn(read)
+        const api = new Proxy(
+            {},
+            { get: (_target, name) => (name === 'updateUser' ? updateUser : name === 'getUserById' ? getUserById : () => of([])) },
+        )
+        TestBed.configureTestingModule({ providers: [{ provide: Api, useValue: api }] })
+        const service = TestBed.inject(DataService)
+        const toast = TestBed.inject(ToastService)
+        service.currentUser.set(structuredClone(user))
+        TestBed.tick()
+        service.userGroups.set([structuredClone(group)] as unknown as ReturnType<DataService['userGroups']>)
+        const success = vi.spyOn(toast, 'success')
+        const error = vi.spyOn(toast, 'error')
+        return { service, updateUser, getUserById, success, error }
+    }
+
+    it('resolves once saved, with the account and its place in each group updated', async () => {
+        const { service, updateUser, success } = setup(
+            () => of({ success: true }),
+            () => of({ ...user, displayName: 'Host' }),
+        )
+
+        await service.updateCurrentUserData({ displayName: 'Host' })
+
+        expect(updateUser).toHaveBeenCalledWith(1, { displayName: 'Host' })
+        expect(service.currentUser()?.displayName).toBe('Host')
+        expect(service.userGroups()[0]?.members.map((member) => member.displayName)).toEqual(['Host', 'Friend'])
+        expect(success).toHaveBeenCalledTimes(1)
+    })
+
+    it('rejects when not saved, and changes nothing or toasts: the caller says it next to its control', async () => {
+        const { service, getUserById, success, error } = setup(
+            () => throwError(() => new HttpErrorResponse({ status: 503 })),
+            () => of(user),
+        )
+        const before = service.currentUser()
+        const groupsBefore = service.userGroups()
+
+        await expect(service.updateCurrentUserData({ displayName: 'Host' })).rejects.toBeInstanceOf(HttpErrorResponse)
+
+        expect(service.currentUser()).toBe(before)
+        expect(service.userGroups()).toBe(groupsBefore)
+        expect(getUserById).not.toHaveBeenCalled()
+        expect(success).not.toHaveBeenCalled()
+        expect(error).not.toHaveBeenCalled()
+    })
+
+    it('applies the change as sent when it was saved but could not be read back', async () => {
+        const { service } = setup(
+            () => of({ success: true }),
+            () => throwError(() => new HttpErrorResponse({ status: 503 })),
+        )
+        const avatar = { ...user.avatar, backgroundColor: '#10B981' }
+
+        await service.updateCurrentUserData({ avatar })
+
+        expect(service.currentUser()).toMatchObject({ displayName: 'Organizer', avatar })
+        expect(service.userGroups()[0]?.members[0]?.avatar).toEqual(avatar)
+    })
+
+    it('applies it to the account as read meanwhile, when it was saved but could not be read back', async () => {
+        const answer = new Subject<{ success: true }>()
+        const { service } = setup(
+            () => answer,
+            () => throwError(() => new HttpErrorResponse({ status: 503 })),
+        )
+
+        const saving = service.updateCurrentUserData({ displayName: 'Host' })
+        service.currentUser.update((current) => current && { ...current, username: 'organizer-2' })
+        answer.next({ success: true })
+        answer.complete()
+        await saving
+
+        expect(service.currentUser()).toMatchObject({ username: 'organizer-2', displayName: 'Host' })
+    })
+
+    it('does not put the saved account back when someone else signed in meanwhile', async () => {
+        const answer = new Subject<{ success: true }>()
+        const { service } = setup(
+            () => answer,
+            () => of({ ...user, displayName: 'Host' }),
+        )
+
+        const saving = service.updateCurrentUserData({ displayName: 'Host' })
+        service.currentUser.set(null)
+        answer.next({ success: true })
+        answer.complete()
+        await saving
+
+        expect(service.currentUser()).toBeNull()
+    })
+
+    it('rejects without a request when nobody is signed in', async () => {
+        const { service, updateUser } = setup(
+            () => of({ success: true }),
+            () => of(user),
+        )
+        service.currentUser.set(null)
+
+        await expect(service.updateCurrentUserData({ displayName: 'Host' })).rejects.toThrow()
+        expect(updateUser).not.toHaveBeenCalled()
+    })
+})

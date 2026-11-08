@@ -1,19 +1,31 @@
+import { signal } from '@angular/core'
 import { TestBed } from '@angular/core/testing'
-import { AccountLanguageService } from '../../../core/i18n/account-language.service'
+import { AccountLanguageService, type LanguageSaveFailure } from '../../../core/i18n/account-language.service'
+import type { Locale } from '../../../core/i18n/locales'
 import { SettingsLanguageComponent } from './settings-language.component'
 
 describe('SettingsLanguageComponent', () => {
     const originalPath = window.location.pathname
     const save = vi.fn()
+    const saving = signal<Locale | null>(null)
+    const failure = signal<LanguageSaveFailure | null>(null)
+    const dismissFailure = vi.fn()
 
     afterEach(() => {
         window.history.replaceState(null, '', originalPath)
-        save.mockClear()
+        save.mockReset()
+        dismissFailure.mockClear()
+        saving.set(null)
+        failure.set(null)
     })
 
     function renderAt(path: string) {
         window.history.replaceState(null, '', path)
-        TestBed.configureTestingModule({ providers: [{ provide: AccountLanguageService, useValue: { choose: save } }] })
+        TestBed.configureTestingModule({
+            providers: [
+                { provide: AccountLanguageService, useValue: { choose: save, saving, failure, dismissFailure, switchForNow: vi.fn() } },
+            ],
+        })
         const fixture = TestBed.createComponent(SettingsLanguageComponent)
         fixture.detectChanges()
         return fixture
@@ -52,6 +64,47 @@ describe('SettingsLanguageComponent', () => {
             ?.click()
 
         expect(save).toHaveBeenCalledWith('en')
+    })
+
+    describe('when the language is not saved on the account (#242)', () => {
+        it('checks the page’s language again and says why below, instead of leaving the clicked one checked', async () => {
+            save.mockImplementation(async (locale: Locale) => failure.set({ locale, maybeSaved: false }))
+            const fixture = renderAt('/fr/settings/language')
+            const element: HTMLElement = fixture.nativeElement
+
+            radios(element)
+                .find((radio) => radio.value === 'en')
+                ?.click()
+            await fixture.whenStable()
+            fixture.detectChanges()
+
+            expect(
+                radios(element)
+                    .filter((radio) => radio.checked)
+                    .map((radio) => radio.value),
+            ).toEqual(['fr'])
+            expect(element.querySelector('[data-testid="language-save-error"]')?.textContent).toContain(
+                'We couldn’t save English on your account.',
+            )
+        })
+
+        it('takes no other choice while one is being saved', () => {
+            const fixture = renderAt('/fr/settings/language')
+            saving.set('en')
+            fixture.detectChanges()
+
+            const fieldset = (fixture.nativeElement as HTMLElement).querySelector('fieldset') as HTMLFieldSetElement
+            expect(fieldset.disabled).toBe(true)
+            expect(fieldset.getAttribute('aria-busy')).toBe('true')
+        })
+
+        it('puts the message away when Settings is left', () => {
+            const fixture = renderAt('/fr/settings/language')
+
+            fixture.destroy()
+
+            expect(dismissFailure).toHaveBeenCalledTimes(1)
+        })
     })
 
     it('does nothing when the page’s own language is chosen again', () => {

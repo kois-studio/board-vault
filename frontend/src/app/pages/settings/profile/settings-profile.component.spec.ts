@@ -56,13 +56,25 @@ describe('SettingsProfileComponent avatar editor', () => {
         expect(dialog()).toBeNull()
     })
 
-    it('saves a chosen avatar once, through the shared profile update', () => {
+    it('saves the picks once, on Save, through the shared profile update (#242)', async () => {
+        dataService.updateCurrentUserData.mockResolvedValue(undefined)
         ;(fixture.nativeElement.querySelector('button[aria-label="Edit profile avatar"]') as HTMLButtonElement).click()
         fixture.detectChanges()
 
         const editor = fixture.debugElement.query((element) => element.name === 'app-avatar-editor')
+        editor.componentInstance.selectColor('#EF4444')
         editor.componentInstance.selectColor('#10B981')
+        fixture.detectChanges()
+        expect(dataService.updateCurrentUserData).not.toHaveBeenCalled()
 
+        const save = Array.from(fixture.nativeElement.querySelectorAll('button') as NodeListOf<HTMLButtonElement>).find(
+            (button) => button.textContent?.trim() === 'Save avatar',
+        )
+        save?.click()
+        await fixture.whenStable()
+        fixture.detectChanges()
+
+        expect(dialog()).toBeNull()
         expect(dataService.updateCurrentUserData).toHaveBeenCalledTimes(1)
         expect(dataService.updateCurrentUserData).toHaveBeenCalledWith({
             avatar: expect.objectContaining({ backgroundColor: '#10B981', type: 'icon', iconName: 'person-fill' }),

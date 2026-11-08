@@ -241,6 +241,12 @@ not the only label for an action.
   [architecture](architecture.md#slow-and-failed-requests)). Do not toast a
   failed load while `ConnectivityService.isDegraded()` is true. Say in place
   what is missing, and keep reporting failed saves.
+- **Saving:** show the stored value until the save succeeds, lock the control
+  and mark its button busy (`[loading]`) while it saves, and say a failure
+  next to the control (`role="alert"`, `text-bv-danger`), keeping what the
+  person typed or picked so trying again is one click. A toast alone is not
+  enough: it fades while the wrong value stays (see
+  [architecture](architecture.md#slow-and-failed-requests)).
 - **Undo:** for a quick, reversible action, act at once and pass an action
   to the toast instead of asking for confirmation first:
   `toastService.success('Removed from your wishlist', { label: 'Undo', run: () => … })`.
