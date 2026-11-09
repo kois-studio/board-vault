@@ -1344,6 +1344,15 @@
         <target>Nota <pc id="0" equivStart="START_TAG_SPAN" equivEnd="CLOSE_TAG_SPAN" type="other" dispStart="&lt;span class=&quot;text-sm font-normal text-bv-text-muted&quot;&gt;" dispEnd="&lt;/span&gt;">opcional</pc></target>
       </segment>
     </unit>
+    <unit id="1748391316904584155">
+      <notes>
+        <note category="description">Error on your own page when your game nights could not be loaded</note>
+      </notes>
+      <segment state="translated">
+        <source>Your game nights could not be loaded.</source>
+        <target>No se han podido cargar tus noches de juegos.</target>
+      </segment>
+    </unit>
     <unit id="1764428149005377596">
       <notes>
         <note category="description">Error under the most players field of the game proposal form</note>
@@ -2546,6 +2555,15 @@
         <target>Esta noche de juegos se canceló. Se queda aquí como referencia.</target>
       </segment>
     </unit>
+    <unit id="238649539848159335">
+      <notes>
+        <note category="description">Error on your own page when some of it could not be loaded</note>
+      </notes>
+      <segment state="translated">
+        <source>Some of your numbers could not be loaded.</source>
+        <target>No se han podido cargar algunos de tus números.</target>
+      </segment>
+    </unit>
     <unit id="2394085080346887535">
       <notes>
         <note category="description">Link at the bottom of a card on the Collection page</note>
@@ -3460,6 +3478,15 @@
       <segment state="translated">
         <source>No selected-attendee rating yet</source>
         <target>Aún sin puntuación de quienes vienen</target>
+      </segment>
+    </unit>
+    <unit id="2817337001932535806">
+      <notes>
+        <note category="description">Instead of a number on your own page when it could not be loaded</note>
+      </notes>
+      <segment state="translated">
+        <source>Not loaded</source>
+        <target>No cargado</target>
       </segment>
     </unit>
     <unit id="2819970185311403911">
@@ -4388,6 +4415,15 @@
       <segment state="translated">
         <source>Connecting you to your Board Vault</source>
         <target>Te estamos conectando con tu Board Vault</target>
+      </segment>
+    </unit>
+    <unit id="3306164303134965739">
+      <notes>
+        <note category="description">Error on your own page when your ratings could not be loaded</note>
+      </notes>
+      <segment state="translated">
+        <source>Your ratings could not be loaded.</source>
+        <target>No se han podido cargar tus valoraciones.</target>
       </segment>
     </unit>
     <unit id="3321646088739641540">
@@ -9046,6 +9082,15 @@
       <segment state="translated">
         <source>entered by a member</source>
         <target>introducido por un miembro</target>
+      </segment>
+    </unit>
+    <unit id="5737993668391697694">
+      <notes>
+        <note category="description">Under an error on your own page; a dash stands in for each number that is missing</note>
+      </notes>
+      <segment state="translated">
+        <source>What is missing shows as a dash. Try again when the connection is ready.</source>
+        <target>Lo que falta se muestra con un guion. Inténtalo de nuevo cuando vuelva la conexión.</target>
       </segment>
     </unit>
     <unit id="5740619620731856219">

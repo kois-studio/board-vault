@@ -7,6 +7,12 @@
                 <p class="text-lg font-semibold text-bv-text" i18n="Shown while the group's settings page loads">Loading group management…</p>
                 <p class="mt-2 text-secondary" i18n="Shown while the group's settings page loads">We are checking your membership and pending invitations.</p>
             </section>
+        } @else if (groupLoadFailed()) {
+            <section class="mt-8 rounded-3xl border border-bv-warning/30 bg-bv-warning/10 p-8 text-center" role="alert">
+                <p class="text-lg font-semibold" i18n="Error on the group page">This group could not be loaded.</p>
+                <p class="mt-2 text-secondary" i18n="Under an error on the group page">Your group data is safe. Try again when the connection is ready.</p>
+                <button appButton type="button" class="mt-5" (click)="retryGroups()" i18n="Button under an error on the group page">Retry group</button>
+            </section>
         } @else if (groupResolutionError()) {
             <section class="mt-8 rounded-3xl border border-bv-warning/30 bg-bv-warning/10 p-8 text-center" role="alert">
                 <p class="text-lg font-semibold" i18n="Shown on the group page for a group you are not in">This group is not available.</p>

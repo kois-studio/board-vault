@@ -4,7 +4,7 @@
     <ng-container i18n="While a game page loads">Loading game data…</ng-container>
   </p>
 } @else if (gameLoadError()) {
-  <div class="flex min-h-[50vh] flex-col items-center justify-center gap-3 px-4 text-center text-secondary">
+  <div class="flex min-h-[50vh] flex-col items-center justify-center gap-3 px-4 text-center text-secondary" role="alert">
     <h1 class="text-xl font-semibold" i18n="Error on a game page">Game data could not be loaded.</h1>
     <p i18n="Under an error when a page could not load">Check your connection and try again.</p>
     <button appButton icon="arrow-repeat" (click)="retryGameLoad()" i18n="Button under an error">Retry</button>

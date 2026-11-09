@@ -26,11 +26,13 @@ describe('GroupEditComponent (Manage group)', () => {
         claimable: false,
     })
 
-    const setup = async (query: Record<string, string> = {}, loadingGroups = false) => {
+    const setup = async (query: Record<string, string> = {}, loadingGroups = false, groups = { list: [group], failed: false }) => {
+        const loadingStatesIndex = signal({ [LOADING_KEYS.USER_GROUPS]: loadingGroups })
         const dataService = {
             currentUser: signal({ id: 1 }),
-            userGroups: signal([group]),
-            userGroupsError: signal(false),
+            userGroups: signal(groups.list),
+            userGroupsError: signal(groups.failed),
+            refreshUserGroups: vi.fn(),
             invitationsGroupIndex: signal({ 7: [{ id: 30, toAccountId: 3, toAccount: { id: 3, username: 'invited' } }] }),
             addInvitedToGroup: vi.fn(() => of({})),
             inviteNewPersonToGroup: vi.fn(() =>
@@ -55,14 +57,14 @@ describe('GroupEditComponent (Manage group)', () => {
                     },
                 },
                 { provide: DataService, useValue: dataService },
-                { provide: LoadingService, useValue: { loadingStatesIndex: signal({ [LOADING_KEYS.USER_GROUPS]: loadingGroups }) } },
+                { provide: LoadingService, useValue: { loadingStatesIndex } },
                 { provide: ToastService, useValue: { success: vi.fn(), error: vi.fn() } },
             ],
         }).compileComponents()
         const fixture = TestBed.createComponent(GroupEditComponent)
         fixture.detectChanges()
         await fixture.whenStable()
-        return { fixture, component: fixture.componentInstance, dataService }
+        return { fixture, component: fixture.componentInstance, dataService, loadingStatesIndex }
     }
 
     const submit = (component: GroupEditComponent, value: string) => {
@@ -79,6 +81,62 @@ describe('GroupEditComponent (Manage group)', () => {
         expect(back.textContent?.trim()).toBe('Back to group workspace')
         // The layout already gives the page its <main>.
         expect(fixture.nativeElement.querySelector('main')).toBeNull()
+    })
+
+    it('says the group could not be loaded, with Retry, when your groups failed to load, never that it is gone (#248)', async () => {
+        const { fixture, dataService } = await setup({}, false, { list: [], failed: true })
+        fixture.detectChanges()
+        const alert = fixture.nativeElement.querySelector('[role="alert"]') as HTMLElement
+
+        expect(alert.textContent).toContain('This group could not be loaded.')
+        expect(fixture.nativeElement.textContent).not.toContain('This group is not available.')
+        ;(alert.querySelector('button') as HTMLButtonElement).click()
+        expect(dataService.refreshUserGroups).toHaveBeenCalledTimes(1)
+    })
+
+    it('shows Loading while Retry loads the groups again, never "not available", then the group', async () => {
+        const { fixture, dataService, loadingStatesIndex } = await setup({}, false, { list: [], failed: true })
+        fixture.detectChanges()
+        const text = () => (fixture.nativeElement as HTMLElement).textContent ?? ''
+
+        ;(fixture.nativeElement.querySelector('[role="alert"] button') as HTMLButtonElement).click()
+        // What the real refresh does before it asks: clears the error, then starts loading.
+        dataService.userGroupsError.set(false)
+        loadingStatesIndex.set({ [LOADING_KEYS.USER_GROUPS]: true })
+        fixture.detectChanges()
+        expect(text()).toContain('Loading group management')
+        expect(text()).not.toContain('This group is not available.')
+        expect(text()).not.toContain('This group could not be loaded.')
+
+        dataService.userGroups.set([group])
+        loadingStatesIndex.set({ [LOADING_KEYS.USER_GROUPS]: false })
+        fixture.detectChanges()
+        expect(text()).not.toContain('Loading group management')
+        expect(fixture.nativeElement.querySelector('[role="alert"]')).toBeNull()
+        expect(text()).toContain('Fridays')
+    })
+
+    it('shows the failure again when Retry fails too', async () => {
+        const { fixture, dataService, loadingStatesIndex } = await setup({}, false, { list: [], failed: true })
+        fixture.detectChanges()
+
+        ;(fixture.nativeElement.querySelector('[role="alert"] button') as HTMLButtonElement).click()
+        dataService.userGroupsError.set(false)
+        loadingStatesIndex.set({ [LOADING_KEYS.USER_GROUPS]: true })
+        fixture.detectChanges()
+        dataService.userGroupsError.set(true)
+        loadingStatesIndex.set({ [LOADING_KEYS.USER_GROUPS]: false })
+        fixture.detectChanges()
+
+        expect(fixture.nativeElement.querySelector('[role="alert"]')?.textContent).toContain('This group could not be loaded.')
+    })
+
+    it('says the group is not available when your groups loaded without it', async () => {
+        const { fixture } = await setup({}, false, { list: [], failed: false })
+        fixture.detectChanges()
+
+        expect(fixture.nativeElement.querySelector('[role="alert"]')?.textContent).toContain('This group is not available.')
+        expect(fixture.nativeElement.textContent).not.toContain('This group could not be loaded.')
     })
 
     it('sends an email invitation for an address, and an in-app one for a username', async () => {

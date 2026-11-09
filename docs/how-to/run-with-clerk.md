@@ -111,6 +111,47 @@ spontaneous live night at desktop and phone widths. Screenshots stay in the
 ignored Playwright results directory. Run this only against disposable local
 fixtures; it creates sessions.
 
+## Resilience browser test
+
+`frontend/e2e/resilience.spec.ts` (#248) checks that every signed-in page
+survives the API failing. A helper (`e2e/fixtures/chaos-api.ts`) sends every
+call to the API through `page.route` and answers it as `pass` (optionally
+slowed), `down` (connection refused), `503` (the API's `DATABASE_TIMEOUT`
+envelope), or `hang` (never answered), with per-path overrides. For each route
+in `app.routes.ts` behind sign-in it cold-loads the page:
+
+- **at boot** with the whole API down, 503 or hung: the handoff says Board
+  Vault cannot be reached, with *Try again* and *Sign out*, never "could not
+  finish setting up your sign-in";
+- **after sign-in** with everything but the account check failing: once every
+  call has failed or been given up on (about 25 s for a hang), the page is not
+  blank, nothing still says it is loading, the connectivity banner shows,
+  pages with their own data show their own alert with a retry button, and no
+  empty state ("No game nights planned"…) pretends there is nothing;
+- **slow** (300 ms on every call): the page loads without outage notices.
+
+It also checks that *Retry* brings Home back once the API answers, and a
+mid-session outage: Home loads, the API starts answering 503, and creating a
+group shows the failure in the form and keeps the name. No call reaches the
+API in the failure modes, so nothing is written.
+
+With the API on the local fixtures (`npm run local:setup`), the frontend on
+port 4300, and the owner storage state saved as above:
+
+```shell
+cd frontend
+PLAYWRIGHT_BASE_URL=http://localhost:4300 PLAYWRIGHT_CLERK_TESTING=1 \
+PLAYWRIGHT_AUTH_STORAGE_STATE=/tmp/bv-states/owner.json \
+  npx playwright test e2e/resilience.spec.ts --workers=4
+```
+
+It takes several minutes, mostly waiting out hung calls. The route ids default
+to the local fixtures (group 1, session 1, game 1, member account 2, person 1);
+`PLAYWRIGHT_GROUP_ID` and `PLAYWRIGHT_RESILIENCE_{SESSION,GAME,MEMBER_ACCOUNT,PERSON}_ID`
+change them, and `PLAYWRIGHT_API_ORIGIN` the API address
+(`http://localhost:3000`). In Git Bash on Windows, set `MSYS_NO_PATHCONV=1`
+before filtering with `-g "/dashboard"`, or the route turns into a file path.
+
 ## Language switching
 
 `frontend/e2e/locales/switch-signed-in.spec.ts` checks that choosing a

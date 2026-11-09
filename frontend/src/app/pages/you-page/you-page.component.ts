@@ -5,6 +5,7 @@ import { firstValueFrom } from 'rxjs'
 import { Api } from '../../api/api'
 import type { GameCompleteType, GroupStandingType } from '../../api/api.types'
 import { ImageProfileComponent } from '../../components/image-profile/image-profile.component'
+import { ButtonComponent } from '../../components/ui/button/button.component'
 import { ContainerWrapperComponent } from '../../components/ui/container-wrapper/container-wrapper.component'
 import { IconComponent } from '../../components/ui/icon/icon.component'
 import { ImageBackgroundComponent } from '../../components/ui/image-background/image-background.component'
@@ -21,6 +22,7 @@ type GroupLine = { id: number; name: string; standing: GroupStandingType | null;
 @Component({
     selector: 'app-you-page',
     imports: [
+        ButtonComponent,
         ContainerWrapperComponent,
         CurrencyPipe,
         IconComponent,
@@ -91,12 +93,39 @@ export class YouPageComponent {
     )
     public readonly ratedCount = computed(() => this.dataService.userReviews().filter((review) => review.review > 0).length)
 
+    /** Your groups did not load: the page cannot know them, so it never says you are in none. */
+    public readonly groupsFailed = this.dataService.userGroupsError
+    /** The totals add up every group's line, so one group that did not load makes them wrong, not zero. */
+    public readonly totalsUnknown = computed(() => this.groupsFailed() || this.groups().some((group) => group.failed))
+    public readonly gamesFailed = this.dataService.userGamesError
+    public readonly historyFailed = this.dataService.userHistoryError
+    public readonly reviewsFailed = this.dataService.userReviewsError
+    /**
+     * Something on the page did not load: it says so once, and what is missing shows as a dash, never as 0 or
+     * "none yet" (#248). Stats alone only feed the "paid" line, which is left out without them, so they do not count.
+     */
+    public readonly anyFailed = computed(() => this.totalsUnknown() || this.gamesFailed() || this.historyFailed() || this.reviewsFailed())
+
     constructor() {
         // Groups can arrive after the page opens, as on a link opened directly.
         effect(() => {
             const groups = this.dataService.userGroups()
             untracked(() => void this.loadStandings(groups.map((group) => group.id).filter((id) => !(id in this.standings()))))
         })
+    }
+
+    /** Loads again only what failed. */
+    public retry(): void {
+        if (this.groupsFailed()) this.dataService.refreshUserGroups()
+        if (this.gamesFailed()) this.dataService.refreshUserGames()
+        if (this.dataService.userStatsError()) this.dataService.refreshUserStats()
+        if (this.historyFailed()) this.dataService.refreshUserHistory()
+        if (this.reviewsFailed()) this.dataService.refreshGameReviews()
+
+        const failedStandings = Object.entries(this.standings())
+            .filter(([, line]) => line === 'failed')
+            .map(([groupId]) => Number(groupId))
+        if (failedStandings.length > 0) void this.loadStandings(failedStandings)
     }
 
     private async loadStandings(groupIds: Array<number>): Promise<void> {

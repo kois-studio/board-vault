@@ -40,12 +40,31 @@ describe('YouPageComponent', () => {
         ],
     })
 
-    const render = async ({ insights = {} as Record<number, Observable<unknown>>, paid = 0 } = {}) => {
-        const groups = signal([
-            { id: 10, name: 'Thursdays' },
-            { id: 20, name: 'Family' },
-            { id: 30, name: 'Office' },
-        ])
+    type Failed = Partial<Record<'groups' | 'games' | 'stats' | 'history' | 'reviews', boolean>>
+    const render = async ({ insights = {} as Record<number, Observable<unknown>>, paid = 0, failed = {} as Failed } = {}) => {
+        const groups = signal(
+            failed.groups
+                ? []
+                : [
+                      { id: 10, name: 'Thursdays' },
+                      { id: 20, name: 'Family' },
+                      { id: 30, name: 'Office' },
+                  ],
+        )
+        const errors = {
+            userGroupsError: signal(Boolean(failed.groups)),
+            userGamesError: signal(Boolean(failed.games)),
+            userStatsError: signal(Boolean(failed.stats)),
+            userHistoryError: signal(Boolean(failed.history)),
+            userReviewsError: signal(Boolean(failed.reviews)),
+        }
+        const refresh = {
+            refreshUserGroups: vi.fn(),
+            refreshUserGames: vi.fn(),
+            refreshUserStats: vi.fn(),
+            refreshUserHistory: vi.fn(),
+            refreshGameReviews: vi.fn(),
+        }
         const api = { getGroupInsights: vi.fn((groupId: number) => insights[groupId] ?? of({ standings: [] })) }
         TestBed.configureTestingModule({
             imports: [YouPageComponent],
@@ -55,26 +74,36 @@ describe('YouPageComponent', () => {
                 {
                     provide: DataService,
                     useValue: {
+                        ...refresh,
+                        ...errors,
                         currentUser: signal(me),
                         userGroups: groups,
-                        userGames: signal([game(1, 'Catan'), game(2, 'Azul')]),
+                        userGames: signal(failed.games ? [] : [game(1, 'Catan'), game(2, 'Azul')]),
                         userStats: signal({ totalGamesValue: paid }),
-                        userReviews: signal([
-                            { accountId: 1, gameId: 2, review: 6, reviewDate: '', gameData: game(2, 'Azul') },
-                            { accountId: 1, gameId: 3, review: 10, reviewDate: '', gameData: game(3, 'Hanabi') },
-                            { accountId: 1, gameId: 4, review: 0, reviewDate: '', gameData: game(4, 'Unrated') },
-                        ]),
-                        userHistory: signal([
-                            night(1, 'completed', [
-                                { game: game(1, 'Catan'), players: [1, 2], winners: [1] },
-                                { game: game(2, 'Azul'), players: [1, 2], winners: [2], playCount: 2 },
-                            ]),
-                            night(2, 'completed', [
-                                { game: game(2, 'Azul'), players: [1], winners: [1] },
-                                { game: game(5, 'Not mine'), players: [2] },
-                            ]),
-                            night(3, 'active', [{ game: game(6, 'Still going'), players: [1] }]),
-                        ]),
+                        userReviews: signal(
+                            failed.reviews
+                                ? []
+                                : [
+                                      { accountId: 1, gameId: 2, review: 6, reviewDate: '', gameData: game(2, 'Azul') },
+                                      { accountId: 1, gameId: 3, review: 10, reviewDate: '', gameData: game(3, 'Hanabi') },
+                                      { accountId: 1, gameId: 4, review: 0, reviewDate: '', gameData: game(4, 'Unrated') },
+                                  ],
+                        ),
+                        userHistory: signal(
+                            failed.history
+                                ? []
+                                : [
+                                      night(1, 'completed', [
+                                          { game: game(1, 'Catan'), players: [1, 2], winners: [1] },
+                                          { game: game(2, 'Azul'), players: [1, 2], winners: [2], playCount: 2 },
+                                      ]),
+                                      night(2, 'completed', [
+                                          { game: game(2, 'Azul'), players: [1], winners: [1] },
+                                          { game: game(5, 'Not mine'), players: [2] },
+                                      ]),
+                                      night(3, 'active', [{ game: game(6, 'Still going'), players: [1] }]),
+                                  ],
+                        ),
                     },
                 },
             ],
@@ -83,7 +112,7 @@ describe('YouPageComponent', () => {
         fixture.detectChanges()
         await fixture.whenStable()
         fixture.detectChanges()
-        return { element: fixture.nativeElement as HTMLElement, api, groups, fixture }
+        return { element: fixture.nativeElement as HTMLElement, api, groups, fixture, refresh, errors }
     }
 
     it('adds up your line in every group, the same numbers each group page shows', async () => {
@@ -101,11 +130,88 @@ describe('YouPageComponent', () => {
         expect(element.querySelector('a[href="/groups/10/members/1"]')).not.toBeNull()
     })
 
-    it('says when a group could not be loaded and still counts the others', async () => {
+    it('says when a group could not be loaded, and shows the totals as missing instead of too low', async () => {
         const { element } = await render({ insights: { 10: of(standing(4, 9, 3)), 20: throwError(() => new Error('down')) } })
+        const numbers = [...element.querySelectorAll('dl dd')].map((dd) => dd.textContent?.trim())
 
         expect(element.textContent).toContain('Numbers could not be loaded')
-        expect(element.querySelector('dl dd')?.textContent?.trim()).toBe('4')
+        expect(numbers.slice(0, 4)).toEqual(['—Not loaded', '—Not loaded', '—Not loaded', '2'])
+        expect(element.querySelector('[role="alert"]')?.textContent).toContain('Some of your numbers could not be loaded.')
+    })
+
+    it('never says you are in no group, or have nothing, when those could not be loaded (#248)', async () => {
+        const { element } = await render({ failed: { groups: true, games: true, history: true, reviews: true } })
+        const text = element.textContent ?? ''
+
+        expect(element.querySelector('[role="alert"]')?.textContent).toContain('Some of your numbers could not be loaded.')
+        expect(text).toContain('Your groups could not be loaded.')
+        expect(text).toContain('Your game nights could not be loaded.')
+        expect(text).toContain('Your ratings could not be loaded.')
+        expect(text).not.toContain('You are not in a group yet.')
+        expect(text).not.toContain('Games you play show here once a night is recorded.')
+        expect(text).not.toContain('Rate a game after you play it')
+        expect([...element.querySelectorAll('dl dd')].map((dd) => dd.textContent?.trim())).toEqual(Array(4).fill('—Not loaded'))
+    })
+
+    it('Retry loads again only what failed, including the groups whose numbers failed', async () => {
+        const { element, refresh, api, fixture } = await render({
+            insights: { 20: throwError(() => new Error('down')) },
+            failed: { history: true, stats: true },
+        })
+        api.getGroupInsights.mockClear()
+
+        element.querySelector<HTMLButtonElement>('[role="alert"] button')?.click()
+        fixture.detectChanges()
+
+        expect(refresh.refreshUserHistory).toHaveBeenCalledTimes(1)
+        expect(refresh.refreshUserStats).toHaveBeenCalledTimes(1)
+        expect(refresh.refreshUserGroups).not.toHaveBeenCalled()
+        expect(refresh.refreshUserGames).not.toHaveBeenCalled()
+        expect(refresh.refreshGameReviews).not.toHaveBeenCalled()
+        expect(api.getGroupInsights).toHaveBeenCalledTimes(1)
+        expect(api.getGroupInsights).toHaveBeenCalledWith(20)
+    })
+
+    it('Retry loads your groups, games and ratings again when those failed', async () => {
+        const { element, refresh, fixture } = await render({ failed: { groups: true, games: true, reviews: true } })
+
+        element.querySelector<HTMLButtonElement>('[role="alert"] button')?.click()
+        fixture.detectChanges()
+
+        expect(refresh.refreshUserGroups).toHaveBeenCalledTimes(1)
+        expect(refresh.refreshUserGames).toHaveBeenCalledTimes(1)
+        expect(refresh.refreshGameReviews).toHaveBeenCalledTimes(1)
+        expect(refresh.refreshUserHistory).not.toHaveBeenCalled()
+        expect(refresh.refreshUserStats).not.toHaveBeenCalled()
+    })
+
+    it('shows the numbers again, without the error, once Retry loads your groups', async () => {
+        const { element, groups, errors, fixture } = await render({
+            insights: { 10: of(standing(4, 9, 3)), 20: of(standing(2, 3, 1)) },
+            failed: { groups: true },
+        })
+        expect(element.textContent).toContain('Not loaded')
+
+        element.querySelector<HTMLButtonElement>('[role="alert"] button')?.click()
+        errors.userGroupsError.set(false)
+        groups.set([
+            { id: 10, name: 'Thursdays' },
+            { id: 20, name: 'Family' },
+        ])
+        fixture.detectChanges()
+        await fixture.whenStable()
+        fixture.detectChanges()
+
+        expect(element.querySelector('[role="alert"]')).toBeNull()
+        expect(element.textContent).not.toContain('Not loaded')
+        expect([...element.querySelectorAll('dl dd')].map((dd) => dd.textContent?.trim()).slice(0, 3)).toEqual(['6', '12', '4'])
+    })
+
+    it('shows no error when everything loaded', async () => {
+        const { element } = await render()
+
+        expect(element.querySelector('[role="alert"]')).toBeNull()
+        expect(element.textContent).not.toContain('Not loaded')
     })
 
     it('ranks the games you played on finished nights, counting repeated plays and your wins', async () => {

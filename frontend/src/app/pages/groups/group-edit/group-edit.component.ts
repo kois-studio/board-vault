@@ -91,6 +91,8 @@ export class GroupEditComponent {
     public readonly isDeletingGroup = signal(false)
     public readonly isResolvingGroup = signal(true)
     public readonly groupResolutionError = signal(false)
+    /** Your groups could not be loaded, so whether this one is yours is unknown: never "not available" then (#248). */
+    public readonly groupLoadFailed = computed(() => this.dataService.userGroupsError())
     public readonly copyLinkStatus = signal<'idle' | 'copied' | 'unavailable' | 'failed'>('idle')
     public readonly isLoading = signal(false)
     private loadedClerkInvitationsGroupId: number | null = null
@@ -135,6 +137,13 @@ export class GroupEditComponent {
                 untracked(() => this.loadGroupPeople(groupData.id, firstLoad ? 'first' : 'refresh'))
             }
         })
+    }
+
+    /** Back to "Loading…" while the groups load again: the effect resolves it, never "not available" meanwhile. */
+    public retryGroups(): void {
+        this.groupResolutionError.set(false)
+        this.isResolvingGroup.set(true)
+        this.dataService.refreshUserGroups()
     }
 
     get isGroupOwner() {

@@ -184,6 +184,17 @@ describe('GameViewPageComponent plays', () => {
             expect(getGameView).toHaveBeenCalledTimes(2)
         })
 
+        it('announces the failure as an alert with Retry (#248)', async () => {
+            const { fixture } = await setup(vi.fn().mockReturnValue(unavailable()), () =>
+                TestBed.inject(ConnectivityService).reportUnreachable(),
+            )
+            fixture.detectChanges()
+            const alert = (fixture.nativeElement as HTMLElement).querySelector('[role="alert"]')
+
+            expect(alert?.textContent).toContain('Game data could not be loaded.')
+            expect(alert?.querySelector('button')?.textContent?.trim()).toBe('Retry')
+        })
+
         it('still toasts when Board Vault is reachable', async () => {
             const { toast } = await setup(vi.fn().mockReturnValue(unavailable()))
 

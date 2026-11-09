@@ -1370,6 +1370,15 @@
         <source>Note <pc id="0" equivStart="START_TAG_SPAN" equivEnd="CLOSE_TAG_SPAN" type="other" dispStart="&lt;span class=&quot;text-sm font-normal text-bv-text-muted&quot;&gt;" dispEnd="&lt;/span&gt;">optional</pc></source>
       </segment>
     </unit>
+    <unit id="1748391316904584155">
+      <notes>
+        <note category="location">src/app/pages/you-page/you-page.component.html</note>
+        <note category="description">Error on your own page when your game nights could not be loaded</note>
+      </notes>
+      <segment>
+        <source>Your game nights could not be loaded.</source>
+      </segment>
+    </unit>
     <unit id="1764428149005377596">
       <notes>
         <note category="location">src/app/components/forms/form-game-submission/form-game-submission.component.html</note>
@@ -2597,6 +2606,15 @@
         <source>This game night was cancelled. It stays here for reference.</source>
       </segment>
     </unit>
+    <unit id="238649539848159335">
+      <notes>
+        <note category="location">src/app/pages/you-page/you-page.component.html</note>
+        <note category="description">Error on your own page when some of it could not be loaded</note>
+      </notes>
+      <segment>
+        <source>Some of your numbers could not be loaded.</source>
+      </segment>
+    </unit>
     <unit id="2394085080346887535">
       <notes>
         <note category="location">src/app/pages/collection-page/collection-page.component.html</note>
@@ -3523,6 +3541,15 @@
       </notes>
       <segment>
         <source>No selected-attendee rating yet</source>
+      </segment>
+    </unit>
+    <unit id="2817337001932535806">
+      <notes>
+        <note category="location">src/app/pages/you-page/you-page.component.html</note>
+        <note category="description">Instead of a number on your own page when it could not be loaded</note>
+      </notes>
+      <segment>
+        <source>Not loaded</source>
       </segment>
     </unit>
     <unit id="2819970185311403911">
@@ -4469,6 +4496,15 @@
         <source>Connecting you to your Board Vault</source>
       </segment>
     </unit>
+    <unit id="3306164303134965739">
+      <notes>
+        <note category="location">src/app/pages/you-page/you-page.component.html</note>
+        <note category="description">Error on your own page when your ratings could not be loaded</note>
+      </notes>
+      <segment>
+        <source>Your ratings could not be loaded.</source>
+      </segment>
+    </unit>
     <unit id="3321646088739641540">
       <notes>
         <note category="location">src/app/components/forms/form-game-submission/form-game-submission.component.ts</note>
@@ -4926,6 +4962,7 @@
     <unit id="3541048472864641079">
       <notes>
         <note category="location">src/app/pages/group-view/group-view.component.html</note>
+        <note category="location">src/app/pages/groups/group-edit/group-edit.component.html</note>
         <note category="description">Button under an error on the group page</note>
       </notes>
       <segment>
@@ -8019,6 +8056,7 @@
         <note category="location">src/app/components/log-session-wizard/log-session-wizard.component.html</note>
         <note category="location">src/app/pages/dashboard-page/dashboard-page.component.html</note>
         <note category="location">src/app/pages/meet-new/meet-new.component.html</note>
+        <note category="location">src/app/pages/you-page/you-page.component.html</note>
         <note category="description">Plan form when your groups could not load</note>
       </notes>
       <segment>
@@ -9190,6 +9228,15 @@
       </notes>
       <segment>
         <source>entered by a member</source>
+      </segment>
+    </unit>
+    <unit id="5737993668391697694">
+      <notes>
+        <note category="location">src/app/pages/you-page/you-page.component.html</note>
+        <note category="description">Under an error on your own page; a dash stands in for each number that is missing</note>
+      </notes>
+      <segment>
+        <source>What is missing shows as a dash. Try again when the connection is ready.</source>
       </segment>
     </unit>
     <unit id="5740619620731856219">
@@ -10955,6 +11002,7 @@
     <unit id="6668162205643683502">
       <notes>
         <note category="location">src/app/pages/group-view/group-view.component.html</note>
+        <note category="location">src/app/pages/groups/group-edit/group-edit.component.html</note>
         <note category="description">Error on the group page</note>
       </notes>
       <segment>
@@ -13560,6 +13608,7 @@
         <note category="location">src/app/pages/play-page/history-page/history-page.component.html</note>
         <note category="location">src/app/pages/play-page/recommendations-page/recommendations-page.component.html</note>
         <note category="location">src/app/pages/play-page/upcoming-sessions-page/upcoming-sessions-page.component.html</note>
+        <note category="location">src/app/pages/you-page/you-page.component.html</note>
         <note category="description">Button under an error</note>
       </notes>
       <segment>
@@ -13887,6 +13936,7 @@
     <unit id="8118949642596747823">
       <notes>
         <note category="location">src/app/pages/group-view/group-view.component.html</note>
+        <note category="location">src/app/pages/groups/group-edit/group-edit.component.html</note>
         <note category="description">Under an error on the group page</note>
       </notes>
       <segment>

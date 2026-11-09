@@ -11,23 +11,31 @@
             </section>
         }
 
+        @if (anyFailed()) {
+            <div class="rounded-2xl border border-bv-warning/30 bg-bv-warning/10 p-5" role="alert">
+                <p class="font-semibold" i18n="Error on your own page when some of it could not be loaded">Some of your numbers could not be loaded.</p>
+                <p class="mt-1 text-sm text-secondary" i18n="Under an error on your own page; a dash stands in for each number that is missing">What is missing shows as a dash. Try again when the connection is ready.</p>
+                <button appButton type="button" class="mt-4" icon="refresh" (click)="retry()" i18n="Button under an error">Retry</button>
+            </div>
+        }
+
         <section i18n-aria-label="Accessible name of the numbers at the top of your own page" aria-label="Your numbers">
             <dl class="grid grid-cols-2 gap-3 sm:grid-cols-4">
                 <div class="rounded-2xl border border-bv-border bg-bv-surface p-4 shadow-sm">
                     <dt class="text-xs text-secondary" i18n="Number on your own page: game nights you came to, in all your groups">Game nights</dt>
-                    <dd class="mt-1 text-3xl font-bold">{{ totals().nights }}</dd>
+                    <dd class="mt-1 text-3xl font-bold">@if (totalsUnknown()) {<span aria-hidden="true">—</span><span class="sr-only" i18n="Instead of a number on your own page when it could not be loaded">Not loaded</span>} @else {{{ totals().nights }}}</dd>
                 </div>
                 <div class="rounded-2xl border border-bv-border bg-bv-surface p-4 shadow-sm">
                     <dt class="text-xs text-secondary" i18n="Number on your own page: games you played, in all your groups">Games played</dt>
-                    <dd class="mt-1 text-3xl font-bold">{{ totals().plays }}</dd>
+                    <dd class="mt-1 text-3xl font-bold">@if (totalsUnknown()) {<span aria-hidden="true">—</span><span class="sr-only" i18n="Instead of a number on your own page when it could not be loaded">Not loaded</span>} @else {{{ totals().plays }}}</dd>
                 </div>
                 <div class="rounded-2xl border border-bv-border bg-bv-surface p-4 shadow-sm">
                     <dt class="text-xs text-secondary" i18n="Number on your own page: games you won, in all your groups">Wins</dt>
-                    <dd class="mt-1 text-3xl font-bold">{{ totals().wins }}</dd>
+                    <dd class="mt-1 text-3xl font-bold">@if (totalsUnknown()) {<span aria-hidden="true">—</span><span class="sr-only" i18n="Instead of a number on your own page when it could not be loaded">Not loaded</span>} @else {{{ totals().wins }}}</dd>
                 </div>
                 <div class="rounded-2xl border border-bv-border bg-bv-surface p-4 shadow-sm">
                     <dt class="text-xs text-secondary" i18n="Number on your own page: games in My Games">Games you own</dt>
-                    <dd class="mt-1 text-3xl font-bold"><a routerLink="/collection" class="hover:text-bv-primary">{{ ownedGames() }}</a></dd>
+                    <dd class="mt-1 text-3xl font-bold">@if (gamesFailed()) {<span aria-hidden="true">—</span><span class="sr-only" i18n="Instead of a number on your own page when it could not be loaded">Not loaded</span>} @else {<a routerLink="/collection" class="hover:text-bv-primary">{{ ownedGames() }}</a>}</dd>
                     @if (paid() > 0) { <dd class="text-xs text-secondary" i18n="Under Games you own on your own page; the placeholder is what you paid for them, in euros">{{ paid() | currency: 'EUR' : 'symbol' : '1.0-0' }} paid</dd> }
                 </div>
             </dl>
@@ -59,6 +67,8 @@
                         </li>
                     }
                 </ul>
+            } @else if (groupsFailed()) {
+                <p class="mt-4 rounded-2xl border border-bv-warning/30 bg-bv-warning/10 p-5 text-secondary" i18n="Error on your own page when your groups could not be loaded">Your groups could not be loaded.</p>
             } @else {
                 <p class="mt-4 rounded-2xl border border-dashed border-bv-border p-5 text-secondary" i18n="Your own page when you are in no group">You are not in a group yet.</p>
             }
@@ -82,6 +92,8 @@
                             </li>
                         }
                     </ol>
+                } @else if (historyFailed()) {
+                    <p class="mt-4 rounded-2xl border border-bv-warning/30 bg-bv-warning/10 p-5 text-secondary" i18n="Error on your own page when your game nights could not be loaded">Your game nights could not be loaded.</p>
                 } @else {
                     <p class="mt-4 rounded-2xl border border-dashed border-bv-border p-5 text-secondary" i18n="Your own page before any game night is recorded">Games you play show here once a night is recorded.</p>
                 }
@@ -104,6 +116,8 @@
                             </li>
                         }
                     </ol>
+                } @else if (reviewsFailed()) {
+                    <p class="mt-4 rounded-2xl border border-bv-warning/30 bg-bv-warning/10 p-5 text-secondary" i18n="Error on your own page when your ratings could not be loaded">Your ratings could not be loaded.</p>
                 } @else {
                     <p class="mt-4 rounded-2xl border border-dashed border-bv-border p-5 text-secondary" i18n="Your own page before you rate any game">Rate a game after you play it and your favourites show here.</p>
                 }
