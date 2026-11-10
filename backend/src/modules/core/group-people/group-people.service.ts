@@ -23,6 +23,20 @@ import type {
 import type { AvatarDto } from '../../../common/types/user.type.js'
 import type { ResultSet } from '@libsql/client'
 
+/** Rows whose first column is a group person's id, mapped from the next column on and grouped by person, in order. */
+function groupByPerson<T>(rows: ResultSet['rows'], map: (row: ResultSet['rows'][number], offset: number) => T): Map<number, Array<T>> {
+    const byPerson = new Map<number, Array<T>>()
+
+    for (const row of rows) {
+        const personId = Number(row[0])
+        const list = byPerson.get(personId) ?? []
+
+        list.push(map(row, 1))
+        byPerson.set(personId, list)
+    }
+    return byPerson
+}
+
 @Injectable()
 export class GroupPeopleService {
     constructor(
@@ -33,23 +47,27 @@ export class GroupPeopleService {
 
     async getWorkspace(actorAccountId: number, groupId: number, includeArchived = false): Promise<Array<GroupPersonWorkspaceDto>> {
         await this.assertGroupMember(actorAccountId, groupId)
-        const claimableIds = new Set(
-            (await this.databaseService.groups.getClaimableGroupPersonIds(groupId, actorAccountId)).rows.map(row => Number(row[0])),
-        )
-        const people = this.databaseService.groups.getGroupPeople(groupId, includeArchived)
-        const rows = await people
+        // Four queries for the whole group, however many people it has (#251).
+        const [claimable, people, ownership, preferences] = await Promise.all([
+            this.databaseService.groups.getClaimableGroupPersonIds(groupId, actorAccountId),
+            this.databaseService.groups.getGroupPeople(groupId, includeArchived),
+            this.databaseService.groups.getGroupPeopleOwnership(groupId),
+            this.databaseService.groups.getGroupPeoplePreferences(groupId),
+        ])
+        const claimableIds = new Set(claimable.rows.map(row => Number(row[0])))
+        const ownershipByPerson = groupByPerson(ownership.rows, (row, offset) => this.mapOwnershipRow(row, offset))
+        const preferencesByPerson = groupByPerson(preferences.rows, (row, offset) => this.mapPreferenceRow(row, offset))
 
-        return Promise.all(
-            rows.rows.map(async row => {
-                const person = this.mapPersonRow(row)
-                const [ownership, preferences] = await Promise.all([
-                    this.getOwnershipRows(person.id, groupId),
-                    this.getPreferenceRows(person.id, groupId),
-                ])
+        return people.rows.map(row => {
+            const person = this.mapPersonRow(row)
 
-                return { person, ownership, preferences, claimable: claimableIds.has(person.id) }
-            }),
-        )
+            return {
+                person,
+                ownership: ownershipByPerson.get(person.id) ?? [],
+                preferences: preferencesByPerson.get(person.id) ?? [],
+                claimable: claimableIds.has(person.id),
+            }
+        })
     }
 
     async getCatalog(actorAccountId: number, groupId: number, locale: Locale, search = ''): Promise<Array<GameCompleteDto>> {
@@ -330,30 +348,44 @@ export class GroupPeopleService {
     private async getOwnershipRows(personId: number, groupId: number): Promise<Array<GroupPersonGameOwnershipDto>> {
         const result = await this.databaseService.groups.getGroupPersonOwnership(personId, groupId)
 
-        return result.rows.map(row => ({
-            gameId: Number(row[0]),
-            status: String(row[1]) as GroupPersonGameOwnershipDto['status'],
-            source: String(row[2]) as GroupPersonGameOwnershipDto['source'],
-            enteredByAccountId: Number(row[3]),
-            confirmedByAccountId: row[4] === null ? null : Number(row[4]),
-            createdAt: String(row[5]),
-            updatedAt: String(row[6]),
-            copyTitle: row[7] === null ? null : String(row[7]),
-            copyTitleLanguage: row[8] === null ? null : String(row[8]),
-        }))
+        return result.rows.map(row => this.mapOwnershipRow(row))
+    }
+
+    /** An ownership row as `getGroupPersonOwnership` reads it; `offset` skips leading columns (the person's id). */
+    private mapOwnershipRow(row: ResultSet['rows'][number], offset = 0): GroupPersonGameOwnershipDto {
+        const column = (index: number) => row[index + offset]
+
+        return {
+            gameId: Number(column(0)),
+            status: String(column(1)) as GroupPersonGameOwnershipDto['status'],
+            source: String(column(2)) as GroupPersonGameOwnershipDto['source'],
+            enteredByAccountId: Number(column(3)),
+            confirmedByAccountId: column(4) === null ? null : Number(column(4)),
+            createdAt: String(column(5)),
+            updatedAt: String(column(6)),
+            copyTitle: column(7) === null ? null : String(column(7)),
+            copyTitleLanguage: column(8) === null ? null : String(column(8)),
+        }
     }
 
     private async getPreferenceRows(personId: number, groupId: number): Promise<Array<GroupPersonGamePreferenceDto>> {
         const result = await this.databaseService.groups.getGroupPersonPreferences(personId, groupId)
 
-        return result.rows.map(row => ({
-            gameId: Number(row[0]),
-            preference: String(row[1]) as GroupPersonGamePreferenceDto['preference'],
-            source: String(row[2]) as GroupPersonGamePreferenceDto['source'],
-            enteredByAccountId: Number(row[3]),
-            createdAt: String(row[4]),
-            updatedAt: String(row[5]),
-        }))
+        return result.rows.map(row => this.mapPreferenceRow(row))
+    }
+
+    /** A preference row as `getGroupPersonPreferences` reads it; `offset` skips leading columns (the person's id). */
+    private mapPreferenceRow(row: ResultSet['rows'][number], offset = 0): GroupPersonGamePreferenceDto {
+        const column = (index: number) => row[index + offset]
+
+        return {
+            gameId: Number(column(0)),
+            preference: String(column(1)) as GroupPersonGamePreferenceDto['preference'],
+            source: String(column(2)) as GroupPersonGamePreferenceDto['source'],
+            enteredByAccountId: Number(column(3)),
+            createdAt: String(column(4)),
+            updatedAt: String(column(5)),
+        }
     }
 
     private mapPersonRow(row: ResultSet['rows'][number]): GroupPersonDto {

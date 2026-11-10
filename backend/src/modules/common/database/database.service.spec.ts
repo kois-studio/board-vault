@@ -111,7 +111,8 @@ describe('DatabaseService logging', () => {
     it('updates the legacy bulk collection path in one idempotent transaction', async () => {
         const service = new DatabaseService({} as ConfigService)
         const transaction = {
-            execute: vi.fn().mockResolvedValue({ rowsAffected: 1 }),
+            // The delete of 7 changed a row, 42 was new, 43 was already owned.
+            batch: vi.fn().mockResolvedValue([{ rowsAffected: 1 }, { rowsAffected: 1 }, { rowsAffected: 0 }]),
             commit: vi.fn().mockResolvedValue(undefined),
             rollback: vi.fn().mockResolvedValue(undefined),
             close: vi.fn(),
@@ -122,22 +123,17 @@ describe('DatabaseService logging', () => {
             transaction: transactionFactory,
         }
 
-        // Every statement changed a row here, so all three games really changed.
-        await expect(service.collection.updateGames(1, [42, 43], [7])).resolves.toEqual({ added: [42, 43], removed: [7] })
+        // Only statements that changed a row count as a change; duplicates are written once.
+        await expect(service.collection.updateGames(1, [42, 43, 42], [7])).resolves.toEqual({ added: [42], removed: [7] })
 
         expect(transactionFactory).toHaveBeenCalledWith('write')
-        expect(transaction.execute).toHaveBeenNthCalledWith(1, {
-            sql: 'DELETE FROM OwnedGame WHERE accountId = ? AND gameId = ?',
-            args: [1, 7],
-        })
-        expect(transaction.execute).toHaveBeenNthCalledWith(2, {
-            sql: 'INSERT OR IGNORE INTO OwnedGame (accountId, gameId) VALUES (?, ?)',
-            args: [1, 42],
-        })
-        expect(transaction.execute).toHaveBeenNthCalledWith(3, {
-            sql: 'INSERT OR IGNORE INTO OwnedGame (accountId, gameId) VALUES (?, ?)',
-            args: [1, 43],
-        })
+        // One round trip for every row, removals first (#251).
+        expect(transaction.batch).toHaveBeenCalledTimes(1)
+        expect(transaction.batch).toHaveBeenCalledWith([
+            { sql: 'DELETE FROM OwnedGame WHERE accountId = ? AND gameId = ?', args: [1, 7] },
+            { sql: 'INSERT OR IGNORE INTO OwnedGame (accountId, gameId) VALUES (?, ?)', args: [1, 42] },
+            { sql: 'INSERT OR IGNORE INTO OwnedGame (accountId, gameId) VALUES (?, ?)', args: [1, 43] },
+        ])
         expect(transaction.commit).toHaveBeenCalledTimes(1)
         expect(transaction.rollback).not.toHaveBeenCalled()
         expect(transaction.close).toHaveBeenCalledTimes(1)
@@ -146,7 +142,7 @@ describe('DatabaseService logging', () => {
     it('rolls back the legacy bulk collection path when a later write fails', async () => {
         const service = new DatabaseService({} as ConfigService)
         const transaction = {
-            execute: vi.fn().mockResolvedValueOnce({ rowsAffected: 1 }).mockRejectedValueOnce(new Error('ownership write failed')),
+            batch: vi.fn().mockRejectedValueOnce(new Error('ownership write failed')),
             commit: vi.fn().mockResolvedValue(undefined),
             rollback: vi.fn().mockResolvedValue(undefined),
             close: vi.fn(),

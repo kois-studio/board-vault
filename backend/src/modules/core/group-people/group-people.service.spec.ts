@@ -23,6 +23,14 @@ describe('GroupPeopleService participant boundaries', () => {
             getGroupPeople: vi.fn().mockResolvedValue({ rows: [personRow] }),
             getGroupPersonOwnership: vi.fn().mockResolvedValue({ rows: [[42, 'asserted', 'placeholder_setup', 7, null, 'a', 'b']] }),
             getGroupPersonPreferences: vi.fn().mockResolvedValue({ rows: [[42, 'favorite', 'placeholder_setup', 7, 'a', 'b']] }),
+            // Group-wide reads put the person first; 99 is someone the workspace did not list.
+            getGroupPeopleOwnership: vi.fn().mockResolvedValue({
+                rows: [
+                    [21, 42, 'asserted', 'placeholder_setup', 7, null, 'a', 'b', null, null],
+                    [99, 43, 'asserted', 'placeholder_setup', 7, null, 'a', 'b', null, null],
+                ],
+            }),
+            getGroupPeoplePreferences: vi.fn().mockResolvedValue({ rows: [[21, 42, 'favorite', 'placeholder_setup', 7, 'a', 'b']] }),
             getGroupPersonById: vi.fn().mockResolvedValue({ rows: [personRow] }),
             getGameById: vi.fn().mockResolvedValue({ rows: [[42]] }),
             claimGroupPerson: vi.fn().mockResolvedValue({ claimed: true, alreadyClaimed: false, addedToShelf: [] }),
@@ -58,9 +66,16 @@ describe('GroupPeopleService participant boundaries', () => {
             expect.objectContaining({
                 claimable: true,
                 person: expect.objectContaining({ id: 21, kind: 'placeholder' }),
+                ownership: [expect.objectContaining({ gameId: 42, status: 'asserted', enteredByAccountId: 7, copyTitle: null })],
+                preferences: [expect.objectContaining({ gameId: 42, preference: 'favorite' })],
             }),
         ])
         expect(databaseService.getClaimableGroupPersonIds).toHaveBeenCalledWith(12, 7)
+        // One read per kind for the whole group, never one per person (#251).
+        expect(databaseService.getGroupPeopleOwnership).toHaveBeenCalledWith(12)
+        expect(databaseService.getGroupPeoplePreferences).toHaveBeenCalledWith(12)
+        expect(databaseService.getGroupPersonOwnership).not.toHaveBeenCalled()
+        expect(databaseService.getGroupPersonPreferences).not.toHaveBeenCalled()
     })
 
     it('returns a group-scoped catalog with every edition, so the app can filter it on any title', async () => {
