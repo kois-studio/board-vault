@@ -82,6 +82,14 @@ checks them at startup.
 Vercel also sets `VERCEL` and `VERCEL_ENV`. The API uses them to trust the
 Vercel proxy hop (real client IPs for rate limits) and to hide Swagger.
 
+### Opening or pausing sign-up
+
+Three switches must agree:
+
+1. `BOARD_VAULT_SELF_REGISTRATION_ENABLED` on the Vercel `board-vault-back` project (the API refuses new accounts without it).
+2. The same variable on `board-vault-front`, which decides whether `/register` offers sign-up. It is read at build time, so force a production build after changing it.
+3. Clerk's sign-up mode on the production instance: `public` to open, `restricted` to pause (`clerk config patch --instance prod --json '{"auth_access_control":{"sign_up_mode":"public"}}'`). While it is `restricted`, Clerk's own window says "Access restricted" whatever Board Vault's switches say.
+
 ## Frontend configuration
 
 The frontend has no `.env` file. `npm start` and `npm run build` run
@@ -91,7 +99,7 @@ which writes the ignored `frontend/public/runtime-config.js` from:
 | Variable | Source locally | Source in production |
 | --- | --- | --- |
 | `CLERK_PUBLISHABLE_KEY` | `backend/.env` | Vercel `board-vault-front` |
-| `BOARD_VAULT_SELF_REGISTRATION_ENABLED` | `backend/.env` | Not set, so `false` |
+| `BOARD_VAULT_SELF_REGISTRATION_ENABLED` | `backend/.env` | Vercel `board-vault-front`, `true` since the launch (#157); read at build time, so a change needs a forced build |
 | `VERCEL`, `VERCEL_ENV` | Not set, so `previewLocales` is `true` | Set by Vercel: `previewLocales` is `true` only when `VERCEL_ENV` is `preview` |
 
 `previewLocales` lets the header's language menu list every supported
