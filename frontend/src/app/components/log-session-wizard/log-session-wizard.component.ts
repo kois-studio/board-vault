@@ -72,7 +72,7 @@ interface StepInfo {
 }
 
 /**
- * Days back the session list surely covers: it holds the last 30 days (#252), less a day for nights whose own time zone
+ * Days back the session list surely covers: it holds the last 30 days (#252; RECENT_MEETS_DAYS on the server), less a day for nights whose own time zone
  * puts them on another date, and one more to spare. An older day asks the server for its nights.
  */
 const DAYS_IN_SESSION_LIST = 28
@@ -143,6 +143,9 @@ export class LogSessionWizardComponent {
     private groupLoadVersion = 0
     /** The chosen group's nights around a day older than the session list holds, read from the server (#252). */
     private readonly nightsAround = signal<MeetsAroundType | null>(null)
+    /** Only the id, so a refreshed group list does not ask for the same nights again. */
+    private readonly selectedGroupId = computed(() => this.selectedGroup()?.id)
+    private readonly currentUserId = computed(() => this.dataService.currentUser?.()?.id)
     readonly sameDaySessions = computed(() => {
         const date = this.dateChoice()
         const group = this.selectedGroup()
@@ -305,8 +308,8 @@ export class LogSessionWizardComponent {
         // A day older than the session list holds: ask the server which nights the group already has around it.
         effect((onCleanup) => {
             const date = this.dateChoice()
-            const groupId = this.selectedGroup()?.id
-            const userId = this.dataService.currentUser?.()?.id
+            const groupId = this.selectedGroupId()
+            const userId = this.currentUserId()
             untracked(() => this.nightsAround.set(null))
             if (!groupId || !userId || !/^\d{4}-\d{2}-\d{2}$/.test(date)) return
             if (date >= isoDay(Date.now() - DAYS_IN_SESSION_LIST * 86_400_000)) return

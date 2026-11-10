@@ -68,7 +68,10 @@ const PLAYED_IN_MINE = `
     WHERE mg.gameStatus = 'played'
 `
 
-/** Finished or cancelled nights stay in the game-night list this many days (#252). */
+/**
+ * Finished or cancelled nights stay in the game-night list this many days (#252). The session wizard asks the server
+ * for older days (DAYS_IN_SESSION_LIST in the frontend): change both together.
+ */
 export const RECENT_MEETS_DAYS = 30
 /** At most this many nights answer `GET /play/users/:userId/meets/around`, three days of one group. */
 export const MEETS_AROUND_MAX = 50
