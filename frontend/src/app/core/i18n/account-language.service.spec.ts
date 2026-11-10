@@ -23,13 +23,13 @@ describe('AccountLanguageService', () => {
         assign: ReturnType<typeof vi.fn>
         replace: ReturnType<typeof vi.fn>
     }
-    let fakeDocument: { cookie: string; location: typeof location }
+    let fakeDocument: { cookie: string; location: typeof location; defaultView: EventTarget }
     let updateUser: ReturnType<typeof vi.fn>
     let currentUser: WritableSignal<UserType | null>
 
     function setup(pathname: string, signedIn: boolean) {
         location = { pathname, search: '?tab=games', hash: '#top', protocol: 'https:', assign: vi.fn(), replace: vi.fn() }
-        fakeDocument = { cookie: '', location }
+        fakeDocument = { cookie: '', location, defaultView: new EventTarget() }
         updateUser = vi.fn().mockReturnValue(of({ success: true }))
         currentUser = signal<UserType | null>(signedIn ? user : null)
         TestBed.configureTestingModule({
@@ -165,6 +165,20 @@ describe('AccountLanguageService', () => {
 
                 expect(updateUser).toHaveBeenCalledTimes(1)
                 expect(updateUser).toHaveBeenCalledWith(7, { locale: 'fr' })
+            })
+
+            it('takes choices again when Back restores the page from the back/forward cache mid-save', async () => {
+                const service = setup('/en/groups/12', true)
+                updateUser.mockReturnValue(new Subject<{ success: true }>())
+
+                void service.choose('fr')
+                expect(service.saving()).toBe('fr')
+
+                fakeDocument.defaultView.dispatchEvent(Object.assign(new Event('pageshow'), { persisted: false }))
+                expect(service.saving()).toBe('fr')
+
+                fakeDocument.defaultView.dispatchEvent(Object.assign(new Event('pageshow'), { persisted: true }))
+                expect(service.saving()).toBeNull()
             })
 
             it('switches for now only when asked, and this session does not go back to the account language', async () => {

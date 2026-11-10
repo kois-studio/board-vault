@@ -62,7 +62,10 @@ export class ConnectivityService {
     public reportAnswered(): void {
         const reloadAlreadyAsked = this.reloadAwaitingOutcome
         this.ended()
-        if (!this.unanswered()) return
+        if (!this.isDegraded()) return
+        // An answer proves the connection works, even if the browser still says it is offline (some VPNs and
+        // captive portals report navigator.onLine wrongly): otherwise the banner would never go away.
+        this.offline.set(false)
         this.unanswered.set(false)
         // What failed while it could not be reached can load now, unless that reload is what brought this answer.
         if (!reloadAlreadyAsked) this.refreshRequested.next()

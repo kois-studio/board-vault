@@ -76,6 +76,17 @@ describe('ConnectivityService (#241)', () => {
         expect(service.isDegraded()).toBe(false)
     })
 
+    it('trusts an answer over the browser saying it is offline, so the banner cannot stay up for good', () => {
+        const { service, refreshes } = setup()
+        window.dispatchEvent(new Event('offline'))
+        expect(service.isDegraded()).toBe(true)
+
+        service.reportAnswered()
+
+        expect(service.isDegraded()).toBe(false)
+        expect(refreshes).toHaveBeenCalledTimes(1)
+    })
+
     it('reloads on Try again and shows it is checking until the next request ends', () => {
         const { service, refreshes } = setup()
         service.reportUnreachable()

@@ -199,6 +199,9 @@ test.describe('resilience: every signed-in page survives the API failing', () =>
                     expect(chaos.faked).toBeGreaterThan(0)
                     await expectNotBlank(page)
                     await expectNothingStillLoading(page)
+                    // The failed reads must not have sent the person back to the sign-in screens either.
+                    await expect(outage(page)).toHaveCount(0)
+                    await expect(signInFailed(page)).toHaveCount(0)
                     // Every page shows the banner while Board Vault is away; a page with its own data also says,
                     // where that data would be, that it could not be loaded.
                     await expect(banner(page)).toBeVisible({ timeout: 5_000 })

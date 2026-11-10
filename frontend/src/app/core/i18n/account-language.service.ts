@@ -37,6 +37,14 @@ export class AccountLanguageService {
     /** The last choice that could not be saved; the pickers say so and offer to try again or switch for now only. */
     public readonly failure = signal<LanguageSaveFailure | null>(null)
 
+    constructor() {
+        // Back from the page in the new language can restore this one from the back/forward cache, mid-"saving":
+        // the save is over by then, so the pickers take choices again.
+        this.document.defaultView?.addEventListener('pageshow', (event) => {
+            if (event.persisted) this.saving.set(null)
+        })
+    }
+
     /**
      * Signed in, saves the choice on the account first and loads the same page in that language only once it is
      * saved (#242). A failed save leaves the page as it is and sets `failure`: switching anyway would be undone on
