@@ -87,8 +87,12 @@ try {
             SELECT CASE WHEN EXISTS (SELECT 1 FROM sqlite_master WHERE type = 'table' AND name = 'IdempotencyKey')
                 AND EXISTS (SELECT 1 FROM sqlite_master WHERE type = 'index' AND name = 'IdempotencyKey_createdAt')
                 THEN 'idempotency-keys: ok' ELSE 'idempotency-keys: missing' END;
-            SELECT CASE WHEN (SELECT COUNT(*) FROM SchemaMigrations) = 32
-                AND (SELECT MAX(version) FROM SchemaMigrations) = '0032'
+            SELECT CASE WHEN (SELECT COUNT(*) FROM sqlite_master WHERE type = 'index' AND name IN (
+                    'Notification_account_created', 'GroupMembership_group', 'Meet_group_status_date', 'GameTag_tag',
+                    'GameReview_game', 'UserGroup_createdBy', 'Invitation_toAccount', 'MeetGame_broughtByAccount')) = 8
+                THEN 'hot-query-indexes: ok' ELSE 'hot-query-indexes: missing' END;
+            SELECT CASE WHEN (SELECT COUNT(*) FROM SchemaMigrations) = 33
+                AND (SELECT MAX(version) FROM SchemaMigrations) = '0033'
                 THEN 'migration-state: ok' ELSE 'migration-state: invalid' END;
             SELECT CASE WHEN EXISTS (SELECT 1 FROM pragma_table_info('GroupPerson') WHERE name = 'claimEmail')
                 THEN 'group-person-claim-email: ok' ELSE 'group-person-claim-email: missing' END;
@@ -116,7 +120,7 @@ try {
                 THEN 'game-retail-price: ok' ELSE 'game-retail-price: missing' END;
         `,
     )
-    if (structure.code !== 0 || !structure.stdout.includes('group-interest: ok') || !structure.stdout.includes('group-decision: ok') || !structure.stdout.includes('group-person: ok') || !structure.stdout.includes('group-person-ownership: ok') || !structure.stdout.includes('group-person-preference: ok') || !structure.stdout.includes('meet-notes: ok') || !structure.stdout.includes('migration-state: ok') || !structure.stdout.includes('meet-person-attendee: ok') || !structure.stdout.includes('meet-person-game: ok') || !structure.stdout.includes('participant-feedback: ok') || !structure.stdout.includes('group-person-claim-email: ok') || !structure.stdout.includes('group-person-claim-expiry: ok') || !structure.stdout.includes('invitation-expiry: ok') || !structure.stdout.includes('invitation-group-person: ok') || !structure.stdout.includes('legacy-credentials-dropped: ok') || !structure.stdout.includes('game-results: ok') || !structure.stdout.includes('proposal-add-to: ok') || !structure.stdout.includes('game-artwork: ok') || !structure.stdout.includes('game-retail-price: ok') || !structure.stdout.includes('meet-game-vote: ok') || !structure.stdout.includes('meet-game-bringer: ok') || !structure.stdout.includes('group-activity: ok') || !structure.stdout.includes('usage-analytics: ok') || !structure.stdout.includes('account-locale: ok') || !structure.stdout.includes('tag-translations: ok') || !structure.stdout.includes('game-editions: ok') || !structure.stdout.includes('idempotency-keys: ok')) {
+    if (structure.code !== 0 || !structure.stdout.includes('group-interest: ok') || !structure.stdout.includes('group-decision: ok') || !structure.stdout.includes('group-person: ok') || !structure.stdout.includes('group-person-ownership: ok') || !structure.stdout.includes('group-person-preference: ok') || !structure.stdout.includes('meet-notes: ok') || !structure.stdout.includes('migration-state: ok') || !structure.stdout.includes('meet-person-attendee: ok') || !structure.stdout.includes('meet-person-game: ok') || !structure.stdout.includes('participant-feedback: ok') || !structure.stdout.includes('group-person-claim-email: ok') || !structure.stdout.includes('group-person-claim-expiry: ok') || !structure.stdout.includes('invitation-expiry: ok') || !structure.stdout.includes('invitation-group-person: ok') || !structure.stdout.includes('legacy-credentials-dropped: ok') || !structure.stdout.includes('game-results: ok') || !structure.stdout.includes('proposal-add-to: ok') || !structure.stdout.includes('game-artwork: ok') || !structure.stdout.includes('game-retail-price: ok') || !structure.stdout.includes('meet-game-vote: ok') || !structure.stdout.includes('meet-game-bringer: ok') || !structure.stdout.includes('group-activity: ok') || !structure.stdout.includes('usage-analytics: ok') || !structure.stdout.includes('account-locale: ok') || !structure.stdout.includes('tag-translations: ok') || !structure.stdout.includes('game-editions: ok') || !structure.stdout.includes('idempotency-keys: ok') || !structure.stdout.includes('hot-query-indexes: ok')) {
         throw new Error(`Migrated schema assertions failed.\n${structure.stdout}\n${structure.stderr}`)
     }
 

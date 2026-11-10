@@ -10,7 +10,7 @@ The database is SQLite through libSQL: a local file in development, Turso in
 production. The schema is
 [`database/schema/schema.sql`](../database/schema/schema.sql) (the 0001–0005
 baseline) plus the numbered files in
-[`database/migrations/`](../database/migrations/). Current version: **0032**.
+[`database/migrations/`](../database/migrations/). Current version: **0033**.
 All SQL lives in the per-domain query classes in
 [`database/queries/`](../backend/src/modules/common/database/queries/).
 
@@ -107,6 +107,30 @@ sessions they created, and more.
   recorded in the same transaction (`IdempotencyKey`, `createOnce` in
   `common/http/idempotency.ts`).
 - Fixtures and verification databases use synthetic data only.
+- A query that runs on every page or poll looks rows up through an index, not
+  by reading the whole table. Check new ones with `EXPLAIN QUERY PLAN`: want
+  `SEARCH … USING INDEX`, not `SCAN <table>`. An `OR` across two joined tables
+  defeats the indexes; write it as a `UNION` of two lookups.
+  `hot-query-indexes.spec.ts` keeps the plans of the hot queries listed below.
+
+## Indexes for the hot queries
+
+Added in 0033 (#249), besides the primary keys and the indexes earlier
+migrations made:
+
+| Index | Serves |
+| --- | --- |
+| `Notification_account_created` (`accountId`, `createdAt` DESC, `id` DESC) | The inbox, polled every minute per open tab, newest first. |
+| `GroupMembership_group` (`groupId`, `accountId`) | A group's members: the membership guard, group pages, recommendations, new nights. The primary key starts with `accountId`. |
+| `Meet_group_status_date` (`groupId`, `status`, `meetDate`) | A group's nights: history, insights, leaving a group. |
+| `GameTag_tag` (`tagId`, `gameId`) | Similar games, the catalogue tags, the Browse tag filter, unused tags in Admin. The primary key starts with `gameId`. |
+| `GameReview_game` (`gameId`) | A game's ratings. The primary key starts with `accountId`. |
+| `UserGroup_createdBy` (`createdBy`) | Your groups (Home, `/groups`, `GET/PUT /profile/home`), with the `UNION` in `getGroupsForAccount`. |
+| `Invitation_toAccount` (`toAccountId`) | Invitations received, polled with the inbox. |
+| `MeetGame_broughtByAccount` (`broughtByAccountId`) | The games you said you would bring. |
+
+`idx_groupmembership_accountId` repeats the start of the `GroupMembership`
+primary key and can be dropped in a later migration.
 
 To change the schema, follow [how-to/add-migration.md](how-to/add-migration.md).
 
