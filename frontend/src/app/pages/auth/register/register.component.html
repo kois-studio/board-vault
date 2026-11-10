@@ -5,21 +5,17 @@
                 <div class="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-bv-primary-soft text-3xl text-bv-on-primary-soft" aria-hidden="true">
                     <app-icon name="users" [size]="30" />
                 </div>
-                <p class="mt-6 text-sm font-semibold uppercase tracking-[0.2em] text-bv-primary" i18n="Small heading of the access page while sign-up is by invitation only">Private beta</p>
-                <h1 class="mt-3 text-4xl font-bold tracking-tight text-bv-text" i18n="Heading of the access page while sign-up is by invitation only">Board Vault is still invite-only</h1>
-                <p class="mt-5 text-lg leading-8 text-bv-text-muted" i18n="Text on the access page while sign-up is by invitation only">
+                <p class="mt-6 text-sm font-semibold uppercase tracking-[0.2em] text-bv-primary" i18n="Small heading of the sign-up page while new accounts are paused">Sign-up paused</p>
+                <h1 class="mt-3 text-4xl font-bold tracking-tight text-bv-text" i18n="Heading of the sign-up page while new accounts are paused">New accounts are paused for now</h1>
+                <p class="mt-5 text-lg leading-8 text-bv-text-muted" i18n="Text on the sign-up page while new accounts are paused">
                     Board Vault helps a group of friends organize its games, choose what to play, and remember every session.
                 </p>
-                <p class="mt-4 text-bv-text-muted" i18n="Text on the access page while sign-up is by invitation only">We are still building the core experience, so new accounts are created by invitation only.</p>
-                <div class="mt-6 rounded-2xl border border-bv-primary/30 bg-bv-primary-soft p-5 text-left">
-                    <p class="font-semibold text-bv-text" i18n="Title of the box on the access page while sign-up is by invitation only">How to get access</p>
-                    <p class="mt-2 text-sm leading-6 text-bv-text-muted" i18n="Text in the box on the access page while sign-up is by invitation only">Ask a friend or group organizer who already uses Board Vault. Once you have an account, they can invite you to their group by your username.</p>
-                </div>
+                <p class="mt-4 text-bv-text-muted" i18n="Text on the sign-up page while new accounts are paused">We are not creating new accounts at the moment. Please check back soon.</p>
                 <div class="mt-8 flex flex-col gap-3 sm:flex-row sm:justify-center">
                     <a appButton routerLink="/login" class="text-center" i18n="Button that goes to the sign-in page">Sign in</a>
-                    <a appButton variant="secondary" routerLink="/" class="text-center" i18n="Button on the access page while sign-up is by invitation only that goes to the landing page">Back to home</a>
+                    <a appButton variant="secondary" routerLink="/" class="text-center" i18n="Button on the sign-up page while new accounts are paused that goes to the landing page">Back to home</a>
                 </div>
-                <p class="mt-8 text-sm text-bv-text-muted" i18n="Note at the bottom of the access page while sign-up is by invitation only">Already have access? Sign in with your existing Board Vault account.</p>
+                <p class="mt-8 text-sm text-bv-text-muted" i18n="Note at the bottom of the sign-up page while new accounts are paused">Already have an account? Sign in with it as usual.</p>
             </div>
         } @else if (clerkIsAvailable()) {
             <div class="text-center">

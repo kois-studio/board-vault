@@ -670,15 +670,6 @@
         <target>Crea un gruppo privato e invita le persone con cui giochi. Chi non ha un account si può aggiungere per nome.</target>
       </segment>
     </unit>
-    <unit id="1338351316035322168">
-      <notes>
-        <note category="description">Note at the bottom of the access page while sign-up is by invitation only</note>
-      </notes>
-      <segment state="translated">
-        <source>Already have access? Sign in with your existing Board Vault account.</source>
-        <target>Hai già l’accesso? Accedi con il tuo account Board Vault.</target>
-      </segment>
-    </unit>
     <unit id="1339301717378745927">
       <notes>
         <note category="description">How many votes a shortlisted game has, for screen readers</note>
@@ -1093,6 +1084,15 @@
       <segment state="translated">
         <source>Everyone played</source>
         <target>Ha giocato tutto il gruppo</target>
+      </segment>
+    </unit>
+    <unit id="1622957540974937471">
+      <notes>
+        <note category="description">Browser tab title of the sign-up page</note>
+      </notes>
+      <segment state="translated">
+        <source>Create your account — Board Vault</source>
+        <target>Crea il tuo account — Board Vault</target>
       </segment>
     </unit>
     <unit id="1630988887703018223">
@@ -1812,15 +1812,6 @@
         <target>Non sei ancora in nessun gruppo.</target>
       </segment>
     </unit>
-    <unit id="2001224549919062414">
-      <notes>
-        <note category="description">Small heading of the access page while sign-up is by invitation only</note>
-      </notes>
-      <segment state="translated">
-        <source>Private beta</source>
-        <target>Beta privata</target>
-      </segment>
-    </unit>
     <unit id="2005233829913860427">
       <notes>
         <note category="description">Password advice in Clerk, the sign-in provider</note>
@@ -1891,15 +1882,6 @@
       <segment state="translated">
         <source>Your Game Proposals</source>
         <target>Le tue proposte di gioco</target>
-      </segment>
-    </unit>
-    <unit id="2031932285140054383">
-      <notes>
-        <note category="description">Search and link preview description of the Join by invitation page</note>
-      </notes>
-      <segment state="translated">
-        <source>Create your Board Vault account from a group invitation.</source>
-        <target>Crea il tuo account Board Vault da un invito a un gruppo.</target>
       </segment>
     </unit>
     <unit id="2034234942475285180">
@@ -3815,15 +3797,6 @@
         <target>Viene solo aggiunto al catalogo</target>
       </segment>
     </unit>
-    <unit id="3022911217122211328">
-      <notes>
-        <note category="description">Browser tab title of the Join by invitation page</note>
-      </notes>
-      <segment state="translated">
-        <source>Join by invitation — Board Vault</source>
-        <target>Entra con un invito — Board Vault</target>
-      </segment>
-    </unit>
     <unit id="3023394972653842807">
       <notes>
         <note category="description">How long a proposed game lasts</note>
@@ -4300,6 +4273,15 @@
         <target>Togli <ph id="0" equiv="name" disp="name"/> dalla serata</target>
       </segment>
     </unit>
+    <unit id="3271632370618157002">
+      <notes>
+        <note category="description">Line at the bottom of the sign-in page with a link to the sign-up page</note>
+      </notes>
+      <segment state="translated">
+        <source> New here? <pc id="0" equivStart="START_LINK" equivEnd="CLOSE_LINK" type="link" dispStart="&lt;a routerLink=&quot;/register&quot; class=&quot;font-medium text-bv-primary underline&quot;&gt;" dispEnd="&lt;/a&gt;">Create an account</pc></source>
+        <target> Prima volta qui? <pc id="0" equivStart="START_LINK" equivEnd="CLOSE_LINK" type="link" dispStart="&lt;a routerLink=&quot;/register&quot; class=&quot;font-medium text-bv-primary underline&quot;&gt;" dispEnd="&lt;/a&gt;">Crea un account</pc> </target>
+      </segment>
+    </unit>
     <unit id="3279828561938242897">
       <notes>
         <note category="description">Link to a game night going on now on the same day; the placeholder lists its games</note>
@@ -4614,6 +4596,15 @@
       <segment state="translated">
         <source>You added <pc id="0" equivStart="START_LINK" equivEnd="CLOSE_LINK" type="link" dispStart="&lt;a [routerLink]=&quot;[&apos;/games/&apos;, activity.gameData.id]&quot; class=&quot;font-medium hover:underline&quot; [attr.lang]=&quot;titleLanguage(activity.gameData)&quot;&gt;" dispEnd="&lt;/a&gt;"><ph id="1" equiv="INTERPOLATION" disp="{{ activity.gameData | gameTitle }}"/></pc> to your collection</source>
         <target>Hai aggiunto <pc id="0" equivStart="START_LINK" equivEnd="CLOSE_LINK" type="link" dispStart="&lt;a [routerLink]=&quot;[&apos;/games/&apos;, activity.gameData.id]&quot; class=&quot;font-medium hover:underline&quot; [attr.lang]=&quot;titleLanguage(activity.gameData)&quot;&gt;" dispEnd="&lt;/a&gt;"><ph id="1" equiv="INTERPOLATION" disp="{{ activity.gameData | gameTitle }}"/></pc> alla tua collezione</target>
+      </segment>
+    </unit>
+    <unit id="3437540694093780867">
+      <notes>
+        <note category="description">Note at the bottom of the sign-up page while new accounts are paused</note>
+      </notes>
+      <segment state="translated">
+        <source>Already have an account? Sign in with it as usual.</source>
+        <target>Hai già un account? Accedi come sempre.</target>
       </segment>
     </unit>
     <unit id="3442074134540073346">
@@ -5561,6 +5552,15 @@
       <segment state="translated">
         <source>Invite <ph id="0" equiv="name" disp="name"/></source>
         <target>Invita <ph id="0" equiv="name" disp="name"/></target>
+      </segment>
+    </unit>
+    <unit id="3905093195634991334">
+      <notes>
+        <note category="description">Heading of the sign-up page while new accounts are paused</note>
+      </notes>
+      <segment state="translated">
+        <source>New accounts are paused for now</source>
+        <target>I nuovi account sono in pausa per ora</target>
       </segment>
     </unit>
     <unit id="3905533329051691155">
@@ -6692,15 +6692,6 @@
         <target>Tieni</target>
       </segment>
     </unit>
-    <unit id="4451621753772609906">
-      <notes>
-        <note category="description">Text in the box on the access page while sign-up is by invitation only</note>
-      </notes>
-      <segment state="translated">
-        <source>Ask a friend or group organizer who already uses Board Vault. Once you have an account, they can invite you to their group by your username.</source>
-        <target>Chiedi a qualcuno che usa già Board Vault, o che organizza un gruppo. Quando avrai un account, potrà invitarti nel suo gruppo con il tuo nome utente.</target>
-      </segment>
-    </unit>
     <unit id="4455805941641791689">
       <notes>
         <note category="description">Group history line; actor and bringer are names, game is a game title</note>
@@ -6784,7 +6775,7 @@
     </unit>
     <unit id="4495457554525951237">
       <notes>
-        <note category="description">Text on the access page while sign-up is by invitation only</note>
+        <note category="description">Text on the sign-up page while new accounts are paused</note>
       </notes>
       <segment state="translated">
         <source> Board Vault helps a group of friends organize its games, choose what to play, and remember every session. </source>
@@ -9483,15 +9474,6 @@
         <target>Sullo scaffale, mai giocati</target>
       </segment>
     </unit>
-    <unit id="5978166085424028670">
-      <notes>
-        <note category="description">Heading of the access page while sign-up is by invitation only</note>
-      </notes>
-      <segment state="translated">
-        <source>Board Vault is still invite-only</source>
-        <target>Board Vault è ancora solo su invito</target>
-      </segment>
-    </unit>
     <unit id="5983207055609138296">
       <notes>
         <note category="description">What deleting your account does, in the Account settings</note>
@@ -9553,15 +9535,6 @@
       <segment state="translated">
         <source>No proposals yet</source>
         <target>Ancora nessuna proposta</target>
-      </segment>
-    </unit>
-    <unit id="6003918591551761898">
-      <notes>
-        <note category="description">Text on the access page while sign-up is by invitation only</note>
-      </notes>
-      <segment state="translated">
-        <source>We are still building the core experience, so new accounts are created by invitation only.</source>
-        <target>Stiamo ancora costruendo le basi, quindi i nuovi account si creano solo su invito.</target>
       </segment>
     </unit>
     <unit id="6005496837258976067">
@@ -9730,6 +9703,15 @@
       <segment state="translated">
         <source>strategy, family, card-game (comma separated)</source>
         <target>strategia, famiglia, carte (separati da virgole)</target>
+      </segment>
+    </unit>
+    <unit id="6098761561703728764">
+      <notes>
+        <note category="description">Search and link preview description of the sign-up page</note>
+      </notes>
+      <segment state="translated">
+        <source>Create your free Board Vault account and put your games on one tidy shelf.</source>
+        <target>Crea il tuo account Board Vault gratuito e metti i tuoi giochi su uno scaffale in ordine.</target>
       </segment>
     </unit>
     <unit id="6099346861896174463">
@@ -11080,7 +11062,7 @@
     </unit>
     <unit id="6801535761978393212">
       <notes>
-        <note category="description">Button on the access page while sign-up is by invitation only that goes to the landing page</note>
+        <note category="description">Button on the sign-up page while new accounts are paused that goes to the landing page</note>
       </notes>
       <segment state="translated">
         <source>Back to home</source>
@@ -11844,15 +11826,6 @@
         <target>Organizza la tua prima serata di gioco</target>
       </segment>
     </unit>
-    <unit id="7152215099434266008">
-      <notes>
-        <note category="description">Title of the box on the access page while sign-up is by invitation only</note>
-      </notes>
-      <segment state="translated">
-        <source>How to get access</source>
-        <target>Come ottenere l’accesso</target>
-      </segment>
-    </unit>
     <unit id="7154237322367136444">
       <notes>
         <note category="description">A list of games ending in several more</note>
@@ -12106,15 +12079,6 @@
         <target>Nei tuoi giochi ✓</target>
       </segment>
     </unit>
-    <unit id="7306616487170771288">
-      <notes>
-        <note category="description">Line at the bottom of the sign-in page with a link to the access page</note>
-      </notes>
-      <segment state="translated">
-        <source> Need access? <pc id="0" equivStart="START_LINK" equivEnd="CLOSE_LINK" type="link" dispStart="&lt;a routerLink=&quot;/register&quot; class=&quot;font-medium text-bv-primary underline&quot;&gt;" dispEnd="&lt;/a&gt;">View private-beta access</pc></source>
-        <target>Ti serve l’accesso? <pc id="0" equivStart="START_LINK" equivEnd="CLOSE_LINK" type="link" dispStart="&lt;a routerLink=&quot;/register&quot; class=&quot;font-medium text-bv-primary underline&quot;&gt;" dispEnd="&lt;/a&gt;">Scopri l’accesso alla beta privata</pc></target>
-      </segment>
-    </unit>
     <unit id="7310158085069615304">
       <notes>
         <note category="description">Link on the logo in the header, to Home or the landing page</note>
@@ -12340,6 +12304,15 @@
       <segment state="translated">
         <source>Rate <ph id="0" equiv="stars" disp="formatNumber(stars)"/> out of 5 stars</source>
         <target>Valuta <ph id="0" equiv="stars" disp="stars"/> su 5 stelle</target>
+      </segment>
+    </unit>
+    <unit id="7454690179828613320">
+      <notes>
+        <note category="description">Text on the sign-up page while new accounts are paused</note>
+      </notes>
+      <segment state="translated">
+        <source>We are not creating new accounts at the moment. Please check back soon.</source>
+        <target>Al momento non stiamo creando nuovi account. Riprova presto.</target>
       </segment>
     </unit>
     <unit id="7455010385478644357">
@@ -14881,6 +14854,15 @@
       <segment state="translated">
         <source>Your rating</source>
         <target>Il tuo voto</target>
+      </segment>
+    </unit>
+    <unit id="8686501706394968097">
+      <notes>
+        <note category="description">Small heading of the sign-up page while new accounts are paused</note>
+      </notes>
+      <segment state="translated">
+        <source>Sign-up paused</source>
+        <target>Registrazioni in pausa</target>
       </segment>
     </unit>
     <unit id="8686964090458766579">

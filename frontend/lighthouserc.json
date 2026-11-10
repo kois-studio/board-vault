@@ -4,8 +4,7 @@
             "startServerCommand": "node scripts/serve-dist.mjs",
             "startServerReadyPattern": "listening",
             "url": ["http://127.0.0.1:4400/en/", "http://127.0.0.1:4400/en/login", "http://127.0.0.1:4400/en/register"],
-            "numberOfRuns": 3,
-            "settings": { "skipAudits": ["is-crawlable"] }
+            "numberOfRuns": 3
         },
         "assert": {
             "assertions": {

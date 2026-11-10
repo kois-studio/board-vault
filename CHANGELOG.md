@@ -13,6 +13,10 @@ operational details.
 
 ### Added
 
+- Anyone can create a Board Vault account (#157). Sign-in and sign-up no
+  longer describe the app as invite-only or a private beta, and the public
+  pages (landing, privacy, sign-in, sign-up) may appear in search results.
+  If new accounts are paused, the sign-up page says so.
 - Board Vault speaks Spanish, French, German, and Italian as well as
   English. The language menu in the header lists all five, and an address
   without a language opens in the one you chose last, or else your browser's.

@@ -140,7 +140,7 @@ test.describe('public navigation', () => {
     test('ignores a Clerk invitation ticket on the registration route (#277)', async ({ page }) => {
         await page.goto('/register?__clerk_ticket=test-ticket')
 
-        await expect(page.getByRole('heading', { name: 'Board Vault is still invite-only' })).toBeVisible()
+        await expect(page.getByRole('heading', { name: 'New accounts are paused for now' })).toBeVisible()
         await expect(page.getByRole('heading', { name: /Join your Board Vault group/i })).toHaveCount(0)
     })
 })

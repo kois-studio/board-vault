@@ -267,7 +267,7 @@ An error never leaves a page without a way on (#244):
 | Route | Guard | Page |
 | --- | --- | --- |
 | `/` | none | Landing |
-| `/login`, `/register` | `GuestOnlyGuard` | Clerk sign-in and sign-up; the private-beta notice |
+| `/login`, `/register` | `GuestOnlyGuard` | Clerk sign-in and sign-up; a "new accounts are paused" notice while self-registration is off |
 | `/dashboard` | `AuthOnlyGuard` | Home (see [ux-flows](ux-flows.md#home)): visible Record/Plan, upcoming nights, consistent group cards with personal pins/ordering, personal rating follow-up and recent history; new accounts retain first-group setup |
 | `/groups/:groupId` | `AuthOnlyGuard` | Group page (`/groups` redirects to Home), top to bottom: next night and Group pulse (approximate worth, links to each person), recent nights, standings, library (filtered by number of players), games to buy, people. Deciding what to play happens on the night |
 | `/groups/:groupId/members/:accountId`, `/groups/:groupId/people/:personId` | `AuthOnlyGuard` | One person in a group, with or without an account: the games they bring, their approximate collection worth (ADR-0016), and their game nights |
@@ -353,7 +353,9 @@ are written without the prefix; the base address adds it.
 - The landing (`/`) links its address in every offered language with
   `<link rel="alternate" hreflang>`, and `x-default` to `/en/`
   (`AppComponent.updateLanguageAlternates`); its canonical address is its own
-  language's. Every page stays `noindex` until registration opens (#157).
+  language's. Since the public launch (#157) the public pages (`/`, `/privacy`, `/login`,
+  `/register`) may be indexed; every other page sets `noindex`
+  (`INDEXABLE_PATHS` in `app.component.ts`).
 - The language menu next to the inbox (signed out, next to the menu button)
   is [`layout/language-menu/`](../frontend/src/app/layout/language-menu/).
   Each language is a link to the same page under its prefix, a full page load,

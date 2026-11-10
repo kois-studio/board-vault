@@ -1,5 +1,5 @@
 User-agent: *
-Disallow: /
+Allow: /
 
-# Board Vault is invitation-only during the private beta. There is intentionally
-# no sitemap until public discovery is a supported product decision.
+# The public pages (landing, privacy, sign-in, sign-up) may be indexed. Pages
+# that need an account set their own noindex tag (app.component.ts).

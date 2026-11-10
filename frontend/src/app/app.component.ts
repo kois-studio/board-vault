@@ -10,6 +10,8 @@ import { OFFERED_LOCALES, SOURCE_LOCALE } from './core/i18n/locales'
 import { ThemeService } from './core/services/theme.service'
 import { UsageService } from './core/services/usage.service'
 
+/** Paths search engines may index (#157): the public pages a visitor can open without an account. */
+const INDEXABLE_PATHS = new Set(['/', '/privacy', '/login', '/register'])
 @Component({
     selector: 'app-root',
     imports: [RouterOutlet, ToastComponent, EditionChoiceDialogComponent, InPageLinkDirective],
@@ -50,7 +52,8 @@ export class AppComponent {
 
         this.title.setTitle(metadata.title)
         this.meta.updateTag({ name: 'description', content: metadata.description })
-        this.meta.updateTag({ name: 'robots', content: 'noindex, nofollow, noarchive' })
+        // Only the public pages are for search engines; everything else needs an account.
+        this.meta.updateTag({ name: 'robots', content: INDEXABLE_PATHS.has(path) ? 'index, follow' : 'noindex, nofollow, noarchive' })
         this.meta.updateTag({ property: 'og:title', content: metadata.title })
         this.meta.updateTag({ property: 'og:description', content: metadata.description })
         this.meta.updateTag({ property: 'og:url', content: canonicalUrl })
@@ -116,8 +119,8 @@ export class AppComponent {
             },
             {
                 match: /^\/register$/,
-                title: $localize`:Browser tab title of the Join by invitation page:Join by invitation — Board Vault`,
-                description: $localize`:Search and link preview description of the Join by invitation page:Create your Board Vault account from a group invitation.`,
+                title: $localize`:Browser tab title of the sign-up page:Create your account — Board Vault`,
+                description: $localize`:Search and link preview description of the sign-up page:Create your free Board Vault account and put your games on one tidy shelf.`,
             },
             {
                 match: /^\/privacy$/,
