@@ -17,5 +17,5 @@ export class PrivacyPageComponent {
     protected readonly contactLink = contactMailto(
         $localize`:Subject of the email a reader starts from the privacy page:About my data in Board Vault`,
     )
-    protected readonly lastUpdated = formatDateTime(new Date(2026, 10, 7), { dateStyle: 'long' })
+    protected readonly lastUpdated = formatDateTime(new Date(2026, 10, 10), { dateStyle: 'long' })
 }
