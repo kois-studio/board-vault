@@ -420,6 +420,15 @@
         <target>un jeu</target>
       </segment>
     </unit>
+    <unit id="1228260231470245908">
+      <notes>
+        <note category="description">On the privacy page, about the people in a group who have no account</note>
+      </notes>
+      <segment state="translated">
+        <source> A group can include people who have no account yet. Group members can record their name, the games they own or like, and the game nights they come to, so the group keeps its shared history. Once one of them has an account, the group can invite them by username to take over that history. </source>
+        <target> Un groupe peut inclure des personnes qui n’ont pas encore de compte. Les membres du groupe peuvent noter leur nom, les jeux qu’elles possèdent ou aiment, et les soirées jeux auxquelles elles viennent, pour que le groupe garde son historique commun. Quand l’une d’elles a un compte, le groupe peut l’inviter par son nom d’utilisateur à reprendre cet historique. </target>
+      </segment>
+    </unit>
     <unit id="1234332817837554846">
       <notes>
         <note category="description">Name of the placeholder shown when a picture does not load; the placeholder is what the picture shows, such as Game artwork</note>
@@ -4480,6 +4489,15 @@
         <target>Présélectionnés</target>
       </segment>
     </unit>
+    <unit id="328831263406084746">
+      <notes>
+        <note category="description">Company that processes data for Board Vault, on the privacy page; the EU-US Data Privacy Framework and standard contractual clauses are the legal names of two transfer mechanisms</note>
+      </notes>
+      <segment state="translated">
+        <source><pc id="0" equivStart="START_TAG_STRONG" equivEnd="CLOSE_TAG_STRONG" type="other" dispStart="&lt;strong&gt;" dispEnd="&lt;/strong&gt;">Clerk</pc> (Clerk, Inc., United States): accounts and sign-in, and the emails with sign-in codes. It may process data outside the EU, under the EU-US Data Privacy Framework and standard contractual clauses. </source>
+        <target><pc id="0" equivStart="START_TAG_STRONG" equivEnd="CLOSE_TAG_STRONG" type="other" dispStart="&lt;strong&gt;" dispEnd="&lt;/strong&gt;">Clerk</pc> (Clerk, Inc., États-Unis) : les comptes et la connexion, et les e-mails avec les codes de connexion. Il peut traiter des données hors de l’UE, dans le cadre de protection des données UE-États-Unis et de clauses contractuelles types. </target>
+      </segment>
+    </unit>
     <unit id="3290850575958930357">
       <notes>
         <note category="description">What to play when the group&apos;s people could not load, in place of the suggestions</note>
@@ -8431,15 +8449,6 @@
         <target>Parcourir le catalogue</target>
       </segment>
     </unit>
-    <unit id="521882842959732614">
-      <notes>
-        <note category="description">Company that processes data for Board Vault, on the privacy page; the EU-US Data Privacy Framework and standard contractual clauses are the legal names of two transfer mechanisms</note>
-      </notes>
-      <segment state="translated">
-        <source><pc id="0" equivStart="START_TAG_STRONG" equivEnd="CLOSE_TAG_STRONG" type="other" dispStart="&lt;strong&gt;" dispEnd="&lt;/strong&gt;">Clerk</pc> (Clerk, Inc., United States): accounts and sign-in, and the emails with sign-in codes and invitations. It may process data outside the EU, under the EU-US Data Privacy Framework and standard contractual clauses. </source>
-        <target><pc id="0" equivStart="START_TAG_STRONG" equivEnd="CLOSE_TAG_STRONG" type="other" dispStart="&lt;strong&gt;" dispEnd="&lt;/strong&gt;">Clerk</pc> (Clerk, Inc., États-Unis) : les comptes et la connexion, et les e-mails avec les codes de connexion et les invitations. Il peut traiter des données hors de l’UE, dans le cadre de protection des données UE-États-Unis et de clauses contractuelles types. </target>
-      </segment>
-    </unit>
     <unit id="5229677678874555342">
       <notes>
         <note category="description">Toast when marking a notification as read failed</note>
@@ -11950,15 +11959,6 @@
       <segment state="translated">
         <source>Last decision by <ph id="0" equiv="INTERPOLATION" disp="{{ decisionBy.displayName || decisionBy.username }}"/></source>
         <target>Dernière décision par <ph id="0" equiv="INTERPOLATION" disp="{{ decisionBy.displayName || decisionBy.username }}"/></target>
-      </segment>
-    </unit>
-    <unit id="7070103133628009655">
-      <notes>
-        <note category="description">On the privacy page, about the people in a group who have no account</note>
-      </notes>
-      <segment state="translated">
-        <source> A group can include people who have no account yet. Group members can record their name, the games they own or like, and the game nights they come to, so the group keeps its shared history. To invite one of them to take over that history, the group owner can enter their email: it is used only for that invitation and kept for 30 days at most. </source>
-        <target> Un groupe peut inclure des personnes qui n’ont pas encore de compte. Les membres du groupe peuvent noter leur nom, les jeux qu’elles possèdent ou aiment, et les soirées jeux auxquelles elles viennent, pour que le groupe garde son historique commun. Pour inviter l’une d’elles à reprendre cet historique, la personne responsable du groupe peut saisir son e-mail : il sert uniquement à cette invitation et est conservé 30 jours au maximum. </target>
       </segment>
     </unit>
     <unit id="7075982590691984096">

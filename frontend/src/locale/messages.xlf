@@ -433,6 +433,15 @@
         <source>a game</source>
       </segment>
     </unit>
+    <unit id="1228260231470245908">
+      <notes>
+        <note category="location">src/app/pages/privacy/privacy-page.component.html</note>
+        <note category="description">On the privacy page, about the people in a group who have no account</note>
+      </notes>
+      <segment>
+        <source> A group can include people who have no account yet. Group members can record their name, the games they own or like, and the game nights they come to, so the group keeps its shared history. Once one of them has an account, the group can invite them by username to take over that history. </source>
+      </segment>
+    </unit>
     <unit id="1234332817837554846">
       <notes>
         <note category="location">src/app/components/ui/image-background/image-background.component.ts</note>
@@ -4559,6 +4568,15 @@
         <source>Shortlisted</source>
       </segment>
     </unit>
+    <unit id="328831263406084746">
+      <notes>
+        <note category="location">src/app/pages/privacy/privacy-page.component.html</note>
+        <note category="description">Company that processes data for Board Vault, on the privacy page; the EU-US Data Privacy Framework and standard contractual clauses are the legal names of two transfer mechanisms</note>
+      </notes>
+      <segment>
+        <source><pc id="0" equivStart="START_TAG_STRONG" equivEnd="CLOSE_TAG_STRONG" type="other" dispStart="&lt;strong&gt;" dispEnd="&lt;/strong&gt;">Clerk</pc> (Clerk, Inc., United States): accounts and sign-in, and the emails with sign-in codes. It may process data outside the EU, under the EU-US Data Privacy Framework and standard contractual clauses. </source>
+      </segment>
+    </unit>
     <unit id="3290850575958930357">
       <notes>
         <note category="location">src/app/pages/play-page/recommendations-page/recommendations-page.component.html</note>
@@ -8563,15 +8581,6 @@
         <source>Browse catalog</source>
       </segment>
     </unit>
-    <unit id="521882842959732614">
-      <notes>
-        <note category="location">src/app/pages/privacy/privacy-page.component.html</note>
-        <note category="description">Company that processes data for Board Vault, on the privacy page; the EU-US Data Privacy Framework and standard contractual clauses are the legal names of two transfer mechanisms</note>
-      </notes>
-      <segment>
-        <source><pc id="0" equivStart="START_TAG_STRONG" equivEnd="CLOSE_TAG_STRONG" type="other" dispStart="&lt;strong&gt;" dispEnd="&lt;/strong&gt;">Clerk</pc> (Clerk, Inc., United States): accounts and sign-in, and the emails with sign-in codes and invitations. It may process data outside the EU, under the EU-US Data Privacy Framework and standard contractual clauses. </source>
-      </segment>
-    </unit>
     <unit id="5229677678874555342">
       <notes>
         <note category="location">src/app/core/services/data.service.ts</note>
@@ -12137,15 +12146,6 @@
       </notes>
       <segment>
         <source>Last decision by <ph id="0" equiv="INTERPOLATION" disp="{{ decisionBy.displayName || decisionBy.username }}"/></source>
-      </segment>
-    </unit>
-    <unit id="7070103133628009655">
-      <notes>
-        <note category="location">src/app/pages/privacy/privacy-page.component.html</note>
-        <note category="description">On the privacy page, about the people in a group who have no account</note>
-      </notes>
-      <segment>
-        <source> A group can include people who have no account yet. Group members can record their name, the games they own or like, and the game nights they come to, so the group keeps its shared history. To invite one of them to take over that history, the group owner can enter their email: it is used only for that invitation and kept for 30 days at most. </source>
       </segment>
     </unit>
     <unit id="7075982590691984096">
