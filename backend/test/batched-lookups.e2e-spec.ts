@@ -105,6 +105,11 @@ describe('batched lookups (e2e)', () => {
 
     /** The queries one request issued, and its body. */
     async function queriesFor(path: string, clerkUserId: string) {
+        // Compare endpoint queries with account resolution warm on both requests (#250).
+        await request(app.getHttpServer())
+            .get('/auth/clerk/status')
+            .set({ Authorization: `Bearer ${sessionFor(clerkUserId)}` })
+            .expect(200)
         execute.mockClear()
         const response = await request(app.getHttpServer())
             .get(path)
