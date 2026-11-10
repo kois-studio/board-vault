@@ -56,7 +56,8 @@ describe('single-user group claim workflow (e2e)', () => {
             INSERT INTO Account (id, email, username, avatar, displayName, clerkUserId)
             VALUES
                 (1, 'organizer@example.test', 'organizer', ${sqlLiteral(avatar)}, 'Organizer', 'user_organizer'),
-                (2, 'member@example.test', 'member', ${sqlLiteral(inviteeAvatar)}, 'Member', 'user_member');
+                (2, 'member@example.test', 'member', ${sqlLiteral(inviteeAvatar)}, 'Member', 'user_member'),
+                (3, 'other@example.test', 'other', ${sqlLiteral(inviteeAvatar)}, 'Other', 'user_other');
             INSERT INTO Game (id, imageUrl, gameAvgDuration, minPlayers, maxPlayers)
             VALUES
                 (10, 'https://example.test/game-10.png', 60, 2, 4),
@@ -100,6 +101,7 @@ describe('single-user group claim workflow (e2e)', () => {
     it('creates phantom people, targets one invitation, and preserves the reviewed claim in the database', async () => {
         const organizerToken = sessionFor('user_organizer')
         const memberToken = sessionFor('user_member')
+        const otherToken = sessionFor('user_other')
 
         const createdGroup = await request(app.getHttpServer())
             .post('/dashboard/users/1/groups/create/group_example')
@@ -157,7 +159,32 @@ describe('single-user group claim workflow (e2e)', () => {
         expect(pendingInvitation.rows).toEqual([expect.objectContaining({ id: expect.any(Number), groupPersonId: anaId })])
         const invitationId = Number(pendingInvitation.rows[0]?.id)
 
+        // The invitation carries the suggestion; no email address is copied anywhere (#277).
+        const untouched = await database.execute(
+            'SELECT COUNT(*) AS n FROM GroupPerson WHERE claimEmail IS NOT NULL OR claimExpiresAt IS NOT NULL',
+        )
+
+        expect(untouched.rows[0]?.n).toBe(0)
+
+        // Someone else in the group, invited without a suggestion, sees nothing to claim and cannot claim it.
+        await request(app.getHttpServer())
+            .post('/invitations/byUsername')
+            .set(withAuth(organizerToken))
+            .send({ groupId, username: 'other' })
+            .expect(201)
+        await request(app.getHttpServer()).post('/memberships').set(withAuth(otherToken)).send({ groupId }).expect(201)
+        const otherWorkspace = await request(app.getHttpServer()).get(`/groups/${groupId}/people`).set(withAuth(otherToken)).expect(200)
+
+        expect(otherWorkspace.body.people.filter((person: { claimable: boolean }) => person.claimable)).toEqual([])
+        await request(app.getHttpServer()).post(`/groups/${groupId}/people/${anaId}/claim`).set(withAuth(otherToken)).send({}).expect(403)
+
         await request(app.getHttpServer()).post('/memberships').set(withAuth(memberToken)).send({ groupId }).expect(201)
+
+        // Accepted, the invitation stays as the claim ticket, but is no longer a pending invitation.
+        const ticket = await database.execute({ sql: 'SELECT groupPersonId FROM Invitation WHERE id = ?', args: [invitationId] })
+
+        expect(ticket.rows).toEqual([expect.objectContaining({ groupPersonId: anaId })])
+        await request(app.getHttpServer()).get(`/groups/${groupId}/invitations`).set(withAuth(organizerToken)).expect(200).expect([])
 
         const memberWorkspace = await request(app.getHttpServer()).get(`/groups/${groupId}/people`).set(withAuth(memberToken)).expect(200)
         const claimablePerson = memberWorkspace.body.people.find((person: { person: { id: number } }) => person.person.id === anaId)
@@ -168,6 +195,13 @@ describe('single-user group claim workflow (e2e)', () => {
                 person: expect.objectContaining({ id: anaId, kind: 'placeholder', accountId: null, displayName: 'person_one' }),
             }),
         )
+
+        // The ticket names one placeholder: the other one is not theirs to claim.
+        await request(app.getHttpServer())
+            .post(`/groups/${groupId}/people/${exampleMemberId}/claim`)
+            .set(withAuth(memberToken))
+            .send({})
+            .expect(403)
 
         await request(app.getHttpServer())
             .post(`/groups/${groupId}/people/${anaId}/claim`)
@@ -217,6 +251,7 @@ describe('single-user group claim workflow (e2e)', () => {
             { accountId: 1, kind: 'linked' },
             { accountId: 2, kind: 'linked' },
             { accountId: null, kind: 'placeholder' },
+            { accountId: 3, kind: 'linked' },
         ])
 
         const invitationCount = await database.execute({
@@ -239,5 +274,66 @@ describe('single-user group claim workflow (e2e)', () => {
         })
 
         expect(remainingPlaceholder.rows).toEqual([{ id: exampleMemberId }])
+    })
+
+    it('lets nobody but the invited account claim, and the ticket goes when they leave', async () => {
+        const organizerToken = sessionFor('user_organizer')
+        const otherToken = sessionFor('user_other')
+
+        const createdGroup = await request(app.getHttpServer())
+            .post('/dashboard/users/1/groups/create/group_second')
+            .set(withAuth(organizerToken))
+            .send({})
+            .expect(201)
+        const groupId = Number(createdGroup.body.groupId)
+        const person = await request(app.getHttpServer())
+            .post(`/groups/${groupId}/people`)
+            .set(withAuth(organizerToken))
+            .send({ displayName: 'person_three' })
+            .expect(201)
+        const personId = Number(person.body.id)
+
+        await request(app.getHttpServer())
+            .post('/invitations/byUsername')
+            .set(withAuth(organizerToken))
+            .send({ groupId, username: 'other', groupPersonId: personId })
+            .expect(201)
+
+        // Not in the group yet: an invitation alone does not let them claim.
+        await request(app.getHttpServer())
+            .post(`/groups/${groupId}/people/${personId}/claim`)
+            .set(withAuth(otherToken))
+            .send({})
+            .expect(403)
+
+        await request(app.getHttpServer()).post('/memberships').set(withAuth(otherToken)).send({ groupId }).expect(201)
+        const workspace = await request(app.getHttpServer()).get(`/groups/${groupId}/people`).set(withAuth(otherToken)).expect(200)
+
+        expect(workspace.body.people.find((entry: { person: { id: number } }) => entry.person.id === personId).claimable).toBe(true)
+
+        // An expired ticket no longer counts.
+        await database.execute({
+            sql: "UPDATE Invitation SET expiresAt = datetime('now', '-1 minute') WHERE groupId = ? AND toAccountId = 3",
+            args: [groupId],
+        })
+        await request(app.getHttpServer())
+            .post(`/groups/${groupId}/people/${personId}/claim`)
+            .set(withAuth(otherToken))
+            .send({})
+            .expect(403)
+        await database.execute({
+            sql: "UPDATE Invitation SET expiresAt = datetime('now', '+1 day') WHERE groupId = ? AND toAccountId = 3",
+            args: [groupId],
+        })
+
+        // Leaving uses the ticket up, so coming back takes a new invitation.
+        await request(app.getHttpServer()).delete(`/dashboard/users/3/groups/${groupId}/members`).set(withAuth(otherToken)).expect(200)
+        const tickets = await database.execute({
+            sql: 'SELECT COUNT(*) AS n FROM Invitation WHERE groupId = ? AND toAccountId = 3',
+            args: [groupId],
+        })
+
+        expect(tickets.rows[0]?.n).toBe(0)
+        await request(app.getHttpServer()).post('/memberships').set(withAuth(otherToken)).send({ groupId }).expect(403)
     })
 })

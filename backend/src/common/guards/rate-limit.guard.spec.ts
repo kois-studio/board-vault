@@ -6,9 +6,7 @@ import { CacheService } from '../../modules/common/cache/cache.service.js'
 import { RateLimitGuard } from './rate-limit.guard.js'
 
 describe('RateLimitGuard', () => {
-    const createContext = (
-        request: object = { ip: '127.0.0.1', route: { path: '/groups/:groupId/clerk-invitations' } },
-    ): ExecutionContext =>
+    const createContext = (request: object = { ip: '127.0.0.1', route: { path: '/invitations/byUsername' } }): ExecutionContext =>
         ({
             getHandler: vi.fn(),
             getClass: vi.fn(),
@@ -37,7 +35,7 @@ describe('RateLimitGuard', () => {
         const cacheService = { increment: vi.fn().mockResolvedValue(1) }
         const reflector = { getAllAndOverride: vi.fn().mockReturnValue({ limit: 2, windowSeconds: 60 }) }
         const guard = new RateLimitGuard(cacheService as unknown as CacheService, reflector as unknown as Reflector)
-        const route = { path: '/groups/:groupId/clerk-invitations' }
+        const route = { path: '/invitations/byUsername' }
 
         await guard.canActivate(createContext({ ip: '10.0.0.1', user: { userId: 7 }, route }))
         await guard.canActivate(createContext({ ip: '10.0.0.2', user: { userId: 7 }, route }))

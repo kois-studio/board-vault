@@ -69,15 +69,14 @@ checks them at startup.
 | `CLERK_SECRET_KEY` | Yes | Verifies Clerk session tokens and calls the Clerk API. `sk_test_…` everywhere except production. |
 | `CLERK_PUBLISHABLE_KEY` | Locally | Not read by the API. The frontend startup script reads it from `backend/.env`. |
 | `CLERK_AUTHORIZED_PARTIES` | Production | Comma-separated origins allowed to present session tokens. |
-| `BOARD_VAULT_CLERK_INVITATION_REDIRECT_URL` | Production | Where Clerk invitation links land (`…/register`). |
 | `CLERK_WEBHOOK_SIGNING_SECRET` | No | Signing secret (`whsec_…`) of the Clerk webhook endpoint. Turns on `POST /webhooks/clerk` ([ADR-0013](adr/0013-clerk-user-lifecycle.md)); unset, the endpoint answers `404`. |
-| `BOARD_VAULT_SELF_REGISTRATION_ENABLED` | No | `true` lets a Clerk user without an invitation create an account. Keep `false` in production during the private beta; the API logs a warning at startup if it is `true`. |
+| `BOARD_VAULT_SELF_REGISTRATION_ENABLED` | No | `true` lets a new Clerk user create an account (otherwise only existing accounts sign in). Keep `false` in production during the private beta; the API logs a warning at startup if it is `true`. |
 | `BOARD_VAULT_GROUP_PEOPLE_ENABLED` | No | `false` turns off the group-people routes without touching data. |
 | `UPSTASH_REDIS_REST_DISABLE` | No | `true` turns off caching and rate-limit storage. Rate limits then fail open. |
 | `UPSTASH_REDIS_REST_URL` | When Redis is on | Upstash REST endpoint. |
 | `UPSTASH_REDIS_REST_TOKEN` | When Redis is on | Upstash REST token. |
 | `USAGE_PSEUDONYM_SECRET` | Production | Long random value (`openssl rand -hex 32`) that turns account ids into usage pseudonyms ([ADR-0021](adr/0021-own-usage-analytics.md)). Unset, nothing is recorded. Changing it starts every pseudonym afresh. |
-| `CRON_SECRET` | Production | Long random value. Vercel Cron sends it as `Authorization: Bearer …` to `GET /internal/daily-maintenance` (`backend/vercel.json`, daily at 03:30 UTC), which rolls up and expires usage events and clears expired group person claim emails. Unset, the route answers `404`. |
+| `CRON_SECRET` | Production | Long random value. Vercel Cron sends it as `Authorization: Bearer …` to `GET /internal/daily-maintenance` (`backend/vercel.json`, daily at 03:30 UTC), which rolls up and expires usage events and deletes expired Idempotency-Key records. Unset, the route answers `404`. |
 | `CORS_ORIGINS` | No | Extra comma-separated browser origins. Local defaults already allow ports 4200 and 4300. |
 
 Vercel also sets `VERCEL` and `VERCEL_ENV`. The API uses them to trust the
@@ -129,8 +128,8 @@ Only public values may go there. The API base URL is fixed per build in
   once a day (03:30 UTC) with `CRON_SECRET`. It writes one
   `usage.daily_maintenance` log line with how many daily counts it made and
   how many raw usage events it deleted, and one
-  `group_person.expired_claims_cleared` line with how many expired claim
-  emails it cleared. A missed day is caught up on the next
+  `idempotency.expired_keys_deleted` line with how many expired
+  Idempotency-Key records it deleted. A missed day is caught up on the next
   run. To run it by hand:
   `curl -H "Authorization: Bearer $CRON_SECRET" https://backend.board-vault.com/internal/daily-maintenance`.
 - **Usage:** Administration → Usage in the app (ADR-0021).

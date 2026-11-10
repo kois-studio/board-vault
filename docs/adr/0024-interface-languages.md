@@ -238,3 +238,9 @@ then a final check of the findings and every change. It fixed wrong meanings
 and the shortlist term. Clerk's formal address stays, as decided above. A
 native speaker who later reports a problem gets an issue like any other bug;
 the translations are not re-reviewed before launch.
+
+## Update 2026-11-10: no invitation emails (#277)
+
+Groups invite by username only, so Clerk no longer sends invitation emails
+and there is no invitation redirect to `/register`. Clerk's sign-in codes
+still stay in English, as decided above.

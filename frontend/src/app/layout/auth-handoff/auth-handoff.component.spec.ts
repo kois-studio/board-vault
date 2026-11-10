@@ -2,7 +2,6 @@ import { signal } from '@angular/core'
 import { ComponentFixture, TestBed } from '@angular/core/testing'
 import { provideRouter } from '@angular/router'
 import type { Mock } from 'vitest'
-import { ClerkService } from '../../core/services/clerk.service'
 import { LoginService } from '../../core/services/login.service'
 import { AuthHandoffComponent } from './auth-handoff.component'
 
@@ -12,7 +11,6 @@ describe('AuthHandoffComponent', () => {
     let error: ReturnType<typeof signal<string | null>>
     let retry: Mock
     let signOut: Mock
-    let invitationFlow: ReturnType<typeof signal<boolean>>
     let reconnecting: ReturnType<typeof signal<boolean>>
 
     beforeEach(() => {
@@ -20,7 +18,6 @@ describe('AuthHandoffComponent', () => {
         error = signal<string | null>(null)
         retry = vi.fn().mockName('retry')
         signOut = vi.fn().mockName('signOut').mockResolvedValue(undefined)
-        invitationFlow = signal(false)
         reconnecting = signal(false)
 
         TestBed.configureTestingModule({
@@ -37,7 +34,6 @@ describe('AuthHandoffComponent', () => {
                         isReconnecting: reconnecting,
                     },
                 },
-                { provide: ClerkService, useValue: { isInvitationFlow: invitationFlow } },
             ],
         })
 
@@ -86,17 +82,6 @@ describe('AuthHandoffComponent', () => {
 
         expect(retry).toHaveBeenCalled()
         expect(signOut).toHaveBeenCalled()
-    })
-
-    it('uses group language when the handoff follows an invitation', () => {
-        invitationFlow.set(true)
-        error.set('The group invitation is no longer valid.')
-        state.set('error')
-        fixture.detectChanges()
-
-        expect(fixture.nativeElement.textContent).toContain('We could not finish joining this group')
-        expect(fixture.nativeElement.textContent).toContain('Ask the group owner for a fresh invitation')
-        expect(fixture.nativeElement.textContent).not.toContain('setting up your sign-in')
     })
 
     it('says Board Vault cannot be reached, without blaming the sign-in, and keeps a way to try now', () => {

@@ -56,7 +56,7 @@
     </unit>
     <unit id="1023159118123911874">
       <notes>
-        <note category="description">Label of the usage statistics switch on the invitation sign-up page; the same switch is in Settings, Privacy</note>
+        <note category="description">Label of the usage statistics switch in the card that asks about usage statistics; the same switch is in Settings, Privacy</note>
       </notes>
       <segment state="translated">
         <source>Help improve Board Vault</source>
@@ -697,15 +697,6 @@
         <target>Personnes dans le groupe</target>
       </segment>
     </unit>
-    <unit id="135077277733987408">
-      <notes>
-        <note category="description">Button on an email invitation on the group&apos;s settings page</note>
-      </notes>
-      <segment state="translated">
-        <source>Revoke</source>
-        <target>Révoquer</target>
-      </segment>
-    </unit>
     <unit id="1351039989158141946">
       <notes>
         <note category="description">While a game page loads</note>
@@ -749,15 +740,6 @@
       <segment state="translated">
         <source>Plays with <ph id="0" equiv="INTERPOLATION" disp="{{ count }}"/></source>
         <target>Jouable à <ph id="0" equiv="INTERPOLATION" disp="{{ count }}"/></target>
-      </segment>
-    </unit>
-    <unit id="1388712764439031120">
-      <notes>
-        <note category="description">Button on the group&apos;s settings page after an email invitation is sent, and the button the copy messages refer to</note>
-      </notes>
-      <segment state="translated">
-        <source>Open link</source>
-        <target>Ouvrir le lien</target>
       </segment>
     </unit>
     <unit id="1391234354545336110">
@@ -842,15 +824,6 @@
         <target>Terminer quand même</target>
       </segment>
     </unit>
-    <unit id="1469632649736561576">
-      <notes>
-        <note category="description">Toast after revoking an email invitation</note>
-      </notes>
-      <segment state="translated">
-        <source>Email invitation revoked</source>
-        <target>Invitation par e-mail révoquée</target>
-      </segment>
-    </unit>
     <unit id="1477020961894413786">
       <notes>
         <note category="description">Next to the search in the games step: how many games are chosen</note>
@@ -932,15 +905,6 @@
         <target>Nouveau pour ce groupe</target>
       </segment>
     </unit>
-    <unit id="1525462353445570720">
-      <notes>
-        <note category="description">Help under an error when finishing sign-in failed</note>
-      </notes>
-      <segment state="translated">
-        <source>If you were invited by a group owner, use the invitation link again after signing out.</source>
-        <target>Si tu as reçu une invitation à un groupe, déconnecte-toi puis utilise de nouveau le lien d’invitation.</target>
-      </segment>
-    </unit>
     <unit id="1525646804357117160">
       <notes>
         <note category="description">Name of a green color theme in the Appearance settings, like the felt of a card table</note>
@@ -1002,15 +966,6 @@
       <segment state="translated">
         <source> Members of your groups see your display name, username and avatar, the games on your shelf, the game nights you take part in, and what you change in the group&apos;s history. </source>
         <target> Les membres de tes groupes voient ton nom affiché, ton nom d’utilisateur et ton avatar, les jeux de ton étagère, les soirées jeux auxquelles tu participes et ce que tu modifies dans l’historique du groupe. </target>
-      </segment>
-    </unit>
-    <unit id="154867606131482974">
-      <notes>
-        <note category="description">Error on the invitation sign-up page when the password is too weak</note>
-      </notes>
-      <segment state="translated">
-        <source>That password does not meet the secure sign-up requirements. Use the guidance above and try again.</source>
-        <target>Ce mot de passe ne respecte pas les exigences de l’inscription sécurisée. Suis les indications ci-dessus et réessaie.</target>
       </segment>
     </unit>
     <unit id="1560603435807422155">
@@ -1102,15 +1057,6 @@
       <segment state="translated">
         <source>Builds on the group’s shared shelf</source>
         <target>S’appuie sur l’étagère commune du groupe</target>
-      </segment>
-    </unit>
-    <unit id="1610683093877445085">
-      <notes>
-        <note category="description">Text on the invitation sign-up page for someone who already has an account</note>
-      </notes>
-      <segment state="translated">
-        <source>Use your existing Board Vault account to join the group that invited you.</source>
-        <target>Utilise ton compte Board Vault pour rejoindre le groupe qui t’a envoyé l’invitation.</target>
       </segment>
     </unit>
     <unit id="1611204955714241765">
@@ -1281,15 +1227,6 @@
         <target>Le pouls du groupe</target>
       </segment>
     </unit>
-    <unit id="1693448719603745632">
-      <notes>
-        <note category="description">Placeholder of the invite field on the group&apos;s settings page; keep the example username and address in the same form</note>
-      </notes>
-      <segment state="translated">
-        <source>friend_username or friend@example.com</source>
-        <target>pseudo_ami ou ami@example.com</target>
-      </segment>
-    </unit>
     <unit id="1696570268117903233">
       <notes>
         <note category="description">Description of the System color scheme in the Appearance settings</note>
@@ -1423,15 +1360,6 @@
       <segment state="translated">
         <source>Could not add this person to the group.</source>
         <target>Impossible d’ajouter cette personne au groupe.</target>
-      </segment>
-    </unit>
-    <unit id="1778794274270029461">
-      <notes>
-        <note category="description">Shown on the group&apos;s settings page when the browser cannot copy; Open link is the button next to it</note>
-      </notes>
-      <segment state="translated">
-        <source>Clipboard access is unavailable; use Open link.</source>
-        <target>Le presse-papiers n’est pas accessible ; utilise « Ouvrir le lien ».</target>
       </segment>
     </unit>
     <unit id="1790637555628658675">
@@ -2107,15 +2035,6 @@
         <target>Toute durée</target>
       </segment>
     </unit>
-    <unit id="2112768397949905814">
-      <notes>
-        <note category="description">Error under the invite field on the group&apos;s settings page</note>
-      </notes>
-      <segment state="translated">
-        <source>Enter a valid email address.</source>
-        <target>Saisis une adresse e-mail valide.</target>
-      </segment>
-    </unit>
     <unit id="2120057704151430913">
       <segment state="translated">
         <source><ph id="0" equiv="person" disp="actor"/> planned a game night in <ph id="1" equiv="group" disp="group"/> for <ph id="2" equiv="date" disp="when"/>. Can you make it?</source>
@@ -2537,15 +2456,6 @@
         <target>Vendredi dernier</target>
       </segment>
     </unit>
-    <unit id="2354722487650755409">
-      <notes>
-        <note category="description">Hint under the password field on the invitation sign-up page</note>
-      </notes>
-      <segment state="translated">
-        <source>Use at least 15 characters.</source>
-        <target>Utilise au moins 15 caractères.</target>
-      </segment>
-    </unit>
     <unit id="2358983192776008663">
       <notes>
         <note category="description">Small line under the landing page buttons</note>
@@ -2843,15 +2753,6 @@
         <target>Par exemple : chez Ana, apportez de quoi grignoter.</target>
       </segment>
     </unit>
-    <unit id="2485595059919735658">
-      <notes>
-        <note category="description">Button on the invitation sign-up page for someone who already has an account</note>
-      </notes>
-      <segment state="translated">
-        <source>Continue to the group</source>
-        <target>Continuer vers le groupe</target>
-      </segment>
-    </unit>
     <unit id="2486379051921165735">
       <notes>
         <note category="description">After the games a person of the group owns, how many more there are</note>
@@ -2932,15 +2833,6 @@
       <segment state="translated">
         <source>Refresh invitations</source>
         <target>Actualiser les invitations</target>
-      </segment>
-    </unit>
-    <unit id="2521053447392428699">
-      <notes>
-        <note category="description">Error when finishing sign-in failed</note>
-      </notes>
-      <segment state="translated">
-        <source>We could not finish connecting this sign-in to Board Vault. Try again, or sign out and use your invitation link.</source>
-        <target>Nous n’avons pas pu relier cette connexion à Board Vault. Réessaie, ou déconnecte-toi et utilise ton lien d’invitation.</target>
       </segment>
     </unit>
     <unit id="2529039960931560775">
@@ -3040,15 +2932,6 @@
       <segment state="translated">
         <source>Filter the example games by players</source>
         <target>Filtrer les jeux d’exemple par nombre de personnes</target>
-      </segment>
-    </unit>
-    <unit id="2561326148159407958">
-      <notes>
-        <note category="description">Field error on the invitation sign-up page</note>
-      </notes>
-      <segment state="translated">
-        <source>Passwords must match.</source>
-        <target>Les mots de passe doivent être identiques.</target>
       </segment>
     </unit>
     <unit id="2564399110758822997">
@@ -3222,15 +3105,6 @@
         <target>Vote pour ce à quoi tu jouerais ; les jeux les plus demandés passent en premier. Ajoutes-en d’autres depuis les suggestions ci-dessous.</target>
       </segment>
     </unit>
-    <unit id="2643703668230155641">
-      <notes>
-        <note category="description">Shown on the group&apos;s settings page after an email invitation is sent</note>
-      </notes>
-      <segment state="translated">
-        <source>Share the secure link directly if the email does not arrive.</source>
-        <target>Partage le lien sécurisé directement si l’e-mail n’arrive pas.</target>
-      </segment>
-    </unit>
     <unit id="2648891279230137253">
       <notes>
         <note category="description">Link on the group&apos;s settings page, back to the group page</note>
@@ -3238,15 +3112,6 @@
       <segment state="translated">
         <source>Back to group workspace</source>
         <target>Retour au groupe</target>
-      </segment>
-    </unit>
-    <unit id="2651093893318942646">
-      <notes>
-        <note category="description">Error on the invitation sign-up page for any other failure</note>
-      </notes>
-      <segment state="translated">
-        <source>We could not complete this invitation right now. Check the fields and security check, then try again.</source>
-        <target>Nous n’avons pas pu finaliser cette invitation pour le moment. Vérifie les champs et la vérification de sécurité, puis réessaie.</target>
       </segment>
     </unit>
     <unit id="2666064384994730683">
@@ -4177,15 +4042,6 @@
         <target>Changer pour l’instant</target>
       </segment>
     </unit>
-    <unit id="3146348002114324720">
-      <notes>
-        <note category="description">Button on the invitation sign-up page while it joins the group</note>
-      </notes>
-      <segment state="translated">
-        <source>Joining…</source>
-        <target>Ajout en cours…</target>
-      </segment>
-    </unit>
     <unit id="3155881512369038593">
       <notes>
         <note category="description">How many more people a group card on Home has than the faces it shows; the hidden words are read only by screen readers</note>
@@ -4220,15 +4076,6 @@
       <segment state="translated">
         <source>Keep the group name to 40 characters or fewer.</source>
         <target>Le nom du groupe ne doit pas dépasser 40 caractères.</target>
-      </segment>
-    </unit>
-    <unit id="3183680813439010723">
-      <notes>
-        <note category="description">Error on the invitation sign-up page when the invitation is no longer valid</note>
-      </notes>
-      <segment state="translated">
-        <source>We could not complete this invitation. The link may have expired, been used already, or the group may no longer be available. Ask the group owner for a fresh invitation and try again.</source>
-        <target>Nous n’avons pas pu finaliser cette invitation. Le lien a peut-être expiré ou déjà servi, ou le groupe n’est plus disponible. Demande une nouvelle invitation à la personne qui a créé le groupe et réessaie.</target>
       </segment>
     </unit>
     <unit id="3186477898571897739">
@@ -4453,15 +4300,6 @@
         <target>Retirer <ph id="0" equiv="name" disp="name"/> de la soirée</target>
       </segment>
     </unit>
-    <unit id="3269668325192817246">
-      <notes>
-        <note category="description">Text while someone joins a group from an invitation link</note>
-      </notes>
-      <segment state="translated">
-        <source>Your invitation is confirmed. We are adding you to the shared games and session history.</source>
-        <target>Ton invitation est confirmée. Nous t’ajoutons aux jeux partagés et à l’historique des soirées jeux.</target>
-      </segment>
-    </unit>
     <unit id="3279828561938242897">
       <notes>
         <note category="description">Link to a game night going on now on the same day; the placeholder lists its games</note>
@@ -4625,15 +4463,6 @@
         <target>Les mieux notés</target>
       </segment>
     </unit>
-    <unit id="335857619216190644">
-      <notes>
-        <note category="description">Button on the invitation sign-up page that creates the account and joins the group</note>
-      </notes>
-      <segment state="translated">
-        <source>Join the group</source>
-        <target>Rejoindre le groupe</target>
-      </segment>
-    </unit>
     <unit id="3359654905446055631">
       <notes>
         <note category="description">Error on the group page</note>
@@ -4641,15 +4470,6 @@
       <segment state="translated">
         <source>Group people could not be loaded.</source>
         <target>Impossible de charger les personnes du groupe.</target>
-      </segment>
-    </unit>
-    <unit id="3368354806275320976">
-      <notes>
-        <note category="description">Under the invite field on the group&apos;s settings page, when it holds an email address</note>
-      </notes>
-      <segment state="translated">
-        <source>We email them a secure link; they join after creating their account.</source>
-        <target>Nous lui envoyons un lien sécurisé par e-mail ; la personne rejoint le groupe après avoir créé son compte.</target>
       </segment>
     </unit>
     <unit id="3369109552231003200">
@@ -4949,15 +4769,6 @@
         <target>Neutre</target>
       </segment>
     </unit>
-    <unit id="3511650652722079837">
-      <notes>
-        <note category="description">Error on the group&apos;s settings page</note>
-      </notes>
-      <segment state="translated">
-        <source>Pending email invitations could not be loaded.</source>
-        <target>Impossible de charger les invitations par e-mail en attente.</target>
-      </segment>
-    </unit>
     <unit id="351522100312897877">
       <notes>
         <note category="description">Placeholder of the search field in the games step; the placeholder is how many games there are</note>
@@ -4984,6 +4795,15 @@
       <segment state="translated">
         <source>Show less</source>
         <target>Afficher moins</target>
+      </segment>
+    </unit>
+    <unit id="3525453333244585181">
+      <notes>
+        <note category="description">Error when finishing sign-in failed</note>
+      </notes>
+      <segment state="translated">
+        <source>We could not finish connecting this sign-in to Board Vault. Try again, or sign out and sign in again.</source>
+        <target>Nous n’avons pas pu relier cette connexion à Board Vault. Réessaie, ou déconnecte-toi puis reconnecte-toi.</target>
       </segment>
     </unit>
     <unit id="3540162720027434413">
@@ -5040,15 +4860,6 @@
         <target>Filtre selon le nombre de personnes qui jouent, et trie par titre ou par durée.</target>
       </segment>
     </unit>
-    <unit id="3568097994808154139">
-      <notes>
-        <note category="description">Shown on the invitation sign-up page while the sign-up service loads</note>
-      </notes>
-      <segment state="translated">
-        <source>The secure sign-up service is still loading. Refresh this page to continue.</source>
-        <target>Le service d’inscription sécurisée est encore en cours de chargement. Recharge cette page pour continuer.</target>
-      </segment>
-    </unit>
     <unit id="3569367893851462741">
       <notes>
         <note category="description">Link to a planned game night on the same day; the placeholder lists its games</note>
@@ -5101,6 +4912,15 @@
       <segment state="translated">
         <source>this person</source>
         <target>cette personne</target>
+      </segment>
+    </unit>
+    <unit id="3596250160541111347">
+      <notes>
+        <note category="description">Under the invite field on the group&apos;s settings page</note>
+      </notes>
+      <segment state="translated">
+        <source>They see the invitation in their inbox. Someone without an account creates one first, then tells you their username.</source>
+        <target>L’invitation apparaît dans sa boîte de réception. Une personne sans compte en crée d’abord un, puis te donne son nom d’utilisateur.</target>
       </segment>
     </unit>
     <unit id="3604302725458668058">
@@ -5283,15 +5103,6 @@
         <target>Connecte-toi avec ton e-mail et ton mot de passe, ou avec un code à usage unique reçu par e-mail.</target>
       </segment>
     </unit>
-    <unit id="3695284650507550132">
-      <notes>
-        <note category="description">Shown on the group&apos;s settings page when copying fails; Open link is the button next to it</note>
-      </notes>
-      <segment state="translated">
-        <source>The link could not be copied; use Open link.</source>
-        <target>Impossible de copier le lien ; utilise « Ouvrir le lien ».</target>
-      </segment>
-    </unit>
     <unit id="3695816730555625996">
       <notes>
         <note category="description">Label of the language selector under the game title in the propose-a-game form</note>
@@ -5383,24 +5194,6 @@
         <target>Vendredi</target>
       </segment>
     </unit>
-    <unit id="3736594653461707643">
-      <notes>
-        <note category="description">Small heading while someone joins a group from an invitation link</note>
-      </notes>
-      <segment state="translated">
-        <source>Joining your group</source>
-        <target>Ajout à ton groupe</target>
-      </segment>
-    </unit>
-    <unit id="3743886829964190111">
-      <notes>
-        <note category="description">Heading when joining a group from an invitation link failed</note>
-      </notes>
-      <segment state="translated">
-        <source>We could not finish joining this group</source>
-        <target>Nous n’avons pas pu finir de t’ajouter à ce groupe</target>
-      </segment>
-    </unit>
     <unit id="374534302404164936">
       <notes>
         <note category="description">Group history line, for a preference this version of the app does not know; actor and person are names, game is a game title</note>
@@ -5417,15 +5210,6 @@
       <segment state="translated">
         <source>Invite at least one person.</source>
         <target>Invite au moins une personne.</target>
-      </segment>
-    </unit>
-    <unit id="3756911098627936144">
-      <notes>
-        <note category="description">Button that confirms revoking an email invitation</note>
-      </notes>
-      <segment state="translated">
-        <source>Yes, revoke</source>
-        <target>Oui, révoquer</target>
       </segment>
     </unit>
     <unit id="3758952688125628845">
@@ -5622,15 +5406,6 @@
       <segment state="translated">
         <source>Your game proposal &quot;<ph id="0" equiv="title" disp="data[&apos;gameTitle&apos;]"/>&quot; was rejected: <ph id="1" equiv="reason" disp="data[&apos;reviewNotes&apos;]"/></source>
         <target>Ta proposition de jeu « <ph id="0" equiv="title" disp="data[&apos;gameTitle&apos;]"/> » a été refusée : <ph id="1" equiv="reason" disp="data[&apos;reviewNotes&apos;]"/></target>
-      </segment>
-    </unit>
-    <unit id="3848463043339307213">
-      <notes>
-        <note category="description">Small heading of the invitation sign-up page</note>
-      </notes>
-      <segment state="translated">
-        <source>You are invited</source>
-        <target>Tu as reçu une invitation</target>
       </segment>
     </unit>
     <unit id="3849567001776882788">
@@ -5961,15 +5736,6 @@
         <target>Terminé</target>
       </segment>
     </unit>
-    <unit id="3973958082584068059">
-      <notes>
-        <note category="description">Shown on the group&apos;s settings page after copying the invitation link</note>
-      </notes>
-      <segment state="translated">
-        <source>Secure link copied.</source>
-        <target>Lien sécurisé copié.</target>
-      </segment>
-    </unit>
     <unit id="3976710906062238438">
       <notes>
         <note category="description">Error in the account deletion dialog</note>
@@ -6106,15 +5872,6 @@
         <target>Impossible d’enregistrer les modifications du jeu joué.</target>
       </segment>
     </unit>
-    <unit id="4047284277855563769">
-      <notes>
-        <note category="description">When an email invitation was sent; the placeholder is a date</note>
-      </notes>
-      <segment state="translated">
-        <source>Sent <ph id="0" equiv="INTERPOLATION" disp="{{ invitation.createdAt | customDate: true }}"/></source>
-        <target>Envoyée : <ph id="0" equiv="INTERPOLATION" disp="{{ invitation.createdAt | customDate: true }}"/></target>
-      </segment>
-    </unit>
     <unit id="4050851435935072722">
       <notes>
         <note category="description">Password warning in Clerk, the sign-in provider</note>
@@ -6231,15 +5988,6 @@
       <segment state="translated">
         <source>30 min</source>
         <target>30 min</target>
-      </segment>
-    </unit>
-    <unit id="4089792051247409822">
-      <notes>
-        <note category="description">Heading on the group&apos;s settings page, of the invitations sent to people with an account</note>
-      </notes>
-      <segment state="translated">
-        <source>Existing account invitations</source>
-        <target>Invitations à des comptes existants</target>
       </segment>
     </unit>
     <unit id="4096101151032067454">
@@ -6746,15 +6494,6 @@
         <target><ph id="0" equiv="person" disp="actor"/> a retiré <ph id="1" equiv="game" disp="game"/> de ses jeux dans <ph id="2" equiv="group" disp="group"/>.</target>
       </segment>
     </unit>
-    <unit id="430848017615851667">
-      <notes>
-        <note category="description">Label of the invite field on the group&apos;s settings page</note>
-      </notes>
-      <segment state="translated">
-        <source>Their username or email</source>
-        <target>Son nom d’utilisateur ou son e-mail</target>
-      </segment>
-    </unit>
     <unit id="43221390339107806">
       <notes>
         <note category="description">Button that opens the editor of a person&apos;s games on the group page</note>
@@ -6951,6 +6690,15 @@
       <segment state="translated">
         <source>Keep</source>
         <target>Garder</target>
+      </segment>
+    </unit>
+    <unit id="4451621753772609906">
+      <notes>
+        <note category="description">Text in the box on the access page while sign-up is by invitation only</note>
+      </notes>
+      <segment state="translated">
+        <source>Ask a friend or group organizer who already uses Board Vault. Once you have an account, they can invite you to their group by your username.</source>
+        <target>Demande à une personne qui utilise déjà Board Vault, ou qui organise un groupe. Une fois ton compte créé, elle pourra t’inviter dans son groupe avec ton nom d’utilisateur.</target>
       </segment>
     </unit>
     <unit id="4455805941641791689">
@@ -7160,13 +6908,13 @@
         <target>Taille du texte</target>
       </segment>
     </unit>
-    <unit id="4566831731994109275">
+    <unit id="4548285248495178004">
       <notes>
-        <note category="description">Toast after inviting someone to a group by email</note>
+        <note category="description">Text on the sign-up page when the sign-up service is down</note>
       </notes>
       <segment state="translated">
-        <source>Clerk invitation sent</source>
-        <target>Invitation par e-mail envoyée</target>
+        <source>Your account has not been created. Please try again shortly.</source>
+        <target>Ton compte n’a pas été créé. Réessaie dans un moment.</target>
       </segment>
     </unit>
     <unit id="4580988005648117665">
@@ -7756,20 +7504,11 @@
     </unit>
     <unit id="4862663633740506261">
       <notes>
-        <note category="description">Note while sign-in or joining a group finishes</note>
+        <note category="description">Note while sign-in finishes</note>
       </notes>
       <segment state="translated">
         <source>This usually takes a moment. Please keep this tab open.</source>
         <target>Cela prend généralement un instant. Garde cet onglet ouvert.</target>
-      </segment>
-    </unit>
-    <unit id="486664973868674424">
-      <notes>
-        <note category="description">Name of the confirmation on the group&apos;s settings page before revoking an email invitation</note>
-      </notes>
-      <segment state="translated">
-        <source>Confirm email invitation revocation</source>
-        <target>Confirmer la révocation de l’invitation par e-mail</target>
       </segment>
     </unit>
     <unit id="4879288031259259008">
@@ -8098,15 +7837,6 @@
         <target><ph id="0" equiv="INTERPOLATION" disp="{{ paid() | currency: &apos;EUR&apos; : &apos;symbol&apos; : &apos;1.0-0&apos; }}"/> payés</target>
       </segment>
     </unit>
-    <unit id="5072920679902574920">
-      <notes>
-        <note category="description">Heading of the invitation sign-up page</note>
-      </notes>
-      <segment state="translated">
-        <source>Join your Board Vault group</source>
-        <target>Rejoins ton groupe Board Vault</target>
-      </segment>
-    </unit>
     <unit id="5073023451628841098">
       <notes>
         <note category="description">Under the suggestions heading of a game night: how many people are coming</note>
@@ -8359,15 +8089,6 @@
         <target><ph id="0" equiv="actor" disp="actor"/> a enregistré une soirée jeux déjà passée</target>
       </segment>
     </unit>
-    <unit id="5182556936985589025">
-      <notes>
-        <note category="description">Text on the invitation sign-up page for someone new</note>
-      </notes>
-      <segment state="translated">
-        <source>Choose a Board Vault username and password to join the group that invited you.</source>
-        <target>Choisis un nom d’utilisateur et un mot de passe Board Vault pour rejoindre le groupe qui t’a envoyé l’invitation.</target>
-      </segment>
-    </unit>
     <unit id="5184649775750491056">
       <notes>
         <note category="description">Under a suggested game when your Interested or Not for us vote could not be saved</note>
@@ -8422,15 +8143,6 @@
         <target>Tes dernières modifications dans ta collection :</target>
       </segment>
     </unit>
-    <unit id="5202277594263112757">
-      <notes>
-        <note category="description">Error under the invite field on the group&apos;s settings page, after sending; Pending invitations is a heading on the page</note>
-      </notes>
-      <segment state="translated">
-        <source>This email already has a pending invitation. Find it under Pending invitations, where you can revoke it and send a new one.</source>
-        <target>Cette adresse a déjà une invitation en attente. Retrouve-la sous « Invitations en attente », où tu peux la révoquer et en envoyer une nouvelle.</target>
-      </segment>
-    </unit>
     <unit id="5207635742003539443">
       <notes>
         <note category="description">Footer link to the sign-in page</note>
@@ -8438,6 +8150,15 @@
       <segment state="translated">
         <source>Sign in</source>
         <target>Se connecter</target>
+      </segment>
+    </unit>
+    <unit id="5217191935719657396">
+      <notes>
+        <note category="description">Help under an error when finishing sign-in failed</note>
+      </notes>
+      <segment state="translated">
+        <source>If it keeps happening, sign out and sign in again.</source>
+        <target>Si le problème continue, déconnecte-toi puis reconnecte-toi.</target>
       </segment>
     </unit>
     <unit id="521757115722784859">
@@ -8762,15 +8483,6 @@
         <target>Supprimer le compte…</target>
       </segment>
     </unit>
-    <unit id="5426652292414469891">
-      <notes>
-        <note category="description">Button on the group&apos;s settings page after an email invitation is sent</note>
-      </notes>
-      <segment state="translated">
-        <source>Copy secure link</source>
-        <target>Copier le lien sécurisé</target>
-      </segment>
-    </unit>
     <unit id="5439518099292334443">
       <notes>
         <note category="description">Button that adds another play of the same game</note>
@@ -8952,15 +8664,6 @@
         <target>Aucun jeu ne correspond à « <ph id="0" equiv="INTERPOLATION" disp="{{ searchTerm$().trim() }}"/> »</target>
       </segment>
     </unit>
-    <unit id="5541061324274473691">
-      <notes>
-        <note category="description">Confirmation on the group&apos;s settings page before revoking an email invitation</note>
-      </notes>
-      <segment state="translated">
-        <source>Revoke this link?</source>
-        <target>Révoquer ce lien ?</target>
-      </segment>
-    </unit>
     <unit id="5556287223564037604">
       <notes>
         <note category="description">Button that opens Home, where your groups are</note>
@@ -9138,6 +8841,15 @@
         <target>Ce lien a expiré. Recommencez ou demandez un nouveau lien.</target>
       </segment>
     </unit>
+    <unit id="5631154745703553359">
+      <notes>
+        <note category="description">Error under the invite field on the group&apos;s settings page, when it is empty</note>
+      </notes>
+      <segment state="translated">
+        <source>Enter their username.</source>
+        <target>Saisis son nom d’utilisateur.</target>
+      </segment>
+    </unit>
     <unit id="5634845637729017989">
       <notes>
         <note category="description">Dialog that finishes a game night</note>
@@ -9190,15 +8902,6 @@
       <segment state="translated">
         <source>Your page ›</source>
         <target>Ta page ›</target>
-      </segment>
-    </unit>
-    <unit id="5673906746664423612">
-      <notes>
-        <note category="description">Heading while someone joins a group from an invitation link</note>
-      </notes>
-      <segment state="translated">
-        <source>Connecting you to your Board Vault group</source>
-        <target>Connexion à ton groupe Board Vault</target>
       </segment>
     </unit>
     <unit id="5676759314427074249">
@@ -9255,15 +8958,6 @@
         <target>Chargement des soirées jeux</target>
       </segment>
     </unit>
-    <unit id="5704529793565613046">
-      <notes>
-        <note category="description">Toast when an email invitation could not be revoked</note>
-      </notes>
-      <segment state="translated">
-        <source>Error revoking email invitation</source>
-        <target>Erreur lors de la révocation de l’invitation par e-mail</target>
-      </segment>
-    </unit>
     <unit id="5704826947758383316">
       <notes>
         <note category="description">Toast when the invitations of a group could not load; the placeholder is the group name</note>
@@ -9316,6 +9010,15 @@
       <segment state="translated">
         <source>Account menu</source>
         <target>Menu du compte</target>
+      </segment>
+    </unit>
+    <unit id="5729569828295791403">
+      <notes>
+        <note category="description">Placeholder of the invite field on the group&apos;s settings page; an example username, letters, numbers, _ or - only</note>
+      </notes>
+      <segment state="translated">
+        <source>friend_username</source>
+        <target>nom_utilisateur</target>
       </segment>
     </unit>
     <unit id="5737478077982119897">
@@ -9553,15 +9256,6 @@
         <target>Fermer la navigation</target>
       </segment>
     </unit>
-    <unit id="5850698978356573024">
-      <notes>
-        <note category="description">Field label on the invitation sign-up page</note>
-      </notes>
-      <segment state="translated">
-        <source>Confirm your password</source>
-        <target>Confirme ton mot de passe</target>
-      </segment>
-    </unit>
     <unit id="5851560788527570644">
       <notes>
         <note category="description">Heading of the notifications list in the inbox</note>
@@ -9578,15 +9272,6 @@
       <segment state="translated">
         <source><ph id="0" equiv="name" disp="name"/> was there</source>
         <target><ph id="0" equiv="name" disp="name"/> était là</target>
-      </segment>
-    </unit>
-    <unit id="585919947763588623">
-      <notes>
-        <note category="description">How many email invitations are waiting on the group&apos;s settings page</note>
-      </notes>
-      <segment state="translated">
-        <source>{VAR_PLURAL, plural, one {<ph id="0" equiv="INTERPOLATION"/> email link} other {<ph id="1" equiv="INTERPOLATION"/> email links}}</source>
-        <target>{VAR_PLURAL, plural, one {<ph id="0" equiv="INTERPOLATION"/> lien par e-mail} other {<ph id="1" equiv="INTERPOLATION"/> liens par e-mail}}</target>
       </segment>
     </unit>
     <unit id="5869913314404545561">
@@ -10065,6 +9750,15 @@
         <target>Tu as rejoint le groupe !</target>
       </segment>
     </unit>
+    <unit id="6103638214215311726">
+      <notes>
+        <note category="description">Error under the invite field on the group&apos;s settings page, when it holds an email address</note>
+      </notes>
+      <segment state="translated">
+        <source>Use their Board Vault username, not their email. Ask them for it if you don&apos;t know it.</source>
+        <target>Utilise son nom d’utilisateur Board Vault, pas son e-mail. Si tu ne le connais pas, demande-le-lui.</target>
+      </segment>
+    </unit>
     <unit id="6106536749017609878">
       <notes>
         <note category="description">Placeholder of the notes field of the game proposal form</note>
@@ -10299,15 +9993,6 @@
         <target><ph id="0" equiv="owners" disp="owners"/> des <ph id="1" equiv="people" disp="attendees"/> personnes présentes l’ont</target>
       </segment>
     </unit>
-    <unit id="6203289205504225930">
-      <notes>
-        <note category="description">Shown on the group&apos;s settings page after an email invitation is sent; the placeholder is the address</note>
-      </notes>
-      <segment state="translated">
-        <source>Invitation sent to <ph id="0" equiv="INTERPOLATION" disp="{{ invitation.emailAddress }}"/>.</source>
-        <target>Invitation envoyée à <ph id="0" equiv="INTERPOLATION" disp="{{ invitation.emailAddress }}"/>.</target>
-      </segment>
-    </unit>
     <unit id="6205660505479571083">
       <notes>
         <note category="description">Shown on the sign-in page while the sign-in service loads</note>
@@ -10414,15 +10099,6 @@
       <segment state="translated">
         <source>Notification not found</source>
         <target>Notification introuvable</target>
-      </segment>
-    </unit>
-    <unit id="6288431611067126915">
-      <notes>
-        <note category="description">Text in the box on the access page while sign-up is by invitation only; Clerk is the sign-in service</note>
-      </notes>
-      <segment state="translated">
-        <source>Ask a friend or group organizer who already uses Board Vault to invite you. Once invited, use the secure Clerk sign-up link they provide.</source>
-        <target>Demande à une personne qui utilise déjà Board Vault, ou qui organise un groupe, de t’inviter. Ensuite, utilise le lien d’inscription sécurisé de Clerk qu’elle te donne.</target>
       </segment>
     </unit>
     <unit id="6295691601911869403">
@@ -10738,15 +10414,6 @@
         <target>Impossible de charger les groupes</target>
       </segment>
     </unit>
-    <unit id="6416477889465671000">
-      <notes>
-        <note category="description">Text on the sign-up page when the sign-up service is down</note>
-      </notes>
-      <segment state="translated">
-        <source>Your account has not been created. Please try again shortly or ask your group owner to send a fresh invitation.</source>
-        <target>Ton compte n’a pas été créé. Réessaie dans un moment ou demande une nouvelle invitation à la personne qui a créé le groupe.</target>
-      </segment>
-    </unit>
     <unit id="641656785674590331">
       <notes>
         <note category="description">Heading on Upcoming for game nights that are over but have no results yet</note>
@@ -10871,15 +10538,6 @@
       <segment state="translated">
         <source>Could not archive this group person.</source>
         <target>Impossible d’archiver cette personne du groupe.</target>
-      </segment>
-    </unit>
-    <unit id="6498062783927960685">
-      <notes>
-        <note category="description">Title of the box on the invitation sign-up page for someone who already has an account</note>
-      </notes>
-      <segment state="translated">
-        <source>Your Board Vault account is already registered.</source>
-        <target>Tu as déjà un compte Board Vault.</target>
       </segment>
     </unit>
     <unit id="6505214317212036405">
@@ -11012,15 +10670,6 @@
       <segment state="translated">
         <source>Features</source>
         <target>Fonctionnalités</target>
-      </segment>
-    </unit>
-    <unit id="6602855542242739725">
-      <notes>
-        <note category="description">Error on the invitation sign-up page when the security check failed</note>
-      </notes>
-      <segment state="translated">
-        <source>The security check could not be completed. Complete it and try again.</source>
-        <target>La vérification de sécurité n’a pas pu aboutir. Termine-la et réessaie.</target>
       </segment>
     </unit>
     <unit id="6605529536585784337">
@@ -11338,15 +10987,6 @@
         <target><ph id="0" equiv="title" disp="title"/> est en tête avec <ph id="1" equiv="votes" disp="votes"/> votes</target>
       </segment>
     </unit>
-    <unit id="6744211960979064014">
-      <notes>
-        <note category="description">Field error on the invitation sign-up page</note>
-      </notes>
-      <segment state="translated">
-        <source>Use 4–64 characters for your username.</source>
-        <target>Ton nom d’utilisateur doit contenir de 4 à 64 caractères.</target>
-      </segment>
-    </unit>
     <unit id="6762830186305693321">
       <notes>
         <note category="description">Group history line, someone changing their own games or preferences; actor is a name, game is a game title</note>
@@ -11508,15 +11148,6 @@
       <segment state="translated">
         <source>Got it, you can’t make it.</source>
         <target>C’est noté, tu ne peux pas venir.</target>
-      </segment>
-    </unit>
-    <unit id="6834924679958399011">
-      <notes>
-        <note category="description">Under the invite field on the group&apos;s settings page, when it holds a username</note>
-      </notes>
-      <segment state="translated">
-        <source>Someone who already has an account sees the invitation in their inbox.</source>
-        <target>Une personne qui a déjà un compte voit l’invitation dans sa boîte de réception.</target>
       </segment>
     </unit>
     <unit id="6837138223026715835">
@@ -12684,6 +12315,15 @@
         <target>Désépingler</target>
       </segment>
     </unit>
+    <unit id="7431603774839555423">
+      <notes>
+        <note category="description">Under Invite the people you play with on the group&apos;s settings page</note>
+      </notes>
+      <segment state="translated">
+        <source>Invite them by their Board Vault username.</source>
+        <target>Invite chaque personne avec son nom d’utilisateur Board Vault.</target>
+      </segment>
+    </unit>
     <unit id="7434447101665682282">
       <notes>
         <note category="description">Search and link preview description of the Groups page</note>
@@ -12711,15 +12351,6 @@
         <target>Tes notes <pc id="0" equivStart="START_TAG_SPAN" equivEnd="CLOSE_TAG_SPAN" type="other" dispStart="&lt;span class=&quot;text-base font-normal text-secondary&quot;&gt;" dispEnd="&lt;/span&gt;">(<ph id="1" equiv="INTERPOLATION" disp="{{ userReviews$().length }}"/>)</pc></target>
       </segment>
     </unit>
-    <unit id="7455956774102417623">
-      <notes>
-        <note category="description">Field label on the invitation sign-up page</note>
-      </notes>
-      <segment state="translated">
-        <source>Choose a username</source>
-        <target>Choisis un nom d’utilisateur</target>
-      </segment>
-    </unit>
     <unit id="7460863139291920826">
       <notes>
         <note category="description">Toast after saving a game night&apos;s shortlist</note>
@@ -12736,15 +12367,6 @@
       <segment state="translated">
         <source>Thanks for your proposal! We will review it as soon as possible and let you know the outcome.</source>
         <target>Merci pour ta proposition ! Nous l’examinerons dès que possible et te dirons ce qu’il en est.</target>
-      </segment>
-    </unit>
-    <unit id="7479353190280997286">
-      <notes>
-        <note category="description">Under Invite the people you play with on the group&apos;s settings page</note>
-      </notes>
-      <segment state="translated">
-        <source>Whether or not they already have an account.</source>
-        <target>Qu’elles aient un compte ou non.</target>
       </segment>
     </unit>
     <unit id="7481083906507561539">
@@ -13081,13 +12703,13 @@
         <target>Voir <ph id="0" equiv="title" disp="title"/></target>
       </segment>
     </unit>
-    <unit id="7647510484935085361">
+    <unit id="7652336251247281831">
       <notes>
-        <note category="description">Button under an error on the invitation sign-up page, back to the access page</note>
+        <note category="description">Label of the invite field on the group&apos;s settings page</note>
       </notes>
       <segment state="translated">
-        <source>Return to private-beta access</source>
-        <target>Retour à l’accès à la bêta privée</target>
+        <source>Their username</source>
+        <target>Son nom d’utilisateur</target>
       </segment>
     </unit>
     <unit id="7652811378040044470">
@@ -13187,15 +12809,6 @@
       <segment state="translated">
         <source>Sort by</source>
         <target>Trier par</target>
-      </segment>
-    </unit>
-    <unit id="7699707220451182317">
-      <notes>
-        <note category="description">Text in the box on the invitation sign-up page for someone who already has an account</note>
-      </notes>
-      <segment state="translated">
-        <source>Continue with this secure invitation link and we’ll add you to the group. No new password is needed.</source>
-        <target>Continue avec ce lien d’invitation sécurisé et nous t’ajouterons au groupe. Pas besoin de nouveau mot de passe.</target>
       </segment>
     </unit>
     <unit id="7702681530374445931">
@@ -13496,15 +13109,6 @@
       <segment state="translated">
         <source>Hide tags</source>
         <target>Masquer les étiquettes</target>
-      </segment>
-    </unit>
-    <unit id="785270353086309130">
-      <notes>
-        <note category="description">Error under the invite field on the group&apos;s settings page, when it is empty</note>
-      </notes>
-      <segment state="translated">
-        <source>Enter their username or email.</source>
-        <target>Saisis son nom d’utilisateur ou son e-mail.</target>
       </segment>
     </unit>
     <unit id="7853727421705146371">
@@ -13991,15 +13595,6 @@
         <target>Invite les personnes qui font de cette soirée jeux une vraie soirée.</target>
       </segment>
     </unit>
-    <unit id="8053410100631770875">
-      <notes>
-        <note category="description">Note at the bottom of the invitation sign-up page</note>
-      </notes>
-      <segment state="translated">
-        <source>This link is private and expires. Do not share it publicly.</source>
-        <target>Ce lien est privé et expire. Ne le partage pas publiquement.</target>
-      </segment>
-    </unit>
     <unit id="8060214676846211943">
       <notes>
         <note category="description">Button on the page that creates a group</note>
@@ -14231,15 +13826,6 @@
         <target>Détails d’achat mis à jour</target>
       </segment>
     </unit>
-    <unit id="8156419267003636846">
-      <notes>
-        <note category="description">Error under the invite field on the group&apos;s settings page, after sending</note>
-      </notes>
-      <segment state="translated">
-        <source>We could not send the email invitation. Check the address and try again; your entry is still here.</source>
-        <target>Nous n’avons pas pu envoyer l’invitation par e-mail. Vérifie l’adresse et réessaie ; ta saisie est toujours là.</target>
-      </segment>
-    </unit>
     <unit id="8158713888154048491">
       <notes>
         <note category="description">Error under the duration field of the game proposal form</note>
@@ -14292,15 +13878,6 @@
       <segment state="translated">
         <source>Continue your group history</source>
         <target>Poursuis ton historique dans le groupe</target>
-      </segment>
-    </unit>
-    <unit id="8186634677386165494">
-      <notes>
-        <note category="description">Shown on the group&apos;s settings page while the email invitations load</note>
-      </notes>
-      <segment state="translated">
-        <source>Loading pending email invitations…</source>
-        <target>Chargement des invitations par e-mail en attente…</target>
       </segment>
     </unit>
     <unit id="8189309010258574251">
@@ -14774,15 +14351,6 @@
         <target>Mes propositions — Board Vault</target>
       </segment>
     </unit>
-    <unit id="8435038262958370080">
-      <notes>
-        <note category="description">Error when joining a group from an invitation link failed</note>
-      </notes>
-      <segment state="translated">
-        <source>We could not finish joining this group. The invitation may have expired, already been used, or the group may no longer be available. Try again, or sign out and ask the group owner for a fresh invitation.</source>
-        <target>Nous n’avons pas pu finir de t’ajouter à ce groupe. L’invitation a peut-être expiré ou déjà servi, ou le groupe n’est plus disponible. Réessaie, ou déconnecte-toi et demande une nouvelle invitation à la personne qui a créé le groupe.</target>
-      </segment>
-    </unit>
     <unit id="8439160099000475740">
       <notes>
         <note category="description">Link above the form that proposes a game, back to the Browse page</note>
@@ -14862,15 +14430,6 @@
       <segment state="translated">
         <source>Search the catalogue</source>
         <target>Rechercher dans le catalogue</target>
-      </segment>
-    </unit>
-    <unit id="8469235912331273979">
-      <notes>
-        <note category="description">Text under the usage statistics switch on the invitation sign-up page; Settings → Privacy names the place in the app</note>
-      </notes>
-      <segment state="translated">
-        <source> Lend us a hand? 🎲 We&apos;re a tiny indie team. Leaving this on lets us count which pages get opened, under a pseudonym and in our own database, so we know what to fix next. No cookies, nothing shared. Change it anytime in Settings → Privacy. </source>
-        <target>Un coup de main ? 🎲 Nous sommes une toute petite équipe indépendante. En laissant ceci activé, tu nous permets de compter les pages ouvertes, sous un pseudonyme et dans notre propre base de données, pour savoir quoi corriger en priorité. Pas de cookies, rien de partagé. Tu peux le changer à tout moment dans Paramètres → Confidentialité.</target>
       </segment>
     </unit>
     <unit id="8470048272886749459">
@@ -15405,15 +14964,6 @@
         <target>Ajouter ton premier jeu</target>
       </segment>
     </unit>
-    <unit id="871235372571809921">
-      <notes>
-        <note category="description">Help under an error when joining a group from an invitation link failed</note>
-      </notes>
-      <segment state="translated">
-        <source>Ask the group owner for a fresh invitation if this link has expired or the group is no longer available.</source>
-        <target>Demande une nouvelle invitation à la personne qui a créé le groupe si ce lien a expiré ou si le groupe n’est plus disponible.</target>
-      </segment>
-    </unit>
     <unit id="8715838975991436163">
       <notes>
         <note category="description">Link on a notification</note>
@@ -15693,7 +15243,7 @@
     </unit>
     <unit id="8851134952747107313">
       <notes>
-        <note category="description">Small heading above an error after signing in or following an invitation link</note>
+        <note category="description">Small heading above an error after signing in</note>
       </notes>
       <segment state="translated">
         <source>One more step needed</source>
@@ -16456,15 +16006,6 @@
       <segment state="translated">
         <source>Favours the games this group rates and plays the most.</source>
         <target>Privilégie les jeux que ce groupe note le mieux et joue le plus.</target>
-      </segment>
-    </unit>
-    <unit id="950714964925956479">
-      <notes>
-        <note category="description">Error on the invitation sign-up page when the username is taken</note>
-      </notes>
-      <segment state="translated">
-        <source>That username is unavailable. Choose a different username and try again.</source>
-        <target>Ce nom d’utilisateur n’est pas disponible. Choisis-en un autre et réessaie.</target>
       </segment>
     </unit>
     <unit id="956803384192364124">

@@ -18,14 +18,7 @@ import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagg
 import { RequestLocale } from '../../../common/decorators/request-locale.decorator.js'
 import { AuthGuard } from '../../../common/guards/auth.guard.js'
 import { GroupOwnerGuard } from '../../../common/guards/group-owner.guard.js'
-import { RateLimit, RateLimitGuard } from '../../../common/guards/rate-limit.guard.js'
 import { UserInGroupGuard } from '../../../common/guards/user-in-group.guard.js'
-import {
-    ClerkGroupInvitationDto,
-    ClerkInvitationIdParam,
-    ClerkGroupInvitationSummaryDto,
-    CreateClerkGroupInvitationBody,
-} from '../../../common/types/clerk-invitation.type.js'
 import { GroupActivityPageDto, GroupActivityQuery } from '../../../common/types/group-activity.type.js'
 import {
     GroupAcquisitionEntryDto,
@@ -35,7 +28,6 @@ import {
 import { GroupCollectionDto, GroupInsightsDto } from '../../../common/types/group-insights.type.js'
 import { CreateGroupRequestBody, GroupDto, UpdateGroupBody } from '../../../common/types/group.type.js'
 import { InvitationWithAccountsData } from '../../../common/types/invitation.type.js'
-import { ClerkIdentityService } from '../../common/auth/clerk-identity.service.js'
 
 import { GroupAcquisitionService } from './group-acquisition.service.js'
 import { GroupActivityService } from './group-activity.service.js'
@@ -53,7 +45,6 @@ export class GroupsController {
     constructor(
         private readonly groupsService: GroupsService,
         private readonly groupAcquisitionService: GroupAcquisitionService,
-        private readonly clerkIdentityService: ClerkIdentityService,
         private readonly groupInsightsService: GroupInsightsService,
         private readonly groupActivityService: GroupActivityService,
     ) {}
@@ -104,42 +95,6 @@ export class GroupsController {
     @ApiResponse({ status: 200, type: [InvitationWithAccountsData] })
     getGroupInvitations(@Param('groupId', ParseIntPipe) groupId: number) {
         return this.groupsService.getGroupInvitations(groupId)
-    }
-
-    // Each call makes Clerk send an email to an arbitrary address.
-    @UseGuards(GroupOwnerGuard, RateLimitGuard)
-    @RateLimit(20, 3600)
-    @Post('/:groupId/clerk-invitations')
-    @ApiOperation({ summary: 'Invite a new person to the group by email through Clerk' })
-    @ApiResponse({ status: 201, type: ClerkGroupInvitationDto, description: 'The Clerk invitation was created and emailed' })
-    createClerkInvitation(
-        @Param('groupId', ParseIntPipe) groupId: number,
-        @Req() request: { user: { userId: number } },
-        @Body() body: CreateClerkGroupInvitationBody,
-    ) {
-        return body.groupPersonId === undefined
-            ? this.clerkIdentityService.createGroupInvitation(groupId, request.user.userId, body.emailAddress)
-            : this.clerkIdentityService.createGroupInvitation(groupId, request.user.userId, body.emailAddress, body.groupPersonId)
-    }
-
-    @UseGuards(GroupOwnerGuard)
-    @Get('/:groupId/clerk-invitations')
-    @ApiOperation({ summary: 'List pending Clerk invitations for a group (owner only)' })
-    @ApiResponse({ status: 200, type: [ClerkGroupInvitationSummaryDto] })
-    getClerkInvitations(@Param('groupId', ParseIntPipe) groupId: number, @Req() request: { user: { userId: number } }) {
-        return this.clerkIdentityService.getGroupInvitations(groupId, request.user.userId)
-    }
-
-    @UseGuards(GroupOwnerGuard)
-    @Delete('/:groupId/clerk-invitations/:invitationId')
-    @ApiOperation({ summary: 'Revoke a pending Clerk invitation for a group (owner only)' })
-    @ApiResponse({ status: 200, description: 'The Clerk invitation was revoked' })
-    revokeClerkInvitation(
-        @Param('groupId', ParseIntPipe) groupId: number,
-        @Param() params: ClerkInvitationIdParam,
-        @Req() request: { user: { userId: number } },
-    ) {
-        return this.clerkIdentityService.revokeGroupInvitation(groupId, request.user.userId, params.invitationId)
     }
 
     @UseGuards(UserInGroupGuard)

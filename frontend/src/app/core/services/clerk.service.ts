@@ -35,8 +35,6 @@ export class ClerkService {
 
     public readonly isConfigured = signal(environment.clerkPublishableKey.length > 0)
     public readonly isSelfRegistrationEnabled = signal(environment.selfRegistrationEnabled)
-    public readonly isInvitationFlow = signal(this.hasInvitationTicket())
-    public readonly isInvitationSignIn = signal(this.getInvitationStatus() === 'sign_in')
     public readonly isLoaded = signal(false)
     public readonly initializationError = signal<string | null>(null)
     public readonly isAvailable = computed(() => this.isConfigured() && this.isLoaded() && !this.initializationError())
@@ -116,59 +114,16 @@ export class ClerkService {
 
     public openSignIn(): void {
         this.clerk?.openSignIn({
-            withSignUp: this.isSelfRegistrationEnabled() || this.isInvitationFlow(),
+            withSignUp: this.isSelfRegistrationEnabled(),
             appearance: this.themeAppearance(),
         })
     }
 
     public openSignUp(): void {
-        if (!this.isSelfRegistrationEnabled() && !this.isInvitationFlow()) {
+        if (!this.isSelfRegistrationEnabled()) {
             return
         }
         this.clerk?.openSignUp({ appearance: this.themeAppearance() })
-    }
-
-    public async completeInvitationSignUp(username: string, password: string): Promise<void> {
-        if (!this.isInvitationFlow() || !this.clerk) {
-            throw new Error('Invitation sign-up is unavailable')
-        }
-
-        const ticket = this.getInvitationTicket()
-        if (!ticket) {
-            throw new Error('Invitation ticket is missing')
-        }
-
-        const client = this.clerk.client
-        if (!client) {
-            throw new Error('Clerk client is unavailable')
-        }
-
-        if (this.getInvitationStatus() === 'sign_in') {
-            const signIn = await client.signIn.create({ strategy: 'ticket', ticket })
-            if (signIn.status !== 'complete' || !signIn.createdSessionId) {
-                throw new Error('Invitation sign-in is incomplete')
-            }
-
-            await this.clerk.setActive({ session: signIn.createdSessionId })
-            return
-        }
-
-        const signUp = await client.signUp.create({ strategy: 'ticket', ticket, username, password })
-        if (signUp.status !== 'complete' || !signUp.createdSessionId) {
-            throw new Error('Invitation sign-up is incomplete')
-        }
-
-        await this.clerk.setActive({ session: signUp.createdSessionId })
-    }
-
-    /**
-     * Clear invitation-derived UI state after a stale ticket is abandoned.
-     * Angular can reuse the register route when only its query string changes,
-     * so the signals cannot rely on component recreation to re-read the URL.
-     */
-    public clearInvitationState(): void {
-        this.isInvitationFlow.set(false)
-        this.isInvitationSignIn.set(false)
     }
 
     public openUserProfile(): void {
@@ -277,18 +232,6 @@ export class ClerkService {
         } catch {
             return null
         }
-    }
-
-    private hasInvitationTicket(): boolean {
-        return Boolean(this.getInvitationTicket())
-    }
-
-    private getInvitationTicket(): string | null {
-        return typeof globalThis.location !== 'undefined' ? new URLSearchParams(globalThis.location.search).get('__clerk_ticket') : null
-    }
-
-    private getInvitationStatus(): string | null {
-        return typeof globalThis.location !== 'undefined' ? new URLSearchParams(globalThis.location.search).get('__clerk_status') : null
     }
 }
 

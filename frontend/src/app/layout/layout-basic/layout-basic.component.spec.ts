@@ -30,7 +30,7 @@ describe('LayoutBasicComponent', () => {
                         retryClerkSession: vi.fn(),
                     },
                 },
-                { provide: ClerkService, useValue: { isSignedIn, isInvitationFlow: signal(false) } },
+                { provide: ClerkService, useValue: { isSignedIn } },
             ],
         })
         const harness = await RouterTestingHarness.create('/page')

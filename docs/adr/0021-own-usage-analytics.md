@@ -144,3 +144,9 @@ disclosed and with an opt-out. This is our reading, not legal advice.
   account's events at once.
 - **Fully anonymous events.** Funnels need to follow one person through
   steps; daily counts can't do that.
+
+## Update 2026-11-10: no invitation sign-up form (#277)
+
+The invitation sign-up form went with email invitations, and its usage
+statistics switch with it. Everyone now answers through the card in the app
+or Settings → Privacy.

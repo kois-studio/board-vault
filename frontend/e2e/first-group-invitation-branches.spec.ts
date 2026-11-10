@@ -27,9 +27,9 @@ test.describe('first-group invitation branches', () => {
             expect(groupId).toBeTruthy()
 
             await ownerPage.goto(`${baseURL}/groups/${groupId}/edit`)
-            await ownerPage.getByLabel('Their username or email').fill(inviteeUsername)
+            await ownerPage.getByLabel('Their username', { exact: true }).fill(inviteeUsername)
             await ownerPage.getByRole('button', { name: 'Send invite', exact: true }).click()
-            await expect(ownerPage.getByRole('heading', { name: 'Existing account invitations' })).toBeVisible()
+            await expect(ownerPage.getByRole('region', { name: 'Pending invitations' }).getByText(inviteeUsername, { exact: true })).toBeVisible()
 
             await inviteePage.goto(`${baseURL}/groups`)
             const declineButton = inviteePage.getByRole('button', { name: `Decline invitation to ${groupName}` })

@@ -11,7 +11,7 @@
         <div class="mt-4 flex flex-wrap items-center justify-between gap-4">
             <div class="flex items-center gap-3">
                 <app-switch [checked]="usageAnalytics() === true" labelledBy="usage-notice-switch" [disabled]="saving()" (toggled)="toggle($event)" />
-                <span id="usage-notice-switch" class="font-medium text-bv-text" i18n="Label of the usage statistics switch on the invitation sign-up page; the same switch is in Settings, Privacy">Help improve Board Vault</span>
+                <span id="usage-notice-switch" class="font-medium text-bv-text" i18n="Label of the usage statistics switch in the card that asks about usage statistics; the same switch is in Settings, Privacy">Help improve Board Vault</span>
             </div>
             <button appButton type="button" variant="secondary" [disabled]="saving()" (click)="close()" i18n="Button that closes the card that asks once about usage statistics">Got it</button>
         </div>

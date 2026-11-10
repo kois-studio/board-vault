@@ -18,8 +18,6 @@ import {
     browseGamesSchema,
     catalogueTagsSchema,
     clerkAuthStatusSchema,
-    clerkGroupInvitationSchema,
-    clerkGroupInvitationSummariesSchema,
     clerkSyncResultSchema,
     createdGroupSchema,
     gameCompleteSchema,
@@ -87,8 +85,6 @@ import type {
     BrowseFilters,
     BrowseGamesResultType,
     CatalogueTagType,
-    ClerkGroupInvitationSummaryType,
-    ClerkGroupInvitationType,
     ClerkSyncResultType,
     CollectionActivityWithGameDataType,
     CreateGameProposalType,
@@ -206,27 +202,6 @@ export class Api {
         return this.http
             .get<Array<InvitationWithAccountsData>>(`${this.url}/groups/${groupId}/invitations`)
             .pipe(map((response) => groupInvitationsSchema.parse(response)))
-    }
-
-    createClerkGroupInvitation(groupId: number, emailAddress: string, groupPersonId?: number) {
-        return this.http
-            .post<ClerkGroupInvitationType>(`${this.url}/groups/${groupId}/clerk-invitations`, {
-                emailAddress,
-                ...(groupPersonId === undefined ? {} : { groupPersonId }),
-            })
-            .pipe(map((response) => clerkGroupInvitationSchema.parse(response)))
-    }
-
-    getClerkGroupInvitations(groupId: number) {
-        return this.http
-            .get<Array<ClerkGroupInvitationSummaryType>>(`${this.url}/groups/${groupId}/clerk-invitations`)
-            .pipe(map((response) => clerkGroupInvitationSummariesSchema.parse(response)))
-    }
-
-    revokeClerkGroupInvitation(groupId: number, invitationId: string) {
-        return this.http
-            .delete<{ success: true }>(`${this.url}/groups/${groupId}/clerk-invitations/${invitationId}`)
-            .pipe(map((response) => successSchema.parse(response)))
     }
 
     claimGroupPerson(

@@ -726,13 +726,6 @@ export class DataService {
         )
     }
 
-    public inviteNewPersonToGroup(groupId: number, emailAddress: string, groupPersonId?: number | null) {
-        return this.api.createClerkGroupInvitation(groupId, emailAddress, groupPersonId ?? undefined).pipe(
-            tap(() => this.toastService.success($localize`:Toast after inviting someone to a group by email:Clerk invitation sent`)),
-            // Failures are explained inline by the page, which keeps what was typed.
-        )
-    }
-
     // #region games
 
     public updateUserGames(userGameIds: Array<number>, gameIdsToToggle: Array<number>) {

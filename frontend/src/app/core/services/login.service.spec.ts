@@ -60,7 +60,7 @@ describe('LoginService account readiness', () => {
                 },
                 {
                     provide: ClerkService,
-                    useValue: { isSignedIn: signal(true), userId: signal<string | null>(null), isInvitationFlow: signal(false), signOut },
+                    useValue: { isSignedIn: signal(true), userId: signal<string | null>(null), signOut },
                 },
                 { provide: DataService, useValue: dataService },
             ],
@@ -93,63 +93,6 @@ describe('LoginService account readiness', () => {
         expect(service.clerkAuthHandoffState()).toBe('idle')
         expect(navigate).toHaveBeenCalledWith(['/'])
     })
-
-    it('uses group-specific recovery copy for a failed invitation handoff', () => {
-        const api = {
-            clerkAuthStatus: vi
-                .fn()
-                .mockName('clerkAuthStatus')
-                .mockReturnValue(throwError(() => new Error('group unavailable'))),
-            getUserById: vi.fn().mockName('getUserById'),
-        }
-        const dataService = {
-            currentUser: signal<null | {
-                id: number
-            }>(null),
-        }
-
-        TestBed.configureTestingModule({
-            providers: [
-                LoginService,
-                { provide: Api, useValue: api },
-                { provide: Router, useValue: { navigate: vi.fn().mockName('navigate') } },
-                { provide: LogService, useValue: { log: vi.fn().mockName('log'), error: vi.fn().mockName('error') } },
-                { provide: ToastService, useValue: { error: vi.fn().mockName('error'), success: vi.fn().mockName('success') } },
-                {
-                    provide: LoadingService,
-                    useValue: {
-                        start: vi.fn().mockName('start'),
-                        finish: vi.fn().mockName('finish'),
-                        setAllLoadingTo: vi.fn().mockName('setAllLoadingTo'),
-                    },
-                },
-                {
-                    provide: LocalStorageService,
-                    useValue: {
-                        getItem: vi.fn().mockName('getItem'),
-                        setItem: vi.fn().mockName('setItem'),
-                        removeItem: vi.fn().mockName('removeItem'),
-                    },
-                },
-                {
-                    provide: ClerkService,
-                    useValue: {
-                        isSignedIn: signal(true),
-                        userId: signal<string | null>(null),
-                        isInvitationFlow: signal(true),
-                        signOut: vi.fn().mockName('signOut').mockResolvedValue(undefined),
-                    },
-                },
-                { provide: DataService, useValue: dataService },
-            ],
-        })
-
-        const service = TestBed.inject(LoginService)
-        service.verifyClerkSession().subscribe()
-
-        expect(service.clerkAuthHandoffError()).toContain('joining this group')
-        expect(service.clerkAuthHandoffError()).toContain('fresh invitation')
-    })
 })
 
 describe('LoginService after the account is deleted', () => {
@@ -157,7 +100,6 @@ describe('LoginService after the account is deleted', () => {
         const clerk = {
             isSignedIn: signal(true),
             userId: signal<string | null>('clerk_7'),
-            isInvitationFlow: signal(false),
             signOut: vi.fn(signOut),
             forgetSession: vi.fn(() => {
                 clerk.isSignedIn.set(false)
@@ -242,7 +184,6 @@ describe('LoginService when Board Vault cannot be reached (#238)', () => {
                     useValue: {
                         isSignedIn: signal(true),
                         userId: signal<string | null>(null),
-                        isInvitationFlow: signal(false),
                         signOut: vi.fn(),
                     },
                 },

@@ -1,20 +1,17 @@
 import { HttpErrorResponse } from '@angular/common/http'
 import { afterNextRender, Component, computed, DestroyRef, ElementRef, effect, Injector, inject, signal, untracked } from '@angular/core'
-import { toSignal } from '@angular/core/rxjs-interop'
 import { FormControl, ReactiveFormsModule } from '@angular/forms'
 import { ActivatedRoute, Router, RouterLink } from '@angular/router'
 import { firstValueFrom } from 'rxjs'
 import { Api } from '../../../api/api'
-import { ClerkGroupInvitationSummaryType, ClerkGroupInvitationType, GroupPersonWorkspaceType } from '../../../api/api.types'
+import { GroupPersonWorkspaceType } from '../../../api/api.types'
 import { CardAccountComponent } from '../../../components/card-account/card-account.component'
 import { ImageProfileComponent } from '../../../components/image-profile/image-profile.component'
-import { ToastService } from '../../../components/toast/toast.service'
 import { BackLinkComponent } from '../../../components/ui/back-link/back-link.component'
 import { ButtonComponent } from '../../../components/ui/button/button.component'
 import { DialogDirective } from '../../../components/ui/dialog/dialog.directive'
 import { IconComponent } from '../../../components/ui/icon/icon.component'
 import { LOADING_KEYS } from '../../../core/enums/loading-keys-enum'
-import { CustomDatePipe } from '../../../core/pipes/customDate.pipe'
 import { DataService } from '../../../core/services/data.service'
 import { LoadingService } from '../../../core/services/loading.service'
 import { groupGameCount, groupPeopleCount } from '../../../core/utils/groupCounts'
@@ -26,7 +23,6 @@ import { groupGameCount, groupPeopleCount } from '../../../core/utils/groupCount
         ImageProfileComponent,
         ReactiveFormsModule,
         CardAccountComponent,
-        CustomDatePipe,
         DialogDirective,
         IconComponent,
     ],
@@ -34,7 +30,6 @@ import { groupGameCount, groupPeopleCount } from '../../../core/utils/groupCount
 })
 export class GroupEditComponent {
     private readonly api = inject(Api)
-    private readonly toastService = inject(ToastService)
     private readonly destroyRef = inject(DestroyRef)
     private readonly injector = inject(Injector)
     private readonly host = inject<ElementRef<HTMLElement>>(ElementRef)
@@ -53,16 +48,9 @@ export class GroupEditComponent {
     public groupData: null | (typeof this.userGroups)[number] = null
     /** `m<accountId>` or `i<invitationId>` while its inline confirmation is open. */
     public readonly pendingRemoval = signal<string | null>(null)
-    /** A username or an email: an email gets a Clerk invitation, a username an in-app one. */
+    /** The username of the person to invite: people are invited by username only (#277). */
     public readonly inviteTarget = new FormControl('', { nonNullable: true })
-    private readonly inviteValue = toSignal(this.inviteTarget.valueChanges, { initialValue: '' })
-    public readonly inviteKind = computed(() => (this.inviteValue().includes('@') ? 'email' : 'username'))
     public readonly inviteError = signal<string | null>(null)
-    public readonly clerkInvitation = signal<ClerkGroupInvitationType | null>(null)
-    public readonly clerkPendingInvitations = signal<Array<ClerkGroupInvitationSummaryType>>([])
-    public readonly clerkInvitationsLoading = signal(false)
-    public readonly clerkInvitationsError = signal(false)
-    public readonly pendingClerkRevokeId = signal<string | null>(null)
     public readonly groupPeople = signal<Array<GroupPersonWorkspaceType>>([])
     public readonly selectedClaimPersonId = signal<number | null>(null)
     /** The group's people are on their way, so it isn't known yet who can be linked to an invitation. */
@@ -93,9 +81,7 @@ export class GroupEditComponent {
     public readonly groupResolutionError = signal(false)
     /** Your groups could not be loaded, so whether this one is yours is unknown: never "not available" then (#248). */
     public readonly groupLoadFailed = computed(() => this.dataService.userGroupsError())
-    public readonly copyLinkStatus = signal<'idle' | 'copied' | 'unavailable' | 'failed'>('idle')
     public readonly isLoading = signal(false)
-    private loadedClerkInvitationsGroupId: number | null = null
 
     constructor(
         private readonly router: Router,
@@ -129,7 +115,6 @@ export class GroupEditComponent {
             this.groupResolutionError.set(false)
 
             if (this.isGroupOwner) {
-                this.loadClerkInvitations(groupData.id)
                 // The effect runs again whenever groups or invitations change, e.g. after an invitation is sent.
                 const firstLoad = this.loadedPeopleGroupId !== groupData.id
                 this.loadedPeopleGroupId = groupData.id
@@ -157,13 +142,9 @@ export class GroupEditComponent {
     /** What is wrong with the entry, in words; null when it can be sent. */
     public inviteProblem(): string | null {
         const value = this.inviteTarget.value.trim()
-        if (!value)
-            return $localize`:Error under the invite field on the group's settings page, when it is empty:Enter their username or email.`
-        if (this.inviteKind() === 'email') {
-            return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value) && value.length <= 320
-                ? null
-                : $localize`:Error under the invite field on the group's settings page:Enter a valid email address.`
-        }
+        if (!value) return $localize`:Error under the invite field on the group's settings page, when it is empty:Enter their username.`
+        if (value.includes('@'))
+            return $localize`:Error under the invite field on the group's settings page, when it holds an email address:Use their Board Vault username, not their email. Ask them for it if you don't know it.`
         if (value.length < 4 || value.length > 20)
             return $localize`:Error under the invite field on the group's settings page:Usernames have 4 to 20 characters.`
         const group = this.groupData
@@ -183,7 +164,7 @@ export class GroupEditComponent {
         event.preventDefault()
         this.inviteTarget.markAsTouched()
         if (this.inviteProblem() !== null || this.inviteWaitsForPeople()) return
-        void (this.inviteKind() === 'email' ? this.onInviteNewPerson() : this.onInviteUser())
+        void this.onInviteUser()
     }
 
     get peopleCount(): number {
@@ -204,7 +185,6 @@ export class GroupEditComponent {
         if (!this.isGroupOwner || !this.groupData || !username || this.isLoading()) return
         this.isLoading.set(true)
         this.inviteError.set(null)
-        this.clerkInvitation.set(null)
 
         try {
             await firstValueFrom(this.dataService.addInvitedToGroup(this.groupData.id, username, this.selectedClaimPersonId()))
@@ -215,33 +195,6 @@ export class GroupEditComponent {
                 httpStatus(error) === 404
                     ? $localize`:Error under the invite field on the group's settings page, after sending:No Board Vault account has this username. Check it and try again; your entry is still here.`
                     : $localize`:Error under the invite field on the group's settings page, after sending:We could not send this invite. Check the username and try again; your entry is still here.`,
-            )
-        } finally {
-            this.isLoading.set(false)
-        }
-    }
-
-    async onInviteNewPerson() {
-        const email = this.inviteTarget.value.trim()
-        if (!this.isGroupOwner || !this.groupData || !email || this.isLoading()) return
-        this.isLoading.set(true)
-        this.clerkInvitation.set(null)
-        this.copyLinkStatus.set('idle')
-        this.inviteError.set(null)
-
-        try {
-            const invitation = await firstValueFrom(
-                this.dataService.inviteNewPersonToGroup(this.groupData.id, email, this.selectedClaimPersonId()),
-            )
-            this.clerkInvitation.set(invitation)
-            this.inviteTarget.reset()
-            this.selectedClaimPersonId.set(null)
-            await this.refreshClerkInvitations(this.groupData.id)
-        } catch (error) {
-            this.inviteError.set(
-                httpStatus(error) === 409
-                    ? $localize`:Error under the invite field on the group's settings page, after sending; Pending invitations is a heading on the page:This email already has a pending invitation. Find it under Pending invitations, where you can revoke it and send a new one.`
-                    : $localize`:Error under the invite field on the group's settings page, after sending:We could not send the email invitation. Check the address and try again; your entry is still here.`,
             )
         } finally {
             this.isLoading.set(false)
@@ -302,62 +255,6 @@ export class GroupEditComponent {
             },
             { injector: this.injector },
         )
-    }
-
-    private async loadClerkInvitations(groupId: number): Promise<void> {
-        if (this.loadedClerkInvitationsGroupId === groupId) return
-        this.loadedClerkInvitationsGroupId = groupId
-        this.clerkInvitationsLoading.set(true)
-        this.clerkInvitationsError.set(false)
-        try {
-            const invitations = await firstValueFrom(this.api.getClerkGroupInvitations(groupId))
-            this.clerkPendingInvitations.set(invitations)
-        } catch {
-            this.clerkInvitationsError.set(true)
-        } finally {
-            this.clerkInvitationsLoading.set(false)
-        }
-    }
-
-    public async refreshClerkInvitations(groupId: number): Promise<void> {
-        this.loadedClerkInvitationsGroupId = null
-        await this.loadClerkInvitations(groupId)
-    }
-
-    public requestClerkRevoke(invitationId: string): void {
-        this.pendingClerkRevokeId.set(this.pendingClerkRevokeId() === invitationId ? null : invitationId)
-    }
-
-    async revokeClerkInvitation(invitationId: string): Promise<void> {
-        if (!this.isGroupOwner || !this.groupData || this.pendingClerkRevokeId() !== invitationId || this.isLoading()) return
-        this.isLoading.set(true)
-
-        try {
-            await firstValueFrom(this.api.revokeClerkGroupInvitation(this.groupData.id, invitationId))
-            this.pendingClerkRevokeId.set(null)
-            this.toastService.success($localize`:Toast after revoking an email invitation:Email invitation revoked`)
-            await this.refreshClerkInvitations(this.groupData.id)
-        } catch {
-            this.toastService.error($localize`:Toast when an email invitation could not be revoked:Error revoking email invitation`)
-        } finally {
-            this.isLoading.set(false)
-        }
-    }
-
-    async copyClerkInvitationLink() {
-        const url = this.clerkInvitation()?.url
-        if (!url) return
-        if (!navigator.clipboard) {
-            this.copyLinkStatus.set('unavailable')
-            return
-        }
-
-        try {
-            await navigator.clipboard.writeText(url)
-            this.copyLinkStatus.set('copied')
-        } catch {
-            this.copyLinkStatus.set('failed')
-        }
     }
 
     /** Removes a member at once, after its inline confirmation. */

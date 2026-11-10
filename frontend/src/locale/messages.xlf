@@ -59,9 +59,8 @@
     <unit id="1023159118123911874">
       <notes>
         <note category="location">src/app/layout/usage-notice/usage-notice.component.html</note>
-        <note category="location">src/app/pages/auth/register/register.component.html</note>
         <note category="location">src/app/pages/settings/privacy/settings-privacy.component.html</note>
-        <note category="description">Label of the usage statistics switch on the invitation sign-up page; the same switch is in Settings, Privacy</note>
+        <note category="description">Label of the usage statistics switch in the card that asks about usage statistics; the same switch is in Settings, Privacy</note>
       </notes>
       <segment>
         <source>Help improve Board Vault</source>
@@ -715,15 +714,6 @@
         <source>People in the group</source>
       </segment>
     </unit>
-    <unit id="135077277733987408">
-      <notes>
-        <note category="location">src/app/pages/groups/group-edit/group-edit.component.html</note>
-        <note category="description">Button on an email invitation on the group&apos;s settings page</note>
-      </notes>
-      <segment>
-        <source>Revoke</source>
-      </segment>
-    </unit>
     <unit id="1351039989158141946">
       <notes>
         <note category="location">src/app/pages/games/game-view/game-view.component.html</note>
@@ -767,15 +757,6 @@
       </notes>
       <segment>
         <source>Plays with <ph id="0" equiv="INTERPOLATION" disp="{{ count }}"/></source>
-      </segment>
-    </unit>
-    <unit id="1388712764439031120">
-      <notes>
-        <note category="location">src/app/pages/groups/group-edit/group-edit.component.html</note>
-        <note category="description">Button on the group&apos;s settings page after an email invitation is sent, and the button the copy messages refer to</note>
-      </notes>
-      <segment>
-        <source>Open link</source>
       </segment>
     </unit>
     <unit id="1391234354545336110">
@@ -858,15 +839,6 @@
       </notes>
       <segment>
         <source>Finish anyway</source>
-      </segment>
-    </unit>
-    <unit id="1469632649736561576">
-      <notes>
-        <note category="location">src/app/pages/groups/group-edit/group-edit.component.ts</note>
-        <note category="description">Toast after revoking an email invitation</note>
-      </notes>
-      <segment>
-        <source>Email invitation revoked</source>
       </segment>
     </unit>
     <unit id="1477020961894413786">
@@ -953,15 +925,6 @@
         <source>New to this group</source>
       </segment>
     </unit>
-    <unit id="1525462353445570720">
-      <notes>
-        <note category="location">src/app/layout/auth-handoff/auth-handoff.component.html</note>
-        <note category="description">Help under an error when finishing sign-in failed</note>
-      </notes>
-      <segment>
-        <source>If you were invited by a group owner, use the invitation link again after signing out.</source>
-      </segment>
-    </unit>
     <unit id="1525646804357117160">
       <notes>
         <note category="location">src/app/pages/settings/appearance/settings-appearance.component.ts</note>
@@ -1023,15 +986,6 @@
       </notes>
       <segment>
         <source> Members of your groups see your display name, username and avatar, the games on your shelf, the game nights you take part in, and what you change in the group&apos;s history. </source>
-      </segment>
-    </unit>
-    <unit id="154867606131482974">
-      <notes>
-        <note category="location">src/app/pages/auth/register/register.component.ts</note>
-        <note category="description">Error on the invitation sign-up page when the password is too weak</note>
-      </notes>
-      <segment>
-        <source>That password does not meet the secure sign-up requirements. Use the guidance above and try again.</source>
       </segment>
     </unit>
     <unit id="1560603435807422155">
@@ -1123,15 +1077,6 @@
       </notes>
       <segment>
         <source>Builds on the group’s shared shelf</source>
-      </segment>
-    </unit>
-    <unit id="1610683093877445085">
-      <notes>
-        <note category="location">src/app/pages/auth/register/register.component.html</note>
-        <note category="description">Text on the invitation sign-up page for someone who already has an account</note>
-      </notes>
-      <segment>
-        <source>Use your existing Board Vault account to join the group that invited you.</source>
       </segment>
     </unit>
     <unit id="1611204955714241765">
@@ -1307,15 +1252,6 @@
         <source>Group pulse</source>
       </segment>
     </unit>
-    <unit id="1693448719603745632">
-      <notes>
-        <note category="location">src/app/pages/groups/group-edit/group-edit.component.html</note>
-        <note category="description">Placeholder of the invite field on the group&apos;s settings page; keep the example username and address in the same form</note>
-      </notes>
-      <segment>
-        <source>friend_username or friend@example.com</source>
-      </segment>
-    </unit>
     <unit id="1696570268117903233">
       <notes>
         <note category="location">src/app/pages/settings/appearance/settings-appearance.component.ts</note>
@@ -1449,15 +1385,6 @@
       </notes>
       <segment>
         <source>Could not add this person to the group.</source>
-      </segment>
-    </unit>
-    <unit id="1778794274270029461">
-      <notes>
-        <note category="location">src/app/pages/groups/group-edit/group-edit.component.html</note>
-        <note category="description">Shown on the group&apos;s settings page when the browser cannot copy; Open link is the button next to it</note>
-      </notes>
-      <segment>
-        <source>Clipboard access is unavailable; use Open link.</source>
       </segment>
     </unit>
     <unit id="1790637555628658675">
@@ -2146,15 +2073,6 @@
         <source>Any length</source>
       </segment>
     </unit>
-    <unit id="2112768397949905814">
-      <notes>
-        <note category="location">src/app/pages/groups/group-edit/group-edit.component.ts</note>
-        <note category="description">Error under the invite field on the group&apos;s settings page</note>
-      </notes>
-      <segment>
-        <source>Enter a valid email address.</source>
-      </segment>
-    </unit>
     <unit id="2120057704151430913">
       <notes>
         <note category="location">src/app/core/i18n/notification-text.ts</note>
@@ -2586,15 +2504,6 @@
         <source>Last Friday</source>
       </segment>
     </unit>
-    <unit id="2354722487650755409">
-      <notes>
-        <note category="location">src/app/pages/auth/register/register.component.html</note>
-        <note category="description">Hint under the password field on the invitation sign-up page</note>
-      </notes>
-      <segment>
-        <source>Use at least 15 characters.</source>
-      </segment>
-    </unit>
     <unit id="2358983192776008663">
       <notes>
         <note category="location">src/app/pages/landing/landing.component.html</note>
@@ -2898,15 +2807,6 @@
         <source>For example: at Ana’s place, bring snacks.</source>
       </segment>
     </unit>
-    <unit id="2485595059919735658">
-      <notes>
-        <note category="location">src/app/pages/auth/register/register.component.html</note>
-        <note category="description">Button on the invitation sign-up page for someone who already has an account</note>
-      </notes>
-      <segment>
-        <source>Continue to the group</source>
-      </segment>
-    </unit>
     <unit id="2486379051921165735">
       <notes>
         <note category="location">src/app/pages/group-view/group-view.component.html</note>
@@ -2987,15 +2887,6 @@
       </notes>
       <segment>
         <source>Refresh invitations</source>
-      </segment>
-    </unit>
-    <unit id="2521053447392428699">
-      <notes>
-        <note category="location">src/app/core/services/login.service.ts</note>
-        <note category="description">Error when finishing sign-in failed</note>
-      </notes>
-      <segment>
-        <source>We could not finish connecting this sign-in to Board Vault. Try again, or sign out and use your invitation link.</source>
       </segment>
     </unit>
     <unit id="2529039960931560775">
@@ -3097,15 +2988,6 @@
       </notes>
       <segment>
         <source>Filter the example games by players</source>
-      </segment>
-    </unit>
-    <unit id="2561326148159407958">
-      <notes>
-        <note category="location">src/app/pages/auth/register/register.component.html</note>
-        <note category="description">Field error on the invitation sign-up page</note>
-      </notes>
-      <segment>
-        <source>Passwords must match.</source>
       </segment>
     </unit>
     <unit id="2564399110758822997">
@@ -3281,15 +3163,6 @@
         <source>Vote for what you’d play; the most wanted games go first. Add more from the suggestions below.</source>
       </segment>
     </unit>
-    <unit id="2643703668230155641">
-      <notes>
-        <note category="location">src/app/pages/groups/group-edit/group-edit.component.html</note>
-        <note category="description">Shown on the group&apos;s settings page after an email invitation is sent</note>
-      </notes>
-      <segment>
-        <source>Share the secure link directly if the email does not arrive.</source>
-      </segment>
-    </unit>
     <unit id="2648891279230137253">
       <notes>
         <note category="location">src/app/pages/groups/group-edit/group-edit.component.html</note>
@@ -3297,15 +3170,6 @@
       </notes>
       <segment>
         <source>Back to group workspace</source>
-      </segment>
-    </unit>
-    <unit id="2651093893318942646">
-      <notes>
-        <note category="location">src/app/pages/auth/register/register.component.ts</note>
-        <note category="description">Error on the invitation sign-up page for any other failure</note>
-      </notes>
-      <segment>
-        <source>We could not complete this invitation right now. Check the fields and security check, then try again.</source>
       </segment>
     </unit>
     <unit id="2666064384994730683">
@@ -4251,15 +4115,6 @@
         <source>Switch for now</source>
       </segment>
     </unit>
-    <unit id="3146348002114324720">
-      <notes>
-        <note category="location">src/app/pages/auth/register/register.component.html</note>
-        <note category="description">Button on the invitation sign-up page while it joins the group</note>
-      </notes>
-      <segment>
-        <source>Joining…</source>
-      </segment>
-    </unit>
     <unit id="3155881512369038593">
       <notes>
         <note category="location">src/app/components/card-group/card-group.component.html</note>
@@ -4294,15 +4149,6 @@
       </notes>
       <segment>
         <source>Keep the group name to 40 characters or fewer.</source>
-      </segment>
-    </unit>
-    <unit id="3183680813439010723">
-      <notes>
-        <note category="location">src/app/pages/auth/register/register.component.ts</note>
-        <note category="description">Error on the invitation sign-up page when the invitation is no longer valid</note>
-      </notes>
-      <segment>
-        <source>We could not complete this invitation. The link may have expired, been used already, or the group may no longer be available. Ask the group owner for a fresh invitation and try again.</source>
       </segment>
     </unit>
     <unit id="3186477898571897739">
@@ -4532,15 +4378,6 @@
         <source>Remove <ph id="0" equiv="name" disp="name"/> from session attendees</source>
       </segment>
     </unit>
-    <unit id="3269668325192817246">
-      <notes>
-        <note category="location">src/app/layout/auth-handoff/auth-handoff.component.html</note>
-        <note category="description">Text while someone joins a group from an invitation link</note>
-      </notes>
-      <segment>
-        <source>Your invitation is confirmed. We are adding you to the shared games and session history.</source>
-      </segment>
-    </unit>
     <unit id="3279828561938242897">
       <notes>
         <note category="location">src/app/components/log-session-wizard/log-session-wizard.component.ts</note>
@@ -4704,15 +4541,6 @@
         <source>Highest rated</source>
       </segment>
     </unit>
-    <unit id="335857619216190644">
-      <notes>
-        <note category="location">src/app/pages/auth/register/register.component.html</note>
-        <note category="description">Button on the invitation sign-up page that creates the account and joins the group</note>
-      </notes>
-      <segment>
-        <source>Join the group</source>
-      </segment>
-    </unit>
     <unit id="3359654905446055631">
       <notes>
         <note category="location">src/app/pages/group-view/group-view.component.html</note>
@@ -4720,15 +4548,6 @@
       </notes>
       <segment>
         <source>Group people could not be loaded.</source>
-      </segment>
-    </unit>
-    <unit id="3368354806275320976">
-      <notes>
-        <note category="location">src/app/pages/groups/group-edit/group-edit.component.html</note>
-        <note category="description">Under the invite field on the group&apos;s settings page, when it holds an email address</note>
-      </notes>
-      <segment>
-        <source>We email them a secure link; they join after creating their account.</source>
       </segment>
     </unit>
     <unit id="3369109552231003200">
@@ -5030,15 +4849,6 @@
         <source>Neutral</source>
       </segment>
     </unit>
-    <unit id="3511650652722079837">
-      <notes>
-        <note category="location">src/app/pages/groups/group-edit/group-edit.component.html</note>
-        <note category="description">Error on the group&apos;s settings page</note>
-      </notes>
-      <segment>
-        <source>Pending email invitations could not be loaded.</source>
-      </segment>
-    </unit>
     <unit id="351522100312897877">
       <notes>
         <note category="location">src/app/components/log-session-wizard/log-session-wizard.component.ts</note>
@@ -5065,6 +4875,15 @@
       </notes>
       <segment>
         <source>Show less</source>
+      </segment>
+    </unit>
+    <unit id="3525453333244585181">
+      <notes>
+        <note category="location">src/app/core/services/login.service.ts</note>
+        <note category="description">Error when finishing sign-in failed</note>
+      </notes>
+      <segment>
+        <source>We could not finish connecting this sign-in to Board Vault. Try again, or sign out and sign in again.</source>
       </segment>
     </unit>
     <unit id="3540162720027434413">
@@ -5122,15 +4941,6 @@
         <source>Filter by how many people are playing, and sort by title or by play time.</source>
       </segment>
     </unit>
-    <unit id="3568097994808154139">
-      <notes>
-        <note category="location">src/app/pages/auth/register/register.component.html</note>
-        <note category="description">Shown on the invitation sign-up page while the sign-up service loads</note>
-      </notes>
-      <segment>
-        <source>The secure sign-up service is still loading. Refresh this page to continue.</source>
-      </segment>
-    </unit>
     <unit id="3569367893851462741">
       <notes>
         <note category="location">src/app/components/log-session-wizard/log-session-wizard.component.ts</note>
@@ -5183,6 +4993,15 @@
       </notes>
       <segment>
         <source>this person</source>
+      </segment>
+    </unit>
+    <unit id="3596250160541111347">
+      <notes>
+        <note category="location">src/app/pages/groups/group-edit/group-edit.component.html</note>
+        <note category="description">Under the invite field on the group&apos;s settings page</note>
+      </notes>
+      <segment>
+        <source>They see the invitation in their inbox. Someone without an account creates one first, then tells you their username.</source>
       </segment>
     </unit>
     <unit id="3604302725458668058">
@@ -5373,15 +5192,6 @@
         <source>Sign in with your email and password, or with a one-time email code.</source>
       </segment>
     </unit>
-    <unit id="3695284650507550132">
-      <notes>
-        <note category="location">src/app/pages/groups/group-edit/group-edit.component.html</note>
-        <note category="description">Shown on the group&apos;s settings page when copying fails; Open link is the button next to it</note>
-      </notes>
-      <segment>
-        <source>The link could not be copied; use Open link.</source>
-      </segment>
-    </unit>
     <unit id="3695816730555625996">
       <notes>
         <note category="location">src/app/components/forms/form-game-submission/form-game-submission.component.html</note>
@@ -5473,24 +5283,6 @@
         <source>Friday</source>
       </segment>
     </unit>
-    <unit id="3736594653461707643">
-      <notes>
-        <note category="location">src/app/layout/auth-handoff/auth-handoff.component.html</note>
-        <note category="description">Small heading while someone joins a group from an invitation link</note>
-      </notes>
-      <segment>
-        <source>Joining your group</source>
-      </segment>
-    </unit>
-    <unit id="3743886829964190111">
-      <notes>
-        <note category="location">src/app/layout/auth-handoff/auth-handoff.component.html</note>
-        <note category="description">Heading when joining a group from an invitation link failed</note>
-      </notes>
-      <segment>
-        <source>We could not finish joining this group</source>
-      </segment>
-    </unit>
     <unit id="374534302404164936">
       <notes>
         <note category="location">src/app/core/utils/groupActivity.ts</note>
@@ -5507,15 +5299,6 @@
       </notes>
       <segment>
         <source>Invite at least one person.</source>
-      </segment>
-    </unit>
-    <unit id="3756911098627936144">
-      <notes>
-        <note category="location">src/app/pages/groups/group-edit/group-edit.component.html</note>
-        <note category="description">Button that confirms revoking an email invitation</note>
-      </notes>
-      <segment>
-        <source>Yes, revoke</source>
       </segment>
     </unit>
     <unit id="3758952688125628845">
@@ -5718,15 +5501,6 @@
       </notes>
       <segment>
         <source>Your game proposal &quot;<ph id="0" equiv="title" disp="data[&apos;gameTitle&apos;]"/>&quot; was rejected: <ph id="1" equiv="reason" disp="data[&apos;reviewNotes&apos;]"/></source>
-      </segment>
-    </unit>
-    <unit id="3848463043339307213">
-      <notes>
-        <note category="location">src/app/pages/auth/register/register.component.html</note>
-        <note category="description">Small heading of the invitation sign-up page</note>
-      </notes>
-      <segment>
-        <source>You are invited</source>
       </segment>
     </unit>
     <unit id="3849567001776882788">
@@ -6059,15 +5833,6 @@
         <source>Done</source>
       </segment>
     </unit>
-    <unit id="3973958082584068059">
-      <notes>
-        <note category="location">src/app/pages/groups/group-edit/group-edit.component.html</note>
-        <note category="description">Shown on the group&apos;s settings page after copying the invitation link</note>
-      </notes>
-      <segment>
-        <source>Secure link copied.</source>
-      </segment>
-    </unit>
     <unit id="3976710906062238438">
       <notes>
         <note category="location">src/app/pages/settings/account/settings-account.component.html</note>
@@ -6204,15 +5969,6 @@
         <source>Could not save the played game changes.</source>
       </segment>
     </unit>
-    <unit id="4047284277855563769">
-      <notes>
-        <note category="location">src/app/pages/groups/group-edit/group-edit.component.html</note>
-        <note category="description">When an email invitation was sent; the placeholder is a date</note>
-      </notes>
-      <segment>
-        <source>Sent <ph id="0" equiv="INTERPOLATION" disp="{{ invitation.createdAt | customDate: true }}"/></source>
-      </segment>
-    </unit>
     <unit id="4050851435935072722">
       <notes>
         <note category="location">src/app/core/i18n/clerk-localization.ts</note>
@@ -6331,15 +6087,6 @@
       </notes>
       <segment>
         <source>30 min</source>
-      </segment>
-    </unit>
-    <unit id="4089792051247409822">
-      <notes>
-        <note category="location">src/app/pages/groups/group-edit/group-edit.component.html</note>
-        <note category="description">Heading on the group&apos;s settings page, of the invitations sent to people with an account</note>
-      </notes>
-      <segment>
-        <source>Existing account invitations</source>
       </segment>
     </unit>
     <unit id="4096101151032067454">
@@ -6858,15 +6605,6 @@
         <source><ph id="0" equiv="person" disp="actor"/> removed <ph id="1" equiv="game" disp="game"/> from their games in <ph id="2" equiv="group" disp="group"/>.</source>
       </segment>
     </unit>
-    <unit id="430848017615851667">
-      <notes>
-        <note category="location">src/app/pages/groups/group-edit/group-edit.component.html</note>
-        <note category="description">Label of the invite field on the group&apos;s settings page</note>
-      </notes>
-      <segment>
-        <source>Their username or email</source>
-      </segment>
-    </unit>
     <unit id="43221390339107806">
       <notes>
         <note category="location">src/app/pages/group-view/group-view.component.html</note>
@@ -7064,6 +6802,15 @@
       </notes>
       <segment>
         <source>Keep</source>
+      </segment>
+    </unit>
+    <unit id="4451621753772609906">
+      <notes>
+        <note category="location">src/app/pages/auth/register/register.component.html</note>
+        <note category="description">Text in the box on the access page while sign-up is by invitation only</note>
+      </notes>
+      <segment>
+        <source>Ask a friend or group organizer who already uses Board Vault. Once you have an account, they can invite you to their group by your username.</source>
       </segment>
     </unit>
     <unit id="4455805941641791689">
@@ -7273,13 +7020,13 @@
         <source>Text size</source>
       </segment>
     </unit>
-    <unit id="4566831731994109275">
+    <unit id="4548285248495178004">
       <notes>
-        <note category="location">src/app/core/services/data.service.ts</note>
-        <note category="description">Toast after inviting someone to a group by email</note>
+        <note category="location">src/app/pages/auth/register/register.component.html</note>
+        <note category="description">Text on the sign-up page when the sign-up service is down</note>
       </notes>
       <segment>
-        <source>Clerk invitation sent</source>
+        <source>Your account has not been created. Please try again shortly.</source>
       </segment>
     </unit>
     <unit id="4580988005648117665">
@@ -7879,19 +7626,10 @@
     <unit id="4862663633740506261">
       <notes>
         <note category="location">src/app/layout/auth-handoff/auth-handoff.component.html</note>
-        <note category="description">Note while sign-in or joining a group finishes</note>
+        <note category="description">Note while sign-in finishes</note>
       </notes>
       <segment>
         <source>This usually takes a moment. Please keep this tab open.</source>
-      </segment>
-    </unit>
-    <unit id="486664973868674424">
-      <notes>
-        <note category="location">src/app/pages/groups/group-edit/group-edit.component.html</note>
-        <note category="description">Name of the confirmation on the group&apos;s settings page before revoking an email invitation</note>
-      </notes>
-      <segment>
-        <source>Confirm email invitation revocation</source>
       </segment>
     </unit>
     <unit id="4879288031259259008">
@@ -8222,15 +7960,6 @@
         <source><ph id="0" equiv="INTERPOLATION" disp="{{ paid() | currency: &apos;EUR&apos; : &apos;symbol&apos; : &apos;1.0-0&apos; }}"/> paid</source>
       </segment>
     </unit>
-    <unit id="5072920679902574920">
-      <notes>
-        <note category="location">src/app/pages/auth/register/register.component.html</note>
-        <note category="description">Heading of the invitation sign-up page</note>
-      </notes>
-      <segment>
-        <source>Join your Board Vault group</source>
-      </segment>
-    </unit>
     <unit id="5073023451628841098">
       <notes>
         <note category="location">src/app/pages/meet-view/meet-view.component.html</note>
@@ -8490,15 +8219,6 @@
         <source><ph id="0" equiv="actor" disp="actor"/> recorded a game night that already happened</source>
       </segment>
     </unit>
-    <unit id="5182556936985589025">
-      <notes>
-        <note category="location">src/app/pages/auth/register/register.component.html</note>
-        <note category="description">Text on the invitation sign-up page for someone new</note>
-      </notes>
-      <segment>
-        <source>Choose a Board Vault username and password to join the group that invited you.</source>
-      </segment>
-    </unit>
     <unit id="5184649775750491056">
       <notes>
         <note category="location">src/app/pages/play-page/recommendations-page/recommendations-page.component.ts</note>
@@ -8553,15 +8273,6 @@
         <source>Your latest changes to your collection:</source>
       </segment>
     </unit>
-    <unit id="5202277594263112757">
-      <notes>
-        <note category="location">src/app/pages/groups/group-edit/group-edit.component.ts</note>
-        <note category="description">Error under the invite field on the group&apos;s settings page, after sending; Pending invitations is a heading on the page</note>
-      </notes>
-      <segment>
-        <source>This email already has a pending invitation. Find it under Pending invitations, where you can revoke it and send a new one.</source>
-      </segment>
-    </unit>
     <unit id="5207635742003539443">
       <notes>
         <note category="location">src/app/layout/footer/footer.component.html</note>
@@ -8570,6 +8281,15 @@
       </notes>
       <segment>
         <source>Sign in</source>
+      </segment>
+    </unit>
+    <unit id="5217191935719657396">
+      <notes>
+        <note category="location">src/app/layout/auth-handoff/auth-handoff.component.html</note>
+        <note category="description">Help under an error when finishing sign-in failed</note>
+      </notes>
+      <segment>
+        <source>If it keeps happening, sign out and sign in again.</source>
       </segment>
     </unit>
     <unit id="521757115722784859">
@@ -8903,15 +8623,6 @@
         <source>Delete account…</source>
       </segment>
     </unit>
-    <unit id="5426652292414469891">
-      <notes>
-        <note category="location">src/app/pages/groups/group-edit/group-edit.component.html</note>
-        <note category="description">Button on the group&apos;s settings page after an email invitation is sent</note>
-      </notes>
-      <segment>
-        <source>Copy secure link</source>
-      </segment>
-    </unit>
     <unit id="5439518099292334443">
       <notes>
         <note category="location">src/app/components/log-session-wizard/log-session-wizard.component.html</note>
@@ -9095,15 +8806,6 @@
         <source>No games found matching “<ph id="0" equiv="INTERPOLATION" disp="{{ searchTerm$().trim() }}"/>”</source>
       </segment>
     </unit>
-    <unit id="5541061324274473691">
-      <notes>
-        <note category="location">src/app/pages/groups/group-edit/group-edit.component.html</note>
-        <note category="description">Confirmation on the group&apos;s settings page before revoking an email invitation</note>
-      </notes>
-      <segment>
-        <source>Revoke this link?</source>
-      </segment>
-    </unit>
     <unit id="5556287223564037604">
       <notes>
         <note category="location">src/app/pages/play-page/recommendations-page/recommendations-page.component.html</note>
@@ -9285,6 +8987,15 @@
         <source>This link has expired. Please start again or request a new link.</source>
       </segment>
     </unit>
+    <unit id="5631154745703553359">
+      <notes>
+        <note category="location">src/app/pages/groups/group-edit/group-edit.component.ts</note>
+        <note category="description">Error under the invite field on the group&apos;s settings page, when it is empty</note>
+      </notes>
+      <segment>
+        <source>Enter their username.</source>
+      </segment>
+    </unit>
     <unit id="5634845637729017989">
       <notes>
         <note category="location">src/app/pages/meet-view/meet-view.component.html</note>
@@ -9337,15 +9048,6 @@
       </notes>
       <segment>
         <source>Your page ›</source>
-      </segment>
-    </unit>
-    <unit id="5673906746664423612">
-      <notes>
-        <note category="location">src/app/layout/auth-handoff/auth-handoff.component.html</note>
-        <note category="description">Heading while someone joins a group from an invitation link</note>
-      </notes>
-      <segment>
-        <source>Connecting you to your Board Vault group</source>
       </segment>
     </unit>
     <unit id="5676759314427074249">
@@ -9402,15 +9104,6 @@
         <source>Loading game nights</source>
       </segment>
     </unit>
-    <unit id="5704529793565613046">
-      <notes>
-        <note category="location">src/app/pages/groups/group-edit/group-edit.component.ts</note>
-        <note category="description">Toast when an email invitation could not be revoked</note>
-      </notes>
-      <segment>
-        <source>Error revoking email invitation</source>
-      </segment>
-    </unit>
     <unit id="5704826947758383316">
       <notes>
         <note category="location">src/app/core/services/data.service.ts</note>
@@ -9463,6 +9156,15 @@
       </notes>
       <segment>
         <source>Account menu</source>
+      </segment>
+    </unit>
+    <unit id="5729569828295791403">
+      <notes>
+        <note category="location">src/app/pages/groups/group-edit/group-edit.component.html</note>
+        <note category="description">Placeholder of the invite field on the group&apos;s settings page; an example username, letters, numbers, _ or - only</note>
+      </notes>
+      <segment>
+        <source>friend_username</source>
       </segment>
     </unit>
     <unit id="5737478077982119897">
@@ -9701,15 +9403,6 @@
         <source>Close navigation</source>
       </segment>
     </unit>
-    <unit id="5850698978356573024">
-      <notes>
-        <note category="location">src/app/pages/auth/register/register.component.html</note>
-        <note category="description">Field label on the invitation sign-up page</note>
-      </notes>
-      <segment>
-        <source>Confirm your password</source>
-      </segment>
-    </unit>
     <unit id="5851560788527570644">
       <notes>
         <note category="location">src/app/layout/inbox/inbox.component.html</note>
@@ -9726,15 +9419,6 @@
       </notes>
       <segment>
         <source><ph id="0" equiv="name" disp="name"/> was there</source>
-      </segment>
-    </unit>
-    <unit id="585919947763588623">
-      <notes>
-        <note category="location">src/app/pages/groups/group-edit/group-edit.component.html</note>
-        <note category="description">How many email invitations are waiting on the group&apos;s settings page</note>
-      </notes>
-      <segment>
-        <source>{VAR_PLURAL, plural, one {<ph id="0" equiv="INTERPOLATION"/> email link} other {<ph id="1" equiv="INTERPOLATION"/> email links}}</source>
       </segment>
     </unit>
     <unit id="5869913314404545561">
@@ -10216,6 +9900,15 @@
         <source>You have joined the group!</source>
       </segment>
     </unit>
+    <unit id="6103638214215311726">
+      <notes>
+        <note category="location">src/app/pages/groups/group-edit/group-edit.component.ts</note>
+        <note category="description">Error under the invite field on the group&apos;s settings page, when it holds an email address</note>
+      </notes>
+      <segment>
+        <source>Use their Board Vault username, not their email. Ask them for it if you don&apos;t know it.</source>
+      </segment>
+    </unit>
     <unit id="6106536749017609878">
       <notes>
         <note category="location">src/app/components/forms/form-game-submission/form-game-submission.component.html</note>
@@ -10453,15 +10146,6 @@
         <source>Owned by <ph id="0" equiv="owners" disp="owners"/> of <ph id="1" equiv="people" disp="attendees"/> selected attendees</source>
       </segment>
     </unit>
-    <unit id="6203289205504225930">
-      <notes>
-        <note category="location">src/app/pages/groups/group-edit/group-edit.component.html</note>
-        <note category="description">Shown on the group&apos;s settings page after an email invitation is sent; the placeholder is the address</note>
-      </notes>
-      <segment>
-        <source>Invitation sent to <ph id="0" equiv="INTERPOLATION" disp="{{ invitation.emailAddress }}"/>.</source>
-      </segment>
-    </unit>
     <unit id="6205660505479571083">
       <notes>
         <note category="location">src/app/pages/auth/login/login.component.html</note>
@@ -10568,15 +10252,6 @@
       </notes>
       <segment>
         <source>Notification not found</source>
-      </segment>
-    </unit>
-    <unit id="6288431611067126915">
-      <notes>
-        <note category="location">src/app/pages/auth/register/register.component.html</note>
-        <note category="description">Text in the box on the access page while sign-up is by invitation only; Clerk is the sign-in service</note>
-      </notes>
-      <segment>
-        <source>Ask a friend or group organizer who already uses Board Vault to invite you. Once invited, use the secure Clerk sign-up link they provide.</source>
       </segment>
     </unit>
     <unit id="6295691601911869403">
@@ -10898,15 +10573,6 @@
         <source>Groups could not be loaded</source>
       </segment>
     </unit>
-    <unit id="6416477889465671000">
-      <notes>
-        <note category="location">src/app/pages/auth/register/register.component.html</note>
-        <note category="description">Text on the sign-up page when the sign-up service is down</note>
-      </notes>
-      <segment>
-        <source>Your account has not been created. Please try again shortly or ask your group owner to send a fresh invitation.</source>
-      </segment>
-    </unit>
     <unit id="641656785674590331">
       <notes>
         <note category="location">src/app/components/session-summary/session-summary.component.ts</note>
@@ -11033,15 +10699,6 @@
       </notes>
       <segment>
         <source>Could not archive this group person.</source>
-      </segment>
-    </unit>
-    <unit id="6498062783927960685">
-      <notes>
-        <note category="location">src/app/pages/auth/register/register.component.html</note>
-        <note category="description">Title of the box on the invitation sign-up page for someone who already has an account</note>
-      </notes>
-      <segment>
-        <source>Your Board Vault account is already registered.</source>
       </segment>
     </unit>
     <unit id="6505214317212036405">
@@ -11182,15 +10839,6 @@
       </notes>
       <segment>
         <source>Features</source>
-      </segment>
-    </unit>
-    <unit id="6602855542242739725">
-      <notes>
-        <note category="location">src/app/pages/auth/register/register.component.ts</note>
-        <note category="description">Error on the invitation sign-up page when the security check failed</note>
-      </notes>
-      <segment>
-        <source>The security check could not be completed. Complete it and try again.</source>
       </segment>
     </unit>
     <unit id="6605529536585784337">
@@ -11516,15 +11164,6 @@
         <source><ph id="0" equiv="title" disp="title"/> leads with <ph id="1" equiv="votes" disp="votes"/> votes</source>
       </segment>
     </unit>
-    <unit id="6744211960979064014">
-      <notes>
-        <note category="location">src/app/pages/auth/register/register.component.html</note>
-        <note category="description">Field error on the invitation sign-up page</note>
-      </notes>
-      <segment>
-        <source>Use 4–64 characters for your username.</source>
-      </segment>
-    </unit>
     <unit id="6762830186305693321">
       <notes>
         <note category="location">src/app/core/utils/groupActivity.ts</note>
@@ -11687,15 +11326,6 @@
       </notes>
       <segment>
         <source>Got it, you can’t make it.</source>
-      </segment>
-    </unit>
-    <unit id="6834924679958399011">
-      <notes>
-        <note category="location">src/app/pages/groups/group-edit/group-edit.component.html</note>
-        <note category="description">Under the invite field on the group&apos;s settings page, when it holds a username</note>
-      </notes>
-      <segment>
-        <source>Someone who already has an account sees the invitation in their inbox.</source>
       </segment>
     </unit>
     <unit id="6837138223026715835">
@@ -12881,6 +12511,15 @@
         <source>Unpin</source>
       </segment>
     </unit>
+    <unit id="7431603774839555423">
+      <notes>
+        <note category="location">src/app/pages/groups/group-edit/group-edit.component.html</note>
+        <note category="description">Under Invite the people you play with on the group&apos;s settings page</note>
+      </notes>
+      <segment>
+        <source>Invite them by their Board Vault username.</source>
+      </segment>
+    </unit>
     <unit id="7434447101665682282">
       <notes>
         <note category="location">src/app/app.component.ts</note>
@@ -12908,15 +12547,6 @@
         <source>Your ratings <pc id="0" equivStart="START_TAG_SPAN" equivEnd="CLOSE_TAG_SPAN" type="other" dispStart="&lt;span class=&quot;text-base font-normal text-secondary&quot;&gt;" dispEnd="&lt;/span&gt;">(<ph id="1" equiv="INTERPOLATION" disp="{{ userReviews$().length }}"/>)</pc></source>
       </segment>
     </unit>
-    <unit id="7455956774102417623">
-      <notes>
-        <note category="location">src/app/pages/auth/register/register.component.html</note>
-        <note category="description">Field label on the invitation sign-up page</note>
-      </notes>
-      <segment>
-        <source>Choose a username</source>
-      </segment>
-    </unit>
     <unit id="7460863139291920826">
       <notes>
         <note category="location">src/app/pages/meet-view/meet-view.component.ts</note>
@@ -12933,15 +12563,6 @@
       </notes>
       <segment>
         <source>Thanks for your proposal! We will review it as soon as possible and let you know the outcome.</source>
-      </segment>
-    </unit>
-    <unit id="7479353190280997286">
-      <notes>
-        <note category="location">src/app/pages/groups/group-edit/group-edit.component.html</note>
-        <note category="description">Under Invite the people you play with on the group&apos;s settings page</note>
-      </notes>
-      <segment>
-        <source>Whether or not they already have an account.</source>
       </segment>
     </unit>
     <unit id="7481083906507561539">
@@ -13288,13 +12909,13 @@
         <source>View <ph id="0" equiv="title" disp="title"/></source>
       </segment>
     </unit>
-    <unit id="7647510484935085361">
+    <unit id="7652336251247281831">
       <notes>
-        <note category="location">src/app/pages/auth/register/register.component.html</note>
-        <note category="description">Button under an error on the invitation sign-up page, back to the access page</note>
+        <note category="location">src/app/pages/groups/group-edit/group-edit.component.html</note>
+        <note category="description">Label of the invite field on the group&apos;s settings page</note>
       </notes>
       <segment>
-        <source>Return to private-beta access</source>
+        <source>Their username</source>
       </segment>
     </unit>
     <unit id="7652811378040044470">
@@ -13394,15 +13015,6 @@
       </notes>
       <segment>
         <source>Sort by</source>
-      </segment>
-    </unit>
-    <unit id="7699707220451182317">
-      <notes>
-        <note category="location">src/app/pages/auth/register/register.component.html</note>
-        <note category="description">Text in the box on the invitation sign-up page for someone who already has an account</note>
-      </notes>
-      <segment>
-        <source>Continue with this secure invitation link and we’ll add you to the group. No new password is needed.</source>
       </segment>
     </unit>
     <unit id="7702681530374445931">
@@ -13713,15 +13325,6 @@
       </notes>
       <segment>
         <source>Hide tags</source>
-      </segment>
-    </unit>
-    <unit id="785270353086309130">
-      <notes>
-        <note category="location">src/app/pages/groups/group-edit/group-edit.component.ts</note>
-        <note category="description">Error under the invite field on the group&apos;s settings page, when it is empty</note>
-      </notes>
-      <segment>
-        <source>Enter their username or email.</source>
       </segment>
     </unit>
     <unit id="7853727421705146371">
@@ -14230,15 +13833,6 @@
         <source>Invite the friends who make this a real game night.</source>
       </segment>
     </unit>
-    <unit id="8053410100631770875">
-      <notes>
-        <note category="location">src/app/pages/auth/register/register.component.html</note>
-        <note category="description">Note at the bottom of the invitation sign-up page</note>
-      </notes>
-      <segment>
-        <source>This link is private and expires. Do not share it publicly.</source>
-      </segment>
-    </unit>
     <unit id="8060214676846211943">
       <notes>
         <note category="location">src/app/pages/groups/group-create/group-create.component.html</note>
@@ -14475,15 +14069,6 @@
         <source>Purchase details updated</source>
       </segment>
     </unit>
-    <unit id="8156419267003636846">
-      <notes>
-        <note category="location">src/app/pages/groups/group-edit/group-edit.component.ts</note>
-        <note category="description">Error under the invite field on the group&apos;s settings page, after sending</note>
-      </notes>
-      <segment>
-        <source>We could not send the email invitation. Check the address and try again; your entry is still here.</source>
-      </segment>
-    </unit>
     <unit id="8158713888154048491">
       <notes>
         <note category="location">src/app/components/forms/form-game-submission/form-game-submission.component.html</note>
@@ -14537,15 +14122,6 @@
       </notes>
       <segment>
         <source>Continue your group history</source>
-      </segment>
-    </unit>
-    <unit id="8186634677386165494">
-      <notes>
-        <note category="location">src/app/pages/groups/group-edit/group-edit.component.html</note>
-        <note category="description">Shown on the group&apos;s settings page while the email invitations load</note>
-      </notes>
-      <segment>
-        <source>Loading pending email invitations…</source>
       </segment>
     </unit>
     <unit id="8189309010258574251">
@@ -15020,15 +14596,6 @@
         <source>My submissions — Board Vault</source>
       </segment>
     </unit>
-    <unit id="8435038262958370080">
-      <notes>
-        <note category="location">src/app/core/services/login.service.ts</note>
-        <note category="description">Error when joining a group from an invitation link failed</note>
-      </notes>
-      <segment>
-        <source>We could not finish joining this group. The invitation may have expired, already been used, or the group may no longer be available. Try again, or sign out and ask the group owner for a fresh invitation.</source>
-      </segment>
-    </unit>
     <unit id="8439160099000475740">
       <notes>
         <note category="location">src/app/pages/collection-page/propose-game-page/propose-game-page.component.html</note>
@@ -15113,15 +14680,6 @@
       </notes>
       <segment>
         <source>Search the catalogue</source>
-      </segment>
-    </unit>
-    <unit id="8469235912331273979">
-      <notes>
-        <note category="location">src/app/pages/auth/register/register.component.html</note>
-        <note category="description">Text under the usage statistics switch on the invitation sign-up page; Settings → Privacy names the place in the app</note>
-      </notes>
-      <segment>
-        <source> Lend us a hand? 🎲 We&apos;re a tiny indie team. Leaving this on lets us count which pages get opened, under a pseudonym and in our own database, so we know what to fix next. No cookies, nothing shared. Change it anytime in Settings → Privacy. </source>
       </segment>
     </unit>
     <unit id="8470048272886749459">
@@ -15664,15 +15222,6 @@
         <source>Add your first game</source>
       </segment>
     </unit>
-    <unit id="871235372571809921">
-      <notes>
-        <note category="location">src/app/layout/auth-handoff/auth-handoff.component.html</note>
-        <note category="description">Help under an error when joining a group from an invitation link failed</note>
-      </notes>
-      <segment>
-        <source>Ask the group owner for a fresh invitation if this link has expired or the group is no longer available.</source>
-      </segment>
-    </unit>
     <unit id="8715838975991436163">
       <notes>
         <note category="location">src/app/components/card-notification/card-notification.component.ts</note>
@@ -15805,7 +15354,6 @@
     <unit id="8779419494821652108">
       <notes>
         <note category="location">src/app/core/i18n/clerk-localization.ts</note>
-        <note category="location">src/app/pages/auth/register/register.component.html</note>
         <note category="description">Placeholder of the new password field in Clerk, the sign-in provider</note>
       </notes>
       <segment>
@@ -15959,7 +15507,7 @@
     <unit id="8851134952747107313">
       <notes>
         <note category="location">src/app/layout/auth-handoff/auth-handoff.component.html</note>
-        <note category="description">Small heading above an error after signing in or following an invitation link</note>
+        <note category="description">Small heading above an error after signing in</note>
       </notes>
       <segment>
         <source>One more step needed</source>
@@ -16732,15 +16280,6 @@
       </notes>
       <segment>
         <source>Favours the games this group rates and plays the most.</source>
-      </segment>
-    </unit>
-    <unit id="950714964925956479">
-      <notes>
-        <note category="location">src/app/pages/auth/register/register.component.ts</note>
-        <note category="description">Error on the invitation sign-up page when the username is taken</note>
-      </notes>
-      <segment>
-        <source>That username is unavailable. Choose a different username and try again.</source>
       </segment>
     </unit>
     <unit id="956803384192364124">

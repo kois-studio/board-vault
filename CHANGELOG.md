@@ -116,6 +116,15 @@ operational details.
 
 ### Changed
 
+- Groups invite people by their username only. The invite field on a group's
+  settings page no longer takes an email address, so Board Vault never stores
+  someone else's email: the email invitation, its secure link and the list of
+  pending email invitations are gone, and so is the sign-up page for
+  invitation links. Someone new creates an account, then shares their
+  username. Inviting someone as a person already in the group still works;
+  only the invited account can claim that person. Requires open registration
+  (#157) before it reaches production (#277).
+
 - Administration → Tags shows Edit, Merge and Delete on each tag as icon
   buttons (pencil, merge, bin) that name the action on hover, and on phones
   they stay on the right of a long tag name.

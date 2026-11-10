@@ -1,12 +1,12 @@
-import { BadRequestException, NotFoundException } from '@nestjs/common'
+import { BadRequestException } from '@nestjs/common'
 
 import { containsPattern, LIKE_ESCAPE } from '../like-pattern.js'
 import { resolvedTitleSql } from '../resolved-title.js'
 
 import { activityStatements, recordInTransaction } from './group-activity.queries.js'
 import { deleteGroupRows, departGroup } from './group-lifecycle.js'
+import { CLAIM_TICKET } from './invitations.queries.js'
 
-import type { ClerkGroupInvitationMetadata } from '../../../../common/types/clerk-invitation.type.js'
 import type { GroupActivityEntry } from '../../../../common/types/group-activity.type.js'
 import type { GroupGameInterestBody } from '../../../../common/types/group-game-interest.type.js'
 import type { CreateGroupMembershipBody } from '../../../../common/types/group-membership.type.js'
@@ -50,58 +50,6 @@ const PERSON_COLUMNS = `gp.id, gp.groupId, gp.accountId, gp.kind, gp.status, ${P
 /** Groups, memberships, group people, and acquisition interest. */
 export class GroupQueries {
     constructor(private readonly database: DatabaseService) {}
-
-    async joinGroupFromClerkInvitation(accountId: number, metadata: ClerkGroupInvitationMetadata) {
-        const transaction = await this.database.transaction('write')
-
-        try {
-            const group = await transaction.execute({
-                sql: 'SELECT id FROM UserGroup WHERE id = ? AND createdBy = ?',
-                args: [metadata.groupId, metadata.inviterAccountId],
-            })
-
-            if (group.rows.length === 0) {
-                throw new NotFoundException('The group invitation is no longer valid')
-            }
-
-            await transaction.execute({
-                sql: 'INSERT OR IGNORE INTO GroupMembership (accountId, groupId) VALUES (?, ?)',
-                args: [accountId, metadata.groupId],
-            })
-            // Only a new membership is a join worth a history entry (ADR-0020).
-            for (const statement of activityStatements(
-                { groupId: metadata.groupId, actorAccountId: accountId, type: 'member_joined' },
-                { onlyIfChanged: true },
-            )) {
-                await transaction.execute(statement)
-            }
-
-            if (metadata.groupPersonId === undefined) {
-                await transaction.execute({
-                    sql: `
-                        INSERT INTO GroupPerson (groupId, accountId, kind, status, displayName, avatar, createdByAccountId, claimedAt)
-                        SELECT ?, a.id, 'linked', 'active', COALESCE(NULLIF(a.displayName, ''), a.username), a.avatar, ug.createdBy, CURRENT_TIMESTAMP
-                        FROM Account a
-                        INNER JOIN UserGroup ug ON ug.id = ?
-                        WHERE a.id = ?
-                          AND NOT EXISTS (
-                              SELECT 1
-                              FROM GroupPerson existing
-                              WHERE existing.groupId = ? AND existing.accountId = ?
-                          )
-                    `,
-                    args: [metadata.groupId, metadata.groupId, accountId, metadata.groupId, accountId],
-                })
-            }
-
-            await transaction.commit()
-        } catch (error) {
-            await transaction.rollback()
-            throw error
-        } finally {
-            transaction.close()
-        }
-    }
 
     getGroupsForAccount(accountId: number) {
         return this.database.execute({
@@ -339,18 +287,18 @@ export class GroupQueries {
         })
     }
 
-    getClaimableGroupPersonIds(groupId: number, email: string) {
+    /** The placeholders this account may claim in the group: those an invitation to it suggested (#277). */
+    getClaimableGroupPersonIds(groupId: number, accountId: number) {
         return this.database.execute({
             sql: `
-                SELECT id
-                FROM GroupPerson
-                WHERE groupId = ? AND status = 'active' AND kind = 'placeholder'
-                  AND accountId IS NULL AND claimEmail IS NOT NULL
-                  AND claimExpiresAt > CURRENT_TIMESTAMP
-                  AND lower(claimEmail) = lower(?)
-                ORDER BY id ASC
+                SELECT gp.id
+                FROM GroupPerson gp
+                WHERE gp.groupId = ? AND gp.status = 'active' AND gp.kind = 'placeholder'
+                  AND gp.accountId IS NULL
+                  AND ${CLAIM_TICKET}
+                ORDER BY gp.id ASC
             `,
-            args: [groupId, email],
+            args: [groupId, accountId],
         })
     }
 
@@ -484,46 +432,10 @@ export class GroupQueries {
         return { rowsAffected: result?.rowsAffected ?? 0 }
     }
 
-    setGroupPersonClaimEmail(groupPersonId: number, groupId: number, claimEmail: string) {
-        return this.database.execute({
-            sql: `UPDATE GroupPerson SET claimEmail = ?, claimExpiresAt = datetime('now', '+30 days'), updatedAt = CURRENT_TIMESTAMP WHERE id = ? AND groupId = ? AND kind = 'placeholder' AND accountId IS NULL`,
-            args: [claimEmail.toLowerCase(), groupPersonId, groupId],
-        })
-    }
-
-    /**
-     * Forgets the email of every claim that can no longer be used (#154). An expired claim can't be
-     * claimed, so the email of someone without an account is kept no longer than the claim lasts.
-     */
-    clearExpiredClaimEmails() {
-        return this.database.execute({
-            sql: `
-                UPDATE GroupPerson
-                SET claimEmail = NULL, claimExpiresAt = NULL, updatedAt = CURRENT_TIMESTAMP
-                WHERE (claimEmail IS NOT NULL OR claimExpiresAt IS NOT NULL)
-                  AND (claimExpiresAt IS NULL OR claimExpiresAt <= CURRENT_TIMESTAMP)
-            `,
-            args: [],
-        })
-    }
-
-    clearGroupPersonClaimEmail(groupPersonId: number, groupId: number, claimEmail?: string) {
-        return this.database.execute({
-            sql: `
-                UPDATE GroupPerson
-                SET claimEmail = NULL, claimExpiresAt = NULL, updatedAt = CURRENT_TIMESTAMP
-                WHERE id = ? AND groupId = ? AND kind = 'placeholder' AND accountId IS NULL
-                  ${claimEmail === undefined ? '' : 'AND lower(claimEmail) = lower(?)'}
-            `,
-            args: claimEmail === undefined ? [groupPersonId, groupId] : [groupPersonId, groupId, claimEmail],
-        })
-    }
-
     async claimGroupPerson(input: {
         groupId: number
         groupPersonId: number
         accountId: number
-        email: string
         keepOwnershipGameIds: Array<number>
         keepPreferenceGameIds: Array<number>
         importOwnershipToCollection: boolean
@@ -534,14 +446,13 @@ export class GroupQueries {
         try {
             const candidate = await transaction.execute({
                 sql: `
-                    SELECT id, accountId, kind
-                    FROM GroupPerson
-                    WHERE id = ? AND groupId = ? AND status = 'active'
-                      AND kind = 'placeholder' AND accountId IS NULL
-                      AND claimEmail IS NOT NULL AND claimExpiresAt > CURRENT_TIMESTAMP
-                      AND lower(claimEmail) = lower(?)
+                    SELECT gp.id, gp.accountId, gp.kind
+                    FROM GroupPerson gp
+                    WHERE gp.id = ? AND gp.groupId = ? AND gp.status = 'active'
+                      AND gp.kind = 'placeholder' AND gp.accountId IS NULL
+                      AND ${CLAIM_TICKET}
                 `,
-                args: [input.groupPersonId, input.groupId, input.email],
+                args: [input.groupPersonId, input.groupId, input.accountId],
             })
 
             if (candidate.rows.length === 0) {
@@ -568,8 +479,7 @@ export class GroupQueries {
             const update = await transaction.execute({
                 sql: `
                     UPDATE GroupPerson
-                    SET accountId = ?, kind = 'linked', claimEmail = NULL, claimExpiresAt = NULL,
-                        claimedAt = CURRENT_TIMESTAMP, updatedAt = CURRENT_TIMESTAMP
+                    SET accountId = ?, kind = 'linked', claimedAt = CURRENT_TIMESTAMP, updatedAt = CURRENT_TIMESTAMP
                     WHERE id = ? AND groupId = ? AND kind = 'placeholder' AND accountId IS NULL
                 `,
                 args: [input.accountId, input.groupPersonId, input.groupId],
@@ -579,6 +489,26 @@ export class GroupQueries {
                 await transaction.rollback()
                 return { claimed: false, alreadyClaimed: false, addedToShelf: [] }
             }
+
+            // The claim uses up the invitation that allowed it (#277). The claimer is now someone in
+            // the group, so no other placeholder there is theirs to claim either. Anyone else invited
+            // to be this placeholder loses that suggestion: a member's leftover ticket goes, and an
+            // invitation not accepted yet stays as a plain invitation to the group.
+            await transaction.batch([
+                { sql: 'DELETE FROM Invitation WHERE groupId = ? AND toAccountId = ?', args: [input.groupId, input.accountId] },
+                {
+                    sql: `
+                        DELETE FROM Invitation
+                        WHERE groupId = ? AND groupPersonId = ?
+                          AND EXISTS (SELECT 1 FROM GroupMembership gm WHERE gm.groupId = Invitation.groupId AND gm.accountId = Invitation.toAccountId)
+                    `,
+                    args: [input.groupId, input.groupPersonId],
+                },
+                {
+                    sql: 'UPDATE Invitation SET groupPersonId = NULL WHERE groupId = ? AND groupPersonId = ?',
+                    args: [input.groupId, input.groupPersonId],
+                },
+            ])
 
             await transaction.batch(
                 ownership.rows.map(row => ({

@@ -11,8 +11,6 @@ import type {
     AdminOverviewType,
     BrowseGamesResultType,
     CatalogueTagType,
-    ClerkGroupInvitationSummaryType,
-    ClerkGroupInvitationType,
     ClerkSyncResultType,
     CollectionActivityWithGameDataType,
     CreatedGroupType,
@@ -565,21 +563,6 @@ export const groupInvitationsSchema: z.ZodMiniType<Array<InvitationWithAccountsD
         toAccount: publicUserSchema,
     }),
 )
-
-export const clerkGroupInvitationSchema: z.ZodMiniType<ClerkGroupInvitationType> = z.object({
-    invitationId: z.string().check(z.minLength(1)),
-    emailAddress: z.email(),
-    url: z.url(),
-})
-
-export const clerkGroupInvitationSummarySchema: z.ZodMiniType<ClerkGroupInvitationSummaryType> = z.object({
-    invitationId: z.string().check(z.minLength(1)),
-    emailAddress: z.email(),
-    status: z.literal('pending'),
-    createdAt: z.string(),
-})
-
-export const clerkGroupInvitationSummariesSchema = z.array(clerkGroupInvitationSummarySchema)
 
 export const userInvitationsSchema: z.ZodMiniType<Array<InvitationWithExtraData>> = z.array(
     z.object({

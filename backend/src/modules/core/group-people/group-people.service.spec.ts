@@ -51,8 +51,8 @@ describe('GroupPeopleService participant boundaries', () => {
         }
     }
 
-    it('marks only email-targeted placeholders as claimable', async () => {
-        const { service } = createService()
+    it('marks as claimable only the placeholders an invitation suggested to the signed-in account', async () => {
+        const { service, databaseService } = createService()
 
         await expect(service.getWorkspace(7, 12)).resolves.toEqual([
             expect.objectContaining({
@@ -60,6 +60,7 @@ describe('GroupPeopleService participant boundaries', () => {
                 person: expect.objectContaining({ id: 21, kind: 'placeholder' }),
             }),
         ])
+        expect(databaseService.getClaimableGroupPersonIds).toHaveBeenCalledWith(12, 7)
     })
 
     it('returns a group-scoped catalog with every edition, so the app can filter it on any title', async () => {
@@ -82,7 +83,7 @@ describe('GroupPeopleService participant boundaries', () => {
         expect(databaseService.getGroupPersonGameCatalog).not.toHaveBeenCalled()
     })
 
-    it('uses the authenticated account email and never trusts claim selections as identity', async () => {
+    it('claims as the authenticated account and never trusts claim selections as identity', async () => {
         const { service, databaseService } = createService()
 
         await expect(service.claim(7, 12, 21, { ownershipGameIds: [42, 999], preferenceGameIds: [42] })).resolves.toEqual({
@@ -93,7 +94,6 @@ describe('GroupPeopleService participant boundaries', () => {
             groupId: 12,
             groupPersonId: 21,
             accountId: 7,
-            email: 'friend@example.com',
             keepOwnershipGameIds: [42],
             keepPreferenceGameIds: [42],
             importOwnershipToCollection: false,
