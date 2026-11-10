@@ -28,6 +28,7 @@ deployment-specific evidence, live data, credentials, and personal details.
 - [0023 — Notifications about shelves and members, without flooding an inbox](0023-group-activity-notifications.md)
 - [0024 — Interface languages](0024-interface-languages.md)
 - [0025 — Game editions and which title a game shows](0025-game-editions.md)
+- [0026 — The public privacy notice and how people reach us](0026-public-privacy-notice.md)
 
 Accepted ADRs are durable constraints unless a later ADR explicitly supersedes
 them. Create an ADR when a decision changes architecture, persistence,
