@@ -51,13 +51,17 @@ const PERSON_COLUMNS = `gp.id, gp.groupId, gp.accountId, gp.kind, gp.status, ${P
 export class GroupQueries {
     constructor(private readonly database: DatabaseService) {}
 
+    /**
+     * The groups an account owns or belongs to, oldest first. Two indexed lookups joined by UNION, which also drops a
+     * group found both ways: an OR across the two tables made SQLite scan every group (#249).
+     */
     getGroupsForAccount(accountId: number) {
         return this.database.execute({
             sql: `
-                SELECT DISTINCT ug.*
-                FROM UserGroup ug
-                LEFT JOIN GroupMembership gm ON gm.groupId = ug.id
-                WHERE ug.createdBy = ? OR gm.accountId = ?
+                SELECT ug.* FROM UserGroup ug WHERE ug.createdBy = ?
+                UNION
+                SELECT ug.* FROM GroupMembership gm JOIN UserGroup ug ON ug.id = gm.groupId WHERE gm.accountId = ?
+                ORDER BY id
             `,
             args: [accountId, accountId],
         })
