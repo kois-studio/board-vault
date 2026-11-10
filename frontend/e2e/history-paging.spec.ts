@@ -2,8 +2,8 @@ import { expect, type Route, test } from '@playwright/test'
 
 /**
  * #252: History reads a page of nights at a time and its totals from the server, and still reaches the oldest night.
- * The two history routes are answered by the fake network with 25 nights, so this needs no history in the account
- * and writes nothing. Needs PLAYWRIGHT_AUTH_STORAGE_STATE, like the other signed-in journeys.
+ * The two history routes are answered by the fake network with 25 nights, so paging needs no history in the account.
+ * Nothing is written. Needs PLAYWRIGHT_AUTH_STORAGE_STATE, like the other signed-in journeys.
  */
 const storageState = process.env['PLAYWRIGHT_AUTH_STORAGE_STATE']
 const NIGHTS = 25
@@ -61,15 +61,30 @@ test.describe('history pages (#252)', () => {
 
         const sessions = page.locator('article')
         await expect(sessions).toHaveCount(20)
-        await expect(page.getByText('Night 125', { exact: true })).toBeVisible()
+        // Notes show in quotes: “Night 125”.
+        await expect(page.getByText(/\bNight 125\b/)).toBeVisible()
         await expect(page.locator('dd').first()).toHaveText(String(NIGHTS))
 
         await page.getByRole('button', { name: 'Show older sessions (5)' }).click()
 
         await expect(sessions).toHaveCount(NIGHTS)
-        await expect(page.getByText('Night 101', { exact: true })).toBeVisible()
+        await expect(page.getByText(/\bNight 101\b/)).toBeVisible()
         await expect(page.getByRole('button', { name: /Show older sessions/ })).toHaveCount(0)
         // The second page starts after the last night shown, never by an offset that a new night would shift.
-        expect(befores).toEqual([null, '106'])
+        // The app reads the first page for Home and Play too, so only the older pages are counted here.
+        expect(befores.filter((before) => before !== null)).toEqual(['106'])
+    })
+
+    // Reads the local API with the `npm run local:setup` fixtures: Root played on 21 August 2026 in group 1.
+    test('still warns about a night already recorded on a day older than the session list holds', async ({ page }) => {
+        const groupId = process.env['PLAYWRIGHT_GROUP_ID'] ?? '1'
+        const around = page.waitForResponse((response) => response.url().includes('/meets/around?') && response.request().method() === 'GET')
+
+        await page.goto(`/play/log-session?groupId=${groupId}`)
+        await page.getByLabel('Day', { exact: true }).fill('2026-08-21')
+
+        expect((await around).status()).toBe(200)
+        const notice = page.getByRole('complementary', { name: 'Sessions already on this day' })
+        await expect(notice.getByRole('link', { name: /Open the recorded night · Root/ })).toBeVisible()
     })
 })
