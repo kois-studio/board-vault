@@ -2,9 +2,9 @@ import { HttpErrorResponse } from '@angular/common/http'
 import { signal } from '@angular/core'
 import { TestBed } from '@angular/core/testing'
 import { ActivatedRoute, convertToParamMap, provideRouter } from '@angular/router'
-import { of, throwError } from 'rxjs'
+import { type Observable, of, throwError } from 'rxjs'
 import { Api } from '../../../api/api'
-import type { GameCompleteType, GameViewType, HistoryRecordType, PublicUserType } from '../../../api/api.types'
+import type { GameCompleteType, GameViewType, HistoryPageOptions, HistoryRecordType, PublicUserType } from '../../../api/api.types'
 import { ToastService } from '../../../components/toast/toast.service'
 import { ConnectivityService } from '../../../core/services/connectivity.service'
 import { DataService } from '../../../core/services/data.service'
@@ -91,13 +91,37 @@ describe('GameViewPageComponent plays', () => {
         similarGames: [],
     }
 
-    const setup = async (getGameView = vi.fn().mockReturnValue(of(view)), beforeCreate = () => {}) => {
+    /** The server: the nights with the game, newest first, a page after the night given as `before` (#252). */
+    const serverHistory = (_userId: number, options: HistoryPageOptions) => {
+        const played = history
+            .filter((record) => record.gamesPlayed.some((game) => game.gameData.id === options.gameId))
+            .sort((a, b) => new Date(b.meetData.meetDate).getTime() - new Date(a.meetData.meetDate).getTime())
+        const start = options.before === undefined ? 0 : played.findIndex((record) => record.meetData.id === options.before) + 1
+        const limit = options.limit ?? 20
+        return of({ entries: played.slice(start, start + limit), hasMore: start + limit < played.length })
+    }
+    const nightsWithGame = (_userId: number, filters: { gameId?: number }): Observable<unknown> =>
+        of({
+            nights: history.filter((record) => record.gamesPlayed.some((game) => game.gameData.id === filters.gameId)).length,
+            gamesPlayed: 0,
+            uniqueGames: 0,
+            people: 0,
+            mostPlayed: null,
+            myMostPlayed: [],
+        })
+
+    const setup = async (
+        getGameView = vi.fn().mockReturnValue(of(view)),
+        beforeCreate = () => {},
+        { getUserGamesHistory = vi.fn(serverHistory), getUserHistorySummary = vi.fn(nightsWithGame) } = {},
+    ) => {
         const toast = { success: vi.fn(), error: vi.fn() }
+        const userHistoryRevision = signal(0)
         await TestBed.configureTestingModule({
             imports: [GameViewPageComponent],
             providers: [
                 provideRouter([]),
-                { provide: Api, useValue: { getGameView } },
+                { provide: Api, useValue: { getGameView, getUserGamesHistory, getUserHistorySummary } },
                 {
                     provide: ActivatedRoute,
                     useValue: {
@@ -110,7 +134,7 @@ describe('GameViewPageComponent plays', () => {
                     useValue: {
                         currentUser: signal({ id: 1 }),
                         userGroups: signal([{ id: 7, name: 'DuckDevs', members: [], placeholders: [] }]),
-                        userHistory: signal(history),
+                        userHistoryRevision,
                         userGames: signal([]),
                         userWishlist: signal([]),
                     },
@@ -124,35 +148,79 @@ describe('GameViewPageComponent plays', () => {
         fixture.detectChanges()
         await fixture.whenStable()
         fixture.detectChanges()
-        return { fixture, toast, component: fixture.componentInstance, element: fixture.nativeElement as HTMLElement }
+        return {
+            fixture,
+            toast,
+            component: fixture.componentInstance,
+            element: fixture.nativeElement as HTMLElement,
+            getUserGamesHistory,
+            getUserHistorySummary,
+            userHistoryRevision,
+        }
     }
 
     const listedNights = (element: HTMLElement) =>
         [...element.querySelectorAll('#game-plays a')].map((link) => Number(link.getAttribute('href')?.split('/').pop()))
 
-    it('lists the nights the game was played, newest first, leaving out other games', async () => {
-        const { component, element } = await setup()
+    it('asks the server for the latest nights with the game and how many there are in all (#252)', async () => {
+        const { element, getUserGamesHistory, getUserHistorySummary } = await setup()
 
-        expect(component.userHistoryFilteredComputed().map((record) => record.meetData.id)).toEqual([40, 8, 2, 31, 22, 12, 10])
+        expect(getUserGamesHistory).toHaveBeenCalledWith(1, { gameId: 18, before: undefined, limit: 6 })
+        expect(getUserHistorySummary).toHaveBeenCalledWith(1, { gameId: 18 })
         expect(element.querySelector('#played-heading')?.textContent?.trim()).toBe('Played 7 times')
         expect(listedNights(element)).toEqual([40, 8, 2, 31, 22, 12])
     })
 
-    it('shows every night once asked, and the latest again after', async () => {
-        const { fixture, element } = await setup()
-        const toggle = () => [...element.querySelectorAll('button')].find((button) => button.getAttribute('aria-controls') === 'game-plays')
+    it('reads older nights on request, after the last one shown', async () => {
+        const { fixture, element, getUserGamesHistory } = await setup()
+        const more = () => [...element.querySelectorAll('button')].find((button) => button.getAttribute('aria-controls') === 'game-plays')
 
-        expect(toggle()?.textContent?.trim()).toBe('Show all 7 plays')
-        expect(toggle()?.getAttribute('aria-expanded')).toBe('false')
+        expect(more()?.textContent?.trim()).toBe('Show more plays')
 
-        toggle()?.click()
+        more()?.click()
         fixture.detectChanges()
+
+        expect(getUserGamesHistory).toHaveBeenLastCalledWith(1, { gameId: 18, before: 12, limit: 20 })
         expect(listedNights(element)).toEqual([40, 8, 2, 31, 22, 12, 10])
-        expect(toggle()?.getAttribute('aria-expanded')).toBe('true')
+        expect(more()).toBeUndefined()
+    })
 
-        toggle()?.click()
+    it('counts the nights shown when the total does not load', async () => {
+        const { element } = await setup(undefined, undefined, {
+            getUserHistorySummary: vi.fn(() => throwError(() => new Error('offline'))),
+        })
+
+        expect(element.querySelector('#played-heading')?.textContent?.trim()).toBe('Played 6 times')
+    })
+
+    it('says when your plays could not load, and loads them on Try again', async () => {
+        let fail = true
+        const { fixture, element } = await setup(undefined, undefined, {
+            getUserGamesHistory: vi.fn((userId: number, options: HistoryPageOptions) =>
+                fail ? throwError(() => new Error('offline')) : serverHistory(userId, options),
+            ),
+        })
+        const section = () => element.querySelector('section[aria-labelledby="played-heading"]') as HTMLElement
+
+        expect(section().querySelector('[role="alert"]')?.textContent).toContain('Your plays could not be loaded.')
+
+        fail = false
+        section().querySelector('[role="alert"] button')?.dispatchEvent(new Event('click'))
         fixture.detectChanges()
+
         expect(listedNights(element)).toHaveLength(6)
+    })
+
+    it('keeps the plays on a heart or a rating, and reads them again when your history changes', async () => {
+        const { fixture, component, getUserGamesHistory } = await setup()
+
+        component.onWishlistChanged(true)
+        fixture.detectChanges()
+        expect(getUserGamesHistory).toHaveBeenCalledTimes(1)
+
+        TestBed.inject(DataService).userHistoryRevision.set(1)
+        fixture.detectChanges()
+        expect(getUserGamesHistory).toHaveBeenCalledTimes(2)
     })
 
     it('shows the players of nights recorded with group people, each once', async () => {

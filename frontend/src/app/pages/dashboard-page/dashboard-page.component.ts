@@ -204,7 +204,8 @@ export class DashboardPageComponent {
 
     /** Your page in the first group on Home: the one you pinned first, or the one you are most active in. */
     public readonly ownedGames = computed(() => this.dataService.userGames().length)
-    public readonly nightsPlayed = computed(() => this.dataService.userHistory().length)
+    /** Every night you played, counted by the server (#252); null until it is known, so it never reads as 0. */
+    public readonly nightsPlayed = computed(() => this.dataService.userHistorySummary()?.nights ?? null)
 
     /** The last three sessions you played, newest first. */
     public readonly recentlyPlayed = computed(() =>

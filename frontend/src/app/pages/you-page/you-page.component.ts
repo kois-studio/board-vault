@@ -3,7 +3,7 @@ import { Component, computed, effect, inject, signal, untracked } from '@angular
 import { RouterLink } from '@angular/router'
 import { firstValueFrom } from 'rxjs'
 import { Api } from '../../api/api'
-import type { GameCompleteType, GroupStandingType } from '../../api/api.types'
+import type { GroupStandingType } from '../../api/api.types'
 import { ImageProfileComponent } from '../../components/image-profile/image-profile.component'
 import { ButtonComponent } from '../../components/ui/button/button.component'
 import { ContainerWrapperComponent } from '../../components/ui/container-wrapper/container-wrapper.component'
@@ -69,22 +69,8 @@ export class YouPageComponent {
     /** What you entered as paid for your games: private, like the rest of this page. */
     public readonly paid = computed(() => this.dataService.userStats().totalGamesValue)
 
-    /** The games you played most, across every group, with how often you won them. */
-    public readonly mostPlayed = computed(() => {
-        const me = this.user()?.id
-        const byGame = new Map<number, { game: GameCompleteType; plays: number; wins: number }>()
-        for (const record of this.dataService.userHistory()) {
-            if (record.meetData.status !== 'completed') continue
-            for (const played of record.gamesPlayed) {
-                if (!played.playedBy.some((person) => person.id === me)) continue
-                const line = byGame.get(played.gameData.id) ?? { game: played.gameData, plays: 0, wins: 0 }
-                line.plays += played.playCount ?? 1
-                if (me !== undefined && played.winnerAccountIds?.includes(me)) line.wins += 1
-                byGame.set(played.gameData.id, line)
-            }
-        }
-        return [...byGame.values()].sort((a, b) => b.plays - a.plays || b.wins - a.wins).slice(0, 5)
-    })
+    /** The games you played most, across every group, with how often you won them: counted by the server (#252). */
+    public readonly mostPlayed = computed(() => this.dataService.userHistorySummary()?.myMostPlayed ?? [])
     public readonly topRated = computed(() =>
         [...this.dataService.userReviews()]
             .filter((review) => review.review > 0)
@@ -98,7 +84,7 @@ export class YouPageComponent {
     /** The totals add up every group's line, so one group that did not load makes them wrong, not zero. */
     public readonly totalsUnknown = computed(() => this.groupsFailed() || this.groups().some((group) => group.failed))
     public readonly gamesFailed = this.dataService.userGamesError
-    public readonly historyFailed = this.dataService.userHistoryError
+    public readonly historyFailed = this.dataService.userHistorySummaryError
     public readonly reviewsFailed = this.dataService.userReviewsError
     /**
      * Something on the page did not load: it says so once, and what is missing shows as a dash, never as 0 or

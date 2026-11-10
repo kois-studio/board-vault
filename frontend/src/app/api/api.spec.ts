@@ -153,9 +153,38 @@ describe('Api response contracts', () => {
 
     it('rejects a malformed shared-history response at the API boundary', async () => {
         const response = firstValueFrom(api.getUserGamesHistory(7))
-        const request = http.expectOne(`${environment.apiUrl}/play/users/7/history`)
+        const request = http.expectOne(`${environment.apiUrl}/play/users/7/history/page`)
 
-        request.flush([{ meetData: { id: 12, groupId: 7 }, attendedBy: [], gamesPlayed: [] }])
+        request.flush({ entries: [{ meetData: { id: 12, groupId: 7 }, attendedBy: [], gamesPlayed: [] }], hasMore: false })
+
+        await expect(response).rejects.toThrow()
+    })
+
+    it('asks for one page of history, after a night and within a group or game, and reads it (#252)', async () => {
+        const response = firstValueFrom(api.getUserGamesHistory(7, { before: 30, limit: 6, groupId: 3, gameId: 42 }))
+        const request = http.expectOne((req) => req.url === `${environment.apiUrl}/play/users/7/history/page`)
+
+        expect(request.request.params.keys()).toEqual(['before', 'limit', 'groupId', 'gameId'])
+        expect(request.request.urlWithParams).toContain('before=30&limit=6&groupId=3&gameId=42')
+        request.flush({ entries: [], hasMore: true })
+
+        await expect(response).resolves.toEqual({ entries: [], hasMore: true })
+    })
+
+    it('reads the history totals, only for the filters given', async () => {
+        const summary = { nights: 3, gamesPlayed: 4, uniqueGames: 2, people: 5, mostPlayed: null, myMostPlayed: [] }
+        const response = firstValueFrom(api.getUserHistorySummary(7, { gameId: 42 }))
+        const request = http.expectOne((req) => req.url === `${environment.apiUrl}/play/users/7/history/summary`)
+
+        expect(request.request.urlWithParams).toBe(`${environment.apiUrl}/play/users/7/history/summary?gameId=42`)
+        request.flush(summary)
+
+        await expect(response).resolves.toEqual(summary)
+    })
+
+    it('rejects history totals without their numbers', async () => {
+        const response = firstValueFrom(api.getUserHistorySummary(7))
+        http.expectOne(`${environment.apiUrl}/play/users/7/history/summary`).flush({ nights: 3 })
 
         await expect(response).rejects.toThrow()
     })

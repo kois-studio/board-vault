@@ -1,6 +1,8 @@
-import { Component, computed, inject, signal } from '@angular/core'
+import { Component, computed, DestroyRef, effect, inject, signal, untracked } from '@angular/core'
 import { ActivatedRoute, Router, RouterLink } from '@angular/router'
-import type { HistoryRecordType } from '../../../api/api.types'
+import type { Subscription } from 'rxjs'
+import { Api } from '../../../api/api'
+import type { HistoryRecordType, HistorySummaryType } from '../../../api/api.types'
 import { HistoryEntryComponent, type HistoryEntryView } from '../../../components/history-entry/history-entry.component'
 import { SkeletonHistoryComponent } from '../../../components/skeletons/skeleton-history/skeleton-history.component'
 import { ButtonComponent } from '../../../components/ui/button/button.component'
@@ -14,6 +16,7 @@ import { DataService } from '../../../core/services/data.service'
 import { LoadingService } from '../../../core/services/loading.service'
 import { attendeeNames, formatAttendeeSummary } from '../../../core/utils/formatAttendeeSummary'
 import { gameTitle } from '../../../core/utils/gameTitle'
+import { HistoryPager } from '../../../core/utils/historyPager'
 import {
     formatWinners,
     type HistoryParticipant,
@@ -22,8 +25,8 @@ import {
 } from '../../../core/utils/historyParticipants'
 import { sessionDateParts } from '../../../core/utils/sessionTiming'
 
-/** Sessions shown at first, and added by each "Show older sessions". */
-const PAGE_SIZE = 10
+/** Sessions read at first, and by each "Show older sessions" (#252). */
+const PAGE_SIZE = 20
 
 @Component({
     imports: [
@@ -38,6 +41,7 @@ const PAGE_SIZE = 10
     templateUrl: 'history-page.component.html',
 })
 export class HistoryPageComponent {
+    private readonly api = inject(Api)
     private readonly dataService = inject(DataService)
     private readonly loadingService = inject(LoadingService)
     private readonly route = inject(ActivatedRoute)
@@ -50,10 +54,12 @@ export class HistoryPageComponent {
     public readonly currentUser$ = this.dataService.currentUser
     public readonly userGroups$ = this.dataService.userGroups
     public readonly groupsError = this.dataService.userGroupsError
-    public readonly userHistory$ = this.dataService.userHistory
-    public readonly historyError = this.dataService.userHistoryError
-    // loadingService
-    public readonly isLoadingHistory = computed(() => this.loadingService.loadingStatesIndex()[LOADING_KEYS.USER_GAMES_HISTORY])
+    /** Your history, or one group's part of it, read from the server a page at a time, newest first (#252). */
+    public readonly history = new HistoryPager((options) => this.api.getUserGamesHistory(this.currentUser$()?.id ?? 0, options), PAGE_SIZE)
+    public readonly historyError = this.history.failed
+    /** Totals over every night of the filter, not only the ones shown; null until they load. */
+    public readonly summary = signal<HistorySummaryType | null>(null)
+    public readonly isLoadingHistory = computed(() => !this.currentUser$() || this.history.loading())
     public readonly groupIdFilter = signal(this.readGroupIdFilter())
     public readonly historyGroupName = computed(() => {
         const groupId = this.groupIdFilter()
@@ -76,20 +82,16 @@ export class HistoryPageComponent {
     // --------------------------------------------------------------------------
     //        Computed
     // --------------------------------------------------------------------------
-    public readonly sortedUserHistoryComputed = computed(() => {
-        const groupId = this.groupIdFilter()
-        return [...this.userHistory$()]
-            .filter((historyRecord) => !groupId || historyRecord.meetData.groupId === groupId)
-            .sort((a, b) => new Date(b.meetData.meetDate).getTime() - new Date(a.meetData.meetDate).getTime())
+    public readonly hasFilteredHistory = computed(() => this.history.entries().length > 0)
+    /** Older sessions not shown yet, once the totals say how many; null while that is unknown. */
+    public readonly hiddenCount = computed(() => {
+        const nights = this.summary()?.nights
+        return nights === undefined ? null : Math.max(0, nights - this.history.entries().length)
     })
-
-    public readonly hasFilteredHistory = computed(() => this.sortedUserHistoryComputed().length > 0)
-    public readonly visibleCount = signal(PAGE_SIZE)
-    public readonly hiddenCount = computed(() => Math.max(0, this.sortedUserHistoryComputed().length - this.visibleCount()))
-    /** The visible sessions, grouped by the month they were played in. */
+    /** The sessions shown, grouped by the month they were played in. */
     public readonly visibleMonths = computed(() => {
         const months: Array<{ key: string; label: string; records: Array<HistoryRecordType> }> = []
-        for (const record of this.sortedUserHistoryComputed().slice(0, this.visibleCount())) {
+        for (const record of this.history.entries()) {
             const date = new Date(record.meetData.meetDate)
             const key = `${date.getFullYear()}-${date.getMonth() + 1}`
             const month = months.at(-1)
@@ -99,37 +101,20 @@ export class HistoryPageComponent {
         return months
     })
     public readonly dateParts = sessionDateParts
+    /** The numbers at the top, counted by the server over every night of the filter; null until they load. */
     public readonly historySummary = computed(() => {
-        const records = this.sortedUserHistoryComputed()
-        const gameCounts = new Map<number, { title: string; count: number }>()
-        const people = new Set<string>()
-        let gamesPlayed = 0
-
-        for (const record of records) {
-            for (const attendee of this.getAttendees(record)) people.add(attendee.key)
-            for (const game of record.gamesPlayed) {
-                for (const player of this.getPlayers(game)) people.add(player.key)
-                gamesPlayed += game.playCount ?? 1
-                const current = gameCounts.get(game.gameData.id)
-                gameCounts.set(game.gameData.id, {
-                    title: gameTitle(game.gameData),
-                    count: (current?.count ?? 0) + 1,
-                })
-            }
-        }
-
-        const mostPlayed =
-            [...gameCounts.values()].sort((a, b) => b.count - a.count || a.title.localeCompare(b.title, intlLocale()))[0] ?? null
+        const summary = this.summary()
+        if (!summary) return null
         return {
-            sessions: records.length,
-            gamesPlayed,
-            uniqueGames: gameCounts.size,
-            people: people.size,
-            mostPlayed,
+            sessions: summary.nights,
+            gamesPlayed: summary.gamesPlayed,
+            uniqueGames: summary.uniqueGames,
+            people: summary.people,
+            mostPlayed: summary.mostPlayed ? { title: gameTitle(summary.mostPlayed.game), count: summary.mostPlayed.nights } : null,
         }
     })
     public readonly mostPlayedSummary = computed(() => {
-        const mostPlayed = this.historySummary().mostPlayed
+        const mostPlayed = this.historySummary()?.mostPlayed
         if (!mostPlayed) return null
         const { title, count } = mostPlayed
         return new Intl.PluralRules(intlLocale()).select(count) === 'one'
@@ -138,6 +123,21 @@ export class HistoryPageComponent {
     })
 
     private readonly customDate = new CustomDatePipe()
+    private summaryRequest: Subscription | null = null
+
+    constructor() {
+        // The first page and the totals of the filter: again for another user, another group, or a changed history.
+        effect(() => {
+            const userId = this.currentUser$()?.id
+            const groupId = this.groupIdFilter() ?? undefined
+            this.dataService.userHistoryRevision()
+            untracked(() => this.load(userId, groupId))
+        })
+        inject(DestroyRef).onDestroy(() => {
+            this.history.destroy()
+            this.summaryRequest?.unsubscribe()
+        })
+    }
 
     /** The view of one recorded night for `<app-history-entry>`. */
     public toHistoryEntry(record: HistoryRecordType): HistoryEntryView {
@@ -219,8 +219,9 @@ export class HistoryPageComponent {
         return attendees.every((attendee) => playerKeys.has(attendee.key))
     }
 
+    /** Reads the sessions before the last one shown. */
     public showMore(): void {
-        this.visibleCount.update((count) => count + PAGE_SIZE)
+        this.history.loadMore()
     }
 
     public getAttendeeSummary(attendees: Array<{ displayName: string; username: string }>): string {
@@ -231,8 +232,10 @@ export class HistoryPageComponent {
         return attendeeNames(players)
     }
 
+    /** Tries again what failed: the first page with its totals, or the older page. */
     public retryHistory(): void {
-        this.dataService.refreshUserHistory()
+        if (this.history.failed()) this.load(this.currentUser$()?.id, this.groupIdFilter() ?? undefined)
+        else this.history.retry()
     }
 
     public setGroupFilter(event: Event): void {
@@ -240,7 +243,6 @@ export class HistoryPageComponent {
         const groupId = Number(value)
         const nextGroupId = Number.isInteger(groupId) && groupId > 0 ? groupId : null
         this.groupIdFilter.set(nextGroupId)
-        this.visibleCount.set(PAGE_SIZE)
         void this.router.navigate([], {
             relativeTo: this.route,
             queryParams: { groupId: nextGroupId },
@@ -261,6 +263,18 @@ export class HistoryPageComponent {
             .join('')
             .slice(0, 2)
             .toUpperCase()
+    }
+
+    /** The first page and the totals of the filter. The totals only add numbers, so if they fail the list still shows. */
+    private load(userId: number | undefined, groupId: number | undefined): void {
+        this.summaryRequest?.unsubscribe()
+        this.summary.set(null)
+        if (!userId) return
+        this.history.reset({ groupId })
+        this.summaryRequest = this.api.getUserHistorySummary(userId, { groupId }).subscribe({
+            next: (summary) => this.summary.set(summary),
+            error: () => this.summary.set(null),
+        })
     }
 
     private readGroupIdFilter(): number | null {

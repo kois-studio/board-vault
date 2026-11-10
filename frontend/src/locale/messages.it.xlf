@@ -1218,6 +1218,15 @@
         <target>Ti diamo il benvenuto, <ph id="0" equiv="INTERPOLATION" disp="{{ greetingName() }}"/></target>
       </segment>
     </unit>
+    <unit id="1691120133957967313">
+      <notes>
+        <note category="description">End of History when older game nights could not load</note>
+      </notes>
+      <segment state="translated">
+        <source>Older sessions could not be loaded.</source>
+        <target>Non è stato possibile caricare le serate precedenti.</target>
+      </segment>
+    </unit>
     <unit id="1693257658764898627">
       <notes>
         <note category="description">Label of the group&apos;s numbers on the group page</note>
@@ -2032,15 +2041,6 @@
         <target>Non è stato possibile salvare la preselezione. Quella precedente è ancora attiva; riprova.</target>
       </segment>
     </unit>
-    <unit id="2129729292853557788">
-      <notes>
-        <note category="description">Button on a game page that shows only your latest plays</note>
-      </notes>
-      <segment state="translated">
-        <source>Show the latest only</source>
-        <target>Mostra solo le ultime</target>
-      </segment>
-    </unit>
     <unit id="2134269724960321685">
       <notes>
         <note category="description">Pin button on a group in the list on Home, when the group is pinned</note>
@@ -2255,6 +2255,15 @@
       <segment state="translated">
         <source>We are checking the group and its shared context.</source>
         <target>Stiamo controllando il gruppo e ciò che condivide.</target>
+      </segment>
+    </unit>
+    <unit id="2239575659977649041">
+      <notes>
+        <note category="description">Button on a game page while older plays load</note>
+      </notes>
+      <segment state="translated">
+        <source>Loading plays…</source>
+        <target>Caricamento delle partite…</target>
       </segment>
     </unit>
     <unit id="2251647579667259226">
@@ -2995,15 +3004,6 @@
       <segment state="translated">
         <source>Turning it off stops it at once and deletes what was kept about you.</source>
         <target>Disattivarlo lo ferma subito ed elimina ciò che è stato conservato su di te.</target>
-      </segment>
-    </unit>
-    <unit id="2605740710698379107">
-      <notes>
-        <note category="description">Button on a game page that shows every play; the placeholder is how many, always more than one</note>
-      </notes>
-      <segment state="translated">
-        <source>Show all <ph id="0" equiv="INTERPOLATION" disp="{{ userHistoryFilteredComputed().length }}"/> plays</source>
-        <target>Mostra tutte le <ph id="0" equiv="INTERPOLATION" disp="{{ userHistoryFilteredComputed().length }}"/> partite</target>
       </segment>
     </unit>
     <unit id="2609601448289645518">
@@ -4445,6 +4445,15 @@
         <target>I più votati</target>
       </segment>
     </unit>
+    <unit id="3355776636216543024">
+      <notes>
+        <note category="description">Button at the end of History before it is known how many older game nights there are</note>
+      </notes>
+      <segment state="translated">
+        <source>Show older sessions</source>
+        <target>Mostra le serate precedenti</target>
+      </segment>
+    </unit>
     <unit id="3359654905446055631">
       <notes>
         <note category="description">Error on the group page</note>
@@ -4578,6 +4587,15 @@
       <segment state="translated">
         <source>Games nobody in the group owns yet. Anyone can say they’re interested; the group owner decides whether to plan buying one.</source>
         <target>Giochi che nessuno nel gruppo ha ancora. Chiunque può segnare il proprio interesse; chi gestisce il gruppo decide se pianificarne l’acquisto.</target>
+      </segment>
+    </unit>
+    <unit id="3423785520770948608">
+      <notes>
+        <note category="description">Toast when the totals of your game nights could not load</note>
+      </notes>
+      <segment state="translated">
+        <source>Your game night totals could not load</source>
+        <target>Impossibile caricare i totali delle tue serate di gioco</target>
       </segment>
     </unit>
     <unit id="3424516948436893066">
@@ -5049,6 +5067,15 @@
         <target>Invita la tua gente</target>
       </segment>
     </unit>
+    <unit id="3668646644715929693">
+      <notes>
+        <note category="description">Game page when older plays could not load</note>
+      </notes>
+      <segment state="translated">
+        <source>Your older plays could not be loaded.</source>
+        <target>Impossibile caricare le tue partite precedenti.</target>
+      </segment>
+    </unit>
     <unit id="3671754034428223474">
       <notes>
         <note category="description">Accessible name of the vote buttons on a suggested game; the placeholder is the game title</note>
@@ -5373,6 +5400,15 @@
       <segment state="translated">
         <source>Pick a day, who is invited, and a few games to consider.</source>
         <target>Scegli un giorno, chi invitare e qualche gioco da considerare.</target>
+      </segment>
+    </unit>
+    <unit id="3832772904475832189">
+      <notes>
+        <note category="description">Button at the end of History while older game nights load</note>
+      </notes>
+      <segment state="translated">
+        <source>Loading older sessions…</source>
+        <target>Caricamento delle serate precedenti…</target>
       </segment>
     </unit>
     <unit id="3835604152936342866">
@@ -6692,6 +6728,15 @@
         <target>Tieni</target>
       </segment>
     </unit>
+    <unit id="4435881282619462846">
+      <notes>
+        <note category="description">Game page when your plays of the game could not load</note>
+      </notes>
+      <segment state="translated">
+        <source>Your plays could not be loaded.</source>
+        <target>Impossibile caricare le tue partite.</target>
+      </segment>
+    </unit>
     <unit id="4455805941641791689">
       <notes>
         <note category="description">Group history line; actor and bringer are names, game is a game title</note>
@@ -7287,6 +7332,15 @@
       <segment state="translated">
         <source><ph id="0" equiv="count" disp="rest"/> games</source>
         <target><ph id="0" equiv="count" disp="rest"/> giochi</target>
+      </segment>
+    </unit>
+    <unit id="4768463818227698287">
+      <notes>
+        <note category="description">Game page while your plays of the game load</note>
+      </notes>
+      <segment state="translated">
+        <source>Loading your plays…</source>
+        <target>Caricamento delle tue partite…</target>
       </segment>
     </unit>
     <unit id="4768749765465246664">
@@ -12140,6 +12194,15 @@
       <segment state="translated">
         <source>What Board Vault keeps about how you use it, and your choice about it.</source>
         <target>Cosa conserva Board Vault su come lo usi, e la tua scelta al riguardo.</target>
+      </segment>
+    </unit>
+    <unit id="7353225049206476329">
+      <notes>
+        <note category="description">Button on a game page that shows older plays</note>
+      </notes>
+      <segment state="translated">
+        <source>Show more plays</source>
+        <target>Mostra altre partite</target>
       </segment>
     </unit>
     <unit id="735453982013279482">

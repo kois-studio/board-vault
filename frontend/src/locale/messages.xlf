@@ -1243,6 +1243,15 @@
         <source>Welcome, <ph id="0" equiv="INTERPOLATION" disp="{{ greetingName() }}"/></source>
       </segment>
     </unit>
+    <unit id="1691120133957967313">
+      <notes>
+        <note category="location">src/app/pages/play-page/history-page/history-page.component.html</note>
+        <note category="description">End of History when older game nights could not load</note>
+      </notes>
+      <segment>
+        <source>Older sessions could not be loaded.</source>
+      </segment>
+    </unit>
     <unit id="1693257658764898627">
       <notes>
         <note category="location">src/app/pages/group-view/group-view.component.html</note>
@@ -2072,15 +2081,6 @@
         <source>Could not save the shortlist. Your previous shortlist is still active; try again.</source>
       </segment>
     </unit>
-    <unit id="2129729292853557788">
-      <notes>
-        <note category="location">src/app/pages/games/game-view/game-view.component.html</note>
-        <note category="description">Button on a game page that shows only your latest plays</note>
-      </notes>
-      <segment>
-        <source>Show the latest only</source>
-      </segment>
-    </unit>
     <unit id="2134269724960321685">
       <notes>
         <note category="location">src/app/pages/dashboard-page/dashboard-page.component.ts</note>
@@ -2301,6 +2301,15 @@
       </notes>
       <segment>
         <source>We are checking the group and its shared context.</source>
+      </segment>
+    </unit>
+    <unit id="2239575659977649041">
+      <notes>
+        <note category="location">src/app/pages/games/game-view/game-view.component.html</note>
+        <note category="description">Button on a game page while older plays load</note>
+      </notes>
+      <segment>
+        <source>Loading plays…</source>
       </segment>
     </unit>
     <unit id="2251647579667259226">
@@ -3052,15 +3061,6 @@
       </notes>
       <segment>
         <source>Turning it off stops it at once and deletes what was kept about you.</source>
-      </segment>
-    </unit>
-    <unit id="2605740710698379107">
-      <notes>
-        <note category="location">src/app/pages/games/game-view/game-view.component.html</note>
-        <note category="description">Button on a game page that shows every play; the placeholder is how many, always more than one</note>
-      </notes>
-      <segment>
-        <source>Show all <ph id="0" equiv="INTERPOLATION" disp="{{ userHistoryFilteredComputed().length }}"/> plays</source>
       </segment>
     </unit>
     <unit id="2609601448289645518">
@@ -4523,6 +4523,15 @@
         <source>Highest rated</source>
       </segment>
     </unit>
+    <unit id="3355776636216543024">
+      <notes>
+        <note category="location">src/app/pages/play-page/history-page/history-page.component.html</note>
+        <note category="description">Button at the end of History before it is known how many older game nights there are</note>
+      </notes>
+      <segment>
+        <source>Show older sessions</source>
+      </segment>
+    </unit>
     <unit id="3359654905446055631">
       <notes>
         <note category="location">src/app/pages/group-view/group-view.component.html</note>
@@ -4657,6 +4666,15 @@
       </notes>
       <segment>
         <source>Games nobody in the group owns yet. Anyone can say they’re interested; the group owner decides whether to plan buying one.</source>
+      </segment>
+    </unit>
+    <unit id="3423785520770948608">
+      <notes>
+        <note category="location">src/app/core/services/data.service.ts</note>
+        <note category="description">Toast when the totals of your game nights could not load</note>
+      </notes>
+      <segment>
+        <source>Your game night totals could not load</source>
       </segment>
     </unit>
     <unit id="3424516948436893066">
@@ -5138,6 +5156,15 @@
         <source>Invite your people</source>
       </segment>
     </unit>
+    <unit id="3668646644715929693">
+      <notes>
+        <note category="location">src/app/pages/games/game-view/game-view.component.html</note>
+        <note category="description">Game page when older plays could not load</note>
+      </notes>
+      <segment>
+        <source>Your older plays could not be loaded.</source>
+      </segment>
+    </unit>
     <unit id="3671754034428223474">
       <notes>
         <note category="location">src/app/pages/play-page/recommendations-page/recommendations-page.component.ts</note>
@@ -5466,6 +5493,15 @@
       </notes>
       <segment>
         <source>Pick a day, who is invited, and a few games to consider.</source>
+      </segment>
+    </unit>
+    <unit id="3832772904475832189">
+      <notes>
+        <note category="location">src/app/pages/play-page/history-page/history-page.component.html</note>
+        <note category="description">Button at the end of History while older game nights load</note>
+      </notes>
+      <segment>
+        <source>Loading older sessions…</source>
       </segment>
     </unit>
     <unit id="3835604152936342866">
@@ -6804,6 +6840,15 @@
         <source>Keep</source>
       </segment>
     </unit>
+    <unit id="4435881282619462846">
+      <notes>
+        <note category="location">src/app/pages/games/game-view/game-view.component.html</note>
+        <note category="description">Game page when your plays of the game could not load</note>
+      </notes>
+      <segment>
+        <source>Your plays could not be loaded.</source>
+      </segment>
+    </unit>
     <unit id="4455805941641791689">
       <notes>
         <note category="location">src/app/core/utils/groupActivity.ts</note>
@@ -7402,6 +7447,15 @@
       </notes>
       <segment>
         <source><ph id="0" equiv="count" disp="rest"/> games</source>
+      </segment>
+    </unit>
+    <unit id="4768463818227698287">
+      <notes>
+        <note category="location">src/app/pages/games/game-view/game-view.component.html</note>
+        <note category="description">Game page while your plays of the game load</note>
+      </notes>
+      <segment>
+        <source>Loading your plays…</source>
       </segment>
     </unit>
     <unit id="4768749765465246664">
@@ -10893,6 +10947,7 @@
         <note category="location">src/app/layout/auth-handoff/auth-handoff.component.html</note>
         <note category="location">src/app/layout/connectivity-banner/connectivity-banner.component.html</note>
         <note category="location">src/app/pages/collection-page/browse-page/browse-page.component.html</note>
+        <note category="location">src/app/pages/games/game-view/game-view.component.html</note>
         <note category="location">src/app/pages/play-page/recommendations-page/recommendations-page.component.html</note>
         <note category="description">Button under the language choices that tries again to save the chosen language on the account</note>
       </notes>
@@ -12332,6 +12387,15 @@
       </notes>
       <segment>
         <source>What Board Vault keeps about how you use it, and your choice about it.</source>
+      </segment>
+    </unit>
+    <unit id="7353225049206476329">
+      <notes>
+        <note category="location">src/app/pages/games/game-view/game-view.component.html</note>
+        <note category="description">Button on a game page that shows older plays</note>
+      </notes>
+      <segment>
+        <source>Show more plays</source>
       </segment>
     </unit>
     <unit id="735453982013279482">

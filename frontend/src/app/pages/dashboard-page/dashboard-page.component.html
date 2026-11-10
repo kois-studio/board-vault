@@ -271,7 +271,7 @@
                             <app-image-profile [avatar]="user.avatar" />
                             <span class="min-w-0 flex-1">
                                 <span class="block truncate font-semibold">{{ greetingName() }}</span>
-                                <span class="block text-xs text-secondary"><ng-container i18n="How many games are on your shelf">{ownedGames(), plural, one {{{ ownedGames() }} game} other {{{ ownedGames() }} games}}</ng-container> · <ng-container i18n="How many game nights you have played">{nightsPlayed(), plural, one {{{ nightsPlayed() }} night played} other {{{ nightsPlayed() }} nights played}}</ng-container></span>
+                                <span class="block text-xs text-secondary"><ng-container i18n="How many games are on your shelf">{ownedGames(), plural, one {{{ ownedGames() }} game} other {{{ ownedGames() }} games}}</ng-container>@if (nightsPlayed() !== null) { · <ng-container i18n="How many game nights you have played">{nightsPlayed(), plural, one {{{ nightsPlayed() }} night played} other {{{ nightsPlayed() }} nights played}}</ng-container>}</span>
                                 <span class="mt-1 block text-sm font-semibold text-bv-primary" i18n="Link on Home to your page">Your page ›</span>
                             </span>
                         </a>

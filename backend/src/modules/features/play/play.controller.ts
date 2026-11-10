@@ -8,7 +8,11 @@ import { AccountMeetDto } from '../../../common/types/meet.type.js'
 
 import { PlayService } from './play.service.js'
 import {
+    HistoryPageDto,
     HistoryRecordDto,
+    HistoryQuery,
+    HistorySummaryDto,
+    HistorySummaryQuery,
     RecommendationFeedbackBody,
     ParticipantRecommendationFeedbackBody,
     RecommendationFeedbackDto,
@@ -78,18 +82,51 @@ export class PlayController {
         return this.playService.getRecommendationSignals(request.user.userId, groupId)
     }
 
+    // Kept as it was for the previous frontend release while both deploy (docs/api.md, Compatibility); remove it in a
+    // later release, once no client reads it.
     @UseGuards(UserOwnershipGuard)
     @Get('/users/:userId/history')
-    @ApiOperation({ summary: 'List of all games played by the user', deprecated: false })
-    @ApiResponse({ status: 200, type: [HistoryRecordDto], description: 'List of all games played by the user' })
+    @ApiOperation({
+        summary: 'Every completed game night of the user. Deprecated: use GET /play/users/:userId/history/page (#252)',
+        deprecated: true,
+    })
+    @ApiResponse({ status: 200, type: [HistoryRecordDto], description: 'Every completed game night of the user, newest first' })
     async getUserGamesHistory(@Param('userId', ParseIntPipe) userId: number, @RequestLocale() locale: Locale) {
-        return this.playService.getUserGamesHistory(userId, locale)
+        return this.playService.getUserGamesHistoryAll(userId, locale)
+    }
+
+    @UseGuards(UserOwnershipGuard)
+    @Get('/users/:userId/history/page')
+    @UsePipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true, transform: true }))
+    @ApiOperation({ summary: "A page of the user's completed game nights in their groups, newest first (#252)" })
+    @ApiResponse({ status: 200, type: HistoryPageDto, description: 'One page of nights, and whether older ones remain.' })
+    async getUserGamesHistoryPage(
+        @Param('userId', ParseIntPipe) userId: number,
+        @Query() query: HistoryQuery,
+        @RequestLocale() locale: Locale,
+    ) {
+        return this.playService.getUserGamesHistory(userId, query, locale)
+    }
+
+    @UseGuards(UserOwnershipGuard)
+    @Get('/users/:userId/history/summary')
+    @UsePipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true, transform: true }))
+    @ApiOperation({ summary: "Totals over the user's whole history: nights, games, people, and the most played games (#252)" })
+    @ApiResponse({ status: 200, type: HistorySummaryDto })
+    async getUserHistorySummary(
+        @Param('userId', ParseIntPipe) userId: number,
+        @Query() query: HistorySummaryQuery,
+        @RequestLocale() locale: Locale,
+    ) {
+        return this.playService.getUserHistorySummary(userId, query, locale)
     }
 
     @UseGuards(UserOwnershipGuard)
     @Get('/users/:userId/meets')
-    @ApiOperation({ summary: 'List of all meets of the user', deprecated: false })
-    @ApiResponse({ status: 200, type: [AccountMeetDto], description: "List of all meets of the user, with the user's own RSVP" })
+    @ApiOperation({
+        summary: "The user's game nights: every open one, those of the last 30 days, and each group's last completed one (#252)",
+    })
+    @ApiResponse({ status: 200, type: [AccountMeetDto], description: "The user's game nights, newest first, with the user's own RSVP" })
     async getUserMeets(@Param('userId', ParseIntPipe) userId: number) {
         return this.playService.getUserMeets(userId)
     }

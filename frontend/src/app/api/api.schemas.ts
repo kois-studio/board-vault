@@ -28,7 +28,9 @@ import type {
     GroupInsightsType,
     GroupType,
     GroupWithMembersAndGames,
+    HistoryPageType,
     HistoryRecordType,
+    HistorySummaryType,
     InvitationWithAccountsData,
     InvitationWithExtraData,
     MeetAttendeeStatusType,
@@ -688,6 +690,20 @@ const historyRecordSchema: z.ZodMiniType<HistoryRecordType> = z.object({
 })
 
 export const userHistorySchema = z.array(historyRecordSchema)
+
+export const historyPageSchema: z.ZodMiniType<HistoryPageType> = z.object({
+    entries: userHistorySchema,
+    hasMore: z.boolean(),
+})
+
+export const historySummarySchema: z.ZodMiniType<HistorySummaryType> = z.object({
+    nights: z.number(),
+    gamesPlayed: z.number(),
+    uniqueGames: z.number(),
+    people: z.number(),
+    mostPlayed: z.nullable(z.object({ game: gameCompleteSchema, nights: z.number() })),
+    myMostPlayed: z.array(z.object({ game: gameCompleteSchema, plays: z.number(), wins: z.number() })),
+})
 
 export const userMeetsSchema: z.ZodMiniType<Array<AccountMeetType>> = z.array(
     z.extend(meetFields, {

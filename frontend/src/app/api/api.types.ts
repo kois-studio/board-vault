@@ -701,6 +701,27 @@ export type HistoryRecordType = {
     }>
 }
 
+/** A page of your history, newest first (#252); `hasMore` says older nights remain. */
+export type HistoryPageType = {
+    entries: Array<HistoryRecordType>
+    hasMore: boolean
+}
+
+/** Which part of your history to read: older than `before` (the last night seen), one group, or one game. */
+export type HistoryPageOptions = { before?: number; limit?: number; groupId?: number; gameId?: number }
+
+/** Totals over your whole history, counted by the server so no screen needs every night (#252). */
+export type HistorySummaryType = {
+    nights: number
+    gamesPlayed: number
+    uniqueGames: number
+    people: number
+    /** The game played on the most nights; null with none. */
+    mostPlayed: { game: GameCompleteType; nights: number } | null
+    /** The five games you played most, then won most. */
+    myMostPlayed: Array<{ game: GameCompleteType; plays: number; wins: number }>
+}
+
 export type RecommendationType = {
     gameData: GameCompleteType
     score: number

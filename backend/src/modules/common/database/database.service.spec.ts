@@ -994,12 +994,40 @@ describe('DatabaseService logging', () => {
 
         ;(service as unknown as { tursoClient: { execute: typeof execute } }).tursoClient = { execute }
 
-        await expect(service.sessions.getDistinctCompletedMeetIdsForAccountHistory(7)).resolves.toEqual([12, 10])
+        await expect(service.sessions.getHistoryMeetIdsPage(7, {}, null, 21)).resolves.toEqual([12, 10])
         expect(execute).toHaveBeenCalledWith({
             sql: expect.stringContaining("m.status = 'completed'"),
-            args: [7, 7, 7, 7, 7],
+            args: [7, 7, 7, 7, 7, 7, 21],
         })
-        expect(execute.mock.calls[0]![0].sql).toContain("ma.attendanceStatus = 'attended'")
+        const sql = execute.mock.calls[0]![0].sql as string
+
+        expect(sql).toContain("ma.attendanceStatus = 'attended'")
+        // Only the account's own groups are read, never every completed night in the database (#252).
+        expect(sql).toContain('m.groupId IN (SELECT gm.groupId FROM GroupMembership gm WHERE gm.accountId = ?)')
+        expect(sql).toContain('ORDER BY datetime(m.meetDate) DESC, m.id DESC LIMIT ?')
+    })
+
+    it('pages personal history by the last night seen, and filters it by group and game (#252)', async () => {
+        const service = new DatabaseService({} as ConfigService)
+        const execute = vi.fn().mockResolvedValue({ rows: [[9]] })
+
+        ;(service as unknown as { tursoClient: { execute: typeof execute } }).tursoClient = { execute }
+
+        await service.sessions.getHistoryMeetIdsPage(7, { groupId: 3, gameId: 42 }, 12, 6)
+
+        const { sql, args } = execute.mock.calls[0]![0] as { sql: string; args: Array<number> }
+
+        expect(args).toEqual([7, 3, 42, 7, 7, 7, 7, 7, 12, 12, 12, 6])
+        expect(sql).toContain('m.groupId = ?')
+        expect(sql).toContain("fg.gameId = ? AND fg.gameStatus = 'played'")
+        expect(sql).toContain('datetime(m.meetDate) < (SELECT datetime(c.meetDate) FROM Meet c WHERE c.id = ?)')
+
+        // Without a limit, only for the deprecated route that still answers every night at once.
+        await service.sessions.getHistoryMeetIdsPage(7, {}, null, null)
+        const unbounded = execute.mock.calls[1]![0] as { sql: string; args: Array<number> }
+
+        expect(unbounded.sql).not.toContain('LIMIT')
+        expect(unbounded.args).toEqual([7, 7, 7, 7, 7, 7])
     })
 
     it('requires a session organizer to remain a member of the private group', async () => {

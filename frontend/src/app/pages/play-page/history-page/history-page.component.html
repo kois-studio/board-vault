@@ -18,12 +18,12 @@
         </div>
     } @else {
         <section class="mb-8 flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between" i18n-aria-label="Accessible name of the numbers at the top of History" aria-label="History summary">
-            @if (hasFilteredHistory()) {
+            @if (hasFilteredHistory() && historySummary(); as summary) {
                 <dl class="grid grid-cols-2 gap-3 sm:grid-cols-4 lg:flex-1">
-                    <div class="rounded-lg border border-bv-border bg-bv-surface px-4 py-3"><dt class="text-xs text-bv-text-muted" i18n="history stat sessions|Number at the top of History: game nights recorded">Sessions</dt><dd class="text-2xl font-bold">{{ historySummary().sessions }}</dd></div>
-                    <div class="rounded-lg border border-bv-border bg-bv-surface px-4 py-3"><dt class="text-xs text-bv-text-muted" i18n="history stat plays|Number at the top of History: games played, counting each play">Games played</dt><dd class="text-2xl font-bold">{{ historySummary().gamesPlayed }}</dd></div>
-                    <div class="rounded-lg border border-bv-border bg-bv-surface px-4 py-3"><dt class="text-xs text-bv-text-muted" i18n="Number at the top of History: how many different games were played">Different games</dt><dd class="text-2xl font-bold">{{ historySummary().uniqueGames }}</dd></div>
-                    <div class="rounded-lg border border-bv-border bg-bv-surface px-4 py-3"><dt class="text-xs text-bv-text-muted" i18n="history stat people|Number at the top of History: how many people came">People</dt><dd class="text-2xl font-bold">{{ historySummary().people }}</dd></div>
+                    <div class="rounded-lg border border-bv-border bg-bv-surface px-4 py-3"><dt class="text-xs text-bv-text-muted" i18n="history stat sessions|Number at the top of History: game nights recorded">Sessions</dt><dd class="text-2xl font-bold">{{ summary.sessions }}</dd></div>
+                    <div class="rounded-lg border border-bv-border bg-bv-surface px-4 py-3"><dt class="text-xs text-bv-text-muted" i18n="history stat plays|Number at the top of History: games played, counting each play">Games played</dt><dd class="text-2xl font-bold">{{ summary.gamesPlayed }}</dd></div>
+                    <div class="rounded-lg border border-bv-border bg-bv-surface px-4 py-3"><dt class="text-xs text-bv-text-muted" i18n="Number at the top of History: how many different games were played">Different games</dt><dd class="text-2xl font-bold">{{ summary.uniqueGames }}</dd></div>
+                    <div class="rounded-lg border border-bv-border bg-bv-surface px-4 py-3"><dt class="text-xs text-bv-text-muted" i18n="history stat people|Number at the top of History: how many people came">People</dt><dd class="text-2xl font-bold">{{ summary.people }}</dd></div>
                 </dl>
             }
             @if (userGroups$().length > 1 || groupIdFilter()) {
@@ -94,9 +94,22 @@
                     </section>
                 }
             </div>
-            @if (hiddenCount() > 0) {
+            @if (history.moreFailed()) {
+                <div class="mt-8 text-center text-bv-text-muted" role="alert">
+                    <p class="mb-3" i18n="End of History when older game nights could not load">Older sessions could not be loaded.</p>
+                    <button appButton variant="secondary" icon="arrow-repeat" (click)="retryHistory()" i18n="Button that loads the history again">Retry</button>
+                </div>
+            } @else if (history.hasMore()) {
                 <div class="mt-8 text-center">
-                    <button appButton variant="secondary" (click)="showMore()" i18n="Button at the end of History; the placeholder is how many older game nights are hidden">Show older sessions ({{ hiddenCount() }})</button>
+                    <button appButton variant="secondary" [disabled]="history.loadingMore()" (click)="showMore()">
+                        @if (history.loadingMore()) {
+                            <ng-container i18n="Button at the end of History while older game nights load">Loading older sessions…</ng-container>
+                        } @else if (hiddenCount()) {
+                            <ng-container i18n="Button at the end of History; the placeholder is how many older game nights are hidden">Show older sessions ({{ hiddenCount() }})</ng-container>
+                        } @else {
+                            <ng-container i18n="Button at the end of History before it is known how many older game nights there are">Show older sessions</ng-container>
+                        }
+                    </button>
                 </div>
             }
         }

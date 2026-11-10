@@ -47,6 +47,7 @@ async function renderHome(overrides: Record<string, unknown> = {}) {
         userMeets: signal([]),
         userMeetsError: signal(false),
         userHistory: signal([]),
+        userHistorySummary: signal<unknown>({ nights: 0, gamesPlayed: 0, uniqueGames: 0, people: 0, mostPlayed: null, myMostPlayed: [] }),
         userGames: signal([]),
         userInvitations: signal([]),
         userInvitationsError: signal(false),
@@ -205,6 +206,23 @@ describe('DashboardPageComponent (Home)', () => {
 
             expect(text(profile)).toContain('1 game · 0 nights played')
             expect(text(profile)).toContain('Your page')
+        })
+
+        it('counts every night you played, not only the latest ones loaded (#252)', async () => {
+            const fixture = await renderHome({
+                ...oneGroup,
+                userHistorySummary: signal({ nights: 42, gamesPlayed: 0, uniqueGames: 0, people: 0, mostPlayed: null, myMostPlayed: [] }),
+            })
+
+            expect(text((fixture.nativeElement as HTMLElement).querySelector('a[href="/you"]'))).toContain('0 games · 42 nights played')
+        })
+
+        it('leaves the nights out until they are counted, never saying 0', async () => {
+            const fixture = await renderHome({ ...oneGroup, userHistorySummary: signal(null) })
+            const profile = text((fixture.nativeElement as HTMLElement).querySelector('a[href="/you"]'))
+
+            expect(profile).toContain('0 games')
+            expect(profile).not.toContain('nights played')
         })
     })
 

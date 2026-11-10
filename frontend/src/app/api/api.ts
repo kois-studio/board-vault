@@ -34,6 +34,8 @@ import {
     groupInvitationsSchema,
     groupPeopleSchema,
     groupPersonSchemaResponse,
+    historyPageSchema,
+    historySummarySchema,
     homePreferencesSchema,
     liveSessionCreatedSchema,
     meetDetailsSchema,
@@ -104,7 +106,10 @@ import type {
     GroupPersonType,
     GroupPersonWorkspaceType,
     GroupWithMembersAndGames,
+    HistoryPageOptions,
+    HistoryPageType,
     HistoryRecordType,
+    HistorySummaryType,
     HomePreferences,
     InvitationWithAccountsData,
     InvitationWithExtraData,
@@ -770,10 +775,26 @@ export class Api {
     // --------------------------------------------------------------------------
     // #region play
     // --------------------------------------------------------------------------
-    getUserGamesHistory(userId: number) {
+    /** A page of your history, newest first; pass the last night's id as `before` for older ones (#252). */
+    getUserGamesHistory(userId: number, options: HistoryPageOptions = {}) {
+        const params: Record<string, number> = {}
+        for (const key of ['before', 'limit', 'groupId', 'gameId'] as const) {
+            const value = options[key]
+            if (value !== undefined) params[key] = value
+        }
         return this.http
-            .get<Array<HistoryRecordType>>(`${this.url}/play/users/${userId}/history`)
-            .pipe(map((response) => userHistorySchema.parse(response)))
+            .get<HistoryPageType>(`${this.url}/play/users/${userId}/history/page`, { params })
+            .pipe(map((response) => historyPageSchema.parse(response)))
+    }
+
+    /** Totals over your whole history, or the nights of one group or with one game (#252). */
+    getUserHistorySummary(userId: number, filters: { groupId?: number; gameId?: number } = {}) {
+        const params: Record<string, number> = {}
+        if (filters.groupId !== undefined) params['groupId'] = filters.groupId
+        if (filters.gameId !== undefined) params['gameId'] = filters.gameId
+        return this.http
+            .get<HistorySummaryType>(`${this.url}/play/users/${userId}/history/summary`, { params })
+            .pipe(map((response) => historySummarySchema.parse(response)))
     }
 
     /** `context`: see `withoutReadRetry` for a quiet refresh. */

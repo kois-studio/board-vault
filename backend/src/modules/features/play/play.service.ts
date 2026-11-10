@@ -11,10 +11,15 @@ import { MeetsService } from '../../core/meets/meets.service.js'
 import { UsersService } from '../../core/users/users.service.js'
 
 import { buildHistoryRecords } from './history-records.js'
+import { HISTORY_PAGE_SIZE } from './play.types.js'
 import { englishNoResultReason, englishReason } from './recommendation-reasons.js'
 
 import type {
+    HistoryPageDto,
     HistoryRecordDto,
+    HistoryQuery,
+    HistorySummaryDto,
+    HistorySummaryQuery,
     NoResultReasonDto,
     RecommendationReasonDto,
     RecommendationDto,
@@ -491,10 +496,38 @@ export class PlayService {
         }
     }
 
+    /**
+     * One page of the caller's history, newest first (#252): its size and its queries no longer grow with
+     * every night ever played. `before` is the id of the last night of the previous page.
+     */
     @LogFeature(new Logger('PlayService'))
-    async getUserGamesHistory(userId: number, locale: Locale): Promise<Array<HistoryRecordDto>> {
-        const meetIds = await this.databaseService.sessions.getDistinctCompletedMeetIdsForAccountHistory(userId)
-        const meets = (await this.meetsService.getMeetsByIdsForAccount(meetIds, userId)).filter(meet => meet.status === 'completed')
+    async getUserGamesHistory(userId: number, query: HistoryQuery, locale: Locale): Promise<HistoryPageDto> {
+        const limit = query.limit ?? HISTORY_PAGE_SIZE
+        const filters = { groupId: query.groupId, gameId: query.gameId }
+        // One more than the page, to know whether older nights remain.
+        const ids = await this.databaseService.sessions.getHistoryMeetIdsPage(userId, filters, query.before ?? null, limit + 1)
+
+        return { entries: await this.historyRecordsFor(ids.slice(0, limit), userId, locale), hasMore: ids.length > limit }
+    }
+
+    /** Every night at once, for the previous frontend release only (`GET /history`, deprecated by #252). */
+    @LogFeature(new Logger('PlayService'))
+    async getUserGamesHistoryAll(userId: number, locale: Locale): Promise<Array<HistoryRecordDto>> {
+        const ids = await this.databaseService.sessions.getHistoryMeetIdsPage(userId, {}, null, null)
+
+        return this.historyRecordsFor(ids, userId, locale)
+    }
+
+    /** The history records of these nights, in this order. */
+    private async historyRecordsFor(meetIds: Array<number>, userId: number, locale: Locale): Promise<Array<HistoryRecordDto>> {
+        if (meetIds.length === 0) return []
+
+        const found = new Map((await this.meetsService.getMeetsByIdsForAccount(meetIds, userId)).map(meet => [meet.id, meet]))
+        const meets = meetIds.flatMap(id => {
+            const meet = found.get(id)
+
+            return meet?.status === 'completed' ? [meet] : []
+        })
 
         return buildHistoryRecords(meets, {
             databaseService: this.databaseService,
@@ -504,6 +537,40 @@ export class PlayService {
             locale,
             meetAccountGamesService: this.meetAccountGamesService,
         })
+    }
+
+    /** Totals over the caller's whole history, optionally for one group, in a fixed number of queries (#252). */
+    @LogFeature(new Logger('PlayService'))
+    async getUserHistorySummary(userId: number, query: HistorySummaryQuery, locale: Locale): Promise<HistorySummaryDto> {
+        const summary = await this.databaseService.sessions.getHistorySummary(userId, { groupId: query.groupId, gameId: query.gameId })
+        const gameIds = [...new Set([...summary.mostPlayedCandidates, ...summary.myMostPlayed].map(game => game.gameId))]
+        const games = new Map(
+            (await this.gameTranslationService.withTitles([...(await this.gamesService.getGamesByIds(gameIds)).values()], locale)).map(
+                game => [game.id, game],
+            ),
+        )
+        // The game played on the most nights; a tie goes to the first title, as the reader would sort them.
+        const collator = new Intl.Collator(locale)
+        const [mostPlayed] = summary.mostPlayedCandidates
+            .flatMap(candidate => {
+                const game = games.get(candidate.gameId)
+
+                return game ? [{ game, nights: candidate.nights }] : []
+            })
+            .sort((a, b) => collator.compare(a.game.title, b.game.title))
+
+        return {
+            nights: summary.nights,
+            gamesPlayed: summary.gamesPlayed,
+            uniqueGames: summary.uniqueGames,
+            people: summary.people,
+            mostPlayed: mostPlayed ?? null,
+            myMostPlayed: summary.myMostPlayed.flatMap(line => {
+                const game = games.get(line.gameId)
+
+                return game ? [{ game, plays: line.plays, wins: line.wins }] : []
+            }),
+        }
     }
 
     @LogFeature(new Logger('PlayService'))

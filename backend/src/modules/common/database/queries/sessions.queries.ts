@@ -10,6 +10,70 @@ import type { DatabaseService } from '../database.service.js'
 import type { IdempotencyRecord } from './idempotency.queries.js'
 import type { InStatement } from '@libsql/client'
 
+/** Narrows the caller's history to one group, or to the nights one game was played. */
+export type HistoryFilters = { groupId?: number; gameId?: number }
+
+/**
+ * The caller's completed nights (#252), as a `SELECT m.id, m.meetDate FROM Meet m WHERE …` to build on.
+ *
+ * Only groups the account is in now: history has always shown only those, since the records are read
+ * through `getMeetsByIdsForAccount`. Starting from the account's groups also means the query never
+ * reads other groups' nights. A night counts when the account attended it, played in it without being
+ * on its list (older recordings), or did either as a linked group person.
+ */
+export function historyNights(accountId: number, filters: HistoryFilters = {}): { sql: string; args: Array<number> } {
+    const conditions = ["m.status = 'completed'", 'm.groupId IN (SELECT gm.groupId FROM GroupMembership gm WHERE gm.accountId = ?)']
+    const args = [accountId]
+
+    if (filters.groupId !== undefined) {
+        conditions.push('m.groupId = ?')
+        args.push(filters.groupId)
+    }
+    if (filters.gameId !== undefined) {
+        conditions.push("EXISTS (SELECT 1 FROM MeetGame fg WHERE fg.meetId = m.id AND fg.gameId = ? AND fg.gameStatus = 'played')")
+        args.push(filters.gameId)
+    }
+    conditions.push(`(
+        EXISTS (
+            SELECT 1 FROM MeetAttendee ma
+            WHERE ma.meetId = m.id AND ma.accountId = ? AND ma.attendanceStatus = 'attended'
+        )
+        OR (
+            EXISTS (SELECT 1 FROM MeetAccountGame mag WHERE mag.meetId = m.id AND mag.accountId = ?)
+            AND NOT EXISTS (SELECT 1 FROM MeetAttendee ma WHERE ma.meetId = m.id AND ma.accountId = ?)
+        )
+        OR EXISTS (
+            SELECT 1 FROM MeetPersonAttendee mpa
+            INNER JOIN GroupPerson gp ON gp.id = mpa.groupPersonId
+            WHERE mpa.meetId = m.id AND gp.accountId = ? AND mpa.attendanceStatus = 'attended'
+        )
+        OR EXISTS (
+            SELECT 1 FROM MeetPersonGame mpg
+            INNER JOIN GroupPerson gp ON gp.id = mpg.groupPersonId
+            WHERE mpg.meetId = m.id AND gp.accountId = ?
+        )
+    )`)
+    args.push(accountId, accountId, accountId, accountId, accountId)
+
+    return { sql: `SELECT m.id, m.meetDate FROM Meet m WHERE ${conditions.join(' AND ')}`, args }
+}
+
+/** A played game of a night in `mine` that is still in the catalogue, as history lists it, with how many times it was played. */
+const PLAYED_IN_MINE = `
+    SELECT mg.meetId, mg.gameId,
+        MAX(1, (SELECT COUNT(*) FROM MeetPlay mp WHERE mp.meetId = mg.meetId AND mp.gameId = mg.gameId)) AS plays
+    FROM MeetGame mg
+    INNER JOIN mine ON mine.id = mg.meetId
+    INNER JOIN Game g ON g.id = mg.gameId
+    WHERE mg.gameStatus = 'played'
+`
+
+/** Finished or cancelled nights stay in the game-night list this many days (#252). */
+export const RECENT_MEETS_DAYS = 30
+
+/** Ties for the most played game are broken by title; this many are titled at most. */
+export const MOST_PLAYED_CANDIDATES = 50
+
 type CompletedSessionInput = {
     /** Recorded in the same transaction, so a repeat of the key creates nothing (#246). */
     idempotency?: IdempotencyRecord
@@ -70,7 +134,12 @@ export type GameResultRow = { accountId: number | null; groupPersonId: number | 
 export class SessionQueries {
     constructor(private readonly database: DatabaseService) {}
 
-    /** Sessions in the account's groups, with the account's own RSVP (null when not invited). */
+    /**
+     * Sessions in the account's groups, with the account's own RSVP (null when not invited), bounded so the
+     * list stops growing with every night ever played (#252): every night still open (planned, running, or
+     * waiting for results), every night of the last `RECENT_MEETS_DAYS` days, and each group's last
+     * completed night, which Home shows as "Last: …". Older nights are in the history.
+     */
     getMeetsForAccount(accountId: number) {
         return this.database.execute({
             sql: `
@@ -85,8 +154,23 @@ export class SessionQueries {
                 FROM Meet m
                 INNER JOIN GroupMembership gm ON gm.groupId = m.groupId
                 WHERE gm.accountId = ?
+                  AND (
+                      m.status IN ('scheduled', 'active')
+                      OR datetime(m.meetDate) >= datetime('now', ?)
+                      OR m.id IN (
+                          SELECT id FROM (
+                              SELECT last.id, ROW_NUMBER() OVER (
+                                  PARTITION BY last.groupId ORDER BY datetime(last.meetDate) DESC, last.id DESC
+                              ) AS position
+                              FROM Meet last
+                              INNER JOIN GroupMembership mine ON mine.groupId = last.groupId AND mine.accountId = ?
+                              WHERE last.status = 'completed'
+                          )
+                          WHERE position = 1
+                      )
+                  )
             `,
-            args: [accountId, accountId, accountId],
+            args: [accountId, accountId, accountId, `-${RECENT_MEETS_DAYS} days`, accountId],
         })
     }
 
@@ -1007,49 +1091,114 @@ export class SessionQueries {
         return resultSet.rows.map(row => Number(row[0]))
     }
 
-    async getDistinctCompletedMeetIdsForAccountHistory(accountId: number): Promise<Array<number>> {
+    /**
+     * One page of the caller's completed nights, newest first (#252): at most `limit` ids, older than
+     * the night `before` when given. Ask for one more than you show to know whether more remain.
+     */
+    /** History night ids, newest first, after the night `before`; `limit` null reads them all (the deprecated route only). */
+    async getHistoryMeetIdsPage(
+        accountId: number,
+        filters: HistoryFilters,
+        before: number | null,
+        limit: number | null,
+    ): Promise<Array<number>> {
+        const nights = historyNights(accountId, filters)
+        const cursor =
+            before === null
+                ? ''
+                : `AND (
+                      datetime(m.meetDate) < (SELECT datetime(c.meetDate) FROM Meet c WHERE c.id = ?)
+                      OR (datetime(m.meetDate) = (SELECT datetime(c.meetDate) FROM Meet c WHERE c.id = ?) AND m.id < ?)
+                  )`
         const resultSet = await this.database.execute({
-            sql: `
-                SELECT DISTINCT m.id
-                FROM Meet m
-                WHERE m.status = 'completed'
-                  AND (
-                      EXISTS (
-                          SELECT 1
-                          FROM MeetAttendee ma
-                          WHERE ma.meetId = m.id AND ma.accountId = ? AND ma.attendanceStatus = 'attended'
-                      )
-                      OR (
-                          EXISTS (
-                              SELECT 1
-                              FROM MeetAccountGame mag
-                              WHERE mag.meetId = m.id AND mag.accountId = ?
-                          )
-                          AND NOT EXISTS (
-                              SELECT 1
-                              FROM MeetAttendee ma
-                              WHERE ma.meetId = m.id AND ma.accountId = ?
-                          )
-                      )
-                      OR EXISTS (
-                          SELECT 1
-                          FROM MeetPersonAttendee mpa
-                          INNER JOIN GroupPerson gp ON gp.id = mpa.groupPersonId
-                          WHERE mpa.meetId = m.id AND gp.accountId = ? AND mpa.attendanceStatus = 'attended'
-                      )
-                      OR EXISTS (
-                          SELECT 1
-                          FROM MeetPersonGame mpg
-                          INNER JOIN GroupPerson gp ON gp.id = mpg.groupPersonId
-                          WHERE mpg.meetId = m.id AND gp.accountId = ?
-                      )
-                  )
-                ORDER BY datetime(m.meetDate) DESC, m.id DESC
-            `,
-            args: [accountId, accountId, accountId, accountId, accountId],
+            sql: `${nights.sql} ${cursor} ORDER BY datetime(m.meetDate) DESC, m.id DESC${limit === null ? '' : ' LIMIT ?'}`,
+            args: [...nights.args, ...(before === null ? [] : [before, before, before]), ...(limit === null ? [] : [limit])],
         })
 
         return resultSet.rows.map(row => Number(row[0]))
+    }
+
+    /**
+     * Totals over the caller's whole history in four queries, however long it is (#252): nights; games
+     * played and the most played candidates; different people; and the games the caller played most.
+     */
+    async getHistorySummary(accountId: number, filters: HistoryFilters) {
+        const nights = historyNights(accountId, filters)
+        const mine = `WITH mine AS (${nights.sql})`
+        const [count, games, people, myGames] = await Promise.all([
+            this.database.execute({ sql: `${mine} SELECT COUNT(*) FROM mine`, args: nights.args }),
+            this.database.execute({
+                sql: `
+                    ${mine}, played AS (${PLAYED_IN_MINE}),
+                    perGame AS (SELECT gameId, COUNT(*) AS nights, SUM(plays) AS plays FROM played GROUP BY gameId)
+                    SELECT gameId, nights,
+                        (SELECT COUNT(*) FROM perGame) AS uniqueGames,
+                        (SELECT SUM(plays) FROM perGame) AS gamesPlayed
+                    FROM perGame
+                    WHERE nights = (SELECT MAX(nights) FROM perGame)
+                    ORDER BY gameId
+                    LIMIT ?
+                `,
+                args: [...nights.args, MOST_PLAYED_CANDIDATES],
+            }),
+            // Everyone once, as the app lists them: a group person linked to an account is that account.
+            this.database.execute({
+                sql: `
+                    ${mine}, played AS (${PLAYED_IN_MINE})
+                    SELECT COUNT(DISTINCT person) FROM (
+                        SELECT 'account:' || ma.accountId AS person
+                        FROM MeetAttendee ma INNER JOIN mine ON mine.id = ma.meetId
+                        WHERE ma.attendanceStatus = 'attended'
+                        UNION ALL
+                        SELECT CASE WHEN gp.accountId IS NULL THEN 'person:' || gp.id ELSE 'account:' || gp.accountId END
+                        FROM MeetPersonAttendee mpa
+                        INNER JOIN mine ON mine.id = mpa.meetId
+                        INNER JOIN GroupPerson gp ON gp.id = mpa.groupPersonId
+                        WHERE mpa.attendanceStatus = 'attended'
+                        UNION ALL
+                        SELECT 'account:' || mag.accountId
+                        FROM MeetAccountGame mag
+                        INNER JOIN played ON played.meetId = mag.meetId AND played.gameId = mag.gameId
+                        UNION ALL
+                        SELECT CASE WHEN gp.accountId IS NULL THEN 'person:' || gp.id ELSE 'account:' || gp.accountId END
+                        FROM MeetPersonGame mpg
+                        INNER JOIN played ON played.meetId = mpg.meetId AND played.gameId = mpg.gameId
+                        INNER JOIN GroupPerson gp ON gp.id = mpg.groupPersonId
+                    )
+                `,
+                args: nights.args,
+            }),
+            // The games the caller played as an account, as the You page has always counted them.
+            this.database.execute({
+                sql: `
+                    ${mine}, played AS (${PLAYED_IN_MINE})
+                    SELECT played.gameId, SUM(played.plays) AS plays,
+                        SUM(EXISTS (
+                            SELECT 1 FROM MeetGameResult r
+                            WHERE r.meetId = played.meetId AND r.gameId = played.gameId AND r.accountId = ? AND r.isWinner = 1
+                        )) AS wins
+                    FROM played
+                    WHERE EXISTS (
+                        SELECT 1 FROM MeetAccountGame mag
+                        WHERE mag.meetId = played.meetId AND mag.gameId = played.gameId AND mag.accountId = ?
+                    )
+                    GROUP BY played.gameId
+                    ORDER BY plays DESC, wins DESC, played.gameId ASC
+                    LIMIT 5
+                `,
+                args: [...nights.args, accountId, accountId],
+            }),
+        ])
+        const [first] = games.rows
+
+        return {
+            nights: Number(count.rows[0]?.[0] ?? 0),
+            uniqueGames: Number(first?.[2] ?? 0),
+            gamesPlayed: Number(first?.[3] ?? 0),
+            mostPlayedCandidates: games.rows.map(row => ({ gameId: Number(row[0]), nights: Number(row[1]) })),
+            people: Number(people.rows[0]?.[0] ?? 0),
+            myMostPlayed: myGames.rows.map(row => ({ gameId: Number(row[0]), plays: Number(row[1]), wins: Number(row[2]) })),
+        }
     }
 
     async updateMeetAttendance(meetId: number, attendedIds: Array<number>, activity?: GroupActivityEntry): Promise<void> {

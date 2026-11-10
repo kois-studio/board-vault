@@ -4488,7 +4488,7 @@
     },
     "/play/users/{userId}/history": {
       "get": {
-        "deprecated": false,
+        "deprecated": true,
         "operationId": "PlayController_getUserGamesHistory",
         "parameters": [
           {
@@ -4502,7 +4502,7 @@
         ],
         "responses": {
           "200": {
-            "description": "List of all games played by the user",
+            "description": "Every completed game night of the user, newest first",
             "content": {
               "application/json": {
                 "schema": {
@@ -4520,7 +4520,139 @@
             "bearer": []
           }
         ],
-        "summary": "List of all games played by the user",
+        "summary": "Every completed game night of the user. Deprecated: use GET /play/users/:userId/history/page (#252)",
+        "tags": [
+          "play"
+        ]
+      }
+    },
+    "/play/users/{userId}/history/page": {
+      "get": {
+        "operationId": "PlayController_getUserGamesHistoryPage",
+        "parameters": [
+          {
+            "name": "userId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "before",
+            "required": false,
+            "in": "query",
+            "description": "Return nights older than this one: the id of the last night of the previous page.",
+            "schema": {
+              "example": 120,
+              "type": "number"
+            }
+          },
+          {
+            "name": "limit",
+            "required": false,
+            "in": "query",
+            "description": "Nights per page, 1 to 50; 20 when left out.",
+            "schema": {
+              "example": 20,
+              "type": "number"
+            }
+          },
+          {
+            "name": "groupId",
+            "required": false,
+            "in": "query",
+            "description": "Only nights of this group.",
+            "schema": {
+              "example": 7,
+              "type": "number"
+            }
+          },
+          {
+            "name": "gameId",
+            "required": false,
+            "in": "query",
+            "description": "Only nights where this game was played.",
+            "schema": {
+              "example": 42,
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "One page of nights, and whether older ones remain.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HistoryPageDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "A page of the user's completed game nights in their groups, newest first (#252)",
+        "tags": [
+          "play"
+        ]
+      }
+    },
+    "/play/users/{userId}/history/summary": {
+      "get": {
+        "operationId": "PlayController_getUserHistorySummary",
+        "parameters": [
+          {
+            "name": "userId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "groupId",
+            "required": false,
+            "in": "query",
+            "description": "Only nights of this group.",
+            "schema": {
+              "example": 7,
+              "type": "number"
+            }
+          },
+          {
+            "name": "gameId",
+            "required": false,
+            "in": "query",
+            "description": "Only nights this game was played on.",
+            "schema": {
+              "example": 42,
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HistorySummaryDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Totals over the user's whole history: nights, games, people, and the most played games (#252)",
         "tags": [
           "play"
         ]
@@ -4528,7 +4660,6 @@
     },
     "/play/users/{userId}/meets": {
       "get": {
-        "deprecated": false,
         "operationId": "PlayController_getUserMeets",
         "parameters": [
           {
@@ -4542,7 +4673,7 @@
         ],
         "responses": {
           "200": {
-            "description": "List of all meets of the user, with the user's own RSVP",
+            "description": "The user's game nights, newest first, with the user's own RSVP",
             "content": {
               "application/json": {
                 "schema": {
@@ -4560,7 +4691,7 @@
             "bearer": []
           }
         ],
-        "summary": "List of all meets of the user",
+        "summary": "The user's game nights: every open one, those of the last 30 days, and each group's last completed one (#252)",
         "tags": [
           "play"
         ]
@@ -10692,6 +10823,117 @@
         "required": [
           "groupId",
           "signals"
+        ]
+      },
+      "HistoryPageDto": {
+        "type": "object",
+        "properties": {
+          "entries": {
+            "description": "Completed nights, newest first.",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/HistoryRecordDto"
+            }
+          },
+          "hasMore": {
+            "type": "boolean",
+            "example": true,
+            "description": "True when older nights remain: ask again with `before` set to the last id."
+          }
+        },
+        "required": [
+          "entries",
+          "hasMore"
+        ]
+      },
+      "HistoryMostPlayedDto": {
+        "type": "object",
+        "properties": {
+          "game": {
+            "$ref": "#/components/schemas/GameCompleteDto"
+          },
+          "nights": {
+            "type": "number",
+            "example": 4,
+            "description": "Nights it was played."
+          }
+        },
+        "required": [
+          "game",
+          "nights"
+        ]
+      },
+      "HistoryMyGameDto": {
+        "type": "object",
+        "properties": {
+          "game": {
+            "$ref": "#/components/schemas/GameCompleteDto"
+          },
+          "plays": {
+            "type": "number",
+            "example": 6,
+            "description": "Times the caller played it, counting every play of a night."
+          },
+          "wins": {
+            "type": "number",
+            "example": 2,
+            "description": "Nights the caller was recorded as winning it."
+          }
+        },
+        "required": [
+          "game",
+          "plays",
+          "wins"
+        ]
+      },
+      "HistorySummaryDto": {
+        "type": "object",
+        "properties": {
+          "nights": {
+            "type": "number",
+            "example": 12,
+            "description": "Completed nights in the history."
+          },
+          "gamesPlayed": {
+            "type": "number",
+            "example": 30,
+            "description": "Games played across those nights, counting every play."
+          },
+          "uniqueGames": {
+            "type": "number",
+            "example": 9,
+            "description": "Different games played."
+          },
+          "people": {
+            "type": "number",
+            "example": 6,
+            "description": "Different people who came or played, each counted once."
+          },
+          "mostPlayed": {
+            "nullable": true,
+            "description": "The game played on the most nights, ties broken by title; null with no games.",
+            "type": "object",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/HistoryMostPlayedDto"
+              }
+            ]
+          },
+          "myMostPlayed": {
+            "description": "The five games the caller played most, then won most.",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/HistoryMyGameDto"
+            }
+          }
+        },
+        "required": [
+          "nights",
+          "gamesPlayed",
+          "uniqueGames",
+          "people",
+          "mostPlayed",
+          "myMostPlayed"
         ]
       },
       "AccountMeetDto": {

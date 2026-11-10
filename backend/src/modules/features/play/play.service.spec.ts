@@ -28,7 +28,7 @@ describe('PlayService history', () => {
         })
         const meets = { getMeetsByIdsForAccount: vi.fn().mockResolvedValue([meet(10, 'completed'), meet(11, 'cancelled')]) }
         const database = fakeDatabase({
-            getDistinctCompletedMeetIdsForAccountHistory: vi.fn().mockResolvedValue([10, 11]),
+            getHistoryMeetIdsPage: vi.fn().mockResolvedValue([10, 11]),
             getHistoryDetailsByMeetIds: vi.fn().mockResolvedValue({
                 attendedAccountIds: new Map([[10, [1]]]),
                 attendedPersonIds: new Map(),
@@ -50,9 +50,12 @@ describe('PlayService history', () => {
             titledGames,
         )
 
-        const history = await service.getUserGamesHistory(1, 'es')
+        const { entries: history, hasMore } = await service.getUserGamesHistory(1, {}, 'es')
 
         expect(history).toHaveLength(1)
+        expect(hasMore).toBe(false)
+        // One more than a page, to know whether more remain (#252).
+        expect(database.sessions.getHistoryMeetIdsPage).toHaveBeenCalledWith(1, { groupId: undefined, gameId: undefined }, null, 21)
         expect(history[0]?.gamesPlayed[0]?.playedBy.map(user => [user.id, user.standing])).toEqual([[1, 'left']])
         expect(meets.getMeetsByIdsForAccount).toHaveBeenCalledWith([10, 11], 1)
         expect(database.sessions.getHistoryDetailsByMeetIds).toHaveBeenCalledTimes(1)
@@ -77,7 +80,7 @@ describe('PlayService history', () => {
         }
         // A session recorded only with group people: no MeetAttendee or MeetAccountGame rows.
         const database = fakeDatabase({
-            getDistinctCompletedMeetIdsForAccountHistory: vi.fn().mockResolvedValue([58]),
+            getHistoryMeetIdsPage: vi.fn().mockResolvedValue([58]),
             getHistoryDetailsByMeetIds: vi.fn().mockResolvedValue({
                 attendedAccountIds: new Map(),
                 attendedPersonIds: new Map([[58, [3, 9]]]),
@@ -116,7 +119,9 @@ describe('PlayService history', () => {
             titledGames,
         )
 
-        const [record] = await service.getUserGamesHistory(6, 'es')
+        const {
+            entries: [record],
+        } = await service.getUserGamesHistory(6, {}, 'es')
 
         const expectedPeople = [
             { id: 3, displayName: 'bloddsword', accountId: 6, avatar: accountAvatar, standing: 'member' },

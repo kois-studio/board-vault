@@ -3,7 +3,7 @@ import { TestBed } from '@angular/core/testing'
 import { provideRouter } from '@angular/router'
 import { type Observable, of, throwError } from 'rxjs'
 import { Api } from '../../api/api'
-import type { GameCompleteType, HistoryRecordType } from '../../api/api.types'
+import type { GameCompleteType } from '../../api/api.types'
 import { DataService } from '../../core/services/data.service'
 import { YouPageComponent } from './you-page.component'
 
@@ -18,21 +18,6 @@ describe('YouPageComponent', () => {
         titleTranslations: { en: title, es: title },
     })
     const me = { id: 1, username: 'ana', displayName: 'Ana Ruiz', avatar: null }
-    const night = (
-        id: number,
-        status: string,
-        games: Array<{ game: GameCompleteType; players: Array<number>; winners?: Array<number>; playCount?: number }>,
-    ) =>
-        ({
-            meetData: { id, groupId: 10, status },
-            attendedBy: [],
-            gamesPlayed: games.map(({ game, players, winners, playCount }) => ({
-                gameData: game,
-                playCount,
-                playedBy: players.map((id) => ({ id })),
-                winnerAccountIds: winners,
-            })),
-        }) as unknown as HistoryRecordType
     const standing = (sessions: number, gamesPlayed: number, wins: number) => ({
         standings: [
             { accountId: 2, groupPersonId: null, displayName: 'Other', avatar: null, sessions: 9, gamesPlayed: 9, wins: 9 },
@@ -55,7 +40,7 @@ describe('YouPageComponent', () => {
             userGroupsError: signal(Boolean(failed.groups)),
             userGamesError: signal(Boolean(failed.games)),
             userStatsError: signal(Boolean(failed.stats)),
-            userHistoryError: signal(Boolean(failed.history)),
+            userHistorySummaryError: signal(Boolean(failed.history)),
             userReviewsError: signal(Boolean(failed.reviews)),
         }
         const refresh = {
@@ -89,20 +74,21 @@ describe('YouPageComponent', () => {
                                       { accountId: 1, gameId: 4, review: 0, reviewDate: '', gameData: game(4, 'Unrated') },
                                   ],
                         ),
-                        userHistory: signal(
+                        // The server counts your most played games over your whole history (#252).
+                        userHistorySummary: signal(
                             failed.history
-                                ? []
-                                : [
-                                      night(1, 'completed', [
-                                          { game: game(1, 'Catan'), players: [1, 2], winners: [1] },
-                                          { game: game(2, 'Azul'), players: [1, 2], winners: [2], playCount: 2 },
-                                      ]),
-                                      night(2, 'completed', [
-                                          { game: game(2, 'Azul'), players: [1], winners: [1] },
-                                          { game: game(5, 'Not mine'), players: [2] },
-                                      ]),
-                                      night(3, 'active', [{ game: game(6, 'Still going'), players: [1] }]),
-                                  ],
+                                ? null
+                                : {
+                                      nights: 2,
+                                      gamesPlayed: 4,
+                                      uniqueGames: 3,
+                                      people: 2,
+                                      mostPlayed: { game: game(2, 'Azul'), nights: 2 },
+                                      myMostPlayed: [
+                                          { game: game(2, 'Azul'), plays: 3, wins: 1 },
+                                          { game: game(1, 'Catan'), plays: 1, wins: 1 },
+                                      ],
+                                  },
                         ),
                     },
                 },
@@ -214,7 +200,7 @@ describe('YouPageComponent', () => {
         expect(element.textContent).not.toContain('Not loaded')
     })
 
-    it('ranks the games you played on finished nights, counting repeated plays and your wins', async () => {
+    it('lists the games you played most, with their plays and your wins, as the server counted them', async () => {
         const { element } = await render()
         const played = [...element.querySelectorAll('section[aria-labelledby="you-played-heading"] li')].map((li) =>
             li.textContent?.replace('Artwork unavailable', '').replace(/\s+/g, ' ').trim(),

@@ -1,4 +1,5 @@
-import { ApiProperty } from '@nestjs/swagger'
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger'
+import { Type } from 'class-transformer'
 import { ArrayMinSize, ArrayUnique, IsArray, IsIn, IsInt, IsOptional, Max, Min } from 'class-validator'
 
 import { GameCompleteDto } from '../../../common/types/game.type.js'
@@ -69,6 +70,112 @@ export class HistoryRecordDto {
 
     @ApiProperty({ type: [HistoryPersonDto], required: false })
     attendedByPeople?: Array<HistoryPersonDto>
+}
+
+/** Nights shown per page of history when the caller does not say (#252). */
+export const HISTORY_PAGE_SIZE = 20
+/** The most nights one page of history may hold. */
+export const HISTORY_PAGE_MAX = 50
+
+/** Which part of the caller's history to read: newest first, a page at a time (#252). */
+export class HistoryQuery {
+    @ApiPropertyOptional({ description: 'Return nights older than this one: the id of the last night of the previous page.', example: 120 })
+    @IsOptional()
+    @Type(() => Number)
+    @IsInt()
+    @Min(1)
+    before?: number
+
+    @ApiPropertyOptional({ description: `Nights per page, 1 to ${HISTORY_PAGE_MAX}; ${HISTORY_PAGE_SIZE} when left out.`, example: 20 })
+    @IsOptional()
+    @Type(() => Number)
+    @IsInt()
+    @Min(1)
+    @Max(HISTORY_PAGE_MAX)
+    limit?: number
+
+    @ApiPropertyOptional({ description: 'Only nights of this group.', example: 7 })
+    @IsOptional()
+    @Type(() => Number)
+    @IsInt()
+    @Min(1)
+    groupId?: number
+
+    @ApiPropertyOptional({ description: 'Only nights where this game was played.', example: 42 })
+    @IsOptional()
+    @Type(() => Number)
+    @IsInt()
+    @Min(1)
+    gameId?: number
+}
+
+export class HistoryPageDto {
+    @ApiProperty({ type: [HistoryRecordDto], description: 'Completed nights, newest first.' })
+    entries: Array<HistoryRecordDto>
+
+    @ApiProperty({ example: true, description: 'True when older nights remain: ask again with `before` set to the last id.' })
+    hasMore: boolean
+}
+
+/** Which part of the caller's history to sum up. */
+export class HistorySummaryQuery {
+    @ApiPropertyOptional({ description: 'Only nights of this group.', example: 7 })
+    @IsOptional()
+    @Type(() => Number)
+    @IsInt()
+    @Min(1)
+    groupId?: number
+
+    @ApiPropertyOptional({ description: 'Only nights this game was played on.', example: 42 })
+    @IsOptional()
+    @Type(() => Number)
+    @IsInt()
+    @Min(1)
+    gameId?: number
+}
+
+export class HistoryMostPlayedDto {
+    @ApiProperty({ type: GameCompleteDto })
+    game: GameCompleteDto
+
+    @ApiProperty({ example: 4, description: 'Nights it was played.' })
+    nights: number
+}
+
+export class HistoryMyGameDto {
+    @ApiProperty({ type: GameCompleteDto })
+    game: GameCompleteDto
+
+    @ApiProperty({ example: 6, description: 'Times the caller played it, counting every play of a night.' })
+    plays: number
+
+    @ApiProperty({ example: 2, description: 'Nights the caller was recorded as winning it.' })
+    wins: number
+}
+
+/** Totals over the whole of the caller's history, so no screen needs every night to count them (#252). */
+export class HistorySummaryDto {
+    @ApiProperty({ example: 12, description: 'Completed nights in the history.' })
+    nights: number
+
+    @ApiProperty({ example: 30, description: 'Games played across those nights, counting every play.' })
+    gamesPlayed: number
+
+    @ApiProperty({ example: 9, description: 'Different games played.' })
+    uniqueGames: number
+
+    @ApiProperty({ example: 6, description: 'Different people who came or played, each counted once.' })
+    people: number
+
+    @ApiProperty({
+        type: HistoryMostPlayedDto,
+        nullable: true,
+        description: 'The game played on the most nights, ties broken by title; null with no games.',
+    })
+    mostPlayed: HistoryMostPlayedDto | null
+
+    @ApiProperty({ type: [HistoryMyGameDto], description: 'The five games the caller played most, then won most.' })
+    myMostPlayed: Array<HistoryMyGameDto>
 }
 
 export class RecommendationRequestBody {

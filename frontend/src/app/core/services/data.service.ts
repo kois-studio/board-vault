@@ -24,6 +24,7 @@ import type {
     GameReviewWithGameData,
     GroupWithMembersAndGames,
     HistoryRecordType,
+    HistorySummaryType,
     InvitationWithAccountsData,
     InvitationWithExtraData,
     NotificationType,
@@ -64,12 +65,18 @@ export class DataService {
     public readonly userInvitations = signal<Array<InvitationWithExtraData>>([])
     public readonly userReviews = signal<Array<GameReviewWithGameData>>([])
     public readonly userMeets = signal<Array<AccountMeetType>>([])
+    /** Your latest nights: the first page of your history (#252). Screens that page further read their own. */
     public readonly userHistory = signal<Array<HistoryRecordType>>([])
+    /** Totals over your whole history, counted by the server; null until they load. */
+    public readonly userHistorySummary = signal<HistorySummaryType | null>(null)
+    /** Goes up when your history changes, so screens that page it themselves read it again. */
+    public readonly userHistoryRevision = signal(0)
     public readonly userGamesError = signal(false)
     public readonly userGroupsError = signal(false)
     public readonly userStatsError = signal(false)
     public readonly userMeetsError = signal(false)
     public readonly userHistoryError = signal(false)
+    public readonly userHistorySummaryError = signal(false)
     public readonly userReviewsError = signal(false)
     public readonly userWishlistError = signal(false)
     public readonly userProposalsLoading = signal(false)
@@ -169,6 +176,7 @@ export class DataService {
         this._getUserReviews(userId)
         this._getUserMeets(userId)
         this._getUserHistory(userId)
+        this._getUserHistorySummary(userId)
         this._getUserWishlist(userId)
         this._getUserCollectionActivity(userId)
         this._getUserProposals(userId)
@@ -185,11 +193,13 @@ export class DataService {
         this.userReviews.set([])
         this.userMeets.set([])
         this.userHistory.set([])
+        this.userHistorySummary.set(null)
         this.userGamesError.set(false)
         this.userGroupsError.set(false)
         this.userStatsError.set(false)
         this.userMeetsError.set(false)
         this.userHistoryError.set(false)
+        this.userHistorySummaryError.set(false)
         this.userReviewsError.set(false)
         this.userWishlistError.set(false)
         this.userProposalsLoading.set(false)
@@ -506,13 +516,36 @@ export class DataService {
                 finalize(() => this.loadingService.finish(LOADING_KEYS.USER_GAMES_HISTORY)),
             )
             .subscribe({
-                next: (history) => this.userHistory.set(history),
+                next: (page) => this.userHistory.set(page.entries),
                 error: () => {
                     this.userHistoryError.set(true)
                     this.loadFailed(
                         'history',
                         () => this._getUserHistory(userId),
                         $localize`:Toast when your game night history could not load:Error retrieving user’s history`,
+                    )
+                },
+            })
+    }
+
+    private _getUserHistorySummary(userId: number) {
+        this.failedLoads.delete('historySummary')
+        this.userHistorySummaryError.set(false)
+        this.loadingService.start(LOADING_KEYS.USER_HISTORY_SUMMARY)
+        this.api
+            .getUserHistorySummary(userId)
+            .pipe(
+                takeUntil(this.userChanged),
+                finalize(() => this.loadingService.finish(LOADING_KEYS.USER_HISTORY_SUMMARY)),
+            )
+            .subscribe({
+                next: (summary) => this.userHistorySummary.set(summary),
+                error: () => {
+                    this.userHistorySummaryError.set(true)
+                    this.loadFailed(
+                        'historySummary',
+                        () => this._getUserHistorySummary(userId),
+                        $localize`:Toast when the totals of your game nights could not load:Your game night totals could not load`,
                     )
                 },
             })
@@ -1066,7 +1099,9 @@ export class DataService {
         if (!currentUser) return
 
         this.userHistory.set([])
+        this.userHistoryRevision.update((revision) => revision + 1)
         this._getUserHistory(currentUser.id)
+        this._getUserHistorySummary(currentUser.id)
     }
 
     public updateSessionAttendees(meetId: number, attendeeIds: Array<number>) {

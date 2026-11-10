@@ -142,15 +142,15 @@
         <!-- When you played it -->
         <section aria-labelledby="played-heading">
           <h2 id="played-heading" class="mb-3 text-xl font-bold">
-            @if (userHistoryFilteredComputed().length) {
-              <ng-container i18n="Heading on a game page of the game nights where you played it">{userHistoryFilteredComputed().length, plural, one {Played {{ userHistoryFilteredComputed().length }} time} other {Played {{ userHistoryFilteredComputed().length }} times}}</ng-container>
+            @if (playedCount()) {
+              <ng-container i18n="Heading on a game page of the game nights where you played it">{playedCount(), plural, one {Played {{ playedCount() }} time} other {Played {{ playedCount() }} times}}</ng-container>
             } @else {
               <ng-container i18n="Heading on a game page when you have not played it yet">Your plays</ng-container>
             }
           </h2>
           @if (userHistoryFilteredComputed().length) {
             <ul id="game-plays" class="divide-y divide-bv-border rounded-2xl border border-bv-border">
-              @for (session of visiblePlaysComputed(); track session.meetData.id) {
+              @for (session of userHistoryFilteredComputed(); track session.meetData.id) {
                 <li>
                   <a [routerLink]="['/sessions', session.meetData.id]" class="flex items-center justify-between gap-4 p-4 transition hover:bg-bv-bg">
                     <span class="min-w-0">
@@ -169,21 +169,31 @@
                 </li>
               }
             </ul>
-            @if (userHistoryFilteredComputed().length > visiblePlaysComputed().length || showAllPlays()) {
+            @if (plays.moreFailed()) {
+              <p class="mt-3 text-sm text-secondary" role="alert" i18n="Game page when older plays could not load">Your older plays could not be loaded.</p>
+            }
+            @if (plays.hasMore()) {
               <button
                 type="button"
-                class="mt-3 text-sm font-semibold text-bv-primary hover:underline"
+                class="mt-3 text-sm font-semibold text-bv-primary hover:underline disabled:opacity-60"
                 aria-controls="game-plays"
-                [attr.aria-expanded]="showAllPlays()"
-                (click)="showAllPlays.set(!showAllPlays())"
+                [disabled]="plays.loadingMore()"
+                (click)="plays.loadMore()"
               >
-                @if (showAllPlays()) {
-                  <ng-container i18n="Button on a game page that shows only your latest plays">Show the latest only</ng-container>
+                @if (plays.loadingMore()) {
+                  <ng-container i18n="Button on a game page while older plays load">Loading plays…</ng-container>
                 } @else {
-                  <ng-container i18n="Button on a game page that shows every play; the placeholder is how many, always more than one">Show all {{ userHistoryFilteredComputed().length }} plays</ng-container>
+                  <ng-container i18n="Button on a game page that shows older plays">Show more plays</ng-container>
                 }
               </button>
             }
+          } @else if (plays.loading()) {
+            <p class="rounded-2xl border border-dashed border-bv-border p-5 text-secondary" role="status" i18n="Game page while your plays of the game load">Loading your plays…</p>
+          } @else if (plays.failed()) {
+            <div class="rounded-2xl border border-bv-warning/30 bg-bv-warning/10 p-5 text-secondary" role="alert">
+              <p i18n="Game page when your plays of the game could not load">Your plays could not be loaded.</p>
+              <button type="button" class="mt-2 text-sm font-semibold text-bv-primary hover:underline" (click)="plays.retry()" i18n="Button on a game page that loads your plays again">Try again</button>
+            </div>
           } @else {
             <p class="rounded-2xl border border-dashed border-bv-border p-5 text-secondary" i18n="Game page when you have not played the game yet">You haven’t played it in a recorded session yet.</p>
           }

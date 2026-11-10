@@ -33,7 +33,8 @@ function fakeApi(overrides: Record<string, () => unknown> = {}) {
         getUserInvitations: () => of([{ id: 4 }]),
         getUserReviews: () => of([{ gameId: 10 }]),
         getUserMeets: () => of([{ id: 6 }]),
-        getUserGamesHistory: () => of([{ meetId: 6 }]),
+        getUserGamesHistory: () => of({ entries: [{ meetId: 6 }], hasMore: false }),
+        getUserHistorySummary: () => of({ nights: 1, gamesPlayed: 1, uniqueGames: 1, people: 1, mostPlayed: null, myMostPlayed: [] }),
         getUserWishlist: () => of([game]),
         getUserCollectionActivity: () => of([{ id: 7 }]),
         getUserProposals: () => of([{ id: 8 }]),
@@ -78,6 +79,7 @@ describe('signing out', () => {
         adminGames.searchControl.setValue('catan')
 
         expect(data.userGames()).toEqual([game])
+        expect(data.userHistorySummary()?.nights).toBe(1)
         expect(data.invitationsGroupIndex()).toEqual({ 5: [{ id: 9 }] })
         expect(data.userProposalStats()).toEqual(proposalStats)
         expect(pendingProposals.count()).toBe(4)
@@ -93,6 +95,7 @@ describe('signing out', () => {
             reviews: data.userReviews(),
             meets: data.userMeets(),
             history: data.userHistory(),
+            historySummary: data.userHistorySummary(),
             wishlist: data.userWishlist(),
             activity: data.userCollectionActivity(),
             proposals: data.userProposals(),
@@ -106,6 +109,7 @@ describe('signing out', () => {
             reviews: [],
             meets: [],
             history: [],
+            historySummary: null,
             wishlist: [],
             activity: [],
             proposals: [],

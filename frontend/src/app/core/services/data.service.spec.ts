@@ -325,12 +325,46 @@ describe('DataService while Board Vault cannot be reached (#241)', () => {
         'getUserReviews',
         'getUserMeets',
         'getUserGamesHistory',
+        'getUserHistorySummary',
         'getUserWishlist',
         'getUserCollectionActivity',
         'getUserProposals',
         'getUserProposalStats',
         'getUserStats',
     ]
+
+    it('keeps the latest page of history and the totals, and reads both again when the history changes (#252)', () => {
+        const page = { entries: [{ meetData: { id: 4 } }], hasMore: true }
+        const summary = { nights: 30, gamesPlayed: 41, uniqueGames: 9, people: 6, mostPlayed: null, myMostPlayed: [] }
+        const extra = { getUserGamesHistory: vi.fn(() => of(page)), getUserHistorySummary: vi.fn(() => of(summary)) }
+        const { service, signIn } = setup([], extra)
+
+        signIn()
+
+        expect(service.userHistory()).toEqual(page.entries)
+        expect(service.userHistorySummary()).toEqual(summary)
+
+        service.refreshUserHistory()
+
+        expect(service.userHistoryRevision()).toBe(1)
+        expect(extra.getUserGamesHistory).toHaveBeenCalledTimes(2)
+        expect(extra.getUserHistorySummary).toHaveBeenCalledTimes(2)
+    })
+
+    it('says when the history totals fail, and reads them again on Try again', () => {
+        const { service, connectivity, toast, calls, down, signIn } = setup(['getUserHistorySummary'])
+
+        signIn()
+
+        expect(service.userHistorySummaryError()).toBe(true)
+        expect(toast.error).toHaveBeenCalledWith('Your game night totals could not load')
+
+        down.value = false
+        connectivity.retry()
+
+        expect(calls['getUserHistorySummary']).toBe(2)
+        expect(service.userHistorySummaryError()).toBe(false)
+    })
 
     it('still toasts a list that failed while Board Vault is reachable', () => {
         const { toast, signIn } = setup(['getUserGames'])

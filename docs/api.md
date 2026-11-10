@@ -120,8 +120,35 @@ an empty string removes it. Admin game lists keep English names.
 
 Catalogue browsing and admin listings are paginated with a maximum page size
 enforced in the DTO. Per-account and per-group lists (collection, wishlist,
-members, sessions) are bounded by their owner and returned whole; an inbox
-answers the latest 100 notifications, newest first.
+members) are bounded by their owner and returned whole; an inbox answers the
+latest 100 notifications, newest first. Lists that grow with every night
+played are paged or bounded instead (see History).
+
+## History
+
+A person's history grows with every night, so no response carries all of it
+(#252). Each reads only the account's current groups.
+
+- `GET /play/users/:userId/history/page` answers `{ entries, hasMore }`: up to
+  `limit` completed nights (20 by default, 1 to 50), newest first. `before`
+  is the id of the last night already shown, and the page continues after it,
+  so nights that share a date are never skipped or repeated. `groupId` keeps
+  one group's nights and `gameId` the nights a game was played on. Unknown
+  parameters answer `400`.
+- `GET /play/users/:userId/history/summary` answers the totals over every
+  night of the same filters (`groupId`, `gameId`): `nights`, `gamesPlayed`
+  (each play counted), `uniqueGames`, `people` (each person once, a group
+  person linked to an account counted as that account), `mostPlayed` (the
+  game played on the most nights, a tie going to the first title in the
+  reader's language; `null` with none) and `myMostPlayed` (the five games
+  the account played most, then won most). It takes the same few queries
+  however long the history is.
+- `GET /play/users/:userId/meets` answers every scheduled or live night,
+  every night of the last 30 days, and each group's last completed night,
+  newest first. Older nights are in the history.
+- `GET /play/users/:userId/history` still answers every night at once, for the
+  previous frontend release while both deploy. It is deprecated and is removed
+  in a later release.
 
 ## Browser caching
 

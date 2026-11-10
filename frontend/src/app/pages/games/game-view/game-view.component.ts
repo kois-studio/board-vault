@@ -1,9 +1,9 @@
 import { CommonModule } from '@angular/common'
-import { Component, computed, effect, inject, signal } from '@angular/core'
+import { Component, computed, DestroyRef, effect, inject, signal, untracked } from '@angular/core'
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
 import { AbstractControl, FormControl, FormGroup, FormsModule, ReactiveFormsModule, ValidationErrors, Validators } from '@angular/forms'
 import { ActivatedRoute, RouterLink } from '@angular/router'
-import { finalize } from 'rxjs'
+import { finalize, type Subscription } from 'rxjs'
 import { Api } from '../../../api/api'
 import type { GameViewType, UpdateGameOwnedType } from '../../../api/api.types'
 import { CardGameComponent } from '../../../components/card-game/card-game.component'
@@ -23,11 +23,13 @@ import { ConnectivityService } from '../../../core/services/connectivity.service
 import { DataService } from '../../../core/services/data.service'
 import { ShelfEditionService } from '../../../core/services/shelf-edition.service'
 import { gameTitle, gameTitleLanguage, otherGameTitles } from '../../../core/utils/gameTitle'
+import { HistoryPager } from '../../../core/utils/historyPager'
 import { mergeHistoryParticipants } from '../../../core/utils/historyParticipants'
 import { playerRange } from '../../../core/utils/plural'
 
-/** Nights listed before "Show all" on the game page. */
+/** Nights listed at first on the game page; each "Show more plays" reads PLAYS_MORE older ones (#252). */
 const PLAYS_SHOWN = 6
+const PLAYS_MORE = 20
 
 @Component({
     imports: [
@@ -79,7 +81,6 @@ export class GameViewPageComponent {
     // dataService
     public readonly currentUser$ = this.dataService.currentUser
     public readonly userGroups$ = this.dataService.userGroups
-    private readonly userHistory$ = this.dataService.userHistory
 
     // --------------------------------------------------------------------------
     //        Component singals
@@ -87,26 +88,32 @@ export class GameViewPageComponent {
     public readonly gameView$ = signal<GameViewType | null>(null)
     public readonly gameUserReviewComputed = computed(() => this.gameView$()?.ratingData?.userRating ?? 0)
     public readonly isWishlistedComputed = computed(() => !!this.gameView$()?.wishlistedGameData)
-    /** The nights the game in view was played, newest first, each with everyone who played it once. */
+    /** The nights you played the game in view, read from the server a page at a time, newest first (#252). */
+    public readonly plays = new HistoryPager(
+        (options) => this.api.getUserGamesHistory(this.currentUser$()?.id ?? 0, options),
+        PLAYS_SHOWN,
+        PLAYS_MORE,
+    )
+    /** The game in view: a review or a heart changes the game, not which one, so the plays stay as they are. */
+    private readonly gameIdInView = computed(() => this.gameView$()?.gameData.id)
+    /** How many nights you played it in all; null until the server counts them. */
+    public readonly playsCount = signal<number | null>(null)
+    /** The nights shown so far, each with everyone who played the game once. */
     public readonly userHistoryFilteredComputed = computed(() => {
         const gameId = this.gameView$()?.gameData.id
 
-        return this.userHistory$()
-            .flatMap((history) => {
-                const gamePlayed = history.gamesPlayed.find((game) => game.gameData.id === gameId)
+        return this.plays.entries().flatMap((history) => {
+            const gamePlayed = history.gamesPlayed.find((game) => game.gameData.id === gameId)
 
-                // Accounts and group people, so nights recorded by the session wizard show their players too.
-                return gamePlayed ? [{ ...history, players: mergeHistoryParticipants(gamePlayed.playedBy, gamePlayed.playedByPeople) }] : []
-            })
-            .sort((a, b) => new Date(b.meetData.meetDate).getTime() - new Date(a.meetData.meetDate).getTime())
+            // Accounts and group people, so nights recorded by the session wizard show their players too.
+            return gamePlayed ? [{ ...history, players: mergeHistoryParticipants(gamePlayed.playedBy, gamePlayed.playedByPeople) }] : []
+        })
     })
-    public readonly showAllPlays = signal(false)
+    /** The heading count: every night once known, else the nights shown. */
+    public readonly playedCount = computed(() => this.playsCount() ?? this.userHistoryFilteredComputed().length)
     protected readonly titleLanguage = gameTitleLanguage
     protected readonly otherTitles = otherGameTitles
-    /** The latest nights, or all of them once asked for. */
-    public readonly visiblePlaysComputed = computed(() =>
-        this.showAllPlays() ? this.userHistoryFilteredComputed() : this.userHistoryFilteredComputed().slice(0, PLAYS_SHOWN),
-    )
+    private playsCountRequest: Subscription | null = null
 
     // --------------------------------------------------------------------------
     //        Component props
@@ -144,6 +151,18 @@ export class GameViewPageComponent {
             if (currentUser?.id && !Number.isNaN(gameId)) {
                 this._loadGameData(currentUser.id, gameId)
             }
+        })
+
+        // Your plays of this game: read again for another game, another user, or when your history changes.
+        effect(() => {
+            const userId = this.currentUser$()?.id
+            const gameId = this.gameIdInView()
+            this.dataService.userHistoryRevision()
+            untracked(() => this.loadPlays(userId, gameId))
+        })
+        inject(DestroyRef).onDestroy(() => {
+            this.plays.destroy()
+            this.playsCountRequest?.unsubscribe()
         })
 
         // Once Board Vault answers again, or on Try again in the banner, a game that could not load loads (#241).
@@ -188,6 +207,22 @@ export class GameViewPageComponent {
                 if (!this.connectivity.isDegraded())
                     this.toastService.error($localize`:Toast when a game page could not load:Error loading game data`)
             },
+        })
+    }
+
+    private loadPlays(userId: number | undefined, gameId: number | undefined): void {
+        this.playsCountRequest?.unsubscribe()
+        this.playsCount.set(null)
+        if (!userId || !gameId) {
+            this.plays.destroy()
+            this.plays.entries.set([])
+            return
+        }
+        this.plays.reset({ gameId })
+        // Without the count the heading says how many nights are shown, so a failure here needs no message of its own.
+        this.playsCountRequest = this.api.getUserHistorySummary(userId, { gameId }).subscribe({
+            next: (summary) => this.playsCount.set(summary.nights),
+            error: () => this.playsCount.set(null),
         })
     }
 

@@ -17,7 +17,9 @@ Answering a game night should never need a detour: wherever a night is
 listed for someone it invites (Home, Upcoming), `<app-session-answer>` shows
 their answer and lets them change it while the night is scheduled or live.
 The session list (`GET /play/users/:userId/meets`) carries the caller's own
-`myRsvpStatus` for that.
+`myRsvpStatus` for that. It holds every open night, the last 30 days, and each
+group's last completed night; older nights are read from History a page at a
+time ([API](api.md#history)).
 
 People hear about a game night in their inbox: when it is planned (everyone
 invited), started or finished (everyone who did not decline), or cancelled
