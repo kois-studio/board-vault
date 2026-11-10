@@ -446,7 +446,7 @@ compliance:
       next_action: None.
     - id: IDN-003
       status: compliant
-      evidence: Product state lives in Turso; Clerk public metadata carries only invitation context.
+      evidence: Product state lives in Turso; Board Vault writes no Clerk metadata.
       priority: high
       next_action: None.
     - id: IDN-004
@@ -653,7 +653,7 @@ compliance:
       next_action: Configure the production webhook endpoint.
     - id: CLERK-005
       status: compliant
-      evidence: 'Public metadata holds only invitation context (group id, inviter id, optional group-person id).'
+      evidence: 'Board Vault writes no Clerk public metadata; groups invite by username in the app (#277).'
       priority: high
       next_action: None.
     - id: CLERK-006

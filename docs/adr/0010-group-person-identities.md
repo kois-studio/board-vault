@@ -58,3 +58,14 @@ backup, migration, schema verification, and rollback procedure.
   cannot support recommendations, shared ownership, or later claiming.
 - Silently importing placeholder data into a private collection: this gives an
   invitee no correction or consent step.
+
+## Update 2026-11-10: claims follow the invitation, not an email (#277)
+
+People are now invited by username only, and Board Vault no longer handles
+anyone else's email address. "Email-targeted" above no longer holds: a
+placeholder is claimed by the account an `Invitation` suggested it to
+(`groupPersonId` + `toAccountId`). Accepting such an invitation keeps the row
+as that member's claim ticket until they claim, leave the group, or the
+invitation expires. Only that account can claim, only an active placeholder
+without an account, and once. `GroupPerson.claimEmail` and `claimExpiresAt`
+are no longer used; migration 0032 cleared them.

@@ -2,7 +2,7 @@
 
 ```text
 Browser ── Angular app (frontend/) ──► NestJS API (backend/) ──► libSQL: SQLite locally, Turso in production
-               │                          ├──► Clerk (verify sessions, invitations)
+               │                          ├──► Clerk (verify sessions, users)
                └── Clerk JS (sign-in UI)  └──► Upstash Redis (cache, rate limits; optional)
 ```
 
@@ -61,7 +61,7 @@ attempt may already have been applied.
 | `common/schemas/` | zod schemas that parse database rows. |
 | `common/validators/validateEnv.ts` | Startup environment checks. |
 | `common/artwork/` | Game artwork without Nest (ADR-0015): the guarded download (public http(s) only, 8 MB, 10 s) and the compression to WebP within 800 px. `backend/scripts/import-artwork.mjs` uses it too. |
-| `modules/common/auth/` | Clerk token verification, account resolution, Clerk invitations, `GET /auth/clerk/status`. |
+| `modules/common/auth/` | Clerk token verification, account resolution, `GET /auth/clerk/status`. |
 | `modules/common/database/` | `DatabaseService`: the connection, `execute`, and `transaction`. |
 | `modules/common/database/queries/` | All SQL, one class per domain (`accounts`, `artwork`, `groups`, `home`, `recordings`, `games`, `collection`, `invitations`, `notifications`, `sessions`, `recommendations`), one method per query. |
 | `modules/common/cache/` | Upstash Redis wrapper and the admin cache endpoints. |
@@ -100,7 +100,7 @@ List `AuthGuard` first; the others read `request.user`.
 | `app.routes.ts` | All routes and their guards. |
 | `app.config.ts` | Providers; starts Clerk once the first page has painted (`afterFirstPagePaint`). `AuthOnlyGuard`, `AdminGuard` and API tokens start it sooner if they need it (`ClerkService.whenLoaded`); public pages, `GuestOnlyGuard` included, never wait for it. |
 | `api/` | `Api` (every HTTP call), zod response schemas, shared types. The schemas turn stored artwork paths (`/artwork/…`) into full addresses on the API. |
-| `core/services/clerk.service.ts` | Clerk lifecycle, sign-in and sign-up modals, invitation tickets, session token. |
+| `core/services/clerk.service.ts` | Clerk lifecycle, sign-in and sign-up modals, session token. |
 | `core/services/login.service.ts` | Board Vault session state: verifies Clerk sessions with `/auth/clerk/status` and loads the current user. |
 | `core/services/data.service.ts` | Shared signals for the current user and loaded data. |
 | `core/services/connectivity.service.ts` | Whether Board Vault can be reached; drives the "can't reach Board Vault" banner ([Slow and failed requests](#slow-and-failed-requests)). |
@@ -267,7 +267,7 @@ An error never leaves a page without a way on (#244):
 | Route | Guard | Page |
 | --- | --- | --- |
 | `/` | none | Landing |
-| `/login`, `/register` | `GuestOnlyGuard` | Clerk sign-in; invitations and the private-beta notice |
+| `/login`, `/register` | `GuestOnlyGuard` | Clerk sign-in and sign-up; the private-beta notice |
 | `/dashboard` | `AuthOnlyGuard` | Home (see [ux-flows](ux-flows.md#home)): visible Record/Plan, upcoming nights, consistent group cards with personal pins/ordering, personal rating follow-up and recent history; new accounts retain first-group setup |
 | `/groups/:groupId` | `AuthOnlyGuard` | Group page (`/groups` redirects to Home), top to bottom: next night and Group pulse (approximate worth, links to each person), recent nights, standings, library (filtered by number of players), games to buy, people. Deciding what to play happens on the night |
 | `/groups/:groupId/members/:accountId`, `/groups/:groupId/people/:personId` | `AuthOnlyGuard` | One person in a group, with or without an account: the games they bring, their approximate collection worth (ADR-0016), and their game nights |
@@ -331,8 +331,8 @@ are written without the prefix; the base address adds it.
   the `bv_lang` cookie, then `Accept-Language`, then English.
 - On Vercel, [`frontend/middleware.ts`](../frontend/middleware.ts) answers
   every address without a prefix that is not a file with a `307` to the same
-  path and query under that language (`/register?__clerk_ticket=…` →
-  `/en/register?__clerk_ticket=…`), and
+  path and query under that language (`/register?next=…` →
+  `/en/register?next=…`), and
   [`frontend/vercel.json`](../frontend/vercel.json) sends each prefix's app
   routes to its own `index.html`. `scripts/serve-dist.mjs` does the same
   locally.
@@ -396,7 +396,7 @@ How to mark text, translate it, and which words to use:
 - **Assets:** account records (email, username), private collections, group
   and session history, and the provider secrets in Vercel.
 - **Untrusted input** enters through the browser (every API request), Clerk
-  webhooks (signature-verified), invitation links, and the images an admin
+  webhooks (signature-verified), and the images an admin
   points the API at: those are downloaded only from public addresses and
   decoded and re-encoded before they are stored (ADR-0015).
 - **Trust boundary:** the API. The browser only holds a Clerk session token

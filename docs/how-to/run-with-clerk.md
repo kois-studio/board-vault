@@ -25,11 +25,11 @@ The shared development database has three more fixtures
 
 ## Invitations
 
-Group owners invite new people by email. The invite link lands on
-`/register?__clerk_ticket=…`, where the invitee picks a username and password.
-Locally, the link points at `BOARD_VAULT_CLERK_INVITATION_REDIRECT_URL`
-(default `http://localhost:4200/register`). Use `+clerk_test` addresses so no
-real mail is sent.
+Group owners invite people by username only (#277): the invitee needs an
+account first, and sees the invitation in their inbox in the app. Board Vault
+sends no invitation email. To try a new person locally, sign up a
+`+clerk_test` account (self-registration is on in `backend/.env.example`) and
+invite it by its username.
 
 ## Webhooks don't reach your machine
 
@@ -84,8 +84,8 @@ PLAYWRIGHT_GROUP_ID=1 \
 ```
 
 Each spec's `test.skip` line lists any extra variables it needs (for example
-the invitation journey needs `PLAYWRIGHT_NEW_PERSON_INVITATION=1` and a new
-`+clerk_test` invitee). Never commit storage-state files, and delete them when
+the claim journey needs `PLAYWRIGHT_SINGLE_USER_GROUP_CLAIM=1`, an invitee
+storage state and its username). Never commit storage-state files, and delete them when
 you are done.
 
 ## Everyday-play browser regression

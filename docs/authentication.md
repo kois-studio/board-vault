@@ -9,15 +9,14 @@ claims, decides administrator and group access.
 The main state transitions are:
 
 1. an unauthenticated visitor reaches the public shell;
-2. the visitor signs in or accepts an invitation through Clerk;
+2. the visitor signs in or signs up through Clerk;
 3. the frontend sends the Clerk session token as a Bearer token;
 4. `ClerkSessionMiddleware` verifies the token and resolves the account:
    - a linked account (matching `clerkUserId`) is used, unless it is deleted;
    - otherwise, a Clerk user with a verified primary email is provisioned as a
-     new account when it arrives through a group invitation or self-registration
-     is enabled (ADR-0008). A group invitation is checked first: if its inviter
-     no longer owns the group (or the group is gone), it is refused with 404 and
-     no account is created;
+     new account only while self-registration is enabled (ADR-0008). Groups
+     invite people by username once they have an account (#277); Board Vault
+     sends no Clerk invitations and ignores old invitation metadata;
    - a verified email that already belongs to an unlinked account is refused
      with `409 ACCOUNT_EMAIL_CONFLICT` and is never linked automatically;
 5. `AuthGuard` admits requests with a resolved account, and later guards apply
@@ -72,11 +71,10 @@ profile row (photo, name) and delete section are hidden with
 instance, for every user (the instance-wide switch is Dashboard-only: *User &
 authentication → Allow users to delete their accounts*). People delete their
 account in Settings → Account instead: `DELETE /auth/account` removes their
-data, keeps them in group history as "Deleted account", revokes the pending
-Clerk group invitations they sent, and then deletes the Clerk user
+data (invitations sent and received included), keeps them in group history as
+"Deleted account", and then deletes the Clerk user
 ([ADR-0018](adr/0018-account-deletion-and-leaving-groups.md)). The
-`user.deleted` webhook revokes them too. A revocation Clerk refuses is logged;
-the deletion stands.
+`user.deleted` webhook runs the same clean-up.
 
 ## Changes made in Clerk
 
@@ -112,12 +110,12 @@ webhook log.
 | Clerk webhooks (email and username sync, deletion) | [`backend/src/modules/common/auth/clerk-webhook.service.ts`](../backend/src/modules/common/auth/clerk-webhook.service.ts) |
 | Copying the username and email from Clerk (webhook and `POST /auth/sync-from-clerk`) | [`backend/src/modules/common/auth/clerk-account-sync.service.ts`](../backend/src/modules/common/auth/clerk-account-sync.service.ts) |
 | Account deletion | [`backend/src/modules/common/auth/account-deletion.service.ts`](../backend/src/modules/common/auth/account-deletion.service.ts), [`account-deletion.queries.ts`](../backend/src/modules/common/database/queries/account-deletion.queries.ts) |
-| Account resolution and provisioning, Clerk invitations | [`backend/src/modules/common/auth/clerk-identity.service.ts`](../backend/src/modules/common/auth/clerk-identity.service.ts) |
+| Account resolution and provisioning | [`backend/src/modules/common/auth/clerk-identity.service.ts`](../backend/src/modules/common/auth/clerk-identity.service.ts) |
 | Sets `request.user` on every request | [`backend/src/common/middlewares/clerk-session.middleware.ts`](../backend/src/common/middlewares/clerk-session.middleware.ts) |
 | Requires a resolved account | [`backend/src/common/guards/auth.guard.ts`](../backend/src/common/guards/auth.guard.ts) |
 | Self-registration policy | [`backend/src/common/registration-policy.ts`](../backend/src/common/registration-policy.ts) |
 | `GET /auth/clerk/status` | [`backend/src/modules/common/auth/auth.controller.ts`](../backend/src/modules/common/auth/auth.controller.ts) |
-| Clerk JS lifecycle and invitation tickets | [`frontend/src/app/core/services/clerk.service.ts`](../frontend/src/app/core/services/clerk.service.ts) |
+| Clerk JS lifecycle, sign-in and sign-up modals | [`frontend/src/app/core/services/clerk.service.ts`](../frontend/src/app/core/services/clerk.service.ts) |
 | Session handoff and sign-out | [`frontend/src/app/core/services/login.service.ts`](../frontend/src/app/core/services/login.service.ts) |
 | Bearer token and 401 handling | [`frontend/src/app/core/interceptors/auth.interceptor.ts`](../frontend/src/app/core/interceptors/auth.interceptor.ts) |
-| Sign-in page and invitation sign-up | [`frontend/src/app/pages/auth/`](../frontend/src/app/pages/auth/) |
+| Sign-in and sign-up pages | [`frontend/src/app/pages/auth/`](../frontend/src/app/pages/auth/) |

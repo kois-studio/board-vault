@@ -98,3 +98,12 @@ backups cover operator mistakes.
   failed once it had history; the owner's "Delete group" uses the same order.
 - Accounts deleted before this decision still carry their old details until
   an operator re-runs the deletion for them.
+
+## Update 2026-11-10: no email invitations (#277)
+
+Groups invite by username only, so there are no Clerk invitations to revoke
+and no claims addressed to an email (step 3's "Pending claims addressed to
+their email are cleared" no longer applies). Invitations sent or received
+are still deleted in the same transaction (step 4), and with them any
+placeholder the account was invited to claim. Leaving a group deletes the
+invitations to that account in the group too.

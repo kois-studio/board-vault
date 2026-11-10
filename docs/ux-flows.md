@@ -28,8 +28,7 @@ group.
 
 Settings → **Privacy** has one switch, "Help improve Board Vault", on by
 default: usage statistics of our own ([ADR-0021](adr/0021-own-usage-analytics.md)).
-Everyone is told once: the invitation sign-up form has the same switch, and
-until an account answers, a "Lend us a hand?" card above every signed-in page
+Everyone is told once: until an account answers, a "Lend us a hand?" card above every signed-in page
 explains it with the switch and "Got it". Flipping the switch or "Got it"
 answers it for good; turning it off gets "No problem, thanks for playing
 anyway!".
@@ -66,10 +65,12 @@ it. A game nobody coming owns is flagged, and one with owners but no bringer
 says so. Declining a night clears what you were bringing. Home shows "You're
 bringing: …" on each night.
 
-The group owner invites from one field on Manage group: a username sends an
-in-app invitation, an email a Clerk one. Either can name a person without an
-account; the invitee reviews what was recorded for that person and claims it
-(ADR-0010). Each such person on the group page has an "Invite" link that
+The group owner invites from one field on Manage group, by username only
+(#277): the invitation reaches the person's inbox in the app. An email
+address is refused with a note to use their username; Board Vault never
+handles anyone else's email. The invitation can name a person without an
+account; once in the group, the invitee reviews what was recorded for that
+person and claims it (ADR-0010). Each such person on the group page has an "Invite" link that
 opens Manage group with them chosen (`?person=<id>`).
 
 History keeps everyone who played. Someone who left the group shows as
