@@ -25,6 +25,28 @@ The main state transitions are:
    loading protected data;
 7. sign-out clears the Clerk session and returns to the public shell.
 
+Every request verifies its own token. With `CLERK_JWT_KEY` set, that check
+needs no network ([environments.md](environments.md)).
+
+Each API instance then remembers the resolved account (its id, email, and admin
+flag) for 60 seconds, so a page that sends many requests reads the `Account`
+row once (#250). It is in-memory, per instance, and holds at most 1,000 people.
+What this means for changes:
+
+- **Deleting an account** (from the app or the `user.deleted` webhook) and
+  **an email synced from Clerk** take effect on the next request on the
+  instance that made the change, which forgets that account at once. Other
+  instances see it within 60 seconds: until then, a request there with a
+  session token taken before the deletion is still accepted. The app signs
+  out right after deleting, and Clerk stops issuing tokens for a deleted
+  user, so that takes a token that was already in flight.
+- **The admin flag** is changed only in the database by an operator, so every
+  instance sees a grant or a removal within 60 seconds.
+- **The interface language** is not remembered: requests take it from
+  `Accept-Language`, and saving it changes nothing here.
+- A failure (an unavailable account, a timeout, a `409`) is never
+  remembered: the next request tries again.
+
 Provider failures, account-resolution errors, expired sessions, and network
 errors must produce actionable retry or sign-out states. They must not expose
 provider payloads, tokens, or account-enumeration details.
@@ -111,6 +133,7 @@ webhook log.
 | Copying the username and email from Clerk (webhook and `POST /auth/sync-from-clerk`) | [`backend/src/modules/common/auth/clerk-account-sync.service.ts`](../backend/src/modules/common/auth/clerk-account-sync.service.ts) |
 | Account deletion | [`backend/src/modules/common/auth/account-deletion.service.ts`](../backend/src/modules/common/auth/account-deletion.service.ts), [`account-deletion.queries.ts`](../backend/src/modules/common/database/queries/account-deletion.queries.ts) |
 | Account resolution and provisioning | [`backend/src/modules/common/auth/clerk-identity.service.ts`](../backend/src/modules/common/auth/clerk-identity.service.ts) |
+| Remembers resolved accounts for 60 seconds | [`backend/src/modules/common/auth/account-cache.ts`](../backend/src/modules/common/auth/account-cache.ts) |
 | Sets `request.user` on every request | [`backend/src/common/middlewares/clerk-session.middleware.ts`](../backend/src/common/middlewares/clerk-session.middleware.ts) |
 | Requires a resolved account | [`backend/src/common/guards/auth.guard.ts`](../backend/src/common/guards/auth.guard.ts) |
 | Self-registration policy | [`backend/src/common/registration-policy.ts`](../backend/src/common/registration-policy.ts) |

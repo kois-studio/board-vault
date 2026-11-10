@@ -67,6 +67,7 @@ checks them at startup.
 | `TURSO_DATABASE_URL` | Yes | `file:…` for local SQLite, `libsql://…` for Turso. |
 | `TURSO_AUTH_TOKEN` | For `libsql://` URLs | Turso database token. Ignored for `file:` URLs. |
 | `CLERK_SECRET_KEY` | Yes | Verifies Clerk session tokens and calls the Clerk API. `sk_test_…` everywhere except production. |
+| `CLERK_JWT_KEY` | No | The instance's JWT public key (Clerk Dashboard > API keys > JWT public key, the PEM from `-----BEGIN PUBLIC KEY-----` to `-----END PUBLIC KEY-----`; on one line with `\n` written out also works). Set, session tokens are verified without fetching Clerk's keys over the network. Unset, they are fetched and cached as before. Each Clerk instance has its own: production and development differ. A value that is not a PEM public key stops the API at startup, since it would answer `401` to everyone. |
 | `CLERK_PUBLISHABLE_KEY` | Locally | Not read by the API. The frontend startup script reads it from `backend/.env`. |
 | `CLERK_AUTHORIZED_PARTIES` | Production | Comma-separated origins allowed to present session tokens. |
 | `CLERK_WEBHOOK_SIGNING_SECRET` | No | Signing secret (`whsec_…`) of the Clerk webhook endpoint. Turns on `POST /webhooks/clerk` ([ADR-0013](adr/0013-clerk-user-lifecycle.md)); unset, the endpoint answers `404`. |

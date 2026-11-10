@@ -1,5 +1,7 @@
 import { Logger } from '@nestjs/common'
 
+import { isClerkJwtKey, readClerkJwtKey } from './clerk-jwt-key.js'
+
 /**
  * ## Validate if environment variables are set
  *
@@ -25,6 +27,16 @@ export function validateEnv(): void {
     if (!process.env.CLERK_SECRET_KEY) {
         err.push('Missing in .env file: CLERK_SECRET_KEY')
         err.push('Sign-in is Clerk-only. Use the development instance key (sk_test_...) from the onboarding .env.\n')
+    }
+
+    const clerkJwtKey = readClerkJwtKey(process.env.CLERK_JWT_KEY)
+
+    // A wrong key would answer 401 to every signed-in request, so it stops the start instead.
+    if (clerkJwtKey && !isClerkJwtKey(clerkJwtKey)) {
+        err.push('Invalid in .env file: CLERK_JWT_KEY')
+        err.push(
+            'Use the PEM public key from Clerk Dashboard > API keys, from -----BEGIN PUBLIC KEY----- to -----END PUBLIC KEY-----, or leave it unset.\n',
+        )
     }
 
     if (process.env.NODE_ENV === 'production') {

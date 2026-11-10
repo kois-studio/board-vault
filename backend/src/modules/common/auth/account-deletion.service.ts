@@ -4,6 +4,7 @@ import { UsageService } from '../../core/usage/usage.service.js'
 import { CacheService } from '../cache/cache.service.js'
 import { DatabaseService } from '../database/database.service.js'
 
+import { AccountCache } from './account-cache.js'
 import { ClerkIdentityService } from './clerk-identity.service.js'
 
 /**
@@ -20,6 +21,7 @@ export class AccountDeletionService {
         private readonly databaseService: DatabaseService,
         private readonly cacheService: CacheService,
         private readonly clerkIdentityService: ClerkIdentityService,
+        private readonly accountCache: AccountCache,
         @Optional() private readonly usageService?: UsageService,
     ) {}
 
@@ -51,6 +53,8 @@ export class AccountDeletionService {
     /** Invitations sent and received go with the account (ADR-0018), in the same transaction. */
     private async deleteAccountData(accountId: number): Promise<void> {
         await this.databaseService.accountDeletion.deleteAccount(accountId)
+        // Its sessions stop working at once on this instance; other instances see it within the cache's minute.
+        this.accountCache.invalidateAccount(accountId)
         // Its usage events go too (ADR-0021); the anonymous daily counts no longer belong to anyone.
         await this.usageService?.forgetAccount(accountId)
         // Reviews, collections, and group views of many people change at once; clearing the cache is always safe.
