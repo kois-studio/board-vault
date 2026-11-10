@@ -1,5 +1,6 @@
 import { fakeDatabase } from '../../../../test/fake-database.js'
 
+import { AccountCache } from './account-cache.js'
 import { ClerkAccountSyncService } from './clerk-account-sync.service.js'
 import { ClerkWebhookService } from './clerk-webhook.service.js'
 
@@ -38,25 +39,33 @@ function createService(overrides: Record<string, Mock> = {}) {
     }
 
     const accountDeletion = { deleteAccountForClerkUser: vi.fn().mockResolvedValue(undefined) }
+    const accountCache = new AccountCache()
+    const invalidateAccount = vi.spyOn(accountCache, 'invalidateAccount')
 
     return {
         service: new ClerkWebhookService(
-            new ClerkAccountSyncService(fakeDatabase(queries)),
+            new ClerkAccountSyncService(fakeDatabase(queries), accountCache),
             accountDeletion as unknown as AccountDeletionService,
         ),
         queries,
         accountDeletion,
+        invalidateAccount,
     }
 }
 
 describe('ClerkWebhookService', () => {
     it('syncs a changed, verified primary email to the linked account', async () => {
-        const { service, queries } = createService()
+        const { service, queries, invalidateAccount } = createService()
 
         await service.handle(userUpdated('new@example.com'))
 
         expect(queries.getUserByClerkId).toHaveBeenCalledWith('user_7')
         expect(queries.updateUserEmail).toHaveBeenCalledWith(7, 'new@example.com')
+        // The next request carries the new email instead of the remembered one (#250).
+        expect(invalidateAccount).toHaveBeenCalledWith(7)
+        expect(invalidateAccount.mock.invocationCallOrder[0]).toBeGreaterThan(
+            queries.updateUserEmail.mock.invocationCallOrder[0] ?? Infinity,
+        )
     })
 
     it('ignores an unverified primary email', async () => {
@@ -162,6 +171,7 @@ describe('ClerkAccountSyncService results', () => {
                 updateUserEmail: vi.fn().mockResolvedValue({ rowsAffected: 1 }),
                 ...overrides,
             }),
+            new AccountCache(),
         )
 
     it('reports what it copied, and what another account already has', async () => {

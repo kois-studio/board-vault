@@ -2,6 +2,8 @@ import { Injectable, Logger } from '@nestjs/common'
 
 import { DatabaseService } from '../database/database.service.js'
 
+import { AccountCache } from './account-cache.js'
+
 import type { ClerkFieldSync, ClerkSyncResultDto } from '../../../common/types/auth.type.js'
 
 /** The usernames Board Vault gives and accepts: 4 to 40 letters, numbers, _ or - (see ClerkIdentityService.buildUsername). */
@@ -25,7 +27,10 @@ export type ClerkProfile = {
 export class ClerkAccountSyncService {
     private readonly logger = new Logger(ClerkAccountSyncService.name)
 
-    constructor(private readonly databaseService: DatabaseService) {}
+    constructor(
+        private readonly databaseService: DatabaseService,
+        private readonly accountCache: AccountCache,
+    ) {}
 
     /** Null when the Clerk user has no active linked account. */
     async apply(profile: ClerkProfile): Promise<ClerkSyncResultDto | null> {
@@ -52,6 +57,8 @@ export class ClerkAccountSyncService {
         }
 
         await this.databaseService.accounts.updateUserEmail(account.id, email)
+        // Requests carry the account's email: the next one reads the new one.
+        this.accountCache.invalidateAccount(account.id)
         this.logger.log('Synced a primary email change from Clerk')
         return 'updated'
     }

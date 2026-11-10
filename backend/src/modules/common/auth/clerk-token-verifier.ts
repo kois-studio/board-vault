@@ -3,10 +3,13 @@ import { Injectable } from '@nestjs/common'
 import { ConfigService } from '@nestjs/config'
 
 import { ProviderTimeoutError, withTimeout } from '../../../common/http/provider-timeout.js'
+import { readClerkJwtKey } from '../../../common/validators/clerk-jwt-key.js'
 
 /**
- * Verifies Clerk session tokens. Tests replace this provider with a fake
- * through Nest's `overrideProvider`; there is no runtime bypass.
+ * Verifies Clerk session tokens. With `CLERK_JWT_KEY` set the check needs no
+ * network: Clerk's public key is read from the environment instead of fetched
+ * (#250). Tests replace this provider with a fake through Nest's
+ * `overrideProvider`; there is no runtime bypass.
  */
 @Injectable()
 export class ClerkTokenVerifier {
@@ -29,11 +32,13 @@ export class ClerkTokenVerifier {
                 ?.split(',')
                 .map(value => value.trim())
                 .filter(Boolean) ?? []
+        const jwtKey = readClerkJwtKey(this.configService.get<string>('CLERK_JWT_KEY'))
 
         try {
             const verification = await withTimeout(
                 verifyToken(token, {
                     secretKey,
+                    ...(jwtKey ? { jwtKey } : {}),
                     ...(authorizedParties.length ? { authorizedParties } : {}),
                 }),
                 'clerk',

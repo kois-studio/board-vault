@@ -31,6 +31,23 @@ describe('ClerkTokenVerifier', () => {
         })
     })
 
+    it('verifies with the public key from the environment when it is set, written out on one line or not', async () => {
+        mockedVerifyToken.mockResolvedValue({ sub: 'user_clerk_123' } as never)
+        const pem = '-----BEGIN PUBLIC KEY-----\nMIIBIjANBgkq\n-----END PUBLIC KEY-----'
+
+        await verifierWith({ CLERK_SECRET_KEY: 'sk_test_example', CLERK_JWT_KEY: pem.replace(/\n/g, '\\n') }).verify('clerk-token')
+
+        expect(mockedVerifyToken).toHaveBeenCalledWith('clerk-token', { secretKey: 'sk_test_example', jwtKey: pem })
+    })
+
+    it('fetches the keys from Clerk when no public key is set', async () => {
+        mockedVerifyToken.mockResolvedValue({ sub: 'user_clerk_123' } as never)
+
+        await verifierWith({ CLERK_SECRET_KEY: 'sk_test_example', CLERK_JWT_KEY: ' ' }).verify('clerk-token')
+
+        expect(mockedVerifyToken).toHaveBeenCalledWith('clerk-token', { secretKey: 'sk_test_example' })
+    })
+
     it('rejects tokens that fail verification', async () => {
         mockedVerifyToken.mockRejectedValue(new Error('expired'))
 

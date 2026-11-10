@@ -65,3 +65,31 @@ every 30 seconds while the tab is shown, and at once when the tab is shown
 again or the browser comes back online. When it answers, the page that was
 asked for opens without a reload. A 401, a `409 ACCOUNT_EMAIL_CONFLICT`, and
 other 4xx answers keep the linking error and its advice to sign out.
+
+## Amendment (2026-11-10)
+
+Resolving the account behind a session token is remembered per API instance,
+in memory, for 60 seconds (#250). Before, every request read the `Account`
+row by `clerkUserId`, so one page load read it as many times as it sent
+requests. The local `Account` row is still the authorization boundary; what
+changes is how late an instance sees a change to it:
+
+- an account deleted, or an email synced, on an instance is seen at once by
+  that instance and within 60 seconds by the others;
+- the admin flag, changed only by an operator in the database, is seen within
+  60 seconds;
+- failed resolutions are never remembered.
+
+Sixty seconds is the bound we accept for those changes. It is the default
+lifetime of a Clerk session token, and Clerk issues none for a deleted user, so a late
+request on another instance needs a token taken before the deletion.
+A shared cache (Redis) would make deletion immediate everywhere, but it would
+put a network call back on every request and make sign-in depend on Redis.
+That is not worth it at this size.
+
+`CLERK_JWT_KEY`, optional, lets the backend verify session tokens with the
+instance's public key instead of fetching Clerk's keys, so the check needs no
+network. Like the fetched keys, it checks the signature, expiry, and
+authorized party only: a signed-out session's token stays valid until it
+expires, as before. `CLERK_SECRET_KEY` is still required in every
+environment.
