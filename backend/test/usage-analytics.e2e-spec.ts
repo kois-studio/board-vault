@@ -23,7 +23,8 @@ const pseudonym = (accountId: number) => createHmac('sha256', secret).update(`ac
 describe('usage analytics (e2e)', () => {
     let app: INestApplication
 
-    const sql = (input: string) => execFileSync('sqlite3', [testDatabasePath], { input, encoding: 'utf8' }).trim()
+    // sqlite3 for Windows ends its lines with \r\n; the expectations are written with \n.
+    const sql = (input: string) => execFileSync('sqlite3', [testDatabasePath], { input, encoding: 'utf8' }).replace(/\r\n/g, '\n').trim()
 
     beforeAll(async () => {
         rmSync(testDatabasePath, { force: true })
