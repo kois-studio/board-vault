@@ -20,11 +20,11 @@ describe('AppComponent', () => {
         expect(app).toBeTruthy()
     })
 
-    it('publishes private-beta metadata and a canonical URL', () => {
+    it('publishes indexable metadata and a canonical URL on a public page', () => {
         TestBed.createComponent(AppComponent)
 
         expect(document.title).toBe('Board Vault — Game night, remembered')
-        expect(document.querySelector('meta[name="robots"]')?.getAttribute('content')).toBe('noindex, nofollow, noarchive')
+        expect(document.querySelector('meta[name="robots"]')?.getAttribute('content')).toBe('index, follow')
         expect(document.querySelector('meta[property="og:title"]')?.getAttribute('content')).toBe('Board Vault — Game night, remembered')
         expect(document.querySelector('meta[property="og:image"]')?.getAttribute('content')).toContain('/icons/icon-512.png')
         expect(document.querySelector('link[rel="canonical"]')?.getAttribute('href')).toContain(window.location.origin)
@@ -44,6 +44,18 @@ describe('AppComponent', () => {
         const skipLink = fixture.nativeElement.querySelector('a[appInPageLink="main-content"]') as HTMLAnchorElement
         expect(skipLink.textContent).toContain('Skip to main content')
         expect(skipLink.getAttribute('href')).toBe('/groups/7#main-content')
+    })
+
+    it('keeps pages that need an account out of search engines', async () => {
+        TestBed.resetTestingModule()
+        await TestBed.configureTestingModule({
+            imports: [AppComponent],
+            providers: [provideRouter([{ path: 'groups/:groupId', component: EmptyRouteComponent }]), provideLocationMocks()],
+        }).compileComponents()
+        TestBed.createComponent(AppComponent)
+        await TestBed.inject(Router).navigateByUrl('/groups/7')
+
+        expect(document.querySelector('meta[name="robots"]')?.getAttribute('content')).toBe('noindex, nofollow, noarchive')
     })
 
     // it(`should have the 'frontend' title`, () => {

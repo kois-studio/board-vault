@@ -131,7 +131,7 @@ read results and the rate-limit counters, through
   failure counts as a cache miss and pauses Redis use for 30 seconds; rate
   limits then fail open. `/health/ready` reports `not_ready` while Redis is
   down, but the API keeps serving from Turso.
-- **Concurrency:** there is no stampede protection; at private-beta traffic a
+- **Concurrency:** there is no stampede protection; at today's traffic a
   concurrent miss costs one extra query.
 - Clearing the cache is always safe (admin cache endpoints, or `FLUSHDB` on a
   local Redis).

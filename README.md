@@ -6,9 +6,9 @@ recommendations, invitations, and session history.
 
 ## Current status
 
-This is a public repository under active development. The product is still a
-private, invitation-only beta: this repository does not promise a hosted
-service, open self-registration, or production support. Run it locally with
+This is a public repository under active development. The hosted service at
+board-vault.com is open to anyone, but this repository does not promise
+production support. Run it locally with
 synthetic data and disposable development credentials. The deployed service
 and production data are separate from this local setup.
 

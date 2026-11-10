@@ -31,12 +31,11 @@ describe('RegisterComponent', () => {
         expect(clerkService.openSignUp).toHaveBeenCalled()
     })
 
-    it('explains access while self-registration is closed, and offers no invitation link (#277)', () => {
+    it('says new accounts are paused while self-registration is off, without beta or invitation wording (#157)', () => {
         const { text } = render(false)
 
-        expect(text).toContain('Board Vault is still invite-only')
-        expect(text).toContain('by your username')
-        expect(text).not.toContain('sign-up link')
+        expect(text).toContain('New accounts are paused for now')
+        expect(text).not.toMatch(/invite-only|private beta|invitation/i)
     })
 
     it('ignores a Clerk invitation ticket in the address', () => {
@@ -46,7 +45,7 @@ describe('RegisterComponent', () => {
             const { text } = render(false)
 
             expect(text).not.toContain('Join your Board Vault group')
-            expect(text).toContain('Board Vault is still invite-only')
+            expect(text).toContain('New accounts are paused for now')
         } finally {
             history.replaceState(null, '', '/')
         }

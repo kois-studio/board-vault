@@ -70,7 +70,7 @@ checks them at startup.
 | `CLERK_PUBLISHABLE_KEY` | Locally | Not read by the API. The frontend startup script reads it from `backend/.env`. |
 | `CLERK_AUTHORIZED_PARTIES` | Production | Comma-separated origins allowed to present session tokens. |
 | `CLERK_WEBHOOK_SIGNING_SECRET` | No | Signing secret (`whsec_…`) of the Clerk webhook endpoint. Turns on `POST /webhooks/clerk` ([ADR-0013](adr/0013-clerk-user-lifecycle.md)); unset, the endpoint answers `404`. |
-| `BOARD_VAULT_SELF_REGISTRATION_ENABLED` | No | `true` lets a new Clerk user create an account (otherwise only existing accounts sign in). Keep `false` in production during the private beta; the API logs a warning at startup if it is `true`. |
+| `BOARD_VAULT_SELF_REGISTRATION_ENABLED` | No | `true` lets a new Clerk user create an account (otherwise only existing accounts sign in). `true` in production since the public launch (#157); set it to `false` to pause new accounts while existing ones keep signing in. The API logs a warning at startup while it is `true`; that is expected. |
 | `BOARD_VAULT_GROUP_PEOPLE_ENABLED` | No | `false` turns off the group-people routes without touching data. |
 | `UPSTASH_REDIS_REST_DISABLE` | No | `true` turns off caching and rate-limit storage. Rate limits then fail open. |
 | `UPSTASH_REDIS_REST_URL` | When Redis is on | Upstash REST endpoint. |

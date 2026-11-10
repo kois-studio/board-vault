@@ -16,8 +16,6 @@ so a release is always audited. The configuration is
   audit downloads and runs Clerk's bundle. The key is fake: its frontend API
   is on `.invalid`, so Clerk's next request fails at once and no Clerk
   instance is contacted.
-- `is-crawlable` is skipped: the private beta asks search engines not to index
-  it on purpose.
 - With the fake key Clerk cannot finish loading, so the "errors in console"
   check fails and costs a few best-practice points. Production does not have
   that error.
