@@ -1068,15 +1068,6 @@
         <target>Non è stato possibile caricare lo storico. Apri la pagina per riprovare.</target>
       </segment>
     </unit>
-    <unit id="1598691428747275487">
-      <notes>
-        <note category="description">What Board Vault keeps, on the privacy page</note>
-      </notes>
-      <segment state="translated">
-        <source><pc id="0" equivStart="START_TAG_STRONG" equivEnd="CLOSE_TAG_STRONG" type="other" dispStart="&lt;strong&gt;" dispEnd="&lt;/strong&gt;">Notifications</pc> about your groups and about the games you propose for the catalogue. </source>
-        <target><pc id="0" equivStart="START_TAG_STRONG" equivEnd="CLOSE_TAG_STRONG" type="other" dispStart="&lt;strong&gt;" dispEnd="&lt;/strong&gt;">Notifiche</pc> sui tuoi gruppi e sui giochi che proponi per il catalogo. </target>
-      </segment>
-    </unit>
     <unit id="1601201671059582133">
       <notes>
         <note category="description">Under an unticked preference on the page where you take over a person prepared for you in a group</note>
@@ -1183,15 +1174,6 @@
       <segment state="translated">
         <source>Play <ph id="0" equiv="number" disp="number"/> of <ph id="1" equiv="title" disp="title"/></source>
         <target>Partita <ph id="0" equiv="number" disp="number"/> di <ph id="1" equiv="title" disp="title"/></target>
-      </segment>
-    </unit>
-    <unit id="1661545473829832505">
-      <notes>
-        <note category="description">What Board Vault keeps, on the privacy page</note>
-      </notes>
-      <segment state="translated">
-        <source><pc id="0" equivStart="START_TAG_STRONG" equivEnd="CLOSE_TAG_STRONG" type="other" dispStart="&lt;strong&gt;" dispEnd="&lt;/strong&gt;">Your groups:</pc> the groups you are in and their game nights: the date, who comes, what is played, winners, scores and notes. Also your votes, the games you bring, the games you are interested in, and the group history, which records who changed what in the group. </source>
-        <target><pc id="0" equivStart="START_TAG_STRONG" equivEnd="CLOSE_TAG_STRONG" type="other" dispStart="&lt;strong&gt;" dispEnd="&lt;/strong&gt;">I tuoi gruppi:</pc> i gruppi di cui fai parte e le loro serate di gioco: la data, chi viene, a cosa si gioca, chi vince, i punteggi e le note. Anche i tuoi voti, i giochi che porti, i giochi che ti interessano e lo storico del gruppo, che registra chi ha cambiato cosa nel gruppo. </target>
       </segment>
     </unit>
     <unit id="1662004852979212587">
@@ -2625,6 +2607,15 @@
       <segment state="translated">
         <source>Loading your group…</source>
         <target>Caricamento del tuo gruppo…</target>
+      </segment>
+    </unit>
+    <unit id="2402601429196310266">
+      <notes>
+        <note category="description">What Board Vault keeps, on the privacy page; Clerk is the sign-in service</note>
+      </notes>
+      <segment state="translated">
+        <source><pc id="0" equivStart="START_TAG_STRONG" equivEnd="CLOSE_TAG_STRONG" type="other" dispStart="&lt;strong&gt;" dispEnd="&lt;/strong&gt;">Your account:</pc> your email, username, display name, avatar and language. Clerk handles your password; Board Vault never sees it. </source>
+        <target><pc id="0" equivStart="START_TAG_STRONG" equivEnd="CLOSE_TAG_STRONG" type="other" dispStart="&lt;strong&gt;" dispEnd="&lt;/strong&gt;">Il tuo account:</pc> la tua email, il nome utente, il nome visualizzato, l’avatar e la lingua. Della password si occupa Clerk; Board Vault non la vede mai. </target>
       </segment>
     </unit>
     <unit id="2404444981573781985">
@@ -4388,15 +4379,6 @@
       <segment state="translated">
         <source>Edit games and players</source>
         <target>Modifica giochi e persone</target>
-      </segment>
-    </unit>
-    <unit id="3229230124437872796">
-      <notes>
-        <note category="description">Company that processes data for Board Vault, on the privacy page; an adequacy decision is the EU&apos;s legal recognition that a country protects data as well as the EU</note>
-      </notes>
-      <segment state="translated">
-        <source><pc id="0" equivStart="START_TAG_STRONG" equivEnd="CLOSE_TAG_STRONG" type="other" dispStart="&lt;strong&gt;" dispEnd="&lt;/strong&gt;">Proton</pc> (Proton AG, Switzerland): the inbox for emails to us. The EU recognises Switzerland&apos;s data protection as adequate. </source>
-        <target><pc id="0" equivStart="START_TAG_STRONG" equivEnd="CLOSE_TAG_STRONG" type="other" dispStart="&lt;strong&gt;" dispEnd="&lt;/strong&gt;">Proton</pc> (Proton AG, Svizzera): la casella di posta per le email che ci scrivi. L’UE riconosce che la protezione dei dati della Svizzera è adeguata. </target>
       </segment>
     </unit>
     <unit id="3229477686517052873">
@@ -6646,15 +6628,6 @@
       <segment state="translated">
         <source>Yes, remove</source>
         <target>Sì, rimuovi</target>
-      </segment>
-    </unit>
-    <unit id="4249702195531967338">
-      <notes>
-        <note category="description">What Board Vault keeps, on the privacy page</note>
-      </notes>
-      <segment state="translated">
-        <source><pc id="0" equivStart="START_TAG_STRONG" equivEnd="CLOSE_TAG_STRONG" type="other" dispStart="&lt;strong&gt;" dispEnd="&lt;/strong&gt;">Your collection:</pc> the games on your shelf, with the price and date you bought them if you enter them, your wishlist, your ratings and your reviews. </source>
-        <target><pc id="0" equivStart="START_TAG_STRONG" equivEnd="CLOSE_TAG_STRONG" type="other" dispStart="&lt;strong&gt;" dispEnd="&lt;/strong&gt;">La tua collezione:</pc> i giochi del tuo scaffale, con il prezzo e la data di acquisto se li inserisci, la tua lista dei desideri, i tuoi voti e le tue recensioni. </target>
       </segment>
     </unit>
     <unit id="4254074280878566137">
@@ -13489,6 +13462,15 @@
         <target>Lo scaffale condiviso per i consigli</target>
       </segment>
     </unit>
+    <unit id="7863040009125630497">
+      <notes>
+        <note category="description">What Board Vault keeps, on the privacy page</note>
+      </notes>
+      <segment state="translated">
+        <source><pc id="0" equivStart="START_TAG_STRONG" equivEnd="CLOSE_TAG_STRONG" type="other" dispStart="&lt;strong&gt;" dispEnd="&lt;/strong&gt;">What you add:</pc> your games, wishlist, ratings and reviews, and what your groups record about their game nights. </source>
+        <target><pc id="0" equivStart="START_TAG_STRONG" equivEnd="CLOSE_TAG_STRONG" type="other" dispStart="&lt;strong&gt;" dispEnd="&lt;/strong&gt;">Quello che aggiungi:</pc> i tuoi giochi, la tua lista dei desideri, i tuoi voti e le tue recensioni, e quello che i tuoi gruppi registrano delle loro serate di gioco. </target>
+      </segment>
+    </unit>
     <unit id="7870266735529442386">
       <notes>
         <note category="description">Browser tab title of your own page</note>
@@ -14646,15 +14628,6 @@
       <segment state="translated">
         <source>No game nights planned</source>
         <target>Nessuna serata di gioco in programma</target>
-      </segment>
-    </unit>
-    <unit id="8397071686213697907">
-      <notes>
-        <note category="description">What Board Vault keeps, on the privacy page; Clerk is the sign-in service</note>
-      </notes>
-      <segment state="translated">
-        <source><pc id="0" equivStart="START_TAG_STRONG" equivEnd="CLOSE_TAG_STRONG" type="other" dispStart="&lt;strong&gt;" dispEnd="&lt;/strong&gt;">Your account:</pc> your email, username, display name, avatar and the language you use. Clerk keeps your password and how you sign in; Board Vault never sees your password. </source>
-        <target><pc id="0" equivStart="START_TAG_STRONG" equivEnd="CLOSE_TAG_STRONG" type="other" dispStart="&lt;strong&gt;" dispEnd="&lt;/strong&gt;">Il tuo account:</pc> la tua email, il nome utente, il nome visualizzato, l’avatar e la lingua che usi. Clerk conserva la tua password e il modo in cui accedi; Board Vault non vede mai la tua password. </target>
       </segment>
     </unit>
     <unit id="8399056526492416069">

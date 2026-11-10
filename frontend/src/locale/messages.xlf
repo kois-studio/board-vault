@@ -1089,15 +1089,6 @@
         <source>History could not be loaded. Open the page to retry.</source>
       </segment>
     </unit>
-    <unit id="1598691428747275487">
-      <notes>
-        <note category="location">src/app/pages/privacy/privacy-page.component.html</note>
-        <note category="description">What Board Vault keeps, on the privacy page</note>
-      </notes>
-      <segment>
-        <source><pc id="0" equivStart="START_TAG_STRONG" equivEnd="CLOSE_TAG_STRONG" type="other" dispStart="&lt;strong&gt;" dispEnd="&lt;/strong&gt;">Notifications</pc> about your groups and about the games you propose for the catalogue. </source>
-      </segment>
-    </unit>
     <unit id="1601201671059582133">
       <notes>
         <note category="location">src/app/pages/group-person-claim/group-person-claim.component.html</note>
@@ -1206,15 +1197,6 @@
       </notes>
       <segment>
         <source>Play <ph id="0" equiv="number" disp="number"/> of <ph id="1" equiv="title" disp="title"/></source>
-      </segment>
-    </unit>
-    <unit id="1661545473829832505">
-      <notes>
-        <note category="location">src/app/pages/privacy/privacy-page.component.html</note>
-        <note category="description">What Board Vault keeps, on the privacy page</note>
-      </notes>
-      <segment>
-        <source><pc id="0" equivStart="START_TAG_STRONG" equivEnd="CLOSE_TAG_STRONG" type="other" dispStart="&lt;strong&gt;" dispEnd="&lt;/strong&gt;">Your groups:</pc> the groups you are in and their game nights: the date, who comes, what is played, winners, scores and notes. Also your votes, the games you bring, the games you are interested in, and the group history, which records who changed what in the group. </source>
       </segment>
     </unit>
     <unit id="1662004852979212587">
@@ -2677,6 +2659,15 @@
       </notes>
       <segment>
         <source>Loading your group…</source>
+      </segment>
+    </unit>
+    <unit id="2402601429196310266">
+      <notes>
+        <note category="location">src/app/pages/privacy/privacy-page.component.html</note>
+        <note category="description">What Board Vault keeps, on the privacy page; Clerk is the sign-in service</note>
+      </notes>
+      <segment>
+        <source><pc id="0" equivStart="START_TAG_STRONG" equivEnd="CLOSE_TAG_STRONG" type="other" dispStart="&lt;strong&gt;" dispEnd="&lt;/strong&gt;">Your account:</pc> your email, username, display name, avatar and language. Clerk handles your password; Board Vault never sees it. </source>
       </segment>
     </unit>
     <unit id="2404444981573781985">
@@ -4466,15 +4457,6 @@
       </notes>
       <segment>
         <source>Edit games and players</source>
-      </segment>
-    </unit>
-    <unit id="3229230124437872796">
-      <notes>
-        <note category="location">src/app/pages/privacy/privacy-page.component.html</note>
-        <note category="description">Company that processes data for Board Vault, on the privacy page; an adequacy decision is the EU&apos;s legal recognition that a country protects data as well as the EU</note>
-      </notes>
-      <segment>
-        <source><pc id="0" equivStart="START_TAG_STRONG" equivEnd="CLOSE_TAG_STRONG" type="other" dispStart="&lt;strong&gt;" dispEnd="&lt;/strong&gt;">Proton</pc> (Proton AG, Switzerland): the inbox for emails to us. The EU recognises Switzerland&apos;s data protection as adequate. </source>
       </segment>
     </unit>
     <unit id="3229477686517052873">
@@ -6756,15 +6738,6 @@
       </notes>
       <segment>
         <source>Yes, remove</source>
-      </segment>
-    </unit>
-    <unit id="4249702195531967338">
-      <notes>
-        <note category="location">src/app/pages/privacy/privacy-page.component.html</note>
-        <note category="description">What Board Vault keeps, on the privacy page</note>
-      </notes>
-      <segment>
-        <source><pc id="0" equivStart="START_TAG_STRONG" equivEnd="CLOSE_TAG_STRONG" type="other" dispStart="&lt;strong&gt;" dispEnd="&lt;/strong&gt;">Your collection:</pc> the games on your shelf, with the price and date you bought them if you enter them, your wishlist, your ratings and your reviews. </source>
       </segment>
     </unit>
     <unit id="4254074280878566137">
@@ -13706,6 +13679,15 @@
         <source>The shared shelf for recommendations</source>
       </segment>
     </unit>
+    <unit id="7863040009125630497">
+      <notes>
+        <note category="location">src/app/pages/privacy/privacy-page.component.html</note>
+        <note category="description">What Board Vault keeps, on the privacy page</note>
+      </notes>
+      <segment>
+        <source><pc id="0" equivStart="START_TAG_STRONG" equivEnd="CLOSE_TAG_STRONG" type="other" dispStart="&lt;strong&gt;" dispEnd="&lt;/strong&gt;">What you add:</pc> your games, wishlist, ratings and reviews, and what your groups record about their game nights. </source>
+      </segment>
+    </unit>
     <unit id="7870266735529442386">
       <notes>
         <note category="location">src/app/app.component.ts</note>
@@ -14892,15 +14874,6 @@
       </notes>
       <segment>
         <source>No game nights planned</source>
-      </segment>
-    </unit>
-    <unit id="8397071686213697907">
-      <notes>
-        <note category="location">src/app/pages/privacy/privacy-page.component.html</note>
-        <note category="description">What Board Vault keeps, on the privacy page; Clerk is the sign-in service</note>
-      </notes>
-      <segment>
-        <source><pc id="0" equivStart="START_TAG_STRONG" equivEnd="CLOSE_TAG_STRONG" type="other" dispStart="&lt;strong&gt;" dispEnd="&lt;/strong&gt;">Your account:</pc> your email, username, display name, avatar and the language you use. Clerk keeps your password and how you sign in; Board Vault never sees your password. </source>
       </segment>
     </unit>
     <unit id="8399056526492416069">
