@@ -104,15 +104,6 @@
         <source>View invitations</source>
       </segment>
     </unit>
-    <unit id="1035746911893064067">
-      <notes>
-        <note category="location">src/app/pages/privacy/privacy-page.component.html</note>
-        <note category="description">On the privacy page</note>
-      </notes>
-      <segment>
-        <source>When this page changes, so does the date at the top. Before your data is used for a new purpose, Board Vault tells you in the app.</source>
-      </segment>
-    </unit>
     <unit id="1038806206534449996">
       <notes>
         <note category="location">src/app/pages/group-view/group-view.component.html</note>
@@ -330,6 +321,15 @@
         <source>Accept invitation to <ph id="0" equiv="group" disp="group"/></source>
       </segment>
     </unit>
+    <unit id="1176725209112022045">
+      <notes>
+        <note category="location">src/app/pages/privacy/privacy-page.component.html</note>
+        <note category="description">On the privacy page; Settings, Settings → Privacy and Settings → Account name places in the app</note>
+      </notes>
+      <segment>
+        <source> You can ask to see your data, get a copy, correct it, delete it or limit how it is used. You can also ask for the data you gave Board Vault in a machine-readable format, to reuse elsewhere. Some of it you can do yourself: edit your profile in <pc id="0" equivStart="START_LINK" equivEnd="CLOSE_LINK" type="link" dispStart="&lt;a class=&quot;font-medium text-bv-primary underline&quot; routerLink=&quot;/settings/profile&quot;&gt;" dispEnd="&lt;/a&gt;">Settings</pc>, turn off usage statistics in <pc id="1" equivStart="START_LINK_1" equivEnd="CLOSE_LINK" type="link" dispStart="&lt;a class=&quot;font-medium text-bv-primary underline&quot; routerLink=&quot;/settings/privacy&quot;&gt;" dispEnd="&lt;/a&gt;">Settings → Privacy</pc>, and delete your account in <pc id="2" equivStart="START_LINK_2" equivEnd="CLOSE_LINK" type="link" dispStart="&lt;a class=&quot;font-medium text-bv-primary underline&quot; routerLink=&quot;/settings/account&quot;&gt;" dispEnd="&lt;/a&gt;">Settings → Account</pc>. </source>
+      </segment>
+    </unit>
     <unit id="1182360463033427882">
       <notes>
         <note category="location">src/app/pages/privacy/privacy-page.component.html</note>
@@ -382,15 +382,6 @@
       </notes>
       <segment>
         <source>Your game proposal &quot;<ph id="0" equiv="title" disp="data[&apos;gameTitle&apos;]"/>&quot; was approved!</source>
-      </segment>
-    </unit>
-    <unit id="1201121091116883590">
-      <notes>
-        <note category="location">src/app/pages/privacy/privacy-page.component.html</note>
-        <note category="description">How long data is kept, on the privacy page</note>
-      </notes>
-      <segment>
-        <source><pc id="0" equivStart="START_TAG_STRONG" equivEnd="CLOSE_TAG_STRONG" type="other" dispStart="&lt;strong&gt;" dispEnd="&lt;/strong&gt;">Usage statistics</pc> are deleted after 30 days. Only daily counts with no account attached are kept. </source>
       </segment>
     </unit>
     <unit id="1211771464911319805">
@@ -1161,15 +1152,6 @@
       </notes>
       <segment>
         <source>{VAR_PLURAL, plural, one {<ph id="0" equiv="INTERPOLATION"/><pc id="1" equivStart="START_TAG_SPAN" equivEnd="CLOSE_TAG_SPAN" type="other"> proposal waiting</pc>} other {<ph id="2" equiv="INTERPOLATION"/><pc id="3" equivStart="START_TAG_SPAN" equivEnd="CLOSE_TAG_SPAN" type="other"> proposals waiting</pc>}}</source>
-      </segment>
-    </unit>
-    <unit id="1620158089879709632">
-      <notes>
-        <note category="location">src/app/pages/privacy/privacy-page.component.html</note>
-        <note category="description">What Board Vault keeps, on the privacy page</note>
-      </notes>
-      <segment>
-        <source><pc id="0" equivStart="START_TAG_STRONG" equivEnd="CLOSE_TAG_STRONG" type="other" dispStart="&lt;strong&gt;" dispEnd="&lt;/strong&gt;">Your emails to us:</pc> stored with our email provider in Switzerland, and kept while they are useful to answer you and follow up. </source>
       </segment>
     </unit>
     <unit id="1621407558187096166">
@@ -4495,15 +4477,6 @@
         <source><ph id="0" equiv="actor" disp="actor"/> changed what was played on a game night</source>
       </segment>
     </unit>
-    <unit id="3245900945864741724">
-      <notes>
-        <note category="location">src/app/pages/privacy/privacy-page.component.html</note>
-        <note category="description">Legal bases on the privacy page; GDPR is the EU data protection law</note>
-      </notes>
-      <segment>
-        <source> Your account and what you add are needed to give you the service you sign up for (GDPR, Article 6(1)(b)). Usage statistics, technical records, your emails to us and the history groups keep rest on legitimate interests: keeping Board Vault working, safe and getting better, answering you, and letting groups keep their shared history (Article 6(1)(f)). </source>
-      </segment>
-    </unit>
     <unit id="3249513483374643425">
       <notes>
         <note category="location">src/app/components/add-person-game/add-person-game.component.ts</note>
@@ -5038,15 +5011,6 @@
         <source><ph id="0" equiv="actor" disp="actor"/> isn’t sure they have <ph id="1" equiv="game" disp="game"/></source>
       </segment>
     </unit>
-    <unit id="3507476529908726391">
-      <notes>
-        <note category="location">src/app/pages/privacy/privacy-page.component.html</note>
-        <note category="description">On the privacy page; Settings, Settings → Privacy and Settings → Account name places in the app</note>
-      </notes>
-      <segment>
-        <source> You can ask to see your data, get a copy, correct it, delete it or limit how it is used. You can do most of it yourself: change your profile in <pc id="0" equivStart="START_LINK" equivEnd="CLOSE_LINK" type="link" dispStart="&lt;a class=&quot;font-medium text-bv-primary underline&quot; routerLink=&quot;/settings/profile&quot;&gt;" dispEnd="&lt;/a&gt;">Settings</pc>, turn off usage statistics in <pc id="1" equivStart="START_LINK_1" equivEnd="CLOSE_LINK" type="link" dispStart="&lt;a class=&quot;font-medium text-bv-primary underline&quot; routerLink=&quot;/settings/privacy&quot;&gt;" dispEnd="&lt;/a&gt;">Settings → Privacy</pc>, and delete your account in <pc id="2" equivStart="START_LINK_2" equivEnd="CLOSE_LINK" type="link" dispStart="&lt;a class=&quot;font-medium text-bv-primary underline&quot; routerLink=&quot;/settings/account&quot;&gt;" dispEnd="&lt;/a&gt;">Settings → Account</pc>. </source>
-      </segment>
-    </unit>
     <unit id="3511545370905854666">
       <notes>
         <note category="location">src/app/pages/group-person-claim/group-person-claim.component.ts</note>
@@ -5264,6 +5228,15 @@
       </notes>
       <segment>
         <source>You’re going</source>
+      </segment>
+    </unit>
+    <unit id="3636673508955703154">
+      <notes>
+        <note category="location">src/app/pages/privacy/privacy-page.component.html</note>
+        <note category="description">Legal bases on the privacy page; GDPR is the EU data protection law</note>
+      </notes>
+      <segment>
+        <source> Your account and what you add are needed to give you the service you sign up for (GDPR, Article 6(1)(b)). Usage statistics, technical records and your emails to us rest on legitimate interests: keeping Board Vault working, safe and getting better, and answering you (Article 6(1)(f)). </source>
       </segment>
     </unit>
     <unit id="3642217425045834854">
@@ -6958,6 +6931,15 @@
         <source>Loading groups…</source>
       </segment>
     </unit>
+    <unit id="4382990543480213507">
+      <notes>
+        <note category="location">src/app/pages/privacy/privacy-page.component.html</note>
+        <note category="description">On the privacy page, about objecting to uses of data that rest on legitimate interests</note>
+      </notes>
+      <segment>
+        <source> You can object to the uses that rest on legitimate interests, for reasons about your situation. Board Vault then stops, unless it has compelling reasons that override your interests and rights, or needs the data for legal claims. </source>
+      </segment>
+    </unit>
     <unit id="4383248305292990663">
       <notes>
         <note category="location">src/app/pages/play-page/play-page.component.html</note>
@@ -7129,13 +7111,13 @@
         <source>Score <ph id="0" equiv="INTERPOLATION" disp="{{ roundScore(play.position, person) }}"/></source>
       </segment>
     </unit>
-    <unit id="4475225222632105702">
+    <unit id="4470891529513397393">
       <notes>
         <note category="location">src/app/pages/privacy/privacy-page.component.html</note>
-        <note category="description">What Board Vault keeps, on the privacy page; Vercel is the hosting company</note>
+        <note category="description">On the privacy page, about the people in a group who have no account; legal basis</note>
       </notes>
       <segment>
-        <source><pc id="0" equivStart="START_TAG_STRONG" equivEnd="CLOSE_TAG_STRONG" type="other" dispStart="&lt;strong&gt;" dispEnd="&lt;/strong&gt;">Technical records:</pc> for each request, the server notes the page or route asked for, whether it worked, and your account number. Vercel keeps these for about an hour. When you are not signed in, your IP address is used to limit repeated requests and is forgotten within minutes. </source>
+        <source> This information comes from the group&apos;s members. Board Vault keeps it, and the game nights of people who deleted their account, for the legitimate interest of groups in organising their games and keeping a shared record (GDPR, Article 6(1)(f)). </source>
       </segment>
     </unit>
     <unit id="4493418406674855888">
@@ -7418,6 +7400,15 @@
         <source>Start the night when the group sits down to play. Then mark the games you play, who played, and who won.</source>
       </segment>
     </unit>
+    <unit id="4659884302251258927">
+      <notes>
+        <note category="location">src/app/pages/privacy/privacy-page.component.html</note>
+        <note category="description">On the privacy page</note>
+      </notes>
+      <segment>
+        <source>When this page changes, so does the date at the top. Before your data is used for a new purpose, you are told about it.</source>
+      </segment>
+    </unit>
     <unit id="4662888686801008290">
       <notes>
         <note category="location">src/app/pages/meet-view/meet-view.component.html</note>
@@ -7543,6 +7534,15 @@
       </notes>
       <segment>
         <source>Could not save the attendee changes</source>
+      </segment>
+    </unit>
+    <unit id="4712661885347766172">
+      <notes>
+        <note category="location">src/app/pages/privacy/privacy-page.component.html</note>
+        <note category="description">What other people see, on the privacy page; the person responsible is the one named under Who is responsible</note>
+      </notes>
+      <segment>
+        <source> The admin pages show accounts and game proposals, to run the service, and usage statistics only as totals. </source>
       </segment>
     </unit>
     <unit id="4715165630183338203">
@@ -8324,15 +8324,6 @@
         <source>Search the catalogue and tap Add. The box art, player count and play time come with it.</source>
       </segment>
     </unit>
-    <unit id="5126241245668321783">
-      <notes>
-        <note category="location">src/app/pages/privacy/privacy-page.component.html</note>
-        <note category="description">On the privacy page, about which data is required to have an account</note>
-      </notes>
-      <segment>
-        <source> To have an account you need a username and a way to sign in; without them, Board Vault cannot give you one. Everything else is your choice. </source>
-      </segment>
-    </unit>
     <unit id="513045381948130029">
       <notes>
         <note category="location">src/app/core/i18n/clerk-localization.ts</note>
@@ -8418,6 +8409,15 @@
         <source>Not now</source>
       </segment>
     </unit>
+    <unit id="516327893498792916">
+      <notes>
+        <note category="location">src/app/pages/privacy/privacy-page.component.html</note>
+        <note category="description">On the privacy page, before the list of companies that process data for Board Vault</note>
+      </notes>
+      <segment>
+        <source>These companies process data for Board Vault to provide their service. You can ask us for a copy of the safeguards for transfers outside the EU.</source>
+      </segment>
+    </unit>
     <unit id="5167037823447958852">
       <notes>
         <note category="location">src/app/pages/collection-page/browse-page/browse-page.component.html</note>
@@ -8461,6 +8461,15 @@
       </notes>
       <segment>
         <source>Over 2 hours</source>
+      </segment>
+    </unit>
+    <unit id="518122125002857089">
+      <notes>
+        <note category="location">src/app/pages/privacy/privacy-page.component.html</note>
+        <note category="description">On the privacy page, before the list of what is stored in the browser</note>
+      </notes>
+      <segment>
+        <source>Board Vault stores only what sign-in and the preferences you choose need:</source>
       </segment>
     </unit>
     <unit id="5181319046980666139">
@@ -10678,15 +10687,6 @@
         <source>Error retrieving user’s wishlist</source>
       </segment>
     </unit>
-    <unit id="6341745270596588373">
-      <notes>
-        <note category="location">src/app/pages/privacy/privacy-page.component.html</note>
-        <note category="description">On the privacy page; the placeholder is the contact email address; AEPD is the Spanish data protection authority</note>
-      </notes>
-      <segment>
-        <source> For anything else, write to <pc id="0" equivStart="START_LINK" equivEnd="CLOSE_LINK" type="link" dispStart="&lt;a class=&quot;font-medium text-bv-primary underline&quot; [href]=&quot;contactLink&quot;&gt;" dispEnd="&lt;/a&gt;"><ph id="1" equiv="INTERPOLATION" disp="{{ contactEmail }}"/></pc>. Requests about your rights get an answer within a month. If you think your data is handled wrongly, you can complain to the Spanish data protection authority (<pc id="2" equivStart="START_LINK_1" equivEnd="CLOSE_LINK" type="link" dispStart="&lt;a class=&quot;font-medium text-bv-primary underline&quot; href=&quot;https://www.aepd.es&quot; target=&quot;_blank&quot; rel=&quot;noopener&quot;&gt;" dispEnd="&lt;/a&gt;">AEPD</pc>) or to the one where you live. </source>
-      </segment>
-    </unit>
     <unit id="6344107819696829929">
       <notes>
         <note category="location">src/app/pages/group-view/group-view.component.ts</note>
@@ -10741,6 +10741,15 @@
       </notes>
       <segment>
         <source>History summary</source>
+      </segment>
+    </unit>
+    <unit id="635665873954265806">
+      <notes>
+        <note category="location">src/app/pages/privacy/privacy-page.component.html</note>
+        <note category="description">What Board Vault keeps, on the privacy page</note>
+      </notes>
+      <segment>
+        <source><pc id="0" equivStart="START_TAG_STRONG" equivEnd="CLOSE_TAG_STRONG" type="other" dispStart="&lt;strong&gt;" dispEnd="&lt;/strong&gt;">What you add:</pc> your games, wishlist and ratings (scores from 0 to 10), and what your groups record about their game nights. </source>
       </segment>
     </unit>
     <unit id="6363341208124688834">
@@ -11415,15 +11424,6 @@
         <source>Error accepting invitation</source>
       </segment>
     </unit>
-    <unit id="6704096820645576036">
-      <notes>
-        <note category="location">src/app/pages/privacy/privacy-page.component.html</note>
-        <note category="description">How long data is kept, on the privacy page; Settings → Account names the place in the app; Deleted account is the name shown instead of a deleted account</note>
-      </notes>
-      <segment>
-        <source><pc id="0" equivStart="START_TAG_STRONG" equivEnd="CLOSE_TAG_STRONG" type="other" dispStart="&lt;strong&gt;" dispEnd="&lt;/strong&gt;">Your account</pc> stays until you delete it in <pc id="1" equivStart="START_LINK" equivEnd="CLOSE_LINK" type="link" dispStart="&lt;a class=&quot;font-medium text-bv-primary underline&quot; routerLink=&quot;/settings/account&quot;&gt;" dispEnd="&lt;/a&gt;">Settings → Account</pc>. Deleting it ends your sign-in at once and erases your email, username, name, avatar, shelf, wishlist and ratings. The game nights you took part in stay in your groups&apos; history, with you shown as “Deleted account”. </source>
-      </segment>
-    </unit>
     <unit id="6708545719304605470">
       <notes>
         <note category="location">src/app/components/log-session-wizard/log-session-wizard.component.ts</note>
@@ -11431,6 +11431,15 @@
       </notes>
       <segment>
         <source>Correct this session</source>
+      </segment>
+    </unit>
+    <unit id="6711230156458918440">
+      <notes>
+        <note category="location">src/app/pages/privacy/privacy-page.component.html</note>
+        <note category="description">How long data is kept, on the privacy page</note>
+      </notes>
+      <segment>
+        <source><pc id="0" equivStart="START_TAG_STRONG" equivEnd="CLOSE_TAG_STRONG" type="other" dispStart="&lt;strong&gt;" dispEnd="&lt;/strong&gt;">Individual usage events</pc> are deleted after 30 days. Only daily totals with no account attached are kept. </source>
       </segment>
     </unit>
     <unit id="6713033374419987338">
@@ -11514,6 +11523,15 @@
       </notes>
       <segment>
         <source><ph id="0" equiv="actor" disp="actor"/> said they don’t mind <ph id="1" equiv="game" disp="game"/></source>
+      </segment>
+    </unit>
+    <unit id="6763649338954617045">
+      <notes>
+        <note category="location">src/app/pages/privacy/privacy-page.component.html</note>
+        <note category="description">On the privacy page; the placeholder is the contact email address; AEPD is the Spanish data protection authority</note>
+      </notes>
+      <segment>
+        <source> For anything else, write to <pc id="0" equivStart="START_LINK" equivEnd="CLOSE_LINK" type="link" dispStart="&lt;a class=&quot;font-medium text-bv-primary underline&quot; [href]=&quot;contactLink&quot;&gt;" dispEnd="&lt;/a&gt;"><ph id="1" equiv="INTERPOLATION" disp="{{ contactEmail }}"/></pc>. Requests about your rights are answered within a month; if one is complex, it can take up to two more months, and you are told why within the first month. If you think your data is handled wrongly, you can complain to the Spanish data protection authority (<pc id="2" equivStart="START_LINK_1" equivEnd="CLOSE_LINK" type="link" dispStart="&lt;a class=&quot;font-medium text-bv-primary underline&quot; href=&quot;https://www.aepd.es&quot; target=&quot;_blank&quot; rel=&quot;noopener&quot;&gt;" dispEnd="&lt;/a&gt;">AEPD</pc>) or to the one where you live. </source>
       </segment>
     </unit>
     <unit id="6766874920336829687">
@@ -11707,6 +11725,15 @@
         <source>A few games to consider. Leave it empty to decide on the night.</source>
       </segment>
     </unit>
+    <unit id="6854184085271734449">
+      <notes>
+        <note category="location">src/app/pages/privacy/privacy-page.component.html</note>
+        <note category="description">On the privacy page, about which data is required to have an account</note>
+      </notes>
+      <segment>
+        <source> An email address, a username and a password are required to create an account; without them, Board Vault cannot give you one. Your display name, avatar and everything you add are optional. </source>
+      </segment>
+    </unit>
     <unit id="685710079621695639">
       <notes>
         <note category="location">src/app/core/services/data.service.ts</note>
@@ -11741,15 +11768,6 @@
       </notes>
       <segment>
         <source>Error retrieving user’s proposal stats</source>
-      </segment>
-    </unit>
-    <unit id="6865710343377586031">
-      <notes>
-        <note category="location">src/app/pages/privacy/privacy-page.component.html</note>
-        <note category="description">On the privacy page, about objecting to uses of data that rest on legitimate interests</note>
-      </notes>
-      <segment>
-        <source> You can also object to the uses that rest on legitimate interests: tell us why, and we will stop unless there is a stronger reason to continue. </source>
       </segment>
     </unit>
     <unit id="6874790119730599934">
@@ -12560,6 +12578,15 @@
         <source>Add to <ph id="0" equiv="INTERPOLATION" disp="{{ ownershipTargetName(game.id) }}"/></source>
       </segment>
     </unit>
+    <unit id="7257867430321269159">
+      <notes>
+        <note category="location">src/app/pages/privacy/privacy-page.component.html</note>
+        <note category="description">What Board Vault keeps, on the privacy page; Vercel is the hosting company</note>
+      </notes>
+      <segment>
+        <source><pc id="0" equivStart="START_TAG_STRONG" equivEnd="CLOSE_TAG_STRONG" type="other" dispStart="&lt;strong&gt;" dispEnd="&lt;/strong&gt;">Technical records:</pc> for each request, the server notes the page or route asked for, whether it worked, and your account number. When you are not signed in, your IP address is used to limit repeated requests and is forgotten within minutes. </source>
+      </segment>
+    </unit>
     <unit id="7258870677523380388">
       <notes>
         <note category="location">src/app/pages/settings/profile/settings-profile.component.html</note>
@@ -12621,6 +12648,15 @@
       </notes>
       <segment>
         <source>Who can see my collection?</source>
+      </segment>
+    </unit>
+    <unit id="7302811123444244168">
+      <notes>
+        <note category="location">src/app/pages/privacy/privacy-page.component.html</note>
+        <note category="description">What Board Vault keeps, on the privacy page</note>
+      </notes>
+      <segment>
+        <source><pc id="0" equivStart="START_TAG_STRONG" equivEnd="CLOSE_TAG_STRONG" type="other" dispStart="&lt;strong&gt;" dispEnd="&lt;/strong&gt;">Your emails to us:</pc> stored with our email provider in Switzerland, which the EU recognises as protecting data adequately, and kept while they are useful to answer you and follow up. </source>
       </segment>
     </unit>
     <unit id="7306190949587501209">
@@ -12998,15 +13034,6 @@
       </notes>
       <segment>
         <source>Could not add your interest. Try again.</source>
-      </segment>
-    </unit>
-    <unit id="7535541474973553405">
-      <notes>
-        <note category="location">src/app/pages/privacy/privacy-page.component.html</note>
-        <note category="description">What Board Vault keeps, on the privacy page</note>
-      </notes>
-      <segment>
-        <source><pc id="0" equivStart="START_TAG_STRONG" equivEnd="CLOSE_TAG_STRONG" type="other" dispStart="&lt;strong&gt;" dispEnd="&lt;/strong&gt;">What you add:</pc> your games, wishlist and ratings, and what your groups record about their game nights. </source>
       </segment>
     </unit>
     <unit id="7540949476032116614">
@@ -13456,15 +13483,6 @@
         <source>Create or join a group before planning a session.</source>
       </segment>
     </unit>
-    <unit id="774073887852905330">
-      <notes>
-        <note category="location">src/app/pages/privacy/privacy-page.component.html</note>
-        <note category="description">On the privacy page, before the list of companies that process data for Board Vault</note>
-      </notes>
-      <segment>
-        <source>These companies process data for Board Vault to provide their service. You can ask us for details of the safeguards for transfers outside the EU.</source>
-      </segment>
-    </unit>
     <unit id="7741820910551245296">
       <notes>
         <note category="location">src/app/pages/dashboard-page/submissions-page/submissions-page.component.html</note>
@@ -13564,6 +13582,15 @@
       </notes>
       <segment>
         <source>Try secure sign-up again</source>
+      </segment>
+    </unit>
+    <unit id="7796921563219723714">
+      <notes>
+        <note category="location">src/app/pages/privacy/privacy-page.component.html</note>
+        <note category="description">How long data is kept, on the privacy page; Settings → Account names the place in the app; Deleted account is the name shown instead of a deleted account</note>
+      </notes>
+      <segment>
+        <source><pc id="0" equivStart="START_TAG_STRONG" equivEnd="CLOSE_TAG_STRONG" type="other" dispStart="&lt;strong&gt;" dispEnd="&lt;/strong&gt;">Your account</pc> stays until you delete it in <pc id="1" equivStart="START_LINK" equivEnd="CLOSE_LINK" type="link" dispStart="&lt;a class=&quot;font-medium text-bv-primary underline&quot; routerLink=&quot;/settings/account&quot;&gt;" dispEnd="&lt;/a&gt;">Settings → Account</pc>. Deleting it ends your sign-in at once, removes your email, username, name, avatar, shelf, wishlist and ratings from the database, and deletes your sign-in account at Clerk. Short-lived copies expire as described below. The game nights you took part in stay in your groups&apos; history, with you shown as “Deleted account”. </source>
       </segment>
     </unit>
     <unit id="7799987464743006164">
@@ -14776,15 +14803,6 @@
         <source>Could not add the game to that night.</source>
       </segment>
     </unit>
-    <unit id="830447391172549505">
-      <notes>
-        <note category="location">src/app/pages/privacy/privacy-page.component.html</note>
-        <note category="description">On the privacy page; Clerk is the sign-in service</note>
-      </notes>
-      <segment>
-        <source> Connections are encrypted. The server checks every request against what you are allowed to see. Board Vault&apos;s code is <pc id="0" equivStart="START_LINK" equivEnd="CLOSE_LINK" type="link" dispStart="&lt;a class=&quot;font-medium text-bv-primary underline&quot; href=&quot;https://github.com/kois-studio/board-vault&quot; target=&quot;_blank&quot; rel=&quot;noopener&quot;&gt;" dispEnd="&lt;/a&gt;">public on GitHub</pc>, so anyone can check how it works. </source>
-      </segment>
-    </unit>
     <unit id="8314285816173386293">
       <notes>
         <note category="location">src/app/pages/dashboard-page/dashboard-page.component.ts</note>
@@ -15149,15 +15167,6 @@
       </notes>
       <segment>
         <source>Yes. Create an account and start adding games.</source>
-      </segment>
-    </unit>
-    <unit id="8484012470447934837">
-      <notes>
-        <note category="location">src/app/pages/privacy/privacy-page.component.html</note>
-        <note category="description">What other people see, on the privacy page; the person responsible is the one named under Who is responsible</note>
-      </notes>
-      <segment>
-        <source> The person responsible can see accounts and game proposals to run the service. The admin pages show usage statistics only as totals. </source>
       </segment>
     </unit>
     <unit id="848585244113423307">
@@ -15636,15 +15645,6 @@
         <source>Select at least one player for every game.</source>
       </segment>
     </unit>
-    <unit id="8706474832290204210">
-      <notes>
-        <note category="location">src/app/pages/privacy/privacy-page.component.html</note>
-        <note category="description">On the privacy page, before the list of what is stored in the browser</note>
-      </notes>
-      <segment>
-        <source>Board Vault stores only what sign-in and the preferences you choose need, so there is no cookie banner:</source>
-      </segment>
-    </unit>
     <unit id="8711759548676227784">
       <notes>
         <note category="location">src/app/components/session-summary/session-summary.component.ts</note>
@@ -15764,6 +15764,15 @@
       </notes>
       <segment>
         <source><ph id="0" equiv="INTERPOLATION" disp="{{ play.winner }}"/> won</source>
+      </segment>
+    </unit>
+    <unit id="8739086112854947732">
+      <notes>
+        <note category="location">src/app/pages/privacy/privacy-page.component.html</note>
+        <note category="description">On the privacy page; Clerk is the sign-in service</note>
+      </notes>
+      <segment>
+        <source> Connections are encrypted. Board Vault&apos;s code is <pc id="0" equivStart="START_LINK" equivEnd="CLOSE_LINK" type="link" dispStart="&lt;a class=&quot;font-medium text-bv-primary underline&quot; href=&quot;https://github.com/kois-studio/board-vault&quot; target=&quot;_blank&quot; rel=&quot;noopener&quot;&gt;" dispEnd="&lt;/a&gt;">public on GitHub</pc>, so anyone can check how it works. </source>
       </segment>
     </unit>
     <unit id="8739336026258908775">
