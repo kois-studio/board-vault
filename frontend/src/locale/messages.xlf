@@ -60,7 +60,7 @@
       <notes>
         <note category="location">src/app/layout/usage-notice/usage-notice.component.html</note>
         <note category="location">src/app/pages/settings/privacy/settings-privacy.component.html</note>
-        <note category="description">Label of the usage statistics switch on the invitation sign-up page; the same switch is in Settings, Privacy</note>
+        <note category="description">Label of the usage statistics switch in the card that asks about usage statistics; the same switch is in Settings, Privacy</note>
       </notes>
       <segment>
         <source>Help improve Board Vault</source>

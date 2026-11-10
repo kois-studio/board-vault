@@ -56,7 +56,7 @@
     </unit>
     <unit id="1023159118123911874">
       <notes>
-        <note category="description">Label of the usage statistics switch on the invitation sign-up page; the same switch is in Settings, Privacy</note>
+        <note category="description">Label of the usage statistics switch in the card that asks about usage statistics; the same switch is in Settings, Privacy</note>
       </notes>
       <segment state="translated">
         <source>Help improve Board Vault</source>
@@ -8767,7 +8767,7 @@
       <segment state="translated">
         <source>friend_username</source>
         <target>nome_utente</target>
-        </segment>
+      </segment>
     </unit>
     <unit id="5737478077982119897">
       <notes>
@@ -11890,7 +11890,7 @@
       <segment state="translated">
         <source>Invite them by their Board Vault username.</source>
         <target>Invita ogni persona con il suo nome utente Board Vault.</target>
-        </segment>
+      </segment>
     </unit>
     <unit id="7434447101665682282">
       <notes>
