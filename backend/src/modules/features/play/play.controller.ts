@@ -13,6 +13,8 @@ import {
     HistoryQuery,
     HistorySummaryDto,
     HistorySummaryQuery,
+    MeetsAroundDto,
+    MeetsAroundQuery,
     RecommendationFeedbackBody,
     ParticipantRecommendationFeedbackBody,
     RecommendationFeedbackDto,
@@ -129,5 +131,16 @@ export class PlayController {
     @ApiResponse({ status: 200, type: [AccountMeetDto], description: "The user's game nights, newest first, with the user's own RSVP" })
     async getUserMeets(@Param('userId', ParseIntPipe) userId: number) {
         return this.playService.getUserMeets(userId)
+    }
+
+    @UseGuards(UserOwnershipGuard)
+    @Get('/users/:userId/meets/around')
+    @UsePipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true, transform: true }))
+    @ApiOperation({
+        summary: "One group's game nights from the day before a date to the day after, for nights older than the list keeps (#252)",
+    })
+    @ApiResponse({ status: 200, type: MeetsAroundDto, description: 'The nights, newest first, and the records of the completed ones' })
+    async getMeetsAround(@Param('userId', ParseIntPipe) userId: number, @Query() query: MeetsAroundQuery, @RequestLocale() locale: Locale) {
+        return this.playService.getMeetsAround(userId, query, locale)
     }
 }

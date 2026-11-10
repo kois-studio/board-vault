@@ -20,6 +20,8 @@ import type {
     HistoryQuery,
     HistorySummaryDto,
     HistorySummaryQuery,
+    MeetsAroundDto,
+    MeetsAroundQuery,
     NoResultReasonDto,
     RecommendationReasonDto,
     RecommendationDto,
@@ -508,6 +510,24 @@ export class PlayService {
         const ids = await this.databaseService.sessions.getHistoryMeetIdsPage(userId, filters, query.before ?? null, limit + 1)
 
         return { entries: await this.historyRecordsFor(ids.slice(0, limit), userId, locale), hasMore: ids.length > limit }
+    }
+
+    /**
+     * One group's nights around a day, with the records of the completed ones: what the session wizard warns about when
+     * you record a night older than the session list holds (#252). A group you are not in has none.
+     */
+    @LogFeature(new Logger('PlayService'))
+    async getMeetsAround(userId: number, query: MeetsAroundQuery, locale: Locale): Promise<MeetsAroundDto> {
+        const ids = await this.databaseService.sessions.getGroupMeetIdsAround(userId, query.groupId, query.date)
+        const found = new Map((await this.meetsService.getMeetsByIdsForAccount(ids, userId)).map(meet => [meet.id, meet]))
+        const meets = ids.flatMap(id => {
+            const meet = found.get(id)
+
+            return meet ? [meet] : []
+        })
+        const completed = meets.filter(meet => meet.status === 'completed').map(meet => meet.id)
+
+        return { meets, records: await this.historyRecordsFor(completed, userId, locale) }
     }
 
     /** Every night at once, for the previous frontend release only (`GET /history`, deprecated by #252). */

@@ -70,6 +70,8 @@ const PLAYED_IN_MINE = `
 
 /** Finished or cancelled nights stay in the game-night list this many days (#252). */
 export const RECENT_MEETS_DAYS = 30
+/** At most this many nights answer `GET /play/users/:userId/meets/around`, three days of one group. */
+export const MEETS_AROUND_MAX = 50
 
 /** Ties for the most played game are broken by title; this many are titled at most. */
 export const MOST_PLAYED_CANDIDATES = 50
@@ -1086,6 +1088,28 @@ export class SessionQueries {
         const resultSet = await this.database.execute({
             sql: "SELECT accountId FROM MeetAttendee WHERE meetId = ? AND attendanceStatus = 'attended'",
             args: [meetId],
+        })
+
+        return resultSet.rows.map(row => Number(row[0]))
+    }
+
+    /**
+     * The ids of one group's nights from the day before `day` (YYYY-MM-DD) to the day after, newest first, if the
+     * account is in the group: enough for the client to keep those on `day` in each night's own time zone (#252).
+     */
+    async getGroupMeetIdsAround(accountId: number, groupId: number, day: string): Promise<Array<number>> {
+        const resultSet = await this.database.execute({
+            sql: `
+                SELECT m.id
+                FROM Meet m
+                INNER JOIN GroupMembership gm ON gm.groupId = m.groupId AND gm.accountId = ?
+                WHERE m.groupId = ?
+                  AND datetime(m.meetDate) >= datetime(?, '-1 day')
+                  AND datetime(m.meetDate) < datetime(?, '+2 days')
+                ORDER BY datetime(m.meetDate) DESC, m.id DESC
+                LIMIT ?
+            `,
+            args: [accountId, groupId, day, day, MEETS_AROUND_MAX],
         })
 
         return resultSet.rows.map(row => Number(row[0]))

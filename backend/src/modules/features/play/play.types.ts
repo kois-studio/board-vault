@@ -1,6 +1,6 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger'
 import { Type } from 'class-transformer'
-import { ArrayMinSize, ArrayUnique, IsArray, IsIn, IsInt, IsOptional, Max, Min } from 'class-validator'
+import { ArrayMinSize, ArrayUnique, IsArray, IsIn, IsInt, IsISO8601, IsOptional, Matches, Max, Min } from 'class-validator'
 
 import { GameCompleteDto } from '../../../common/types/game.type.js'
 import { GROUP_PERSON_STANDINGS, type GroupPersonStanding } from '../../../common/types/group-person.type.js'
@@ -115,6 +115,32 @@ export class HistoryPageDto {
 
     @ApiProperty({ example: true, description: 'True when older nights remain: ask again with `before` set to the last id.' })
     hasMore: boolean
+}
+
+/** One group and one day, to find the nights already recorded around it (#252). */
+export class MeetsAroundQuery {
+    @ApiProperty({ description: 'The group whose nights to read.', example: 7 })
+    @Type(() => Number)
+    @IsInt()
+    @Min(1)
+    groupId: number
+
+    @ApiProperty({ description: 'A calendar day, YYYY-MM-DD.', example: '2026-09-20' })
+    @Matches(/^\d{4}-\d{2}-\d{2}$/)
+    @IsISO8601({ strict: true })
+    date: string
+}
+
+export class MeetsAroundDto {
+    @ApiProperty({
+        type: [MeetDto],
+        description:
+            "The group's nights from the day before to the day after, newest first; keep those on the day in each night's time zone.",
+    })
+    meets: Array<MeetDto>
+
+    @ApiProperty({ type: [HistoryRecordDto], description: 'The completed ones among them, with their games and players.' })
+    records: Array<HistoryRecordDto>
 }
 
 /** Which part of the caller's history to sum up. */

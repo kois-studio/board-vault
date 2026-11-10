@@ -203,4 +203,36 @@ describe('bounded history (e2e)', () => {
 
         expect(meets.map(meet => meet.id)).toEqual([306, 301, 304, 302, 124, 300])
     })
+
+    it('finds one group’s nights around an older day, with the records of the completed ones', async () => {
+        // Night 110 was 90 days ago, with 109 the day before and 111 the day after; the cancelled 200 shares its date.
+        const day = new Date(Date.now() - 90 * 86_400_000).toISOString().slice(0, 10)
+        const around: {
+            meets: Array<{ id: number; status: string }>
+            records: Array<{ meetData: { id: number }; gamesPlayed: Array<unknown> }>
+        } = (await get(`/play/users/1/meets/around?groupId=10&date=${day}`).expect(200)).body
+
+        expect(around.meets.map(meet => meet.id)).toEqual([111, 200, 110, 109])
+        expect(around.meets[2]).toMatchObject({
+            id: 110,
+            groupId: 10,
+            status: 'completed',
+            notes: null,
+            timezone: expect.any(String),
+            isConfirmed: expect.any(Boolean),
+        })
+        expect(around.records.map(record => record.meetData.id)).toEqual([111, 110, 109])
+        expect(around.records[0]!.gamesPlayed).toHaveLength(1)
+
+        // Another group's nights on that day are not Ana's to see.
+        expect((await get(`/play/users/1/meets/around?groupId=11&date=${day}`).expect(200)).body).toEqual({ meets: [], records: [] })
+    })
+
+    it('refuses a day or group it cannot read, and other people’s nights', async () => {
+        await get('/play/users/1/meets/around?groupId=10&date=2026-02-30').expect(400)
+        await get('/play/users/1/meets/around?groupId=10&date=20260920').expect(400)
+        await get('/play/users/1/meets/around?date=2026-09-20').expect(400)
+        await get('/play/users/1/meets/around?groupId=10&date=2026-09-20&limit=5').expect(400)
+        await get('/play/users/1/meets/around?groupId=10&date=2026-09-20', 'user_bea').expect(403)
+    })
 })

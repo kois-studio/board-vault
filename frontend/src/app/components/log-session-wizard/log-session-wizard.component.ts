@@ -11,6 +11,7 @@ import type {
     GameReviewDto,
     GroupPersonWorkspaceType,
     GroupWithMembersAndGames,
+    MeetsAroundType,
     PublicUserType,
     ScheduleSessionRequest,
     SessionRecording,
@@ -69,6 +70,12 @@ interface StepInfo {
     label: string
     description: string
 }
+
+/**
+ * Days back the session list surely covers: it holds the last 30 days (#252), less a day for nights whose own time zone
+ * puts them on another date, and one more to spare. An older day asks the server for its nights.
+ */
+const DAYS_IN_SESSION_LIST = 28
 
 /** Today in the browser's timezone, as the date input expects it (YYYY-MM-DD). */
 function todayInputValue(): string {
@@ -134,10 +141,15 @@ export class LogSessionWizardComponent {
     private nextPlayKey = 1
     private recordingRestored = false
     private groupLoadVersion = 0
+    /** The chosen group's nights around a day older than the session list holds, read from the server (#252). */
+    private readonly nightsAround = signal<MeetsAroundType | null>(null)
     readonly sameDaySessions = computed(() => {
         const date = this.dateChoice()
         const group = this.selectedGroup()
-        return (this.dataService.userMeets?.() ?? []).filter(
+        const listed = this.dataService.userMeets?.() ?? []
+        const listedIds = new Set(listed.map((session) => session.id))
+        const older = (this.nightsAround()?.meets ?? []).filter((session) => !listedIds.has(session.id))
+        return [...listed, ...older].filter(
             (session) =>
                 session.id !== this.editingId &&
                 session.groupId === group?.id &&
@@ -289,6 +301,22 @@ export class LogSessionWizardComponent {
     constructor() {
         this.sessionDate.valueChanges.pipe(takeUntilDestroyed()).subscribe((value) => this.dateChoice.set(value ?? ''))
         if (this.editingId) void this.loadRecording()
+
+        // A day older than the session list holds: ask the server which nights the group already has around it.
+        effect((onCleanup) => {
+            const date = this.dateChoice()
+            const groupId = this.selectedGroup()?.id
+            const userId = this.dataService.currentUser?.()?.id
+            untracked(() => this.nightsAround.set(null))
+            if (!groupId || !userId || !/^\d{4}-\d{2}-\d{2}$/.test(date)) return
+            if (date >= isoDay(Date.now() - DAYS_IN_SESSION_LIST * 86_400_000)) return
+            // The warning only helps: without an answer, the wizard records as before.
+            const request = this.api.getMeetsAround(userId, groupId, date).subscribe({
+                next: (around) => this.nightsAround.set(around),
+                error: () => this.nightsAround.set(null),
+            })
+            onCleanup(() => request.unsubscribe())
+        })
 
         // Typing in the one search box also looks beyond the games of the people who came.
         effect((onCleanup) => {
@@ -1036,7 +1064,9 @@ export class LogSessionWizardComponent {
     }
 
     public sessionSuggestionLabel(sessionId: number): string {
-        const history = (this.dataService.userHistory?.() ?? []).find((record) => record.meetData.id === sessionId)
+        const history = [...(this.dataService.userHistory?.() ?? []), ...(this.nightsAround()?.records ?? [])].find(
+            (record) => record.meetData.id === sessionId,
+        )
         const titles = history?.gamesPlayed.map((play) => this.getGameTitle(play.gameData)) ?? []
         return titles.length > 0
             ? formatList(titles)

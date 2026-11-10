@@ -707,6 +707,15 @@ export type HistoryPageType = {
     hasMore: boolean
 }
 
+/**
+ * One group's nights from the day before a date to the day after, and the records of the completed ones (#252): what
+ * the session wizard checks when you record a night older than the session list holds.
+ */
+export type MeetsAroundType = {
+    meets: Array<MeetType>
+    records: Array<HistoryRecordType>
+}
+
 /** Which part of your history to read: older than `before` (the last night seen), one group, or one game. */
 export type HistoryPageOptions = { before?: number; limit?: number; groupId?: number; gameId?: number }
 

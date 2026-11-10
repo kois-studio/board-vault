@@ -34,6 +34,7 @@ import type {
     InvitationWithAccountsData,
     InvitationWithExtraData,
     MeetAttendeeStatusType,
+    MeetsAroundType,
     MeetType,
     MeetWithAttendeesAndGamesType,
     NameTranslationsType,
@@ -694,6 +695,11 @@ export const userHistorySchema = z.array(historyRecordSchema)
 export const historyPageSchema: z.ZodMiniType<HistoryPageType> = z.object({
     entries: userHistorySchema,
     hasMore: z.boolean(),
+})
+
+export const meetsAroundSchema: z.ZodMiniType<MeetsAroundType> = z.object({
+    meets: z.array(meetSchema),
+    records: userHistorySchema,
 })
 
 export const historySummarySchema: z.ZodMiniType<HistorySummaryType> = z.object({

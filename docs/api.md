@@ -146,6 +146,13 @@ A person's history grows with every night, so no response carries all of it
 - `GET /play/users/:userId/meets` answers every scheduled or live night,
   every night of the last 30 days, and each group's last completed night,
   newest first. Older nights are in the history.
+- `GET /play/users/:userId/meets/around?groupId=&date=YYYY-MM-DD` answers
+  `{ meets, records }`: one group's nights (any status) from the day before
+  `date` to the day after, newest first, and the history records of the
+  completed ones. The client keeps those on `date` in each night's own time
+  zone. The session wizard asks for it when you record a night older than the
+  session list holds, to warn about one already recorded that day. A group the
+  account is not in answers none; an invalid day answers `400`.
 - `GET /play/users/:userId/history` still answers every night at once, for the
   previous frontend release while both deploy. It is deprecated and is removed
   in a later release.

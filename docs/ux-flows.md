@@ -19,7 +19,9 @@ their answer and lets them change it while the night is scheduled or live.
 The session list (`GET /play/users/:userId/meets`) carries the caller's own
 `myRsvpStatus` for that. It holds every open night, the last 30 days, and each
 group's last completed night; older nights are read from History a page at a
-time ([API](api.md#history)).
+time ([API](api.md#history)). When you record a night older than that, the
+session wizard asks the server for the group's nights around that day, so it
+still warns about one already recorded.
 
 People hear about a game night in their inbox: when it is planned (everyone
 invited), started or finished (everyone who did not decline), or cancelled

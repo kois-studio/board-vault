@@ -40,6 +40,7 @@ import {
     liveSessionCreatedSchema,
     meetDetailsSchema,
     meetSchema,
+    meetsAroundSchema,
     mergeTagResultSchema,
     privacySettingsSchema,
     publicUserSchema,
@@ -113,6 +114,7 @@ import type {
     HomePreferences,
     InvitationWithAccountsData,
     InvitationWithExtraData,
+    MeetsAroundType,
     MeetType,
     MeetWithAttendeesAndGamesType,
     NameTranslationsType,
@@ -795,6 +797,13 @@ export class Api {
         return this.http
             .get<HistorySummaryType>(`${this.url}/play/users/${userId}/history/summary`, { params })
             .pipe(map((response) => historySummarySchema.parse(response)))
+    }
+
+    /** One group's nights around `date` (YYYY-MM-DD), for a day older than `getUserMeets` holds (#252). */
+    getMeetsAround(userId: number, groupId: number, date: string) {
+        return this.http
+            .get<MeetsAroundType>(`${this.url}/play/users/${userId}/meets/around`, { params: { groupId, date } })
+            .pipe(map((response) => meetsAroundSchema.parse(response)))
     }
 
     /** `context`: see `withoutReadRetry` for a quiet refresh. */

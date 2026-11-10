@@ -4697,6 +4697,62 @@
         ]
       }
     },
+    "/play/users/{userId}/meets/around": {
+      "get": {
+        "operationId": "PlayController_getMeetsAround",
+        "parameters": [
+          {
+            "name": "userId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "groupId",
+            "required": true,
+            "in": "query",
+            "description": "The group whose nights to read.",
+            "schema": {
+              "example": 7,
+              "type": "number"
+            }
+          },
+          {
+            "name": "date",
+            "required": true,
+            "in": "query",
+            "description": "A calendar day, YYYY-MM-DD.",
+            "schema": {
+              "example": "2026-09-20",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The nights, newest first, and the records of the completed ones",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MeetsAroundDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "One group's game nights from the day before a date to the day after, for nights older than the list keeps (#252)",
+        "tags": [
+          "play"
+        ]
+      }
+    },
     "/profile/users/{userId}": {
       "get": {
         "deprecated": false,
@@ -11010,6 +11066,29 @@
           "timezone",
           "myRsvpStatus",
           "gamesToBring"
+        ]
+      },
+      "MeetsAroundDto": {
+        "type": "object",
+        "properties": {
+          "meets": {
+            "description": "The group's nights from the day before to the day after, newest first; keep those on the day in each night's time zone.",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/MeetDto"
+            }
+          },
+          "records": {
+            "description": "The completed ones among them, with their games and players.",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/HistoryRecordDto"
+            }
+          }
+        },
+        "required": [
+          "meets",
+          "records"
         ]
       },
       "UserSelfDto": {

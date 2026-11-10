@@ -114,6 +114,7 @@ describe('LogSessionWizardComponent games step', () => {
                         correctSession: vi.fn(),
                         getSessionRecording: vi.fn().mockReturnValue(of(recording)),
                         getGameView: vi.fn().mockReturnValue(of({ gameData: nekoSyndicate })),
+                        getMeetsAround: vi.fn().mockReturnValue(of({ meets: [], records: [] })),
                     },
                 },
             ],
@@ -419,6 +420,53 @@ describe('LogSessionWizardComponent games step', () => {
         fixture.detectChanges()
         expect(component.canProceedToNextStep()).toBe(false)
         expect((fixture.nativeElement as HTMLElement).querySelector('a[href="/sessions/5"]')?.textContent).toContain('Open it')
+    })
+
+    it('asks the server for the nights on a day older than the session list holds, and names their games (#252)', async () => {
+        await setup([])
+        const getMeetsAround = TestBed.inject(Api).getMeetsAround as unknown as ReturnType<typeof vi.fn>
+        const night = (id: number, meetDate: string) => ({
+            id,
+            groupId: group.id,
+            createdBy: 1,
+            meetDate,
+            status: 'completed',
+            timezone: 'UTC',
+        })
+        getMeetsAround.mockReturnValue(
+            of({
+                // The server answers the day before to the day after; only the chosen day is shown.
+                meets: [night(41, '2026-01-16T19:00:00.000Z'), night(40, '2026-01-15T19:00:00.000Z')],
+                records: [
+                    {
+                        meetData: night(40, '2026-01-15T19:00:00.000Z'),
+                        attendedBy: [],
+                        gamesPlayed: [{ gameData: { id: 2, title: 'Azul' } }],
+                    },
+                ],
+            }),
+        )
+        component.selectGroup(group)
+        fixture.detectChanges()
+
+        // Within the last few weeks the session list already holds every night: nothing to ask.
+        component.sessionDate.setValue(new Date().toISOString().slice(0, 10))
+        fixture.detectChanges()
+        expect(getMeetsAround).not.toHaveBeenCalled()
+
+        component.sessionDate.setValue('2026-01-15')
+        fixture.detectChanges()
+
+        const element = fixture.nativeElement as HTMLElement
+        expect(getMeetsAround).toHaveBeenCalledWith(6, group.id, '2026-01-15')
+        expect(element.querySelector('a[href="/sessions/40"]')?.textContent).toContain('Open the recorded night · Azul')
+        expect(element.querySelector('a[href="/sessions/41"]')).toBeNull()
+
+        // Another day forgets the nights of the first.
+        getMeetsAround.mockReturnValue(of({ meets: [], records: [] }))
+        component.sessionDate.setValue('2026-01-20')
+        fixture.detectChanges()
+        expect(element.querySelector('a[href="/sessions/40"]')).toBeNull()
     })
 
     it('does not silently substitute the only remaining group for an unavailable scoped group', async () => {

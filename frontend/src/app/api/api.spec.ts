@@ -189,6 +189,31 @@ describe('Api response contracts', () => {
         await expect(response).rejects.toThrow()
     })
 
+    it('reads one group’s nights around a day, and rejects an answer without its records', async () => {
+        const meet = {
+            id: 40,
+            groupId: 3,
+            createdBy: 1,
+            meetDate: '2026-01-15T19:00:00.000Z',
+            isConfirmed: true,
+            status: 'completed',
+            timezone: 'UTC',
+            notes: null,
+        }
+        const response = firstValueFrom(api.getMeetsAround(7, 3, '2026-01-15'))
+        const request = http.expectOne((req) => req.url === `${environment.apiUrl}/play/users/7/meets/around`)
+
+        expect(request.request.urlWithParams).toBe(`${environment.apiUrl}/play/users/7/meets/around?groupId=3&date=2026-01-15`)
+        request.flush({ meets: [meet], records: [] })
+
+        await expect(response).resolves.toEqual({ meets: [meet], records: [] })
+
+        const broken = firstValueFrom(api.getMeetsAround(7, 3, '2026-01-15'))
+        http.expectOne((req) => req.url === `${environment.apiUrl}/play/users/7/meets/around`).flush({ meets: [meet] })
+
+        await expect(broken).rejects.toThrow()
+    })
+
     it('reads canonical session details from the member-scoped session endpoint', async () => {
         const response = firstValueFrom(api.getSessionDetailsById(12))
         const request = http.expectOne(`${environment.apiUrl}/sessions/12`)

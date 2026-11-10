@@ -1030,6 +1030,22 @@ describe('DatabaseService logging', () => {
         expect(unbounded.args).toEqual([7, 7, 7, 7, 7, 7])
     })
 
+    it('reads one group’s nights from the day before a date to the day after, only for a member (#252)', async () => {
+        const service = new DatabaseService({} as ConfigService)
+        const execute = vi.fn().mockResolvedValue({ rows: [[11], [10]] })
+
+        ;(service as unknown as { tursoClient: { execute: typeof execute } }).tursoClient = { execute }
+
+        await expect(service.sessions.getGroupMeetIdsAround(7, 3, '2026-09-20')).resolves.toEqual([11, 10])
+        const { sql, args } = execute.mock.calls[0]![0] as { sql: string; args: Array<unknown> }
+
+        expect(args).toEqual([7, 3, '2026-09-20', '2026-09-20', 50])
+        expect(sql).toContain('INNER JOIN GroupMembership gm ON gm.groupId = m.groupId AND gm.accountId = ?')
+        expect(sql).toContain("datetime(m.meetDate) >= datetime(?, '-1 day')")
+        expect(sql).toContain("datetime(m.meetDate) < datetime(?, '+2 days')")
+        expect(sql).toContain('LIMIT ?')
+    })
+
     it('requires a session organizer to remain a member of the private group', async () => {
         const service = new DatabaseService({} as ConfigService)
         const execute = vi.fn().mockResolvedValue({ rows: [] })
