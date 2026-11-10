@@ -42,12 +42,11 @@ export class CollectionService {
 
     @LogFeature(new Logger('CollectionService'))
     async getGamesOwnedByUser(userId: number, locale: Locale): Promise<Array<OwnedGameCompleteDto>> {
-        const gamesOwned = await this.gamesOwnedService.getGamesOwnedByAccountId(userId)
-        const games = await Promise.all(gamesOwned.map(async game => this.gamesService.getGameById(game.gameId)))
-        const [titled, ownedTitles] = await Promise.all([
-            this.gameTranslationService.withTitles(games, locale),
+        const [gamesOwned, ownedTitles] = await Promise.all([
+            this.gamesOwnedService.getGamesOwnedByAccountId(userId),
             this.databaseService.collection.getOwnedTitlesByAccountId(userId, locale),
         ])
+        const titled = await this.gameTranslationService.withTitles(await this.gamesInOrder(gamesOwned.map(game => game.gameId)), locale)
         // ADR-0025 rule 1: a copy shows the title of the edition its owner said they own.
         const copies = new Map(ownedTitles.rows.map(row => [Number(row[0]), row]))
 
@@ -59,6 +58,16 @@ export class CollectionService {
                 ? { ...game, ownedEditionId }
                 : { ...game, title: String(copy?.[2]), titleLanguage: String(copy?.[3]), ownedEditionId }
         })
+    }
+
+    /**
+     * The games behind a list of ids, in the list's order, read in one query instead of one per game (#251).
+     * An id with no game is left out.
+     */
+    private async gamesInOrder(gameIds: Array<number>): Promise<Array<GameDto>> {
+        const games = await this.gamesService.getGamesByIds(gameIds)
+
+        return gameIds.flatMap(gameId => games.get(gameId) ?? [])
     }
 
     /** The editions of a game, the primary one first, for choosing which one a copy is. */
@@ -129,29 +138,29 @@ export class CollectionService {
 
     @LogFeature(new Logger('CollectionService'))
     async getGameViewByUserId(userId: number, gameId: number, locale: Locale): Promise<GameViewDto> {
-        // Step 1: Get each part of data needed in the view
-        const gameData = await this.gamesService.getGameById(gameId)
-        const ownedGameData = await this.gamesOwnedService.isGameIdOwnedByAccountId(userId, gameId, false)
-        const wishlistGameData = await this.wishlistService.isGameWishlisted(userId, gameId)
-        const editions = await this.getGameEditions(gameId)
-        // reviews
-        const myReview = await this.reviewsService.getSafeGameReviewsById(userId, gameId)
-        const avgGroupsRating = await this.reviewsService.getAvgGroupsRating(userId, gameId)
-        const avgGlobalRating = await this.reviewsService.getAvgGlobalRating(gameId)
-
-        // Similar games: the ones sharing the most tags with this one
-        const similarGameIds = await this.gamesService.getSimilarGameIds(gameId)
-        const similarGames = await Promise.all(similarGameIds.map(id => this.gamesService.getSafeGameById(id)))
-        const similarGamesFiltered = similarGames.filter(Boolean) as Array<GameDto>
+        // Step 1: every part of the view is read at once; none needs another (#251).
+        const [gameData, ownedGameData, wishlistGameData, editions, myReview, avgGroupsRating, avgGlobalRating, similarGames, tagRows] =
+            await Promise.all([
+                this.gamesService.getGameById(gameId),
+                this.gamesOwnedService.isGameIdOwnedByAccountId(userId, gameId, false),
+                this.wishlistService.isGameWishlisted(userId, gameId),
+                this.getGameEditions(gameId),
+                this.reviewsService.getSafeGameReviewsById(userId, gameId),
+                this.reviewsService.getAvgGroupsRating(userId, gameId),
+                this.reviewsService.getAvgGlobalRating(gameId),
+                // Similar games: the ones sharing the most tags with this one
+                this.gamesService.getSimilarGameIds(gameId).then(ids => this.gamesInOrder(ids)),
+                this.databaseService.games.getGameTagNames(gameId, locale),
+            ])
 
         // Tags, in the reader's language, by category and then name
         const compare = compareNames(locale)
-        const tags = (await this.databaseService.games.getGameTagNames(gameId, locale)).rows
+        const tags = tagRows.rows
             .map(row => ({ tag: String(row['name']), category: String(row['categoryName']) }))
             .sort((a, b) => compare(a.category, b.category) || compare(a.tag, b.tag))
 
-        // Step 2: Construct the GameView
-        const [gameWithTitles] = await this.gameTranslationService.withTitles([gameData], locale)
+        // Step 2: Construct the GameView. The game and the similar ones get their titles together.
+        const [gameWithTitles, ...similarWithTitles] = await this.gameTranslationService.withTitles([gameData, ...similarGames], locale)
         // Rule 1 for "your copy": the title of the edition the reader owns, else the one the game shows.
         const ownedEdition = editions.find(edition => edition.id === ownedGameData?.editionId)
 
@@ -180,7 +189,7 @@ export class CollectionService {
                 avgGlobalRating,
             },
             editions,
-            similarGames: await this.gameTranslationService.withTitles(similarGamesFiltered, locale),
+            similarGames: similarWithTitles,
         }
     }
 
@@ -252,7 +261,7 @@ export class CollectionService {
     @LogFeature(new Logger('CollectionService'))
     async getReviewsOfUser(userId: number, locale: Locale): Promise<Array<GameReviewWithGameDataDto>> {
         const reviews = await this.reviewsService.getUserReviews(userId)
-        const games = await Promise.all(reviews.map(async review => this.gamesService.getGameById(review.gameId)))
+        const games = await this.gamesInOrder(reviews.map(review => review.gameId))
         const titled = new Map((await this.gameTranslationService.withTitles(games, locale)).map(game => [game.id, game]))
 
         return reviews.flatMap(review => {
@@ -273,7 +282,7 @@ export class CollectionService {
     @LogFeature(new Logger('CollectionService'))
     async getUserWishlist(userId: number, locale: Locale): Promise<Array<GameCompleteDto>> {
         const wishlist = await this.wishlistService.getWishlistByAccountId(userId)
-        const games = await Promise.all(wishlist.map(async gameId => this.gamesService.getGameById(gameId)))
+        const games = await this.gamesInOrder(wishlist)
 
         return this.gameTranslationService.withTitles(games, locale)
     }
@@ -281,7 +290,7 @@ export class CollectionService {
     @LogFeature(new Logger('CollectionService'))
     async getUserCollectionActivities(userId: number, locale: Locale): Promise<Array<CollectionActivityWithGameDataDto>> {
         const activities = await this.collectionActivityService.getUserCollectionActivities(userId)
-        const games = await Promise.all(activities.map(async activity => this.gamesService.getGameById(activity.gameId)))
+        const games = await this.gamesInOrder(activities.map(activity => activity.gameId))
         const titled = new Map((await this.gameTranslationService.withTitles(games, locale)).map(game => [game.id, game]))
 
         return activities.flatMap(activity => {

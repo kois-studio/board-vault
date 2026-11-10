@@ -70,6 +70,13 @@ export class GroupQueries {
         })
     }
 
+    getGroupsByIds(ids: Array<number>) {
+        return this.database.execute({
+            sql: `SELECT * FROM UserGroup WHERE id IN (${ids.map(() => '?').join(', ')})`,
+            args: ids,
+        })
+    }
+
     getGroupByName(name: string) {
         return this.database.execute({
             sql: 'SELECT * FROM UserGroup WHERE name = ?',
@@ -587,6 +594,32 @@ export class GroupQueries {
         })
     }
 
+    /** What every person of a group owns, in one query: `getGroupPersonOwnership` for all of them, the person's id first. */
+    getGroupPeopleOwnership(groupId: number) {
+        return this.database.execute({
+            sql: `
+                SELECT o.groupPersonId, o.gameId, o.status, o.source, o.enteredByAccountId,
+                       o.confirmedByAccountId, o.createdAt, o.updatedAt, NULL, NULL
+                FROM GroupPersonGameOwnership o
+                INNER JOIN GroupPerson gp ON gp.id = o.groupPersonId AND gp.groupId = ?
+                UNION ALL
+                SELECT gp.id, og.gameId, 'asserted', 'account_collection', gp.accountId,
+                       NULL, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, oe.title, oe.languageCode
+                FROM GroupPerson gp
+                INNER JOIN OwnedGame og ON og.accountId = gp.accountId
+                LEFT JOIN GameEdition oe ON oe.id = og.editionId AND oe.gameId = og.gameId
+                WHERE gp.groupId = ? AND gp.kind = 'linked'
+                  AND NOT EXISTS (
+                      SELECT 1
+                      FROM GroupPersonGameOwnership existing
+                      WHERE existing.groupPersonId = gp.id AND existing.gameId = og.gameId
+                  )
+                ORDER BY 1 ASC, 2 ASC
+            `,
+            args: [groupId, groupId],
+        })
+    }
+
     upsertGroupPersonOwnership(
         groupPersonId: number,
         gameId: number,
@@ -622,6 +655,19 @@ export class GroupQueries {
                 ORDER BY p.gameId ASC
             `,
             args: [groupId, groupPersonId],
+        })
+    }
+
+    /** Every person's game preferences in a group, in one query, the person's id first. */
+    getGroupPeoplePreferences(groupId: number) {
+        return this.database.execute({
+            sql: `
+                SELECT p.groupPersonId, p.gameId, p.preference, p.source, p.enteredByAccountId, p.createdAt, p.updatedAt
+                FROM GroupPersonGamePreference p
+                INNER JOIN GroupPerson gp ON gp.id = p.groupPersonId AND gp.groupId = ?
+                ORDER BY p.groupPersonId ASC, p.gameId ASC
+            `,
+            args: [groupId],
         })
     }
 

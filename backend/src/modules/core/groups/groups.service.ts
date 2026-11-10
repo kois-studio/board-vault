@@ -59,6 +59,17 @@ export class GroupsService {
         return group
     }
 
+    /** Many groups in one query, keyed by id. Missing ids are left out. */
+    async getGroupsByIds(ids: Array<number>): Promise<Map<number, GroupDto>> {
+        const uniqueIds = [...new Set(ids)]
+
+        if (uniqueIds.length === 0) return new Map()
+
+        const groups = this._parseResultSet(await this.databaseService.groups.getGroupsByIds(uniqueIds))
+
+        return new Map(groups.map(group => [group.id, group]))
+    }
+
     async getGroupByName(name: string): Promise<GroupDto> {
         this.LOGGER.log('Getting group by name')
         const resultSet = await this.databaseService.groups.getGroupByName(name)

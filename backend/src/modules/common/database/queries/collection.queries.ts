@@ -37,26 +37,19 @@ export class CollectionQueries {
         const transaction = await this.database.transaction('write')
 
         try {
-            const removed: Array<number> = []
-            const added: Array<number> = []
-
-            for (const gameId of new Set(gamesToRemove)) {
-                const result = await transaction.execute({
-                    sql: 'DELETE FROM OwnedGame WHERE accountId = ? AND gameId = ?',
-                    args: [accountId, gameId],
-                })
-
-                if (result.rowsAffected === 1) removed.push(gameId)
-            }
-
-            for (const gameId of new Set(gamesToAdd)) {
-                const result = await transaction.execute({
+            const toRemove = [...new Set(gamesToRemove)]
+            const toAdd = [...new Set(gamesToAdd)]
+            // Every row in one round trip instead of one per game (#251), removals first as before.
+            const statements = [
+                ...toRemove.map(gameId => ({ sql: 'DELETE FROM OwnedGame WHERE accountId = ? AND gameId = ?', args: [accountId, gameId] })),
+                ...toAdd.map(gameId => ({
                     sql: 'INSERT OR IGNORE INTO OwnedGame (accountId, gameId) VALUES (?, ?)',
                     args: [accountId, gameId],
-                })
-
-                if (result.rowsAffected === 1) added.push(gameId)
-            }
+                })),
+            ]
+            const results = statements.length > 0 ? await transaction.batch(statements) : []
+            const removed = toRemove.filter((_gameId, index) => results[index]?.rowsAffected === 1)
+            const added = toAdd.filter((_gameId, index) => results[toRemove.length + index]?.rowsAffected === 1)
 
             await transaction.commit()
             return { added: added.filter(gameId => !removed.includes(gameId)), removed: removed.filter(gameId => !added.includes(gameId)) }

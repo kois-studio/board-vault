@@ -73,15 +73,20 @@ export class SessionsService {
     ) {}
 
     async getSessionDetails(actorAccountId: number, sessionId: number): Promise<MeetWithAttendeesAndGames> {
-        const result = await this.databaseService.sessions.getMeetDetailsByIdForAccount(sessionId, actorAccountId)
+        // The votes and bringers are read with the details; they are only returned once the details show the actor may see the session (#251).
+        const [result, gameVotes, gameBringers] = await Promise.all([
+            this.databaseService.sessions.getMeetDetailsByIdForAccount(sessionId, actorAccountId),
+            this.databaseService.sessions.getMeetGameVotes(sessionId),
+            this.databaseService.sessions.getMeetGameBringers(sessionId),
+        ])
         const session = mapMeetDetailsResult(result)
 
         if (!session) {
             throw new NotFoundException(`Session with id ${sessionId} not found`)
         }
 
-        session.gameVotes = await this.databaseService.sessions.getMeetGameVotes(sessionId)
-        session.gameBringers = await this.databaseService.sessions.getMeetGameBringers(sessionId)
+        session.gameVotes = gameVotes
+        session.gameBringers = gameBringers
 
         return session
     }

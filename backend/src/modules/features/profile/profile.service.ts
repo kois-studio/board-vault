@@ -52,14 +52,19 @@ export class ProfileService {
     @LogFeature(new Logger('ProfileService'))
     async getUserInvitations(accountId: number): Promise<Array<InvitationWithExtraData>> {
         const invitations = await this.invitationsService.getUserInvitationsReceived(accountId)
+        // Polled every minute: the groups and senders of every invitation in two queries, not two per invitation (#251).
+        const [groups, senders] = await Promise.all([
+            this.groupsService.getGroupsByIds(invitations.map(invitation => invitation.groupId)),
+            this.usersService.getPublicUsersByIds(invitations.map(invitation => invitation.fromAccountId)),
+        ])
 
-        return Promise.all(
-            invitations.map(async invitation => ({
-                ...invitation,
-                group: await this.groupsService.getGroupById(invitation.groupId),
-                fromAccount: await this.usersService.getPublicUserById(invitation.fromAccountId),
-            })),
-        )
+        return invitations.flatMap(invitation => {
+            const group = groups.get(invitation.groupId)
+            const fromAccount = senders.get(invitation.fromAccountId)
+
+            // A group or sender that is gone hides its invitation instead of failing the whole inbox.
+            return group && fromAccount ? [{ ...invitation, group, fromAccount }] : []
+        })
     }
 
     @LogFeature(new Logger('ProfileService'))

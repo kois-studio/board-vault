@@ -44,13 +44,7 @@ export class PlayService {
 
     @LogFeature(new Logger('PlayService'))
     async getRecommendations(actorAccountId: number, body: RecommendationRequestBody, locale: Locale): Promise<RecommendationsDto> {
-        const group = await this.databaseService.groups.getGroupById(body.groupId)
-
-        if (group.rows.length === 0) {
-            throw new NotFoundException(`Group with id ${body.groupId} not found`)
-        }
-
-        const memberIds = await this.databaseService.groups.getGroupMemberIds(body.groupId)
+        const memberIds = await this.existingGroupMemberIds(body.groupId)
 
         if (!memberIds.includes(actorAccountId)) {
             throw new ForbiddenException('You must belong to the group to get recommendations')
@@ -124,19 +118,15 @@ export class PlayService {
         body: ParticipantRecommendationRequestBody,
         locale: Locale,
     ): Promise<RecommendationsDto> {
-        const group = await this.databaseService.groups.getGroupById(body.groupId)
-
-        if (group.rows.length === 0) {
-            throw new NotFoundException(`Group with id ${body.groupId} not found`)
-        }
-
-        const memberIds = await this.databaseService.groups.getGroupMemberIds(body.groupId)
+        const [memberIds, people] = await Promise.all([
+            this.existingGroupMemberIds(body.groupId),
+            this.databaseService.groups.getGroupPeople(body.groupId),
+        ])
 
         if (!memberIds.includes(actorAccountId)) {
             throw new ForbiddenException('You must belong to the group to get recommendations')
         }
 
-        const people = await this.databaseService.groups.getGroupPeople(body.groupId)
         const activePersonIds = new Set(people.rows.filter(row => row[10] === 'member').map(row => Number(row[0])))
 
         if (body.groupPersonIds.some(personId => !activePersonIds.has(personId))) {
@@ -208,17 +198,15 @@ export class PlayService {
         actorAccountId: number,
         body: ParticipantRecommendationFeedbackBody,
     ): Promise<RecommendationFeedbackDto> {
-        const group = await this.databaseService.groups.getGroupById(body.groupId)
-
-        if (group.rows.length === 0) throw new NotFoundException(`Group with id ${body.groupId} not found`)
-
-        const memberIds = await this.databaseService.groups.getGroupMemberIds(body.groupId)
+        const [memberIds, people] = await Promise.all([
+            this.existingGroupMemberIds(body.groupId),
+            this.databaseService.groups.getGroupPeople(body.groupId),
+        ])
 
         if (!memberIds.includes(actorAccountId)) {
             throw new ForbiddenException('You must belong to the group to submit recommendation feedback')
         }
 
-        const people = await this.databaseService.groups.getGroupPeople(body.groupId)
         const activePersonIds = new Set(people.rows.filter(row => row[10] === 'member').map(row => Number(row[0])))
 
         if (body.participantIds.some(personId => !activePersonIds.has(personId))) {
@@ -240,6 +228,23 @@ export class PlayService {
         })
 
         return { success: true }
+    }
+
+    /**
+     * The member account ids of a group, read together with the check that the group exists (404 when
+     * it is gone) instead of one after the other (#251). Every recommendation route starts with both.
+     */
+    private async existingGroupMemberIds(groupId: number): Promise<Array<number>> {
+        const [group, memberIds] = await Promise.all([
+            this.databaseService.groups.getGroupById(groupId),
+            this.databaseService.groups.getGroupMemberIds(groupId),
+        ])
+
+        if (group.rows.length === 0) {
+            throw new NotFoundException(`Group with id ${groupId} not found`)
+        }
+
+        return memberIds
     }
 
     private async _getNoResultReason(body: RecommendationRequestBody): Promise<NoResultReasonDto> {
@@ -375,13 +380,7 @@ export class PlayService {
 
     @LogFeature(new Logger('PlayService'))
     async createRecommendationFeedback(actorAccountId: number, body: RecommendationFeedbackBody): Promise<RecommendationFeedbackDto> {
-        const group = await this.databaseService.groups.getGroupById(body.groupId)
-
-        if (group.rows.length === 0) {
-            throw new NotFoundException(`Group with id ${body.groupId} not found`)
-        }
-
-        const memberIds = await this.databaseService.groups.getGroupMemberIds(body.groupId)
+        const memberIds = await this.existingGroupMemberIds(body.groupId)
 
         if (!memberIds.includes(actorAccountId)) {
             throw new ForbiddenException('You must belong to the group to submit recommendation feedback')
@@ -410,13 +409,7 @@ export class PlayService {
 
     @LogFeature(new Logger('PlayService'))
     async getRecommendationSignals(actorAccountId: number, groupId: number): Promise<RecommendationSignalsDto> {
-        const group = await this.databaseService.groups.getGroupById(groupId)
-
-        if (group.rows.length === 0) {
-            throw new NotFoundException(`Group with id ${groupId} not found`)
-        }
-
-        const memberIds = await this.databaseService.groups.getGroupMemberIds(groupId)
+        const memberIds = await this.existingGroupMemberIds(groupId)
 
         if (!memberIds.includes(actorAccountId)) {
             throw new ForbiddenException('You must belong to the group to view recommendation signals')

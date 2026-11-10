@@ -45,6 +45,39 @@ describe('ProfileService invitation acceptance', () => {
         })
     })
 
+    it('reads every invitation group and sender in one call each, and hides an invitation whose group or sender is gone (#251)', async () => {
+        const invitation = (id: number, groupId: number, fromAccountId: number) => ({ id, groupId, fromAccountId, toAccountId: 8 })
+        const groupsService = {
+            getGroupsByIds: vi.fn().mockResolvedValue(new Map([[12, { id: 12, name: 'Fridays' }]])),
+        }
+        const usersService = {
+            getPublicUsersByIds: vi.fn().mockResolvedValue(new Map([[7, { id: 7, username: 'friend' }]])),
+        }
+        const service = new ProfileService(
+            usersService as unknown as UsersService,
+            {} as NotificationsService,
+            groupsService as unknown as GroupsService,
+            {
+                getUserInvitationsReceived: vi
+                    .fn()
+                    .mockResolvedValue([invitation(1, 12, 7), invitation(2, 99, 7), invitation(3, 12, 98), invitation(4, 12, 7)]),
+            } as unknown as InvitationsService,
+            {} as DatabaseService,
+            {} as GameProposalService,
+            fakeActivityNotifier(),
+        )
+
+        const invitations = await service.getUserInvitations(8)
+
+        expect(invitations.map(({ id, group, fromAccount }) => [id, group.name, fromAccount.username])).toEqual([
+            [1, 'Fridays', 'friend'],
+            [4, 'Fridays', 'friend'],
+        ])
+        expect(groupsService.getGroupsByIds).toHaveBeenCalledTimes(1)
+        expect(groupsService.getGroupsByIds).toHaveBeenCalledWith([12, 99, 12, 12])
+        expect(usersService.getPublicUsersByIds).toHaveBeenCalledTimes(1)
+    })
+
     it('denies accepting an invitation addressed to another user', async () => {
         const invitationsService = {
             getInvitationById: vi.fn().mockResolvedValue({ id: 1, groupId: 12, fromAccountId: 7, toAccountId: 8 }),
