@@ -69,7 +69,6 @@ describe('notifications (e2e)', () => {
         const clerk = app.get(ClerkIdentityService)
 
         clerk.deleteClerkUser = async () => undefined
-        clerk.revokeInvitationsFrom = async () => ({ revoked: 0, failed: 0 })
         database = createClient({ url: `file:${testDatabasePath}` })
     })
 

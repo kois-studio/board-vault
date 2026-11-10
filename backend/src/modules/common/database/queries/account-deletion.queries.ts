@@ -28,13 +28,12 @@ export class AccountDeletionQueries {
         try {
             const account = await transaction.execute({
                 // The name as ActivityNotifier wrote it into other people's notifications.
-                sql: "SELECT email, COALESCE(NULLIF(TRIM(displayName), ''), username) AS name FROM Account WHERE id = ?",
+                sql: "SELECT id, COALESCE(NULLIF(TRIM(displayName), ''), username) AS name FROM Account WHERE id = ?",
                 args: [accountId],
             })
-            const email = account.rows[0]?.email
             const name = String(account.rows[0]?.name ?? '')
 
-            if (email === undefined) {
+            if (account.rows.length === 0) {
                 await transaction.commit()
                 return { deletedGroupIds: [] }
             }
@@ -85,18 +84,13 @@ export class AccountDeletionQueries {
                 {
                     sql: `
                         UPDATE GroupPerson
-                        SET displayName = ?, avatar = ?, claimEmail = NULL, claimExpiresAt = NULL, updatedAt = CURRENT_TIMESTAMP
+                        SET displayName = ?, avatar = ?, updatedAt = CURRENT_TIMESTAMP
                         WHERE accountId = ?
                     `,
                     args: [DELETED_ACCOUNT_NAME, DELETED_ACCOUNT_AVATAR, accountId],
                 },
                 { sql: `DELETE FROM GroupPersonGameOwnership WHERE groupPersonId IN (${linkedPeople})`, args: [accountId] },
                 { sql: `DELETE FROM GroupPersonGamePreference WHERE groupPersonId IN (${linkedPeople})`, args: [accountId] },
-                // Pending claims still addressed to their email.
-                {
-                    sql: 'UPDATE GroupPerson SET claimEmail = NULL, claimExpiresAt = NULL WHERE claimEmail = ? COLLATE NOCASE',
-                    args: [String(email)],
-                },
                 // Private data.
                 { sql: 'DELETE FROM AccountHomePreference WHERE accountId = ?', args: [accountId] },
                 { sql: 'DELETE FROM IdempotencyKey WHERE accountId = ?', args: [accountId] },
@@ -108,6 +102,7 @@ export class AccountDeletionQueries {
                 // What others were told about them ("Ana joined Fridays.") no longer names them.
                 ...(name ? [renameActorInNotifications(accountId, name, DELETED_ACCOUNT_NAME)] : []),
                 { sql: 'DELETE FROM GroupGameInterest WHERE accountId = ?', args: [accountId] },
+                // Invitations they sent or received, and with them any placeholder they were invited to claim (#277).
                 { sql: 'DELETE FROM Invitation WHERE fromAccountId = ? OR toAccountId = ?', args: [accountId, accountId] },
                 { sql: "DELETE FROM GameProposal WHERE submittedBy = ? AND status = 'pending'", args: [accountId] },
                 {

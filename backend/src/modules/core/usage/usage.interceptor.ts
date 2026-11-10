@@ -32,7 +32,6 @@ const ACTIONS: Record<string, UsageEventName | ((request: UsageRequest, response
     'POST /profile/users/:userId/proposals': 'game_proposed',
     'POST /dashboard/users/:userId/groups/create/:groupName': 'group_created',
     'POST /profile/users/:userId/invitations/:invitationId/accept': 'group_joined',
-    'POST /groups/:groupId/clerk-invitations': 'invite_sent',
     'POST /invitations/byUsername': 'invite_sent',
     'POST /sessions/scheduled': 'session_planned',
     'POST /sessions': 'session_recorded',

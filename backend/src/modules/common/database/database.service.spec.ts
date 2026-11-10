@@ -6,33 +6,15 @@ import type { ConfigService } from '@nestjs/config'
 import type { Mock } from 'vitest'
 
 describe('DatabaseService logging', () => {
-    it('expires targeted placeholder claims when a new invitation is bound', async () => {
+    it('deletes an invitation without touching any group person (#277)', async () => {
         const service = new DatabaseService({} as ConfigService)
         const execute = vi.fn().mockResolvedValue({ rowsAffected: 1 })
 
         ;(service as unknown as { tursoClient: { execute: typeof execute } }).tursoClient = { execute }
 
-        await service.groups.setGroupPersonClaimEmail(21, 12, 'Ana@Example.com')
-
-        expect(execute).toHaveBeenCalledWith({
-            sql: expect.stringContaining("claimExpiresAt = datetime('now', '+30 days')"),
-            args: ['ana@example.com', 21, 12],
-        })
-    })
-
-    it('clears a legacy invitation claim target when its invitation is deleted', async () => {
-        const service = new DatabaseService({} as ConfigService)
-        const execute = vi
-            .fn()
-            .mockResolvedValueOnce({ rows: [[12, 21]] })
-            .mockResolvedValueOnce({ rowsAffected: 1 })
-            .mockResolvedValueOnce({ rowsAffected: 1 })
-
-        ;(service as unknown as { tursoClient: { execute: typeof execute } }).tursoClient = { execute }
-
         await expect(service.invitations.deleteInvitationById(99)).resolves.toEqual({ rowsAffected: 1 })
-        expect(execute).toHaveBeenNthCalledWith(3, expect.objectContaining({ args: [21, 12, 21] }))
-        expect(execute).toHaveBeenNthCalledWith(3, expect.objectContaining({ sql: expect.stringContaining('claimExpiresAt = NULL') }))
+        expect(execute).toHaveBeenCalledTimes(1)
+        expect(execute).toHaveBeenCalledWith({ sql: 'DELETE FROM Invitation WHERE id = ?', args: [99] })
     })
 
     it('logs only the parameterized SQL template, never bound values', async () => {
@@ -865,7 +847,7 @@ describe('DatabaseService logging', () => {
 
         await expect(service.invitations.acceptInvitationAtomically(42, 7, 12)).resolves.toEqual({ success: true, joined: true })
         expect(transaction.execute).toHaveBeenNthCalledWith(1, {
-            sql: expect.stringContaining('SELECT id'),
+            sql: expect.stringContaining('SELECT i.id, i.groupPersonId'),
             args: [42, 12, 7],
         })
         expect(transaction.execute).toHaveBeenNthCalledWith(2, {
@@ -889,6 +871,49 @@ describe('DatabaseService logging', () => {
         expect(transaction.commit).toHaveBeenCalledTimes(1)
         expect(transaction.rollback).not.toHaveBeenCalled()
         expect(transaction.close).toHaveBeenCalledTimes(1)
+    })
+
+    it('keeps an accepted invitation that suggests a claimable placeholder as its claim ticket (#277)', async () => {
+        const service = new DatabaseService({} as ConfigService)
+        const transaction = {
+            execute: vi
+                .fn()
+                .mockResolvedValueOnce({ rows: [[42, 21]] })
+                .mockResolvedValueOnce({ rowsAffected: 1 })
+                .mockResolvedValueOnce({ rowsAffected: 1 })
+                .mockResolvedValueOnce({ rows: [[1]] }),
+            commit: vi.fn().mockResolvedValue(undefined),
+            rollback: vi.fn().mockResolvedValue(undefined),
+            close: vi.fn(),
+        }
+
+        ;(service as unknown as { tursoClient: unknown }).tursoClient = {
+            transaction: vi.fn().mockResolvedValue(transaction),
+        }
+
+        await expect(service.invitations.acceptInvitationAtomically(42, 7, 12)).resolves.toEqual({ success: true, joined: true })
+        expect(transaction.execute).toHaveBeenNthCalledWith(4, {
+            sql: expect.stringContaining("kind = 'placeholder' AND status = 'active' AND accountId IS NULL"),
+            args: [21, 12],
+        })
+        // No linked person is made for them (they will claim the placeholder) and the invitation stays.
+        expect(transaction.execute).toHaveBeenCalledTimes(4)
+        expect(transaction.commit).toHaveBeenCalledTimes(1)
+    })
+
+    it('authorises a claim by the invitation to the account, never by an email (#277)', async () => {
+        const service = new DatabaseService({} as ConfigService)
+        const execute = vi.fn().mockResolvedValue({ rows: [] })
+
+        ;(service as unknown as { tursoClient: { execute: typeof execute } }).tursoClient = { execute }
+
+        await service.groups.getClaimableGroupPersonIds(12, 7)
+
+        expect(execute).toHaveBeenCalledWith({
+            sql: expect.stringContaining('ci.groupPersonId = gp.id AND ci.toAccountId = ?'),
+            args: [12, 7],
+        })
+        expect(execute.mock.calls[0]![0].sql).not.toContain('claimEmail')
     })
 
     it('does not resolve soft-deleted accounts for username invitations', async () => {
@@ -1071,69 +1096,6 @@ describe('DatabaseService logging', () => {
 
         expect(transaction.rollback).toHaveBeenCalledTimes(1)
         expect(transaction.commit).not.toHaveBeenCalled()
-        expect(transaction.close).toHaveBeenCalledTimes(1)
-    })
-
-    it('joins a provisioned Clerk account only to the inviter-owned group', async () => {
-        const service = new DatabaseService({} as ConfigService)
-        const transaction = {
-            execute: vi
-                .fn()
-                .mockResolvedValueOnce({ rows: [[12]] })
-                .mockResolvedValueOnce({ rowsAffected: 1 })
-                .mockResolvedValueOnce({ rowsAffected: 1 })
-                .mockResolvedValueOnce({ rowsAffected: 1 }),
-            commit: vi.fn().mockResolvedValue(undefined),
-            rollback: vi.fn().mockResolvedValue(undefined),
-            close: vi.fn(),
-        }
-
-        ;(service as unknown as { tursoClient: unknown }).tursoClient = {
-            transaction: vi.fn().mockResolvedValue(transaction),
-        }
-
-        await service.groups.joinGroupFromClerkInvitation(9, { groupId: 12, inviterAccountId: 7, version: 1 })
-
-        expect(transaction.execute).toHaveBeenNthCalledWith(1, {
-            sql: 'SELECT id FROM UserGroup WHERE id = ? AND createdBy = ?',
-            args: [12, 7],
-        })
-        expect(transaction.execute).toHaveBeenNthCalledWith(2, {
-            sql: 'INSERT OR IGNORE INTO GroupMembership (accountId, groupId) VALUES (?, ?)',
-            args: [9, 12],
-        })
-        expect(transaction.execute).toHaveBeenNthCalledWith(3, {
-            sql: expect.stringContaining('INSERT INTO GroupActivity'),
-            args: [12, 9, 'member_joined', null, null, null, null, '{}'],
-        })
-        expect(transaction.execute).toHaveBeenNthCalledWith(4, {
-            sql: expect.stringContaining('INSERT INTO GroupPerson'),
-            args: [12, 12, 9, 12, 9],
-        })
-        expect(transaction.commit).toHaveBeenCalledTimes(1)
-        expect(transaction.close).toHaveBeenCalledTimes(1)
-    })
-
-    it('rolls back a Clerk invitation join when the group is no longer available', async () => {
-        const service = new DatabaseService({} as ConfigService)
-        const transaction = {
-            execute: vi.fn().mockResolvedValueOnce({ rows: [] }),
-            commit: vi.fn().mockResolvedValue(undefined),
-            rollback: vi.fn().mockResolvedValue(undefined),
-            close: vi.fn(),
-        }
-
-        ;(service as unknown as { tursoClient: unknown }).tursoClient = {
-            transaction: vi.fn().mockResolvedValue(transaction),
-        }
-
-        await expect(service.groups.joinGroupFromClerkInvitation(9, { groupId: 404, inviterAccountId: 7, version: 1 })).rejects.toThrow(
-            'The group invitation is no longer valid',
-        )
-
-        expect(transaction.execute).toHaveBeenCalledTimes(1)
-        expect(transaction.commit).not.toHaveBeenCalled()
-        expect(transaction.rollback).toHaveBeenCalledTimes(1)
         expect(transaction.close).toHaveBeenCalledTimes(1)
     })
 

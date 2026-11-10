@@ -37,11 +37,6 @@ export function validateEnv(): void {
             err.push('Example value: "https://board-vault.com"\n')
         }
 
-        if (!process.env.BOARD_VAULT_CLERK_INVITATION_REDIRECT_URL) {
-            err.push('Missing in production environment: BOARD_VAULT_CLERK_INVITATION_REDIRECT_URL')
-            err.push('Example value: "https://board-vault.com/register"\n')
-        }
-
         if (!process.env.USAGE_PSEUDONYM_SECRET?.trim()) {
             err.push('Missing in production environment: USAGE_PSEUDONYM_SECRET')
             err.push('A long random value (openssl rand -hex 32). It turns account ids into usage pseudonyms (ADR-0021).\n')

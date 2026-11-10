@@ -64,7 +64,6 @@ describe('usage analytics (e2e)', () => {
         app = moduleFixture.createNestApplication()
         await app.init()
         app.get(ClerkIdentityService).deleteClerkUser = async () => undefined
-        app.get(ClerkIdentityService).revokeInvitationsFrom = async () => ({ revoked: 0, failed: 0 })
     })
 
     afterAll(async () => {
@@ -189,21 +188,6 @@ describe('usage analytics (e2e)', () => {
         await http().get('/internal/daily-maintenance').set('Authorization', 'Bearer test-cron-secret').expect(200)
         expect(sql('SELECT SUM(events) FROM UsageDaily;')).toBe('3')
         expect(sql('PRAGMA table_info(UsageDaily);')).not.toContain('pseudonym')
-    })
-
-    it('forgets the email of a group person claim once it has expired, and keeps the ones still open (#154)', async () => {
-        sql(`
-            INSERT INTO GroupPerson (id, groupId, kind, status, displayName, createdByAccountId, claimEmail, claimExpiresAt) VALUES
-                (20, 10, 'placeholder', 'active', 'Pedro', 2, 'pedro@example.test', datetime('now', '-1 day')),
-                (21, 10, 'placeholder', 'active', 'Lucia', 2, 'lucia@example.test', datetime('now', '+5 days'));
-        `)
-
-        const { body } = await http().get('/internal/daily-maintenance').set('Authorization', 'Bearer test-cron-secret').expect(200)
-
-        expect(body.expiredClaims).toBe(1)
-        expect(sql('SELECT id, claimEmail, claimExpiresAt IS NULL FROM GroupPerson WHERE id IN (20, 21) ORDER BY id;')).toBe(
-            '20||1\n21|lucia@example.test|0',
-        )
     })
 
     it("deletes an account's events with the account, and keeps the anonymous counts", async () => {

@@ -12,10 +12,7 @@ function createService({ cleared = true, enabled = true } = {}) {
         deleteAll: vi.fn().mockResolvedValue(true),
         isEnabled: vi.fn().mockReturnValue(enabled),
     }
-    const clerk = {
-        deleteClerkUser: vi.fn().mockResolvedValue(undefined),
-        revokeInvitationsFrom: vi.fn().mockResolvedValue({ revoked: 0, failed: 0 }),
-    }
+    const clerk = { deleteClerkUser: vi.fn().mockResolvedValue(undefined) }
     const service = new AccountDeletionService(
         fakeDatabase({
             deleteAccount,

@@ -7,6 +7,27 @@ import { activityStatements } from './group-activity.queries.js'
 import type { CreateInvitationBody, CreateInvitationByUsernameBody } from '../../../../common/types/invitation.type.js'
 import type { DatabaseService } from '../database.service.js'
 
+/**
+ * An invitation that suggested a placeholder (`groupPersonId`) is not used up when accepted: it
+ * stays as the claim ticket that lets that account, and only that account, claim the placeholder
+ * until the invitation expires (#277). Claiming, or leaving the group, uses it up. A ticket is no
+ * longer a pending invitation, so it is never listed, accepted, or declined again. Email
+ * addresses play no part.
+ */
+const IS_PENDING = (alias: string) =>
+    `(${alias}.groupPersonId IS NULL OR NOT EXISTS (SELECT 1 FROM GroupMembership pm WHERE pm.groupId = ${alias}.groupId AND pm.accountId = ${alias}.toAccountId))`
+
+/**
+ * True when the placeholder `gp` was suggested to the account bound to `?` by an invitation that
+ * has not expired. The caller still checks that the account is a member and the placeholder is
+ * active and unlinked.
+ */
+export const CLAIM_TICKET = `EXISTS (
+    SELECT 1 FROM Invitation ci
+    WHERE ci.groupId = gp.groupId AND ci.groupPersonId = gp.id AND ci.toAccountId = ?
+      AND (ci.expiresAt IS NULL OR ci.expiresAt > CURRENT_TIMESTAMP)
+)`
+
 /** Group invitations. */
 export class InvitationQueries {
     constructor(private readonly database: DatabaseService) {}
@@ -34,6 +55,7 @@ export class InvitationQueries {
             JOIN Account fa ON i.fromAccountId = fa.id AND fa.isDeleted = 0
             JOIN Account ta ON i.toAccountId = ta.id AND ta.isDeleted = 0
             WHERE i.groupId = ? AND (i.expiresAt IS NULL OR i.expiresAt > CURRENT_TIMESTAMP)
+              AND ${IS_PENDING('i')}
             `,
             args: [groupId],
         })
@@ -45,21 +67,21 @@ export class InvitationQueries {
 
     getInvitationById(id: number) {
         return this.database.execute({
-            sql: 'SELECT * FROM Invitation WHERE id = ?',
+            sql: `SELECT * FROM Invitation i WHERE i.id = ? AND ${IS_PENDING('i')}`,
             args: [id],
         })
     }
 
     getUserInvitationsReceived(accountId: number) {
         return this.database.execute({
-            sql: 'SELECT * FROM Invitation WHERE toAccountId = ? AND (expiresAt IS NULL OR expiresAt > CURRENT_TIMESTAMP)',
+            sql: `SELECT * FROM Invitation i WHERE i.toAccountId = ? AND (i.expiresAt IS NULL OR i.expiresAt > CURRENT_TIMESTAMP) AND ${IS_PENDING('i')}`,
             args: [accountId],
         })
     }
 
     getInvitationByGroupAndRecipient(groupId: number, accountId: number) {
         return this.database.execute({
-            sql: 'SELECT * FROM Invitation WHERE groupId = ? AND toAccountId = ? AND (expiresAt IS NULL OR expiresAt > CURRENT_TIMESTAMP)',
+            sql: `SELECT * FROM Invitation i WHERE i.groupId = ? AND i.toAccountId = ? AND (i.expiresAt IS NULL OR i.expiresAt > CURRENT_TIMESTAMP) AND ${IS_PENDING('i')}`,
             args: [groupId, accountId],
         })
     }
@@ -100,10 +122,11 @@ export class InvitationQueries {
         return invitedAccount
     }
 
+    /** The suggested placeholder must be someone without an account who is still in the group. Nothing is written. */
     private async assertClaimableGroupPerson(groupId: number, groupPersonId: number, accountId: number): Promise<void> {
         const result = await this.database.execute({
             sql: `
-                SELECT gp.id, a.email
+                SELECT gp.id
                 FROM GroupPerson gp
                 INNER JOIN Account a ON a.id = ? AND a.isDeleted = 0
                 WHERE gp.id = ? AND gp.groupId = ? AND gp.kind = 'placeholder'
@@ -112,49 +135,16 @@ export class InvitationQueries {
             args: [accountId, groupPersonId, groupId],
         })
 
-        const [placeholder] = result.rows
-
-        if (!placeholder) {
+        if (result.rows.length === 0) {
             throw new NotFoundException('The selected placeholder is not available for claiming')
         }
-
-        await this.database.execute({
-            sql: "UPDATE GroupPerson SET claimEmail = ?, claimExpiresAt = datetime('now', '+30 days'), updatedAt = CURRENT_TIMESTAMP WHERE id = ? AND groupId = ?",
-            args: [String(placeholder[1]).toLowerCase(), groupPersonId, groupId],
-        })
     }
 
-    async deleteInvitationById(id: number) {
-        const invitation = await this.database.execute({
-            sql: 'SELECT groupId, groupPersonId FROM Invitation WHERE id = ?',
-            args: [id],
-        })
-        const result = await this.database.execute({
+    deleteInvitationById(id: number) {
+        return this.database.execute({
             sql: 'DELETE FROM Invitation WHERE id = ?',
             args: [id],
         })
-
-        const groupPersonId = invitation.rows[0]?.[1]
-        const groupId = invitation.rows[0]?.[0]
-
-        if (result.rowsAffected === 1 && groupPersonId !== null && groupPersonId !== undefined) {
-            await this.database.execute({
-                sql: `
-                    UPDATE GroupPerson
-                    SET claimEmail = NULL, claimExpiresAt = NULL, updatedAt = CURRENT_TIMESTAMP
-                    WHERE id = ? AND groupId = ? AND kind = 'placeholder' AND accountId IS NULL
-                      AND NOT EXISTS (
-                          SELECT 1
-                          FROM Invitation
-                          WHERE groupPersonId = ?
-                            AND (expiresAt IS NULL OR expiresAt > CURRENT_TIMESTAMP)
-                      )
-                `,
-                args: [Number(groupPersonId), Number(groupId), Number(groupPersonId)],
-            })
-        }
-
-        return result
     }
 
     /** Accepts an invitation; `joined` is false when the account was already a member (the invitation is still used up). */
@@ -168,12 +158,13 @@ export class InvitationQueries {
         try {
             const invitation = await transaction.execute({
                 sql: `
-                    SELECT id, groupPersonId
-                    FROM Invitation
-                    WHERE id = ?
-                      AND groupId = ?
-                      AND toAccountId = ?
-                      AND (expiresAt IS NULL OR expiresAt > CURRENT_TIMESTAMP)
+                    SELECT i.id, i.groupPersonId
+                    FROM Invitation i
+                    WHERE i.id = ?
+                      AND i.groupId = ?
+                      AND i.toAccountId = ?
+                      AND (i.expiresAt IS NULL OR i.expiresAt > CURRENT_TIMESTAMP)
+                      AND ${IS_PENDING('i')}
                 `,
                 args: [invitationId, groupId, accountId],
             })
@@ -186,6 +177,7 @@ export class InvitationQueries {
                 sql: 'INSERT OR IGNORE INTO GroupMembership (accountId, groupId) VALUES (?, ?)',
                 args: [accountId, groupId],
             })
+
             // Only a new membership is a join worth a history entry (ADR-0020).
             for (const statement of activityStatements(
                 { groupId, actorAccountId: accountId, type: 'member_joined' },
@@ -194,7 +186,22 @@ export class InvitationQueries {
                 await transaction.execute(statement)
             }
 
-            if (invitation.rows[0]?.[1] === null || invitation.rows[0]?.[1] === undefined) {
+            const suggestedPersonId = invitation.rows[0]?.[1]
+            // The suggested placeholder may have been claimed, archived or removed since the invitation was sent.
+            const keepsTicket =
+                suggestedPersonId !== null &&
+                suggestedPersonId !== undefined &&
+                (
+                    await transaction.execute({
+                        sql: `
+                            SELECT 1 FROM GroupPerson
+                            WHERE id = ? AND groupId = ? AND kind = 'placeholder' AND status = 'active' AND accountId IS NULL
+                        `,
+                        args: [Number(suggestedPersonId), groupId],
+                    })
+                ).rows.length === 1
+
+            if (!keepsTicket) {
                 await transaction.execute({
                     sql: `
                         INSERT INTO GroupPerson (groupId, accountId, kind, status, displayName, avatar, createdByAccountId, claimedAt)
@@ -212,18 +219,16 @@ export class InvitationQueries {
                 })
             }
 
-            const deletedInvitation = await transaction.execute({
-                sql: `
-                    DELETE FROM Invitation
-                    WHERE id = ?
-                      AND groupId = ?
-                      AND toAccountId = ?
-                `,
-                args: [invitationId, groupId, accountId],
-            })
+            // An invitation with a placeholder still to claim stays as the claim ticket; any other is used up.
+            if (!keepsTicket) {
+                const deletedInvitation = await transaction.execute({
+                    sql: 'DELETE FROM Invitation WHERE id = ? AND groupId = ? AND toAccountId = ?',
+                    args: [invitationId, groupId, accountId],
+                })
 
-            if (deletedInvitation.rowsAffected !== 1) {
-                throw new NotFoundException('Invitation is no longer available')
+                if (deletedInvitation.rowsAffected !== 1) {
+                    throw new NotFoundException('Invitation is no longer available')
+                }
             }
 
             await transaction.commit()

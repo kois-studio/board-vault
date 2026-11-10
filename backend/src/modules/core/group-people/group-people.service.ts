@@ -33,14 +33,8 @@ export class GroupPeopleService {
 
     async getWorkspace(actorAccountId: number, groupId: number, includeArchived = false): Promise<Array<GroupPersonWorkspaceDto>> {
         await this.assertGroupMember(actorAccountId, groupId)
-        const account = await this.databaseService.accounts.getUserById(actorAccountId)
-        const accountEmail = account.rows[0]?.email
         const claimableIds = new Set(
-            accountEmail === undefined
-                ? []
-                : (await this.databaseService.groups.getClaimableGroupPersonIds(groupId, String(accountEmail))).rows.map(row =>
-                      Number(row[0]),
-                  ),
+            (await this.databaseService.groups.getClaimableGroupPersonIds(groupId, actorAccountId)).rows.map(row => Number(row[0])),
         )
         const people = this.databaseService.groups.getGroupPeople(groupId, includeArchived)
         const rows = await people
@@ -258,7 +252,6 @@ export class GroupPeopleService {
             groupId,
             groupPersonId: personId,
             accountId: actorAccountId,
-            email: String(accountRow.email),
             keepOwnershipGameIds,
             keepPreferenceGameIds,
             importOwnershipToCollection: body.importOwnershipToCollection === true,
@@ -266,7 +259,7 @@ export class GroupPeopleService {
         })
 
         if (result.alreadyClaimed) return { success: true, alreadyClaimed: true }
-        if (!result.claimed) throw new ForbiddenException('This placeholder is not assigned to your verified account')
+        if (!result.claimed) throw new ForbiddenException('This placeholder is not assigned to your account')
         // Games brought over to the claimer's own shelf are news to their other groups too.
         await this.activityNotifier.shelfChanged(actorAccountId, { added: result.addedToShelf })
         return { success: true, alreadyClaimed: false }

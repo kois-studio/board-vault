@@ -1,6 +1,5 @@
 import { UpdateGroupAcquisitionDecisionBody } from '../../../common/types/group-game-interest.type.js'
 import { CreateGroupRequestBody } from '../../../common/types/group.type.js'
-import { ClerkIdentityService } from '../../common/auth/clerk-identity.service.js'
 
 import { GroupAcquisitionService } from './group-acquisition.service.js'
 import { GroupActivityService } from './group-activity.service.js'
@@ -16,7 +15,6 @@ describe('GroupsController actor and listing boundaries', () => {
         const controller = new GroupsController(
             { getGroupsForAccount } as unknown as GroupsService,
             {} as GroupAcquisitionService,
-            {} as ClerkIdentityService,
             {} as GroupInsightsService,
             {} as GroupActivityService,
         )
@@ -31,7 +29,6 @@ describe('GroupsController actor and listing boundaries', () => {
         const controller = new GroupsController(
             { createGroup } as unknown as GroupsService,
             {} as GroupAcquisitionService,
-            {} as ClerkIdentityService,
             {} as GroupInsightsService,
             {} as GroupActivityService,
         )
@@ -42,61 +39,11 @@ describe('GroupsController actor and listing boundaries', () => {
         expect(createGroup).toHaveBeenCalledWith({ name: 'Test group', createdBy: 7 })
     })
 
-    it('derives the Clerk invitation sender from the authenticated account', async () => {
-        const createGroupInvitation = vi.fn().mockResolvedValue({
-            invitationId: 'inv_123',
-            emailAddress: 'friend@example.com',
-            url: 'https://clerk.test/invite',
-        })
-        const controller = new GroupsController(
-            {} as GroupsService,
-            {} as GroupAcquisitionService,
-            { createGroupInvitation } as never,
-            {} as GroupInsightsService,
-            {} as GroupActivityService,
-        )
-
-        await controller.createClerkInvitation(12, request, { emailAddress: 'friend@example.com' })
-
-        expect(createGroupInvitation).toHaveBeenCalledWith(12, 7, 'friend@example.com')
-    })
-
-    it('derives the Clerk invitation listing owner from the authenticated account', async () => {
-        const getGroupInvitations = vi.fn().mockResolvedValue([])
-        const controller = new GroupsController(
-            {} as GroupsService,
-            {} as GroupAcquisitionService,
-            { getGroupInvitations } as never,
-            {} as GroupInsightsService,
-            {} as GroupActivityService,
-        )
-
-        await controller.getClerkInvitations(12, request)
-
-        expect(getGroupInvitations).toHaveBeenCalledWith(12, 7)
-    })
-
-    it('derives the Clerk invitation revocation owner from the authenticated account', async () => {
-        const revokeGroupInvitation = vi.fn().mockResolvedValue({ success: true })
-        const controller = new GroupsController(
-            {} as GroupsService,
-            {} as GroupAcquisitionService,
-            { revokeGroupInvitation } as never,
-            {} as GroupInsightsService,
-            {} as GroupActivityService,
-        )
-
-        await controller.revokeClerkInvitation(12, { groupId: 12, invitationId: 'inv_123' }, request)
-
-        expect(revokeGroupInvitation).toHaveBeenCalledWith(12, 7, 'inv_123')
-    })
-
     it('derives the acquisition decision owner from the authenticated account', async () => {
         const updateDecision = vi.fn().mockResolvedValue({ success: true })
         const controller = new GroupsController(
             {} as GroupsService,
             { updateDecision } as unknown as GroupAcquisitionService,
-            {} as ClerkIdentityService,
             {} as GroupInsightsService,
             {} as GroupActivityService,
         )

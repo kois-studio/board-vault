@@ -87,8 +87,8 @@ try {
             SELECT CASE WHEN EXISTS (SELECT 1 FROM sqlite_master WHERE type = 'table' AND name = 'IdempotencyKey')
                 AND EXISTS (SELECT 1 FROM sqlite_master WHERE type = 'index' AND name = 'IdempotencyKey_createdAt')
                 THEN 'idempotency-keys: ok' ELSE 'idempotency-keys: missing' END;
-            SELECT CASE WHEN (SELECT COUNT(*) FROM SchemaMigrations) = 31
-                AND (SELECT MAX(version) FROM SchemaMigrations) = '0031'
+            SELECT CASE WHEN (SELECT COUNT(*) FROM SchemaMigrations) = 32
+                AND (SELECT MAX(version) FROM SchemaMigrations) = '0032'
                 THEN 'migration-state: ok' ELSE 'migration-state: invalid' END;
             SELECT CASE WHEN EXISTS (SELECT 1 FROM pragma_table_info('GroupPerson') WHERE name = 'claimEmail')
                 THEN 'group-person-claim-email: ok' ELSE 'group-person-claim-email: missing' END;

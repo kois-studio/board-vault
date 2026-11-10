@@ -31,7 +31,6 @@ describe('leaving a group and deleting an account (e2e)', () => {
     let app: INestApplication
     let database: Client
     let deleteClerkUser: ReturnType<typeof vi.fn<(clerkUserId: string) => Promise<void>>>
-    let revokeInvitationsFrom: ReturnType<typeof vi.fn<(accountId: number) => Promise<{ revoked: number; failed: number }>>>
     let groupId: number
     let soloGroupId: number
     let fridayId: number
@@ -85,10 +84,6 @@ describe('leaving a group and deleting an account (e2e)', () => {
         await app.init()
         deleteClerkUser = vi.fn<(clerkUserId: string) => Promise<void>>().mockResolvedValue(undefined)
         app.get(ClerkIdentityService).deleteClerkUser = deleteClerkUser
-        revokeInvitationsFrom = vi
-            .fn<(accountId: number) => Promise<{ revoked: number; failed: number }>>()
-            .mockResolvedValue({ revoked: 1, failed: 0 })
-        app.get(ClerkIdentityService).revokeInvitationsFrom = revokeInvitationsFrom
         database = createClient({ url: `file:${testDatabasePath}` })
 
         // Mario created the group; Carlos joined before Jose, so Carlos takes it over.
@@ -225,8 +220,6 @@ describe('leaving a group and deleting an account (e2e)', () => {
         await request(app.getHttpServer()).delete('/auth/account').set(auth('user_mario')).expect(204)
 
         expect(deleteClerkUser).toHaveBeenCalledWith('user_mario')
-        // The group invitations Mario sent stop working in Clerk (ADR-0018: invitations sent go too).
-        expect(revokeInvitationsFrom).toHaveBeenCalledWith(2)
 
         const { night, byPerson } = await fridayAsCarlos()
         const catan = night.gamesPlayed.find(game => game.gameData.id === 10)
