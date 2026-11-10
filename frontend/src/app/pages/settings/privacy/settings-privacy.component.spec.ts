@@ -1,4 +1,5 @@
 import { TestBed } from '@angular/core/testing'
+import { provideRouter } from '@angular/router'
 import { of } from 'rxjs'
 import { Api } from '../../../api/api'
 import { ToastService } from '../../../components/toast/toast.service'
@@ -10,6 +11,7 @@ describe('SettingsPrivacyComponent', () => {
         await TestBed.configureTestingModule({
             imports: [SettingsPrivacyComponent],
             providers: [
+                provideRouter([]),
                 { provide: Api, useValue: { getPrivacySettings: () => of({ usageAnalytics: true }), updatePrivacySettings } },
                 { provide: ToastService, useValue: { success: vi.fn(), error: vi.fn() } },
             ],

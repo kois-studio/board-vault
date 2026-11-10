@@ -1,4 +1,5 @@
 import { Component, inject, signal } from '@angular/core'
+import { RouterLink } from '@angular/router'
 import { firstValueFrom } from 'rxjs'
 import { Api } from '../../../api/api'
 import { ToastService } from '../../../components/toast/toast.service'
@@ -6,7 +7,7 @@ import { SwitchComponent } from '../../../components/ui/switch/switch.component'
 
 /** Settings → Privacy: whether what you do counts towards usage statistics (ADR-0021). */
 @Component({
-    imports: [SwitchComponent],
+    imports: [RouterLink, SwitchComponent],
     templateUrl: './settings-privacy.component.html',
 })
 export class SettingsPrivacyComponent {

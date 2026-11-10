@@ -120,6 +120,11 @@ export class AppComponent {
                 description: $localize`:Search and link preview description of the Join by invitation page:Create your Board Vault account from a group invitation.`,
             },
             {
+                match: /^\/privacy$/,
+                title: $localize`:Browser tab title of the privacy page:Privacy — Board Vault`,
+                description: $localize`:Search and link preview description of the privacy page:What Board Vault keeps about you, why, who helps run it, and how to ask about it.`,
+            },
+            {
                 match: /^\/dashboard$/,
                 title: $localize`:Browser tab title of the Home page:Home — Board Vault`,
                 description: $localize`:Search and link preview description of the Home page:See what your group should do next, from one focused workspace.`,

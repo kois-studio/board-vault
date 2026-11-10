@@ -76,6 +76,7 @@
                     </div>
                 }
                 <p class="mt-6 text-sm text-bv-text-muted" i18n="Note at the bottom of the invitation sign-up page">This link is private and expires. Do not share it publicly.</p>
+                <p class="mt-2 text-sm text-bv-text-muted" i18n="Line at the bottom of the sign-up pages with a link to the privacy page">See what Board Vault keeps about you in the <a routerLink="/privacy" class="underline">privacy notice</a>.</p>
             </div>
         } @else if (!selfRegistrationEnabled()) {
             <div class="text-center">
@@ -105,6 +106,7 @@
                 <p class="mt-5 text-bv-text-muted" i18n="Text on the sign-up page; Clerk is the sign-in service">Set up your identity securely with Clerk.</p>
                 <button appButton type="button" class="mt-8" (click)="openClerkSignUp()" i18n="Button on the sign-up page that opens the sign-up window">Open secure sign-up</button>
                 <p class="mt-6 text-sm text-bv-text-muted" i18n="Line at the bottom of the sign-up page with a link to the sign-in page">Already have an account? <a routerLink="/login" class="underline">Sign in</a></p>
+                <p class="mt-2 text-sm text-bv-text-muted" i18n="Line at the bottom of the sign-up pages with a link to the privacy page">See what Board Vault keeps about you in the <a routerLink="/privacy" class="underline">privacy notice</a>.</p>
             </div>
         } @else {
             <div class="text-center">

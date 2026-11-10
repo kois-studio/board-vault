@@ -315,6 +315,24 @@
         <target>Einladung zu <ph id="0" equiv="group" disp="group"/> annehmen</target>
       </segment>
     </unit>
+    <unit id="1176725209112022045">
+      <notes>
+        <note category="description">On the privacy page; Settings, Settings → Privacy and Settings → Account name places in the app</note>
+      </notes>
+      <segment state="translated">
+        <source> You can ask to see your data, get a copy, correct it, delete it or limit how it is used. You can also ask for the data you gave Board Vault in a machine-readable format, to reuse elsewhere. Some of it you can do yourself: edit your profile in <pc id="0" equivStart="START_LINK" equivEnd="CLOSE_LINK" type="link" dispStart="&lt;a class=&quot;font-medium text-bv-primary underline&quot; routerLink=&quot;/settings/profile&quot;&gt;" dispEnd="&lt;/a&gt;">Settings</pc>, turn off usage statistics in <pc id="1" equivStart="START_LINK_1" equivEnd="CLOSE_LINK" type="link" dispStart="&lt;a class=&quot;font-medium text-bv-primary underline&quot; routerLink=&quot;/settings/privacy&quot;&gt;" dispEnd="&lt;/a&gt;">Settings → Privacy</pc>, and delete your account in <pc id="2" equivStart="START_LINK_2" equivEnd="CLOSE_LINK" type="link" dispStart="&lt;a class=&quot;font-medium text-bv-primary underline&quot; routerLink=&quot;/settings/account&quot;&gt;" dispEnd="&lt;/a&gt;">Settings → Account</pc>. </source>
+        <target> Du kannst verlangen, deine Daten einzusehen, eine Kopie zu erhalten, sie zu berichtigen, zu löschen oder ihre Nutzung einzuschränken. Du kannst außerdem die Daten, die du Board Vault gegeben hast, in einem strukturierten, gängigen und maschinenlesbaren Format verlangen, um sie anderswo weiterzuverwenden. Einiges kannst du selbst erledigen: Bearbeite dein Profil in den <pc id="0" equivStart="START_LINK" equivEnd="CLOSE_LINK" type="link" dispStart="&lt;a class=&quot;font-medium text-bv-primary underline&quot; routerLink=&quot;/settings/profile&quot;&gt;" dispEnd="&lt;/a&gt;">Einstellungen</pc>, schalte die Nutzungsstatistiken in <pc id="1" equivStart="START_LINK_1" equivEnd="CLOSE_LINK" type="link" dispStart="&lt;a class=&quot;font-medium text-bv-primary underline&quot; routerLink=&quot;/settings/privacy&quot;&gt;" dispEnd="&lt;/a&gt;">Einstellungen → Datenschutz</pc> aus und lösche dein Konto in <pc id="2" equivStart="START_LINK_2" equivEnd="CLOSE_LINK" type="link" dispStart="&lt;a class=&quot;font-medium text-bv-primary underline&quot; routerLink=&quot;/settings/account&quot;&gt;" dispEnd="&lt;/a&gt;">Einstellungen → Konto</pc>. </target>
+      </segment>
+    </unit>
+    <unit id="1182360463033427882">
+      <notes>
+        <note category="description">Heading on the privacy page</note>
+      </notes>
+      <segment state="translated">
+        <source>What Board Vault keeps, and why</source>
+        <target>Was Board Vault speichert und warum</target>
+      </segment>
+    </unit>
     <unit id="1188193109474903303">
       <notes>
         <note category="description">Button on a group invitation in the inbox while it is being accepted or declined</note>
@@ -400,6 +418,15 @@
       <segment state="translated">
         <source>a game</source>
         <target>ein Spiel</target>
+      </segment>
+    </unit>
+    <unit id="1228260231470245908">
+      <notes>
+        <note category="description">On the privacy page, about the people in a group who have no account</note>
+      </notes>
+      <segment state="translated">
+        <source> A group can include people who have no account yet. Group members can record their name, the games they own or like, and the game nights they come to, so the group keeps its shared history. Once one of them has an account, the group can invite them by username to take over that history. </source>
+        <target> Eine Gruppe kann Personen enthalten, die noch kein Konto haben. Gruppenmitglieder können ihren Namen, die Spiele, die sie besitzen oder mögen, und die Spieleabende, zu denen sie kommen, erfassen, damit die Gruppe ihren gemeinsamen Verlauf behält. Sobald eine dieser Personen ein Konto hat, kann die Gruppe sie über ihren Benutzernamen einladen, diesen Verlauf zu übernehmen. </target>
       </segment>
     </unit>
     <unit id="1234332817837554846">
@@ -968,6 +995,15 @@
         <target><ph id="0" equiv="actor" disp="actor"/> hat die Meinung von <ph id="1" equiv="person" disp="person"/> zu <ph id="2" equiv="game" disp="game"/> entfernt</target>
       </segment>
     </unit>
+    <unit id="1540518919131947382">
+      <notes>
+        <note category="description">What other people see, on the privacy page</note>
+      </notes>
+      <segment state="translated">
+        <source> Members of your groups see your display name, username and avatar, the games on your shelf, the game nights you take part in, and what you change in the group&apos;s history. </source>
+        <target> Die Mitglieder deiner Gruppen sehen deinen Anzeigenamen, deinen Benutzernamen und dein Avatar, die Spiele in deinem Regal, die Spieleabende, an denen du teilnimmst, und was du im Verlauf der Gruppe änderst. </target>
+      </segment>
+    </unit>
     <unit id="154867606131482974">
       <notes>
         <note category="description">Error on the invitation sign-up page when the password is too weak</note>
@@ -1495,6 +1531,15 @@
       <segment state="translated">
         <source>Clear filters (<ph id="0" equiv="INTERPOLATION" disp="{{ activeFilterCount() }}"/>)</source>
         <target>Filter zurücksetzen (<ph id="0" equiv="INTERPOLATION" disp="{{ activeFilterCount() }}"/>)</target>
+      </segment>
+    </unit>
+    <unit id="1834840815674587506">
+      <notes>
+        <note category="description">What is stored in the browser, on the privacy page</note>
+      </notes>
+      <segment state="translated">
+        <source>In your browser&apos;s storage: your theme, colours and text size, and whether the language follows your account.</source>
+        <target>Im Speicher deines Browsers: dein Design, deine Farben und deine Textgröße sowie ob die Sprache deinem Konto folgt.</target>
       </segment>
     </unit>
     <unit id="1835096012816040438">
@@ -2582,6 +2627,15 @@
         <target>Deine Gruppe wird geladen…</target>
       </segment>
     </unit>
+    <unit id="2402601429196310266">
+      <notes>
+        <note category="description">What Board Vault keeps, on the privacy page; Clerk is the sign-in service</note>
+      </notes>
+      <segment state="translated">
+        <source><pc id="0" equivStart="START_TAG_STRONG" equivEnd="CLOSE_TAG_STRONG" type="other" dispStart="&lt;strong&gt;" dispEnd="&lt;/strong&gt;">Your account:</pc> your email, username, display name, avatar and language. Clerk handles your password; Board Vault never sees it. </source>
+        <target><pc id="0" equivStart="START_TAG_STRONG" equivEnd="CLOSE_TAG_STRONG" type="other" dispStart="&lt;strong&gt;" dispEnd="&lt;/strong&gt;">Dein Konto:</pc> deine E-Mail, dein Benutzername, dein Anzeigename, dein Avatar und deine Sprache. Um dein Passwort kümmert sich Clerk; Board Vault sieht es nie. </target>
+      </segment>
+    </unit>
     <unit id="2404444981573781985">
       <notes>
         <note category="description">Footer link to the project repository</note>
@@ -2825,6 +2879,15 @@
         <target>In <ph id="0" equiv="INTERPOLATION" disp="{{ name }}"/>, ohne Konto</target>
       </segment>
     </unit>
+    <unit id="2508049310844836572">
+      <notes>
+        <note category="description">Heading on the privacy page about the companies that process data for Board Vault</note>
+      </notes>
+      <segment state="translated">
+        <source>Who helps run Board Vault</source>
+        <target>Wer beim Betrieb von Board Vault hilft</target>
+      </segment>
+    </unit>
     <unit id="2508172532481809877">
       <notes>
         <note category="description">Error on the plan form with a date in the past; the link opens the form that records a played night</note>
@@ -2896,6 +2959,15 @@
       <segment state="translated">
         <source>Your ratings, and the games from your groups you haven’t rated yet</source>
         <target>Deine Bewertungen und die Spiele aus deinen Gruppen, die du noch nicht bewertet hast</target>
+      </segment>
+    </unit>
+    <unit id="2533327878707392443">
+      <notes>
+        <note category="description">Under the usage statistics card in the Privacy settings, with a link to the privacy page</note>
+      </notes>
+      <segment state="translated">
+        <source> Everything else Board Vault keeps, and how to ask about it, is in the <pc id="0" equivStart="START_LINK" equivEnd="CLOSE_LINK" type="link" dispStart="&lt;a routerLink=&quot;/privacy&quot; class=&quot;font-medium text-bv-primary underline&quot;&gt;" dispEnd="&lt;/a&gt;">privacy notice</pc>. </source>
+        <target> Alles Weitere, was Board Vault speichert, und wie du dazu nachfragen kannst, steht in der <pc id="0" equivStart="START_LINK" equivEnd="CLOSE_LINK" type="link" dispStart="&lt;a routerLink=&quot;/privacy&quot; class=&quot;font-medium text-bv-primary underline&quot;&gt;" dispEnd="&lt;/a&gt;">Datenschutzerklärung</pc>. </target>
       </segment>
     </unit>
     <unit id="2535852132159535435">
@@ -3678,6 +3750,15 @@
         <target>Läuft gerade</target>
       </segment>
     </unit>
+    <unit id="2928283098082345683">
+      <notes>
+        <note category="description">On the privacy page, after the list of what is stored in the browser</note>
+      </notes>
+      <segment state="translated">
+        <source>There are no analytics, advertising or tracking cookies.</source>
+        <target>Es gibt keine Cookies für Analyse, Werbung oder Tracking.</target>
+      </segment>
+    </unit>
     <unit id="2931551312893462607">
       <notes>
         <note category="description">What to play when nobody is chosen</note>
@@ -3733,6 +3814,15 @@
         <target><ph id="0" equiv="name" disp="name"/> als einzige eingeladene Person behalten</target>
       </segment>
     </unit>
+    <unit id="2947120263980718534">
+      <notes>
+        <note category="description">Heading on the privacy page</note>
+      </notes>
+      <segment state="translated">
+        <source>What other people see</source>
+        <target>Was andere sehen</target>
+      </segment>
+    </unit>
     <unit id="2949848596707725099">
       <notes>
         <note category="description">Button at the bottom of the avatar menu</note>
@@ -3740,6 +3830,15 @@
       <segment state="translated">
         <source>Sign out</source>
         <target>Abmelden</target>
+      </segment>
+    </unit>
+    <unit id="295715226568241340">
+      <notes>
+        <note category="description">Heading on the privacy page about the people in a group who have no account</note>
+      </notes>
+      <segment state="translated">
+        <source>People without an account</source>
+        <target>Personen ohne Konto</target>
       </segment>
     </unit>
     <unit id="2960253771203321789">
@@ -4033,6 +4132,15 @@
         <target>Du hast <pc id="0" equivStart="START_LINK" equivEnd="CLOSE_LINK" type="link" dispStart="&lt;a [routerLink]=&quot;[&apos;/games/&apos;, activity.gameData.id]&quot; class=&quot;font-medium hover:underline&quot; [attr.lang]=&quot;titleLanguage(activity.gameData)&quot;&gt;" dispEnd="&lt;/a&gt;"><ph id="1" equiv="INTERPOLATION" disp="{{ activity.gameData | gameTitle }}"/></pc> mit <ph id="2" equiv="INTERPOLATION_1" disp="{{ formatStars(stars) }}"/> Stern bewertet</target>
       </segment>
     </unit>
+    <unit id="3123466148156510948">
+      <notes>
+        <note category="description">How long data is kept, on the privacy page</note>
+      </notes>
+      <segment state="translated">
+        <source><pc id="0" equivStart="START_TAG_STRONG" equivEnd="CLOSE_TAG_STRONG" type="other" dispStart="&lt;strong&gt;" dispEnd="&lt;/strong&gt;">Technical records</pc> last about an hour, and the short-lived copies up to a day. </source>
+        <target><pc id="0" equivStart="START_TAG_STRONG" equivEnd="CLOSE_TAG_STRONG" type="other" dispStart="&lt;strong&gt;" dispEnd="&lt;/strong&gt;">Technische Protokolle</pc> bleiben etwa eine Stunde, die kurzlebigen Kopien bis zu einem Tag. </target>
+      </segment>
+    </unit>
     <unit id="3127935614657706117">
       <notes>
         <note category="description">Group history line; actor is a name</note>
@@ -4040,6 +4148,15 @@
       <segment state="translated">
         <source><ph id="0" equiv="actor" disp="actor"/> can’t make a game night</source>
         <target><ph id="0" equiv="actor" disp="actor"/> kann nicht zu einem Spieleabend kommen</target>
+      </segment>
+    </unit>
+    <unit id="3138915563236626718">
+      <notes>
+        <note category="description">Heading on the privacy page</note>
+      </notes>
+      <segment state="translated">
+        <source>How long it is kept</source>
+        <target>Wie lange es gespeichert wird</target>
       </segment>
     </unit>
     <unit id="3139028466842840430">
@@ -4370,6 +4487,15 @@
       <segment state="translated">
         <source>Shortlisted</source>
         <target>In der Vorauswahl</target>
+      </segment>
+    </unit>
+    <unit id="328831263406084746">
+      <notes>
+        <note category="description">Company that processes data for Board Vault, on the privacy page; the EU-US Data Privacy Framework and standard contractual clauses are the legal names of two transfer mechanisms</note>
+      </notes>
+      <segment state="translated">
+        <source><pc id="0" equivStart="START_TAG_STRONG" equivEnd="CLOSE_TAG_STRONG" type="other" dispStart="&lt;strong&gt;" dispEnd="&lt;/strong&gt;">Clerk</pc> (Clerk, Inc., United States): accounts and sign-in, and the emails with sign-in codes. It may process data outside the EU, under the EU-US Data Privacy Framework and standard contractual clauses. </source>
+        <target><pc id="0" equivStart="START_TAG_STRONG" equivEnd="CLOSE_TAG_STRONG" type="other" dispStart="&lt;strong&gt;" dispEnd="&lt;/strong&gt;">Clerk</pc> (Clerk, Inc., USA): Konten und Anmeldung sowie die E-Mails mit Anmeldecodes. Clerk kann Daten außerhalb der EU verarbeiten, auf Grundlage des EU-US-Datenschutzrahmens und von Standardvertragsklauseln. </target>
       </segment>
     </unit>
     <unit id="3290850575958930357">
@@ -4995,6 +5121,15 @@
         <target>Erste Schritte</target>
       </segment>
     </unit>
+    <unit id="3609832365456512966">
+      <notes>
+        <note category="description">Company that processes data for Board Vault, on the privacy page; the EU-US Data Privacy Framework is the legal name of a transfer mechanism</note>
+      </notes>
+      <segment state="translated">
+        <source><pc id="0" equivStart="START_TAG_STRONG" equivEnd="CLOSE_TAG_STRONG" type="other" dispStart="&lt;strong&gt;" dispEnd="&lt;/strong&gt;">Upstash</pc> (Upstash, Inc., United States): short-lived copies of data that make pages load faster, stored in Frankfurt, Germany, and deleted within a day. It follows the EU-US Data Privacy Framework. </source>
+        <target><pc id="0" equivStart="START_TAG_STRONG" equivEnd="CLOSE_TAG_STRONG" type="other" dispStart="&lt;strong&gt;" dispEnd="&lt;/strong&gt;">Upstash</pc> (Upstash, Inc., USA): kurzlebige Kopien von Daten, die Seiten schneller laden lassen, gespeichert in Frankfurt, Deutschland, und innerhalb eines Tages gelöscht. Es gilt der EU-US-Datenschutzrahmen. </target>
+      </segment>
+    </unit>
     <unit id="3614057461352661644">
       <notes>
         <note category="description">Name of the list of faces on a group card on Home</note>
@@ -5002,6 +5137,15 @@
       <segment state="translated">
         <source>People in <ph id="0" equiv="group" disp="this.group().name"/></source>
         <target>Personen in <ph id="0" equiv="group" disp="this.group().name"/></target>
+      </segment>
+    </unit>
+    <unit id="3614605232585139647">
+      <notes>
+        <note category="description">Company that processes data for Board Vault, on the privacy page; the EU-US Data Privacy Framework is the legal name of a transfer mechanism</note>
+      </notes>
+      <segment state="translated">
+        <source><pc id="0" equivStart="START_TAG_STRONG" equivEnd="CLOSE_TAG_STRONG" type="other" dispStart="&lt;strong&gt;" dispEnd="&lt;/strong&gt;">Vercel</pc> (Vercel Inc., United States): runs the website and the server. The server runs in Dublin, Ireland. Transfers to the United States follow the EU-US Data Privacy Framework. </source>
+        <target><pc id="0" equivStart="START_TAG_STRONG" equivEnd="CLOSE_TAG_STRONG" type="other" dispStart="&lt;strong&gt;" dispEnd="&lt;/strong&gt;">Vercel</pc> (Vercel Inc., USA): betreibt die Website und den Server. Der Server läuft in Dublin, Irland. Übermittlungen in die USA folgen dem EU-US-Datenschutzrahmen. </target>
       </segment>
     </unit>
     <unit id="3635224618020757014">
@@ -5013,6 +5157,15 @@
         <target>Du kommst</target>
       </segment>
     </unit>
+    <unit id="3636673508955703154">
+      <notes>
+        <note category="description">Legal bases on the privacy page; GDPR is the EU data protection law</note>
+      </notes>
+      <segment state="translated">
+        <source> Your account and what you add are needed to give you the service you sign up for (GDPR, Article 6(1)(b)). Usage statistics, technical records and your emails to us rest on legitimate interests: keeping Board Vault working, safe and getting better, and answering you (Article 6(1)(f)). </source>
+        <target> Dein Konto und das, was du hinzufügst, brauchen wir, um dir den Dienst zu bieten, für den du dich anmeldest (DSGVO, Art. 6 Abs. 1 lit. b). Nutzungsstatistiken, technische Protokolle und deine E-Mails an uns beruhen auf berechtigten Interessen: Board Vault funktionsfähig und sicher zu halten und zu verbessern und dir zu antworten (Art. 6 Abs. 1 lit. f). </target>
+      </segment>
+    </unit>
     <unit id="3642217425045834854">
       <notes>
         <note category="description">Name of the placeholder shown on Home while your groups load</note>
@@ -5020,6 +5173,15 @@
       <segment state="translated">
         <source>Loading your groups</source>
         <target>Deine Gruppen werden geladen</target>
+      </segment>
+    </unit>
+    <unit id="3643787078575728662">
+      <notes>
+        <note category="description">Line at the bottom of the sign-up pages with a link to the privacy page</note>
+      </notes>
+      <segment state="translated">
+        <source>See what Board Vault keeps about you in the <pc id="0" equivStart="START_LINK" equivEnd="CLOSE_LINK" type="link" dispStart="&lt;a routerLink=&quot;/privacy&quot; class=&quot;underline&quot;&gt;" dispEnd="&lt;/a&gt;">privacy notice</pc>.</source>
+        <target>Was Board Vault über dich speichert, steht in der <pc id="0" equivStart="START_LINK" equivEnd="CLOSE_LINK" type="link" dispStart="&lt;a routerLink=&quot;/privacy&quot; class=&quot;underline&quot;&gt;" dispEnd="&lt;/a&gt;">Datenschutzerklärung</pc>.</target>
       </segment>
     </unit>
     <unit id="3646645416321057827">
@@ -6665,6 +6827,15 @@
         <target>Gruppen werden geladen…</target>
       </segment>
     </unit>
+    <unit id="4382990543480213507">
+      <notes>
+        <note category="description">On the privacy page, about objecting to uses of data that rest on legitimate interests</note>
+      </notes>
+      <segment state="translated">
+        <source> You can object to the uses that rest on legitimate interests, for reasons about your situation. Board Vault then stops, unless it has compelling reasons that override your interests and rights, or needs the data for legal claims. </source>
+        <target> Du kannst den Verwendungen, die auf berechtigten Interessen beruhen, aus Gründen, die sich aus deiner besonderen Situation ergeben, widersprechen. Board Vault hört dann auf, es sei denn, es kann zwingende schutzwürdige Gründe nachweisen, die deine Interessen und Rechte überwiegen, oder braucht die Daten zur Geltendmachung, Ausübung oder Verteidigung von Rechtsansprüchen. </target>
+      </segment>
+    </unit>
     <unit id="4383248305292990663">
       <notes>
         <note category="description">Description of the Upcoming card on the Play page</note>
@@ -6836,6 +7007,15 @@
         <target><ph id="0" equiv="INTERPOLATION" disp="{{ roundScore(play.position, person) }}"/> Punkte</target>
       </segment>
     </unit>
+    <unit id="4470891529513397393">
+      <notes>
+        <note category="description">On the privacy page, about the people in a group who have no account; legal basis</note>
+      </notes>
+      <segment state="translated">
+        <source> This information comes from the group&apos;s members. Board Vault keeps it, and the game nights of people who deleted their account, for the legitimate interest of groups in organising their games and keeping a shared record (GDPR, Article 6(1)(f)). </source>
+        <target> Diese Angaben stammen von den Mitgliedern der Gruppe. Board Vault bewahrt sie sowie die Spieleabende von Personen, die ihr Konto gelöscht haben, aufgrund des berechtigten Interesses der Gruppen auf, ihre Spiele zu organisieren und einen gemeinsamen Verlauf zu führen (DSGVO, Art. 6 Abs. 1 lit. f). </target>
+      </segment>
+    </unit>
     <unit id="4493418406674855888">
       <notes>
         <note category="description">Name of the group switcher at the top of the group page</note>
@@ -6962,6 +7142,15 @@
         <target>Spiele filtern</target>
       </segment>
     </unit>
+    <unit id="454413178613346161">
+      <notes>
+        <note category="description">Date the privacy page last changed; the placeholder is a date such as 7 November 2026</note>
+      </notes>
+      <segment state="translated">
+        <source>Last updated: <ph id="0" equiv="INTERPOLATION" disp="{{ lastUpdated }}"/></source>
+        <target>Zuletzt aktualisiert: <ph id="0" equiv="INTERPOLATION" disp="{{ lastUpdated }}"/></target>
+      </segment>
+    </unit>
     <unit id="4547376068759243702">
       <notes>
         <note category="description">Heading of the text size choice in the Appearance settings</note>
@@ -6996,6 +7185,15 @@
       <segment state="translated">
         <source>Correct session</source>
         <target>Abend korrigieren</target>
+      </segment>
+    </unit>
+    <unit id="4585170676636831144">
+      <notes>
+        <note category="description">How long data is kept, on the privacy page</note>
+      </notes>
+      <segment state="translated">
+        <source><pc id="0" equivStart="START_TAG_STRONG" equivEnd="CLOSE_TAG_STRONG" type="other" dispStart="&lt;strong&gt;" dispEnd="&lt;/strong&gt;">A group&apos;s data</pc> stays as long as the group. Deleting a group deletes its game nights and its history. </source>
+        <target><pc id="0" equivStart="START_TAG_STRONG" equivEnd="CLOSE_TAG_STRONG" type="other" dispStart="&lt;strong&gt;" dispEnd="&lt;/strong&gt;">Die Daten einer Gruppe</pc> bleiben, solange es die Gruppe gibt. Wird eine Gruppe gelöscht, werden auch ihre Spieleabende und ihr Verlauf gelöscht. </target>
       </segment>
     </unit>
     <unit id="4586758363613137861">
@@ -7096,6 +7294,15 @@
       <segment state="translated">
         <source>Start the night when the group sits down to play. Then mark the games you play, who played, and who won.</source>
         <target>Starte den Abend, wenn sich die Gruppe zum Spielen hinsetzt. Markier dann die Spiele, die ihr spielt, wer mitgespielt und wer gewonnen hat.</target>
+      </segment>
+    </unit>
+    <unit id="4659884302251258927">
+      <notes>
+        <note category="description">On the privacy page</note>
+      </notes>
+      <segment state="translated">
+        <source>When this page changes, so does the date at the top. Before your data is used for a new purpose, you are told about it.</source>
+        <target>Wenn sich diese Seite ändert, ändert sich auch das Datum oben. Bevor deine Daten für einen neuen Zweck verwendet werden, wirst du darüber informiert.</target>
       </segment>
     </unit>
     <unit id="4662888686801008290">
@@ -7223,6 +7430,15 @@
       <segment state="translated">
         <source>Could not save the attendee changes</source>
         <target>Die Änderungen an der Teilnahme konnten nicht gespeichert werden</target>
+      </segment>
+    </unit>
+    <unit id="4712661885347766172">
+      <notes>
+        <note category="description">What other people see, on the privacy page; the person responsible is the one named under Who is responsible</note>
+      </notes>
+      <segment state="translated">
+        <source> The admin pages show accounts and game proposals, to run the service, and usage statistics only as totals. </source>
+        <target> Die Verwaltungsseiten zeigen Konten und Spielvorschläge, um den Dienst zu betreiben, und Nutzungsstatistiken nur als Gesamtwerte. </target>
       </segment>
     </unit>
     <unit id="4715165630183338203">
@@ -8071,6 +8287,15 @@
         <target>Jetzt nicht</target>
       </segment>
     </unit>
+    <unit id="516327893498792916">
+      <notes>
+        <note category="description">On the privacy page, before the list of companies that process data for Board Vault</note>
+      </notes>
+      <segment state="translated">
+        <source>These companies process data for Board Vault to provide their service. You can ask us for a copy of the safeguards for transfers outside the EU.</source>
+        <target>Diese Unternehmen verarbeiten Daten für Board Vault, um ihren Dienst zu erbringen. Du kannst bei uns eine Kopie der Garantien für Übermittlungen außerhalb der EU anfordern.</target>
+      </segment>
+    </unit>
     <unit id="5167037823447958852">
       <notes>
         <note category="description">Button under a game on Browse once the game is on the group&apos;s shortlist of games to buy</note>
@@ -8116,6 +8341,15 @@
         <target>Über 2 Stunden</target>
       </segment>
     </unit>
+    <unit id="518122125002857089">
+      <notes>
+        <note category="description">On the privacy page, before the list of what is stored in the browser</note>
+      </notes>
+      <segment state="translated">
+        <source>Board Vault stores only what sign-in and the preferences you choose need:</source>
+        <target>Board Vault speichert nur, was die Anmeldung und die von dir gewählten Einstellungen brauchen:</target>
+      </segment>
+    </unit>
     <unit id="5181319046980666139">
       <notes>
         <note category="description">Group history line; actor is a name</note>
@@ -8141,6 +8375,15 @@
       <segment state="translated">
         <source>Feedback could not be saved. Try again.</source>
         <target>Deine Meinung konnte nicht gespeichert werden. Versuch es noch einmal.</target>
+      </segment>
+    </unit>
+    <unit id="5192833865584050629">
+      <notes>
+        <note category="description">Browser tab title of the privacy page</note>
+      </notes>
+      <segment state="translated">
+        <source>Privacy — Board Vault</source>
+        <target>Datenschutz — Board Vault</target>
       </segment>
     </unit>
     <unit id="5193733208668437163">
@@ -8635,6 +8878,15 @@
       <segment state="translated">
         <source>Keep <ph id="0" equiv="name" disp="name"/> as an attendee because they are recorded for a played game</source>
         <target><ph id="0" equiv="name" disp="name"/> bleibt eingeladen, weil die Person bei einem gespielten Spiel eingetragen ist</target>
+      </segment>
+    </unit>
+    <unit id="5506805882198943220">
+      <notes>
+        <note category="description">Subject of the email a reader starts from the contact link in the footer</note>
+      </notes>
+      <segment state="translated">
+        <source>Board Vault</source>
+        <target>Board Vault</target>
       </segment>
     </unit>
     <unit id="5511632235866983478">
@@ -9903,6 +10155,15 @@
         <target>Wähl, wem es gehört</target>
       </segment>
     </unit>
+    <unit id="6129838331331540445">
+      <notes>
+        <note category="description">Company that processes data for Board Vault, on the privacy page</note>
+      </notes>
+      <segment state="translated">
+        <source><pc id="0" equivStart="START_TAG_STRONG" equivEnd="CLOSE_TAG_STRONG" type="other" dispStart="&lt;strong&gt;" dispEnd="&lt;/strong&gt;">Turso</pc> (ChiselStrike Inc., United States): the database, stored in Ireland. We have not yet confirmed whether this involves transfers outside the EU, or which safeguard applies. </source>
+        <target><pc id="0" equivStart="START_TAG_STRONG" equivEnd="CLOSE_TAG_STRONG" type="other" dispStart="&lt;strong&gt;" dispEnd="&lt;/strong&gt;">Turso</pc> (ChiselStrike Inc., USA): die Datenbank, gespeichert in Irland. Wir haben noch nicht bestätigt, ob dabei Übermittlungen außerhalb der EU stattfinden und welche Garantie gilt. </target>
+      </segment>
+    </unit>
     <unit id="6132616578626491786">
       <notes>
         <note category="description">Accessible name of the heart on a game cover; the placeholder is the game title</note>
@@ -9955,6 +10216,24 @@
       <segment state="translated">
         <source>Could not add the game. Try again.</source>
         <target>Das Spiel konnte nicht hinzugefügt werden. Versuch es noch einmal.</target>
+      </segment>
+    </unit>
+    <unit id="6155876973774194934">
+      <notes>
+        <note category="description">Heading on the privacy page</note>
+      </notes>
+      <segment state="translated">
+        <source>Your rights</source>
+        <target>Deine Rechte</target>
+      </segment>
+    </unit>
+    <unit id="6162928345085918552">
+      <notes>
+        <note category="description">How long data is kept, on the privacy page</note>
+      </notes>
+      <segment state="translated">
+        <source><pc id="0" equivStart="START_TAG_STRONG" equivEnd="CLOSE_TAG_STRONG" type="other" dispStart="&lt;strong&gt;" dispEnd="&lt;/strong&gt;">Backups:</pc> before a change to the database, a copy is taken and kept privately, only while it may be needed to undo a mistake. The database company also keeps its own short-term backups. </source>
+        <target> <pc id="0" equivStart="START_TAG_STRONG" equivEnd="CLOSE_TAG_STRONG" type="other" dispStart="&lt;strong&gt;" dispEnd="&lt;/strong&gt;">Sicherungen:</pc> Vor einer Änderung an der Datenbank wird eine Kopie erstellt und privat aufbewahrt, nur solange sie nötig sein kann, um einen Fehler rückgängig zu machen. Der Datenbankanbieter bewahrt außerdem eigene, kurzlebige Sicherungen auf. </target>
       </segment>
     </unit>
     <unit id="6165219619684566053">
@@ -10036,6 +10315,15 @@
       <segment state="translated">
         <source>Loading secure sign-in…</source>
         <target>Sichere Anmeldung wird geladen…</target>
+      </segment>
+    </unit>
+    <unit id="6205739162974185948">
+      <notes>
+        <note category="description">Introduction at the top of the privacy page</note>
+      </notes>
+      <segment state="translated">
+        <source> Board Vault is a free side project. This page explains in plain words what it keeps about you, why, who helps run it, and how to ask about it. </source>
+        <target> Board Vault ist ein kostenloses Nebenprojekt. Diese Seite erklärt in einfachen Worten, was es über dich speichert, warum, wer beim Betrieb hilft und wie du nachfragen kannst. </target>
       </segment>
     </unit>
     <unit id="6210252110477915807">
@@ -10305,6 +10593,15 @@
         <target>Zusammenfassung des Verlaufs</target>
       </segment>
     </unit>
+    <unit id="635665873954265806">
+      <notes>
+        <note category="description">What Board Vault keeps, on the privacy page</note>
+      </notes>
+      <segment state="translated">
+        <source><pc id="0" equivStart="START_TAG_STRONG" equivEnd="CLOSE_TAG_STRONG" type="other" dispStart="&lt;strong&gt;" dispEnd="&lt;/strong&gt;">What you add:</pc> your games, wishlist and ratings (scores from 0 to 10), and what your groups record about their game nights. </source>
+        <target><pc id="0" equivStart="START_TAG_STRONG" equivEnd="CLOSE_TAG_STRONG" type="other" dispStart="&lt;strong&gt;" dispEnd="&lt;/strong&gt;">Was du hinzufügst:</pc> deine Spiele, deine Wunschliste und deine Bewertungen (Werte von 0 bis 10) sowie das, was deine Gruppen über ihre Spieleabende festhalten. </target>
+      </segment>
+    </unit>
     <unit id="6363341208124688834">
       <notes>
         <note category="description">How many can play a game, one number</note>
@@ -10313,6 +10610,15 @@
       <segment state="translated">
         <source><ph id="0" equiv="count" disp="min"/> players</source>
         <target><ph id="0" equiv="count" disp="min"/> Personen</target>
+      </segment>
+    </unit>
+    <unit id="6364099513112380340">
+      <notes>
+        <note category="description">What is stored in the browser, on the privacy page; bv_lang is the name of the cookie and stays as it is</note>
+      </notes>
+      <segment state="translated">
+        <source>A cookie named <pc id="0" equivStart="START_TAG_CODE" equivEnd="CLOSE_TAG_CODE" type="other" dispStart="&lt;code&gt;" dispEnd="&lt;/code&gt;">bv_lang</pc> that remembers your language for a year.</source>
+        <target>Ein Cookie namens <pc id="0" equivStart="START_TAG_CODE" equivEnd="CLOSE_TAG_CODE" type="other" dispStart="&lt;code&gt;" dispEnd="&lt;/code&gt;">bv_lang</pc>, das sich deine Sprache ein Jahr lang merkt.</target>
       </segment>
     </unit>
     <unit id="6369425269629738896">
@@ -10504,6 +10810,15 @@
         <target>Deine erste Gruppe erstellen</target>
       </segment>
     </unit>
+    <unit id="6444637410618622592">
+      <notes>
+        <note category="description">Search and link preview description of the privacy page</note>
+      </notes>
+      <segment state="translated">
+        <source>What Board Vault keeps about you, why, who helps run it, and how to ask about it.</source>
+        <target>Was Board Vault über dich speichert, warum, wer beim Betrieb hilft und wie du nachfragen kannst.</target>
+      </segment>
+    </unit>
     <unit id="6448641551368612870">
       <notes>
         <note category="description">History card on the Play page while it loads</note>
@@ -10538,6 +10853,15 @@
       <segment state="translated">
         <source>Tags <pc id="0" equivStart="START_TAG_SPAN" equivEnd="CLOSE_TAG_SPAN" type="other" dispStart="&lt;span class=&quot;font-normal text-bv-text-muted&quot;&gt;" dispEnd="&lt;/span&gt;">(games with all of the chosen tags)</pc></source>
         <target>Tags <pc id="0" equivStart="START_TAG_SPAN" equivEnd="CLOSE_TAG_SPAN" type="other" dispStart="&lt;span class=&quot;font-normal text-bv-text-muted&quot;&gt;" dispEnd="&lt;/span&gt;">(Spiele mit allen gewählten Tags)</pc></target>
+      </segment>
+    </unit>
+    <unit id="646728710817010836">
+      <notes>
+        <note category="description">Heading on the privacy page</note>
+      </notes>
+      <segment state="translated">
+        <source>Who is responsible</source>
+        <target>Wer verantwortlich ist</target>
       </segment>
     </unit>
     <unit id="6477243893666331441">
@@ -10942,6 +11266,15 @@
         <target>Diesen Abend korrigieren</target>
       </segment>
     </unit>
+    <unit id="6711230156458918440">
+      <notes>
+        <note category="description">How long data is kept, on the privacy page</note>
+      </notes>
+      <segment state="translated">
+        <source><pc id="0" equivStart="START_TAG_STRONG" equivEnd="CLOSE_TAG_STRONG" type="other" dispStart="&lt;strong&gt;" dispEnd="&lt;/strong&gt;">Individual usage events</pc> are deleted after 30 days. Only daily totals with no account attached are kept. </source>
+        <target><pc id="0" equivStart="START_TAG_STRONG" equivEnd="CLOSE_TAG_STRONG" type="other" dispStart="&lt;strong&gt;" dispEnd="&lt;/strong&gt;">Einzelne Nutzungsereignisse</pc> werden nach 30 Tagen gelöscht. Nur Tagessummen ohne zugeordnetes Konto bleiben erhalten. </target>
+      </segment>
+    </unit>
     <unit id="6713033374419987338">
       <notes>
         <note category="description">Toast when My Games could not be reloaded after a change</note>
@@ -11021,6 +11354,15 @@
       <segment state="translated">
         <source><ph id="0" equiv="actor" disp="actor"/> said they don’t mind <ph id="1" equiv="game" disp="game"/></source>
         <target><ph id="0" equiv="actor" disp="actor"/> hat angegeben, nichts gegen <ph id="1" equiv="game" disp="game"/> zu haben</target>
+      </segment>
+    </unit>
+    <unit id="6763649338954617045">
+      <notes>
+        <note category="description">On the privacy page; the placeholder is the contact email address; AEPD is the Spanish data protection authority</note>
+      </notes>
+      <segment state="translated">
+        <source> For anything else, write to <pc id="0" equivStart="START_LINK" equivEnd="CLOSE_LINK" type="link" dispStart="&lt;a class=&quot;font-medium text-bv-primary underline&quot; [href]=&quot;contactLink&quot;&gt;" dispEnd="&lt;/a&gt;"><ph id="1" equiv="INTERPOLATION" disp="{{ contactEmail }}"/></pc>. Requests about your rights are answered within a month; if one is complex, it can take up to two more months, and you are told why within the first month. If you think your data is handled wrongly, you can complain to the Spanish data protection authority (<pc id="2" equivStart="START_LINK_1" equivEnd="CLOSE_LINK" type="link" dispStart="&lt;a class=&quot;font-medium text-bv-primary underline&quot; href=&quot;https://www.aepd.es&quot; target=&quot;_blank&quot; rel=&quot;noopener&quot;&gt;" dispEnd="&lt;/a&gt;">AEPD</pc>) or to the one where you live. </source>
+        <target> Für alles andere schreib an <pc id="0" equivStart="START_LINK" equivEnd="CLOSE_LINK" type="link" dispStart="&lt;a class=&quot;font-medium text-bv-primary underline&quot; [href]=&quot;contactLink&quot;&gt;" dispEnd="&lt;/a&gt;"><ph id="1" equiv="INTERPOLATION" disp="{{ contactEmail }}"/></pc>. Anfragen zu deinen Rechten werden innerhalb eines Monats beantwortet; ist eine davon komplex, kann es bis zu zwei weitere Monate dauern, und du erfährst den Grund innerhalb des ersten Monats. Wenn du denkst, dass mit deinen Daten falsch umgegangen wird, kannst du dich bei der spanischen Datenschutzbehörde (<pc id="2" equivStart="START_LINK_1" equivEnd="CLOSE_LINK" type="link" dispStart="&lt;a class=&quot;font-medium text-bv-primary underline&quot; href=&quot;https://www.aepd.es&quot; target=&quot;_blank&quot; rel=&quot;noopener&quot;&gt;" dispEnd="&lt;/a&gt;">AEPD</pc>) oder bei der Behörde deines Wohnorts beschweren. </target>
       </segment>
     </unit>
     <unit id="6766874920336829687">
@@ -11150,6 +11492,15 @@
         <target>Kann es mitbringen: <ph id="0" equiv="names" disp="names"/> +<ph id="1" equiv="count" disp="entry.owners.length - 2"/></target>
       </segment>
     </unit>
+    <unit id="6823981506766396736">
+      <notes>
+        <note category="description">Heading on the privacy page</note>
+      </notes>
+      <segment state="translated">
+        <source>Cookies and your browser</source>
+        <target>Cookies und dein Browser</target>
+      </segment>
+    </unit>
     <unit id="6833264188558306028">
       <notes>
         <note category="description">Toast after you answer that you cannot come to a game night</note>
@@ -11204,6 +11555,15 @@
         <target>Ein paar Spiele zur Auswahl. Lass es leer, um am Abend zu entscheiden.</target>
       </segment>
     </unit>
+    <unit id="6854184085271734449">
+      <notes>
+        <note category="description">On the privacy page, about which data is required to have an account</note>
+      </notes>
+      <segment state="translated">
+        <source> An email address, a username and a password are required to create an account; without them, Board Vault cannot give you one. Your display name, avatar and everything you add are optional. </source>
+        <target> Zum Erstellen eines Kontos sind eine E-Mail-Adresse, ein Benutzername und ein Passwort erforderlich; ohne sie kann Board Vault dir keines geben. Dein Anzeigename, dein Avatar und alles, was du hinzufügst, sind optional. </target>
+      </segment>
+    </unit>
     <unit id="685710079621695639">
       <notes>
         <note category="description">Toast when the inbox could not load notifications</note>
@@ -11211,6 +11571,15 @@
       <segment state="translated">
         <source>Error retrieving user’s notifications</source>
         <target>Deine Benachrichtigungen konnten nicht geladen werden</target>
+      </segment>
+    </unit>
+    <unit id="6857195011057296096">
+      <notes>
+        <note category="description">On the privacy page, about the people in a group who have no account; the placeholder is the contact email address</note>
+      </notes>
+      <segment state="translated">
+        <source> If you are one of these people and want to see, correct or remove what was recorded about you, ask the group owner or write to <pc id="0" equivStart="START_LINK" equivEnd="CLOSE_LINK" type="link" dispStart="&lt;a class=&quot;font-medium text-bv-primary underline&quot; [href]=&quot;contactLink&quot;&gt;" dispEnd="&lt;/a&gt;"><ph id="1" equiv="INTERPOLATION" disp="{{ contactEmail }}"/></pc>. </source>
+        <target> Wenn du eine dieser Personen bist und sehen, berichtigen oder entfernen lassen möchtest, was über dich erfasst wurde, frag die Leitung der Gruppe oder schreib an <pc id="0" equivStart="START_LINK" equivEnd="CLOSE_LINK" type="link" dispStart="&lt;a class=&quot;font-medium text-bv-primary underline&quot; [href]=&quot;contactLink&quot;&gt;" dispEnd="&lt;/a&gt;"><ph id="1" equiv="INTERPOLATION" disp="{{ contactEmail }}"/></pc>. </target>
       </segment>
     </unit>
     <unit id="6860216252576439121">
@@ -11265,6 +11634,15 @@
       <segment state="translated">
         <source>Price paid <pc id="0" equivStart="START_TAG_SPAN" equivEnd="CLOSE_TAG_SPAN" type="other" dispStart="&lt;span class=&quot;text-xs text-secondary&quot;&gt;" dispEnd="&lt;/span&gt;">(optional)</pc></source>
         <target>Bezahlter Preis <pc id="0" equivStart="START_TAG_SPAN" equivEnd="CLOSE_TAG_SPAN" type="other" dispStart="&lt;span class=&quot;text-xs text-secondary&quot;&gt;" dispEnd="&lt;/span&gt;">(optional)</pc></target>
+      </segment>
+    </unit>
+    <unit id="6886194529154023314">
+      <notes>
+        <note category="description">On the privacy page</note>
+      </notes>
+      <segment state="translated">
+        <source>Board Vault shows no ads, sells no data and does not track you on other sites.</source>
+        <target>Board Vault zeigt keine Werbung, verkauft keine Daten und verfolgt dich nicht auf anderen Seiten.</target>
       </segment>
     </unit>
     <unit id="6889663554099339228">
@@ -11412,6 +11790,15 @@
         <target>Noch größer.</target>
       </segment>
     </unit>
+    <unit id="6961525975890184052">
+      <notes>
+        <note category="description">What other people see, on the privacy page</note>
+      </notes>
+      <segment state="translated">
+        <source> Your email, wishlist, prices and purchase dates stay private from other people. Your ratings are not shown with your name; they count towards a game&apos;s average rating in your groups and across Board Vault. </source>
+        <target> Deine E-Mail, deine Wunschliste, Preise und Kaufdaten bleiben für andere Personen privat. Deine Bewertungen werden nicht mit deinem Namen angezeigt; sie zählen für die durchschnittliche Bewertung eines Spiels in deinen Gruppen und in ganz Board Vault. </target>
+      </segment>
+    </unit>
     <unit id="6963942788569864999">
       <notes>
         <note category="description">Question on the landing page</note>
@@ -11545,6 +11932,15 @@
       <segment state="translated">
         <source><ph id="0" equiv="actor" disp="actor"/> said they would rather not play <ph id="1" equiv="game" disp="game"/></source>
         <target><ph id="0" equiv="actor" disp="actor"/> hat angegeben, <ph id="1" equiv="game" disp="game"/> lieber nicht zu spielen</target>
+      </segment>
+    </unit>
+    <unit id="7058018508163407413">
+      <notes>
+        <note category="description">What is stored in the browser, on the privacy page; Clerk is the sign-in service</note>
+      </notes>
+      <segment state="translated">
+        <source>Clerk&apos;s sign-in cookies, to keep you signed in.</source>
+        <target>Die Anmelde-Cookies von Clerk, damit du angemeldet bleibst.</target>
       </segment>
     </unit>
     <unit id="7061555756418309143">
@@ -11962,6 +12358,15 @@
         <target>Zusammenfassung des Abends</target>
       </segment>
     </unit>
+    <unit id="7249572353514356522">
+      <notes>
+        <note category="description">On the privacy page; the first placeholder is the full name of the person responsible, the second the contact email address</note>
+      </notes>
+      <segment state="translated">
+        <source> Board Vault is made by Kois Studio. Kois Studio is not a company: the person responsible for your data is <ph id="0" equiv="INTERPOLATION" disp="{{ controllerName }}"/>, in Spain. For anything about your data, write to <pc id="1" equivStart="START_LINK" equivEnd="CLOSE_LINK" type="link" dispStart="&lt;a class=&quot;font-medium text-bv-primary underline&quot; [href]=&quot;contactLink&quot;&gt;" dispEnd="&lt;/a&gt;"><ph id="2" equiv="INTERPOLATION_1" disp="{{ contactEmail }}"/></pc>. </source>
+        <target> Board Vault wird von Kois Studio gemacht. Kois Studio ist kein Unternehmen: Verantwortlich für deine Daten ist <ph id="0" equiv="INTERPOLATION" disp="{{ controllerName }}"/>, in Spanien. Bei allen Fragen zu deinen Daten schreib an <pc id="1" equivStart="START_LINK" equivEnd="CLOSE_LINK" type="link" dispStart="&lt;a class=&quot;font-medium text-bv-primary underline&quot; [href]=&quot;contactLink&quot;&gt;" dispEnd="&lt;/a&gt;"><ph id="2" equiv="INTERPOLATION_1" disp="{{ contactEmail }}"/></pc>. </target>
+      </segment>
+    </unit>
     <unit id="7253597640515691983">
       <notes>
         <note category="description">Button that opens the form to change who won a game</note>
@@ -11978,6 +12383,15 @@
       <segment state="translated">
         <source>Add to <ph id="0" equiv="INTERPOLATION" disp="{{ ownershipTargetName(game.id) }}"/></source>
         <target>Zu <ph id="0" equiv="INTERPOLATION" disp="{{ ownershipTargetName(game.id) }}"/> hinzufügen</target>
+      </segment>
+    </unit>
+    <unit id="7257867430321269159">
+      <notes>
+        <note category="description">What Board Vault keeps, on the privacy page; Vercel is the hosting company</note>
+      </notes>
+      <segment state="translated">
+        <source><pc id="0" equivStart="START_TAG_STRONG" equivEnd="CLOSE_TAG_STRONG" type="other" dispStart="&lt;strong&gt;" dispEnd="&lt;/strong&gt;">Technical records:</pc> for each request, the server notes the page or route asked for, whether it worked, and your account number. When you are not signed in, your IP address is used to limit repeated requests and is forgotten within minutes. </source>
+        <target><pc id="0" equivStart="START_TAG_STRONG" equivEnd="CLOSE_TAG_STRONG" type="other" dispStart="&lt;strong&gt;" dispEnd="&lt;/strong&gt;">Technische Protokolle:</pc> Für jede Anfrage notiert der Server die angefragte Seite oder Route, ob sie funktioniert hat, und deine Kontonummer. Wenn du nicht angemeldet bist, wird deine IP-Adresse genutzt, um wiederholte Anfragen zu begrenzen, und nach wenigen Minuten vergessen. </target>
       </segment>
     </unit>
     <unit id="7258870677523380388">
@@ -12041,6 +12455,15 @@
       <segment state="translated">
         <source>Who can see my collection?</source>
         <target>Wer kann meine Sammlung sehen?</target>
+      </segment>
+    </unit>
+    <unit id="7302811123444244168">
+      <notes>
+        <note category="description">What Board Vault keeps, on the privacy page</note>
+      </notes>
+      <segment state="translated">
+        <source><pc id="0" equivStart="START_TAG_STRONG" equivEnd="CLOSE_TAG_STRONG" type="other" dispStart="&lt;strong&gt;" dispEnd="&lt;/strong&gt;">Your emails to us:</pc> stored with our email provider in Switzerland, which the EU recognises as protecting data adequately, and kept while they are useful to answer you and follow up. </source>
+        <target><pc id="0" equivStart="START_TAG_STRONG" equivEnd="CLOSE_TAG_STRONG" type="other" dispStart="&lt;strong&gt;" dispEnd="&lt;/strong&gt;">Deine E-Mails an uns:</pc> werden bei unserem E-Mail-Anbieter in der Schweiz gespeichert, die die EU als Land mit angemessenem Datenschutzniveau anerkennt, und aufbewahrt, solange sie nützlich sind, um dir zu antworten und nachzufassen. </target>
       </segment>
     </unit>
     <unit id="7306190949587501209">
@@ -12149,6 +12572,15 @@
       <segment state="translated">
         <source>The more sessions you record, the better the group’s memory becomes.</source>
         <target>Je mehr Spieleabende ihr eintragt, desto besser erinnert sich die Gruppe.</target>
+      </segment>
+    </unit>
+    <unit id="7360250126742640921">
+      <notes>
+        <note category="description">Under the contact link in the footer of the public pages; the placeholder is the contact email address</note>
+      </notes>
+      <segment state="translated">
+        <source>Questions or ideas? Write to <ph id="0" equiv="INTERPOLATION" disp="{{ contactEmail }}"/>. A person reads every email.</source>
+        <target>Fragen oder Ideen? Schreib an <ph id="0" equiv="INTERPOLATION" disp="{{ contactEmail }}"/>. Eine Person liest jede E-Mail.</target>
       </segment>
     </unit>
     <unit id="7366703022700051940">
@@ -12644,9 +13076,9 @@
       <notes>
         <note category="description">Accessible name of a game&apos;s cover link in a recorded game night; the placeholder is the game title</note>
       </notes>
-      <segment state="initial">
+      <segment state="translated">
         <source>View <ph id="0" equiv="title" disp="title"/></source>
-        <target><ph id="0" equiv="title" disp="gameTitle(game)"/> ansehen</target>
+        <target><ph id="0" equiv="title" disp="title"/> ansehen</target>
       </segment>
     </unit>
     <unit id="7647510484935085361">
@@ -12930,15 +13362,6 @@
         <target>Wer in dieser Gruppe was geändert hat, neueste zuerst. Hier lässt sich nichts bearbeiten: Ein Fehler wird durch Zurückändern behoben, und beide Änderungen bleiben stehen.</target>
       </segment>
     </unit>
-    <unit id="7786483200692238826">
-      <notes>
-        <note category="description">Note in the footer of the public pages</note>
-      </notes>
-      <segment state="translated">
-        <source>Board Vault is an early product; privacy, terms, and support content will be added before public launch.</source>
-        <target>Board Vault ist ein junges Produkt; Datenschutz, Nutzungsbedingungen und Support kommen vor dem öffentlichen Start dazu.</target>
-      </segment>
-    </unit>
     <unit id="7794280213228432643">
       <notes>
         <note category="description">Button on the sign-up page when the sign-up service is down</note>
@@ -12946,6 +13369,15 @@
       <segment state="translated">
         <source>Try secure sign-up again</source>
         <target>Sichere Registrierung erneut versuchen</target>
+      </segment>
+    </unit>
+    <unit id="7796921563219723714">
+      <notes>
+        <note category="description">How long data is kept, on the privacy page; Settings → Account names the place in the app; Deleted account is the name shown instead of a deleted account</note>
+      </notes>
+      <segment state="translated">
+        <source><pc id="0" equivStart="START_TAG_STRONG" equivEnd="CLOSE_TAG_STRONG" type="other" dispStart="&lt;strong&gt;" dispEnd="&lt;/strong&gt;">Your account</pc> stays until you delete it in <pc id="1" equivStart="START_LINK" equivEnd="CLOSE_LINK" type="link" dispStart="&lt;a class=&quot;font-medium text-bv-primary underline&quot; routerLink=&quot;/settings/account&quot;&gt;" dispEnd="&lt;/a&gt;">Settings → Account</pc>. Deleting it ends your sign-in at once, removes your email, username, name, avatar, shelf, wishlist and ratings from the database, and deletes your sign-in account at Clerk. Short-lived copies expire as described below. The game nights you took part in stay in your groups&apos; history, with you shown as “Deleted account”. </source>
+        <target><pc id="0" equivStart="START_TAG_STRONG" equivEnd="CLOSE_TAG_STRONG" type="other" dispStart="&lt;strong&gt;" dispEnd="&lt;/strong&gt;">Dein Konto</pc> bleibt, bis du es in <pc id="1" equivStart="START_LINK" equivEnd="CLOSE_LINK" type="link" dispStart="&lt;a class=&quot;font-medium text-bv-primary underline&quot; routerLink=&quot;/settings/account&quot;&gt;" dispEnd="&lt;/a&gt;">Einstellungen → Konto</pc> löschst. Das Löschen beendet deine Anmeldung sofort, entfernt deine E-Mail, deinen Benutzernamen, deinen Namen, dein Avatar, dein Regal, deine Wunschliste und deine Bewertungen aus der Datenbank und löscht dein Anmeldekonto bei Clerk. Kurzlebige Kopien laufen wie weiter unten beschrieben ab. Die Spieleabende, an denen du teilgenommen hast, bleiben im Verlauf deiner Gruppen, wo du als „Gelöschtes Konto“ angezeigt wirst. </target>
       </segment>
     </unit>
     <unit id="7799987464743006164">
@@ -13219,6 +13651,15 @@
         <target>Du bist auf dem neuesten Stand.</target>
       </segment>
     </unit>
+    <unit id="7892199283551347204">
+      <notes>
+        <note category="description">Subject of the email a reader starts from the privacy page</note>
+      </notes>
+      <segment state="translated">
+        <source>About my data in Board Vault</source>
+        <target>Zu meinen Daten in Board Vault</target>
+      </segment>
+    </unit>
     <unit id="7894133274112638816">
       <notes>
         <note category="description">Hint in the edition chooser: your copy shows the title of the edition you pick</note>
@@ -13226,6 +13667,15 @@
       <segment state="translated">
         <source>Your copy shows the title of the edition you pick.</source>
         <target>Dein Exemplar zeigt den Titel der Ausgabe, die du wählst.</target>
+      </segment>
+    </unit>
+    <unit id="7894945541928150283">
+      <notes>
+        <note category="description">Heading on the privacy page</note>
+      </notes>
+      <segment state="translated">
+        <source>Changes to this page</source>
+        <target>Änderungen an dieser Seite</target>
       </segment>
     </unit>
     <unit id="7899674800818281248">
@@ -13280,6 +13730,15 @@
         <target>Am meisten gespielt: <pc id="0" equivStart="START_TAG_STRONG" equivEnd="CLOSE_TAG_STRONG" type="other" dispStart="&lt;strong class=&quot;text-bv-text&quot;&gt;" dispEnd="&lt;/strong&gt;"><ph id="1" equiv="INTERPOLATION" disp="{{ mostPlayed }}"/></pc></target>
       </segment>
     </unit>
+    <unit id="7911416166208830577">
+      <notes>
+        <note category="description">Heading of the footer column of links to the privacy page and to contact Board Vault</note>
+      </notes>
+      <segment state="translated">
+        <source>Help</source>
+        <target>Hilfe</target>
+      </segment>
+    </unit>
     <unit id="7914959784420103692">
       <notes>
         <note category="description">Label on the group&apos;s settings page</note>
@@ -13305,6 +13764,15 @@
       <segment state="translated">
         <source>Added to the <ph id="0" equiv="date" disp="this.nextNightLabel()"/> shortlist.</source>
         <target>Zur Vorauswahl für <ph id="0" equiv="date" disp="this.nextNightLabel()"/> hinzugefügt.</target>
+      </segment>
+    </unit>
+    <unit id="7922989125096435449">
+      <notes>
+        <note category="description">Footer link that writes an email to Board Vault</note>
+      </notes>
+      <segment state="translated">
+        <source>Contact</source>
+        <target>Kontakt</target>
       </segment>
     </unit>
     <unit id="7924912164252500969">
@@ -14326,7 +14794,7 @@
     </unit>
     <unit id="8440128775129354214">
       <notes>
-        <note category="description">Heading of the Privacy settings</note>
+        <note category="description">Footer link to the privacy page</note>
       </notes>
       <segment state="translated">
         <source>Privacy</source>
@@ -15036,6 +15504,15 @@
         <target><ph id="0" equiv="INTERPOLATION" disp="{{ play.winner }}"/> hat gewonnen</target>
       </segment>
     </unit>
+    <unit id="8739086112854947732">
+      <notes>
+        <note category="description">On the privacy page; Clerk is the sign-in service</note>
+      </notes>
+      <segment state="translated">
+        <source> Connections are encrypted. Board Vault&apos;s code is <pc id="0" equivStart="START_LINK" equivEnd="CLOSE_LINK" type="link" dispStart="&lt;a class=&quot;font-medium text-bv-primary underline&quot; href=&quot;https://github.com/kois-studio/board-vault&quot; target=&quot;_blank&quot; rel=&quot;noopener&quot;&gt;" dispEnd="&lt;/a&gt;">public on GitHub</pc>, so anyone can check how it works. </source>
+        <target> Verbindungen sind verschlüsselt. Der Code von Board Vault ist <pc id="0" equivStart="START_LINK" equivEnd="CLOSE_LINK" type="link" dispStart="&lt;a class=&quot;font-medium text-bv-primary underline&quot; href=&quot;https://github.com/kois-studio/board-vault&quot; target=&quot;_blank&quot; rel=&quot;noopener&quot;&gt;" dispEnd="&lt;/a&gt;">öffentlich auf GitHub</pc>, sodass jede Person nachprüfen kann, wie er funktioniert. </target>
+      </segment>
+    </unit>
     <unit id="8739336026258908775">
       <segment state="translated">
         <source><ph id="0" equiv="person" disp="actor"/> joined <ph id="1" equiv="group" disp="group"/>.</source>
@@ -15278,6 +15755,15 @@
         <target>Dein Exemplar:</target>
       </segment>
     </unit>
+    <unit id="8878700331247603166">
+      <notes>
+        <note category="description">Heading on the privacy page</note>
+      </notes>
+      <segment state="translated">
+        <source>Security</source>
+        <target>Sicherheit</target>
+      </segment>
+    </unit>
     <unit id="8881851115595994876">
       <notes>
         <note category="description">Toast when adding a game to My Games from its page failed</note>
@@ -15439,6 +15925,15 @@
       <segment state="translated">
         <source>Keep editing</source>
         <target>Weiter bearbeiten</target>
+      </segment>
+    </unit>
+    <unit id="898240920872349159">
+      <notes>
+        <note category="description">What Board Vault keeps, on the privacy page; Settings → Privacy names the place in the app</note>
+      </notes>
+      <segment state="translated">
+        <source><pc id="0" equivStart="START_TAG_STRONG" equivEnd="CLOSE_TAG_STRONG" type="other" dispStart="&lt;strong&gt;" dispEnd="&lt;/strong&gt;">Usage statistics:</pc> which pages you open and which features you use, under a pseudonym instead of your name, never what you write. You can turn them off in <pc id="1" equivStart="START_LINK" equivEnd="CLOSE_LINK" type="link" dispStart="&lt;a class=&quot;font-medium text-bv-primary underline&quot; routerLink=&quot;/settings/privacy&quot;&gt;" dispEnd="&lt;/a&gt;">Settings → Privacy</pc>. </source>
+        <target><pc id="0" equivStart="START_TAG_STRONG" equivEnd="CLOSE_TAG_STRONG" type="other" dispStart="&lt;strong&gt;" dispEnd="&lt;/strong&gt;">Nutzungsstatistiken:</pc> welche Seiten du öffnest und welche Funktionen du nutzt, unter einem Pseudonym statt deines Namens, nie das, was du schreibst. Du kannst sie in <pc id="1" equivStart="START_LINK" equivEnd="CLOSE_LINK" type="link" dispStart="&lt;a class=&quot;font-medium text-bv-primary underline&quot; routerLink=&quot;/settings/privacy&quot;&gt;" dispEnd="&lt;/a&gt;">Einstellungen → Datenschutz</pc> ausschalten. </target>
       </segment>
     </unit>
     <unit id="8990201165371153225">
