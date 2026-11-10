@@ -214,49 +214,6 @@ describe('Api response contracts', () => {
         await expect(response).resolves.toEqual([])
     })
 
-    it('validates pending Clerk group invitations at the API boundary', async () => {
-        const response = firstValueFrom(api.getClerkGroupInvitations(7))
-        const request = http.expectOne(`${environment.apiUrl}/groups/7/clerk-invitations`)
-
-        expect(request.request.method).toBe('GET')
-        request.flush([
-            {
-                invitationId: 'inv_123',
-                emailAddress: 'friend@example.com',
-                status: 'pending',
-                createdAt: '2026-09-05T10:00:00.000Z',
-            },
-        ])
-
-        await expect(response).resolves.toEqual([
-            {
-                invitationId: 'inv_123',
-                emailAddress: 'friend@example.com',
-                status: 'pending',
-                createdAt: '2026-09-05T10:00:00.000Z',
-            },
-        ])
-    })
-
-    it('uses the group-scoped endpoint for Clerk invitation revocation', async () => {
-        const response = firstValueFrom(api.revokeClerkGroupInvitation(7, 'inv_123'))
-        const request = http.expectOne(`${environment.apiUrl}/groups/7/clerk-invitations/inv_123`)
-
-        expect(request.request.method).toBe('DELETE')
-        request.flush({ success: true })
-
-        await expect(response).resolves.toEqual({ success: true })
-    })
-
-    it('rejects a provider invitation with a non-pending status', async () => {
-        const response = firstValueFrom(api.getClerkGroupInvitations(7))
-        const request = http.expectOne(`${environment.apiUrl}/groups/7/clerk-invitations`)
-
-        request.flush([{ invitationId: 'inv_123', emailAddress: 'friend@example.com', status: 'revoked', createdAt: '2026-09-05' }])
-
-        await expect(response).rejects.toThrow()
-    })
-
     it('rejects malformed recommendation lens responses at the API boundary', async () => {
         const response = firstValueFrom(api.getRecommendations({ groupId: 7, attendeeIds: [1], decisionLens: 'fresh' }))
         const request = http.expectOne(`${environment.apiUrl}/play/recommendations`)
@@ -403,15 +360,6 @@ describe('Api response contracts', () => {
         const request = http.expectOne(`${environment.apiUrl}/sessions/scheduled`)
 
         request.flush({ sessionId: 12, status: 'completed' })
-
-        await expect(response).rejects.toThrow()
-    })
-
-    it('rejects a malformed invitation handoff response at the API boundary', async () => {
-        const response = firstValueFrom(api.createClerkGroupInvitation(7, 'friend@example.com'))
-        const request = http.expectOne(`${environment.apiUrl}/groups/7/clerk-invitations`)
-
-        request.flush({ invitationId: 'inv_123', emailAddress: 'not-an-email', url: '/register' })
 
         await expect(response).rejects.toThrow()
     })

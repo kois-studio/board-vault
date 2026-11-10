@@ -35,9 +35,6 @@ describe('GroupEditComponent (Manage group)', () => {
             refreshUserGroups: vi.fn(),
             invitationsGroupIndex: signal({ 7: [{ id: 30, toAccountId: 3, toAccount: { id: 3, username: 'invited' } }] }),
             addInvitedToGroup: vi.fn(() => of({})),
-            inviteNewPersonToGroup: vi.fn(() =>
-                of({ invitationId: 'inv_1', emailAddress: 'ana@example.com', url: 'https://example.test' }),
-            ),
             removeMemberFromGroup: vi.fn(() => of({})),
             removeInvitedFromGroup: vi.fn(() => of({})),
         }
@@ -53,7 +50,6 @@ describe('GroupEditComponent (Manage group)', () => {
                     provide: Api,
                     useValue: {
                         getGroupPeople: vi.fn(() => of({ people: [placeholder(31, 'Ana'), placeholder(32, 'Leo')] })),
-                        getClerkGroupInvitations: vi.fn(() => of([])),
                     },
                 },
                 { provide: DataService, useValue: dataService },
@@ -139,14 +135,13 @@ describe('GroupEditComponent (Manage group)', () => {
         expect(fixture.nativeElement.textContent).not.toContain('This group could not be loaded.')
     })
 
-    it('sends an email invitation for an address, and an in-app one for a username', async () => {
+    it('invites by username, and sends nothing for an email address (#277)', async () => {
         const { component, dataService } = await setup()
 
         submit(component, 'ana@example.com')
-        expect(component.inviteKind()).toBe('email')
-        expect(dataService.inviteNewPersonToGroup).toHaveBeenCalledWith(7, 'ana@example.com', null)
+        expect(component.inviteProblem()).toContain('not their email')
+        expect(dataService.addInvitedToGroup).not.toHaveBeenCalled()
 
-        await vi.waitFor(() => expect(component.isLoading()).toBe(false))
         submit(component, 'leo_plays')
         await vi.waitFor(() => expect(component.isLoading()).toBe(false))
         expect(dataService.addInvitedToGroup).toHaveBeenCalledWith(7, 'leo_plays', null)
@@ -156,8 +151,8 @@ describe('GroupEditComponent (Manage group)', () => {
         const { component, dataService } = await setup()
 
         const cases: Array<[string, string]> = [
-            ['', 'Enter their username or email.'],
-            ['ana@', 'Enter a valid email address.'],
+            ['', 'Enter their username.'],
+            ['ana@', "Use their Board Vault username, not their email. Ask them for it if you don't know it."],
             ['abc', 'Usernames have 4 to 20 characters.'],
             ['Member', 'They are already in this group.'],
             ['invited', 'They already have an invitation waiting.'],
@@ -167,7 +162,6 @@ describe('GroupEditComponent (Manage group)', () => {
             expect(component.inviteProblem()).toBe(problem)
         }
         expect(dataService.addInvitedToGroup).not.toHaveBeenCalled()
-        expect(dataService.inviteNewPersonToGroup).not.toHaveBeenCalled()
     })
 
     it('opens with the person to invite already chosen when coming from their card', async () => {
@@ -175,8 +169,8 @@ describe('GroupEditComponent (Manage group)', () => {
 
         expect(component.claimablePeople().map(({ person }) => person.displayName)).toEqual(['Ana', 'Leo'])
         expect(component.selectedClaimPersonId()).toBe(32)
-        submit(component, 'leo@example.com')
-        expect(dataService.inviteNewPersonToGroup).toHaveBeenCalledWith(7, 'leo@example.com', 32)
+        submit(component, 'leo_plays')
+        expect(dataService.addInvitedToGroup).toHaveBeenCalledWith(7, 'leo_plays', 32)
     })
 
     it('removes a member and withdraws an invitation at once, with no separate save', async () => {
@@ -196,7 +190,7 @@ describe('GroupEditComponent (Manage group)', () => {
         // The page loads the people once it knows you own the group: make that first load answer this way.
         const setupWith = async (answer: Observable<PeopleAnswer>, query: Record<string, string> = {}) => {
             const getGroupPeople = vi.fn<() => Observable<PeopleAnswer>>().mockReturnValue(answer)
-            TestBed.overrideProvider(Api, { useValue: { getGroupPeople, getClerkGroupInvitations: vi.fn(() => of([])) } })
+            TestBed.overrideProvider(Api, { useValue: { getGroupPeople } })
             const result = await setup(query)
             result.fixture.detectChanges()
             const page = () => result.fixture.nativeElement as HTMLElement
@@ -212,8 +206,8 @@ describe('GroupEditComponent (Manage group)', () => {
             expect(byTestId('people-error')?.textContent).toContain('can’t be linked to someone already in the group')
             expect(page().querySelector('#group-invite-person')).toBeNull()
             expect(sendButton().disabled).toBe(false)
-            submit(component, 'ana@example.com')
-            expect(dataService.inviteNewPersonToGroup).toHaveBeenCalledWith(7, 'ana@example.com', null)
+            submit(component, 'ana_plays')
+            expect(dataService.addInvitedToGroup).toHaveBeenCalledWith(7, 'ana_plays', null)
         })
 
         it('holds the invitation for a chosen person until the people load, so it is not sent unlinked', async () => {
@@ -221,9 +215,7 @@ describe('GroupEditComponent (Manage group)', () => {
 
             expect(byTestId('people-error')).not.toBeNull()
             expect(sendButton().disabled).toBe(true)
-            submit(component, 'leo@example.com')
             submit(component, 'leo_plays')
-            expect(dataService.inviteNewPersonToGroup).not.toHaveBeenCalled()
             expect(dataService.addInvitedToGroup).not.toHaveBeenCalled()
         })
 
@@ -237,8 +229,8 @@ describe('GroupEditComponent (Manage group)', () => {
             slow.next({ people: [placeholder(32, 'Leo')] })
             fixture.detectChanges()
             expect(sendButton().disabled).toBe(false)
-            submit(component, 'leo@example.com')
-            expect(dataService.inviteNewPersonToGroup).toHaveBeenCalledWith(7, 'leo@example.com', 32)
+            submit(component, 'leo_plays')
+            expect(dataService.addInvitedToGroup).toHaveBeenCalledWith(7, 'leo_plays', 32)
         })
 
         it('loads them again on Retry, keeping the message until they arrive, then picks the person and moves focus to the menu', async () => {

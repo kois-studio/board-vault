@@ -289,19 +289,6 @@ export type GroupAcquisitionEntryType = {
     decisionBy: PublicUserType | null
 }
 
-export type ClerkGroupInvitationType = {
-    invitationId: string
-    emailAddress: string
-    url: string
-}
-
-export type ClerkGroupInvitationSummaryType = {
-    invitationId: string
-    emailAddress: string
-    status: 'pending'
-    createdAt: string
-}
-
 // #region Invitation
 
 export type InvitationType = {

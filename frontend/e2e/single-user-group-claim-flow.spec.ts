@@ -1,29 +1,26 @@
 import { execFileSync } from 'node:child_process'
 
-import { createClerkClient } from '@clerk/backend'
-import { setupClerkTestingToken } from '@clerk/testing/playwright'
-import { expect, test } from './fixtures/clerk-testing'
+import { expect, test } from '@playwright/test'
 
 const enabled = process.env['PLAYWRIGHT_SINGLE_USER_GROUP_CLAIM'] === '1'
 const ownerStorageState = process.env['PLAYWRIGHT_OWNER_STORAGE_STATE']
-const inviteeEmail = process.env['PLAYWRIGHT_SINGLE_USER_GROUP_INVITEE_EMAIL']
-const inviteeUsername = process.env['PLAYWRIGHT_SINGLE_USER_GROUP_INVITEE_USERNAME']
-const inviteePassword = process.env['PLAYWRIGHT_SINGLE_USER_GROUP_INVITEE_PASSWORD']
+// An invitee who already has an account: people are invited by username only (#277).
+const inviteeStorageState = process.env['PLAYWRIGHT_INVITEE_STORAGE_STATE']
+const inviteeUsername = process.env['PLAYWRIGHT_INVITEE_USERNAME']
 const gameTitle = process.env['PLAYWRIGHT_SINGLE_USER_GROUP_GAME_TITLE']
 const databasePath = process.env['PLAYWRIGHT_SINGLE_USER_GROUP_DB_PATH']
 const apiPort = process.env['PLAYWRIGHT_API_PORT']
 
 test.describe('single-user group claim flow', () => {
     test.skip(
-        !enabled || !ownerStorageState || !inviteeEmail || !inviteeUsername || !inviteePassword || !gameTitle || !databasePath,
-        'Set the explicit flag, owner state, disposable invitee credentials, a fixture game, and the local SQLite path.',
+        !enabled || !ownerStorageState || !inviteeStorageState || !inviteeUsername || !gameTitle || !databasePath,
+        'Set the explicit flag, owner and invitee states, the invitee username, a fixture game, and the local SQLite path.',
     )
     test.use({ storageState: ownerStorageState })
 
     test('creates group people, configures one, and verifies the registered invitee claim in SQLite', async ({ page, browser, baseURL }) => {
-        const inviteeContext = await browser.newContext({ storageState: { cookies: [], origins: [] } })
+        const inviteeContext = await browser.newContext({ storageState: inviteeStorageState })
         const inviteePage = await inviteeContext.newPage()
-        let providerInvitationId: string | undefined
 
         const routeBoardVaultApi = async (targetPage: typeof page) => {
             if (!apiPort || apiPort === '3000') return
@@ -73,27 +70,15 @@ test.describe('single-user group claim flow', () => {
             await page.goto(`${baseURL}/groups/${groupId}/edit`)
             const claimPersonSelect = page.getByLabel('Are they someone already in this group?')
             await claimPersonSelect.selectOption({ label: 'Yes, they are Ana' })
-            await page.getByLabel('Their username or email').fill(inviteeEmail ?? '')
+            await page.getByLabel('Their username', { exact: true }).fill(inviteeUsername ?? '')
             await page.getByRole('button', { name: 'Send invite', exact: true }).click()
+            await expect(page.getByRole('region', { name: 'Pending invitations' }).getByText(inviteeUsername ?? '', { exact: true })).toBeVisible()
 
-            const invitationLink = await page.getByRole('link', { name: 'Open link' }).getAttribute('href')
-            expect(invitationLink).toContain('/v1/tickets/accept?ticket=')
-            const ticket = invitationLink ? new URL(invitationLink).searchParams.get('ticket') : null
-            const ticketPayload = ticket?.split('.')[1]
-            if (ticketPayload) {
-                const payload = JSON.parse(Buffer.from(ticketPayload, 'base64url').toString('utf8')) as { sid?: unknown }
-                providerInvitationId = typeof payload.sid === 'string' ? payload.sid : undefined
-            }
-
-            await inviteePage.goto(invitationLink ?? '')
-            await expect(inviteePage.getByRole('heading', { name: 'Join your Board Vault group' })).toBeVisible()
-            await setupClerkTestingToken({ context: inviteeContext })
-            await inviteePage.getByLabel('Choose a username').fill(inviteeUsername ?? '')
-            await inviteePage.getByLabel('Create a password').fill(inviteePassword ?? '')
-            await inviteePage.getByLabel('Confirm your password').fill(inviteePassword ?? '')
-            await inviteePage.getByRole('button', { name: 'Join the group', exact: true }).click()
-
-            await expect(inviteePage).toHaveURL(/\/dashboard$/)
+            await inviteePage.goto(`${baseURL}/groups`)
+            await expect(inviteePage.getByRole('heading', { name: 'Invitations waiting for you' })).toBeVisible()
+            const accepted = inviteePage.waitForResponse((response) => /\/invitations\/\d+\/accept$/.test(response.url()) && response.ok())
+            await inviteePage.getByRole('button', { name: /Accept/ }).first().click()
+            await accepted
             await inviteePage.goto(`${baseURL}/groups/${groupId}`)
             await expect(inviteePage.getByText('A group person is waiting for you')).toBeVisible()
             await inviteePage.getByRole('link', { name: 'Review and claim' }).click()
@@ -108,12 +93,12 @@ test.describe('single-user group claim flow', () => {
             await expect(inviteePage.getByRole('heading', { name: 'Ana', exact: true }).locator('..')).toContainText('Account linked')
 
             const groupPersonRows = queryDatabase(
-                `SELECT id, accountId, kind, claimEmail, claimExpiresAt FROM GroupPerson WHERE groupId = ${Number(groupId)} AND displayName = 'Ana';`,
+                `SELECT id, accountId, kind FROM GroupPerson WHERE groupId = ${Number(groupId)} AND displayName = 'Ana';`,
             )
             expect(groupPersonRows).toHaveLength(1)
-            expect(groupPersonRows[0]).toEqual(
-                expect.objectContaining({ kind: 'linked', claimEmail: null, claimExpiresAt: null }),
-            )
+            expect(groupPersonRows[0]).toEqual(expect.objectContaining({ kind: 'linked' }))
+            // The claim used up the invitation that allowed it (#277).
+            expect(queryDatabase(`SELECT id FROM Invitation WHERE groupId = ${Number(groupId)};`)).toEqual([])
 
             const groupPersonId = Number(groupPersonRows[0].id)
             const accountId = Number(groupPersonRows[0].accountId)
@@ -129,13 +114,6 @@ test.describe('single-user group claim flow', () => {
             ])
         } finally {
             await inviteeContext.close()
-
-            if (inviteeEmail && process.env['CLERK_SECRET_KEY']) {
-                const clerkClient = createClerkClient({ secretKey: process.env['CLERK_SECRET_KEY'] })
-                if (providerInvitationId) await clerkClient.invitations.revokeInvitation(providerInvitationId).catch(() => undefined)
-                const users = await clerkClient.users.getUserList({ emailAddress: [inviteeEmail] })
-                for (const user of users.data) await clerkClient.users.deleteUser(user.id)
-            }
         }
     })
 })

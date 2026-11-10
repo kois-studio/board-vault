@@ -1,128 +1,54 @@
 import { signal } from '@angular/core'
 import { TestBed } from '@angular/core/testing'
-import { Router } from '@angular/router'
-import { of } from 'rxjs'
-import { Api } from '../../../api/api'
+import { provideRouter } from '@angular/router'
 import { ClerkService } from '../../../core/services/clerk.service'
 import { RegisterComponent } from './register.component'
 
-describe('RegisterComponent invitation onboarding', () => {
-    function createComponent(invitationSignIn: boolean) {
+describe('RegisterComponent', () => {
+    function render(selfRegistrationEnabled: boolean) {
         const clerkService = {
             isConfigured: signal(true),
             isAvailable: signal(true),
-            isSelfRegistrationEnabled: signal(false),
-            isInvitationFlow: signal(true),
-            isInvitationSignIn: signal(invitationSignIn),
-            clearInvitationState: vi.fn().mockName('clearInvitationState'),
-            completeInvitationSignUp: vi.fn().mockName('completeInvitationSignUp').mockResolvedValue(undefined),
+            isSelfRegistrationEnabled: signal(selfRegistrationEnabled),
+            openSignUp: vi.fn().mockName('openSignUp'),
         }
-        const router = { navigateByUrl: vi.fn().mockName('navigateByUrl').mockResolvedValue(true) }
-        const api = { updatePrivacySettings: vi.fn((body: { usageAnalytics: boolean }) => of({ ...body, noticeAnswered: true })) }
 
         TestBed.configureTestingModule({
             imports: [RegisterComponent],
-            providers: [
-                { provide: ClerkService, useValue: clerkService },
-                { provide: Router, useValue: router },
-                { provide: Api, useValue: api },
-            ],
+            providers: [provideRouter([]), { provide: ClerkService, useValue: clerkService }],
         })
-
-        return {
-            fixture: TestBed.createComponent(RegisterComponent),
-            clerkService,
-            router,
-            api,
-        }
-    }
-
-    it('lets an existing account continue without asking for replacement credentials', async () => {
-        const { fixture, clerkService, router } = createComponent(true)
-        const component = fixture.componentInstance
-
-        await component.completeInvitationSignUp()
-
-        expect(clerkService.completeInvitationSignUp).toHaveBeenCalledWith('', '')
-        expect(router.navigateByUrl).toHaveBeenCalledWith('/dashboard')
-    })
-
-    it('saves the usage statistics choice made on the sign-up form, once the account exists (#158)', async () => {
-        const { fixture, api } = createComponent(false)
-        const component = fixture.componentInstance
+        const fixture = TestBed.createComponent(RegisterComponent)
         fixture.detectChanges()
 
-        const toggle = (fixture.nativeElement as HTMLElement).querySelector<HTMLButtonElement>('[role="switch"]')
-        expect(toggle?.getAttribute('aria-checked')).toBe('true')
-        toggle?.click()
+        return { fixture, clerkService, text: (fixture.nativeElement as HTMLElement).textContent ?? '' }
+    }
 
-        component.invitationForm.setValue({ username: 'new-invitee', password: 'a'.repeat(15), confirmPassword: 'a'.repeat(15) })
-        await component.completeInvitationSignUp()
+    it('opens Clerk sign-up while self-registration is open', () => {
+        const { fixture, clerkService, text } = render(true)
 
-        expect(api.updatePrivacySettings).toHaveBeenCalledWith({ usageAnalytics: false })
+        expect(text).toContain('Create your Board Vault account')
+        ;(fixture.nativeElement as HTMLElement).querySelector<HTMLButtonElement>('button')?.click()
+        expect(clerkService.openSignUp).toHaveBeenCalled()
     })
 
-    it('leaves an existing account to the notice in the app', async () => {
-        const { fixture, api } = createComponent(true)
+    it('explains access while self-registration is closed, and offers no invitation link (#277)', () => {
+        const { text } = render(false)
 
-        await fixture.componentInstance.completeInvitationSignUp()
-
-        expect(api.updatePrivacySettings).not.toHaveBeenCalled()
+        expect(text).toContain('Board Vault is still invite-only')
+        expect(text).toContain('by your username')
+        expect(text).not.toContain('sign-up link')
     })
 
-    it('requires the new invitee credentials before completing registration', async () => {
-        const { fixture, clerkService } = createComponent(false)
-        const component = fixture.componentInstance
+    it('ignores a Clerk invitation ticket in the address', () => {
+        history.replaceState(null, '', '/register?__clerk_ticket=abc')
 
-        await component.completeInvitationSignUp()
-        expect(clerkService.completeInvitationSignUp).not.toHaveBeenCalled()
+        try {
+            const { text } = render(false)
 
-        component.invitationForm.setValue({
-            username: 'new-invitee',
-            password: 'a'.repeat(15),
-            confirmPassword: 'a'.repeat(15),
-        })
-        await component.completeInvitationSignUp()
-
-        expect(clerkService.completeInvitationSignUp).toHaveBeenCalledWith('new-invitee', 'a'.repeat(15))
-    })
-
-    it('maps provider failures to safe, actionable recovery copy', async () => {
-        const { fixture, clerkService } = createComponent(false)
-        const component = fixture.componentInstance
-
-        component.invitationForm.setValue({
-            username: 'new-invitee',
-            password: 'a'.repeat(15),
-            confirmPassword: 'a'.repeat(15),
-        })
-
-        const failures = [
-            [{ errors: [{ code: 'captcha_invalid' }] }, 'security check'],
-            [{ errors: [{ code: 'form_identifier_exists' }] }, 'username is unavailable'],
-            [{ errors: [{ code: 'form_password_pwned' }] }, 'secure sign-up requirements'],
-            [{ errors: [{ code: 'ticket_expired' }] }, 'fresh invitation'],
-            [new Error('provider unavailable'), 'Check the fields and security check'],
-        ] as const
-
-        for (const [failure, expectedCopy] of failures) {
-            clerkService.completeInvitationSignUp.mockRejectedValue(failure)
-            await component.completeInvitationSignUp()
-
-            expect(component.invitationError()).toContain(expectedCopy)
-            component.invitationError.set(null)
+            expect(text).not.toContain('Join your Board Vault group')
+            expect(text).toContain('Board Vault is still invite-only')
+        } finally {
+            history.replaceState(null, '', '/')
         }
-
-        expect(component.isInvitationSubmitting()).toBe(false)
-    })
-
-    it('clears stale invitation state when returning to private-beta access', async () => {
-        const { fixture, clerkService, router } = createComponent(false)
-        const component = fixture.componentInstance
-
-        await component.returnToPrivateBeta()
-
-        expect(router.navigateByUrl).toHaveBeenCalledWith('/register')
-        expect(clerkService.clearInvitationState).toHaveBeenCalled()
     })
 })

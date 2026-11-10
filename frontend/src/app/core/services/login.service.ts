@@ -247,11 +247,7 @@ export class LoginService {
     }
 
     private get clerkHandoffErrorMessage(): string {
-        if (this.clerkService.isInvitationFlow()) {
-            return $localize`:Error when joining a group from an invitation link failed:We could not finish joining this group. The invitation may have expired, already been used, or the group may no longer be available. Try again, or sign out and ask the group owner for a fresh invitation.`
-        }
-
-        return $localize`:Error when finishing sign-in failed:We could not finish connecting this sign-in to Board Vault. Try again, or sign out and use your invitation link.`
+        return $localize`:Error when finishing sign-in failed:We could not finish connecting this sign-in to Board Vault. Try again, or sign out and sign in again.`
     }
 
     /**
