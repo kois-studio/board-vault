@@ -4778,15 +4778,6 @@
         <target>Tu as ajouté <pc id="0" equivStart="START_LINK" equivEnd="CLOSE_LINK" type="link" dispStart="&lt;a [routerLink]=&quot;[&apos;/games/&apos;, activity.gameData.id]&quot; class=&quot;font-medium hover:underline&quot; [attr.lang]=&quot;titleLanguage(activity.gameData)&quot;&gt;" dispEnd="&lt;/a&gt;"><ph id="1" equiv="INTERPOLATION" disp="{{ activity.gameData | gameTitle }}"/></pc> à ta collection</target>
       </segment>
     </unit>
-    <unit id="3438545670918457570">
-      <notes>
-        <note category="description">Company that processes data for Board Vault, on the privacy page</note>
-      </notes>
-      <segment state="translated">
-        <source><pc id="0" equivStart="START_TAG_STRONG" equivEnd="CLOSE_TAG_STRONG" type="other" dispStart="&lt;strong&gt;" dispEnd="&lt;/strong&gt;">Turso</pc> (ChiselStrike Inc., United States): the database, stored in Ireland. </source>
-        <target><pc id="0" equivStart="START_TAG_STRONG" equivEnd="CLOSE_TAG_STRONG" type="other" dispStart="&lt;strong&gt;" dispEnd="&lt;/strong&gt;">Turso</pc> (ChiselStrike Inc., États-Unis) : la base de données, hébergée en Irlande. </target>
-      </segment>
-    </unit>
     <unit id="3442074134540073346">
       <notes>
         <note category="description">Heading on the page where you take over a person prepared for you in a group; the placeholder is that person&apos;s name</note>
@@ -10155,6 +10146,15 @@
         <target>Choisis qui l’a</target>
       </segment>
     </unit>
+    <unit id="6129838331331540445">
+      <notes>
+        <note category="description">Company that processes data for Board Vault, on the privacy page</note>
+      </notes>
+      <segment state="translated">
+        <source><pc id="0" equivStart="START_TAG_STRONG" equivEnd="CLOSE_TAG_STRONG" type="other" dispStart="&lt;strong&gt;" dispEnd="&lt;/strong&gt;">Turso</pc> (ChiselStrike Inc., United States): the database, stored in Ireland. We have not yet confirmed whether this involves transfers outside the EU, or which safeguard applies. </source>
+        <target><pc id="0" equivStart="START_TAG_STRONG" equivEnd="CLOSE_TAG_STRONG" type="other" dispStart="&lt;strong&gt;" dispEnd="&lt;/strong&gt;">Turso</pc> (ChiselStrike Inc., États-Unis) : la base de données, stockée en Irlande. Nous n’avons pas encore confirmé si cela implique des transferts hors de l’UE, ni quelle garantie s’applique. </target>
+      </segment>
+    </unit>
     <unit id="6132616578626491786">
       <notes>
         <note category="description">Accessible name of the heart on a game cover; the placeholder is the game title</note>
@@ -12464,7 +12464,7 @@
       <segment state="translated">
         <source><pc id="0" equivStart="START_TAG_STRONG" equivEnd="CLOSE_TAG_STRONG" type="other" dispStart="&lt;strong&gt;" dispEnd="&lt;/strong&gt;">Your emails to us:</pc> stored with our email provider in Switzerland, which the EU recognises as protecting data adequately, and kept while they are useful to answer you and follow up. </source>
         <target><pc id="0" equivStart="START_TAG_STRONG" equivEnd="CLOSE_TAG_STRONG" type="other" dispStart="&lt;strong&gt;" dispEnd="&lt;/strong&gt;">Les e-mails que tu nous envoies :</pc> stockés chez notre fournisseur de messagerie en Suisse, un pays que l’UE reconnaît comme offrant un niveau de protection adéquat, et conservés tant qu’ils servent à te répondre et à assurer le suivi. </target>
-        </segment>
+      </segment>
     </unit>
     <unit id="7306190949587501209">
       <notes>
