@@ -22,8 +22,18 @@ describe('LayoutFooterComponent', () => {
         fixture.detectChanges()
     })
 
-    it('shows signed-out visitors the landing sections, sign-in, and the theme switch', () => {
-        expect(linkTexts()).toEqual(['Features', 'How it works', 'FAQ', 'Source code on GitHub', 'Sign in', 'Create an account'])
+    it('shows signed-out visitors the landing sections, sign-in, privacy, contact, and the theme switch', () => {
+        expect(linkTexts()).toEqual([
+            'Features',
+            'How it works',
+            'FAQ',
+            'Source code on GitHub',
+            'Sign in',
+            'Create an account',
+            'Privacy',
+            'Contact',
+        ])
+        expect(element().querySelector('a[href^="mailto:contact@kois.app"]')).not.toBeNull()
         expect(element().querySelector('app-theme-switch')).not.toBeNull()
     })
 
@@ -34,7 +44,7 @@ describe('LayoutFooterComponent', () => {
         const footer = element().querySelector('footer')
         expect(footer?.classList).toContain('hidden')
         expect(footer?.classList).toContain('lg:block')
-        expect(linkTexts()).toEqual(['Source code on GitHub'])
+        expect(linkTexts()).toEqual(['Privacy', 'Contact', 'Source code on GitHub'])
         // The theme switch lives in the avatar menu.
         expect(element().querySelector('app-theme-switch')).toBeNull()
     })
