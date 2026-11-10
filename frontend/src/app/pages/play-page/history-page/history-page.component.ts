@@ -61,6 +61,8 @@ export class HistoryPageComponent {
     public readonly summary = signal<HistorySummaryType | null>(null)
     public readonly isLoadingHistory = computed(() => !this.currentUser$() || this.history.loading())
     public readonly groupIdFilter = signal(this.readGroupIdFilter())
+    /** Only the id, so editing your profile keeps the older sessions already shown. */
+    private readonly userId = computed(() => this.currentUser$()?.id)
     public readonly historyGroupName = computed(() => {
         const groupId = this.groupIdFilter()
         return groupId ? this.getGroupName(groupId) : null
@@ -128,7 +130,7 @@ export class HistoryPageComponent {
     constructor() {
         // The first page and the totals of the filter: again for another user, another group, or a changed history.
         effect(() => {
-            const userId = this.currentUser$()?.id
+            const userId = this.userId()
             const groupId = this.groupIdFilter() ?? undefined
             this.dataService.userHistoryRevision()
             untracked(() => this.load(userId, groupId))

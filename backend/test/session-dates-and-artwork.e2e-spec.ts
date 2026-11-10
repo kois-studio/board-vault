@@ -15,6 +15,14 @@ import { removeTestDatabase } from './remove-test-database.js'
 
 const repositoryRoot = resolve(__dirname, '../..')
 const testDatabasePath = resolve(__dirname, 'session-dates-and-artwork.e2e.sqlite')
+/**
+ * The UTC day `days` ago. The nights are recent so the session list still holds every one: it keeps only the last
+ * 30 days of finished nights (#252).
+ */
+const daysAgo = (days: number) => new Date(Date.now() - days * 86_400_000).toISOString().slice(0, 10)
+const THURSDAY = daysAgo(10)
+const EARLIER_THURSDAY = daysAgo(20)
+const WEEKEND = daysAgo(3)
 const avatar = `'{"backgroundColor":"#2563EB","iconName":null,"emoji":"😎","type":"emoji","initials":""}'`
 
 describe('session dates, last played, and artwork addresses (e2e)', () => {
@@ -61,28 +69,28 @@ describe('session dates, last played, and artwork addresses (e2e)', () => {
 
                 -- Thursdays, recorded with group people by the session wizard: Ana played Azul.
                 INSERT INTO Meet (id, groupId, createdBy, meetDate, isConfirmed, status, timezone)
-                    VALUES (50, 10, 1, '2026-09-20 19:30:00', TRUE, 'completed', 'Europe/Madrid');
+                    VALUES (50, 10, 1, '${THURSDAY} 19:30:00', TRUE, 'completed', 'Europe/Madrid');
                 INSERT INTO MeetPersonAttendee (meetId, groupPersonId, rsvpStatus, attendanceStatus) VALUES (50, 100, 'accepted', 'attended');
                 INSERT INTO MeetGame (meetId, gameId, gameStatus) VALUES (50, 1, 'played');
                 INSERT INTO MeetPersonGame (meetId, groupPersonId, gameId) VALUES (50, 100, 1);
 
                 -- Thursdays, half an hour earlier, recorded with accounts: Ben played Catan.
                 INSERT INTO Meet (id, groupId, createdBy, meetDate, isConfirmed, status, timezone)
-                    VALUES (51, 10, 1, '2026-09-20T19:00:00.000Z', TRUE, 'completed', 'Europe/Madrid');
+                    VALUES (51, 10, 1, '${THURSDAY}T19:00:00.000Z', TRUE, 'completed', 'Europe/Madrid');
                 INSERT INTO MeetAttendee (meetId, accountId, rsvpStatus, attendanceStatus) VALUES (51, 2, 'accepted', 'attended');
                 INSERT INTO MeetGame (meetId, gameId, gameStatus) VALUES (51, 2, 'played');
                 INSERT INTO MeetAccountGame (meetId, accountId, gameId) VALUES (51, 2, 2);
 
                 -- Thursdays, earlier, from a seed script: Ana played Azul by account.
                 INSERT INTO Meet (id, groupId, createdBy, meetDate, isConfirmed, status, timezone)
-                    VALUES (52, 10, 1, '2026-09-10T20:00:00+02:00', TRUE, 'completed', 'Europe/Madrid');
+                    VALUES (52, 10, 1, '${EARLIER_THURSDAY}T20:00:00+02:00', TRUE, 'completed', 'Europe/Madrid');
                 INSERT INTO MeetAttendee (meetId, accountId, rsvpStatus, attendanceStatus) VALUES (52, 1, 'accepted', 'attended');
                 INSERT INTO MeetGame (meetId, gameId, gameStatus) VALUES (52, 1, 'played');
                 INSERT INTO MeetAccountGame (meetId, accountId, gameId) VALUES (52, 1, 1);
 
                 -- Weekends, the latest of all: Ana played Azul in the other group.
                 INSERT INTO Meet (id, groupId, createdBy, meetDate, isConfirmed, status, timezone)
-                    VALUES (53, 11, 1, '2026-09-27T18:00:00.000Z', TRUE, 'completed', 'Europe/Madrid');
+                    VALUES (53, 11, 1, '${WEEKEND}T18:00:00.000Z', TRUE, 'completed', 'Europe/Madrid');
                 INSERT INTO MeetAttendee (meetId, accountId, rsvpStatus, attendanceStatus) VALUES (53, 1, 'accepted', 'attended');
                 INSERT INTO MeetGame (meetId, gameId, gameStatus) VALUES (53, 1, 'played');
                 INSERT INTO MeetAccountGame (meetId, accountId, gameId) VALUES (53, 1, 1);
@@ -124,15 +132,15 @@ describe('session dates, last played, and artwork addresses (e2e)', () => {
             const dates = Object.fromEntries(meets.map(meet => [meet.id, meet.meetDate]))
 
             expect(dates).toEqual({
-                50: '2026-09-20T19:30:00.000Z',
-                51: '2026-09-20T19:00:00.000Z',
-                52: '2026-09-10T18:00:00.000Z',
-                53: '2026-09-27T18:00:00.000Z',
+                50: `${THURSDAY}T19:30:00.000Z`,
+                51: `${THURSDAY}T19:00:00.000Z`,
+                52: `${EARLIER_THURSDAY}T18:00:00.000Z`,
+                53: `${WEEKEND}T18:00:00.000Z`,
             })
 
             const session = (await request(app.getHttpServer()).get('/sessions/50').set(as('user_ana')).expect(200)).body
 
-            expect(session.meetDate).toBe('2026-09-20T19:30:00.000Z')
+            expect(session.meetDate).toBe(`${THURSDAY}T19:30:00.000Z`)
         })
 
         it("lists each session with the caller's own answer, from an account or a group-person invite", async () => {
@@ -160,9 +168,9 @@ describe('session dates, last played, and artwork addresses (e2e)', () => {
             // Ana took part in 50, 52 and 53; Ben alone played 51.
             expect(newestFirst.map(record => record.meetData.id)).toEqual([53, 50, 52])
             expect(newestFirst.map(record => record.meetData.meetDate)).toEqual([
-                '2026-09-27T18:00:00.000Z',
-                '2026-09-20T19:30:00.000Z',
-                '2026-09-10T18:00:00.000Z',
+                `${WEEKEND}T18:00:00.000Z`,
+                `${THURSDAY}T19:30:00.000Z`,
+                `${EARLIER_THURSDAY}T18:00:00.000Z`,
             ])
         })
     })
@@ -183,7 +191,7 @@ describe('session dates, last played, and artwork addresses (e2e)', () => {
                 .expect(201)
 
             // Azul: Thursdays' last night is the wizard's (20 Sep), not Weekends' later one (27 Sep).
-            expect(lastPlayedOf(response.body)).toEqual({ 1: '2026-09-20T19:30:00.000Z', 2: '2026-09-20T19:00:00.000Z' })
+            expect(lastPlayedOf(response.body)).toEqual({ 1: `${THURSDAY}T19:30:00.000Z`, 2: `${THURSDAY}T19:00:00.000Z` })
         })
 
         it('answers the same when the group is chosen by accounts', async () => {
@@ -193,7 +201,7 @@ describe('session dates, last played, and artwork addresses (e2e)', () => {
                 .send({ groupId: 10, attendeeIds: [1, 2] })
                 .expect(201)
 
-            expect(lastPlayedOf(response.body)).toEqual({ 1: '2026-09-20T19:30:00.000Z', 2: '2026-09-20T19:00:00.000Z' })
+            expect(lastPlayedOf(response.body)).toEqual({ 1: `${THURSDAY}T19:30:00.000Z`, 2: `${THURSDAY}T19:00:00.000Z` })
         })
 
         it('dates the group’s most played games in ISO', async () => {
@@ -201,7 +209,7 @@ describe('session dates, last played, and artwork addresses (e2e)', () => {
                 mostPlayed: Array<{ gameData: { id: number }; lastPlayedAt: string }>
             }
 
-            expect(insights.mostPlayed.find(entry => entry.gameData.id === 1)?.lastPlayedAt).toBe('2026-09-20T19:30:00.000Z')
+            expect(insights.mostPlayed.find(entry => entry.gameData.id === 1)?.lastPlayedAt).toBe(`${THURSDAY}T19:30:00.000Z`)
         })
     })
 

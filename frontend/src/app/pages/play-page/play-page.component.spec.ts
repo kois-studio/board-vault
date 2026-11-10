@@ -7,7 +7,7 @@ import { LoadingService } from '../../core/services/loading.service'
 import { PlayPageComponent } from './play-page.component'
 
 describe('PlayPageComponent', () => {
-    const setup = async (meetsError = false, extraMeets: Array<object> = []) => {
+    const setup = async (meetsError = false, extraMeets: Array<object> = [], summaryError = false) => {
         await TestBed.configureTestingModule({
             imports: [PlayPageComponent],
             providers: [
@@ -27,6 +27,9 @@ describe('PlayPageComponent', () => {
                         ]),
                         userMeetsError: signal(meetsError),
                         userHistoryError: signal(false),
+                        // The app holds only the latest nights; the server counts them all (#252).
+                        userHistorySummary: signal(summaryError ? null : { nights: 42 }),
+                        userHistorySummaryError: signal(summaryError),
                     },
                 },
                 {
@@ -56,7 +59,7 @@ describe('PlayPageComponent', () => {
         ])
         expect(cards[0]?.textContent).toContain('1 session')
         expect(cards[0]?.textContent).toContain('Next: Friday crew')
-        expect(cards[2]?.textContent).toContain('3 sessions')
+        expect(cards[2]?.textContent).toContain('42 sessions')
         expect(cards[2]?.textContent).toContain('Last: Friday crew')
     })
 
@@ -79,5 +82,13 @@ describe('PlayPageComponent', () => {
 
         expect(element.textContent).toContain('Unavailable')
         expect(element.textContent).toContain('Sessions could not be loaded')
+    })
+
+    it('says the history count is unavailable when the totals fail, instead of counting only the nights held', async () => {
+        const element = await setup(false, [], true)
+        const history = element.querySelectorAll('app-card-section')[2]
+
+        expect(history?.textContent).toContain('Unavailable')
+        expect(history?.textContent).not.toContain('3 sessions')
     })
 })

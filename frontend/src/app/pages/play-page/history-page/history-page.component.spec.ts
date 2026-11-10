@@ -34,7 +34,7 @@ async function setup({
 }) {
     const api = { getUserGamesHistory: vi.fn(history), getUserHistorySummary: vi.fn(summary) }
     const dataService = {
-        currentUser: signal({ id: 1 }),
+        currentUser: signal<{ id: number; displayName?: string }>({ id: 1 }),
         userGroups: signal(groups),
         userGroupsError: signal(false),
         userHistoryRevision: signal(0),
@@ -334,5 +334,21 @@ describe('HistoryPageComponent long histories', () => {
 
         expect(api.getUserGamesHistory).toHaveBeenCalledTimes(2)
         expect(api.getUserHistorySummary).toHaveBeenCalledTimes(2)
+    })
+
+    it('keeps the older sessions shown when you edit your profile', async () => {
+        const { fixture, element, api, dataService } = await setup({
+            history: (_userId, options) =>
+                of(options.before === undefined ? { entries: nights(100, 20), hasMore: true } : { entries: nights(80, 3), hasMore: false }),
+            summary: () => of(summaryOf(23)),
+        })
+        showOlder(element)?.click()
+        fixture.detectChanges()
+
+        dataService.currentUser.set({ id: 1, displayName: 'Ana B.' })
+        fixture.detectChanges()
+
+        expect(api.getUserGamesHistory).toHaveBeenCalledTimes(2)
+        expect(element.querySelectorAll('article').length).toBe(23)
     })
 })

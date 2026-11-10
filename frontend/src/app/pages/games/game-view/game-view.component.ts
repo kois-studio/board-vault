@@ -96,6 +96,8 @@ export class GameViewPageComponent {
     )
     /** The game in view: a review or a heart changes the game, not which one, so the plays stay as they are. */
     private readonly gameIdInView = computed(() => this.gameView$()?.gameData.id)
+    /** Only the id, so editing your profile does not read your plays again. */
+    private readonly userId = computed(() => this.currentUser$()?.id)
     /** How many nights you played it in all; null until the server counts them. */
     public readonly playsCount = signal<number | null>(null)
     /** The nights shown so far, each with everyone who played the game once. */
@@ -155,7 +157,7 @@ export class GameViewPageComponent {
 
         // Your plays of this game: read again for another game, another user, or when your history changes.
         effect(() => {
-            const userId = this.currentUser$()?.id
+            const userId = this.userId()
             const gameId = this.gameIdInView()
             this.dataService.userHistoryRevision()
             untracked(() => this.loadPlays(userId, gameId))

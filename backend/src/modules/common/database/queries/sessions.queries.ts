@@ -1094,8 +1094,8 @@ export class SessionQueries {
     /**
      * One page of the caller's completed nights, newest first (#252): at most `limit` ids, older than
      * the night `before` when given. Ask for one more than you show to know whether more remain.
+     * `limit` null reads them all, for the deprecated `/history` route only.
      */
-    /** History night ids, newest first, after the night `before`; `limit` null reads them all (the deprecated route only). */
     async getHistoryMeetIdsPage(
         accountId: number,
         filters: HistoryFilters,

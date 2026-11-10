@@ -57,7 +57,7 @@
             description="Every game night your groups have recorded"
             cardLink="/play/history"
         >
-            <app-badge class="app-card-section-badge" tone="success" [text]="isLoadingHistory() ? loadingLabel : userHistoryError() ? unavailableLabel : sessionsLabel(userHistory$().length)" />
+            <app-badge class="app-card-section-badge" tone="success" [text]="historyBadge()" />
             @if (isLoadingHistory()) {
                 <p class="text-sm text-bv-text-muted" i18n="History card on the Play page while it loads">Loading your history…</p>
             } @else if (userHistoryError()) {

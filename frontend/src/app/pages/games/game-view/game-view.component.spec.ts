@@ -211,10 +211,15 @@ describe('GameViewPageComponent plays', () => {
         expect(listedNights(element)).toHaveLength(6)
     })
 
-    it('keeps the plays on a heart or a rating, and reads them again when your history changes', async () => {
+    it('keeps the plays on a heart, a rating or a profile edit, and reads them again when your history changes', async () => {
         const { fixture, component, getUserGamesHistory } = await setup()
 
         component.onWishlistChanged(true)
+        fixture.detectChanges()
+        expect(getUserGamesHistory).toHaveBeenCalledTimes(1)
+
+        const edited = { id: 1, displayName: 'Ana B.' }
+        TestBed.inject(DataService).currentUser.set(edited as never)
         fixture.detectChanges()
         expect(getUserGamesHistory).toHaveBeenCalledTimes(1)
 

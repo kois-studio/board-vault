@@ -38,6 +38,16 @@ export class PlayPageComponent {
     )
     public readonly wrapUpCount = computed(() => this.upcomingSessions().filter((meet) => upcomingState(meet) === 'wrap-up').length)
     public readonly nextSession = computed(() => this.upcomingSessions().find((meet) => upcomingState(meet) !== 'wrap-up') ?? null)
+    /**
+     * The History badge: every night recorded, counted by the server, since the app holds only the latest ones (#252).
+     */
+    public readonly historyBadge = computed(() => {
+        const loading = this.loadingService.loadingStatesIndex()
+        if (loading[LOADING_KEYS.USER_GAMES_HISTORY] || loading[LOADING_KEYS.USER_HISTORY_SUMMARY]) return this.loadingLabel
+        const nights = this.dataService.userHistorySummary()?.nights
+        if (this.userHistoryError() || this.dataService.userHistorySummaryError()) return this.unavailableLabel
+        return nights === undefined ? this.loadingLabel : this.sessionsLabel(nights)
+    })
     public readonly lastSession = computed(
         () =>
             [...this.userHistory$()].sort((a, b) => new Date(b.meetData.meetDate).getTime() - new Date(a.meetData.meetDate).getTime())[0] ??
