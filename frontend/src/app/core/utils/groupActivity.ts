@@ -169,6 +169,11 @@ export function describeActivity(entry: GroupActivityType): string {
             return $localize`:Group history line; actor and person are names:${actor}:actor: brought back ${person}:person:`
         case 'person_claimed':
             return $localize`:Group history line, someone linking a group person to their own account; actor and person are names:${actor}:actor: linked ${person}:person: to their account`
+        case 'person_takeover_undone':
+            // The person has their name back; the subject is who had taken them over (ADR-0027).
+            if (entry.subject?.id === entry.actor.id)
+                return $localize`:Group history line, someone saying they are not a person they had taken over; actor and person are names:${actor}:actor: said they aren’t ${person}:person: and gave them back to the group`
+            return $localize`:Group history line, someone undoing a takeover; actor, person and member are names:${actor}:actor: gave ${person}:person: back to the group; ${activityName(entry.subject)}:member: stays as themselves`
         case 'person_game_set': {
             const status = entry.data['status']
             if (own) {

@@ -3,7 +3,7 @@
 - **Status:** Accepted
 - **Date:** 2026-09-26
 - **Supersedes:** None
-- **Superseded by:** [ADR-0020](0020-group-history.md), in part: any member may now set a group person's games and preferences
+- **Superseded by:** [ADR-0020](0020-group-history.md), in part: any member may now set a group person's games and preferences; [ADR-0027](0027-this-is-me-and-undoing-a-takeover.md), in part: any member who is not one of the group's people may take over a person without an account
 
 ## Context
 
@@ -69,3 +69,11 @@ as that member's claim ticket until they claim, leave the group, or the
 invitation expires. Only that account can claim, only an active placeholder
 without an account, and once. `GroupPerson.claimEmail` and `claimExpiresAt`
 are no longer used; migration 0032 cleared them.
+
+## Update 2026-11-11: anyone joining may say "this is me" (#278)
+
+[ADR-0027](0027-this-is-me-and-undoing-a-takeover.md) replaces the rule
+above that only the suggested account may claim. Any member who is not one
+of the group's people yet may take over any active person without an
+account; a suggestion only puts that person first. A takeover keeps a
+snapshot, and the group can undo it for 30 days.

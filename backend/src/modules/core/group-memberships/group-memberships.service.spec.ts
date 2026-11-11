@@ -20,7 +20,7 @@ describe('GroupMembershipsService join policy', () => {
     })
 
     it('creates membership and consumes the pending invitation', async () => {
-        const acceptInvitationAtomically = vi.fn().mockResolvedValue({ success: true, joined: true })
+        const acceptInvitationAtomically = vi.fn().mockResolvedValue({ success: true, joined: true, choosePerson: false })
         const databaseService = fakeDatabase({
             getInvitationByGroupAndRecipient: vi.fn().mockResolvedValue({ rows: [[42]] }),
             acceptInvitationAtomically,
@@ -28,7 +28,11 @@ describe('GroupMembershipsService join policy', () => {
         const notifier = fakeActivityNotifier()
         const service = new GroupMembershipsService(databaseService, notifier)
 
-        await expect(service.createGroupMembershipFromInvitation(7, 12)).resolves.toEqual({ success: true })
+        await expect(service.createGroupMembershipFromInvitation(7, 12)).resolves.toEqual({
+            success: true,
+            groupId: 12,
+            choosePerson: false,
+        })
         expect(acceptInvitationAtomically).toHaveBeenCalledWith(42, 7, 12)
         expect(notifier.memberJoined).toHaveBeenCalledWith(12, 7)
     })
@@ -36,12 +40,16 @@ describe('GroupMembershipsService join policy', () => {
     it('tells nobody that someone joined who was already in the group', async () => {
         const databaseService = fakeDatabase({
             getInvitationByGroupAndRecipient: vi.fn().mockResolvedValue({ rows: [[42]] }),
-            acceptInvitationAtomically: vi.fn().mockResolvedValue({ success: true, joined: false }),
+            acceptInvitationAtomically: vi.fn().mockResolvedValue({ success: true, joined: false, choosePerson: false }),
         })
         const notifier = fakeActivityNotifier()
         const service = new GroupMembershipsService(databaseService, notifier)
 
-        await expect(service.createGroupMembershipFromInvitation(7, 12)).resolves.toEqual({ success: true })
+        await expect(service.createGroupMembershipFromInvitation(7, 12)).resolves.toEqual({
+            success: true,
+            groupId: 12,
+            choosePerson: false,
+        })
         expect(notifier.memberJoined).not.toHaveBeenCalled()
     })
 })

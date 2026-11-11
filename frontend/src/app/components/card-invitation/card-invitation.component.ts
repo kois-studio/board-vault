@@ -1,4 +1,5 @@
-import { Component, input, signal } from '@angular/core'
+import { Component, inject, input, signal } from '@angular/core'
+import { Router } from '@angular/router'
 import { firstValueFrom } from 'rxjs'
 import { InvitationWithExtraData } from '../../api/api.types'
 import { CustomDatePipe } from '../../core/pipes/customDate.pipe'
@@ -17,6 +18,7 @@ export class CardInvitationComponent {
     public readonly isLoading = signal(false)
     public readonly isConfirmingDecline = signal(false)
     public readonly actionError = signal<string | null>(null)
+    private readonly router = inject(Router)
 
     constructor(private readonly dataService: DataService) {}
 
@@ -35,7 +37,11 @@ export class CardInvitationComponent {
         this.actionError.set(null)
         this.isLoading.set(true)
         try {
-            await firstValueFrom(this.dataService.acceptInvitation(invitation.id))
+            const accepted = await firstValueFrom(this.dataService.acceptInvitation(invitation.id))
+            // The group may have recorded them before they joined: they say who they are first (#278).
+            if (accepted.choosePerson) {
+                await this.router.navigate(['/groups', accepted.groupId ?? invitation.groupId, 'people', 'choose'])
+            }
         } catch {
             this.actionError.set(
                 $localize`:Error on a group invitation in the inbox when accepting it failed:We could not accept this invitation. It may have expired or the group may no longer be available. Try again or refresh your invitations.`,

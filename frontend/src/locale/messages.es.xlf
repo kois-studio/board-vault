@@ -36,6 +36,16 @@
         <target>Sugerencias para quienes vienen y el tiempo que tenéis</target>
       </segment>
     </unit>
+    <unit id="1015227177439611494">
+      <notes>
+        <note category="description">Last item of the list of a person&apos;s games on the page where you say who you are in a group, after three titles</note>
+        <note category="meaning">more games, one</note>
+      </notes>
+      <segment state="translated">
+        <source><ph id="0" equiv="count" disp="more"/> more game</source>
+        <target><ph id="0" equiv="count" disp="more"/> juego más</target>
+      </segment>
+    </unit>
     <unit id="1022072569342469305">
       <notes>
         <note category="description">Recommendation reason</note>
@@ -959,6 +969,15 @@
         <target> Las personas de tus grupos ven tu nombre visible, tu nombre de usuario y tu avatar, los juegos de tu estantería, las noches de juegos en las que participas y lo que cambias en el historial del grupo. </target>
       </segment>
     </unit>
+    <unit id="154596699052974723">
+      <notes>
+        <note category="description">Label on the page where you say who you are in a group</note>
+      </notes>
+      <segment state="translated">
+        <source>Join your group’s history</source>
+        <target>Únete al historial de tu grupo</target>
+      </segment>
+    </unit>
     <unit id="1560603435807422155">
       <notes>
         <note category="description">Toast after taking over a person prepared for you in a group</note>
@@ -1279,6 +1298,15 @@
       <segment state="translated">
         <source>Players:</source>
         <target>Personas:</target>
+      </segment>
+    </unit>
+    <unit id="1710376389933079475">
+      <notes>
+        <note category="description">Notification to someone whose takeover of a person in a group was undone; person is the name that person has again</note>
+      </notes>
+      <segment state="translated">
+        <source><ph id="0" equiv="actor" disp="actor"/> undid your takeover of <ph id="1" equiv="person" disp="person"/> in <ph id="2" equiv="group" disp="group"/>. You’re in the group as yourself.</source>
+        <target><ph id="0" equiv="actor" disp="actor"/> deshizo la vinculación con <ph id="1" equiv="person" disp="person"/> en <ph id="2" equiv="group" disp="group"/>. Sigues en el grupo con tu propia identidad.</target>
       </segment>
     </unit>
     <unit id="1722160113515323109">
@@ -1659,6 +1687,15 @@
         <target>No hemos podido confirmar que ese cambio se haya guardado. Los menús muestran lo que está guardado.</target>
       </segment>
     </unit>
+    <unit id="191771589371612497">
+      <notes>
+        <note category="description">Button on the page where you say who you are in a group, next to a person</note>
+      </notes>
+      <segment state="translated">
+        <source>This is me</source>
+        <target>Soy yo</target>
+      </segment>
+    </unit>
     <unit id="1922586940816531681">
       <notes>
         <note category="description">Accessible name of the grid of your games on My Games</note>
@@ -1936,6 +1973,15 @@
       <segment state="translated">
         <source>I’ll bring it</source>
         <target>Lo llevo yo</target>
+      </segment>
+    </unit>
+    <unit id="2048995976996046045">
+      <notes>
+        <note category="description">Toast after undoing a takeover in a group; name is the name the person gets back</note>
+      </notes>
+      <segment state="translated">
+        <source><ph id="0" equiv="name" disp="takeover.previousName"/> is back as before.</source>
+        <target><ph id="0" equiv="name" disp="takeover.previousName"/> vuelve a ser como antes.</target>
       </segment>
     </unit>
     <unit id="2057533260886728415">
@@ -2230,6 +2276,15 @@
         <target>Reseñas de juegos</target>
       </segment>
     </unit>
+    <unit id="2213791322113148979">
+      <notes>
+        <note category="description">Link on the page where you take over a person in a group, back to the list of the group&apos;s people without an account</note>
+      </notes>
+      <segment state="translated">
+        <source>Not you? Choose someone else</source>
+        <target>¿No eres tú? Elige a otra persona</target>
+      </segment>
+    </unit>
     <unit id="2222649520035707506">
       <notes>
         <note category="description">Label on the page that creates a group</note>
@@ -2422,7 +2477,7 @@
     </unit>
     <unit id="2329778182437242260">
       <notes>
-        <note category="description">Link on the page where you take over a person prepared for you in a group, back to the group page</note>
+        <note category="description">Link on the page where you say who you are in a group, back to the group page</note>
       </notes>
       <segment state="translated">
         <source>Back to group</source>
@@ -3690,7 +3745,7 @@
     </unit>
     <unit id="295715226568241340">
       <notes>
-        <note category="description">Heading on the privacy page about the people in a group who have no account</note>
+        <note category="description">Name of the list on the page where you say who you are in a group</note>
       </notes>
       <segment state="translated">
         <source>People without an account</source>
@@ -4031,6 +4086,15 @@
       <segment state="translated">
         <source>Switch for now</source>
         <target>Cambiar solo por ahora</target>
+      </segment>
+    </unit>
+    <unit id="3148561573174774299">
+      <notes>
+        <note category="description">Label over the person an invitation suggested, on the page where you say who you are in a group</note>
+      </notes>
+      <segment state="translated">
+        <source>Is this you?</source>
+        <target>¿Eres tú?</target>
       </segment>
     </unit>
     <unit id="3155881512369038593">
@@ -4661,6 +4725,16 @@
         <target>¿Eres <ph id="0" equiv="INTERPOLATION" disp="{{ groupPerson.person.displayName }}"/>?</target>
       </segment>
     </unit>
+    <unit id="3446226877652037016">
+      <notes>
+        <note category="description">On the page where you say who you are in a group; count is a number of game nights, date the day of the last one</note>
+        <note category="meaning">nights came to, one</note>
+      </notes>
+      <segment state="translated">
+        <source>Came to <ph id="0" equiv="count" disp="count"/> game night, on <ph id="1" equiv="date" disp="last"/></source>
+        <target>Estuvo en <ph id="0" equiv="count" disp="count"/> noche de juegos, el <ph id="1" equiv="date" disp="last"/></target>
+      </segment>
+    </unit>
     <unit id="3449701572444683643">
       <notes>
         <note category="description">Status of a game the group might buy, before the group owner decides</note>
@@ -4668,6 +4742,15 @@
       <segment state="translated">
         <source>Open for discussion</source>
         <target>Abierto a debate</target>
+      </segment>
+    </unit>
+    <unit id="3451218948737981900">
+      <notes>
+        <note category="description">Button on the page of a person of a group that confirms undoing a takeover; previous is the name the person gets back</note>
+      </notes>
+      <segment state="translated">
+        <source>Yes, give <ph id="0" equiv="INTERPOLATION" disp="{{ takeover.previousName }}"/> back</source>
+        <target>Sí, devolver a <ph id="0" equiv="INTERPOLATION" disp="{{ takeover.previousName }}"/></target>
       </segment>
     </unit>
     <unit id="3452528779645465088">
@@ -5257,6 +5340,15 @@
         <target><ph id="0" equiv="actor" disp="actor"/> ha indicado qué opina <ph id="1" equiv="person" disp="person"/> de <ph id="2" equiv="game" disp="game"/></target>
       </segment>
     </unit>
+    <unit id="3754729295562748338">
+      <notes>
+        <note category="description">Button under an error, to the home page</note>
+      </notes>
+      <segment state="translated">
+        <source>Go to Home</source>
+        <target>Ir a Inicio</target>
+      </segment>
+    </unit>
     <unit id="3755225619299225097">
       <notes>
         <note category="description">Warning at the bottom of the plan form when nobody is invited</note>
@@ -5469,6 +5561,15 @@
       <segment state="translated">
         <source>Your game proposal &quot;<ph id="0" equiv="title" disp="data[&apos;gameTitle&apos;]"/>&quot; was rejected: <ph id="1" equiv="reason" disp="data[&apos;reviewNotes&apos;]"/></source>
         <target>Han rechazado tu propuesta de juego «<ph id="0" equiv="title" disp="data[&apos;gameTitle&apos;]"/>»: <ph id="1" equiv="reason" disp="data[&apos;reviewNotes&apos;]"/></target>
+      </segment>
+    </unit>
+    <unit id="3843592369516915787">
+      <notes>
+        <note category="description">Text on the page where you say who you are in a group</note>
+      </notes>
+      <segment state="translated">
+        <source>The group may have added you before you joined, with your games and the game nights you came to. Pick yourself to keep them. If you pick the wrong person, anyone in the group can undo it for 30 days.</source>
+        <target>Puede que el grupo te haya añadido antes de que te unieras, con tus juegos y las noches de juegos a las que viniste. Elígete para conservarlos. Si eliges a otra persona por error, cualquiera del grupo puede deshacerlo durante 30 días.</target>
       </segment>
     </unit>
     <unit id="3849567001776882788">
@@ -5715,6 +5816,15 @@
       <segment state="translated">
         <source>Your recent game nights could not be loaded.</source>
         <target>No se han podido cargar tus últimas noches de juegos.</target>
+      </segment>
+    </unit>
+    <unit id="3942808527420438984">
+      <notes>
+        <note category="description">Shown on the group page to a member who is not one of the group&apos;s people yet, when the group has people without an account</note>
+      </notes>
+      <segment state="translated">
+        <source>Are you already one of this group’s people?</source>
+        <target>¿Ya eres una de las personas de este grupo?</target>
       </segment>
     </unit>
     <unit id="3943327831062501605">
@@ -6015,6 +6125,15 @@
       <segment state="translated">
         <source>Withdraw?</source>
         <target>¿Retirar?</target>
+      </segment>
+    </unit>
+    <unit id="406848791942432385">
+      <notes>
+        <note category="description">Button on the group page to the page where you say who you are in the group</note>
+      </notes>
+      <segment state="translated">
+        <source>Find yourself</source>
+        <target>Buscar mi nombre</target>
       </segment>
     </unit>
     <unit id="4069508235949246102">
@@ -6432,6 +6551,15 @@
         <target>Espera mientras verificamos tu solicitud.</target>
       </segment>
     </unit>
+    <unit id="4243541533155757894">
+      <notes>
+        <note category="description">Heading of the page where you say who you are in a group, before the group name loads</note>
+      </notes>
+      <segment state="translated">
+        <source>Who are you in this group?</source>
+        <target>¿Quién eres en este grupo?</target>
+      </segment>
+    </unit>
     <unit id="4244995398387742877">
       <notes>
         <note category="description">Text next to the group switcher at the top of the group page</note>
@@ -6448,6 +6576,15 @@
       <segment state="translated">
         <source>Yes, remove</source>
         <target>Sí, quitar</target>
+      </segment>
+    </unit>
+    <unit id="4253201720596210789">
+      <notes>
+        <note category="description">Error on the page where you say who you are in a group, when Board Vault did not answer</note>
+      </notes>
+      <segment state="translated">
+        <source>The group’s people couldn’t be loaded</source>
+        <target>No se pudieron cargar las personas del grupo</target>
       </segment>
     </unit>
     <unit id="4254074280878566137">
@@ -6629,6 +6766,15 @@
         <target>Entradas descartadas</target>
       </segment>
     </unit>
+    <unit id="4363086839053285457">
+      <notes>
+        <note category="description">On the page where you say who you are in a group, when there is no one to choose</note>
+      </notes>
+      <segment state="translated">
+        <source>There’s no one to choose</source>
+        <target>No hay a quién elegir</target>
+      </segment>
+    </unit>
     <unit id="4364002120105904553">
       <notes>
         <note category="description">What deleting your account does, in the Account settings</note>
@@ -6735,6 +6881,15 @@
       <segment state="translated">
         <source><pc id="0" equivStart="START_TAG_SPAN" equivEnd="CLOSE_TAG_SPAN" type="other" dispStart="&lt;span class=&quot;font-mono&quot;&gt;" dispEnd="&lt;/span&gt;"><ph id="1" equiv="INTERPOLATION" disp="{{ username() }}"/></pc> is already taken in Board Vault, so your groups still see you as <pc id="2" equivStart="START_TAG_SPAN" equivEnd="CLOSE_TAG_SPAN" type="other" dispStart="&lt;span class=&quot;font-mono&quot;&gt;" dispEnd="&lt;/span&gt;"><ph id="3" equiv="INTERPOLATION_1" disp="{{ accountUsername() }}"/></pc>. Choose another username in Manage sign-in. </source>
         <target><pc id="0" equivStart="START_TAG_SPAN" equivEnd="CLOSE_TAG_SPAN" type="other" dispStart="&lt;span class=&quot;font-mono&quot;&gt;" dispEnd="&lt;/span&gt;"><ph id="1" equiv="INTERPOLATION" disp="{{ username() }}"/></pc> ya está en uso en Board Vault, así que tus grupos aún te ven como <pc id="2" equivStart="START_TAG_SPAN" equivEnd="CLOSE_TAG_SPAN" type="other" dispStart="&lt;span class=&quot;font-mono&quot;&gt;" dispEnd="&lt;/span&gt;"><ph id="3" equiv="INTERPOLATION_1" disp="{{ accountUsername() }}"/></pc>. Elige otro nombre de usuario en Gestionar el inicio de sesión. </target>
+      </segment>
+    </unit>
+    <unit id="4413928506195436658">
+      <notes>
+        <note category="description">Name of the This is me button for screen readers, on the page where you say who you are in a group; name is a person&apos;s name</note>
+      </notes>
+      <segment state="translated">
+        <source>This is me: <ph id="0" equiv="name" disp="name"/></source>
+        <target>Soy yo: <ph id="0" equiv="name" disp="name"/></target>
       </segment>
     </unit>
     <unit id="4415919604451271822">
@@ -7159,15 +7314,6 @@
       <segment state="translated">
         <source>Game night <pc id="0" equivStart="START_TAG_SPAN" equivEnd="CLOSE_TAG_SPAN" type="other" dispStart="&lt;span class=&quot;text-bv-text-muted&quot;&gt;" dispEnd="&lt;/span&gt;">· <ph id="1" equiv="INTERPOLATION" disp="{{ when.time }}"/></pc></source>
         <target>Noche de juegos <pc id="0" equivStart="START_TAG_SPAN" equivEnd="CLOSE_TAG_SPAN" type="other" dispStart="&lt;span class=&quot;text-bv-text-muted&quot;&gt;" dispEnd="&lt;/span&gt;">· <ph id="1" equiv="INTERPOLATION" disp="{{ when.time }}"/></pc></target>
-      </segment>
-    </unit>
-    <unit id="466821837352877142">
-      <notes>
-        <note category="description">Error when taking over a person prepared for you in a group fails</note>
-      </notes>
-      <segment state="translated">
-        <source>This claim could not be completed. The invitation may have expired or already been used.</source>
-        <target>No se ha podido completar la reclamación. Puede que la invitación haya caducado o ya se haya usado.</target>
       </segment>
     </unit>
     <unit id="4668766084790521948">
@@ -7737,6 +7883,15 @@
         <target><ph id="0" equiv="actor" disp="actor"/> ha invitado a <ph id="1" equiv="invited" disp="invited"/> a una noche de juegos</target>
       </segment>
     </unit>
+    <unit id="4941644978819481751">
+      <notes>
+        <note category="description">On the page of a person of a group who took over someone the group had recorded; previous is the name before, date a day</note>
+      </notes>
+      <segment state="translated">
+        <source>If that was the wrong person, anyone in the group can undo it until <ph id="0" equiv="INTERPOLATION" disp="{{ storedDay(takeover.undoableUntil) }}"/>. <ph id="1" equiv="INTERPOLATION_1" disp="{{ takeover.previousName }}"/> gets back their name, games and earlier game nights, and the member stays in the group as themselves.</source>
+        <target>Si no era la persona correcta, cualquiera del grupo puede deshacerlo hasta el <ph id="0" equiv="INTERPOLATION" disp="{{ storedDay(takeover.undoableUntil) }}"/>. <ph id="1" equiv="INTERPOLATION_1" disp="{{ takeover.previousName }}"/> recupera su nombre, sus juegos y sus noches de juegos anteriores, y la persona con cuenta sigue en el grupo con su propia identidad.</target>
+      </segment>
+    </unit>
     <unit id="4943535571315509162">
       <notes>
         <note category="description">Toast after cancelling a game night</note>
@@ -7844,6 +7999,16 @@
       <segment state="translated">
         <source>This sign-in needs an extra verification step that can&apos;t be shown here. Please try again or use a different sign-in method.</source>
         <target>Este inicio de sesión necesita un paso de verificación adicional que no se puede mostrar aquí. Vuelve a intentarlo o usa otro método de inicio de sesión.</target>
+      </segment>
+    </unit>
+    <unit id="5025719366659329793">
+      <notes>
+        <note category="description">On the page where you say who you are in a group; count is a number of game nights, date the day of the last one</note>
+        <note category="meaning">nights came to, other</note>
+      </notes>
+      <segment state="translated">
+        <source>Came to <ph id="0" equiv="count" disp="count"/> game nights, the last on <ph id="1" equiv="date" disp="last"/></source>
+        <target>Estuvo en <ph id="0" equiv="count" disp="count"/> noches de juegos, la última el <ph id="1" equiv="date" disp="last"/></target>
       </segment>
     </unit>
     <unit id="502859342561934882">
@@ -8600,6 +8765,15 @@
         <target>Tu ejemplar <pc id="0" equivStart="START_TAG_SPAN" equivEnd="CLOSE_TAG_SPAN" type="other" dispStart="&lt;span class=&quot;font-normal text-secondary&quot;&gt;" dispEnd="&lt;/span&gt;">· fecha de compra, precio, notas</pc></target>
       </segment>
     </unit>
+    <unit id="5457638677705616769">
+      <notes>
+        <note category="description">On the page where you say who you are in a group, before the button to join as someone new</note>
+      </notes>
+      <segment state="translated">
+        <source>None of these is you?</source>
+        <target>¿No eres ninguna de estas personas?</target>
+      </segment>
+    </unit>
     <unit id="5462476764405547286">
       <notes>
         <note category="description">Label of the group switcher at the top of the group page</note>
@@ -8974,6 +9148,15 @@
       <segment state="translated">
         <source>Unavailable</source>
         <target>No disponible</target>
+      </segment>
+    </unit>
+    <unit id="5650131289782412928">
+      <notes>
+        <note category="description">Group history line, someone undoing a takeover; actor, person and member are names</note>
+      </notes>
+      <segment state="translated">
+        <source><ph id="0" equiv="actor" disp="actor"/> gave <ph id="1" equiv="person" disp="person"/> back to the group; <ph id="2" equiv="member" disp="activityName(entry.subject)"/> stays as themselves</source>
+        <target><ph id="0" equiv="actor" disp="actor"/> devolvió a <ph id="1" equiv="person" disp="person"/> al grupo; <ph id="2" equiv="member" disp="activityName(entry.subject)"/> sigue siendo quien es</target>
       </segment>
     </unit>
     <unit id="5651951128882735477">
@@ -10323,6 +10506,24 @@
         <target>Cargando los juegos de tus grupos</target>
       </segment>
     </unit>
+    <unit id="6330702430614588298">
+      <notes>
+        <note category="description">Error on the page of a person of a group when undoing a takeover failed</note>
+      </notes>
+      <segment state="translated">
+        <source>The takeover couldn’t be undone. It may have been undone already, or it is more than 30 days old.</source>
+        <target>No se pudo deshacer la vinculación. Puede que ya se haya deshecho o que tenga más de 30 días.</target>
+      </segment>
+    </unit>
+    <unit id="6339443737534596426">
+      <notes>
+        <note category="description">On the page where you say who you are in a group, the games recorded for a person; games is a list of game titles</note>
+      </notes>
+      <segment state="translated">
+        <source>Owns <ph id="0" equiv="games" disp="formatList(named)"/></source>
+        <target>Tiene <ph id="0" equiv="games" disp="formatList(named)"/></target>
+      </segment>
+    </unit>
     <unit id="6344107819696829929">
       <notes>
         <note category="description">Name of the list of games a person of the group owns, on the group page</note>
@@ -10457,6 +10658,15 @@
       <segment state="translated">
         <source>Could not record ownership. Your session is already saved; try again.</source>
         <target>No se ha podido registrar quién lo tiene. Tu noche ya está guardada; inténtalo de nuevo.</target>
+      </segment>
+    </unit>
+    <unit id="638447719675547609">
+      <notes>
+        <note category="description">Error on the page where you say who you are in a group, when you are not in it or it is gone</note>
+      </notes>
+      <segment state="translated">
+        <source>You may have left it, or it was deleted.</source>
+        <target>Puede que lo hayas dejado, o que se haya eliminado.</target>
       </segment>
     </unit>
     <unit id="6389145516487479848">
@@ -10659,7 +10869,7 @@
     </unit>
     <unit id="6506637250515275221">
       <notes>
-        <note category="description">History page with nothing recorded</note>
+        <note category="description">On the page where you say who you are in a group, for a person who came to no game night yet</note>
       </notes>
       <segment state="translated">
         <source>No game nights recorded yet</source>
@@ -10742,6 +10952,15 @@
       <segment state="translated">
         <source>Clear filters</source>
         <target>Quitar filtros</target>
+      </segment>
+    </unit>
+    <unit id="6574674582403239984">
+      <notes>
+        <note category="description">Error when taking over a person in a group fails</note>
+      </notes>
+      <segment state="translated">
+        <source>This person couldn’t be linked to you. Someone may have taken them over already, or you are one of the group’s people already.</source>
+        <target>No se pudo vincular a esta persona contigo. Puede que otra persona ya la haya vinculado, o que ya seas una de las personas del grupo.</target>
       </segment>
     </unit>
     <unit id="6582558331846075943">
@@ -11066,6 +11285,15 @@
       <segment state="translated">
         <source>Reopen</source>
         <target>Reabrir</target>
+      </segment>
+    </unit>
+    <unit id="6729998653808208029">
+      <notes>
+        <note category="description">Button on the page of a person of a group that starts undoing a takeover</note>
+      </notes>
+      <segment state="translated">
+        <source>Undo takeover…</source>
+        <target>Deshacer vinculación…</target>
       </segment>
     </unit>
     <unit id="6737715777823698933">
@@ -11547,6 +11775,15 @@
         <target><ph id="0" equiv="actor" disp="actor"/> ha quitado a <ph id="1" equiv="uninvited" disp="uninvited"/> de la lista de una noche de juegos</target>
       </segment>
     </unit>
+    <unit id="6988013986380833142">
+      <notes>
+        <note category="description">On the page where you say who you are in a group, when there is no one to choose</note>
+      </notes>
+      <segment state="translated">
+        <source>You’re already one of this group’s people, or everyone in it has an account.</source>
+        <target>Ya eres una de las personas de este grupo, o todo el grupo tiene cuenta.</target>
+      </segment>
+    </unit>
     <unit id="6988528602252556074">
       <notes>
         <note category="description">Under the invite editor of a game night, when Board Vault did not answer in time, so inviting or removing the person may or may not be saved, and the night could not be read again</note>
@@ -11633,8 +11870,8 @@
         <note category="description">Name shown for a game whose title is missing; the placeholder is its number</note>
       </notes>
       <segment state="translated">
-        <source>Game #<ph id="0" equiv="id" disp="gameId"/></source>
-        <target>Juego n.º <ph id="0" equiv="id" disp="gameId"/></target>
+        <source>Game #<ph id="0" equiv="id" disp="game.id"/></source>
+        <target>Juego n.º <ph id="0" equiv="id" disp="game.id"/></target>
       </segment>
     </unit>
     <unit id="7046520332064983368">
@@ -12115,6 +12352,15 @@
         <target><pc id="0" equivStart="START_TAG_STRONG" equivEnd="CLOSE_TAG_STRONG" type="other" dispStart="&lt;strong&gt;" dispEnd="&lt;/strong&gt;">Registros técnicos:</pc> por cada petición, el servidor anota la página o ruta pedida, si funcionó y tu número de cuenta. Cuando no has iniciado sesión, tu dirección IP se usa para limitar las peticiones repetidas y se olvida en pocos minutos. </target>
       </segment>
     </unit>
+    <unit id="7258581701888833164">
+      <notes>
+        <note category="description">Button on the page where you say who you are in a group, to the group page</note>
+      </notes>
+      <segment state="translated">
+        <source>Go to the group</source>
+        <target>Ir al grupo</target>
+      </segment>
+    </unit>
     <unit id="7258870677523380388">
       <notes>
         <note category="description">Hint under your username in the Profile settings; the link opens the Account settings</note>
@@ -12396,6 +12642,16 @@
         <target>Enviar invitación</target>
       </segment>
     </unit>
+    <unit id="7424648109330778916">
+      <notes>
+        <note category="description">Last item of the list of a person&apos;s games on the page where you say who you are in a group, after three titles</note>
+        <note category="meaning">more games, other</note>
+      </notes>
+      <segment state="translated">
+        <source><ph id="0" equiv="count" disp="more"/> more games</source>
+        <target><ph id="0" equiv="count" disp="more"/> juegos más</target>
+      </segment>
+    </unit>
     <unit id="7425524211157837406">
       <notes>
         <note category="description">Tooltip of the pin button on a group in the list on Home, when the group is pinned</note>
@@ -12403,6 +12659,15 @@
       <segment state="translated">
         <source>Unpin</source>
         <target>Desfijar</target>
+      </segment>
+    </unit>
+    <unit id="742573837700006737">
+      <notes>
+        <note category="description">Heading of the page where you say who you are in a group; the placeholder is the group name</note>
+      </notes>
+      <segment state="translated">
+        <source>Who are you in <ph id="0" equiv="INTERPOLATION" disp="{{ name }}"/>?</source>
+        <target>¿Quién eres en <ph id="0" equiv="INTERPOLATION" disp="{{ name }}"/>?</target>
       </segment>
     </unit>
     <unit id="7431603774839555423">
@@ -12991,6 +13256,15 @@
       <segment state="translated">
         <source>Approved</source>
         <target>Aprobadas</target>
+      </segment>
+    </unit>
+    <unit id="7746821027192759084">
+      <notes>
+        <note category="description">Button on the page where you say who you are in a group, when you are none of its people</note>
+      </notes>
+      <segment state="translated">
+        <source>I’m new here</source>
+        <target>Es mi primera vez aquí</target>
       </segment>
     </unit>
     <unit id="7751883799865007527">
@@ -13748,6 +14022,15 @@
         <target>Aún no lo has jugado en ninguna sesión registrada.</target>
       </segment>
     </unit>
+    <unit id="8074990507410479388">
+      <notes>
+        <note category="description">On the page of a person of a group who took over someone the group had recorded; name is the person&apos;s current name, previous the name before, date a day</note>
+      </notes>
+      <segment state="translated">
+        <source><ph id="0" equiv="INTERPOLATION" disp="{{ person.displayName }}"/> took over <ph id="1" equiv="INTERPOLATION_1" disp="{{ takeover.previousName }}"/> on <ph id="2" equiv="INTERPOLATION_2" disp="{{ storedDay(takeover.takenAt) }}"/></source>
+        <target><ph id="0" equiv="INTERPOLATION" disp="{{ person.displayName }}"/> se vinculó a <ph id="1" equiv="INTERPOLATION_1" disp="{{ takeover.previousName }}"/> el <ph id="2" equiv="INTERPOLATION_2" disp="{{ storedDay(takeover.takenAt) }}"/></target>
+      </segment>
+    </unit>
     <unit id="8079081579901316861">
       <notes>
         <note category="description">Toast after adding a game to your wishlist</note>
@@ -14242,6 +14525,15 @@
         <target>Fijar <ph id="0" equiv="group" disp="group.name"/> arriba</target>
       </segment>
     </unit>
+    <unit id="8320564452145050269">
+      <notes>
+        <note category="description">Error on the page where you say who you are in a group, when you are not in it or it is gone</note>
+      </notes>
+      <segment state="translated">
+        <source>This group isn’t available</source>
+        <target>Este grupo no está disponible</target>
+      </segment>
+    </unit>
     <unit id="8321308556634676437">
       <notes>
         <note category="description">Dialog that starts a game night early; the placeholders are its day, such as Sat 24 Oct, and its time</note>
@@ -14720,6 +15012,15 @@
         <target>Gestiona tus juegos de mesa, tu lista de deseos y tus reseñas</target>
       </segment>
     </unit>
+    <unit id="8536231996512826373">
+      <notes>
+        <note category="description">Shown on the group page to a member who is not one of the group&apos;s people yet, when the group has people without an account</note>
+      </notes>
+      <segment state="translated">
+        <source>Someone may have added you before you joined. Find yourself to keep your games and game nights.</source>
+        <target>Puede que alguien te añadiera antes de que te unieras. Encuéntrate para conservar tus juegos y noches de juegos.</target>
+      </segment>
+    </unit>
     <unit id="8549716072171275937">
       <notes>
         <note category="description">Sort option on the Reviews page: the games you rated last first</note>
@@ -14772,6 +15073,15 @@
       <segment state="translated">
         <source>Keep track of games you want to add to your collection</source>
         <target>Ten a mano los juegos que quieres añadir a tu colección</target>
+      </segment>
+    </unit>
+    <unit id="8588244623604790661">
+      <notes>
+        <note category="description">Link after a line in the group&apos;s history saying someone took over a person, to that person&apos;s page where the takeover can be undone</note>
+      </notes>
+      <segment state="translated">
+        <source>Undo…</source>
+        <target>Deshacer…</target>
       </segment>
     </unit>
     <unit id="8593763195239032430">
@@ -15510,6 +15820,15 @@
       <segment state="translated">
         <source>See their games</source>
         <target>Ver sus juegos</target>
+      </segment>
+    </unit>
+    <unit id="8941891701294702101">
+      <notes>
+        <note category="description">Group history line, someone saying they are not a person they had taken over; actor and person are names</note>
+      </notes>
+      <segment state="translated">
+        <source><ph id="0" equiv="actor" disp="actor"/> said they aren’t <ph id="1" equiv="person" disp="person"/> and gave them back to the group</source>
+        <target><ph id="0" equiv="actor" disp="actor"/> dijo que no es <ph id="1" equiv="person" disp="person"/> y devolvió a esa persona al grupo</target>
       </segment>
     </unit>
     <unit id="8954448049813376034">

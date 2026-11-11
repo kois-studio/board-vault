@@ -29,6 +29,8 @@ const DATA_BY_TYPE: Record<NotificationTypeEnum, z.ZodType> = {
         game: id,
         change: z.enum(GROUP_PERSON_CHANGES).optional(),
     }),
+    // {account} undid your takeover of {person} in {group} (ADR-0027)
+    [NotificationTypeEnum.GROUP_PERSON_TAKEOVER_UNDONE]: z.object({ account: id, group: id, person: id }),
     [NotificationTypeEnum.GAME_PROPOSAL_APPROVED]: proposalData.extend({ createdGameId: id.optional() }),
     [NotificationTypeEnum.GAME_PROPOSAL_SUBMITTED]: proposalData.extend({ submittedBy: id }),
     [NotificationTypeEnum.GAME_PROPOSAL_REJECTED]: proposalData.extend({ reviewNotes: z.string() }),

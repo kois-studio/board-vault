@@ -73,9 +73,20 @@ The group owner invites from one field on Manage group, by username only
 (#277): the invitation reaches the person's inbox in the app. An email
 address is refused with a note to use their username; Board Vault never
 handles anyone else's email. The invitation can name a person without an
-account; once in the group, the invitee reviews what was recorded for that
-person and claims it (ADR-0010). Each such person on the group page has an "Invite" link that
-opens Manage group with them chosen (`?person=<id>`).
+account; once in the group, that person is shown first as "Is this you?".
+Each such person on the group page has an "Invite" link that opens Manage
+group with them chosen (`?person=<id>`).
+
+Someone who joins a group with people without an account, and isn't one of
+its people yet, picks who they are (#278, ADR-0027). Accepting the invitation
+opens "Who are you in this group?": those people with their games and game
+nights, the suggested one first, each with "This is me", and "I'm new here".
+"This is me" opens the review page, where they keep or drop each game and
+preference before taking the person over. The group page offers the same
+choice until they make it. For 30 days anyone in the group can undo a wrong
+pick from that member's page ("Undo takeover…", linked from the history
+entry): the person gets their name, games and earlier nights back, and the
+member stays as a new person with the nights since.
 
 History keeps everyone who played. Someone who left the group shows as
 "Name (left)" with a muted avatar; a deleted account shows as "Deleted

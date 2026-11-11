@@ -6,6 +6,7 @@ import { environment } from '../../environments/environment'
 import type { Locale } from '../core/i18n/locales'
 import { asReadOnly, REQUEST_TIMEOUT_MS, withoutReadRetry } from '../core/interceptors/resilience.interceptor'
 import {
+    acceptInvitationSchema,
     adminApprovalResponseSchema,
     adminGameProposalSchema,
     adminGameProposalsSchema,
@@ -33,7 +34,9 @@ import {
     groupInsightsSchema,
     groupInvitationsSchema,
     groupPeopleSchema,
+    groupPersonChoicesSchema,
     groupPersonSchemaResponse,
+    groupPersonTakeoversSchema,
     historyPageSchema,
     historySummarySchema,
     homePreferencesSchema,
@@ -61,6 +64,7 @@ import {
     successSchema,
     tagCategorySchema,
     tagSchema,
+    undoGroupPersonTakeoverSchema,
     usageReportSchema,
     userCollectionActivitySchema,
     userGamesSchema,
@@ -227,6 +231,26 @@ export class Api {
 
     joinGroupAsNewPerson(groupId: number) {
         return this.http.post<GroupPersonType>(`${this.url}/groups/${groupId}/people/join`, {})
+    }
+
+    /** The people you may say "this is me" about; empty when you are one of the group's people already (#278). */
+    getGroupPersonChoices(groupId: number) {
+        return this.http
+            .get<unknown>(`${this.url}/groups/${groupId}/people/choices`)
+            .pipe(map((response) => groupPersonChoicesSchema.parse(response).choices))
+    }
+
+    /** Takeovers in the group that can still be undone (ADR-0027). */
+    getGroupPersonTakeovers(groupId: number) {
+        return this.http
+            .get<unknown>(`${this.url}/groups/${groupId}/people/takeovers`)
+            .pipe(map((response) => groupPersonTakeoversSchema.parse(response).takeovers))
+    }
+
+    undoGroupPersonTakeover(groupId: number, personId: number) {
+        return this.http
+            .post<unknown>(`${this.url}/groups/${groupId}/people/${personId}/takeover/undo`, {})
+            .pipe(map((response) => undoGroupPersonTakeoverSchema.parse(response)))
     }
 
     // #region games
@@ -886,8 +910,8 @@ export class Api {
 
     acceptInvitation(userId: number, invitationId: number) {
         return this.http
-            .post<{ success: true }>(`${this.url}/profile/users/${userId}/invitations/${invitationId}/accept`, {})
-            .pipe(map((response) => successSchema.parse(response)))
+            .post<unknown>(`${this.url}/profile/users/${userId}/invitations/${invitationId}/accept`, {})
+            .pipe(map((response) => acceptInvitationSchema.parse(response)))
     }
 
     // #region Game Proposals
