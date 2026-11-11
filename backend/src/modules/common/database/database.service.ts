@@ -88,11 +88,12 @@ export class DatabaseService implements OnModuleInit, OnModuleDestroy {
     /**
      * Use this instead of the client's `execute` to log the parameterized SQL template before executing it.
      * Bound values are intentionally excluded because they may contain secrets or personal data.
+     * The template is a `verbose` line: shown locally, left out of the Vercel logs (#254).
      */
     execute(stmt: InStatement) {
         const sql = typeof stmt === 'string' ? stmt : stmt.sql
 
-        this.LOGGER.log(sql)
+        this.LOGGER.verbose(sql)
 
         return this.executeWithRetry(stmt, sql)
     }
@@ -115,7 +116,7 @@ export class DatabaseService implements OnModuleInit, OnModuleDestroy {
 
     /** Several writes that succeed or fail together, in one round trip. Logged like `execute`. */
     batch(stmts: Array<InStatement>) {
-        for (const stmt of stmts) this.LOGGER.log(typeof stmt === 'string' ? stmt : stmt.sql)
+        for (const stmt of stmts) this.LOGGER.verbose(typeof stmt === 'string' ? stmt : stmt.sql)
 
         return this.tursoClient.batch(stmts, 'write')
     }

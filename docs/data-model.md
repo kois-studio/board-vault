@@ -140,8 +140,8 @@ Turso is the only source of truth. Upstash Redis holds disposable copies of
 read results and the rate-limit counters, through
 [`CacheService`](../backend/src/modules/common/cache/cache.service.ts).
 
-- **Keys:** `<area>:<selector>:<id>`, for example `reviews:byAccountId:7` or
-  `game-proposal:byStatus:pending`. Rate limits use `rate-limit:…` keys that
+- **Keys:** `<area>:<selector>:<id>`, for example `games:byId:12` or
+  `reviews:avgGlobalRating:12`. Rate limits use `rate-limit:…` keys that
   expire with their window.
 - **Values:** JSON, serialized by the Upstash client.
 - **TTL:** every entry expires: `minute` 1 minute (the admin overview,

@@ -44,6 +44,46 @@ describe('processArtwork', () => {
     })
 })
 
+describe('loading sharp (#254)', () => {
+    afterEach(() => {
+        vi.doUnmock('sharp')
+        vi.resetModules()
+    })
+
+    it('loads sharp on the first image, not when the module loads, and only once', async () => {
+        const loads = vi.fn()
+
+        vi.resetModules()
+        vi.doMock('sharp', async () => {
+            loads()
+            return vi.importActual('sharp')
+        })
+        const artwork = await import('./artwork.js')
+
+        expect(loads).not.toHaveBeenCalled()
+
+        const image = await sharp({ create: { width: 10, height: 10, channels: 3, background: '#000' } })
+            .png()
+            .toBuffer()
+
+        await Promise.all([artwork.processArtwork(image), artwork.processArtwork(image)])
+        await artwork.processArtwork(image)
+        expect(loads).toHaveBeenCalledTimes(1)
+    })
+
+    it('treats sharp failing to load as a server fault, not an image the admin can fix', async () => {
+        vi.resetModules()
+        vi.doMock('sharp', () => {
+            throw new Error('Could not load the "sharp" module')
+        })
+        const artwork = await import('./artwork.js')
+        const failure = await artwork.processArtwork(Buffer.from('image')).catch((error: unknown) => error)
+
+        expect(failure).toBeInstanceOf(Error)
+        expect(failure).not.toBeInstanceOf(artwork.ArtworkError)
+    })
+})
+
 describe('downloadArtwork', () => {
     it('downloads a public image', async () => {
         const fetch = vi.fn().mockResolvedValue(imageResponse('image bytes'))

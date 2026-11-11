@@ -163,9 +163,6 @@ export class GamesService {
             throw new NotFoundException('The created game could not be read back')
         }
 
-        // Clear cache
-        await this.cacheService.deleteOne(`${this.CACHE_KEY}:all`)
-
         return createdGame
     }
 }

@@ -17,23 +17,31 @@ describe('DatabaseService logging', () => {
         expect(execute).toHaveBeenCalledWith({ sql: 'DELETE FROM Invitation WHERE id = ?', args: [99] })
     })
 
-    it('logs only the parameterized SQL template, never bound values', async () => {
+    it('logs only the parameterized SQL template, as a verbose line, never bound values', async () => {
         const service = new DatabaseService({} as ConfigService)
         const execute = vi.fn().mockResolvedValue({ rows: [] })
-        const logger = vi.spyOn((service as unknown as { LOGGER: { log: (message: string) => void } }).LOGGER, 'log')
+        const batch = vi.fn().mockResolvedValue([])
+        const internals = service as unknown as { LOGGER: { log: (message: string) => void; verbose: (message: string) => void } }
+        const logger = vi.spyOn(internals.LOGGER, 'verbose')
+        const log = vi.spyOn(internals.LOGGER, 'log')
         const statement = {
             sql: 'SELECT * FROM Account WHERE email = ? AND password_reset_token = ?',
             args: ['person@example.com', 'reset-token-secret'],
         }
+        const write = { sql: 'UPDATE Account SET displayName = ? WHERE id = ?', args: ['Secret name', 1] }
 
-        ;(service as unknown as { tursoClient: { execute: typeof execute } }).tursoClient = { execute }
+        ;(service as unknown as { tursoClient: { execute: typeof execute; batch: typeof batch } }).tursoClient = { execute, batch }
 
         await service.execute(statement)
+        await service.batch([write])
 
         expect(execute).toHaveBeenCalledWith(statement)
-        expect(logger).toHaveBeenCalledWith(statement.sql)
+        expect(logger.mock.calls).toEqual([[statement.sql], [write.sql]])
+        // `verbose`, so the Vercel logs leave it out (#254).
+        expect(log).not.toHaveBeenCalled()
         expect(logger).not.toHaveBeenCalledWith(expect.stringContaining('person@example.com'))
         expect(logger).not.toHaveBeenCalledWith(expect.stringContaining('reset-token-secret'))
+        expect(logger).not.toHaveBeenCalledWith(expect.stringContaining('Secret name'))
     })
 
     it('builds recommendation candidates from selected attendee ownership', async () => {

@@ -174,16 +174,10 @@ export class AdminService {
     /** Moves every game from one tag to another, then deletes the first; one transaction. */
     async mergeTag(tagId: number, intoTagId: number): Promise<MergeTagResultDto> {
         if (tagId === intoTagId) throw new BadRequestException('A tag cannot be merged into itself.')
-        const [tag, into] = await Promise.all([this.tagService.getTagById(tagId), this.tagService.getTagById(intoTagId)])
+        // Both must exist: getTagById answers 404 for a tag that does not.
+        await Promise.all([this.tagService.getTagById(tagId), this.tagService.getTagById(intoTagId)])
 
-        const result = await this.databaseService.games.mergeTagAtomically({ tagId, intoTagId })
-
-        await Promise.all([
-            this.cacheService.deleteOne(`tags:byCategoryId:${tag.categoryId}`),
-            this.cacheService.deleteOne(`tags:byCategoryId:${into.categoryId}`),
-        ])
-
-        return result
+        return this.databaseService.games.mergeTagAtomically({ tagId, intoTagId })
     }
 
     // #endregion
@@ -545,10 +539,6 @@ export class AdminService {
         })
 
         await Promise.all([
-            this.cacheService.deleteOne(`game-proposal:byId:${proposalId}`),
-            this.cacheService.deleteOne('game-proposal:byStatus:pending'),
-            this.cacheService.deleteOne('game-proposal:byStatus:approved'),
-            this.cacheService.deleteOne(`game-proposal:bySubmitter:${proposal.submittedBy}`),
             this.cacheService.deleteOne(`user-proposal-stats:${proposal.submittedBy}`),
             // The approval may have put the game on the proposer's shelf or wishlist.
             this.cacheService.deleteOne(`collection-activity:byAccountId:${proposal.submittedBy}`),
@@ -580,13 +570,7 @@ export class AdminService {
             },
         })
 
-        await Promise.all([
-            this.cacheService.deleteOne(`game-proposal:byId:${proposalId}`),
-            this.cacheService.deleteOne('game-proposal:byStatus:pending'),
-            this.cacheService.deleteOne('game-proposal:byStatus:rejected'),
-            this.cacheService.deleteOne(`game-proposal:bySubmitter:${proposal.submittedBy}`),
-            this.cacheService.deleteOne(`user-proposal-stats:${proposal.submittedBy}`),
-        ])
+        await this.cacheService.deleteOne(`user-proposal-stats:${proposal.submittedBy}`)
 
         return { success: true }
     }
@@ -624,13 +608,7 @@ export class AdminService {
             },
         })
 
-        await Promise.all([
-            this.cacheService.deleteOne(`game-proposal:byId:${proposalId}`),
-            this.cacheService.deleteOne('game-proposal:byStatus:pending'),
-            this.cacheService.deleteOne('game-proposal:byStatus:duplicate'),
-            this.cacheService.deleteOne(`game-proposal:bySubmitter:${proposal.submittedBy}`),
-            this.cacheService.deleteOne(`user-proposal-stats:${proposal.submittedBy}`),
-        ])
+        await this.cacheService.deleteOne(`user-proposal-stats:${proposal.submittedBy}`)
 
         return { success: true }
     }

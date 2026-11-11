@@ -2,7 +2,6 @@ import { ResultSet } from '@libsql/client'
 import { Injectable, Logger, NotFoundException } from '@nestjs/common'
 
 import { tagsSchema } from '../../../common/schemas/db-tag.schema.js'
-import { CacheService } from '../../common/cache/cache.service.js'
 import { DatabaseService } from '../../common/database/database.service.js'
 
 import type { TagDto } from '../../../common/types/tag.type.js'
@@ -10,12 +9,8 @@ import type { TagDto } from '../../../common/types/tag.type.js'
 @Injectable()
 export class TagsService {
     private readonly LOGGER: Logger = new Logger(this.constructor.name)
-    private readonly CACHE_KEY = 'tags'
 
-    constructor(
-        private readonly databaseService: DatabaseService,
-        private readonly cacheService: CacheService,
-    ) {}
+    constructor(private readonly databaseService: DatabaseService) {}
 
     private _parseResultSet(resultSet: ResultSet): Array<TagDto> {
         const tags = resultSet.rows.map(row => ({
@@ -68,9 +63,6 @@ export class TagsService {
         const resultSet = await this.databaseService.games.createTag(name, categoryId)
         const tagId = Number(resultSet.lastInsertRowid)
 
-        // Clear cache
-        await this.cacheService.deleteOne(`${this.CACHE_KEY}:byCategoryId:${categoryId}`)
-
         return this.getTagById(tagId)
     }
 
@@ -78,9 +70,6 @@ export class TagsService {
         this.LOGGER.log('Updating tag in category')
 
         await this.databaseService.games.updateTag(id, name, categoryId)
-
-        // Clear cache
-        await this.cacheService.deleteOne(`${this.CACHE_KEY}:byCategoryId:${categoryId}`)
 
         return this.getTagById(id)
     }

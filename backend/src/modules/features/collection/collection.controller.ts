@@ -10,6 +10,7 @@ import {
     Put,
     Query,
     UseGuards,
+    UseInterceptors,
     UsePipes,
     ValidationPipe,
 } from '@nestjs/common'
@@ -19,6 +20,7 @@ import { RequestLocale } from '../../../common/decorators/request-locale.decorat
 import { AuthGuard } from '../../../common/guards/auth.guard.js'
 import { UserOwnershipGuard } from '../../../common/guards/ownership.guard.js'
 import { RateLimit, RateLimitGuard } from '../../../common/guards/rate-limit.guard.js'
+import { RarelyChangingInterceptor } from '../../../common/http/rarely-changing.interceptor.js'
 import { SuccessDto } from '../../../common/types/auth.type.js'
 import { CollectionActivityDto } from '../../../common/types/collection-activity.type.js'
 import { AddGameToCollectionBody, GameOwnedDto, SetOwnedEditionBody, UpdateGameOwnedDto } from '../../../common/types/game-owned.type.js'
@@ -156,6 +158,8 @@ export class CollectionController {
     }
 
     @Get('/tags')
+    // The tags and their counts change only when the catalogue does; the browser may keep them (#254).
+    @UseInterceptors(RarelyChangingInterceptor)
     @ApiOperation({ summary: 'Tags used by catalogue games, for the Browse filters', deprecated: false })
     @ApiResponse({ status: 200, type: [CatalogueTagDto], description: 'Tags with their category and game count' })
     async getCatalogueTags(@RequestLocale() locale: Locale) {

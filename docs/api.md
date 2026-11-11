@@ -123,6 +123,21 @@ enforced in the DTO. Per-account and per-group lists (collection, wishlist,
 members, sessions) are bounded by their owner and returned whole; an inbox
 answers the latest 100 notifications, newest first.
 
+## Browser caching
+
+Answers are not cached by default. A route whose answer changes rarely and is
+the same for every reader may let the browser keep it, with
+`RarelyChangingInterceptor`: `Cache-Control: private, max-age=300,
+stale-while-revalidate=86400` and `Vary: Accept-Language`, set only on a
+successful answer. `private` keeps it out of shared caches. A browser may then
+show an answer up to five minutes old, and for up to a day after that, an
+older one for one load while it fetches a fresh one. Errors and refused
+requests are never kept: `ApiErrorFilter` removes the header. Today only
+`GET /collection/tags` does: the Browse and admin tag filters can show a tag
+added, renamed, or merged recently as it was. Never add it to a route
+whose answer depends on who asks, since the browser keeps it whoever signs in
+next. Artwork has its own caching (see [Artwork](#artwork)).
+
 ## Dates
 
 Session dates (`meetDate`, `sessionDate`, `lastPlayedAt`) and a notification's

@@ -3,13 +3,20 @@ import { ConsoleLogger, type LogLevel } from '@nestjs/common'
 import { requestContext } from './request-context.js'
 
 /**
+ * What the Vercel logs keep. `verbose` and `debug` lines (every SQL template,
+ * `@LogFeature`'s method entry and exit) stay in local output only, so the
+ * logs a person searches hold the events that matter (#254).
+ */
+export const JSON_LOG_LEVELS: Array<LogLevel> = ['fatal', 'error', 'warn', 'log']
+
+/**
  * One JSON object per line, for Vercel's log search. Messages written with
  * `structuredLog` are merged in as fields instead of nested as a string, and
  * every line inside a request carries its `requestId`.
  */
 export class JsonLogger extends ConsoleLogger {
     constructor() {
-        super({ json: true })
+        super({ json: true, logLevels: JSON_LOG_LEVELS })
     }
 
     protected override getJsonLogObject(

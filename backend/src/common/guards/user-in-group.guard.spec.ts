@@ -37,7 +37,7 @@ describe('UserInGroupGuard when the membership lookup fails (#245)', () => {
     const answer = async (getGroupMembershipById: ReturnType<typeof vi.fn>) => {
         const service = new GroupMembershipsService(fakeDatabase({ getGroupMembershipById }), fakeActivityNotifier())
         const guard = new UserInGroupGuard(service)
-        const response = { setHeader: vi.fn(), status: vi.fn().mockReturnThis(), json: vi.fn() }
+        const response = { setHeader: vi.fn(), removeHeader: vi.fn(), status: vi.fn().mockReturnThis(), json: vi.fn() }
         const host = {
             switchToHttp: () => ({ getRequest: () => ({ method: 'GET', originalUrl: '/groups/12/people' }), getResponse: () => response }),
         }

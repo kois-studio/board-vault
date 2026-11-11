@@ -2,8 +2,6 @@ import { createHash } from 'node:crypto'
 import { lookup } from 'node:dns/promises'
 import { BlockList, isIP } from 'node:net'
 
-import sharp from 'sharp'
-
 /**
  * Game artwork Board Vault keeps itself (ADR-0015): copied once, compressed, and served from
  * `/artwork/<gameId>-<hash>.webp`. Nothing here depends on Nest, so the import script uses it too.
@@ -49,9 +47,27 @@ export function storedArtworkPath(value: string): string | null {
     return ARTWORK_PATH.test(path) ? path : null
 }
 
+let sharpModule: Promise<typeof import('sharp')> | undefined
+
+/**
+ * sharp, loaded on first use (#254). Only admin uploads and artwork imports need it, so a cold start
+ * no longer loads its native library for every other request. A failed load is tried again next time.
+ */
+function loadSharp(): Promise<typeof import('sharp')> {
+    sharpModule ??= import('sharp').catch((error: unknown) => {
+        sharpModule = undefined
+        throw error
+    })
+
+    return sharpModule
+}
+
 /** Any image sharp reads, turned upright, fitted within the longest side, as WebP without metadata. */
 export async function processArtwork(source: Buffer): Promise<ProcessedArtwork> {
     if (source.length > ARTWORK_MAX_SOURCE_BYTES) throw new ArtworkError('The image is larger than 8 MB.')
+
+    // Outside the try: sharp failing to load is a server fault, not a file the admin can fix.
+    const { default: sharp } = await loadSharp()
 
     try {
         const { data, info } = await sharp(source, { limitInputPixels: 40_000_000 })

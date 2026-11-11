@@ -133,6 +133,9 @@ Only public values may go there. The API base URL is fixed per build in
   duration, and account id; `provider.timeout` marks a slow provider and
   `database.retry` a read retried after a database timeout. Search
   Vercel logs by any of these values. No bodies, emails, or tokens are logged.
+  The Vercel logs keep `log`, `warn`, `error`, and `fatal` lines only: the SQL
+  template of every query and `@LogFeature`'s method entry and exit are
+  `verbose` lines, shown in local output and left out of the Vercel logs (#254).
 - **Daily maintenance:** Vercel Cron calls `GET /internal/daily-maintenance`
   once a day (03:30 UTC) with `CRON_SECRET`. It writes one
   `usage.daily_maintenance` log line with how many daily counts it made and

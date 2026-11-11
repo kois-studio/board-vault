@@ -65,6 +65,8 @@ export class ApiErrorFilter implements ExceptionFilter {
             )
         }
 
+        // An error answer is never kept by a browser, even on a route that lets it keep its answers (#254).
+        response.removeHeader('Cache-Control')
         response.setHeader('X-Request-Id', requestId)
         response.status(statusCode).json({
             statusCode,

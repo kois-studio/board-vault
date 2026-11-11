@@ -1,3 +1,5 @@
+import { Logger } from '@nestjs/common'
+
 import { JsonLogger } from './json-logger.js'
 import { requestContext } from './request-context.js'
 import { structuredLog } from './structured-log.js'
@@ -35,5 +37,39 @@ describe('JsonLogger', () => {
 
         expect(lines[0]).toEqual(expect.objectContaining({ requestId: 'req-1', message: 'SELECT 1' }))
         expect(lines[1]).not.toHaveProperty('requestId')
+    })
+
+    it('leaves verbose and debug lines out, and keeps everything else (#254)', () => {
+        const logger = new JsonLogger()
+        const errors = vi.spyOn(process.stderr, 'write').mockImplementation((chunk: string | Uint8Array) => {
+            lines.push(JSON.parse(String(chunk)) as Record<string, unknown>)
+            return true
+        })
+
+        try {
+            logger.verbose('SELECT * FROM Account', 'DatabaseService')
+            logger.debug('[FEATURE] IN getHome', 'HomeService')
+            logger.log('kept log', 'Init')
+            logger.warn('kept warn', 'Init')
+            logger.error('kept error', undefined, 'Init')
+            logger.fatal('kept fatal', 'Init')
+        } finally {
+            errors.mockRestore()
+        }
+
+        expect(lines.map(line => line.message)).toEqual(['kept log', 'kept warn', 'kept error', 'kept fatal'])
+    })
+
+    it('leaves the SQL out of the Vercel logs, through the Logger every service uses (#254)', () => {
+        Logger.overrideLogger(new JsonLogger())
+
+        try {
+            new Logger('DatabaseService').verbose('SELECT 1')
+            new Logger('LoggerMiddleware').log(structuredLog('http.request.completed', { statusCode: 200 }))
+        } finally {
+            Logger.overrideLogger(true)
+        }
+
+        expect(lines).toEqual([expect.objectContaining({ event: 'http.request.completed', context: 'LoggerMiddleware' })])
     })
 })

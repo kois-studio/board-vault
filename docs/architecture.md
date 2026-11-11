@@ -56,11 +56,11 @@ attempt may already have been applied.
 | `app.module.ts` | Registers every module and the two global middlewares. |
 | `common/guards/` | Route guards (table below). |
 | `common/middlewares/` | Request logging and Clerk session resolution. |
-| `common/http/` | Error envelope (`api-error.ts`), CORS, hardening. |
+| `common/http/` | Error envelope (`api-error.ts`), CORS, hardening, and `RarelyChangingInterceptor`, which lets the browser keep a rarely changing answer (see [api.md](api.md#browser-caching)). |
 | `common/types/` | DTOs with `class-validator` decorators; they define the OpenAPI contract. |
 | `common/schemas/` | zod schemas that parse database rows. |
 | `common/validators/validateEnv.ts` | Startup environment checks. |
-| `common/artwork/` | Game artwork without Nest (ADR-0015): the guarded download (public http(s) only, 8 MB, 10 s) and the compression to WebP within 800 px. `backend/scripts/import-artwork.mjs` uses it too. |
+| `common/artwork/` | Game artwork without Nest (ADR-0015): the guarded download (public http(s) only, 8 MB, 10 s) and the compression to WebP within 800 px. sharp loads on the first image, not on every cold start (#254). `backend/scripts/import-artwork.mjs` uses it too. |
 | `modules/common/auth/` | Clerk token verification, account resolution, `GET /auth/clerk/status`. |
 | `modules/common/database/` | `DatabaseService`: the connection, `execute`, and `transaction`. |
 | `modules/common/database/queries/` | All SQL, one class per domain (`accounts`, `artwork`, `groups`, `home`, `recordings`, `games`, `collection`, `invitations`, `notifications`, `sessions`, `recommendations`), one method per query. |

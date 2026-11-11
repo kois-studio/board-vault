@@ -37,7 +37,6 @@ function parseOtherTitles(value: unknown): Array<ProposalOtherTitleDto> {
 @Injectable()
 export class GameProposalService {
     private readonly LOGGER: Logger = new Logger(this.constructor.name)
-    private readonly CACHE_KEY = 'game-proposal'
 
     constructor(
         private readonly databaseService: DatabaseService,
@@ -149,9 +148,6 @@ export class GameProposalService {
             },
         })
 
-        await this.cacheService.deleteOne(`${this.CACHE_KEY}:bySubmitter:${submittedBy}`)
-        await this.cacheService.deleteOne(`${this.CACHE_KEY}:byStatus:pending`)
-
         return this.getGameProposalById(proposalId)
     }
 
@@ -166,12 +162,6 @@ export class GameProposalService {
 
         await this.databaseService.games.updateGameProposal(id, updatePayload)
 
-        // Clear cache
-        await this.cacheService.deleteOne(`${this.CACHE_KEY}:byId:${id}`)
-        if (updateData.status) {
-            await this.cacheService.deleteOne(`${this.CACHE_KEY}:byStatus:${updateData.status}`)
-        }
-
         return this.getGameProposalById(id)
     }
 
@@ -179,9 +169,6 @@ export class GameProposalService {
         this.LOGGER.log('Deleting game proposal')
 
         await this.databaseService.games.deleteGameProposalById(id)
-
-        // Clear cache
-        await this.cacheService.deleteOne(`${this.CACHE_KEY}:byId:${id}`)
 
         return { success: true }
     }

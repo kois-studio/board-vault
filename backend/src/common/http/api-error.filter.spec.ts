@@ -7,6 +7,7 @@ import { ProviderTimeoutError } from './provider-timeout.js'
 function createHost(exception: unknown) {
     const response = {
         setHeader: vi.fn(),
+        removeHeader: vi.fn(),
         status: vi.fn().mockReturnThis(),
         json: vi.fn(),
     }
@@ -22,6 +23,15 @@ function createHost(exception: unknown) {
 }
 
 describe('ApiErrorFilter', () => {
+    it('never lets the browser keep an error answer (#254)', () => {
+        const { exception, host, response } = createHost(new Error('failed while sending a cacheable answer'))
+
+        new ApiErrorFilter().catch(exception, host as never)
+
+        expect(response.removeHeader).toHaveBeenCalledWith('Cache-Control')
+        expect(response.removeHeader.mock.invocationCallOrder[0]).toBeLessThan(response.json.mock.invocationCallOrder[0]!)
+    })
+
     it('normalizes validation errors while retaining safe field details', () => {
         const filter = new ApiErrorFilter()
         const { host, response } = createHost(new BadRequestException({ message: ['groupId must be an integer'], error: 'Bad Request' }))
