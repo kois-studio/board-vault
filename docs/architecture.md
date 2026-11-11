@@ -255,6 +255,11 @@ An error never leaves a page without a way on (#244):
   listed or the list failed. When the night or its group can't be loaded, the
   page says so, and Retry asks for both again, the group afresh. A groups
   refresh that fails after the night is shown leaves it on screen.
+- Opening another night from a night's page (a notification, say) builds the
+  page afresh. Its route is marked `remountOnParamChange`, and
+  `RemountOnParamChangeStrategy` (`core/routing`) keeps Angular's own reuse
+  for every other route. Anything the first night was still waiting for,
+  saves included, then belongs to the page that was left.
 - Taking over a person prepared for you tells two failures apart. "Not there
   for you" (a 403 or 404, or a person you can't claim) still offers joining as
   a new person. Board Vault not answering offers only Retry, since joining as

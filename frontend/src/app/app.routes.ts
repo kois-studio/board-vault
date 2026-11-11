@@ -2,6 +2,7 @@ import { Routes } from '@angular/router'
 import { AdminGuard } from './core/guards/admin.guard'
 import { AuthOnlyGuard, SHOWS_AUTH_HANDOFF } from './core/guards/auth.guard'
 import { GuestOnlyGuard } from './core/guards/auth-redirect.guard'
+import { remountOnParamChange } from './core/routing/remount-on-param-change'
 import { LayoutBasicComponent } from './layout/layout-basic/layout-basic.component'
 import { LayoutCompleteComponent } from './layout/layout-complete/layout-complete.component'
 import { LandingComponent } from './pages/landing/landing.component'
@@ -157,6 +158,8 @@ export const routes: Routes = [
                 path: 'sessions/:sessionId',
                 loadComponent: () => import('./pages/meet-view/meet-view.component').then((m) => m.MeetViewComponent),
                 canActivate: [AuthOnlyGuard],
+                // Another night (a notification opened from this page) gets a page of its own.
+                data: remountOnParamChange,
             },
             {
                 path: 'meets/:meetId',
