@@ -11,9 +11,8 @@ import { BackLinkComponent } from '../../../components/ui/back-link/back-link.co
 import { ButtonComponent } from '../../../components/ui/button/button.component'
 import { DialogDirective } from '../../../components/ui/dialog/dialog.directive'
 import { IconComponent } from '../../../components/ui/icon/icon.component'
-import { LOADING_KEYS } from '../../../core/enums/loading-keys-enum'
+import { isPending } from '../../../core/async/resource-state'
 import { DataService } from '../../../core/services/data.service'
-import { LoadingService } from '../../../core/services/loading.service'
 import { groupGameCount, groupPeopleCount } from '../../../core/utils/groupCounts'
 @Component({
     imports: [
@@ -80,14 +79,13 @@ export class GroupEditComponent {
     public readonly isResolvingGroup = signal(true)
     public readonly groupResolutionError = signal(false)
     /** Your groups could not be loaded, so whether this one is yours is unknown: never "not available" then (#248). */
-    public readonly groupLoadFailed = computed(() => this.dataService.userGroupsError())
+    public readonly groupLoadFailed = computed(() => this.dataService.userGroupsState().status === 'error')
     public readonly isLoading = signal(false)
 
     constructor(
         private readonly router: Router,
         private readonly route: ActivatedRoute,
         private readonly dataService: DataService,
-        private readonly loadingService: LoadingService,
     ) {
         effect(() => {
             this.userData = this.dataService.currentUser()
@@ -101,10 +99,10 @@ export class GroupEditComponent {
                 return
             }
 
-            const isLoadingGroups = this.loadingService.loadingStatesIndex()[LOADING_KEYS.USER_GROUPS]
+            const isLoadingGroups = isPending(this.dataService.userGroupsState())
             if (isLoadingGroups) return
 
-            if (this.dataService.userGroupsError() || !groupData) {
+            if (this.dataService.userGroupsState().status === 'error' || !groupData) {
                 this.isResolvingGroup.set(false)
                 this.groupResolutionError.set(true)
                 return

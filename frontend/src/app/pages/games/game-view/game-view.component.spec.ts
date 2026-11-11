@@ -6,6 +6,8 @@ import { type Observable, of, throwError } from 'rxjs'
 import { Api } from '../../../api/api'
 import type { GameCompleteType, GameViewType, HistoryPageOptions, HistoryRecordType, PublicUserType } from '../../../api/api.types'
 import { ToastService } from '../../../components/toast/toast.service'
+import { type ResourceStatus } from '../../../core/async/resource-state'
+import { withStates } from '../../../core/async/resource-state.testing'
 import { ConnectivityService } from '../../../core/services/connectivity.service'
 import { DataService } from '../../../core/services/data.service'
 import { GameViewPageComponent } from './game-view.component'
@@ -113,10 +115,15 @@ describe('GameViewPageComponent plays', () => {
     const setup = async (
         getGameView = vi.fn().mockReturnValue(of(view)),
         beforeCreate = () => {},
-        { getUserGamesHistory = vi.fn(serverHistory), getUserHistorySummary = vi.fn(nightsWithGame) } = {},
+        {
+            getUserGamesHistory = vi.fn(serverHistory),
+            getUserHistorySummary = vi.fn(nightsWithGame),
+            groupsStatus = 'ready' as ResourceStatus,
+        } = {},
     ) => {
         const toast = { success: vi.fn(), error: vi.fn() }
         const userHistoryRevision = signal(0)
+        const refreshUserGroups = vi.fn()
         await TestBed.configureTestingModule({
             imports: [GameViewPageComponent],
             providers: [
@@ -131,13 +138,17 @@ describe('GameViewPageComponent plays', () => {
                 },
                 {
                     provide: DataService,
-                    useValue: {
-                        currentUser: signal({ id: 1 }),
-                        userGroups: signal([{ id: 7, name: 'DuckDevs', members: [], placeholders: [] }]),
-                        userHistoryRevision,
-                        userGames: signal([]),
-                        userWishlist: signal([]),
-                    },
+                    useValue: withStates(
+                        {
+                            currentUser: signal({ id: 1 }),
+                            userGroups: signal([{ id: 7, name: 'DuckDevs', members: [], placeholders: [] }]),
+                            userHistoryRevision,
+                            userGames: signal([]),
+                            userWishlist: signal([]),
+                            refreshUserGroups,
+                        },
+                        { userGroups: groupsStatus },
+                    ),
                 },
                 { provide: ToastService, useValue: toast },
             ],
@@ -156,11 +167,39 @@ describe('GameViewPageComponent plays', () => {
             getUserGamesHistory,
             getUserHistorySummary,
             userHistoryRevision,
+            refreshUserGroups,
         }
     }
 
     const listedNights = (element: HTMLElement) =>
         [...element.querySelectorAll('#game-plays a')].map((link) => Number(link.getAttribute('href')?.split('/').pop()))
+
+    // #256: "nobody owns it" only once your groups have loaded.
+    it('says nobody in your groups owns it only once your groups have loaded', async () => {
+        const { element } = await setup()
+
+        expect(element.querySelector('[aria-labelledby="owners-heading"]')?.textContent).toContain('Nobody in your groups owns it yet.')
+    })
+
+    it('does not say nobody owns it while your groups load', async () => {
+        const { element } = await setup(undefined, undefined, { groupsStatus: 'loading' })
+        const owners = element.querySelector('[aria-labelledby="owners-heading"]')
+
+        expect(owners?.textContent).not.toContain('Nobody in your groups owns it yet.')
+        expect(owners?.querySelector('app-async')?.getAttribute('aria-busy')).toBe('true')
+    })
+
+    it('says who owns it is unknown when your groups failed, with Retry', async () => {
+        const { element, refreshUserGroups } = await setup(undefined, undefined, { groupsStatus: 'error' })
+        const owners = element.querySelector('[aria-labelledby="owners-heading"]')
+
+        expect(owners?.textContent).not.toContain('Nobody in your groups owns it yet.')
+        expect(owners?.querySelector('[data-async="error"]')?.textContent).toContain(
+            'Your groups could not be loaded, so who owns it is unknown.',
+        )
+        owners?.querySelector<HTMLButtonElement>('[data-async="error"] button')?.click()
+        expect(refreshUserGroups).toHaveBeenCalledTimes(1)
+    })
 
     it('asks the server for the latest nights with the game and how many there are in all (#252)', async () => {
         const { element, getUserGamesHistory, getUserHistorySummary } = await setup()

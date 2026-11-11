@@ -2,6 +2,7 @@ import { Component, computed, inject, input, signal } from '@angular/core'
 import { firstValueFrom } from 'rxjs'
 import { Api } from '../../api/api'
 import type { GameCompleteType, HistoryRecordType } from '../../api/api.types'
+import { settledValue } from '../../core/async/resource-state'
 import { DataService } from '../../core/services/data.service'
 import { HomePreferencesService } from '../../core/services/home-preferences.service'
 import { gameTitle } from '../../core/utils/gameTitle'
@@ -55,10 +56,15 @@ export class RatingFollowUpComponent {
         return $localize`:Button on Home that stops asking you to rate a game; the placeholder is the game title:Not now: stop asking to rate ${gameTitle(game)}:title:`
     }
 
-    /** Played by you in this night, not rated, not dismissed; at most two so the row stays a row. */
+    /**
+     * Played by you in this night, not rated, not dismissed; at most two so the row stays a row. Nothing until
+     * your ratings have loaded: otherwise it would ask you to rate games you already rated (#256).
+     */
     readonly pending = computed(() => {
         const accountId = this.data.currentUser()?.id
-        const rated = new Set([...(this.data.userReviews?.() ?? []).map((review) => review.gameId), ...this.rated()])
+        const reviews = settledValue(this.data.userReviewsState())
+        if (reviews === undefined) return []
+        const rated = new Set([...reviews.map((review) => review.gameId), ...this.rated()])
         const dismissed = new Set(this.home.preferences().dismissedRatingGameIds)
         const games = new Map<number, GameCompleteType>()
         for (const play of this.record().gamesPlayed) {

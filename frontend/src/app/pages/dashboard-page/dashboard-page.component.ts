@@ -8,13 +8,13 @@ import { NextNightCardComponent } from '../../components/next-night-card/next-ni
 import { RatingFollowUpComponent } from '../../components/rating-follow-up/rating-follow-up.component'
 import { SessionAnswerComponent } from '../../components/session-answer/session-answer.component'
 import { SkeletonCardGroupComponent } from '../../components/skeletons/skeleton-card-group/skeleton-card-group.component'
+import { ASYNC } from '../../components/ui/async/async.component'
 import { ButtonComponent } from '../../components/ui/button/button.component'
 import { ContainerWrapperComponent } from '../../components/ui/container-wrapper/container-wrapper.component'
 import { IconComponent } from '../../components/ui/icon/icon.component'
-import { LOADING_KEYS } from '../../core/enums/loading-keys-enum'
+import { isPending, settledValue } from '../../core/async/resource-state'
 import { DataService } from '../../core/services/data.service'
 import { HomePreferencesService } from '../../core/services/home-preferences.service'
-import { LoadingService } from '../../core/services/loading.service'
 import { gameTitle } from '../../core/utils/gameTitle'
 import { mergeHistoryParticipants } from '../../core/utils/historyParticipants'
 import { daysUntil, relativeDay, sessionDate, upcomingState } from '../../core/utils/sessionTiming'
@@ -26,6 +26,7 @@ import { daysUntil, relativeDay, sessionDate, upcomingState } from '../../core/u
  */
 @Component({
     imports: [
+        ASYNC,
         RatingFollowUpComponent,
         ButtonComponent,
         CardGroupComponent,
@@ -43,20 +44,20 @@ import { daysUntil, relativeDay, sessionDate, upcomingState } from '../../core/u
 export class DashboardPageComponent {
     readonly home = inject(HomePreferencesService)
     private readonly dataService = inject(DataService)
-    private readonly loadingService = inject(LoadingService)
 
     public readonly currentUser$ = this.dataService.currentUser
     public readonly userGroups$ = this.dataService.userGroups
-    public readonly userGroupsError = this.dataService.userGroupsError
-    public readonly userMeetsError = this.dataService.userMeetsError
+    public readonly userGroupsError = computed(() => this.dataService.userGroupsState().status === 'error')
+    public readonly userMeetsError = computed(() => this.dataService.userMeetsState().status === 'error')
     public readonly userInvitations$ = this.dataService.userInvitations
-    public readonly userInvitationsError = this.dataService.userInvitationsError
-    public readonly isLoadingInvitations = this.dataService.userInvitationsLoading
+    public readonly userInvitationsError = computed(() => this.dataService.userInvitationsState().status === 'error')
+    public readonly isLoadingInvitations = computed(() => isPending(this.dataService.userInvitationsState()))
     public readonly invitationsGroupIndex$ = this.dataService.invitationsGroupIndex
 
-    private readonly loading = computed(() => this.loadingService.loadingStatesIndex())
-    public readonly isLoadingGroups = computed(() => this.loading()[LOADING_KEYS.USER_GROUPS])
-    public readonly isLoadingMeets = computed(() => this.loading()[LOADING_KEYS.USER_MEETS])
+    public readonly isLoadingGroups = computed(() => isPending(this.dataService.userGroupsState()))
+    public readonly isLoadingMeets = computed(() => isPending(this.dataService.userMeetsState()))
+    /** Your latest nights, as one state: "Nothing recorded yet" only once they have loaded (#256). */
+    public readonly historyState = this.dataService.userHistoryState
 
     public readonly greetingName = computed(() => {
         const user = this.currentUser$()
@@ -66,6 +67,16 @@ export class DashboardPageComponent {
     /** No group yet, and nothing failed or still loading: the page is about making the first one. */
     public readonly isNew = computed(() => !this.isLoadingGroups() && !this.userGroupsError() && this.userGroups$().length === 0)
     public readonly hasGames = computed(() => this.dataService.userGames().length > 0)
+    /**
+     * How many of the three first steps are done; null until your games have loaded, so it never reads
+     * "0 of 3" while they load or after they failed (#256).
+     */
+    public readonly setupStepsDone = computed(() => {
+        const games = settledValue(this.dataService.userGamesState())
+        return games === undefined ? null : games.length > 0 ? 1 : 0
+    })
+    /** Your shelf has loaded and it is empty: only then does Home suggest adding games. */
+    public readonly shelfEmpty = computed(() => settledValue(this.dataService.userGamesState())?.length === 0)
 
     private readonly groupsById = computed(() => new Map(this.userGroups$().map((group) => [group.id, group])))
 
@@ -203,7 +214,8 @@ export class DashboardPageComponent {
     })
 
     /** Your page in the first group on Home: the one you pinned first, or the one you are most active in. */
-    public readonly ownedGames = computed(() => this.dataService.userGames().length)
+    /** How many games are on your shelf; null until they have loaded, so it never reads "0 games" (#256). */
+    public readonly ownedGames = computed(() => settledValue(this.dataService.userGamesState())?.length ?? null)
     /** Every night you played, counted by the server (#252); null until it is known, so it never reads as 0. */
     public readonly nightsPlayed = computed(() => this.dataService.userHistorySummary()?.nights ?? null)
 
@@ -241,6 +253,10 @@ export class DashboardPageComponent {
     public retryGroups() {
         this.dataService.refreshUserGroups()
         this.dataService.refreshUserMeets()
+    }
+
+    public retryHistory() {
+        this.dataService.refreshUserHistory()
     }
 
     public retryInvitations() {

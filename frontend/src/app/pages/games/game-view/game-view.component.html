@@ -122,21 +122,28 @@
         <!-- Who has it in your groups -->
         <section aria-labelledby="owners-heading">
           <h2 id="owners-heading" class="mb-3 text-xl font-bold" i18n="Heading on a game page of the groups where someone owns it">In your groups</h2>
-          @if (groupOwnershipComputed().length) {
-            <ul class="divide-y divide-bv-border rounded-2xl border border-bv-border">
-              @for (entry of groupOwnershipComputed(); track entry.group.id) {
-                <li class="flex items-center justify-between gap-4 p-4">
-                  <span class="min-w-0">
-                    <a [routerLink]="['/groups', entry.group.id]" class="block truncate font-semibold hover:underline">{{ entry.group.name }}</a>
-                    <span class="block truncate text-sm text-secondary" i18n="Who owns a game in one of your groups, on its page; the placeholder is a list of names">Owned by {{ formatList(entry.owners) }}</span>
-                  </span>
-                  <a class="shrink-0 text-sm font-semibold text-bv-primary hover:underline" routerLink="/play/recommendations" [queryParams]="{ groupId: entry.group.id }" i18n="Link on a game page that opens the suggestions for a group that owns it">Plan with it</a>
-                </li>
-              }
-            </ul>
-          } @else {
-            <p class="rounded-2xl border border-dashed border-bv-border p-5 text-secondary" i18n="Game page when nobody in your groups owns the game">Nobody in your groups owns it yet.</p>
-          }
+          <!-- "Nobody owns it" only once your groups have loaded (#256). -->
+          <app-async [state]="ownersState()" loadingLabel="Loading who owns it in your groups" i18n-loadingLabel="Read by screen readers on a game page while your groups load" errorMessage="Your groups could not be loaded, so who owns it is unknown." i18n-errorMessage="Error on a game page in place of who owns it in your groups" (retry)="retryGroups()">
+            <ng-template appAsyncLoading>
+              <div class="h-20 rounded-2xl bg-bv-surface-2 motion-safe:animate-pulse"></div>
+            </ng-template>
+            <ng-template appAsyncReady>
+                <ul class="divide-y divide-bv-border rounded-2xl border border-bv-border">
+                  @for (entry of groupOwnershipComputed(); track entry.group.id) {
+                    <li class="flex items-center justify-between gap-4 p-4">
+                      <span class="min-w-0">
+                        <a [routerLink]="['/groups', entry.group.id]" class="block truncate font-semibold hover:underline">{{ entry.group.name }}</a>
+                        <span class="block truncate text-sm text-secondary" i18n="Who owns a game in one of your groups, on its page; the placeholder is a list of names">Owned by {{ formatList(entry.owners) }}</span>
+                      </span>
+                      <a class="shrink-0 text-sm font-semibold text-bv-primary hover:underline" routerLink="/play/recommendations" [queryParams]="{ groupId: entry.group.id }" i18n="Link on a game page that opens the suggestions for a group that owns it">Plan with it</a>
+                    </li>
+                  }
+                </ul>
+            </ng-template>
+            <ng-template appAsyncEmpty>
+              <p class="rounded-2xl border border-dashed border-bv-border p-5 text-secondary" i18n="Game page when nobody in your groups owns the game">Nobody in your groups owns it yet.</p>
+            </ng-template>
+          </app-async>
         </section>
 
         <!-- When you played it -->

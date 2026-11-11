@@ -10,12 +10,14 @@ import { CardGameComponent } from '../../../components/card-game/card-game.compo
 import { ImageProfileComponent } from '../../../components/image-profile/image-profile.component'
 import { TagsComponent } from '../../../components/tags/tags.component'
 import { ToastService } from '../../../components/toast/toast.service'
+import { ASYNC } from '../../../components/ui/async/async.component'
 import { ButtonComponent } from '../../../components/ui/button/button.component'
 import { ContainerWrapperComponent } from '../../../components/ui/container-wrapper/container-wrapper.component'
 import { IconComponent } from '../../../components/ui/icon/icon.component'
 import { ImageBackgroundComponent } from '../../../components/ui/image-background/image-background.component'
 import { SpinnerComponent } from '../../../components/ui/spinner/spinner.component'
 import { WishlistToggleComponent } from '../../../components/wishlist-toggle/wishlist-toggle.component'
+import { mapState } from '../../../core/async/resource-state'
 import { formatList, formatNumber } from '../../../core/i18n/format'
 import { CustomDatePipe } from '../../../core/pipes/customDate.pipe'
 import { CoverAltPipe, GameTitlePipe } from '../../../core/pipes/game-title.pipe'
@@ -33,6 +35,7 @@ const PLAYS_MORE = 20
 
 @Component({
     imports: [
+        ASYNC,
         CoverAltPipe,
         GameTitlePipe,
         CommonModule,
@@ -459,6 +462,13 @@ export class GameViewPageComponent {
             }))
             .filter((entry) => entry.owners.length > 0)
     })
+
+    /** Who owns it in your groups, as the state of your groups: it is only "nobody" once they have loaded. */
+    public readonly ownersState = computed(() => mapState(this.dataService.userGroupsState(), () => this.groupOwnershipComputed()))
+
+    public retryGroups(): void {
+        this.dataService.refreshUserGroups()
+    }
 
     /** "2 players", "2–4 players", or null when unknown. */
     public readonly playersLabelComputed = computed(() => {

@@ -9,11 +9,10 @@ import { ButtonComponent } from '../../../components/ui/button/button.component'
 import { ContainerWrapperComponent } from '../../../components/ui/container-wrapper/container-wrapper.component'
 import { IconComponent } from '../../../components/ui/icon/icon.component'
 import { PageHeaderComponent } from '../../../components/ui/page-header/page-header.component'
-import { LOADING_KEYS } from '../../../core/enums/loading-keys-enum'
+import { isPending } from '../../../core/async/resource-state'
 import { formatDateTime, intlLocale } from '../../../core/i18n/format'
 import { CustomDatePipe } from '../../../core/pipes/customDate.pipe'
 import { DataService } from '../../../core/services/data.service'
-import { LoadingService } from '../../../core/services/loading.service'
 import { attendeeNames, formatAttendeeSummary } from '../../../core/utils/formatAttendeeSummary'
 import { gameTitle } from '../../../core/utils/gameTitle'
 import { HistoryPager } from '../../../core/utils/historyPager'
@@ -43,7 +42,6 @@ const PAGE_SIZE = 20
 export class HistoryPageComponent {
     private readonly api = inject(Api)
     private readonly dataService = inject(DataService)
-    private readonly loadingService = inject(LoadingService)
     private readonly route = inject(ActivatedRoute)
     private readonly router = inject(Router)
 
@@ -53,7 +51,7 @@ export class HistoryPageComponent {
     // dataService
     public readonly currentUser$ = this.dataService.currentUser
     public readonly userGroups$ = this.dataService.userGroups
-    public readonly groupsError = this.dataService.userGroupsError
+    public readonly groupsError = computed(() => this.dataService.userGroupsState().status === 'error')
     /** Your history, or one group's part of it, read from the server a page at a time, newest first (#252). */
     public readonly history = new HistoryPager((options) => this.api.getUserGamesHistory(this.currentUser$()?.id ?? 0, options), PAGE_SIZE)
     public readonly historyError = this.history.failed
@@ -67,7 +65,7 @@ export class HistoryPageComponent {
         const groupId = this.groupIdFilter()
         return groupId ? this.getGroupName(groupId) : null
     })
-    public readonly isLoadingGroups = computed(() => this.loadingService.loadingStatesIndex()[LOADING_KEYS.USER_GROUPS])
+    public readonly isLoadingGroups = computed(() => isPending(this.dataService.userGroupsState()))
     public readonly isUnknownGroupFilter = computed(() => {
         const groupId = this.groupIdFilter()
         return Boolean(

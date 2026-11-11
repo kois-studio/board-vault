@@ -4,8 +4,8 @@ import { TestBed } from '@angular/core/testing'
 import { ActivatedRoute, convertToParamMap, provideRouter } from '@angular/router'
 import { BehaviorSubject, type Observable, of, Subject, throwError } from 'rxjs'
 import { Api } from '../../api/api'
+import { withStates } from '../../core/async/resource-state.testing'
 import { DataService } from '../../core/services/data.service'
-import { LoadingService } from '../../core/services/loading.service'
 import { ApiUnavailableError } from '../../core/utils/apiUnavailable'
 import { formatAttendeeSummary } from '../../core/utils/formatAttendeeSummary'
 import { GroupViewComponent, shouldShowFirstGroupSetup } from './group-view.component'
@@ -30,7 +30,6 @@ describe('GroupViewComponent switching groups', () => {
             currentUser: signal({ id: 6 }),
             refreshUserGroups: vi.fn(),
             userGroups: signal([group(1, 'DuckDevs'), group(4, 'Private group')]),
-            userGroupsError: signal(false),
             userMeets: signal([]),
             invitationsGroupIndex: signal({}),
             groupHistoryByGroupId: signal<Record<number, Array<never>>>({}),
@@ -41,7 +40,7 @@ describe('GroupViewComponent switching groups', () => {
                 provideRouter([]),
                 { provide: ActivatedRoute, useValue: { paramMap: params, fragment: of(null), snapshot: { paramMap: params.value } } },
                 { provide: Api, useValue: api },
-                { provide: DataService, useValue: dataService },
+                { provide: DataService, useValue: withStates(dataService) },
             ],
         })
         const component = TestBed.runInInjectionContext(() => new GroupViewComponent())
@@ -257,7 +256,6 @@ describe('GroupViewComponent collection worth', () => {
         const dataService = {
             currentUser: signal({ id: 6 }),
             userGroups: signal([{ id: 1, name: 'DuckDevs', createdBy: 6, members: [{ id: 6, games: [] }], placeholders: [] }]),
-            userGroupsError: signal(false),
             userMeets: signal([]),
             invitationsGroupIndex: signal({}),
             groupHistoryByGroupId: signal({}),
@@ -274,7 +272,7 @@ describe('GroupViewComponent collection worth', () => {
                     },
                 },
                 { provide: Api, useValue: api },
-                { provide: DataService, useValue: dataService },
+                { provide: DataService, useValue: withStates(dataService) },
             ],
         })
         const component = TestBed.runInInjectionContext(() => new GroupViewComponent())
@@ -332,14 +330,13 @@ describe('GroupViewComponent collection worth retries', () => {
                 { provide: Api, useValue: api },
                 {
                     provide: DataService,
-                    useValue: {
+                    useValue: withStates({
                         currentUser: signal({ id: 6 }),
                         userGroups: signal([{ id: 1, name: 'DuckDevs', createdBy: 6, members: [{ id: 6, games: [] }], placeholders: [] }]),
-                        userGroupsError: signal(false),
                         userMeets: signal([]),
                         invitationsGroupIndex: signal({}),
                         groupHistoryByGroupId: signal({}),
-                    },
+                    }),
                 },
             ],
         })
@@ -398,16 +395,14 @@ describe('GroupViewComponent page layout', () => {
                 },
                 {
                     provide: DataService,
-                    useValue: {
+                    useValue: withStates({
                         currentUser: signal({ id: currentUserId }),
                         userGroups: signal([groupData]),
-                        userGroupsError: signal(false),
                         userMeets: signal([]),
                         invitationsGroupIndex: signal({}),
                         groupHistoryByGroupId: signal<Record<number, Array<never>>>({ 1: [] }),
-                    },
+                    }),
                 },
-                { provide: LoadingService, useValue: { loadingStatesIndex: signal({}) } },
             ],
         }).compileComponents()
         const fixture = TestBed.createComponent(GroupViewComponent)

@@ -22,11 +22,10 @@ import { ContainerWrapperComponent } from '../../../components/ui/container-wrap
 import { IconComponent } from '../../../components/ui/icon/icon.component'
 import { PageHeaderComponent } from '../../../components/ui/page-header/page-header.component'
 import { SpinnerComponent } from '../../../components/ui/spinner/spinner.component'
-import { LOADING_KEYS } from '../../../core/enums/loading-keys-enum'
+import { isPending } from '../../../core/async/resource-state'
 import { formatList, intlLocale } from '../../../core/i18n/format'
 import { CustomDatePipe } from '../../../core/pipes/customDate.pipe'
 import { DataService } from '../../../core/services/data.service'
-import { LoadingService } from '../../../core/services/loading.service'
 import { gameTitle } from '../../../core/utils/gameTitle'
 import { canTakePart } from '../../../core/utils/groupPeople'
 import { sessionDate, upcomingState } from '../../../core/utils/sessionTiming'
@@ -69,7 +68,6 @@ export class RecommendationsPageComponent {
     private readonly api = inject(Api)
     private readonly route = inject(ActivatedRoute)
     private readonly dataService = inject(DataService)
-    private readonly loadingService = inject(LoadingService)
     private readonly toastService = inject(ToastService)
     private readonly router = inject(Router)
     private readonly destroyRef = inject(DestroyRef)
@@ -77,8 +75,8 @@ export class RecommendationsPageComponent {
     private readonly host = inject<ElementRef<HTMLElement>>(ElementRef)
 
     public readonly userGroups = this.dataService.userGroups
-    public readonly userGroupsError = this.dataService.userGroupsError
-    public readonly isLoadingGroups = computed(() => this.loadingService.loadingStatesIndex()[LOADING_KEYS.USER_GROUPS])
+    public readonly userGroupsError = computed(() => this.dataService.userGroupsState().status === 'error')
+    public readonly isLoadingGroups = computed(() => isPending(this.dataService.userGroupsState()))
     public readonly selectedGroupId = signal<number | null>(null)
     public readonly selectedAttendeeIds = signal<Array<number>>([])
     public readonly groupPeople = signal<Array<GroupPersonWorkspaceType>>([])

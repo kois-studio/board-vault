@@ -1,9 +1,8 @@
 import { signal } from '@angular/core'
 import { TestBed } from '@angular/core/testing'
 import { provideRouter } from '@angular/router'
-import { LOADING_KEYS } from '../../core/enums/loading-keys-enum'
+import { withStates } from '../../core/async/resource-state.testing'
 import { DataService } from '../../core/services/data.service'
-import { LoadingService } from '../../core/services/loading.service'
 import { PlayPageComponent } from './play-page.component'
 
 describe('PlayPageComponent', () => {
@@ -13,30 +12,24 @@ describe('PlayPageComponent', () => {
             providers: [
                 {
                     provide: DataService,
-                    useValue: {
-                        userGroups: signal([{ id: 7, name: 'Friday crew', members: [] }]),
-                        userMeets: signal([
-                            { id: 1, groupId: 7, status: 'completed', meetDate: '2026-09-01T18:00:00Z', timezone: 'UTC' },
-                            { id: 2, groupId: 7, status: 'scheduled', meetDate: '2099-12-01T18:00:00Z', timezone: 'UTC' },
-                            ...extraMeets,
-                        ]),
-                        userHistory: signal([
-                            { meetData: { groupId: 7, meetDate: '2026-09-01T18:00:00Z' } },
-                            { meetData: { groupId: 7, meetDate: '2026-08-01T18:00:00Z' } },
-                            { meetData: { groupId: 7, meetDate: '2026-07-01T18:00:00Z' } },
-                        ]),
-                        userMeetsError: signal(meetsError),
-                        userHistoryError: signal(false),
-                        // The app holds only the latest nights; the server counts them all (#252).
-                        userHistorySummary: signal(summaryError ? null : { nights: 42 }),
-                        userHistorySummaryError: signal(summaryError),
-                    },
-                },
-                {
-                    provide: LoadingService,
-                    useValue: {
-                        loadingStatesIndex: signal({ [LOADING_KEYS.USER_MEETS]: false, [LOADING_KEYS.USER_GAMES_HISTORY]: false }),
-                    },
+                    useValue: withStates(
+                        {
+                            userGroups: signal([{ id: 7, name: 'Friday crew', members: [] }]),
+                            userMeets: signal([
+                                { id: 1, groupId: 7, status: 'completed', meetDate: '2026-09-01T18:00:00Z', timezone: 'UTC' },
+                                { id: 2, groupId: 7, status: 'scheduled', meetDate: '2099-12-01T18:00:00Z', timezone: 'UTC' },
+                                ...extraMeets,
+                            ]),
+                            userHistory: signal([
+                                { meetData: { groupId: 7, meetDate: '2026-09-01T18:00:00Z' } },
+                                { meetData: { groupId: 7, meetDate: '2026-08-01T18:00:00Z' } },
+                                { meetData: { groupId: 7, meetDate: '2026-07-01T18:00:00Z' } },
+                            ]),
+                            // The app holds only the latest nights; the server counts them all (#252).
+                            userHistorySummary: signal(summaryError ? null : { nights: 42 }),
+                        },
+                        { userMeets: meetsError ? 'error' : 'ready', userHistorySummary: summaryError ? 'error' : 'ready' },
+                    ),
                 },
                 provideRouter([]),
             ],

@@ -4,8 +4,8 @@ import { ActivatedRoute, convertToParamMap, provideRouter, Router } from '@angul
 import { isObservable, type Observable, of, Subject, throwError } from 'rxjs'
 import { Api } from '../../api/api'
 import type { GameCompleteType, GroupWithMembersAndGames, SessionRecording } from '../../api/api.types'
+import { withStates } from '../../core/async/resource-state.testing'
 import { DataService } from '../../core/services/data.service'
-import { LoadingService } from '../../core/services/loading.service'
 import { ApiUnavailableError } from '../../core/utils/apiUnavailable'
 import { ToastService } from '../toast/toast.service'
 import { LogSessionWizardComponent } from './log-session-wizard.component'
@@ -92,17 +92,15 @@ describe('LogSessionWizardComponent games step', () => {
                 },
                 {
                     provide: DataService,
-                    useValue: {
+                    useValue: withStates({
                         userGroups: signal([group]),
-                        userGroupsError: signal(false),
                         currentUser: signal({ id: 6 }),
                         refreshUserGroups: vi.fn(),
                         refreshUserHistory: vi.fn(),
                         refreshUserMeets: vi.fn(),
                         userMeets: signal([]),
-                    },
+                    }),
                 },
-                { provide: LoadingService, useValue: { loadingStatesIndex: signal({}) } },
                 { provide: ToastService, useValue: { success: vi.fn(), error: vi.fn() } },
                 {
                     provide: Api,

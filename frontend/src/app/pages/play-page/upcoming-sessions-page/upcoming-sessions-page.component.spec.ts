@@ -1,9 +1,8 @@
 import { signal } from '@angular/core'
 import { TestBed } from '@angular/core/testing'
 import { ActivatedRoute, convertToParamMap, provideRouter, Router } from '@angular/router'
-import { LOADING_KEYS } from '../../../core/enums/loading-keys-enum'
+import { withStates } from '../../../core/async/resource-state.testing'
 import { DataService } from '../../../core/services/data.service'
-import { LoadingService } from '../../../core/services/loading.service'
 import { UpcomingSessionsPageComponent } from './upcoming-sessions-page.component'
 
 const fridayCrew = {
@@ -24,14 +23,9 @@ describe('UpcomingSessionsPageComponent', () => {
     const setup = async ({ groups = [fridayCrew, sundayClub], meets = [] as Array<object>, query = {} } = {}) => {
         const dataService = {
             userGroups: signal(groups),
-            userGroupsError: signal(false),
             userMeets: signal(meets),
-            userMeetsError: signal(false),
             refreshUserGroups: vi.fn(),
             refreshUserMeets: vi.fn(),
-        }
-        const loadingService = {
-            loadingStatesIndex: signal({ [LOADING_KEYS.USER_GROUPS]: false, [LOADING_KEYS.USER_MEETS]: false }),
         }
 
         await TestBed.configureTestingModule({
@@ -39,8 +33,7 @@ describe('UpcomingSessionsPageComponent', () => {
             providers: [
                 // Before the ActivatedRoute override, which provideRouter would otherwise replace.
                 provideRouter([]),
-                { provide: DataService, useValue: dataService },
-                { provide: LoadingService, useValue: loadingService },
+                { provide: DataService, useValue: withStates(dataService) },
                 { provide: ActivatedRoute, useValue: { snapshot: { queryParamMap: convertToParamMap(query) } } },
             ],
         }).compileComponents()

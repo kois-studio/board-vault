@@ -1,27 +1,22 @@
 import { signal } from '@angular/core'
 import { TestBed } from '@angular/core/testing'
 import { provideRouter } from '@angular/router'
-import { LOADING_KEYS } from '../../../core/enums/loading-keys-enum'
+import type { ResourceStatus } from '../../../core/async/resource-state'
+import { withStates } from '../../../core/async/resource-state.testing'
 import { DataService } from '../../../core/services/data.service'
-import { LoadingService } from '../../../core/services/loading.service'
 import { MyGamesPageComponent } from './my-games-page.component'
 
 describe('MyGamesPageComponent private collection boundary', () => {
-    const setup = async () => {
+    const setup = async (status: ResourceStatus = 'ready') => {
         const dataService = {
             currentUser: signal(null),
             userGames: signal<Array<Record<string, unknown>>>([]),
-            userGamesError: signal(false),
             userWishlist: signal([]),
         }
 
         await TestBed.configureTestingModule({
             imports: [MyGamesPageComponent],
-            providers: [
-                { provide: DataService, useValue: dataService },
-                { provide: LoadingService, useValue: { loadingStatesIndex: signal({ [LOADING_KEYS.USER_GAMES]: false }) } },
-                provideRouter([]),
-            ],
+            providers: [{ provide: DataService, useValue: withStates(dataService, { userGames: status }) }, provideRouter([])],
         }).compileComponents()
 
         const fixture = TestBed.createComponent(MyGamesPageComponent)
@@ -66,5 +61,20 @@ describe('MyGamesPageComponent private collection boundary', () => {
 
         expect(fixture.componentInstance.visibleGames().map((visible) => visible.id)).toEqual([1])
         expect(fixture.nativeElement.textContent).toContain('1 of 12 games')
+    })
+
+    // #256: the shelf stays on screen while it reloads; the empty shelf only once it has loaded empty.
+    it('keeps your games on screen while they reload', async () => {
+        const { fixture, dataService } = await setup('refreshing')
+        dataService.userGames.set([game(1, 2, 4), game(2, 1, 1)])
+        fixture.detectChanges()
+
+        expect(fixture.nativeElement.textContent).toContain('2 games')
+    })
+
+    it('does not offer to add a first game while your games load', async () => {
+        const { fixture } = await setup('loading')
+
+        expect(fixture.nativeElement.textContent).not.toContain('Add your first game')
     })
 })

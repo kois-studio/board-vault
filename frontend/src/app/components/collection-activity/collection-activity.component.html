@@ -12,77 +12,97 @@
             <p class="mt-2 text-bv-text-muted" i18n="In the info popover of Recent Activity">It keeps your last 32 changes, however old; each new change replaces the oldest. Only you can see it.</p>
         </app-info-popover>
     </h2>
-    <div class="bg-bv-surface rounded-xl shadow-sm border border-bv-border overflow-hidden">
-        @if (userCollectionActivity$().length === 0) {
-            <div class="p-8 text-center text-bv-text-muted">
-                <p i18n="Recent Activity when there is none">No recent activity found.</p>
+    <app-async [state]="activityState()" loadingLabel="Loading your recent activity" i18n-loadingLabel="Read by screen readers while your recent collection activity loads" errorMessage="Your recent activity could not be loaded." i18n-errorMessage="Error in place of Recent Activity when it could not be loaded" (retry)="retry()">
+        <ng-template appAsyncLoading>
+            <div class="bg-bv-surface rounded-xl shadow-sm border border-bv-border overflow-hidden">
+                <ul class="divide-y divide-bv-border">
+                    @for (row of [1, 2, 3]; track row) {
+                        <li class="flex items-center p-4 motion-safe:animate-pulse">
+                            <span class="mr-4 h-10 w-10 shrink-0 rounded-full bg-bv-surface-2"></span>
+                            <span class="flex-1 space-y-2">
+                                <span class="block h-4 w-2/3 rounded bg-bv-surface-2"></span>
+                                <span class="block h-3 w-1/4 rounded bg-bv-surface-2"></span>
+                            </span>
+                        </li>
+                    }
+                </ul>
             </div>
-        } @else {
-            <ul class="divide-y divide-bv-border">
-                @for (activity of userCollectionActivitySortedComputed() | slice:0:(showAllActivity ? userCollectionActivitySortedComputed().length : 5); track activity.id) {
-                    <li class="p-4 hover:bg-bv-bg transition">
-                        <div class="flex items-center">
-                            <!-- Icon based on action type -->
-                            <div class="mr-4 flex h-10 w-10 shrink-0 items-center justify-center rounded-full" [class]="{
-                                added: 'bg-bv-success/15 text-bv-success',
-                                rated: 'bg-bv-accent text-bv-on-accent',
-                                wishlisted: 'bg-bv-primary-soft text-bv-on-primary-soft',
-                                unwishlisted: 'bg-bv-surface-2 text-bv-text-muted',
-                                updated: 'bg-bv-primary-soft text-bv-on-primary-soft',
-                                removed: 'bg-bv-surface-2 text-bv-text-muted',
-                            }[activity.actionType]">
-                                <app-icon [name]="getActivityIcon(activity.actionType)" [size]="18" [fill]="activity.actionType === 'rated' || activity.actionType === 'wishlisted' ? 'currentColor' : 'none'" />
-                            </div>
-                            
-                            <div>
-                                <p class="text-sm text-bv-text">
-                                    @switch (activity.actionType) {
-                                        @case ('added') {
-                                            <ng-container i18n="Line in Recent Activity; the link is the game title">You added <a [routerLink]="['/games/', activity.gameData.id]" class="font-medium hover:underline" [attr.lang]="titleLanguage(activity.gameData)">{{ activity.gameData | gameTitle }}</a> to your collection</ng-container>
-                                        }
-                                        @case ('removed') {
-                                            <ng-container i18n="Line in Recent Activity; the link is the game title">You removed <a [routerLink]="['/games/', activity.gameData.id]" class="font-medium hover:underline" [attr.lang]="titleLanguage(activity.gameData)">{{ activity.gameData | gameTitle }}</a> from your collection</ng-container>
-                                        }
-                                        @case ('wishlisted') {
-                                            <ng-container i18n="Line in Recent Activity; the link is the game title">You added <a [routerLink]="['/games/', activity.gameData.id]" class="font-medium hover:underline" [attr.lang]="titleLanguage(activity.gameData)">{{ activity.gameData | gameTitle }}</a> to your wishlist</ng-container>
-                                        }
-                                        @case ('unwishlisted') {
-                                            <ng-container i18n="Line in Recent Activity; the link is the game title">You removed <a [routerLink]="['/games/', activity.gameData.id]" class="font-medium hover:underline" [attr.lang]="titleLanguage(activity.gameData)">{{ activity.gameData | gameTitle }}</a> from your wishlist</ng-container>
-                                        }
-                                        @case ('updated') {
-                                            <ng-container i18n="Line in Recent Activity: you changed the purchase details of your copy; the link is the game title">You updated <a [routerLink]="['/games/', activity.gameData.id]" class="font-medium hover:underline" [attr.lang]="titleLanguage(activity.gameData)">{{ activity.gameData | gameTitle }}</a> in your collection</ng-container>
-                                        }
-                                        @case ('rated') {
-                                            @let stars = (activity.actionDetails?.rating ?? 0) / 2;
-                                            @if (isOne(stars)) {
-                                                <ng-container i18n="rated with stars, one|Line in Recent Activity; the link is the game title, then the number of stars out of 5, one">You rated <a [routerLink]="['/games/', activity.gameData.id]" class="font-medium hover:underline" [attr.lang]="titleLanguage(activity.gameData)">{{ activity.gameData | gameTitle }}</a> with {{ formatStars(stars) }} star</ng-container>
-                                            } @else {
-                                                <ng-container i18n="rated with stars, other|Line in Recent Activity; the link is the game title, then the number of stars out of 5, more than one">You rated <a [routerLink]="['/games/', activity.gameData.id]" class="font-medium hover:underline" [attr.lang]="titleLanguage(activity.gameData)">{{ activity.gameData | gameTitle }}</a> with {{ formatStars(stars) }} stars</ng-container>
+        </ng-template>
+        <ng-template appAsyncEmpty>
+            <div class="bg-bv-surface rounded-xl shadow-sm border border-bv-border overflow-hidden">
+                <div class="p-8 text-center text-bv-text-muted">
+                    <p i18n="Recent Activity when there is none">No recent activity found.</p>
+                </div>
+            </div>
+        </ng-template>
+        <ng-template appAsyncReady>
+            <div class="bg-bv-surface rounded-xl shadow-sm border border-bv-border overflow-hidden">
+                <ul class="divide-y divide-bv-border">
+                    @for (activity of userCollectionActivitySortedComputed() | slice:0:(showAllActivity ? userCollectionActivitySortedComputed().length : 5); track activity.id) {
+                        <li class="p-4 hover:bg-bv-bg transition">
+                            <div class="flex items-center">
+                                <!-- Icon based on action type -->
+                                <div class="mr-4 flex h-10 w-10 shrink-0 items-center justify-center rounded-full" [class]="{
+                                    added: 'bg-bv-success/15 text-bv-success',
+                                    rated: 'bg-bv-accent text-bv-on-accent',
+                                    wishlisted: 'bg-bv-primary-soft text-bv-on-primary-soft',
+                                    unwishlisted: 'bg-bv-surface-2 text-bv-text-muted',
+                                    updated: 'bg-bv-primary-soft text-bv-on-primary-soft',
+                                    removed: 'bg-bv-surface-2 text-bv-text-muted',
+                                }[activity.actionType]">
+                                    <app-icon [name]="getActivityIcon(activity.actionType)" [size]="18" [fill]="activity.actionType === 'rated' || activity.actionType === 'wishlisted' ? 'currentColor' : 'none'" />
+                                </div>
+                                
+                                <div>
+                                    <p class="text-sm text-bv-text">
+                                        @switch (activity.actionType) {
+                                            @case ('added') {
+                                                <ng-container i18n="Line in Recent Activity; the link is the game title">You added <a [routerLink]="['/games/', activity.gameData.id]" class="font-medium hover:underline" [attr.lang]="titleLanguage(activity.gameData)">{{ activity.gameData | gameTitle }}</a> to your collection</ng-container>
+                                            }
+                                            @case ('removed') {
+                                                <ng-container i18n="Line in Recent Activity; the link is the game title">You removed <a [routerLink]="['/games/', activity.gameData.id]" class="font-medium hover:underline" [attr.lang]="titleLanguage(activity.gameData)">{{ activity.gameData | gameTitle }}</a> from your collection</ng-container>
+                                            }
+                                            @case ('wishlisted') {
+                                                <ng-container i18n="Line in Recent Activity; the link is the game title">You added <a [routerLink]="['/games/', activity.gameData.id]" class="font-medium hover:underline" [attr.lang]="titleLanguage(activity.gameData)">{{ activity.gameData | gameTitle }}</a> to your wishlist</ng-container>
+                                            }
+                                            @case ('unwishlisted') {
+                                                <ng-container i18n="Line in Recent Activity; the link is the game title">You removed <a [routerLink]="['/games/', activity.gameData.id]" class="font-medium hover:underline" [attr.lang]="titleLanguage(activity.gameData)">{{ activity.gameData | gameTitle }}</a> from your wishlist</ng-container>
+                                            }
+                                            @case ('updated') {
+                                                <ng-container i18n="Line in Recent Activity: you changed the purchase details of your copy; the link is the game title">You updated <a [routerLink]="['/games/', activity.gameData.id]" class="font-medium hover:underline" [attr.lang]="titleLanguage(activity.gameData)">{{ activity.gameData | gameTitle }}</a> in your collection</ng-container>
+                                            }
+                                            @case ('rated') {
+                                                @let stars = (activity.actionDetails?.rating ?? 0) / 2;
+                                                @if (isOne(stars)) {
+                                                    <ng-container i18n="rated with stars, one|Line in Recent Activity; the link is the game title, then the number of stars out of 5, one">You rated <a [routerLink]="['/games/', activity.gameData.id]" class="font-medium hover:underline" [attr.lang]="titleLanguage(activity.gameData)">{{ activity.gameData | gameTitle }}</a> with {{ formatStars(stars) }} star</ng-container>
+                                                } @else {
+                                                    <ng-container i18n="rated with stars, other|Line in Recent Activity; the link is the game title, then the number of stars out of 5, more than one">You rated <a [routerLink]="['/games/', activity.gameData.id]" class="font-medium hover:underline" [attr.lang]="titleLanguage(activity.gameData)">{{ activity.gameData | gameTitle }}</a> with {{ formatStars(stars) }} stars</ng-container>
+                                                }
+                                            }
+                                            @default {
+                                                <a [routerLink]="['/games/', activity.gameData.id]" class="font-medium hover:underline" [attr.lang]="titleLanguage(activity.gameData)">{{ activity.gameData | gameTitle }}</a>
                                             }
                                         }
-                                        @default {
-                                            <a [routerLink]="['/games/', activity.gameData.id]" class="font-medium hover:underline" [attr.lang]="titleLanguage(activity.gameData)">{{ activity.gameData | gameTitle }}</a>
-                                        }
-                                    }
-                                </p>
-                                <p class="text-xs text-bv-text-muted mt-1">{{ formatTimeAgo(activity.createdAt) }}</p>
+                                    </p>
+                                    <p class="text-xs text-bv-text-muted mt-1">{{ formatTimeAgo(activity.createdAt) }}</p>
+                                </div>
                             </div>
-                        </div>
-                    </li>
+                        </li>
+                    }
+                </ul>
+                @if (userCollectionActivity$().length > 5) {
+                    <div class="bg-bv-bg p-4 text-center">
+                        <button 
+                            (click)="showAllActivity = !showAllActivity" 
+                            class="text-sm text-bv-primary font-medium hover:underline cursor-pointer">
+                            @if (showAllActivity) {
+                                <ng-container i18n="Button under Recent Activity that shows only the latest changes">Show less</ng-container>
+                            } @else {
+                                <ng-container i18n="Button under Recent Activity that shows every change">View all activity</ng-container>
+                            }
+                        </button>
+                    </div>
                 }
-            </ul>
-            @if (userCollectionActivity$().length > 5) {
-                <div class="bg-bv-bg p-4 text-center">
-                    <button 
-                        (click)="showAllActivity = !showAllActivity" 
-                        class="text-sm text-bv-primary font-medium hover:underline cursor-pointer">
-                        @if (showAllActivity) {
-                            <ng-container i18n="Button under Recent Activity that shows only the latest changes">Show less</ng-container>
-                        } @else {
-                            <ng-container i18n="Button under Recent Activity that shows every change">View all activity</ng-container>
-                        }
-                    </button>
-                </div>
-            }
-        }
-    </div>
+            </div>
+        </ng-template>
+    </app-async>

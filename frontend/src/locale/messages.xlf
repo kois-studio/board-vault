@@ -2222,6 +2222,15 @@
         <source>Session marked as active.</source>
       </segment>
     </unit>
+    <unit id="2190007641518402590">
+      <notes>
+        <note category="location">src/app/pages/collection-page/reviews-page/reviews-page.component.html</note>
+        <note category="description">Error on the Reviews page when your groups could not load</note>
+      </notes>
+      <segment>
+        <source>The games from your groups could not be loaded, so the ones waiting for your rating are missing.</source>
+      </segment>
+    </unit>
     <unit id="2190081233855588477">
       <notes>
         <note category="location">src/app/pages/auth/login/login.component.html</note>
@@ -2533,10 +2542,11 @@
     </unit>
     <unit id="2369742814572661392">
       <notes>
+        <note category="location">src/app/components/ui/async/async.component.ts</note>
         <note category="location">src/app/core/i18n/clerk-localization.ts</note>
         <note category="location">src/app/pages/collection-page/collection-page.component.ts</note>
         <note category="location">src/app/pages/play-page/play-page.component.ts</note>
-        <note category="description">Shown by Clerk, the sign-in provider, while it checks that a sign-in is not automated</note>
+        <note category="description">Read by screen readers while a section of a page loads</note>
       </notes>
       <segment>
         <source>Loading…</source>
@@ -3633,7 +3643,7 @@
         <note category="description">How many of the three first steps on Home are done; the placeholder is 0 or 1</note>
       </notes>
       <segment>
-        <source><ph id="0" equiv="INTERPOLATION" disp="{{ hasGames() ? 1 : 0 }}"/> of 3 done</source>
+        <source><ph id="0" equiv="INTERPOLATION" disp="{{ setupStepsDone() }}"/> of 3 done</source>
       </segment>
     </unit>
     <unit id="2892987275385116225">
@@ -3766,6 +3776,15 @@
       </notes>
       <segment>
         <source>The friends who shape group decisions</source>
+      </segment>
+    </unit>
+    <unit id="2960335044851777592">
+      <notes>
+        <note category="location">src/app/pages/dashboard-page/dashboard-page.component.html</note>
+        <note category="description">Read by screen readers on Home while your last game nights load</note>
+      </notes>
+      <segment>
+        <source>Loading your recent game nights</source>
       </segment>
     </unit>
     <unit id="297208535294697212">
@@ -4285,6 +4304,15 @@
       </notes>
       <segment>
         <source>Edit games and players</source>
+      </segment>
+    </unit>
+    <unit id="3228543063918601443">
+      <notes>
+        <note category="location">src/app/components/collection-activity/collection-activity.component.html</note>
+        <note category="description">Read by screen readers while your recent collection activity loads</note>
+      </notes>
+      <segment>
+        <source>Loading your recent activity</source>
       </segment>
     </unit>
     <unit id="3229477686517052873">
@@ -4810,6 +4838,15 @@
       </notes>
       <segment>
         <source>Couldn’t add <ph id="0" equiv="name" disp="error.name"/> to the night. Try again.</source>
+      </segment>
+    </unit>
+    <unit id="3485134173922932124">
+      <notes>
+        <note category="location">src/app/pages/games/game-view/game-view.component.html</note>
+        <note category="description">Read by screen readers on a game page while your groups load</note>
+      </notes>
+      <segment>
+        <source>Loading who owns it in your groups</source>
       </segment>
     </unit>
     <unit id="3489766120253960513">
@@ -5768,6 +5805,15 @@
         <source>You joined the group as a new person.</source>
       </segment>
     </unit>
+    <unit id="3939926373519857629">
+      <notes>
+        <note category="location">src/app/pages/dashboard-page/dashboard-page.component.html</note>
+        <note category="description">Error on Home when your last game nights could not be loaded</note>
+      </notes>
+      <segment>
+        <source>Your recent game nights could not be loaded.</source>
+      </segment>
+    </unit>
     <unit id="3943327831062501605">
       <notes>
         <note category="location">src/app/core/utils/formatAttendeeSummary.ts</note>
@@ -6350,6 +6396,15 @@
       </notes>
       <segment>
         <source>{VAR_PLURAL, plural, one {<ph id="0" equiv="INTERPOLATION"/> of <ph id="1" equiv="INTERPOLATION_1"/> game} other {<ph id="2" equiv="INTERPOLATION"/> of <ph id="3" equiv="INTERPOLATION_1"/> games}}</source>
+      </segment>
+    </unit>
+    <unit id="4186506597878003878">
+      <notes>
+        <note category="location">src/app/pages/games/game-view/game-view.component.html</note>
+        <note category="description">Error on a game page in place of who owns it in your groups</note>
+      </notes>
+      <segment>
+        <source>Your groups could not be loaded, so who owns it is unknown.</source>
       </segment>
     </unit>
     <unit id="4189467467511250248">
@@ -9050,15 +9105,6 @@
         <source>The night joins the group’s history. Played games, players and attendance can no longer change, but anyone can still record who won.</source>
       </segment>
     </unit>
-    <unit id="5635940559783388054">
-      <notes>
-        <note category="location">src/app/core/services/data.service.ts</note>
-        <note category="description">Toast after My Games is saved</note>
-      </notes>
-      <segment>
-        <source>Games updated</source>
-      </segment>
-    </unit>
     <unit id="5642836248241530789">
       <notes>
         <note category="location">src/app/components/forms/form-game-submission/form-game-submission.component.ts</note>
@@ -9070,8 +9116,9 @@
     </unit>
     <unit id="5643561794785412000">
       <notes>
+        <note category="location">src/app/pages/collection-page/collection-page.component.ts</note>
         <note category="location">src/app/pages/play-page/play-page.component.ts</note>
-        <note category="description">Badge on a Play card when its count could not load</note>
+        <note category="description">Badge on a Collection card when its count could not load</note>
       </notes>
       <segment>
         <source>Unavailable</source>
@@ -10209,6 +10256,15 @@
         <source>Who played <ph id="0" equiv="title" disp="title"/></source>
       </segment>
     </unit>
+    <unit id="6234394398385857937">
+      <notes>
+        <note category="location">src/app/components/collection-activity/collection-activity.component.html</note>
+        <note category="description">Error in place of Recent Activity when it could not be loaded</note>
+      </notes>
+      <segment>
+        <source>Your recent activity could not be loaded.</source>
+      </segment>
+    </unit>
     <unit id="6261296985973142615">
       <notes>
         <note category="location">src/app/core/utils/groupActivity.ts</note>
@@ -10405,6 +10461,24 @@
       </notes>
       <segment>
         <source>Error retrieving user’s wishlist</source>
+      </segment>
+    </unit>
+    <unit id="6333378149996839259">
+      <notes>
+        <note category="location">src/app/components/ui/async/async.component.ts</note>
+        <note category="description">Shown in place of a section of a page that could not load</note>
+      </notes>
+      <segment>
+        <source>This could not be loaded.</source>
+      </segment>
+    </unit>
+    <unit id="6333594302334536712">
+      <notes>
+        <note category="location">src/app/pages/collection-page/reviews-page/reviews-page.component.html</note>
+        <note category="description">Read by screen readers on the Reviews page while the games from your groups load</note>
+      </notes>
+      <segment>
+        <source>Loading the games from your groups</source>
       </segment>
     </unit>
     <unit id="6344107819696829929">
@@ -11134,15 +11208,6 @@
       </notes>
       <segment>
         <source><pc id="0" equivStart="START_TAG_STRONG" equivEnd="CLOSE_TAG_STRONG" type="other" dispStart="&lt;strong&gt;" dispEnd="&lt;/strong&gt;">Individual usage events</pc> are deleted after 30 days. Only daily totals with no account attached are kept. </source>
-      </segment>
-    </unit>
-    <unit id="6713033374419987338">
-      <notes>
-        <note category="location">src/app/core/services/data.service.ts</note>
-        <note category="description">Toast when My Games could not be reloaded after a change</note>
-      </notes>
-      <segment>
-        <source>Error fetching updated games</source>
       </segment>
     </unit>
     <unit id="6716126281248146214">
@@ -11933,6 +11998,15 @@
         <source>Game added to collection</source>
       </segment>
     </unit>
+    <unit id="7097769172686717376">
+      <notes>
+        <note category="location">src/app/components/ui/async/async.component.ts</note>
+        <note category="description">Small note under something already shown when loading a newer copy failed</note>
+      </notes>
+      <segment>
+        <source>This may be out of date.</source>
+      </segment>
+    </unit>
     <unit id="7102237808273658201">
       <notes>
         <note category="location">src/app/core/i18n/clerk-localization.ts</note>
@@ -12188,15 +12262,6 @@
       </notes>
       <segment>
         <source>Some selected people have marked this game to avoid</source>
-      </segment>
-    </unit>
-    <unit id="7236870739940358130">
-      <notes>
-        <note category="location">src/app/core/services/data.service.ts</note>
-        <note category="description">Toast when the change to My Games could not be saved</note>
-      </notes>
-      <segment>
-        <source>Error updating games</source>
       </segment>
     </unit>
     <unit id="7245261921583507305">
@@ -13702,6 +13767,7 @@
       <notes>
         <note category="location">src/app/components/group-activity-feed/group-activity-feed.component.html</note>
         <note category="location">src/app/components/log-session-wizard/log-session-wizard.component.html</note>
+        <note category="location">src/app/components/ui/async/async.component.ts</note>
         <note category="location">src/app/layout/inbox/inbox.component.html</note>
         <note category="location">src/app/pages/collection-page/my-games-page/my-games-page.component.html</note>
         <note category="location">src/app/pages/collection-page/reviews-page/reviews-page.component.html</note>
@@ -14915,6 +14981,15 @@
       </notes>
       <segment>
         <source>Recently rated</source>
+      </segment>
+    </unit>
+    <unit id="8552527853286713077">
+      <notes>
+        <note category="location">src/app/components/ui/async/async.component.ts</note>
+        <note category="description">Shown under a placeholder when something has been loading for several seconds</note>
+      </notes>
+      <segment>
+        <source>This is taking longer than usual…</source>
       </segment>
     </unit>
     <unit id="8564202903947049539">
@@ -16335,6 +16410,15 @@
       </notes>
       <segment>
         <source>The search failed. Your choices are safe. <pc id="0" equivStart="START_TAG_BUTTON" equivEnd="CLOSE_TAG_BUTTON" type="other" dispStart="&lt;button type=&quot;button&quot; class=&quot;font-semibold underline&quot; (click)=&quot;searchCatalog()&quot;&gt;" dispEnd="&lt;/button&gt;">Try again</pc></source>
+      </segment>
+    </unit>
+    <unit id="957393057575378626">
+      <notes>
+        <note category="location">src/app/components/ui/async/async.component.ts</note>
+        <note category="description">Small hint under something already shown while a newer copy loads</note>
+      </notes>
+      <segment>
+        <source>Refreshing…</source>
       </segment>
     </unit>
     <unit id="96017348812413257">

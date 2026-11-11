@@ -4,8 +4,8 @@ import { ActivatedRoute, convertToParamMap, provideRouter } from '@angular/route
 import { type Observable, of, Subject, throwError } from 'rxjs'
 import { Api } from '../../../api/api'
 import { ToastService } from '../../../components/toast/toast.service'
+import { withStates } from '../../../core/async/resource-state.testing'
 import { DataService } from '../../../core/services/data.service'
-import { LoadingService } from '../../../core/services/loading.service'
 import { RecommendationsPageComponent } from './recommendations-page.component'
 
 describe('RecommendationsPageComponent history context', () => {
@@ -121,14 +121,12 @@ describe('RecommendationsPageComponent and the next game night', () => {
                 { provide: ActivatedRoute, useValue: { snapshot: { queryParamMap: convertToParamMap({}) } } },
                 {
                     provide: DataService,
-                    useValue: {
+                    useValue: withStates({
                         currentUser: signal({ id: 1 }),
                         userGroups: signal([{ id: 7, name: 'Fridays', createdBy: 9, members: [] }]),
-                        userGroupsError: signal(false),
                         userMeets: signal(meets),
-                    },
+                    }),
                 },
-                { provide: LoadingService, useValue: { loadingStatesIndex: signal({}) } },
                 { provide: ToastService, useValue: toast },
             ],
         })
@@ -189,14 +187,12 @@ describe('RecommendationsPageComponent when the group people cannot be loaded', 
                 { provide: ActivatedRoute, useValue: { snapshot: { queryParamMap: convertToParamMap(query) } } },
                 {
                     provide: DataService,
-                    useValue: {
+                    useValue: withStates({
                         currentUser: signal({ id: 1 }),
                         userGroups: signal(groups),
-                        userGroupsError: signal(false),
                         userMeets: signal([]),
-                    },
+                    }),
                 },
-                { provide: LoadingService, useValue: { loadingStatesIndex: signal({}) } },
                 { provide: ToastService, useValue: { success: vi.fn(), error: vi.fn() } },
             ],
         })

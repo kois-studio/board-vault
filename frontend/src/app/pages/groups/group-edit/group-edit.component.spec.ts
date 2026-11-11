@@ -4,9 +4,9 @@ import { ActivatedRoute, convertToParamMap, provideRouter } from '@angular/route
 import { type Observable, of, Subject, throwError } from 'rxjs'
 import { Api } from '../../../api/api'
 import { ToastService } from '../../../components/toast/toast.service'
-import { LOADING_KEYS } from '../../../core/enums/loading-keys-enum'
+import { type ResourceStatus } from '../../../core/async/resource-state'
+import { stateOf } from '../../../core/async/resource-state.testing'
 import { DataService } from '../../../core/services/data.service'
-import { LoadingService } from '../../../core/services/loading.service'
 import { GroupEditComponent } from './group-edit.component'
 
 describe('GroupEditComponent (Manage group)', () => {
@@ -27,11 +27,12 @@ describe('GroupEditComponent (Manage group)', () => {
     })
 
     const setup = async (query: Record<string, string> = {}, loadingGroups = false, groups = { list: [group], failed: false }) => {
-        const loadingStatesIndex = signal({ [LOADING_KEYS.USER_GROUPS]: loadingGroups })
+        const groupsStatus = signal<ResourceStatus>(loadingGroups ? 'loading' : groups.failed ? 'error' : 'ready')
+        const userGroups = signal(groups.list)
         const dataService = {
             currentUser: signal({ id: 1 }),
-            userGroups: signal(groups.list),
-            userGroupsError: signal(groups.failed),
+            userGroups,
+            userGroupsState: stateOf(userGroups, groupsStatus),
             refreshUserGroups: vi.fn(),
             invitationsGroupIndex: signal({ 7: [{ id: 30, toAccountId: 3, toAccount: { id: 3, username: 'invited' } }] }),
             addInvitedToGroup: vi.fn(() => of({})),
@@ -53,14 +54,13 @@ describe('GroupEditComponent (Manage group)', () => {
                     },
                 },
                 { provide: DataService, useValue: dataService },
-                { provide: LoadingService, useValue: { loadingStatesIndex } },
                 { provide: ToastService, useValue: { success: vi.fn(), error: vi.fn() } },
             ],
         }).compileComponents()
         const fixture = TestBed.createComponent(GroupEditComponent)
         fixture.detectChanges()
         await fixture.whenStable()
-        return { fixture, component: fixture.componentInstance, dataService, loadingStatesIndex }
+        return { fixture, component: fixture.componentInstance, dataService, groupsStatus }
     }
 
     const submit = (component: GroupEditComponent, value: string) => {
@@ -91,21 +91,20 @@ describe('GroupEditComponent (Manage group)', () => {
     })
 
     it('shows Loading while Retry loads the groups again, never "not available", then the group', async () => {
-        const { fixture, dataService, loadingStatesIndex } = await setup({}, false, { list: [], failed: true })
+        const { fixture, dataService, groupsStatus } = await setup({}, false, { list: [], failed: true })
         fixture.detectChanges()
         const text = () => (fixture.nativeElement as HTMLElement).textContent ?? ''
 
         ;(fixture.nativeElement.querySelector('[role="alert"] button') as HTMLButtonElement).click()
-        // What the real refresh does before it asks: clears the error, then starts loading.
-        dataService.userGroupsError.set(false)
-        loadingStatesIndex.set({ [LOADING_KEYS.USER_GROUPS]: true })
+        // What the real refresh does: loading again, with nothing loaded before.
+        groupsStatus.set('loading')
         fixture.detectChanges()
         expect(text()).toContain('Loading group management')
         expect(text()).not.toContain('This group is not available.')
         expect(text()).not.toContain('This group could not be loaded.')
 
         dataService.userGroups.set([group])
-        loadingStatesIndex.set({ [LOADING_KEYS.USER_GROUPS]: false })
+        groupsStatus.set('ready')
         fixture.detectChanges()
         expect(text()).not.toContain('Loading group management')
         expect(fixture.nativeElement.querySelector('[role="alert"]')).toBeNull()
@@ -113,15 +112,13 @@ describe('GroupEditComponent (Manage group)', () => {
     })
 
     it('shows the failure again when Retry fails too', async () => {
-        const { fixture, dataService, loadingStatesIndex } = await setup({}, false, { list: [], failed: true })
+        const { fixture, groupsStatus } = await setup({}, false, { list: [], failed: true })
         fixture.detectChanges()
 
         ;(fixture.nativeElement.querySelector('[role="alert"] button') as HTMLButtonElement).click()
-        dataService.userGroupsError.set(false)
-        loadingStatesIndex.set({ [LOADING_KEYS.USER_GROUPS]: true })
+        groupsStatus.set('loading')
         fixture.detectChanges()
-        dataService.userGroupsError.set(true)
-        loadingStatesIndex.set({ [LOADING_KEYS.USER_GROUPS]: false })
+        groupsStatus.set('error')
         fixture.detectChanges()
 
         expect(fixture.nativeElement.querySelector('[role="alert"]')?.textContent).toContain('This group could not be loaded.')

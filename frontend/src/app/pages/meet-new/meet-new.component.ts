@@ -13,12 +13,11 @@ import { ContainerWrapperComponent } from '../../components/ui/container-wrapper
 import { IconComponent } from '../../components/ui/icon/icon.component'
 import { ImageBackgroundComponent } from '../../components/ui/image-background/image-background.component'
 import { PageHeaderComponent } from '../../components/ui/page-header/page-header.component'
-import { LOADING_KEYS } from '../../core/enums/loading-keys-enum'
+import { isPending } from '../../core/async/resource-state'
 import { formatDateTime } from '../../core/i18n/format'
 import { PlayersPipe } from '../../core/pipes/count.pipe'
 import { CoverAltPipe } from '../../core/pipes/game-title.pipe'
 import { DataService } from '../../core/services/data.service'
-import { LoadingService } from '../../core/services/loading.service'
 import { isSaveOutcomeUnknown } from '../../core/utils/apiUnavailable'
 import { gameTitle } from '../../core/utils/gameTitle'
 import { canTakePart } from '../../core/utils/groupPeople'
@@ -82,7 +81,6 @@ export class MeetNewComponent {
     private readonly api = inject(Api)
     private readonly router = inject(Router)
     private readonly toastService = inject(ToastService)
-    private readonly loadingService = inject(LoadingService)
     private readonly destroyRef = inject(DestroyRef)
     private readonly injector = inject(Injector)
     private readonly host = inject<ElementRef<HTMLElement>>(ElementRef)
@@ -230,8 +228,8 @@ export class MeetNewComponent {
             this.selectedAttendeeIds().length > 0,
     )
 
-    public readonly isLoadingGroups = computed(() => Boolean(this.loadingService.loadingStatesIndex()[LOADING_KEYS.USER_GROUPS]))
-    public readonly groupsError = computed(() => this.dataService.userGroupsError())
+    public readonly isLoadingGroups = computed(() => isPending(this.dataService.userGroupsState()))
+    public readonly groupsError = computed(() => this.dataService.userGroupsState().status === 'error')
     public readonly groupUnavailable = computed(() => !this.isLoadingGroups() && !this.groupsError() && this.groupData() === null)
 
     constructor() {

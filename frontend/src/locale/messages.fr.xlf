@@ -2176,6 +2176,15 @@
         <target>Soirée marquée comme en cours.</target>
       </segment>
     </unit>
+    <unit id="2190007641518402590">
+      <notes>
+        <note category="description">Error on the Reviews page when your groups could not load</note>
+      </notes>
+      <segment state="translated">
+        <source>The games from your groups could not be loaded, so the ones waiting for your rating are missing.</source>
+        <target>Impossible de charger les jeux de tes groupes : ceux qui attendent ta note n’apparaissent donc pas.</target>
+      </segment>
+    </unit>
     <unit id="2190081233855588477">
       <notes>
         <note category="description">Error on the sign-in page when the sign-in service does not load</note>
@@ -2485,7 +2494,7 @@
     </unit>
     <unit id="2369742814572661392">
       <notes>
-        <note category="description">Shown by Clerk, the sign-in provider, while it checks that a sign-in is not automated</note>
+        <note category="description">Read by screen readers while a section of a page loads</note>
       </notes>
       <segment state="translated">
         <source>Loading…</source>
@@ -3565,8 +3574,8 @@
       <notes>
         <note category="description">How many of the three first steps on Home are done; the placeholder is 0 or 1</note>
       </notes>
-      <segment state="translated">
-        <source><ph id="0" equiv="INTERPOLATION" disp="{{ hasGames() ? 1 : 0 }}"/> of 3 done</source>
+      <segment state="initial">
+        <source><ph id="0" equiv="INTERPOLATION" disp="{{ setupStepsDone() }}"/> of 3 done</source>
         <target><ph id="0" equiv="INTERPOLATION" disp="{{ hasGames() ? 1 : 0 }}"/> sur 3 faites</target>
       </segment>
     </unit>
@@ -3695,6 +3704,15 @@
       <segment state="translated">
         <source>The friends who shape group decisions</source>
         <target>Les personnes qui façonnent les décisions du groupe</target>
+      </segment>
+    </unit>
+    <unit id="2960335044851777592">
+      <notes>
+        <note category="description">Read by screen readers on Home while your last game nights load</note>
+      </notes>
+      <segment state="translated">
+        <source>Loading your recent game nights</source>
+        <target>Chargement de tes dernières soirées jeux</target>
       </segment>
     </unit>
     <unit id="297208535294697212">
@@ -4208,6 +4226,15 @@
       <segment state="translated">
         <source>Edit games and players</source>
         <target>Modifier les jeux et les personnes</target>
+      </segment>
+    </unit>
+    <unit id="3228543063918601443">
+      <notes>
+        <note category="description">Read by screen readers while your recent collection activity loads</note>
+      </notes>
+      <segment state="translated">
+        <source>Loading your recent activity</source>
+        <target>Chargement de ton activité récente</target>
       </segment>
     </unit>
     <unit id="3229477686517052873">
@@ -4731,6 +4758,15 @@
       <segment state="translated">
         <source>Couldn’t add <ph id="0" equiv="name" disp="error.name"/> to the night. Try again.</source>
         <target>Impossible d’ajouter <ph id="0" equiv="name" disp="error.name"/> à la soirée. Réessaie.</target>
+      </segment>
+    </unit>
+    <unit id="3485134173922932124">
+      <notes>
+        <note category="description">Read by screen readers on a game page while your groups load</note>
+      </notes>
+      <segment state="translated">
+        <source>Loading who owns it in your groups</source>
+        <target>Chargement de qui l’a dans tes groupes</target>
       </segment>
     </unit>
     <unit id="3489766120253960513">
@@ -5672,6 +5708,15 @@
         <target>Tu as rejoint le groupe comme nouvelle personne.</target>
       </segment>
     </unit>
+    <unit id="3939926373519857629">
+      <notes>
+        <note category="description">Error on Home when your last game nights could not be loaded</note>
+      </notes>
+      <segment state="translated">
+        <source>Your recent game nights could not be loaded.</source>
+        <target>Impossible de charger tes dernières soirées jeux.</target>
+      </segment>
+    </unit>
     <unit id="3943327831062501605">
       <notes>
         <note category="description">Line on a played game night that recorded nobody as there</note>
@@ -6241,6 +6286,15 @@
       <segment state="translated">
         <source>{VAR_PLURAL, plural, one {<ph id="0" equiv="INTERPOLATION"/> of <ph id="1" equiv="INTERPOLATION_1"/> game} other {<ph id="2" equiv="INTERPOLATION"/> of <ph id="3" equiv="INTERPOLATION_1"/> games}}</source>
         <target>{VAR_PLURAL, plural, one {<ph id="0" equiv="INTERPOLATION"/> sur <ph id="1" equiv="INTERPOLATION_1"/> jeu} other {<ph id="2" equiv="INTERPOLATION"/> sur <ph id="3" equiv="INTERPOLATION_1"/> jeux}}</target>
+      </segment>
+    </unit>
+    <unit id="4186506597878003878">
+      <notes>
+        <note category="description">Error on a game page in place of who owns it in your groups</note>
+      </notes>
+      <segment state="translated">
+        <source>Your groups could not be loaded, so who owns it is unknown.</source>
+        <target>Impossible de charger tes groupes : on ne sait donc pas qui l’a.</target>
       </segment>
     </unit>
     <unit id="4189467467511250248">
@@ -8904,15 +8958,6 @@
         <target>La soirée rejoint l’historique du groupe. Les jeux joués, les personnes et les présences ne peuvent plus changer, mais tout le monde peut encore enregistrer qui a gagné.</target>
       </segment>
     </unit>
-    <unit id="5635940559783388054">
-      <notes>
-        <note category="description">Toast after My Games is saved</note>
-      </notes>
-      <segment state="translated">
-        <source>Games updated</source>
-        <target>Jeux mis à jour</target>
-      </segment>
-    </unit>
     <unit id="5642836248241530789">
       <notes>
         <note category="description">Toast when sending a game proposal without a title</note>
@@ -8924,7 +8969,7 @@
     </unit>
     <unit id="5643561794785412000">
       <notes>
-        <note category="description">Badge on a Play card when its count could not load</note>
+        <note category="description">Badge on a Collection card when its count could not load</note>
       </notes>
       <segment state="translated">
         <source>Unavailable</source>
@@ -10056,6 +10101,15 @@
         <target>Qui a joué à <ph id="0" equiv="title" disp="title"/></target>
       </segment>
     </unit>
+    <unit id="6234394398385857937">
+      <notes>
+        <note category="description">Error in place of Recent Activity when it could not be loaded</note>
+      </notes>
+      <segment state="translated">
+        <source>Your recent activity could not be loaded.</source>
+        <target>Impossible de charger ton activité récente.</target>
+      </segment>
+    </unit>
     <unit id="6261296985973142615">
       <notes>
         <note category="description">Group history line; actor is a name, game is a game title</note>
@@ -10249,6 +10303,24 @@
       <segment state="translated">
         <source>Error retrieving user’s wishlist</source>
         <target>Impossible de charger ta liste d’envies</target>
+      </segment>
+    </unit>
+    <unit id="6333378149996839259">
+      <notes>
+        <note category="description">Shown in place of a section of a page that could not load</note>
+      </notes>
+      <segment state="translated">
+        <source>This could not be loaded.</source>
+        <target>Impossible de charger ce contenu.</target>
+      </segment>
+    </unit>
+    <unit id="6333594302334536712">
+      <notes>
+        <note category="description">Read by screen readers on the Reviews page while the games from your groups load</note>
+      </notes>
+      <segment state="translated">
+        <source>Loading the games from your groups</source>
+        <target>Chargement des jeux de tes groupes</target>
       </segment>
     </unit>
     <unit id="6344107819696829929">
@@ -10958,15 +11030,6 @@
       <segment state="translated">
         <source><pc id="0" equivStart="START_TAG_STRONG" equivEnd="CLOSE_TAG_STRONG" type="other" dispStart="&lt;strong&gt;" dispEnd="&lt;/strong&gt;">Individual usage events</pc> are deleted after 30 days. Only daily totals with no account attached are kept. </source>
         <target><pc id="0" equivStart="START_TAG_STRONG" equivEnd="CLOSE_TAG_STRONG" type="other" dispStart="&lt;strong&gt;" dispEnd="&lt;/strong&gt;">Les événements d’usage individuels</pc> sont supprimés au bout de 30 jours. Seuls des totaux quotidiens sans compte associé sont conservés. </target>
-      </segment>
-    </unit>
-    <unit id="6713033374419987338">
-      <notes>
-        <note category="description">Toast when My Games could not be reloaded after a change</note>
-      </notes>
-      <segment state="translated">
-        <source>Error fetching updated games</source>
-        <target>Impossible de recharger tes jeux</target>
       </segment>
     </unit>
     <unit id="6716126281248146214">
@@ -11745,6 +11808,15 @@
         <target>Jeu ajouté à ta collection</target>
       </segment>
     </unit>
+    <unit id="7097769172686717376">
+      <notes>
+        <note category="description">Small note under something already shown when loading a newer copy failed</note>
+      </notes>
+      <segment state="translated">
+        <source>This may be out of date.</source>
+        <target>Ce n’est peut-être pas à jour.</target>
+      </segment>
+    </unit>
     <unit id="7102237808273658201">
       <notes>
         <note category="description">Title shown by Clerk, the sign-in provider, while it checks that a sign-in is not automated</note>
@@ -11996,15 +12068,6 @@
       <segment state="translated">
         <source>Some selected people have marked this game to avoid</source>
         <target>Certaines personnes préfèrent l’éviter</target>
-      </segment>
-    </unit>
-    <unit id="7236870739940358130">
-      <notes>
-        <note category="description">Toast when the change to My Games could not be saved</note>
-      </notes>
-      <segment state="translated">
-        <source>Error updating games</source>
-        <target>Impossible de mettre à jour tes jeux</target>
       </segment>
     </unit>
     <unit id="7245261921583507305">
@@ -14666,6 +14729,15 @@
         <target>Notés récemment</target>
       </segment>
     </unit>
+    <unit id="8552527853286713077">
+      <notes>
+        <note category="description">Shown under a placeholder when something has been loading for several seconds</note>
+      </notes>
+      <segment state="translated">
+        <source>This is taking longer than usual…</source>
+        <target>Cela prend plus de temps que d’habitude…</target>
+      </segment>
+    </unit>
     <unit id="8564202903947049539">
       <notes>
         <note category="description">Main section of the app, with game nights</note>
@@ -16060,6 +16132,15 @@
       <segment state="translated">
         <source>The search failed. Your choices are safe. <pc id="0" equivStart="START_TAG_BUTTON" equivEnd="CLOSE_TAG_BUTTON" type="other" dispStart="&lt;button type=&quot;button&quot; class=&quot;font-semibold underline&quot; (click)=&quot;searchCatalog()&quot;&gt;" dispEnd="&lt;/button&gt;">Try again</pc></source>
         <target>La recherche a échoué. Tes choix sont conservés. <pc id="0" equivStart="START_TAG_BUTTON" equivEnd="CLOSE_TAG_BUTTON" type="other" dispStart="&lt;button type=&quot;button&quot; class=&quot;font-semibold underline&quot; (click)=&quot;searchCatalog()&quot;&gt;" dispEnd="&lt;/button&gt;">Réessayer</pc></target>
+      </segment>
+    </unit>
+    <unit id="957393057575378626">
+      <notes>
+        <note category="description">Small hint under something already shown while a newer copy loads</note>
+      </notes>
+      <segment state="translated">
+        <source>Refreshing…</source>
+        <target>Actualisation…</target>
       </segment>
     </unit>
     <unit id="96017348812413257">

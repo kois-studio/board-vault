@@ -5,9 +5,8 @@ import { type Observable, of, Subject, throwError } from 'rxjs'
 import { Api } from '../../api/api'
 import type { GroupPersonWorkspaceType } from '../../api/api.types'
 import { ToastService } from '../../components/toast/toast.service'
-import { LOADING_KEYS } from '../../core/enums/loading-keys-enum'
+import { withStates } from '../../core/async/resource-state.testing'
 import { DataService } from '../../core/services/data.service'
-import { LoadingService } from '../../core/services/loading.service'
 import { ApiUnavailableError } from '../../core/utils/apiUnavailable'
 import { defaultSessionDay, MeetNewComponent } from './meet-new.component'
 
@@ -64,11 +63,7 @@ describe('MeetNewComponent social handoff', () => {
             currentUser: signal({ id: 1 }),
             userGroups: signal([groupData]),
             invitationsGroupIndex: signal({}),
-            userGroupsError: signal(false),
             refreshUserMeets: vi.fn().mockName('refreshUserMeets'),
-        }
-        const loadingService = {
-            loadingStatesIndex: signal({ [LOADING_KEYS.USER_GROUPS]: false }),
         }
 
         await TestBed.configureTestingModule({
@@ -77,8 +72,7 @@ describe('MeetNewComponent social handoff', () => {
                 provideRouter([]),
                 { provide: Api, useValue: api },
                 { provide: ActivatedRoute, useValue: routerData },
-                { provide: DataService, useValue: dataService },
-                { provide: LoadingService, useValue: loadingService },
+                { provide: DataService, useValue: withStates(dataService) },
                 { provide: ToastService, useValue: { success: vi.fn().mockName('success'), error: vi.fn().mockName('error') } },
             ],
         }).compileComponents()
@@ -86,7 +80,7 @@ describe('MeetNewComponent social handoff', () => {
         const fixture = TestBed.createComponent(MeetNewComponent)
         fixture.detectChanges()
         await fixture.whenStable()
-        return { fixture, component: fixture.componentInstance, api, dataService, loadingService }
+        return { fixture, component: fixture.componentInstance, api, dataService }
     }
 
     it('starts with the way back to the group, above the heading', async () => {

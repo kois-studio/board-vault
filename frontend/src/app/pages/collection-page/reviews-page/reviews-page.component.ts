@@ -2,12 +2,12 @@ import { Component, computed, inject, signal } from '@angular/core'
 import { RouterLink } from '@angular/router'
 import type { GameCompleteType } from '../../../api/api.types'
 import { SkeletonReviewGameComponent } from '../../../components/skeletons/skeleton-review-game/skeleton-review-game.component'
+import { ASYNC } from '../../../components/ui/async/async.component'
 import { ButtonComponent } from '../../../components/ui/button/button.component'
 import { ContainerWrapperComponent } from '../../../components/ui/container-wrapper/container-wrapper.component'
 import { PageHeaderComponent } from '../../../components/ui/page-header/page-header.component'
-import { LOADING_KEYS } from '../../../core/enums/loading-keys-enum'
+import { isFirstLoad, mapState } from '../../../core/async/resource-state'
 import { DataService } from '../../../core/services/data.service'
-import { LoadingService } from '../../../core/services/loading.service'
 import { gameTitle } from '../../../core/utils/gameTitle'
 import { ReviewRowComponent } from './review-row/review-row.component'
 
@@ -16,17 +16,24 @@ export type ReviewSort = 'title' | 'rating' | 'recent'
 const byTitle = (a: GameCompleteType, b: GameCompleteType) => gameTitle(a).localeCompare(gameTitle(b))
 
 @Component({
-    imports: [ContainerWrapperComponent, PageHeaderComponent, ButtonComponent, RouterLink, ReviewRowComponent, SkeletonReviewGameComponent],
+    imports: [
+        ASYNC,
+        ContainerWrapperComponent,
+        PageHeaderComponent,
+        ButtonComponent,
+        RouterLink,
+        ReviewRowComponent,
+        SkeletonReviewGameComponent,
+    ],
     templateUrl: 'reviews-page.component.html',
 })
 export class ReviewsPageComponent {
     private readonly dataService = inject(DataService)
-    private readonly loadingService = inject(LoadingService)
 
     public readonly userGroups$ = this.dataService.userGroups
     public readonly userReviews$ = this.dataService.userReviews
-    public readonly reviewsError = this.dataService.userReviewsError
-    public readonly isLoadingReviews = computed(() => this.loadingService.loadingStatesIndex()[LOADING_KEYS.USER_REVIEWS])
+    public readonly reviewsError = computed(() => this.dataService.userReviewsState().status === 'error')
+    public readonly isLoadingReviews = computed(() => isFirstLoad(this.dataService.userReviewsState()))
 
     public readonly sortBy = signal<ReviewSort>('title')
 
@@ -57,8 +64,15 @@ export class ReviewsPageComponent {
         return [...games.values()].sort(byTitle)
     })
 
+    /** The games waiting for your rating, as the state of your groups, which they come from. */
+    public readonly pendingState = computed(() => mapState(this.dataService.userGroupsState(), () => this.pendingReviews()))
+
     public setSort(value: string): void {
         if (value === 'title' || value === 'rating' || value === 'recent') this.sortBy.set(value)
+    }
+
+    public retryGroups(): void {
+        this.dataService.refreshUserGroups()
     }
 
     public retryReviews(): void {

@@ -5,10 +5,11 @@ import { formatDateTime, formatNumber, intlLocale, timeAgo } from '../../core/i1
 import { GameTitlePipe } from '../../core/pipes/game-title.pipe'
 import { DataService } from '../../core/services/data.service'
 import { gameTitleLanguage } from '../../core/utils/gameTitle'
+import { ASYNC } from '../ui/async/async.component'
 import { IconComponent } from '../ui/icon/icon.component'
 import { InfoPopoverComponent } from '../ui/info-popover/info-popover.component'
 @Component({
-    imports: [GameTitlePipe, CommonModule, RouterLink, IconComponent, InfoPopoverComponent],
+    imports: [ASYNC, GameTitlePipe, CommonModule, RouterLink, IconComponent, InfoPopoverComponent],
     selector: 'app-collection-activity',
     templateUrl: 'collection-activity.component.html',
 })
@@ -21,6 +22,8 @@ export class CollectionActivityComponent {
     public readonly userGames$ = this.dataService.userGames
     public readonly userWishlist$ = this.dataService.userWishlist
     public readonly userCollectionActivity$ = this.dataService.userCollectionActivity
+    /** "No recent activity found." only once it has loaded, never while it loads or after it failed (#256). */
+    public readonly activityState = this.dataService.userCollectionActivityState
 
     public readonly userCollectionActivitySortedComputed = computed(() =>
         [...this.userCollectionActivity$()].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()),
@@ -31,6 +34,10 @@ export class CollectionActivityComponent {
     // --------------------------------------------------------------------------
     // Track whether to show all activities or just 5
     public showAllActivity = false
+
+    public retry(): void {
+        this.dataService.refreshUserCollectionActivity()
+    }
 
     public getActivityIcon(actionType: string): string {
         return (

@@ -27,13 +27,12 @@ import { IconComponent } from '../../components/ui/icon/icon.component'
 import { ImageBackgroundComponent } from '../../components/ui/image-background/image-background.component'
 import { InPageLinkDirective } from '../../components/ui/in-page-link/in-page-link.directive'
 import { StarRatingComponent } from '../../components/ui/star-rating/star-rating.component'
-import { LOADING_KEYS } from '../../core/enums/loading-keys-enum'
+import { isPending } from '../../core/async/resource-state'
 import { formatList, intlLocale } from '../../core/i18n/format'
 import { PlayersPipe } from '../../core/pipes/count.pipe'
 import { CustomDatePipe } from '../../core/pipes/customDate.pipe'
 import { CoverAltPipe } from '../../core/pipes/game-title.pipe'
 import { DataService } from '../../core/services/data.service'
-import { LoadingService } from '../../core/services/loading.service'
 import { ShelfEditionService } from '../../core/services/shelf-edition.service'
 import type { Nullable } from '../../core/types/commons.type'
 import { isSaveOutcomeUnknown } from '../../core/utils/apiUnavailable'
@@ -94,7 +93,6 @@ export class MeetViewComponent {
     public readonly isLoading = signal(true)
     public readonly loadError = signal(false)
     private requestedMeetId: number | null = null
-    private readonly loadingService = inject(LoadingService)
     /**
      * The last failure came from the groups: they failed to load, or the night's group was not among them. Retry then
      * loads the groups again and waits for them before loading the night (#244).
@@ -172,7 +170,7 @@ export class MeetViewComponent {
             this.userGroups = this.dataService.userGroups()
             // Read on every run, before any early return: the end of a groups load must always run this again, even
             // one that fails without changing the list (Retry waits for it).
-            const groupsLoading = Boolean(this.loadingService.loadingStatesIndex()[LOADING_KEYS.USER_GROUPS])
+            const groupsLoading = isPending(this.dataService.userGroupsState())
 
             // Get Meet Details
             const sessionId = Number.parseInt(this.route.snapshot.paramMap.get('sessionId') || '', 10)
@@ -185,7 +183,7 @@ export class MeetViewComponent {
             if (this.userGroups.length === 0 || this.awaitingFreshGroups) {
                 if (groupsLoading) return
                 this.awaitingFreshGroups = false
-                if (this.userGroups.length === 0 && this.dataService.userGroupsError()) {
+                if (this.userGroups.length === 0 && this.dataService.userGroupsState().status === 'error') {
                     this.retryReloadsGroups = true
                     this.loaded = false
                     this.loadError.set(true)
@@ -212,7 +210,7 @@ export class MeetViewComponent {
             // notice, another action) is waited for instead of starting a second one.
             this.retryReloadsGroups = false
             this.awaitingFreshGroups = true
-            if (!this.loadingService.loadingStatesIndex()[LOADING_KEYS.USER_GROUPS]) this.dataService.refreshUserGroups()
+            if (!isPending(this.dataService.userGroupsState())) this.dataService.refreshUserGroups()
             return
         }
         this.requestedMeetId = sessionId

@@ -4,6 +4,8 @@ import { provideRouter } from '@angular/router'
 import { type Observable, of, throwError } from 'rxjs'
 import { Api } from '../../api/api'
 import type { GameCompleteType } from '../../api/api.types'
+import { type ResourceStatus } from '../../core/async/resource-state'
+import { withStates } from '../../core/async/resource-state.testing'
 import { DataService } from '../../core/services/data.service'
 import { YouPageComponent } from './you-page.component'
 
@@ -36,12 +38,13 @@ describe('YouPageComponent', () => {
                       { id: 30, name: 'Office' },
                   ],
         )
-        const errors = {
-            userGroupsError: signal(Boolean(failed.groups)),
-            userGamesError: signal(Boolean(failed.games)),
-            userStatsError: signal(Boolean(failed.stats)),
-            userHistorySummaryError: signal(Boolean(failed.history)),
-            userReviewsError: signal(Boolean(failed.reviews)),
+        const status = (failure?: boolean) => signal<ResourceStatus>(failure ? 'error' : 'ready')
+        const statuses = {
+            userGroups: status(failed.groups),
+            userGames: status(failed.games),
+            userStats: status(failed.stats),
+            userHistorySummary: status(failed.history),
+            userReviews: status(failed.reviews),
         }
         const refresh = {
             refreshUserGroups: vi.fn(),
@@ -58,39 +61,41 @@ describe('YouPageComponent', () => {
                 { provide: Api, useValue: api },
                 {
                     provide: DataService,
-                    useValue: {
-                        ...refresh,
-                        ...errors,
-                        currentUser: signal(me),
-                        userGroups: groups,
-                        userGames: signal(failed.games ? [] : [game(1, 'Catan'), game(2, 'Azul')]),
-                        userStats: signal({ totalGamesValue: paid }),
-                        userReviews: signal(
-                            failed.reviews
-                                ? []
-                                : [
-                                      { accountId: 1, gameId: 2, review: 6, reviewDate: '', gameData: game(2, 'Azul') },
-                                      { accountId: 1, gameId: 3, review: 10, reviewDate: '', gameData: game(3, 'Hanabi') },
-                                      { accountId: 1, gameId: 4, review: 0, reviewDate: '', gameData: game(4, 'Unrated') },
-                                  ],
-                        ),
-                        // The server counts your most played games over your whole history (#252).
-                        userHistorySummary: signal(
-                            failed.history
-                                ? null
-                                : {
-                                      nights: 2,
-                                      gamesPlayed: 4,
-                                      uniqueGames: 3,
-                                      people: 2,
-                                      mostPlayed: { game: game(2, 'Azul'), nights: 2 },
-                                      myMostPlayed: [
-                                          { game: game(2, 'Azul'), plays: 3, wins: 1 },
-                                          { game: game(1, 'Catan'), plays: 1, wins: 1 },
+                    useValue: withStates(
+                        {
+                            ...refresh,
+                            currentUser: signal(me),
+                            userGroups: groups,
+                            userGames: signal(failed.games ? [] : [game(1, 'Catan'), game(2, 'Azul')]),
+                            userStats: signal({ totalGamesValue: paid }),
+                            userReviews: signal(
+                                failed.reviews
+                                    ? []
+                                    : [
+                                          { accountId: 1, gameId: 2, review: 6, reviewDate: '', gameData: game(2, 'Azul') },
+                                          { accountId: 1, gameId: 3, review: 10, reviewDate: '', gameData: game(3, 'Hanabi') },
+                                          { accountId: 1, gameId: 4, review: 0, reviewDate: '', gameData: game(4, 'Unrated') },
                                       ],
-                                  },
-                        ),
-                    },
+                            ),
+                            // The server counts your most played games over your whole history (#252).
+                            userHistorySummary: signal(
+                                failed.history
+                                    ? null
+                                    : {
+                                          nights: 2,
+                                          gamesPlayed: 4,
+                                          uniqueGames: 3,
+                                          people: 2,
+                                          mostPlayed: { game: game(2, 'Azul'), nights: 2 },
+                                          myMostPlayed: [
+                                              { game: game(2, 'Azul'), plays: 3, wins: 1 },
+                                              { game: game(1, 'Catan'), plays: 1, wins: 1 },
+                                          ],
+                                      },
+                            ),
+                        },
+                        statuses,
+                    ),
                 },
             ],
         })
@@ -98,7 +103,7 @@ describe('YouPageComponent', () => {
         fixture.detectChanges()
         await fixture.whenStable()
         fixture.detectChanges()
-        return { element: fixture.nativeElement as HTMLElement, api, groups, fixture, refresh, errors }
+        return { element: fixture.nativeElement as HTMLElement, api, groups, fixture, refresh, statuses }
     }
 
     it('adds up your line in every group, the same numbers each group page shows', async () => {
@@ -172,14 +177,14 @@ describe('YouPageComponent', () => {
     })
 
     it('shows the numbers again, without the error, once Retry loads your groups', async () => {
-        const { element, groups, errors, fixture } = await render({
+        const { element, groups, statuses, fixture } = await render({
             insights: { 10: of(standing(4, 9, 3)), 20: of(standing(2, 3, 1)) },
             failed: { groups: true },
         })
         expect(element.textContent).toContain('Not loaded')
 
         element.querySelector<HTMLButtonElement>('[role="alert"] button')?.click()
-        errors.userGroupsError.set(false)
+        statuses.userGroups.set('ready')
         groups.set([
             { id: 10, name: 'Thursdays' },
             { id: 20, name: 'Family' },

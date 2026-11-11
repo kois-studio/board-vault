@@ -83,7 +83,9 @@
                 <section aria-labelledby="setup-heading">
                     <div class="mb-3 flex items-baseline justify-between gap-3">
                         <h2 id="setup-heading" class="text-lg font-bold" i18n="Heading of the first steps on Home for a new account">Getting set up</h2>
-                        <span class="text-xs text-secondary" i18n="How many of the three first steps on Home are done; the placeholder is 0 or 1">{{ hasGames() ? 1 : 0 }} of 3 done</span>
+                        @if (setupStepsDone() !== null) {
+                            <span class="text-xs text-secondary" i18n="How many of the three first steps on Home are done; the placeholder is 0 or 1">{{ setupStepsDone() }} of 3 done</span>
+                        }
                     </div>
                     <ol class="divide-y divide-bv-border rounded-2xl border border-bv-border bg-bv-surface">
                         <li>
@@ -207,54 +209,70 @@
                                 <a routerLink="/play/history" class="text-sm font-semibold text-bv-primary hover:underline" i18n="Link on Home to Play, History">Full history</a>
                             }
                         </div>
-                        @if (recentlyPlayed().length > 0) {
-                            <ul class="divide-y divide-bv-border rounded-2xl border border-bv-border bg-bv-surface">
-                                @for (record of recentlyPlayed(); track record.meetData.id) {
-                                    <li>
-                                        <a [routerLink]="['/sessions', record.meetData.id]" class="flex items-center gap-3 p-3 transition hover:bg-bv-bg">
-                                            <span class="relative flex h-11 w-11 shrink-0 items-center justify-center overflow-hidden rounded-lg bg-bv-primary-soft text-xs font-bold text-bv-on-primary-soft" aria-hidden="true">
-                                                @if (firstGame(record); as game) {
-                                                    {{ game.title.slice(0, 2).toUpperCase() }}
-                                                    @if (game.imageUrl) {
-                                                        <img [src]="game.imageUrl" alt="" loading="lazy" class="absolute inset-0 h-full w-full object-cover" (error)="hideBrokenImage($event)" />
-                                                    }
-                                                } @else {
-                                                    <app-icon name="history" [size]="18" />
-                                                }
+                        <app-async [state]="historyState()" loadingLabel="Loading your recent game nights" i18n-loadingLabel="Read by screen readers on Home while your last game nights load" errorMessage="Your recent game nights could not be loaded." i18n-errorMessage="Error on Home when your last game nights could not be loaded" (retry)="retryHistory()">
+                            <ng-template appAsyncLoading>
+                                <div class="divide-y divide-bv-border rounded-2xl border border-bv-border bg-bv-surface">
+                                    @for (row of [1, 2]; track row) {
+                                        <div class="flex items-center gap-3 p-3 motion-safe:animate-pulse">
+                                            <span class="h-11 w-11 shrink-0 rounded-lg bg-bv-surface-2"></span>
+                                            <span class="min-w-0 flex-1 space-y-2">
+                                                <span class="block h-4 w-2/3 rounded bg-bv-surface-2"></span>
+                                                <span class="block h-3 w-1/2 rounded bg-bv-surface-2"></span>
                                             </span>
-                                            <span class="min-w-0 flex-1">
-                                                <span class="block truncate font-semibold">
-                                                    @if (gameTitles(record); as titles) {
-                                                        {{ titles }}
+                                        </div>
+                                    }
+                                </div>
+                            </ng-template>
+                            <ng-template appAsyncReady>
+                                <ul class="divide-y divide-bv-border rounded-2xl border border-bv-border bg-bv-surface">
+                                    @for (record of recentlyPlayed(); track record.meetData.id) {
+                                        <li>
+                                            <a [routerLink]="['/sessions', record.meetData.id]" class="flex items-center gap-3 p-3 transition hover:bg-bv-bg">
+                                                <span class="relative flex h-11 w-11 shrink-0 items-center justify-center overflow-hidden rounded-lg bg-bv-primary-soft text-xs font-bold text-bv-on-primary-soft" aria-hidden="true">
+                                                    @if (firstGame(record); as game) {
+                                                        {{ game.title.slice(0, 2).toUpperCase() }}
+                                                        @if (game.imageUrl) {
+                                                            <img [src]="game.imageUrl" alt="" loading="lazy" class="absolute inset-0 h-full w-full object-cover" (error)="hideBrokenImage($event)" />
+                                                        }
                                                     } @else {
-                                                        <ng-container i18n="A played game night on Home with no games recorded">No games recorded</ng-container>
+                                                        <app-icon name="history" [size]="18" />
                                                     }
                                                 </span>
-                                                <span class="block truncate text-xs text-secondary">
-                                                    @if (userGroups$().length > 1) {
-                                                        {{ groupName(record.meetData.groupId) }} ·
-                                                    }
-                                                    {{ historyDate(record) }} · <ng-container i18n="How many people came to a game night">{peopleCount(record), plural, one {{{ peopleCount(record) }} person} other {{{ peopleCount(record) }} people}}</ng-container>
+                                                <span class="min-w-0 flex-1">
+                                                    <span class="block truncate font-semibold">
+                                                        @if (gameTitles(record); as titles) {
+                                                            {{ titles }}
+                                                        } @else {
+                                                            <ng-container i18n="A played game night on Home with no games recorded">No games recorded</ng-container>
+                                                        }
+                                                    </span>
+                                                    <span class="block truncate text-xs text-secondary">
+                                                        @if (userGroups$().length > 1) {
+                                                            {{ groupName(record.meetData.groupId) }} ·
+                                                        }
+                                                        {{ historyDate(record) }} · <ng-container i18n="How many people came to a game night">{peopleCount(record), plural, one {{{ peopleCount(record) }} person} other {{{ peopleCount(record) }} people}}</ng-container>
+                                                    </span>
                                                 </span>
-                                            </span>
-                                        </a>
-                                        <app-rating-follow-up [record]="record" />
-                                    </li>
-                                }
-                            </ul>
-                        } @else {
-                            <div class="flex items-center gap-3 rounded-2xl border border-dashed border-bv-border p-4">
-                                <span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-bv-surface-2 text-bv-text-muted" aria-hidden="true"><app-icon name="history" [size]="20" /></span>
-                                <span class="min-w-0 flex-1">
-                                    <span class="block text-sm font-semibold" i18n="Empty history on Home">Nothing recorded yet</span>
-                                    <span class="block text-xs text-secondary" i18n="Empty history on Home">Played before joining? Add past nights.</span>
-                                </span>
-                                <a routerLink="/play/log-session" class="shrink-0 text-sm font-semibold text-bv-primary hover:underline" i18n="Link next to the empty history on Home; the hidden words are read only by screen readers">Record<span class="sr-only"> a past night</span></a>
-                            </div>
-                        }
+                                            </a>
+                                            <app-rating-follow-up [record]="record" />
+                                        </li>
+                                    }
+                                </ul>
+                            </ng-template>
+                            <ng-template appAsyncEmpty>
+                                <div class="flex items-center gap-3 rounded-2xl border border-dashed border-bv-border p-4">
+                                    <span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-bv-surface-2 text-bv-text-muted" aria-hidden="true"><app-icon name="history" [size]="20" /></span>
+                                    <span class="min-w-0 flex-1">
+                                        <span class="block text-sm font-semibold" i18n="Empty history on Home">Nothing recorded yet</span>
+                                        <span class="block text-xs text-secondary" i18n="Empty history on Home">Played before joining? Add past nights.</span>
+                                    </span>
+                                    <a routerLink="/play/log-session" class="shrink-0 text-sm font-semibold text-bv-primary hover:underline" i18n="Link next to the empty history on Home; the hidden words are read only by screen readers">Record<span class="sr-only"> a past night</span></a>
+                                </div>
+                            </ng-template>
+                        </app-async>
                     </section>
 
-                    @if (!hasGames()) {
+                    @if (shelfEmpty()) {
                         <a routerLink="/collection/browse" class="flex items-center gap-3 rounded-2xl border border-dashed border-bv-border p-4 transition hover:border-bv-primary/40">
                             <span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-bv-primary-soft text-bv-on-primary-soft" aria-hidden="true"><app-icon name="circle-plus" [size]="20" /></span>
                             <span class="min-w-0 flex-1">
@@ -271,7 +289,7 @@
                             <app-image-profile [avatar]="user.avatar" />
                             <span class="min-w-0 flex-1">
                                 <span class="block truncate font-semibold">{{ greetingName() }}</span>
-                                <span class="block text-xs text-secondary"><ng-container i18n="How many games are on your shelf">{ownedGames(), plural, one {{{ ownedGames() }} game} other {{{ ownedGames() }} games}}</ng-container>@if (nightsPlayed() !== null) { · <ng-container i18n="How many game nights you have played">{nightsPlayed(), plural, one {{{ nightsPlayed() }} night played} other {{{ nightsPlayed() }} nights played}}</ng-container>}</span>
+                                <span class="block text-xs text-secondary">@if (ownedGames() !== null) {<ng-container i18n="How many games are on your shelf">{ownedGames(), plural, one {{{ ownedGames() }} game} other {{{ ownedGames() }} games}}</ng-container>}@if (ownedGames() !== null && nightsPlayed() !== null) { · }@if (nightsPlayed() !== null) {<ng-container i18n="How many game nights you have played">{nightsPlayed(), plural, one {{{ nightsPlayed() }} night played} other {{{ nightsPlayed() }} nights played}}</ng-container>}</span>
                                 <span class="mt-1 block text-sm font-semibold text-bv-primary" i18n="Link on Home to your page">Your page ›</span>
                             </span>
                         </a>

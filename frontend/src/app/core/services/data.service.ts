@@ -1,19 +1,6 @@
 import { effect, Injectable, inject, signal, untracked } from '@angular/core'
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
-import {
-    catchError,
-    concatMap,
-    finalize,
-    firstValueFrom,
-    forkJoin,
-    map,
-    type Observable,
-    of,
-    Subject,
-    takeUntil,
-    tap,
-    throwError,
-} from 'rxjs'
+import { catchError, concatMap, firstValueFrom, forkJoin, map, type Observable, of, Subject, takeUntil, tap, throwError } from 'rxjs'
 import { Api } from '../../api/api'
 import type {
     AccountMeetType,
@@ -33,12 +20,11 @@ import type {
     UserType,
 } from '../../api/api.types'
 import { ToastService } from '../../components/toast/toast.service'
-import { LOADING_KEYS } from '../enums/loading-keys-enum'
+import { ResourceSignal } from '../async/resource-state'
 import { intlLocale } from '../i18n/format'
 import { withoutReadRetry } from '../interceptors/resilience.interceptor'
 import { rsvpToast } from '../utils/rsvp'
 import { ConnectivityService } from './connectivity.service'
-import { LoadingService } from './loading.service'
 import { LogService } from './log.service'
 
 @Injectable({ providedIn: 'root' })
@@ -46,7 +32,6 @@ export class DataService {
     private readonly api = inject(Api)
     private readonly logger = inject(LogService)
     private readonly toastService = inject(ToastService)
-    private readonly loadingService = inject(LoadingService)
     private readonly connectivity = inject(ConnectivityService)
 
     // --------------------------------------------------------------------------
@@ -56,41 +41,23 @@ export class DataService {
     public readonly currentUser = signal<null | UserType>(null)
 
     // --------------------------------------------------------------------------
-    //         ARRAYS OF DATA
+    //         DATA OF THE SIGNED-IN USER
     // --------------------------------------------------------------------------
-    // `userXYZ` to store the data of the current user
-    public readonly userGames = signal<Array<GameCompleteType>>([])
-    public readonly userGroups = signal<Array<GroupWithMembersAndGames>>([])
-    public readonly userNotifications = signal<Array<NotificationType>>([])
-    public readonly userInvitations = signal<Array<InvitationWithExtraData>>([])
-    public readonly userReviews = signal<Array<GameReviewWithGameData>>([])
-    public readonly userMeets = signal<Array<AccountMeetType>>([])
-    /** Your latest nights: the first page of your history (#252). Screens that page further read their own. */
-    public readonly userHistory = signal<Array<HistoryRecordType>>([])
-    /** Totals over your whole history, counted by the server; null until they load. */
-    public readonly userHistorySummary = signal<HistorySummaryType | null>(null)
-    /** Goes up when your history changes, so screens that page it themselves read it again. */
-    public readonly userHistoryRevision = signal(0)
-    public readonly userGamesError = signal(false)
-    public readonly userGroupsError = signal(false)
-    public readonly userStatsError = signal(false)
-    public readonly userMeetsError = signal(false)
-    public readonly userHistoryError = signal(false)
-    public readonly userHistorySummaryError = signal(false)
-    public readonly userReviewsError = signal(false)
-    public readonly userWishlistError = signal(false)
-    public readonly userProposalsLoading = signal(false)
-    public readonly userProposalsError = signal(false)
-    public readonly userProposalStatsLoading = signal(false)
-    public readonly userProposalStatsError = signal(false)
-    public readonly userInvitationsLoading = signal(false)
-    public readonly userInvitationsError = signal(false)
-    public readonly userNotificationsLoading = signal(false)
-    public readonly userNotificationsError = signal(false)
-    public readonly userWishlist = signal<Array<GameCompleteType>>([])
-    public readonly userCollectionActivity = signal<Array<CollectionActivityWithGameDataType>>([])
-    public readonly userProposals = signal<Array<GameProposalType>>([])
-    public readonly userProposalStats = signal<UserProposalStatsType>({
+    // Each piece is a ResourceSignal (#256): `userX` is the data, which changes in place after a write, and
+    // `userXState` says whether it is loading, refreshing, failed, or ready. A page renders the state, so an
+    // empty list only reads as "nothing here" once it has loaded. A reload never empties what is shown.
+    private readonly games = new ResourceSignal<Array<GameCompleteType>>([])
+    private readonly groups = new ResourceSignal<Array<GroupWithMembersAndGames>>([])
+    private readonly notifications = new ResourceSignal<Array<NotificationType>>([])
+    private readonly invitations = new ResourceSignal<Array<InvitationWithExtraData>>([])
+    private readonly reviews = new ResourceSignal<Array<GameReviewWithGameData>>([])
+    private readonly meets = new ResourceSignal<Array<AccountMeetType>>([])
+    private readonly history = new ResourceSignal<Array<HistoryRecordType>>([])
+    private readonly historySummary = new ResourceSignal<HistorySummaryType | null>(null)
+    private readonly wishlist = new ResourceSignal<Array<GameCompleteType>>([])
+    private readonly collectionActivity = new ResourceSignal<Array<CollectionActivityWithGameDataType>>([])
+    private readonly proposals = new ResourceSignal<Array<GameProposalType>>([])
+    private readonly proposalStats = new ResourceSignal<UserProposalStatsType>({
         totalProposals: 0,
         approvedProposals: 0,
         rejectedProposals: 0,
@@ -99,10 +66,53 @@ export class DataService {
         approvalRate: 0,
         reputationScore: 0,
     })
-    // non arrays
-    public readonly userStats = signal<UserStatsType>({
-        totalGamesValue: 0,
-    })
+    private readonly stats = new ResourceSignal<UserStatsType>({ totalGamesValue: 0 })
+    private readonly resources = [
+        this.games,
+        this.groups,
+        this.notifications,
+        this.invitations,
+        this.reviews,
+        this.meets,
+        this.history,
+        this.historySummary,
+        this.wishlist,
+        this.collectionActivity,
+        this.proposals,
+        this.proposalStats,
+        this.stats,
+    ]
+
+    public readonly userGames = this.games.value
+    public readonly userGamesState = this.games.state
+    public readonly userGroups = this.groups.value
+    public readonly userGroupsState = this.groups.state
+    public readonly userNotifications = this.notifications.value
+    public readonly userNotificationsState = this.notifications.state
+    public readonly userInvitations = this.invitations.value
+    public readonly userInvitationsState = this.invitations.state
+    public readonly userReviews = this.reviews.value
+    public readonly userReviewsState = this.reviews.state
+    public readonly userMeets = this.meets.value
+    public readonly userMeetsState = this.meets.state
+    /** Your latest nights: the first page of your history (#252). Screens that page further read their own. */
+    public readonly userHistory = this.history.value
+    public readonly userHistoryState = this.history.state
+    /** Totals over your whole history, counted by the server; null until they load. */
+    public readonly userHistorySummary = this.historySummary.value
+    public readonly userHistorySummaryState = this.historySummary.state
+    /** Goes up when your history changes, so screens that page it themselves read it again. */
+    public readonly userHistoryRevision = signal(0)
+    public readonly userWishlist = this.wishlist.value
+    public readonly userWishlistState = this.wishlist.state
+    public readonly userCollectionActivity = this.collectionActivity.value
+    public readonly userCollectionActivityState = this.collectionActivity.state
+    public readonly userProposals = this.proposals.value
+    public readonly userProposalsState = this.proposals.state
+    public readonly userProposalStats = this.proposalStats.value
+    public readonly userProposalStatsState = this.proposalStats.state
+    public readonly userStats = this.stats.value
+    public readonly userStatsState = this.stats.state
     public readonly groupHistoryByGroupId = signal<Record<number, Array<HistoryRecordType>>>({})
 
     // --------------------------------------------------------------------------
@@ -114,6 +124,8 @@ export class DataService {
     // Emits when the signed-in user changes or signs out. Loads started for the previous user stop
     // here, so a late answer cannot put their data back after sign-out.
     private readonly userChanged = new Subject<void>()
+    /** Whose lists are held, so a change of person starts from nothing loaded. */
+    private loadedUserId: number | null = null
 
     // --------------------------------------------------------------------------
     // --------------------------------------------------------------------------
@@ -126,8 +138,14 @@ export class DataService {
             // Only the user drives this: a load that fails at once reads other signals (`isDegraded`), and a change
             // of connection must not fetch everything again (#241).
             untracked(() => {
+                // Stop the loads on their way first, so ending them is not taken for a failure.
+                for (const resource of this.resources) resource.cancel()
                 this.userChanged.next()
                 this.failedLoads.clear()
+                // Another person: nothing of the last one may show, even as "refreshing" (#256). The same person
+                // read again (a new username) keeps what is shown while it reloads.
+                if (user?.id !== this.loadedUserId) this._clearAllDerivedUserData()
+                this.loadedUserId = user?.id ?? null
                 if (user?.id) {
                     this.logger.log(`DataService: currentUser updated (ID: ${user.id}). Fetching derived data.`)
                     this._fetchAllDerivedUserData(user.id)
@@ -186,107 +204,42 @@ export class DataService {
     }
 
     private _clearAllDerivedUserData(): void {
-        this.userGames.set([])
-        this.userGroups.set([])
-        this.userNotifications.set([])
-        this.userInvitations.set([])
-        this.userReviews.set([])
-        this.userMeets.set([])
-        this.userHistory.set([])
-        this.userHistorySummary.set(null)
-        this.userGamesError.set(false)
-        this.userGroupsError.set(false)
-        this.userStatsError.set(false)
-        this.userMeetsError.set(false)
-        this.userHistoryError.set(false)
-        this.userHistorySummaryError.set(false)
-        this.userReviewsError.set(false)
-        this.userWishlistError.set(false)
-        this.userProposalsLoading.set(false)
-        this.userProposalsError.set(false)
-        this.userProposalStatsLoading.set(false)
-        this.userProposalStatsError.set(false)
-        this.userInvitationsLoading.set(false)
-        this.userInvitationsError.set(false)
-        this.userNotificationsLoading.set(false)
-        this.userNotificationsError.set(false)
-        this.userWishlist.set([])
-        this.userCollectionActivity.set([])
-        this.userProposals.set([])
-        this.userProposalStats.set({
-            totalProposals: 0,
-            approvedProposals: 0,
-            rejectedProposals: 0,
-            duplicateProposals: 0,
-            pendingProposals: 0,
-            approvalRate: 0,
-            reputationScore: 0,
-        })
-        this.userStats.set({ totalGamesValue: 0 }) // Reset to default
+        for (const resource of this.resources) resource.reset()
         this.groupHistoryByGroupId.set({})
         this.invitationsGroupIndex.set({})
-
-        // Note: LoadingService.setAllLoadingTo(true) in LoginService's logout
-        // should handle resetting the loading states for these items if they
-        // are part of the initial set of loading keys.
-        // If not, you might need to manually reset them here or ensure
-        // each _getUserXYZ method sets its loading key to true even if data is empty.
     }
 
     private _getUserGames(userId: number) {
         this.failedLoads.delete('games')
-        this.userGamesError.set(false)
-        this.loadingService.start(LOADING_KEYS.USER_GAMES)
-        this.api
-            .getUserGames(userId)
-            .pipe(
-                takeUntil(this.userChanged),
-                finalize(() => this.loadingService.finish(LOADING_KEYS.USER_GAMES)),
-            )
-            .subscribe({
-                next: (games) => {
-                    this.userGames.set(games)
-                    this.userGroups.update((groups) =>
-                        groups.map((group) => ({
-                            ...group,
-                            members: group.members.map((member) => (member.id === userId ? { ...member, games } : member)),
-                        })),
-                    )
-                },
-                error: () => {
-                    this.userGamesError.set(true)
-                    this.loadFailed(
-                        'games',
-                        () => this._getUserGames(userId),
-                        $localize`:Toast when My Games could not be loaded:Error retrieving user games`,
-                    )
-                },
-            })
+        this.games.load(this.api.getUserGames(userId).pipe(takeUntil(this.userChanged)), {
+            apply: (games) => {
+                this.userGames.set(games)
+                this.userGroups.update((groups) =>
+                    groups.map((group) => ({
+                        ...group,
+                        members: group.members.map((member) => (member.id === userId ? { ...member, games } : member)),
+                    })),
+                )
+            },
+            failed: () =>
+                this.loadFailed(
+                    'games',
+                    () => this._getUserGames(userId),
+                    $localize`:Toast when My Games could not be loaded:Error retrieving user games`,
+                ),
+        })
     }
 
     private _getUserInvitations(userId: number) {
         this.failedLoads.delete('invitations')
-        this.userInvitationsLoading.set(true)
-        this.userInvitationsError.set(false)
-        this.api
-            .getUserInvitations(userId)
-            .pipe(
-                takeUntil(this.userChanged),
-                finalize(() => this.userInvitationsLoading.set(false)),
-            )
-            .subscribe({
-                next: (invitations) => {
-                    this.userInvitations.set(invitations)
-                },
-                error: () => {
-                    this.userInvitationsError.set(true)
-                    this.loadFailed(
-                        'invitations',
-                        () => this._getUserInvitations(userId),
-                        $localize`:Toast when the inbox could not load group invitations:Error retrieving user’s invitations`,
-                    )
-                },
-            })
+        this.invitations.load(this.api.getUserInvitations(userId).pipe(takeUntil(this.userChanged)), {
+            failed: () =>
+                this.loadFailed(
+                    'invitations',
+                    () => this._getUserInvitations(userId),
+                    $localize`:Toast when the inbox could not load group invitations:Error retrieving user’s invitations`,
+                ),
+        })
     }
 
     public retryUserInvitations(): void {
@@ -296,27 +249,14 @@ export class DataService {
 
     private _getUserNotifications(userId: number) {
         this.failedLoads.delete('notifications')
-        this.userNotificationsLoading.set(true)
-        this.userNotificationsError.set(false)
-        this.api
-            .getUserNotifications(userId)
-            .pipe(
-                takeUntil(this.userChanged),
-                finalize(() => this.userNotificationsLoading.set(false)),
-            )
-            .subscribe({
-                next: (notifications) => {
-                    this.userNotifications.set(notifications)
-                },
-                error: () => {
-                    this.userNotificationsError.set(true)
-                    this.loadFailed(
-                        'notifications',
-                        () => this._getUserNotifications(userId),
-                        $localize`:Toast when the inbox could not load notifications:Error retrieving user’s notifications`,
-                    )
-                },
-            })
+        this.notifications.load(this.api.getUserNotifications(userId).pipe(takeUntil(this.userChanged)), {
+            failed: () =>
+                this.loadFailed(
+                    'notifications',
+                    () => this._getUserNotifications(userId),
+                    $localize`:Toast when the inbox could not load notifications:Error retrieving user’s notifications`,
+                ),
+        })
     }
 
     public retryUserNotifications(): void {
@@ -337,10 +277,7 @@ export class DataService {
         if (!currentUser || (!force && now - this.lastQuietRefresh < 60_000)) return
         this.lastQuietRefresh = now
         this.refreshInbox()
-        this.quietly(this.api.getUserMeets(currentUser.id, withoutReadRetry()), (meets) => {
-            this.userMeets.set(meets)
-            this.userMeetsError.set(false)
-        })
+        this.quietly(this.api.getUserMeets(currentUser.id, withoutReadRetry()), (meets) => this.meets.set(meets))
     }
 
     /**
@@ -363,8 +300,7 @@ export class DataService {
         this.quietly(
             this.api.getUserNotifications(currentUser.id, withoutReadRetry()),
             (notifications) => {
-                this.userNotifications.set(notifications)
-                this.userNotificationsError.set(false)
+                this.notifications.set(notifications)
                 arrived(notifications.filter((item) => !item.isRead).map(notificationKey))
             },
             stop,
@@ -372,8 +308,7 @@ export class DataService {
         this.quietly(
             this.api.getUserInvitations(currentUser.id, withoutReadRetry()),
             (invitations) => {
-                this.userInvitations.set(invitations)
-                this.userInvitationsError.set(false)
+                this.invitations.set(invitations)
                 arrived(invitations.map((item) => `i${item.id}`))
             },
             stop,
@@ -402,61 +337,38 @@ export class DataService {
 
     private _getUserReviews(accountId: number) {
         this.failedLoads.delete('reviews')
-        this.userReviewsError.set(false)
-        this.loadingService.start(LOADING_KEYS.USER_REVIEWS)
-        this.api
-            .getUserReviews(accountId)
-            .pipe(
-                takeUntil(this.userChanged),
-                finalize(() => this.loadingService.finish(LOADING_KEYS.USER_REVIEWS)),
-            )
-            .subscribe({
-                next: (reviews) => {
-                    this.userReviews.set(reviews)
-                },
-                error: () => {
-                    this.userReviewsError.set(true)
-                    this.loadFailed(
-                        'reviews',
-                        () => this._getUserReviews(accountId),
-                        $localize`:Toast when your ratings could not be loaded:Error retrieving user’s reviews`,
-                    )
-                },
-            })
+        this.reviews.load(this.api.getUserReviews(accountId).pipe(takeUntil(this.userChanged)), {
+            failed: () =>
+                this.loadFailed(
+                    'reviews',
+                    () => this._getUserReviews(accountId),
+                    $localize`:Toast when your ratings could not be loaded:Error retrieving user’s reviews`,
+                ),
+        })
     }
 
     private _getUserGroups(accountId: number) {
         this.failedLoads.delete('groups')
-        this.userGroupsError.set(false)
-        this.loadingService.start(LOADING_KEYS.USER_GROUPS)
-        this.api
-            .getUserGroups(accountId)
-            .pipe(
-                takeUntil(this.userChanged),
-                finalize(() => this.loadingService.finish(LOADING_KEYS.USER_GROUPS)),
-            )
-            .subscribe({
-                next: (groups) => {
-                    this.userGroups.set(groups)
+        this.groups.load(this.api.getUserGroups(accountId).pipe(takeUntil(this.userChanged)), {
+            apply: (groups) => {
+                this.userGroups.set(groups)
 
-                    for (const group of groups) {
-                        if (group.createdBy !== accountId) {
-                            this.invitationsGroupIndex.update((index) => ({ ...index, [group.id]: [] }))
-                            continue
-                        }
-
-                        this._getGroupInvitations(group)
+                for (const group of groups) {
+                    if (group.createdBy !== accountId) {
+                        this.invitationsGroupIndex.update((index) => ({ ...index, [group.id]: [] }))
+                        continue
                     }
-                },
-                error: () => {
-                    this.userGroupsError.set(true)
-                    this.loadFailed(
-                        'groups',
-                        () => this._getUserGroups(accountId),
-                        $localize`:Toast when your groups could not load:Error retrieving user’s groups`,
-                    )
-                },
-            })
+
+                    this._getGroupInvitations(group)
+                }
+            },
+            failed: () =>
+                this.loadFailed(
+                    'groups',
+                    () => this._getUserGroups(accountId),
+                    $localize`:Toast when your groups could not load:Error retrieving user’s groups`,
+                ),
+        })
     }
 
     /** The pending invitations of a group the user owns. */
@@ -484,144 +396,75 @@ export class DataService {
 
     private _getUserMeets(userId: number) {
         this.failedLoads.delete('meets')
-        this.userMeetsError.set(false)
-        this.loadingService.start(LOADING_KEYS.USER_MEETS)
-        this.api
-            .getUserMeets(userId)
-            .pipe(
-                takeUntil(this.userChanged),
-                finalize(() => this.loadingService.finish(LOADING_KEYS.USER_MEETS)),
-            )
-            .subscribe({
-                next: (meets) => this.userMeets.set(meets),
-                error: () => {
-                    this.userMeetsError.set(true)
-                    this.loadFailed(
-                        'meets',
-                        () => this._getUserMeets(userId),
-                        $localize`:Toast when your game nights could not load:Error retrieving user’s meets`,
-                    )
-                },
-            })
+        this.meets.load(this.api.getUserMeets(userId).pipe(takeUntil(this.userChanged)), {
+            failed: () =>
+                this.loadFailed(
+                    'meets',
+                    () => this._getUserMeets(userId),
+                    $localize`:Toast when your game nights could not load:Error retrieving user’s meets`,
+                ),
+        })
     }
 
     private _getUserHistory(userId: number) {
         this.failedLoads.delete('history')
-        this.userHistoryError.set(false)
-        this.loadingService.start(LOADING_KEYS.USER_GAMES_HISTORY)
-        this.api
-            .getUserGamesHistory(userId)
-            .pipe(
-                takeUntil(this.userChanged),
-                finalize(() => this.loadingService.finish(LOADING_KEYS.USER_GAMES_HISTORY)),
-            )
-            .subscribe({
-                next: (page) => this.userHistory.set(page.entries),
-                error: () => {
-                    this.userHistoryError.set(true)
-                    this.loadFailed(
-                        'history',
-                        () => this._getUserHistory(userId),
-                        $localize`:Toast when your game night history could not load:Error retrieving user’s history`,
-                    )
-                },
-            })
+        const firstPage = this.api.getUserGamesHistory(userId).pipe(map((page) => page.entries))
+        this.history.load(firstPage.pipe(takeUntil(this.userChanged)), {
+            failed: () =>
+                this.loadFailed(
+                    'history',
+                    () => this._getUserHistory(userId),
+                    $localize`:Toast when your game night history could not load:Error retrieving user’s history`,
+                ),
+        })
     }
 
     private _getUserHistorySummary(userId: number) {
         this.failedLoads.delete('historySummary')
-        this.userHistorySummaryError.set(false)
-        this.loadingService.start(LOADING_KEYS.USER_HISTORY_SUMMARY)
-        this.api
-            .getUserHistorySummary(userId)
-            .pipe(
-                takeUntil(this.userChanged),
-                finalize(() => this.loadingService.finish(LOADING_KEYS.USER_HISTORY_SUMMARY)),
-            )
-            .subscribe({
-                next: (summary) => this.userHistorySummary.set(summary),
-                error: () => {
-                    this.userHistorySummaryError.set(true)
-                    this.loadFailed(
-                        'historySummary',
-                        () => this._getUserHistorySummary(userId),
-                        $localize`:Toast when the totals of your game nights could not load:Your game night totals could not load`,
-                    )
-                },
-            })
+        this.historySummary.load(this.api.getUserHistorySummary(userId).pipe(takeUntil(this.userChanged)), {
+            failed: () =>
+                this.loadFailed(
+                    'historySummary',
+                    () => this._getUserHistorySummary(userId),
+                    $localize`:Toast when the totals of your game nights could not load:Your game night totals could not load`,
+                ),
+        })
     }
 
     private _getUserWishlist(userId: number) {
         this.failedLoads.delete('wishlist')
-        this.userWishlistError.set(false)
-        this.loadingService.start(LOADING_KEYS.USER_WISHLIST)
-        this.api
-            .getUserWishlist(userId)
-            .pipe(
-                takeUntil(this.userChanged),
-                finalize(() => this.loadingService.finish(LOADING_KEYS.USER_WISHLIST)),
-            )
-            .subscribe({
-                next: (wishlist) => {
-                    this.userWishlist.set(wishlist)
-                },
-                error: () => {
-                    this.userWishlistError.set(true)
-                    this.loadFailed(
-                        'wishlist',
-                        () => this._getUserWishlist(userId),
-                        $localize`:Toast when your wishlist could not be loaded:Error retrieving user’s wishlist`,
-                    )
-                },
-            })
+        this.wishlist.load(this.api.getUserWishlist(userId).pipe(takeUntil(this.userChanged)), {
+            failed: () =>
+                this.loadFailed(
+                    'wishlist',
+                    () => this._getUserWishlist(userId),
+                    $localize`:Toast when your wishlist could not be loaded:Error retrieving user’s wishlist`,
+                ),
+        })
     }
 
     private _getUserCollectionActivity(userId: number) {
         this.failedLoads.delete('collectionActivity')
-        this.loadingService.start(LOADING_KEYS.USER_COLLECTION_ACTIVITY)
-        this.api
-            .getUserCollectionActivity(userId)
-            .pipe(
-                takeUntil(this.userChanged),
-                finalize(() => this.loadingService.finish(LOADING_KEYS.USER_COLLECTION_ACTIVITY)),
-            )
-            .subscribe({
-                next: (collectionActivity) => {
-                    this.userCollectionActivity.set(collectionActivity)
-                },
-                error: () => {
-                    this.loadFailed(
-                        'collectionActivity',
-                        () => this._getUserCollectionActivity(userId),
-                        $localize`:Toast when your recent collection activity could not be loaded:Error retrieving user’s collection activity`,
-                    )
-                },
-            })
+        this.collectionActivity.load(this.api.getUserCollectionActivity(userId).pipe(takeUntil(this.userChanged)), {
+            failed: () =>
+                this.loadFailed(
+                    'collectionActivity',
+                    () => this._getUserCollectionActivity(userId),
+                    $localize`:Toast when your recent collection activity could not be loaded:Error retrieving user’s collection activity`,
+                ),
+        })
     }
 
     private _getUserStats(userId: number) {
         this.failedLoads.delete('stats')
-        this.userStatsError.set(false)
-        this.loadingService.start(LOADING_KEYS.USER_STATS)
-        this.api
-            .getUserStats(userId)
-            .pipe(
-                takeUntil(this.userChanged),
-                finalize(() => this.loadingService.finish(LOADING_KEYS.USER_STATS)),
-            )
-            .subscribe({
-                next: (stats) => {
-                    this.userStats.set(stats)
-                },
-                error: () => {
-                    this.userStatsError.set(true)
-                    this.loadFailed(
-                        'stats',
-                        () => this._getUserStats(userId),
-                        $localize`:Toast when your numbers could not be loaded:Error retrieving user’s stats`,
-                    )
-                },
-            })
+        this.stats.load(this.api.getUserStats(userId).pipe(takeUntil(this.userChanged)), {
+            failed: () =>
+                this.loadFailed(
+                    'stats',
+                    () => this._getUserStats(userId),
+                    $localize`:Toast when your numbers could not be loaded:Error retrieving user’s stats`,
+                ),
+        })
     }
     // #region ## public methods ##
 
@@ -759,56 +602,6 @@ export class DataService {
         )
     }
 
-    // #region games
-
-    public updateUserGames(userGameIds: Array<number>, gameIdsToToggle: Array<number>) {
-        const currentUser = this.currentUser()
-        if (!currentUser) return
-        const gamesToAdd = gameIdsToToggle.filter((id) => !userGameIds.includes(id))
-        const gamesToRemove = userGameIds.filter((id) => !gameIdsToToggle.includes(id))
-
-        // 1.
-        this.api
-            .updateUserGames(currentUser.id, gamesToAdd, gamesToRemove)
-            .pipe(
-                concatMap(() =>
-                    // 2.
-                    this.api.getUserGames(currentUser.id).pipe(
-                        catchError(() => {
-                            this.toastService.error(
-                                $localize`:Toast when My Games could not be reloaded after a change:Error fetching updated games`,
-                            )
-                            return of([]) // Return an empty array if fetching fails
-                        }),
-                    ),
-                ),
-                catchError(() => {
-                    this.toastService.error($localize`:Toast when the change to My Games could not be saved:Error updating games`)
-                    return of(null)
-                }),
-            )
-            .subscribe({
-                next: (games) => {
-                    if (games) {
-                        this.userGames.set(games)
-                        this.userGroups.update((groups) =>
-                            groups.map((group) => {
-                                const userIndex = group.members.findIndex((member) => member.id === currentUser.id)
-                                if (userIndex === -1) return group
-
-                                return {
-                                    ...group,
-                                    members: group.members.map((member) => (member.id === currentUser.id ? { ...member, games } : member)),
-                                }
-                            }),
-                        )
-                        // 3.
-                        this.toastService.success($localize`:Toast after My Games is saved:Games updated`)
-                    }
-                },
-            })
-    }
-
     // #region answer a session
 
     /** Answers a game night from a list (Home, Upcoming) and updates that list in place. */
@@ -831,7 +624,6 @@ export class DataService {
 
         return this.api.createGroup(currentUser.id, groupName).pipe(
             tap(() => {
-                this.userGroups.set([])
                 this._getUserGroups(currentUser.id)
                 this.toastService.success(
                     $localize`:Toast after creating a group; the placeholder is its name:You have created the group ${groupName}:group:`,
@@ -906,7 +698,6 @@ export class DataService {
         return this.api.acceptInvitation(currentUser.id, invitationId).pipe(
             tap(() => {
                 this.userInvitations.update((invitations) => invitations.filter((invitation) => invitation.id !== invitationId))
-                this.userGroups.set([])
                 this._getUserGroups(currentUser.id)
                 this.toastService.success($localize`:Toast after accepting a group invitation:You have joined the group!`)
             }),
@@ -1031,7 +822,6 @@ export class DataService {
         const currentUser = this.currentUser()
         if (!currentUser) return
 
-        this.userReviews.set([])
         this._getUserReviews(currentUser.id)
     }
 
@@ -1039,7 +829,6 @@ export class DataService {
         const currentUser = this.currentUser()
         if (!currentUser) return
 
-        this.userWishlist.set([])
         this._getUserWishlist(currentUser.id)
     }
 
@@ -1070,6 +859,11 @@ export class DataService {
         this._getUserCollectionActivity(currentUser.id)
     }
 
+    public refreshUserCollectionActivity(): void {
+        const currentUser = this.currentUser()
+        if (currentUser) this._getUserCollectionActivity(currentUser.id)
+    }
+
     public refreshUserGroups() {
         const currentUser = this.currentUser()
         if (!currentUser) return
@@ -1090,7 +884,6 @@ export class DataService {
         const currentUser = this.currentUser()
         if (!currentUser) return
 
-        this.userMeets.set([])
         this._getUserMeets(currentUser.id)
     }
 
@@ -1098,7 +891,6 @@ export class DataService {
         const currentUser = this.currentUser()
         if (!currentUser) return
 
-        this.userHistory.set([])
         this.userHistoryRevision.update((revision) => revision + 1)
         this._getUserHistory(currentUser.id)
         this._getUserHistorySummary(currentUser.id)
@@ -1119,52 +911,26 @@ export class DataService {
 
     private _getUserProposals(userId: number) {
         this.failedLoads.delete('proposals')
-        this.userProposalsLoading.set(true)
-        this.userProposalsError.set(false)
-        this.api
-            .getUserProposals(userId)
-            .pipe(
-                takeUntil(this.userChanged),
-                finalize(() => this.userProposalsLoading.set(false)),
-            )
-            .subscribe({
-                next: (proposals) => {
-                    this.userProposals.set(proposals)
-                },
-                error: () => {
-                    this.userProposalsError.set(true)
-                    this.loadFailed(
-                        'proposals',
-                        () => this._getUserProposals(userId),
-                        $localize`:Toast when your game proposals could not be loaded:Error retrieving user’s proposals`,
-                    )
-                },
-            })
+        this.proposals.load(this.api.getUserProposals(userId).pipe(takeUntil(this.userChanged)), {
+            failed: () =>
+                this.loadFailed(
+                    'proposals',
+                    () => this._getUserProposals(userId),
+                    $localize`:Toast when your game proposals could not be loaded:Error retrieving user’s proposals`,
+                ),
+        })
     }
 
     private _getUserProposalStats(userId: number) {
         this.failedLoads.delete('proposalStats')
-        this.userProposalStatsLoading.set(true)
-        this.userProposalStatsError.set(false)
-        this.api
-            .getUserProposalStats(userId)
-            .pipe(
-                takeUntil(this.userChanged),
-                finalize(() => this.userProposalStatsLoading.set(false)),
-            )
-            .subscribe({
-                next: (stats) => {
-                    this.userProposalStats.set(stats)
-                },
-                error: () => {
-                    this.userProposalStatsError.set(true)
-                    this.loadFailed(
-                        'proposalStats',
-                        () => this._getUserProposalStats(userId),
-                        $localize`:Toast when the numbers about your game proposals could not be loaded:Error retrieving user’s proposal stats`,
-                    )
-                },
-            })
+        this.proposalStats.load(this.api.getUserProposalStats(userId).pipe(takeUntil(this.userChanged)), {
+            failed: () =>
+                this.loadFailed(
+                    'proposalStats',
+                    () => this._getUserProposalStats(userId),
+                    $localize`:Toast when the numbers about your game proposals could not be loaded:Error retrieving user’s proposal stats`,
+                ),
+        })
     }
 
     public refreshUserProposals(): void {

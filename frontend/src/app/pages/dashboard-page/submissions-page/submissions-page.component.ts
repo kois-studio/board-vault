@@ -1,10 +1,11 @@
-import { Component, inject, ViewChild } from '@angular/core'
+import { Component, computed, inject, ViewChild } from '@angular/core'
 import type { GameProposalType } from '../../../api/api.types'
 import { ModalGameSubmissionComponent } from '../../../components/modals/modal-game-submission/modal-game-submission.component'
 import { ButtonComponent } from '../../../components/ui/button/button.component'
 import { ContainerWrapperComponent } from '../../../components/ui/container-wrapper/container-wrapper.component'
 import { IconComponent } from '../../../components/ui/icon/icon.component'
 import { PageHeaderComponent } from '../../../components/ui/page-header/page-header.component'
+import { isFirstLoad } from '../../../core/async/resource-state'
 import { formatDateTime } from '../../../core/i18n/format'
 import { DataService } from '../../../core/services/data.service'
 
@@ -21,10 +22,10 @@ export class SubmissionsPageComponent {
     public readonly currentUser$ = this.dataService.currentUser
     public readonly userProposals$ = this.dataService.userProposals
     public readonly userProposalStats$ = this.dataService.userProposalStats
-    public readonly proposalsLoading = this.dataService.userProposalsLoading
-    public readonly proposalsError = this.dataService.userProposalsError
-    public readonly proposalStatsLoading = this.dataService.userProposalStatsLoading
-    public readonly proposalStatsError = this.dataService.userProposalStatsError
+    public readonly proposalsLoading = computed(() => isFirstLoad(this.dataService.userProposalsState()))
+    public readonly proposalsError = computed(() => this.dataService.userProposalsState().status === 'error')
+    public readonly proposalStatsLoading = computed(() => isFirstLoad(this.dataService.userProposalStatsState()))
+    public readonly proposalStatsError = computed(() => this.dataService.userProposalStatsState().status === 'error')
 
     // --------------------------------------------------------------------------
     //        Component props
