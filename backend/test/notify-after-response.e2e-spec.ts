@@ -18,7 +18,7 @@ const testDatabasePath = resolve(__dirname, 'notify-after-response.e2e.sqlite')
 const avatar = `'{"backgroundColor":"#2563EB","iconName":null,"emoji":"😎","type":"emoji","initials":""}'`
 const ana = { Authorization: `Bearer ${sessionFor('user_ana')}` }
 const bruno = { Authorization: `Bearer ${sessionFor('user_bruno')}` }
-/** Where @vercel/functions finds the request's `waitUntil`; set here as the Vercel runtime sets it. */
+/** Where the Vercel runtime puts the request's `waitUntil`; set here as the runtime sets it. */
 const VERCEL_REQUEST_CONTEXT = Symbol.for('@vercel/request-context')
 const contexts = globalThis as Record<symbol, unknown>
 
