@@ -4130,6 +4130,52 @@
       }
     },
     "/dashboard/users/{userId}/groups/{groupId}": {
+      "get": {
+        "deprecated": false,
+        "operationId": "DashboardController_getGroupOfUser",
+        "parameters": [
+          {
+            "name": "userId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "groupId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The group, with its members, their games and reviews",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GroupWithMembersAndGames"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Not this user, or not a member of the group."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get one group of a user with members and games, as in the list of all groups",
+        "tags": [
+          "dashboard"
+        ]
+      },
       "delete": {
         "deprecated": false,
         "operationId": "DashboardController_deleteGroup",

@@ -45,6 +45,19 @@ export class DashboardController {
     }
 
     @UseGuards(UserOwnershipGuard, UserInGroupGuard)
+    @Get('/users/:userId/groups/:groupId')
+    @ApiOperation({ summary: 'Get one group of a user with members and games, as in the list of all groups', deprecated: false })
+    @ApiResponse({ status: 200, type: GroupWithMembersAndGames, description: 'The group, with its members, their games and reviews' })
+    @ApiResponse({ status: 403, description: 'Not this user, or not a member of the group.' })
+    async getGroupOfUser(
+        @Param('userId', ParseIntPipe) _userId: number,
+        @Param('groupId', ParseIntPipe) groupId: number,
+        @RequestLocale() locale: Locale,
+    ) {
+        return this.dashboardService.getGroupOfUser(groupId, locale)
+    }
+
+    @UseGuards(UserOwnershipGuard, UserInGroupGuard)
     @Delete('/users/:userId/groups/:groupId')
     @ApiOperation({ summary: 'Delete a group (owner only)', deprecated: false })
     @ApiResponse({ status: 204, description: 'Group deleted successfully' })

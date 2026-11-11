@@ -1,4 +1,4 @@
-import { BadRequestException, ForbiddenException, Injectable, Logger } from '@nestjs/common'
+import { BadRequestException, ForbiddenException, Injectable, Logger, NotFoundException } from '@nestjs/common'
 
 import { LogFeature } from '../../../common/decorators/logger.decorator.js'
 import { DatabaseService } from '../../common/database/database.service.js'
@@ -50,10 +50,32 @@ export class DashboardService {
     @LogFeature(new Logger('DashboardService'))
     async getGroupsOfUser(userId: number, locale: Locale): Promise<Array<GroupWithMembersAndGames>> {
         const memberships = await this.groupMembershipsService.getGroupMembershipsByAccountId(userId)
+
+        return this.groupsWithMembersAndGames(
+            memberships.map(membership => membership.groupId),
+            locale,
+        )
+    }
+
+    /**
+     * One of the user's groups, shaped like an entry of `getGroupsOfUser`, for a page about that group: a session
+     * page needs its own group, not every group with every member's games and reviews (#258). The route's guards
+     * check that the caller is the user and a member.
+     */
+    @LogFeature(new Logger('DashboardService'))
+    async getGroupOfUser(groupId: number, locale: Locale): Promise<GroupWithMembersAndGames> {
+        const [group] = await this.groupsWithMembersAndGames([groupId], locale)
+
+        if (!group) throw new NotFoundException(`Group with id ${groupId} not found`)
+
+        return group
+    }
+
+    private async groupsWithMembersAndGames(groupIdsOfUser: Array<number>, locale: Locale): Promise<Array<GroupWithMembersAndGames>> {
         const groups = await Promise.all(
-            memberships.map(async membership => ({
-                group: await this.groupsService.getGroupById(membership.groupId),
-                memberships: await this.groupMembershipsService.getGroupMembershipsByGroupId(membership.groupId),
+            groupIdsOfUser.map(async groupId => ({
+                group: await this.groupsService.getGroupById(groupId),
+                memberships: await this.groupMembershipsService.getGroupMembershipsByGroupId(groupId),
             })),
         )
 
