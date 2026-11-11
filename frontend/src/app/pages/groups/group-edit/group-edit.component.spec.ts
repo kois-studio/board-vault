@@ -181,6 +181,59 @@ describe('GroupEditComponent (Manage group)', () => {
         await component.withdrawInvitation(30)
         expect(dataService.removeInvitedFromGroup).toHaveBeenCalledWith(30)
     })
+    it('asks for the group people once per visit, however often your groups and invitations change (#257)', async () => {
+        const { fixture, component, dataService, groupsStatus } = await setup({}, true)
+        const getGroupPeople = vi.mocked(TestBed.inject(Api).getGroupPeople)
+        // Your groups are still loading: nothing to ask for yet.
+        expect(getGroupPeople).not.toHaveBeenCalled()
+
+        const settle = async () => {
+            fixture.detectChanges()
+            await fixture.whenStable()
+        }
+        groupsStatus.set('ready')
+        await settle()
+        expect(getGroupPeople).toHaveBeenCalledTimes(1)
+        expect(getGroupPeople).toHaveBeenCalledWith(7)
+
+        // What happens on the page afterwards: invitations arrive and change, groups reload, a member is removed.
+        dataService.invitationsGroupIndex.set({ 7: [] })
+        await settle()
+        submit(component, 'leo_plays')
+        dataService.invitationsGroupIndex.set({ 7: [{ id: 31, toAccountId: 4, toAccount: { id: 4, username: 'leo_plays' } }] })
+        await settle()
+        groupsStatus.set('refreshing')
+        await settle()
+        groupsStatus.set('ready')
+        dataService.userGroups.set([{ ...group, members: group.members.slice(0, 1) }])
+        await settle()
+
+        expect(getGroupPeople).toHaveBeenCalledTimes(1)
+        expect(component.peopleLoading()).toBe(false)
+        expect(component.claimablePeople()).toHaveLength(2)
+    })
+
+    it('asks for the people once your groups load after failing', async () => {
+        const { fixture, dataService, groupsStatus } = await setup({}, false, { list: [], failed: true })
+        const getGroupPeople = vi.mocked(TestBed.inject(Api).getGroupPeople)
+        expect(getGroupPeople).not.toHaveBeenCalled()
+
+        groupsStatus.set('loading')
+        fixture.detectChanges()
+        dataService.userGroups.set([group])
+        groupsStatus.set('ready')
+        fixture.detectChanges()
+        await fixture.whenStable()
+
+        expect(getGroupPeople).toHaveBeenCalledTimes(1)
+    })
+
+    it('does not ask for the people of a group you do not own', async () => {
+        await setup({}, false, { list: [{ ...group, createdBy: 2 }], failed: false })
+
+        expect(TestBed.inject(Api).getGroupPeople).not.toHaveBeenCalled()
+    })
+
     describe('when the group people cannot be loaded', () => {
         const down = () => throwError(() => new Error('Board Vault could not be reached'))
         type PeopleAnswer = { people: Array<ReturnType<typeof placeholder>> }
@@ -277,52 +330,22 @@ describe('GroupEditComponent (Manage group)', () => {
             expect(component.inviteWaitsForPeople()).toBe(true)
         })
 
-        it('refreshes the people quietly after an invitation, without picking the person again or locking Send', async () => {
-            const { fixture, component, dataService, getGroupPeople, byTestId, sendButton } = await setupWith(
+        it('keeps the people it loaded after an invitation, without asking again or picking the person again (#257)', async () => {
+            const { fixture, component, dataService, getGroupPeople, sendButton } = await setupWith(
                 of({ people: [placeholder(31, 'Ana'), placeholder(32, 'Leo')] }),
                 { person: '32' },
             )
             expect(component.selectedClaimPersonId()).toBe(32)
             submit(component, 'leo_plays')
             await fixture.whenStable()
-            expect(component.selectedClaimPersonId()).toBeNull()
-
             // Sending updates the invitations, which runs the page's effect again.
-            const refreshed = new Subject<PeopleAnswer>()
-            getGroupPeople.mockReturnValue(refreshed)
             dataService.invitationsGroupIndex.set({ 7: [] })
             fixture.detectChanges()
-            expect(getGroupPeople).toHaveBeenCalledTimes(2)
-            expect(sendButton().disabled).toBe(false)
-            expect(byTestId('people-loading')).toBeNull()
 
-            refreshed.next({ people: [placeholder(31, 'Ana'), placeholder(32, 'Leo')] })
-            fixture.detectChanges()
+            expect(getGroupPeople).toHaveBeenCalledTimes(1)
             expect(component.selectedClaimPersonId()).toBeNull()
-        })
-
-        it('keeps the people shown when a quiet refresh fails', async () => {
-            const { fixture, component, dataService, getGroupPeople, byTestId } = await setupWith(of({ people: [placeholder(31, 'Ana')] }))
-            getGroupPeople.mockReturnValue(down())
-            dataService.invitationsGroupIndex.set({ 7: [] })
-            fixture.detectChanges()
-
-            expect(byTestId('people-error')).toBeNull()
-            expect(component.claimablePeople().map(({ person }) => person.displayName)).toEqual(['Ana'])
-        })
-
-        it('applies only the newest answer when loads overlap', async () => {
-            const first = new Subject<PeopleAnswer>()
-            const { fixture, component, dataService, getGroupPeople } = await setupWith(first)
-            getGroupPeople.mockReturnValue(of({ people: [placeholder(32, 'Leo')] }))
-            dataService.invitationsGroupIndex.set({ 7: [] })
-            fixture.detectChanges()
-            expect(getGroupPeople).toHaveBeenCalledTimes(2)
-            expect(component.claimablePeople().map(({ person }) => person.displayName)).toEqual(['Leo'])
-            first.next({ people: [placeholder(31, 'Ana')] })
-            fixture.detectChanges()
-
-            expect(component.claimablePeople().map(({ person }) => person.displayName)).toEqual(['Leo'])
+            expect(component.claimablePeople().map(({ person }) => person.displayName)).toEqual(['Ana', 'Leo'])
+            expect(sendButton().disabled).toBe(false)
         })
 
         it('loads the people once, whatever the answer, rather than again on every change it makes', async () => {
@@ -345,38 +368,41 @@ describe('GroupEditComponent (Manage group)', () => {
             expect(loaded.getGroupPeople).toHaveBeenCalledTimes(1)
         })
 
-        it('does not load the people again when they arrive after an invitation sent while they were missing', async () => {
+        it('does not ask again when an invitation is sent while they are missing: only Retry does', async () => {
             const { fixture, component, dataService, getGroupPeople, byTestId } = await setupWith(down())
-            const later = new Subject<PeopleAnswer>()
-            getGroupPeople.mockReturnValue(later)
             submit(component, 'ana@example.com')
+            submit(component, 'ana_plays')
             await fixture.whenStable()
             dataService.invitationsGroupIndex.set({ 7: [] })
             fixture.detectChanges()
-            expect(getGroupPeople).toHaveBeenCalledTimes(2)
 
-            later.next({ people: [placeholder(31, 'Ana')] })
-            fixture.detectChanges()
-            await fixture.whenStable()
-            expect(byTestId('people-error')).toBeNull()
-            expect(getGroupPeople).toHaveBeenCalledTimes(2)
+            expect(getGroupPeople).toHaveBeenCalledTimes(1)
+            expect(byTestId('people-error')).not.toBeNull()
         })
 
-        it('still says the people are missing when the page runs its effect again before the first answer', async () => {
+        it('waits for the first answer when the page runs its effect again before it arrives', async () => {
             // As the page loads, groups and invitations arrive one after another and each runs the effect again.
             const first = new Subject<PeopleAnswer>()
             const { fixture, dataService, getGroupPeople, byTestId, sendButton } = await setupWith(first, { person: '32' })
-            const again = new Subject<PeopleAnswer>()
-            getGroupPeople.mockReturnValue(again)
             dataService.invitationsGroupIndex.set({ 7: [] })
             fixture.detectChanges()
+            expect(getGroupPeople).toHaveBeenCalledTimes(1)
+            expect(byTestId('people-loading')).not.toBeNull()
             expect(sendButton().disabled).toBe(true)
 
             first.error(new Error('down'))
-            again.error(new Error('down'))
             fixture.detectChanges()
             expect(byTestId('people-error')).not.toBeNull()
             expect(sendButton().disabled).toBe(true)
+        })
+
+        it('stops waiting for the people when you leave the page', async () => {
+            const slow = new Subject<PeopleAnswer>()
+            const { fixture } = await setupWith(slow)
+            expect(slow.observed).toBe(true)
+
+            fixture.destroy()
+            expect(slow.observed).toBe(false)
         })
     })
 })
