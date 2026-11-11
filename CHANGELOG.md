@@ -1,647 +1,211 @@
 # Changelog
 
-Board Vault follows semantic versioning for repository snapshots. The
-application is still a private, invitation-only beta; a public Git repository
-is not the same thing as a hosted product release.
+Board Vault follows semantic versioning for repository snapshots. The hosted
+service at board-vault.com is open to anyone, but this repository does not
+promise production support, a stable public API, or a managed product. A
+version tag marks a state of the code that the owner approved, not a service
+level.
 
 ## Unreleased
 
-Changes after `0.1.0-beta.1` are recorded here until the next owner-approved
-tag. Release notes must describe product boundaries honestly and must not
-include credentials, personal data, provider identifiers, or private
-operational details.
+Changes after `0.1.0` are recorded here until the next owner-approved tag.
+Release notes must describe product boundaries honestly and must not include
+credentials, personal data, provider identifiers, or private operational
+details.
 
-### Added
+## 0.1.0 — 2026-11-11
 
-- Anyone can create a Board Vault account (#157). Sign-in and sign-up no
-  longer describe the app as invite-only or a private beta, and the public
-  pages (landing, privacy, sign-in, sign-up) may appear in search results.
-  If new accounts are paused, the sign-up page says so.
-- Board Vault speaks Spanish, French, German, and Italian as well as
-  English. The language menu in the header lists all five, and an address
-  without a language opens in the one you chose last, or else your browser's.
-- Your language choice is saved on your account: choose it in the language
-  menu or in its own Settings section, Language, and Board Vault opens in it
-  when you sign in on another device.
-- Games now store their titles as editions, one per language. Nothing
-  changes on screen yet.
-- Administration edits a game's editions: a language, a title and a primary
-  mark for each, in any language, instead of the fixed English and Spanish
-  titles. The Games filter finds games with editions but no primary one
-  instead of games without a Spanish title.
-- A game proposal says which language its title is in (the page's language
-  until changed) and can list the game's titles in other languages. Approving
-  it creates those editions, with the proposed title's language as primary.
-- Say which edition you own: adding a game that has several editions asks
-  which one (the page's language preselected, else the original), and the
-  game page shows and changes it. My Games, who brings a game to a night and
-  a person's linked games then show the title on your own box.
-- Game titles in groups, history and recommendations follow the page's
-  language, and a game that only has an edition in another language shows
-  that one.
-- Tag and tag category names in Spanish, French, German, and Italian, edited
-  in Administration → Tags; Browse filters and game pages show them in the
-  page's language.
-- The landing page in Spanish, French, German, and Italian, with links
-  between its languages for search engines. The example games use each
-  language's edition title (Código Secreto, Zug um Zug).
-- Home and the group pages (group, settings, new group, a person of the
-  group, taking over a person, the group's history) in Spanish, French,
-  German, and Italian, with counts that agree in every language.
-- Collection (My Games, Browse and its filters, Reviews, Wishlist, proposing
-  a game, your proposals, recent activity) and the game page in Spanish,
-  French, German, and Italian. Owner names read as a list in each language
-  ("Ana, Luis and Marta"), and a rating of one star says "1 star".
-- Play and game nights (the Play hub, Upcoming, What to play, History,
-  recording a night, planning one, and a night's page) in Spanish, French,
-  German, and Italian. Lists of who voted, played or is interested read as a
-  list in each language ("Ana and Bo"), and players are called people
-  throughout.
-- Settings (Profile, Appearance, Account, Privacy), your page, the avatar
-  editor and the remaining messages in Spanish, French, German, and Italian;
-  only Administration stays in English. Your page's browser tab now reads
-  "Your page" instead of "Page not found".
-- Home always offers recording and planning. With several groups each has a
-  corner pin that appears on hover; pinned groups lead.
-- Recording keeps its group context, offers Today/Yesterday and same-day
-  session suggestions, and can search catalogue games without ownership.
-  Separate plays keep their own players, winners and scores. Completed
-  recordings can be corrected with group history and stale-edit protection.
-- Optional personal rating follow-up reuses existing ratings and suggests
-  only games actually played, as a compact line under each recently played
-  night that can be dismissed. Ownership entry names My Games or a person
-  without an account, independently of saving a session. Those people's
-  pages can search and add games directly.
-- Your page (`/you`), visible only to you: nights, games played and wins
-  across all your groups, your line in each group, the games you play most
-  and your favourites. Open it from your name in the account menu or from
-  Home, whose card no longer points at a single group.
-- The Record flow can start a night live instead, and links to the group's
-  live night when one is already under way.
-- Usage statistics of our own, with no third party and nothing stored in the
-  browser: which pages are opened and from where, which features are used,
-  and two funnels (getting started, game night). Events carry a code instead
-  of the account and are deleted after 30 days; only anonymous daily totals
-  stay. Settings → Privacy turns it off, which also deletes what was kept.
-  Admins see it in Administration → Usage.
-- Every group has a history, "What changed" at the end of its page: who
-  planned, started, finished or cancelled a night, changed who is invited,
-  the shortlist, who brings what, the games played or the results, who
-  answered, who added or changed a group person and their games, and who
-  joined, left or was removed. Nothing in it can be edited; a mistake is
-  fixed by changing it back, and both changes stay. Only members see it.
-- Any member can now edit a group person's games and preferences, not only
-  the owner. Whoever entered a game or preference hears when someone else
-  changes it.
-- A game night is where the group decides what to play. Its games on offer
-  are those of the people coming (invited and not declined), and it shows
-  the best suggestions for them, which change as people answer. Anyone
-  coming can add a suggestion to the shortlist and vote for the games they'd
-  play; the shortlist puts the most wanted first. What to play offers
-  "Add to <next night>" when the group already has one planned.
-- Each shortlisted game on a night says who brings it. Owners who are coming
-  tap "I'll bring it", the organizer can name a friend without an account,
-  and games nobody coming owns are flagged. Home lists what you're bringing.
-- Notifications for game nights: planned, started, finished, and cancelled,
-  plus someone joining your group. Each links to the night or group, and the
-  inbox looks for new ones when you open it or come back to the app.
-- Answer "Can you make it?" straight from Home and Upcoming, which also show
-  your answer on every night you're invited to.
-- A username changed in Clerk reaches Board Vault at once: Settings →
-  Account asks the API to copy it from Clerk (`POST /auth/sync-from-clerk`)
-  instead of waiting for the webhook, and says plainly when another account
-  already has it. It works on a local API too, which never receives
-  webhooks; `docs/how-to/run-with-clerk.md` explains what else that changes.
-- You can delete your account in Settings → Account. It removes your shelf,
-  wishlist, ratings and the rest of your private data, takes you out of your
-  groups, and passes the groups you own to the member who joined first.
-  Game nights you already played keep you, as "Deleted account", so your
-  friends' history stays complete. You confirm by typing your username.
+The public launch. Anyone can now create an account (#157), and the app speaks
+English, Spanish, French, German, and Italian. Board Vault keeps your games,
+plans game nights with your group, and remembers who played what and who won.
 
-### Changed
+Board Vault is not a complete board-game catalogue, a marketplace, a social
+network, or a managed SaaS. It is a small, open source tool for friends who
+play together. This is the first release tag; it covers everything since
+`0.1.0-beta.1`, the earlier development baseline described at the end of this
+file.
 
-- Groups invite people by their username only. The invite field on a group's
-  settings page no longer takes an email address, so Board Vault never stores
-  someone else's email: the email invitation, its secure link and the list of
-  pending email invitations are gone, and so is the sign-up page for
-  invitation links. Someone new creates an account, then shares their
-  username. Inviting someone as a person already in the group still works;
-  only the invited account can claim that person. Requires open registration
-  (#157) before it reaches production (#277).
+### Groups and people
 
-- Administration → Tags shows Edit, Merge and Delete on each tag as icon
-  buttons (pencil, merge, bin) that name the action on hover, and on phones
-  they stay on the right of a long tag name.
-- Home shows every group as its full card, stacked, when there are several:
-  people, the invite nudge, and What to play, Library and History for each,
-  with the last or next night under the name and the pin on the card's
-  corner. Pinned groups still lead.
-- Development and CI use the Node.js 24.22.1 security release; npm 11.19.1
-  stays aligned across local development, CI, and Vercel installs.
-- Names have at most 20 characters, for accounts and for people without one,
-  and the API enforces it. Longer names saved before are shown cut the same
-  way everywhere ("Bartholomew Montgom…"), notifications included. Names stay
-  on one line in cards and lists, so a long one no longer makes its card
-  taller, runs off the screen or covers the Winner box, and avatar initials
-  stay inside their circle.
-- The account menu and the footer show GitHub's mark beside "Source code".
-- Home follows where you are. A new account sees one card to create its
-  first group and a short checklist. With a group, the next game night
-  leads, showing who is going, the shortlist, what you're bringing, and your
-  answer. Your group follows as one card with shortcuts to what to play, its
-  library and its history, or as compact rows sorted by activity when you
-  have several. Creating another group is a small link instead of a large
-  card. On desktop, a card links to your own page in the group.
-- The landing page shows real, well-known games (Catan, Carcassonne, UNO,
-  Ticket to Ride and more) in our own flat cover art instead of made-up
-  ones. The covers under the hero drift past in a slow loop, which stands
-  still with reduced motion.
-- Signed in, the app no longer ends every page with the landing page's
-  footer. On phones the tab bar ends the page; on desktop there is one quiet
-  line. The avatar menu links to the landing page and the source code.
-- Inviting someone takes one field: their username or their email. You no
-  longer need to know first whether they have an account. A person without
-  an account has an "Invite" link on the group page that opens the invite
-  with them chosen, so they take over their history when they join.
-  Removing a member or withdrawing an invitation happens at once after a
-  quick confirmation, instead of waiting for a separate save.
-- The group page is shorter and reads top to bottom: the next night and the
-  group's pulse, recent nights, standings, the library (filter it by number
-  of players), games to buy, and people. Choosing who plays and what to play
-  moved to the game night itself. Members see "Plan a game night" at the
-  top; leaving the group is at the end of People.
-- Anyone coming to a game night can start it, record what was played and
-  who came, and finish it; the organizer or the group owner still decides
-  who is invited and can cancel (ADR-0019). Whoever played a game counts as
-  there. Before, only the organizer could, so a night stayed open when they
-  were away.
-- Group names can be 2 to 40 characters (were 4 to 20), and creating a group
-  takes you straight to inviting people. Planning a night after 19:00
-  starts on tomorrow. Ratings after a night use the same stars as Reviews.
-- The frontend's initial bundle budget is now a warning at 1 MB and an
-  error at 1.25 MB (it was 850 kB and 1 MB), with headroom for features;
-  it stays an alarm for sudden jumps. See the audit how-to.
-- When someone leaves a group, past game nights still list them, as
-  "Name (left)" with a faded avatar, instead of looking like a current
-  member. They come off the group's upcoming nights, and nights they
-  organised pass to the group owner. People who left can't be added to new
-  sessions. Archived people stay in the nights they played, too.
-- Deleting a group removes its game nights first, so it no longer fails on a
-  database that enforces foreign keys once the group has history.
-- Settings are reorganised. **Profile** is how people in your groups see you:
-  avatar, display name, and your username, shown read-only. **Account**
-  replaces Security: it shows your username and email and opens the sign-in
-  panel to change them, your password, and your devices. The sign-in panel no
-  longer offers a photo or a first and last name, which Board Vault never
-  showed. Your username is now the one you sign in with everywhere, and
-  inviting someone by username ignores upper and lower case.
-- Settings → Appearance offers themes besides plum: Felt (card-table green),
-  Harbor (sea blue), and Graphite (grays), each in light and dark, and a
-  text size (Default, Large, Larger) that makes text, buttons, and icons
-  bigger everywhere. Player colours stay the same in every theme. When the
-  device asks for more contrast, muted text and borders get darker. The
-  System/Light/Dark choice is now called "Color scheme".
-- A new landing page, collection first: "Every game you own, on one tidy
-  shelf." Five short rows show adding a game, filtering the shelf (the
-  example chips work), rating and wishing, sharing with a group, and planning
-  a night, all with our own made-up games. The questions say plainly what a
-  group sees (the games you own and your ratings) and what stays private
-  (your wishlist and account). The header and footer drop the private-beta
-  wording and link the FAQ and the source code. The design came from Claude
-  Design; the Spanish copy waits for the app to speak Spanish.
-- The API runs on NestJS 12 and TypeScript 6 as an ES module package, and
-  its tests run on Vitest, like the frontend's.
-- Browse filters the catalogue by number of players, length, and tags (a
-  game must have every chosen tag), can hide the games you own, and sorts
-  A–Z, shortest first, or newest. Filters live in the URL, and on phones they
-  sit behind a Filters button. Title search now also matches Spanish titles.
-- A new logo, "Round": four pieces around a shared square, in plum (pink
-  in dark mode), next to the name in the header and footer. The app can be
-  installed on phones: a web manifest with app icons, an adaptive Android
-  icon, and an iOS home-screen icon.
-- Vercel installs exactly like CI: npm 11.19.1 and no dependency install
-  scripts.
-- The frontend validates API responses with zod 4 (`zod/mini`), which also
-  makes the first download slightly smaller.
-- Public pages paint about twice as fast on phones. Icons ship only the ones
-  the app uses (they pulled in the whole icon set), and Clerk loads after the
-  first paint instead of before it; signed-in pages still wait for it.
-- The session page is redesigned: a date header with the status, your RSVP
-  and the organizer's actions; the games played tonight with their players
-  and winners; the shortlist; and who's coming with attendance alongside.
-- TypeScript is strict in both packages, with unchecked index access and
-  unused locals and parameters reported; the remaining undocumented `any`
-  are typed.
-- Sign-in is Clerk-only (ADR-0012). The legacy password, email-verification,
-  and password-reset flows and their endpoints are removed, and migration 0015
-  drops the credential columns.
-- Local development signs in with `+clerk_test` fixture accounts through the
-  development Clerk instance.
-- Node.js 24 everywhere (`.nvmrc`, `engines`, CI, Vercel).
-- Invitation and game-proposal creation are rate limited per account, and the
-  API sees real client IPs behind Vercel.
-- Swagger UI is served outside production only.
-- Documentation rewritten around onboarding, maps, and how-to guides; work is
-  tracked in GitHub Issues.
-- Frontend unit tests run on Vitest (Karma and Jasmine removed) and now run in
-  CI.
-- Navigation is back to three sections, Home, Collection, and Play. Groups
-  live on Home, History is under Play, and Settings is in the profile menu.
-  Home is redesigned around invitations, the next game nights, your groups,
-  and recently played sessions.
-- Collection and Play pages are redesigned: a new game page (ratings, your
-  copy, owners in each group, play count, similar games), a filterable and
-  sortable My Games grid, a Browse page that lists games before you search,
-  compact upcoming sessions, and shorter group and session pages.
-  `/collection` and `/play` open a hub with a card for each subpage and its
-  count; recent collection activity sits under the Collection cards.
-- New colour palette, "Ciruela": plum primary, Sunglow accent, and lilac or
-  plum-charcoal backgrounds, in light and dark mode. Colours come from theme
-  tokens (`bg-bv-surface`, `text-bv-primary`) instead of Tailwind's palette,
-  secondary buttons are outlined, and avatars use eight player colours that
-  follow the theme (earlier avatar colours map onto them).
-- Collection pages, after a review pass:
-  - The wishlist heart is back on game covers (game page, Browse, and
-    Wishlist). With a mouse it slides open to say "Add to wishlist" or
-    "Remove from wishlist", and every change can be undone from the toast.
-    Browse can now save a game to the wishlist.
-  - Wishlist cards have an "I bought it" button that moves the game to My
-    Games, and an empty wishlist explains how to add games.
-  - The Collection hub cards have colour again: a faint tint per section
-    with a stronger icon tile (plum, green, amber, red).
-  - The (?) next to Recent activity explains what the list records, how
-    long it keeps it, and who sees it. It opens on hover or on a tap.
-  - Reviews lists the games waiting for your rating even before your first
-    rating, shows each game once, and sorts your ratings A–Z, by rating, or
-    by date. Rating a game no longer reloads the whole list.
-  - My Games shows its filters from 12 games and filters by player count
-    instead of sorting by maximum players.
-  - Recent activity updates after changes instead of on the next sign-in.
-- Play pages, after a redesign:
-  - The Play hub cards each have a colour (Upcoming plum, What to play
-    Sunglow, History green, Record a session amber) and match the tabs.
-    "Discover" is now "What to play", and the hub's main button plans a
-    session.
-  - Upcoming separates sessions waiting for results (planned nights that
-    are over but were never completed), live sessions, and planned ones,
-    with "in 6 days" style dates. "Plan a session" goes straight to the
-    group when you only have one.
-  - What to play uses chips for the group, the people coming, the time, and
-    the mood, and updates the suggestions as you change them. Interested
-    and Not for us are thumbs on each suggestion, and the best fit is
-    marked as the top pick.
-  - History is grouped by month, with compact session cards (avatars, games
-    with who played them, "Everyone played"), shows ten sessions at a time,
-    and gives people without an account their initials instead of a blank
-    avatar.
-  - Record a session has three steps instead of seven: who and when, the
-    games with their players, and a note with a summary. Games can be
-    searched, and changing the attendees keeps the games and players
-    already chosen.
-- Suggestion reasons no longer list everyone coming as the owners of a game
-  ("Owned by 1 of 3 selected people (Ana, Bo, Cris)"); they give the count
-  only, as the names were not the owners.
-- Buttons share one component: `appButton` goes on a native `<button>` or
-  `<a>` (replacing the `<app-button>` wrapper and hand-written `app-btn-*`
-  classes), primary buttons are indigo everywhere, and every button shrinks
-  slightly when pressed.
-- Group cards count the group's people without an account and the games
-  they own.
-- The groups overview and history load games, titles, and people in
-  set-based queries (the groups overview went from about 650 queries to 15).
-  Personal and group history load session details in five queries,
-  whatever the number of sessions.
-- Backend queries are split into per-domain classes
-  (`databaseService.groups.getGroupById`, …).
-- The backend deploys with Vercel's NestJS preset instead of the legacy
-  `builds` configuration.
-
-### Fixed
-
-- A change that couldn’t be saved no longer looks saved. Your display name stays open with what you typed and says it wasn’t saved; the avatar editor saves once, on Save, and stays open if it fails; a person’s games and preferences on the group page go back to what is stored, with a note under the game; and a language that couldn’t be saved on your account keeps the page as it was, with Try again or Switch for now.
-- When Board Vault can’t be reached, one notice under the header says so, and that what you see may be out of date, instead of a pile of error messages. It goes away by itself once Board Vault answers, and Try again reloads what failed. Going offline shows it at once.
-- No page waits forever for Board Vault. When it doesn't answer, a page
-  stops trying after a few seconds, tries once more, and then shows its
-  error with Retry. A brief blip no longer shows an error at all. Saving
-  is never repeated behind your back.
-- Opening a focused page (a new group, a new game night, editing a group,
-  claiming a person, proposing a game) while you are signed in shows
-  "Connecting you…", or that Board Vault cannot be reached, instead of a
-  blank page. A link to Administration does the same and opens it once your
-  account is known, instead of a blank page or a request to sign in again.
-- When Board Vault cannot be reached as you open the app signed in, it says
-  so and keeps trying until it answers, then opens the page you asked for.
-  It used to call this a failed sign-in, suggest signing out, or sign you out.
-- French, German, and Italian were reviewed before they are offered: the
-  history line about someone not being sure whether a person has a game
-  named them the wrong way round (Spanish too), player counts and "who was
-  there" no longer default to masculine forms, and wrong words were fixed
-  (unpin, dates, the shortlist). French has its no-break spaces, and
-  Codenames keeps its published Italian title. The game proposal dialog
-  spells Board Vault correctly.
-- The not-found page keeps the header and footer, so there is a way on, and
-  reads as one centred column on any screen instead of leaving an empty
-  column on desktop and a misaligned text on phones. Its button goes to
-  Home once you are signed in.
-- A member shows with the same name and avatar everywhere in a group. Group
-  people, standings, the group's history and notifications showed the name
-  they had when they joined (sometimes their username) after they changed it
-  in Settings → Profile, while the member list and "Owned by" showed the new
-  one. The owner can no longer rename a member through the API, as the app
-  never offered; people without an account are renamed as before.
-- A member changing their own games or preferences reads as such in the
-  group's history and in notifications: "Ana said they have Catan" instead of
-  "Ana said Ana has Catan", in every language.
-- Every page without the navigation bar (create a group, plan a game night,
-  group settings, claim a person, propose a game) starts with the same "Back
-  to …" link above its heading. Plan a game night and Propose a game had no
-  way out but the browser's Back button; Propose a game now goes back to
-  Browse with the same search. Those pages no longer put a second `<main>`
-  inside the layout's.
-- A planned game night whose day has passed with nothing recorded asks for
-  results on its page, as Upcoming does: it shows "Waiting for results" and a
-  Record results button that opens it with its date kept, instead of the
-  "Can you make it?" answers, Start, and Add to calendar.
-- Ratings show out of 5 stars everywhere: the group library and the
-  recommendation reason "Selected-attendee rating" showed the stored score out
-  of 10.
-- Browse cards line up again when a game has a tall cover: the cover box grew
-  to fit the image and pushed the title down.
-- Game titles on Home and the group pages show in the page's language, and
-  a few Spanish, French, German, and Italian texts there read more naturally
-  and without gendered forms.
-- Administration can create and rename tags: the API refused them, asking
-  for a game count that only it can know.
-- Correcting a session no longer lists a removed game as "shortlisted but not
-  played", and on finished nights keeps people taken out as absent instead of
-  erasing their invitation.
-- Planning a game night, recording a past one, and choosing who is coming
-  for suggestions no longer offer someone who left the group. Their group
-  person stays for history, so the list showed them, and planning failed
-  with "the action could not be completed" once they were invited.
-- A notification with a long name without spaces stays inside the inbox
-  instead of widening it with a side scrollbar; group invitations wrap long
-  group and inviter names too.
-- A notification's link closes the inbox, also when it points at the page
-  already open, and marks it read without a "Notification marked as read"
-  toast; a read notification asks the server nothing.
-- A group's game library lists the games of people without an account too,
-  with their names under "Owned by". They already counted in the group's
-  totals and suggestions, but were missing from the list.
-- Display names can be as short as you like: Ana, Pau or Leo no longer
-  become "Player Ana" at sign-up, and Settings → Profile accepts them.
-- Artwork addresses with a made-up hash no longer return the image: they
-  redirect to the current address without reading it, so changing the hash
-  can't skip the CDN to load the database. Old addresses still reach
-  today's image through that redirect.
-- Deleting an account clears the cached views but keeps the rate-limit
-  counters, which share the same Redis; before, each deletion reset
-  everyone's limits. If the cache can't be cleared, the server logs a
-  warning instead of carrying on silently.
-- The older `DELETE /memberships/:accountId/:groupId` leaves a group the way
-  the app does: upcoming nights drop the person, history keeps them, and
-  the owner can't leave their own group.
-- Star ratings were drawn as outlines everywhere: the filled stars got both
-  `fill-none` and a fill colour. They are filled again.
-- Switching group with the group page's selector shows the chosen group;
-  before, the address changed but the page kept the previous one until a
-  reload. An answer for the previous group that arrives late no longer
-  lands on the new one.
-- Clerk's sign-in and account panels open in the theme chosen in
-  Appearance, not the one the page loaded with.
-- A username changed in Clerk is no longer shown in the app before Board
-  Vault has it (an already taken one never would be).
-- The admin game form says why Save is off: a price outside €0–5,000,
-  players or length out of range, or a title over 200 characters, each
-  with its own message.
-- A game without a title shows as "Untitled game" on a person's page in a
-  group, instead of an empty card.
-- The session heading no longer reads the time twice to screen readers.
-- A game's page lists its plays newest first, with every night reachable
-  through "Show all", and shows who played on nights recorded with group
-  people. The group page and group settings count people without an account
-  and their games, as Home does. A game night in progress shows as
-  "Happening now" on Home and Play instead of as the next session, and stays
-  listed until it is finished. Planning a game night for a time that has
-  already passed today is refused with an explanation.
-- The header, footer and landing logo load a 6 KB image instead of 75 KB,
-  and hashed scripts and styles are cached for a year.
-- Signing out clears every account's data, including search results, the
-  open group and the admin badge, and drops answers still on the way, so the
-  next account to sign in on the same browser starts empty.
-- Visiting the catalogue or the admin game search repeatedly no longer
-  stacks a new search listener each time.
-- Joining a group as a new person named you "undefined" and dropped your
-  avatar (the code read rows instead of columns); found by the stricter
-  TypeScript checks.
-- Marking the first game of a live night no longer moves the rest of the
-  shortlist to "not played"; that happens when the night is finished.
-- Marking a game as played in a session with group people no longer fails
-  (the page sent an empty account list the API rejects).
-- Pages update after slow actions again: the session page kept showing
-  "Saving…", and the group settings page could miss the email invitation
-  link, because Angular now checks components only when told (OnPush by
-  default). Invitation cards, the group forms, the game proposal form and
-  the invitation sign-up keep their busy state in signals.
-- Signing in no longer fails at random when the database is slow to answer
-  its first query after a quiet spell: a read that times out is tried once more.
-- A long name without spaces no longer makes the group page wider than a
-  phone screen; it is cut off with an ellipsis in its card.
-- The Collection tabs fit on a phone screen; Wishlist was cut off.
-- Search boxes, filters, and form fields have a background in light mode
-  again (they were see-through after the palette change).
-- Hub card counts say "1 game" and "1 review", and show "Loading…" while
-  loading instead of 0.
-- The game page cover fills its frame.
-
-- The avatar editor (Settings → Account) and the invitations and
-  notifications dialogs in the profile menu open again. They had stopped
-  rendering under Angular 22's default `OnPush` change detection. Saving an
-  avatar now sends one profile update instead of two.
-- Avatar changes save again for icon and emoji avatars with empty initials:
-  the API requires initials only for an initials avatar. The editor no longer
-  shows an unsaved avatar as if it were saved, and a failed profile update
-  shows an accurate error.
-- Approved game proposals without artwork no longer point to a dead
-  third-party placeholder image.
-- Play › History lists the attendees and players of sessions recorded with
-  group people (the session wizard records them that way) instead of
-  "Attendance not recorded". The group page and Home count each person once
-  when a session lists both their account and their group person, and
-  history people include the linked `accountId` and fall back to the
-  account's avatar.
-- Long names without spaces no longer overflow their cards or widen the
-  page on phones. They wrap in attendee pickers, group and session cards, and
-  recommendation explanations, and history's "Played by" line stops at two
-  lines.
-- Long names without spaces no longer widen the group page or the session
-  page on phones (the group People cards made the page 714 px wide at 390 px).
-  Responsive grids now declare a single column on phones (`grid-cols-1`), so
-  a long name or title truncates inside its card instead of stretching it.
-  On Home group cards, member names use the whole row up to the "owned"
-  count instead of stopping at 140 px.
-- Local checks on Windows: `.gitattributes` keeps LF line endings regardless
-  of `core.autocrlf`, and backend e2e cleanup tolerates the SQLite file lock
-  that the native libsql driver holds until the test process exits.
-- The group page section links (Decide, Games to acquire, People, …) and the
-  "Skip to main content" link stay on the current page. Under
-  `<base href="/">` they resolved to `/#section` and reloaded the app on the
-  landing page; they now scroll to the section and move focus to it.
-- "Submit Your First Game" and "Submit New Game" show the game proposal
-  form again. The dialog's Tailwind 3 backdrop was opaque and painted over
-  the form under Tailwind 4.
-- Long session and proposal notes without spaces wrap inside their cards on
-  the group page, the session page, Play › History, My submissions, and the
-  wizard's review step, which also wraps long attendee, group, and game names.
-- Red buttons such as "Delete group" show white text in light mode again;
-  the danger button style had no text colour.
-- "Record a past session" works end to end again. Attendees no longer reset
-  when you move to the Games step, Save session is enabled on the review
-  step, saving a session with group people no longer fails with a 500 (the
-  session service called group queries with the wrong `this` after the
-  DatabaseService split), linked people show their account avatar and
-  username, and Play › History and Home show the new session without a
-  reload.
-- Game ratings add up: a game's "Your groups" average counts each rating once,
-  however many groups you share with its author (it could show more ratings
-  than "Everyone"), and a new rating refreshes the cached averages. Saving the
-  same rating again no longer repeats it in Recent Activity. Title searches
-  read `%` and `_` as plain characters, so `__` or `%%` no longer list the
-  whole catalogue.
-- One notification the API can't read no longer empties the whole inbox:
-  it is left out and the rest show. Game proposal notifications (to
-  admins and proposers) are read again; they never matched the check, so
-  an admin's inbox came back empty. Older notification types still show.
-- A username changed in Clerk that Board Vault doesn't accept (shorter
-  than 4 characters, longer than 40, or with characters other than
-  letters, numbers, `_` and `-`) is no longer copied to the account, which
-  would then fail to load and lock the person out. Settings → Account says
-  so. Two copies racing for the same name answer "taken" instead of an
-  error.
-- A notification's time comes as UTC with its zone, so "x hours ago" is
-  right: a new notification said "2 hours ago" in Spain, and stayed
-  "Just now" for hours in the Americas.
-- Nobody can create their own notifications anymore: the old
-  `POST /notifications` accepted any type and text (even one copying the
-  app's) and could break that person's inbox. Only the API writes them.
-- An inbox answers the latest 100 notifications, newest first, and
-  notifications written at the same time keep their order.
-- Leaving a group removes your notifications about it, whose links led to
-  pages you could no longer open; deleting a group removes everyone's.
-  What others were told about someone who deleted their account ("Ana
-  joined Fridays.") says "Deleted account" instead of their name.
-- "Someone joined" is sent once: accepting a second invitation to a group
-  you are already in no longer tells the whole group again.
-- Public pages no longer wait for Clerk: it loads after the first page has
-  painted, and `/login` and `/register` render without it. With a Clerk key,
-  as in production, Lighthouse performance goes from about 76 to 94–96, and
-  CI now audits with a (fake) key too.
-- Deleting an account revokes the group invitations it sent through Clerk,
-  as ADR-0018 already said for invitations sent: their links stop working
-  instead of signing people up into nothing. An invitation the group no
-  longer honours (its inviter no longer owns the group) is refused before
-  an account is created, so nobody ends up with an account and no group.
-- A group page's "Next game night" is the next one again: a planned night
-  whose date has passed is waiting for results (Play › Upcoming), so it no
-  longer shows as next, the way Home and the group cards already did.
-- A game without a title shows as "Untitled game" in a group's recent
-  sessions and library, the game page, the collection, the wishlist, the
-  ratings and recent activity, instead of a blank name.
-- Counts read right with one: "1 game", "1 vote", "1 win", "1 preference",
-  "Played once"; a game for an exact number of players says "2 players",
-  not "2–2 players". Vote and win counts reach screen readers, and the
-  group page says "from retail prices for 3 of 5 copies".
-- A failed group creation or invitation shows one message, next to the form,
-  instead of the same error again as a toast. Inviting an unknown username or
-  an email with a pending invitation says so.
-- The inbox looks for new notifications and invitations every minute while
-  the page is in view, and always when you open it; before, a new one only
-  appeared after opening it more than a minute after the last look, or
-  coming back to the tab. Screen readers hear when something new arrives.
-- "Mark all read" marks the ones it can when one fails, drops one deleted
-  elsewhere, and says how many failed, instead of marking none.
-- A new game proposal's notification opens that proposal for admins, and a
-  rejected one opens "My proposals", where the reason is.
-- Inbox cards are easier to read and use: read ones keep their contrast
-  (they faded before), unread ones say so to screen readers, and the
-  buttons say which notification they act on.
-- Game nights keep an honest history: starting or finishing a night before
-  its date asks first and moves it to now, and finishing one with no games
-  played asks whether to cancel it instead or finish it anyway.
-- Votes and "I'll bring it" belong to people still coming to a night:
-  declining, being taken off the invite list, or leaving the group (and so
-  deleting the account) drops them, so the shortlist is no longer ordered
-  by people who aren't coming and no game shows as brought by someone who
-  won't be there. Before, declining only dropped the games to bring.
-- Game night notifications (started, finished, cancelled) no longer reach
-  someone who left the group while that night was under way.
-- Similar games on a game's page share its tags, the group catalogue search
-  finds "love letter" for "Love-Letter", and a proposal title of only spaces
-  is refused.
-- The admin "Guessed values" filter is gone. No game in the catalogue still
-  had values guessed by old approvals, and the check flagged games whose
-  reviewed values happened to be 60 min or 2–4 players.
-- Session dates come back in one shape, ISO in UTC: dates stored without a
-  zone (as SQLite writes them) were read in each reader's own time zone, so
-  the same night showed different times on the server and in the browser and
-  mixed shapes sorted wrongly. "Last played" in suggestions now counts the
-  group's nights recorded with group people and leaves out other groups'
-  nights. Game artwork must be an http(s) address, or empty for none.
-- After deleting your account, the app no longer stays half signed in when
-  Clerk can't sign out a user it already removed: no "session expired"
-  over "account deleted", and the header shows Log in again.
-- Group pulse says when the collection's worth is loading or could not be
-  loaded, with a retry, instead of the line for a group with no data. On a
-  person's page, failed game nights no longer hide the collection, and a
-  link opened directly no longer calls the group "Group" while it loads.
-
-### Added
-
-- CI runs Lighthouse on the production build of the landing, sign-in and
-  sign-up pages, keeps the reports, and fails when a score drops below its
-  floor (see `docs/how-to/audit-rendered-pages.md`).
-- Sessions record who won each played game, with optional scores. Ties,
-  co-op wins, and nobody winning are all possible, and results can be
-  corrected after the night is over (API and migration 0016). Anyone in the
-  group marks the winners on the session page; History and the group page
-  show who won.
-- The group page shows standings and stats from finished game nights: wins,
-  games and nights per person, the most played games with when they were last
-  played, and games someone owns that the group has never played
-  (`GET /groups/:groupId/insights`).
-- Proposing a game asks where it should go once approved: your shelf ("I
-  own it"), your wishlist, or neither. Approval adds it there in the same
-  transaction (migration 0017). Admins get a notification for each new
-  proposal and see how many are waiting next to the Admin Panel link; the
-  approval notification links to the new game.
-- Add a planned game night to your calendar from its page: Google Calendar,
-  or an `.ics` file for Apple Calendar, Outlook and others.
-- Turso and Clerk calls time out after 5 seconds with a `503` and a stable
-  error code; the database client closes on shutdown.
-- JSON logs on Vercel with the request id on every line, and an uptime check
-  that opens an `incident` issue while production is not ready.
-- Optional local Redis profile (`docker compose --profile redis up -d`).
-- CI check for documentation links and Node version consistency.
-- Clerk webhooks keep account emails in sync and soft-delete accounts whose
-  Clerk user is deleted (ADR-0013).
-- Rule-by-rule engineering-standards assessment in
-  `docs/project-standards.yml`.
+- Anyone can create an account. Sign-in and sign-up no longer describe the app
+  as invite-only, and the public pages (landing, privacy, sign-in, sign-up) may
+  appear in search results. If new accounts are paused, the sign-up page says so.
+- Groups invite people by username only. Board Vault never stores someone
+  else's email address. Someone new creates an account, then shares their
+  username (#277). Inviting someone as a person already in the group still
+  works, and only the invited account can claim that person.
+- Group names are 2 to 40 characters. Creating a group takes you straight to
+  inviting people.
+- The group page reads top to bottom: the next night and the group's pulse,
+  recent nights, standings, the library (filter it by number of players),
+  games to buy, and people. Leaving the group is at the end of People.
+- Any member can edit a group person's games and preferences. Whoever entered
+  a game or preference hears when someone else changes it.
 - Each person in a group has a page with the games they bring, roughly what
-  their collection is worth, and their game nights; Group pulse shows the
-  group collection's approximate worth and links to everyone. Worth comes
-  from each game's recommended retail price, never from what anyone paid
-  (ADR-0016, migration 0019). Admins set the price when they edit or approve
-  a game, and the catalogue lists games without one. First version by Bruno.
-- Board Vault keeps its own copy of every game's artwork (ADR-0015,
-  migration 0018). An image address an admin enters is downloaded, compressed
-  to WebP and served from `/artwork/…`, cached for a year; admins can also
-  upload a photo. Every existing game's image was checked and copied: the
-  broken ones (Lifeboat, Citadels, Sushi Go!, Virus!, What Do You Meme?,
-  Dune: Imperium – Uprising) have new images from their publishers or a
-  shop, The Grimwood shows the placeholder until a source is found, and the
-  BoardGameGeek copies were replaced. No page loads artwork
-  from another site any more, and the 18 images kept in
-  `frontend/public/images/games` are gone.
+  their collection is worth, and their game nights. Worth comes from each
+  game's recommended retail price, never from what anyone paid (ADR-0016).
+- Every group has a history, "What changed", at the end of its page. It shows
+  who planned, started, finished or cancelled a night, who is invited, the
+  shortlist, who brings what, the results, who joined, left or was removed,
+  and who added or changed a group person. Nothing in it can be edited; a
+  mistake is fixed by changing it back, and both changes stay. Only members
+  see it.
+- The group page shows standings and stats from finished nights: wins, games
+  and nights per person, the most played games, and games someone owns that
+  the group has never played.
+- When someone leaves a group, past nights still list them as "Name (left)".
+  They come off upcoming nights, and nights they organised pass to the group
+  owner. Deleting a group removes its game nights first.
+- A member shows with the same name and avatar everywhere in a group.
+- Home follows where you are. A new account sees one card to create its first
+  group and a short checklist. With a group, the next game night leads,
+  showing who is going, the shortlist, what you are bringing, and your
+  answer. With several groups, each has a card; pinned groups lead.
+- Your page (`/you`), visible only to you, shows nights, games played and wins
+  across all your groups, your line in each group, and the games you play
+  most.
+
+### Game nights
+
+- A game night is where the group decides what to play. The games on offer are
+  those of the people coming. It shows the best suggestions for them, which
+  change as people answer. Anyone coming can add a game to the shortlist and
+  vote for the games they would play; the most wanted come first.
+- Each shortlisted game says who brings it. Owners tap "I'll bring it", the
+  organizer can name a friend without an account, and games nobody coming
+  owns are flagged. Home lists what you are bringing.
+- Anyone coming can start a night, record what was played and who came, and
+  finish it. The organizer or the group owner decides who is invited and can
+  cancel (ADR-0019).
+- Sessions record who won each game, with optional scores. Ties, co-op wins,
+  and nobody winning are all possible, and results can be corrected later.
+- Recording a night keeps its group context, offers Today and Yesterday,
+  suggests same-day sessions, and can start a night live. Completed
+  recordings can be corrected, with protection against stale edits.
+- After a night, an optional line asks for your rating of the games played.
+  It can be dismissed.
+- Answer "Can you make it?" straight from Home and Upcoming.
+- Add a planned night to your calendar: Google Calendar, or an `.ics` file for
+  Apple Calendar, Outlook and others.
+- Notifications for game nights (planned, started, finished, cancelled) and
+  for someone joining your group. The inbox checks for new ones every minute
+  while the page is in view, and when you open it.
+- Starting or finishing a night before its date asks first. Finishing one with
+  no games asks whether to cancel it instead. Votes and "I'll bring it"
+  belong to people still coming.
+- Play has Upcoming, What to play, History, and Record. History is grouped
+  by month, and recording a night takes three steps.
+
+### Collection and games
+
+- My Games, a Browse page, Reviews, and Wishlist. Browse filters the
+  catalogue by number of players, length, and tags, can hide games you own,
+  and sorts A-Z, shortest first, or newest. Filters live in the URL.
+- A game page shows ratings, your copy, owners in each group, play count,
+  and similar games. Ratings show out of 5 stars everywhere.
+- The wishlist heart sits on game covers, every change can be undone from the
+  toast, and wishlist cards have an "I bought it" button.
+- Proposing a game asks where it should go once approved: your shelf, your
+  wishlist, or neither. Admins are notified of new proposals; a rejected
+  proposal opens "My proposals", where the reason is.
+- Say which edition you own. Games store their titles as editions, one per
+  language, and titles in groups, history and recommendations follow the
+  page's language. Administration edits editions and their tags.
+- Board Vault keeps its own copy of every game's artwork (ADR-0015). An
+  image address an admin enters is downloaded, compressed to WebP and served
+  from `/artwork/…`. No page loads artwork from another site.
+- Administration → Usage shows anonymous usage statistics to admins.
+
+### Languages
+
+- English, Spanish, French, German, and Italian. The language menu in the
+  header lists all five. An address without a language opens in the one you
+  chose last, or else your browser's.
+- Your choice is saved on your account, so Board Vault opens in it on another
+  device.
+- Everything people use is translated: the landing page, Home, groups,
+  collection, game pages, Play and game nights, Settings, and notifications.
+  Only Administration stays in English. Names and counts read naturally in
+  each language ("Ana, Luis and Marta", "1 star").
+- French, German, and Italian were reviewed before they were offered.
+
+### Accounts and privacy
+
+- Sign-in is handled by Clerk only (ADR-0012). The older password flows are
+  gone. A username changed in Clerk reaches Board Vault at once, and Settings
+  → Account says plainly when another account already has it (ADR-0017).
+- You can delete your account in Settings → Account (ADR-0018). It removes
+  your shelf, wishlist, ratings and the rest of your private data, takes you
+  out of your groups, and passes groups you own to the member who joined
+  first. Nights you already played keep you as "Deleted account", so your
+  friends' history stays complete.
+- Usage statistics are our own, with no third party and nothing stored in the
+  browser: which pages are opened, which features are used, and two funnels.
+  Events carry a code instead of the account and are deleted after 30 days;
+  only anonymous daily totals stay. Settings → Privacy turns it off and
+  deletes what was kept (ADR-0021).
+- Names have at most 20 characters, and the API enforces it.
+- Nobody can create their own notifications. Leaving a group removes your
+  notifications about it.
+- Signing out clears every account's data from the browser.
+
+### Look and feel
+
+- A new logo, "Round", and a plum palette, "Ciruela", in light and dark mode.
+  Settings → Appearance adds the themes Felt, Harbor, and Graphite, and a text
+  size (Default, Large, Larger). More contrast is used when the device asks.
+- The app can be installed on phones, with app icons.
+- A new landing page, collection first, with real, well-known games shown in
+  our own flat cover art. It says plainly what a group sees (the games you
+  own and your ratings) and what stays private (your wishlist and account).
+- Navigation has three sections: Home, Collection, and Play. Settings is in
+  the profile menu.
+- Settings has Profile (how people in your groups see you), Account (username,
+  email, password, devices), Appearance, Language, and Privacy.
+
+### Reliability and speed
+
+- Pages stop waiting after a few seconds, try once more, and then show an
+  error with Retry. Saving is never repeated behind your back.
+- When Board Vault cannot be reached, one notice says so and goes away once it
+  answers. Opening the app signed in during an outage no longer looks like a
+  failed sign-in.
+- A change that could not be saved no longer looks saved.
+- Public pages paint about twice as fast on phones. Clerk loads after the first
+  paint, icons ship only the ones used, and Lighthouse scores in CI went from
+  about 76 to 94-96. Hashed scripts and styles are cached for a year.
+- History pages its nights instead of loading them all, and the game-night
+  list is bounded (#252). Notifications go out after the answer, and cold
+  starts do less work (#253, #254). Hot queries have the indexes they
+  needed, and a session's account is remembered for a minute (#249, #250).
+- The groups overview went from about 650 database queries to 15, and history
+  loads in a fixed number of queries whatever the number of sessions.
+- The API times out slow database and sign-in calls after 5 seconds with a
+  stable error code, retries a read that timed out once, and writes JSON logs
+  with a request id. An uptime check opens an `incident` issue while
+  production is not ready.
+- Invitation and game-proposal creation are rate limited per account.
+- Dates come back in one shape, ISO in UTC, so the same night shows the same
+  time everywhere.
+- Many layout, accessibility, and wording fixes: long names stay inside
+  cards, counts read right with one, and screen readers hear new
+  notifications.
+
+### For contributors
+
+- The API runs on NestJS 12 and TypeScript 6 as an ES module package. Tests
+  run on Vitest in both packages, and the frontend's now run in CI.
+- Node.js 24 and npm 11 are used everywhere (`.nvmrc`, `engines`, CI, Vercel).
+- TypeScript is strict in both packages. The frontend validates API
+  responses with zod 4.
+- Local development signs in with `+clerk_test` fixture accounts through a
+  development Clerk instance. An optional local Redis profile is available.
+- CI checks documentation links, Node version consistency, and Lighthouse
+  scores for the landing, sign-in and sign-up pages.
+- Documentation was rewritten around onboarding, maps, and how-to guides.
+  Work is tracked in GitHub Issues. `docs/project-standards.yml` assesses the
+  engineering standards rule by rule.
+- Local checks work on Windows. Swagger UI is served outside production only.
 
 ## 0.1.0-beta.1 — public development baseline
 
