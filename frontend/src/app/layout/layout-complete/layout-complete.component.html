@@ -1,13 +1,13 @@
 <app-layout-header />
 
-@if (isAuthenticated()) {
+@if (showsAppFrame()) {
 <app-layout-section-tabs />
 }
 
 <app-connectivity-banner />
 
 @if (isClerkAuthHandoffActive()) {
-<app-auth-handoff />
+<app-account-pending />
 } @else {
 <main id="main-content" tabindex="-1" class="outline-none">
     @if (isAuthenticated()) {
@@ -19,6 +19,6 @@
 
 <app-layout-footer />
 
-@if (isAuthenticated()) {
+@if (showsAppFrame()) {
 <app-layout-bottom-tabs />
 }

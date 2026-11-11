@@ -4,6 +4,7 @@ import { CanActivateFn, Router, UrlTree } from '@angular/router'
 import { from, Observable, of } from 'rxjs'
 import { switchMap } from 'rxjs/operators'
 import { ToastService } from '../../components/toast/toast.service'
+import { AccountPendingService } from '../services/account-pending.service'
 import { ClerkService } from '../services/clerk.service'
 import { LogService } from '../services/log.service'
 import { LoginService } from '../services/login.service'
@@ -12,7 +13,7 @@ import { LoginService } from '../services/login.service'
 const accessDenied = () =>
     $localize`:Toast when someone who isn't an operator opens an Administration address:Access Denied: You do not have permission to view this page.`
 
-export const AdminGuard: CanActivateFn = (_route, state): Observable<boolean | UrlTree> | boolean => {
+export const AdminGuard: CanActivateFn = (route, state): Observable<boolean | UrlTree> | boolean => {
     const loginService = inject(LoginService)
     const clerkService = inject(ClerkService)
     const router = inject(Router)
@@ -34,6 +35,8 @@ export const AdminGuard: CanActivateFn = (_route, state): Observable<boolean | U
     // 1. Already authenticated in this session
     if (loginService.isAuthenticated()) return decideForKnownAccount()
 
+    // Opened directly: the app's frame shows instead of a blank page while Clerk loads (#259).
+    inject(AccountPendingService).showBootFrameWhileWaiting(route)
     return from(clerkService.whenLoaded()).pipe(
         switchMap((): Observable<boolean | UrlTree> => {
             if (loginService.isAuthenticated()) return of(decideForKnownAccount())

@@ -1,15 +1,14 @@
 import { Component, computed, DOCUMENT, effect, HostListener, inject, signal } from '@angular/core'
-import { toSignal } from '@angular/core/rxjs-interop'
-import { NavigationEnd, Router, RouterLink } from '@angular/router'
-import { filter, map } from 'rxjs/operators'
+import { Router, RouterLink } from '@angular/router'
 import { environment } from '../../../environments/environment'
 import { ButtonComponent } from '../../components/ui/button/button.component'
 import { IconComponent } from '../../components/ui/icon/icon.component'
 import { LogoComponent } from '../../components/ui/logo/logo.component'
+import { AccountPendingService } from '../../core/services/account-pending.service'
 import { ClerkService } from '../../core/services/clerk.service'
 import { LoginService } from '../../core/services/login.service'
 import { PendingProposalsService } from '../../core/services/pending-proposals.service'
-import { APP_SECTIONS, activeSectionFor } from '../app-sections'
+import { APP_SECTIONS, activeSectionFor, shownUrl } from '../app-sections'
 import { InboxComponent } from '../inbox/inbox.component'
 import { LanguageMenuComponent, languageMenuLocales } from '../language-menu/language-menu.component'
 import { ProfileMenuComponent } from '../profile-menu/profile-menu.component'
@@ -30,6 +29,8 @@ export class LayoutHeaderComponent {
     private readonly router = inject(Router)
 
     public readonly isAuthenticated = this.loginService.isAuthenticated
+    /** Signed in, or the account is still being confirmed: the app's section links, not the landing page's. */
+    public readonly showsAppFrame = inject(AccountPendingService).showsAppFrame
     public readonly isCurrentUserAdmin = this.loginService.isCurrentUserAdmin
     public readonly clerkIsAvailable = this.clerkService.isAvailable
     public readonly selfRegistrationEnabled = this.clerkService.isSelfRegistrationEnabled
@@ -39,13 +40,7 @@ export class LayoutHeaderComponent {
     public readonly languages = languageMenuLocales(inject(DOCUMENT).location.pathname, environment.previewLocales)
 
     public readonly sections = APP_SECTIONS
-    private readonly url = toSignal(
-        this.router.events.pipe(
-            filter((event) => event instanceof NavigationEnd),
-            map((event) => event.urlAfterRedirects),
-        ),
-        { initialValue: this.router.url },
-    )
+    private readonly url = shownUrl(this.router)
     public readonly activeSection = computed(() => activeSectionFor(this.url()))
 
     constructor() {

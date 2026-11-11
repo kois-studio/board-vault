@@ -3,6 +3,7 @@ import { TestBed } from '@angular/core/testing'
 import { ActivatedRouteSnapshot, Router, RouterStateSnapshot, UrlTree } from '@angular/router'
 import { firstValueFrom, isObservable, Observable, of } from 'rxjs'
 import { ToastService } from '../../components/toast/toast.service'
+import { AccountPendingService } from '../services/account-pending.service'
 import { ClerkService } from '../services/clerk.service'
 import { LogService } from '../services/log.service'
 import { LoginService } from '../services/login.service'
@@ -24,6 +25,7 @@ describe('AdminGuard', () => {
         TestBed.configureTestingModule({
             providers: [
                 { provide: LoginService, useValue: loginService },
+                { provide: AccountPendingService, useValue: { showBootFrameWhileWaiting: vi.fn() } },
                 {
                     provide: ClerkService,
                     useValue: {

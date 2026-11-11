@@ -6,6 +6,7 @@ import { firstValueFrom, Observable, of, Subject } from 'rxjs'
 import { routes } from '../../app.routes'
 import { LayoutBasicComponent } from '../../layout/layout-basic/layout-basic.component'
 
+import { AccountPendingService, FOCUSED_LAYOUT } from '../services/account-pending.service'
 import { ClerkService } from '../services/clerk.service'
 import { LoginService } from '../services/login.service'
 import { AuthOnlyGuard, SHOWS_AUTH_HANDOFF } from './auth.guard'
@@ -24,9 +25,11 @@ describe('AuthOnlyGuard', () => {
             isAuthenticated: signal(options.authenticated),
             verifySession: vi.fn().mockName('verifySession').mockReturnValue(options.verification),
         }
+        const accountPending = { showBootFrameWhileWaiting: vi.fn() }
         TestBed.configureTestingModule({
             providers: [
                 { provide: LoginService, useValue: loginService },
+                { provide: AccountPendingService, useValue: accountPending },
                 {
                     provide: ClerkService,
                     useValue: { isSignedIn: signal(options.signedIn), whenLoaded: () => options.clerkLoaded ?? Promise.resolve() },
@@ -42,7 +45,7 @@ describe('AuthOnlyGuard', () => {
             AuthOnlyGuard(route as unknown as ActivatedRouteSnapshot, {} as RouterStateSnapshot),
         ) as Observable<boolean | UrlTree>
 
-        return { loginService, result }
+        return { loginService, accountPending, route, result }
     }
 
     it('allows an authenticated user without verifying again', async () => {
@@ -50,6 +53,21 @@ describe('AuthOnlyGuard', () => {
 
         expect(await firstValueFrom(result)).toBe(true)
         expect(loginService.verifySession).not.toHaveBeenCalled()
+    })
+
+    it('shows the app frame while it waits, instead of a blank page (#259)', () => {
+        const waiting = run({
+            authenticated: false,
+            signedIn: false,
+            handoffLayout: true,
+            verification: of(true),
+            clerkLoaded: new Promise(() => {}),
+        })
+        expect(waiting.accountPending.showBootFrameWhileWaiting).toHaveBeenCalledWith(waiting.route)
+
+        TestBed.resetTestingModule()
+        const known = run({ authenticated: true, signedIn: true, handoffLayout: true, verification: of(true) })
+        expect(known.accountPending.showBootFrameWhileWaiting).not.toHaveBeenCalled()
     })
 
     it('lets a signed-in user reach a handoff layout while verification is pending', async () => {
@@ -141,6 +159,9 @@ describe('Pages behind AuthOnlyGuard', () => {
         const focused = routes.find((route) => route.component === LayoutBasicComponent)
 
         expect(focused?.data?.[SHOWS_AUTH_HANDOFF]).toBe(true)
+        // Its boot frame is the skeleton alone, without the app's header (#259).
+        expect(focused?.data?.[FOCUSED_LAYOUT]).toBe(true)
+        expect(routes.filter((route) => route.component !== LayoutBasicComponent).some((route) => route.data?.[FOCUSED_LAYOUT])).toBe(false)
         expect(focused?.children?.map((route) => route.path)).toEqual(
             expect.arrayContaining([
                 'create-group',

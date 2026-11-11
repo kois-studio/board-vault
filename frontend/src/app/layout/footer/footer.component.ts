@@ -4,7 +4,7 @@ import { GithubMarkComponent } from '../../components/ui/github-mark/github-mark
 import { LogoComponent } from '../../components/ui/logo/logo.component'
 import { ThemeSwitchComponent } from '../../components/ui/theme-switch/theme-switch.component'
 import { CONTACT_EMAIL, contactMailto } from '../../core/contact'
-import { LoginService } from '../../core/services/login.service'
+import { AccountPendingService } from '../../core/services/account-pending.service'
 
 @Component({
     selector: 'app-layout-footer',
@@ -12,7 +12,8 @@ import { LoginService } from '../../core/services/login.service'
     templateUrl: './footer.component.html',
 })
 export class LayoutFooterComponent {
-    public readonly isAuthenticated = inject(LoginService).isAuthenticated
+    /** The app's one quiet line once signed in, or while the account is confirmed (#259); the full footer otherwise. */
+    public readonly showsAppFrame = inject(AccountPendingService).showsAppFrame
     public date = new Date().getFullYear().toString()
     protected readonly contactEmail = CONTACT_EMAIL
     protected readonly contactLink = contactMailto(

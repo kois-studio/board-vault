@@ -2,6 +2,7 @@ import { Routes } from '@angular/router'
 import { AdminGuard } from './core/guards/admin.guard'
 import { AuthOnlyGuard, SHOWS_AUTH_HANDOFF } from './core/guards/auth.guard'
 import { GuestOnlyGuard } from './core/guards/auth-redirect.guard'
+import { FOCUSED_LAYOUT } from './core/services/account-pending.service'
 import { LayoutBasicComponent } from './layout/layout-basic/layout-basic.component'
 import { LayoutCompleteComponent } from './layout/layout-complete/layout-complete.component'
 import { LandingComponent } from './pages/landing/landing.component'
@@ -216,7 +217,7 @@ export const routes: Routes = [
         path: '',
         component: LayoutBasicComponent,
         // Focused pages show the same handoff screen while the account is resolved, never a blank page (#239).
-        data: { [SHOWS_AUTH_HANDOFF]: true },
+        data: { [SHOWS_AUTH_HANDOFF]: true, [FOCUSED_LAYOUT]: true },
         children: [
             // accessible to authenticated users
             {
