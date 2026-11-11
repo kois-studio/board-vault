@@ -1,6 +1,7 @@
 import { ResultSet } from '@libsql/client'
 import { Injectable, Logger } from '@nestjs/common'
 
+import { cacheKeys } from '../../common/cache/cache-keys.js'
 import { CacheService } from '../../common/cache/cache.service.js'
 import { DatabaseService } from '../../common/database/database.service.js'
 
@@ -15,7 +16,6 @@ import type { GameTitleFields } from '../../../common/utils/game-title.js'
 @Injectable()
 export class GameTranslationService {
     private readonly LOGGER: Logger = new Logger(this.constructor.name)
-    private readonly CACHE_KEY = 'game-translation'
 
     constructor(
         private readonly databaseService: DatabaseService,
@@ -111,7 +111,7 @@ export class GameTranslationService {
         this.LOGGER.log('Getting translations for game')
 
         // Step 1: Try to get them from cache
-        const cachedGameTranslations = await this.cacheService.get(`${this.CACHE_KEY}:byGameId:${gameId}`)
+        const cachedGameTranslations = await this.cacheService.get(cacheKeys.gameTranslations(gameId))
 
         if (cachedGameTranslations) {
             this.LOGGER.log('Returning cached game translations')
@@ -125,7 +125,7 @@ export class GameTranslationService {
         const gameTranslations = this._parseResultSet(resultSet)
 
         // Step 3: Save them to cache
-        await this.cacheService.set(`${this.CACHE_KEY}:byGameId:${gameId}`, gameTranslations)
+        await this.cacheService.set(cacheKeys.gameTranslations(gameId), gameTranslations)
 
         return this._reduceGameTranslations(gameTranslations)
     }
@@ -138,7 +138,7 @@ export class GameTranslationService {
         await this.databaseService.games.createGameTranslation(gameId, languageCode, title, normalizedTitle)
 
         // Step 4: Invalidate cache
-        await this.cacheService.deleteOne(`${this.CACHE_KEY}:byGameId:${gameId}`)
+        await this.cacheService.deleteOne(cacheKeys.gameTranslations(gameId))
 
         return { success: true }
     }
@@ -151,7 +151,7 @@ export class GameTranslationService {
         await this.databaseService.games.upsertGameTranslation(gameId, languageCode, title, normalizedTitle)
 
         // Step 4: Invalidate cache
-        await this.cacheService.deleteOne(`${this.CACHE_KEY}:byGameId:${gameId}`)
+        await this.cacheService.deleteOne(cacheKeys.gameTranslations(gameId))
 
         return { success: true }
     }

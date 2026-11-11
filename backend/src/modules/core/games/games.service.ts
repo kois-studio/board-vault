@@ -6,6 +6,7 @@ import { safeErrorName } from '../../../common/logging/structured-log.js'
 import { gamesSchema } from '../../../common/schemas/index.js'
 import { GameDto } from '../../../common/types/game.type.js'
 import { CatalogueTagDto } from '../../../common/types/tag.type.js'
+import { cacheKeys } from '../../common/cache/cache-keys.js'
 import { CacheService } from '../../common/cache/cache.service.js'
 import { DatabaseService } from '../../common/database/database.service.js'
 
@@ -16,7 +17,6 @@ import type { CatalogueFilters } from '../../common/database/queries/games.queri
 @Injectable()
 export class GamesService {
     private readonly LOGGER: Logger = new Logger(this.constructor.name)
-    private readonly CACHE_KEY = 'games'
 
     constructor(
         private readonly databaseService: DatabaseService,
@@ -92,7 +92,7 @@ export class GamesService {
         this.LOGGER.log('Getting game by id')
 
         // Step 1: Try to get them from cache
-        const cachedGame = await this.cacheService.get(`${this.CACHE_KEY}:byId:${id}`)
+        const cachedGame = await this.cacheService.get(cacheKeys.gameById(id))
 
         if (cachedGame) {
             this.LOGGER.log('Returning cached game')
@@ -112,7 +112,7 @@ export class GamesService {
         }
 
         // Step 3: Save them to cache
-        await this.cacheService.set(`${this.CACHE_KEY}:byId:${id}`, game)
+        await this.cacheService.set(cacheKeys.gameById(id), game)
         return game
     }
 

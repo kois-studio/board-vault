@@ -143,6 +143,11 @@ read results and the rate-limit counters, through
 - **Keys:** `<area>:<selector>:<id>`, for example `games:byId:12` or
   `reviews:avgGlobalRating:12`. Rate limits use `rate-limit:…` keys that
   expire with their window.
+- **Shared keys:** a key that one service caches and another invalidates is
+  built in [`cache-keys.ts`](../backend/src/modules/common/cache/cache-keys.ts),
+  never written by hand. A write must clear every key built from what it
+  changes: sending or deleting a proposal clears its author's
+  `user-proposal-stats`, as reviewing one does (#295).
 - **Values:** JSON, serialized by the Upstash client.
 - **TTL:** every entry expires: `minute` 1 minute (the admin overview,
   `admin:overview`), `short` 1 hour (collections, reviews, wishlist),

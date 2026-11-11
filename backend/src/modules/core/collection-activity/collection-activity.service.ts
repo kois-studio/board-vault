@@ -3,13 +3,13 @@ import { BadRequestException, Injectable, Logger } from '@nestjs/common'
 
 import { collectionActivitiesSchema } from '../../../common/schemas/db-collection-activity.schema.js'
 import { CollectionActivityDto } from '../../../common/types/collection-activity.type.js'
+import { cacheKeys } from '../../common/cache/cache-keys.js'
 import { CacheService } from '../../common/cache/cache.service.js'
 import { DatabaseService } from '../../common/database/database.service.js'
 
 @Injectable()
 export class CollectionActivityService {
     private readonly LOGGER: Logger = new Logger(this.constructor.name)
-    private readonly CACHE_KEY = 'collection-activity'
 
     constructor(
         private readonly databaseService: DatabaseService,
@@ -44,7 +44,7 @@ export class CollectionActivityService {
         this.LOGGER.log('Getting collection activities for account')
 
         // Step 1: Try to get them from cache
-        const cachedCollectionActivities = await this.cacheService.get(`${this.CACHE_KEY}:byAccountId:${accountId}`)
+        const cachedCollectionActivities = await this.cacheService.get(cacheKeys.collectionActivity(accountId))
 
         if (cachedCollectionActivities) {
             this.LOGGER.log('Returning cached collection activities')
@@ -56,7 +56,7 @@ export class CollectionActivityService {
         const collectionActivities = this._parseResultSet(resultSet)
 
         // Step 3: Save them to cache
-        await this.cacheService.set(`${this.CACHE_KEY}:byAccountId:${accountId}`, collectionActivities)
+        await this.cacheService.set(cacheKeys.collectionActivity(accountId), collectionActivities)
 
         return collectionActivities
     }
@@ -105,6 +105,6 @@ export class CollectionActivityService {
     }
 
     async invalidateForAccount(accountId: number): Promise<void> {
-        await this.cacheService.deleteOne(`${this.CACHE_KEY}:byAccountId:${accountId}`)
+        await this.cacheService.deleteOne(cacheKeys.collectionActivity(accountId))
     }
 }

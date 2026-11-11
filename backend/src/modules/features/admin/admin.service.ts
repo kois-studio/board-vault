@@ -30,6 +30,7 @@ import { ActivityNotifier } from '../../../modules/core/notifications/activity-n
 import { NotificationTypeEnum } from '../../../modules/core/notifications/notifications-enum.type.js'
 import { TagCategoryService } from '../../../modules/core/tag-category/tag-category.service.js'
 import { TagsService } from '../../../modules/core/tags/tags.service.js'
+import { cacheKeys } from '../../common/cache/cache-keys.js'
 import { CacheService } from '../../common/cache/cache.service.js'
 import { DatabaseService } from '../../common/database/database.service.js'
 
@@ -262,9 +263,9 @@ export class AdminService {
         })
 
         await Promise.all([
-            this.cacheService.deleteOne(`games:byId:${gameId}`),
-            this.cacheService.deleteOne(`game-translation:byGameId:${gameId}`),
-            this.cacheService.deleteOne(`game-tags:byGameId:${gameId}`),
+            this.cacheService.deleteOne(cacheKeys.gameById(gameId)),
+            this.cacheService.deleteOne(cacheKeys.gameTranslations(gameId)),
+            this.cacheService.deleteOne(cacheKeys.gameTags(gameId)),
         ])
 
         // Field names only: no titles or URLs in logs.
@@ -288,7 +289,7 @@ export class AdminService {
         const artwork = await this.artworkService.copyFromUpload(bytes)
 
         await this.databaseService.artwork.setGameArtwork(gameId, artwork)
-        await this.cacheService.deleteOne(`games:byId:${gameId}`)
+        await this.cacheService.deleteOne(cacheKeys.gameById(gameId))
         this.LOGGER.log(structuredLog('admin.game.updated', { adminId, gameId, fields: ['artwork'] }))
 
         return this.getAdminGame(gameId)
@@ -539,9 +540,9 @@ export class AdminService {
         })
 
         await Promise.all([
-            this.cacheService.deleteOne(`user-proposal-stats:${proposal.submittedBy}`),
+            this.cacheService.deleteOne(cacheKeys.proposalStats(proposal.submittedBy)),
             // The approval may have put the game on the proposer's shelf or wishlist.
-            this.cacheService.deleteOne(`collection-activity:byAccountId:${proposal.submittedBy}`),
+            this.cacheService.deleteOne(cacheKeys.collectionActivity(proposal.submittedBy)),
         ])
         // The proposer's groups hear about a game that went onto their shelf, as when they add one.
         if (addedToShelfOf) await this.activityNotifier.shelfChanged(addedToShelfOf, { added: [createdGameId] })
@@ -570,7 +571,7 @@ export class AdminService {
             },
         })
 
-        await this.cacheService.deleteOne(`user-proposal-stats:${proposal.submittedBy}`)
+        await this.cacheService.deleteOne(cacheKeys.proposalStats(proposal.submittedBy))
 
         return { success: true }
     }
@@ -608,7 +609,7 @@ export class AdminService {
             },
         })
 
-        await this.cacheService.deleteOne(`user-proposal-stats:${proposal.submittedBy}`)
+        await this.cacheService.deleteOne(cacheKeys.proposalStats(proposal.submittedBy))
 
         return { success: true }
     }

@@ -54,8 +54,6 @@ describe('DashboardService group history', () => {
             { withTitles: vi.fn(async (games: Array<unknown>) => games) } as never,
             meetAccountGames as never,
             {} as never,
-            {} as never,
-            {} as never,
         )
 
         await expect(service.getGroupMeetings(1, 7, 'es')).resolves.toHaveLength(1)
@@ -71,8 +69,6 @@ describe('DashboardService group creation', () => {
         const service = new DashboardService(
             {} as never,
             fakeDatabase(database),
-            {} as never,
-            {} as never,
             {} as never,
             {} as never,
             {} as never,
@@ -134,8 +130,6 @@ describe('DashboardService groups overview', () => {
             translations as never,
             {} as never,
             {} as never,
-            {} as never,
-            {} as never,
         )
 
         const groups = await service.getGroupsOfUser(1, 'es')
@@ -170,8 +164,6 @@ describe('DashboardService leaving and removing', () => {
             {} as never,
             fakeDatabase({ leaveGroup }),
             groups as never,
-            {} as never,
-            {} as never,
             {} as never,
             {} as never,
             {} as never,

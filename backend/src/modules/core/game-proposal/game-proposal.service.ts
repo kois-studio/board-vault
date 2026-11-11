@@ -3,6 +3,7 @@ import { Injectable, Logger, NotFoundException } from '@nestjs/common'
 
 import { requireEditionLanguage, validateOtherTitles } from '../../../common/i18n/edition-language.js'
 import { gameProposalsSchema } from '../../../common/schemas/db-game-proposal.schema.js'
+import { cacheKeys } from '../../common/cache/cache-keys.js'
 import { CacheService } from '../../common/cache/cache.service.js'
 import { DatabaseService } from '../../common/database/database.service.js'
 import { NotificationTypeEnum } from '../notifications/notifications-enum.type.js'
@@ -148,6 +149,9 @@ export class GameProposalService {
             },
         })
 
+        // The submissions page reads the counts again right after this; they must include it (#295).
+        await this.cacheService.deleteOne(cacheKeys.proposalStats(submittedBy))
+
         return this.getGameProposalById(proposalId)
     }
 
@@ -168,7 +172,11 @@ export class GameProposalService {
     async deleteGameProposalById(id: number): Promise<{ success: boolean }> {
         this.LOGGER.log('Deleting game proposal')
 
+        // Read first: whose counts change. A proposal that is already gone is still a success.
+        const [proposal] = this._parseResultSet(await this.databaseService.games.getGameProposalById(id))
+
         await this.databaseService.games.deleteGameProposalById(id)
+        if (proposal) await this.cacheService.deleteOne(cacheKeys.proposalStats(proposal.submittedBy))
 
         return { success: true }
     }
@@ -187,7 +195,7 @@ export class GameProposalService {
         )
 
         // Clear user proposal stats cache
-        await this.cacheService.deleteOne(`user-proposal-stats:${proposal.submittedBy}`)
+        await this.cacheService.deleteOne(cacheKeys.proposalStats(proposal.submittedBy))
 
         return proposal
     }
@@ -205,7 +213,7 @@ export class GameProposalService {
         )
 
         // Clear user proposal stats cache
-        await this.cacheService.deleteOne(`user-proposal-stats:${proposal.submittedBy}`)
+        await this.cacheService.deleteOne(cacheKeys.proposalStats(proposal.submittedBy))
 
         return proposal
     }
@@ -214,7 +222,7 @@ export class GameProposalService {
         this.LOGGER.log('Getting user proposal stats')
 
         // Try to get from cache first
-        const cachedStats = await this.cacheService.get(`user-proposal-stats:${userId}`)
+        const cachedStats = await this.cacheService.get(cacheKeys.proposalStats(userId))
 
         if (cachedStats) {
             return cachedStats as UserProposalStatsDto
@@ -246,8 +254,8 @@ export class GameProposalService {
             reputationScore: Math.round(reputationScore),
         }
 
-        // Cache the stats for 5 minutes
-        await this.cacheService.set(`user-proposal-stats:${userId}`, stats, 'short')
+        // Cache the stats for an hour (`short`)
+        await this.cacheService.set(cacheKeys.proposalStats(userId), stats, 'short')
 
         return stats
     }

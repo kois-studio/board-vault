@@ -2,13 +2,13 @@ import { ResultSet } from '@libsql/client'
 import { Injectable, Logger } from '@nestjs/common'
 
 import { gameTagsSchema, GameTagType } from '../../../common/schemas/db-game-tag.schema.js'
+import { cacheKeys } from '../../common/cache/cache-keys.js'
 import { CacheService } from '../../common/cache/cache.service.js'
 import { DatabaseService } from '../../common/database/database.service.js'
 
 @Injectable()
 export class GameTagsService {
     private readonly LOGGER: Logger = new Logger(this.constructor.name)
-    private readonly CACHE_KEY = 'game-tags'
 
     constructor(
         private readonly databaseService: DatabaseService,
@@ -39,7 +39,7 @@ export class GameTagsService {
         this.LOGGER.log('Getting tags for game')
 
         // Step 1: Try to get them from cache
-        const cachedTags = await this.cacheService.get(`${this.CACHE_KEY}:byGameId:${gameId}`)
+        const cachedTags = await this.cacheService.get(cacheKeys.gameTags(gameId))
 
         if (cachedTags) {
             this.LOGGER.log('Returning cached game tags')
@@ -51,7 +51,7 @@ export class GameTagsService {
         const tags = this._parseResultSet(resultSet)
 
         // Step 3: Save them to cache
-        await this.cacheService.set(`${this.CACHE_KEY}:byGameId:${gameId}`, tags)
+        await this.cacheService.set(cacheKeys.gameTags(gameId), tags)
 
         return tags
     }
@@ -70,7 +70,7 @@ export class GameTagsService {
         await this.databaseService.games.addGameTag(gameId, tagId)
 
         // Clear cache
-        await this.cacheService.deleteOne(`${this.CACHE_KEY}:byGameId:${gameId}`)
+        await this.cacheService.deleteOne(cacheKeys.gameTags(gameId))
 
         return { success: true }
     }
@@ -81,7 +81,7 @@ export class GameTagsService {
         await this.databaseService.games.removeGameTag(gameId, tagId)
 
         // Clear cache
-        await this.cacheService.deleteOne(`${this.CACHE_KEY}:byGameId:${gameId}`)
+        await this.cacheService.deleteOne(cacheKeys.gameTags(gameId))
 
         return { success: true }
     }
