@@ -54,13 +54,14 @@ test.describe('authenticated core navigation', () => {
         const documentWidth = await page.evaluate(() => ({ viewport: window.innerWidth, document: document.documentElement.scrollWidth }))
         expect(documentWidth.document).toBeLessThanOrEqual(documentWidth.viewport)
 
-        const gameLinks = page.locator('a[href^="/games/"]')
-        await expect(gameLinks.first()).toBeVisible()
-        await expect(gameLinks.first()).toHaveAttribute('aria-label', /^View /)
+        // Only the cover links: a link with a title, such as Most played, is named by its text.
+        const coverLinks = page.locator('a[href^="/games/"]:has(image-background)')
+        await expect(coverLinks.first()).toBeVisible()
+        for (const link of await coverLinks.all()) await expect(link).toHaveAttribute('aria-label', /^View /)
 
         // In the order the sections appear; Standings only once the group has stats.
         const areas = (await page.getByRole('navigation', { name: 'Group workspace areas' }).locator('a').allTextContents()).map((text) => text.trim())
-        expect(areas.filter((area) => area !== 'Standings')).toEqual(['History', 'Library', 'Games to buy', 'People'])
+        expect(areas.filter((area) => area !== 'Standings')).toEqual(['History', 'Library', 'Games to buy', 'People', 'What changed'])
 
         await page.goto('/play/history')
         const historyGameLinks = page.locator('a[href^="/games/"]')
@@ -74,7 +75,7 @@ test.describe('authenticated core navigation', () => {
 
         await expect(page.getByRole('heading', { name: 'Record a session', level: 1 })).toBeVisible()
         await expect(page.getByText(/Pick the group, the day, and who came/i)).toBeVisible()
-        await expect(page.getByRole('link', { name: 'Plan a session', exact: true })).toHaveAttribute('href', '/play/upcoming-sessions?plan=1')
+        await expect(page.getByRole('link', { name: 'Plan a game night', exact: true })).toHaveAttribute('href', '/play/upcoming-sessions?plan=1')
     })
 
     test('opens upcoming sessions with a scheduling action', async ({ page }) => {
