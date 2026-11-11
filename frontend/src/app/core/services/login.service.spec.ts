@@ -5,12 +5,10 @@ import { Router } from '@angular/router'
 import { of, Subject, throwError } from 'rxjs'
 import { Api } from '../../api/api'
 import { ToastService } from '../../components/toast/toast.service'
-import { LOADING_KEYS } from '../enums/loading-keys-enum'
 import { RETRY_READ } from '../interceptors/resilience.interceptor'
 import { ApiUnavailableError } from '../utils/apiUnavailable'
 import { ClerkService } from './clerk.service'
 import { DataService } from './data.service'
-import { LoadingService } from './loading.service'
 import { LocalStorageService } from './local-storage.service'
 import { LogService } from './log.service'
 import { LoginService } from './login.service'
@@ -42,14 +40,6 @@ describe('LoginService account readiness', () => {
                 { provide: Router, useValue: { navigate } },
                 { provide: LogService, useValue: { log: vi.fn().mockName('log'), error: vi.fn().mockName('error') } },
                 { provide: ToastService, useValue: { error: vi.fn().mockName('error'), success: vi.fn().mockName('success') } },
-                {
-                    provide: LoadingService,
-                    useValue: {
-                        start: vi.fn().mockName('start'),
-                        finish: vi.fn().mockName('finish'),
-                        setAllLoadingTo: vi.fn().mockName('setAllLoadingTo'),
-                    },
-                },
                 {
                     provide: LocalStorageService,
                     useValue: {
@@ -117,7 +107,6 @@ describe('LoginService after the account is deleted', () => {
                 { provide: Router, useValue: { navigate, url: '/settings/account' } },
                 { provide: LogService, useValue: { log: vi.fn(), error: vi.fn() } },
                 { provide: ToastService, useValue: toast },
-                { provide: LoadingService, useValue: { start: vi.fn(), finish: vi.fn(), setAllLoadingTo: vi.fn() } },
                 { provide: ClerkService, useValue: clerk },
                 { provide: DataService, useValue: { currentUser: signal<{ id: number } | null>({ id: 7 }) } },
             ],
@@ -168,8 +157,9 @@ describe('LoginService when Board Vault cannot be reached (#238)', () => {
         const navigation = signal<{ finalUrl?: { toString(): string }; extractedUrl?: { toString(): string } } | null>(null)
         const router = { navigate, navigateByUrl: vi.fn().mockResolvedValue(true), url, currentNavigation: navigation }
         const toast = { error: vi.fn(), success: vi.fn() }
-        const loading = { start: vi.fn(), finish: vi.fn(), setAllLoadingTo: vi.fn() }
         const dataService = { currentUser: signal<{ id: number } | null>(null) }
+        // Signing out clears the account, which resets what DataService holds (#256).
+        vi.spyOn(dataService.currentUser, 'set')
 
         TestBed.configureTestingModule({
             providers: [
@@ -178,7 +168,6 @@ describe('LoginService when Board Vault cannot be reached (#238)', () => {
                 { provide: Router, useValue: router },
                 { provide: LogService, useValue: { log: vi.fn(), error: vi.fn() } },
                 { provide: ToastService, useValue: toast },
-                { provide: LoadingService, useValue: loading },
                 {
                     provide: ClerkService,
                     useValue: {
@@ -190,7 +179,7 @@ describe('LoginService when Board Vault cannot be reached (#238)', () => {
                 { provide: DataService, useValue: dataService },
             ],
         })
-        return { service: TestBed.inject(LoginService), api, navigate, router, navigation, toast, loading, dataService }
+        return { service: TestBed.inject(LoginService), api, navigate, router, navigation, toast, dataService }
     }
 
     beforeEach(() => {
@@ -203,10 +192,10 @@ describe('LoginService when Board Vault cannot be reached (#238)', () => {
         vi.restoreAllMocks()
     })
 
-    const expectNotSignedOut = ({ service, navigate, toast, loading }: ReturnType<typeof setup>) => {
+    const expectNotSignedOut = ({ service, navigate, toast, dataService }: ReturnType<typeof setup>) => {
         expect(service.clerkAuthHandoffState()).toBe('unavailable')
         expect(service.clerkAuthHandoffError()).toBeNull()
-        expect(loading.setAllLoadingTo).not.toHaveBeenCalled()
+        expect(dataService.currentUser.set).not.toHaveBeenCalledWith(null)
         expect(navigate).not.toHaveBeenCalled()
         expect(toast.error).not.toHaveBeenCalled()
     }
@@ -363,7 +352,7 @@ describe('LoginService when Board Vault cannot be reached (#238)', () => {
 
             expect(context.service.clerkAuthHandoffState()).toBe('error')
             expect(context.service.clerkAuthHandoffError()).toContain('We could not finish connecting this sign-in')
-            expect(context.loading.setAllLoadingTo).toHaveBeenCalled()
+            expect(context.dataService.currentUser.set).toHaveBeenCalledWith(null)
             expect(context.api.clerkAuthStatus).toHaveBeenCalledTimes(1)
         }
     })
@@ -394,13 +383,12 @@ describe('LoginService when Board Vault cannot be reached (#238)', () => {
         expect(context.service.isAuthenticated()).toBe(true)
     })
 
-    it('recovers when loading the account failed, and does not leave it marked as loading', () => {
+    it('recovers when loading the account failed', () => {
         const context = setup()
         context.api.clerkAuthStatus.mockReturnValue(linked())
         context.api.getUserById.mockReturnValueOnce(status(503) as never)
 
         context.service.verifyClerkSession().subscribe()
-        expect(context.loading.finish).toHaveBeenCalledWith(LOADING_KEYS.USER_DATA)
         vi.advanceTimersByTime(2_000)
 
         expect(context.service.isAuthenticated()).toBe(true)

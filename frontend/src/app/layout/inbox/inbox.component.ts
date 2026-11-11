@@ -3,6 +3,7 @@ import { CardInvitationComponent } from '../../components/card-invitation/card-i
 import { CardNotificationComponent } from '../../components/card-notification/card-notification.component'
 import { ButtonComponent } from '../../components/ui/button/button.component'
 import { IconComponent } from '../../components/ui/icon/icon.component'
+import { isFirstLoad } from '../../core/async/resource-state'
 import { intlLocale } from '../../core/i18n/format'
 import { SortByDatePipe } from '../../core/pipes/sortByDate.pipe'
 import { DataService } from '../../core/services/data.service'
@@ -38,11 +39,11 @@ export class InboxComponent {
     public readonly disclosure = injectDisclosure(() => this.trigger())
 
     public readonly invitations = this.dataService.userInvitations
-    public readonly invitationsLoading = this.dataService.userInvitationsLoading
-    public readonly invitationsError = this.dataService.userInvitationsError
+    public readonly invitationsLoading = computed(() => isFirstLoad(this.dataService.userInvitationsState()))
+    public readonly invitationsError = computed(() => this.dataService.userInvitationsState().status === 'error')
     public readonly notifications = this.dataService.userNotifications
-    public readonly notificationsLoading = this.dataService.userNotificationsLoading
-    public readonly notificationsError = this.dataService.userNotificationsError
+    public readonly notificationsLoading = computed(() => isFirstLoad(this.dataService.userNotificationsState()))
+    public readonly notificationsError = computed(() => this.dataService.userNotificationsState().status === 'error')
 
     public readonly unreadCount = computed(() => this.notifications().filter((notification) => !notification.isRead).length)
     public readonly count = computed(() => this.invitations().length + this.unreadCount())

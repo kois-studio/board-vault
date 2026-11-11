@@ -5,13 +5,11 @@ import { from, Observable, of, throwError } from 'rxjs'
 import { catchError, finalize, map, shareReplay, switchMap, tap } from 'rxjs/operators'
 import { Api } from '../../api/api'
 import { ToastService } from '../../components/toast/toast.service'
-import { LOADING_KEYS } from '../enums/loading-keys-enum'
 import { AccountLanguageService } from '../i18n/account-language.service'
 import { withoutReadRetry } from '../interceptors/resilience.interceptor'
 import { isServerUnreachable } from '../utils/serverUnreachable'
 import { ClerkService } from './clerk.service'
 import { DataService } from './data.service'
-import { LoadingService } from './loading.service'
 import { LogService } from './log.service'
 
 /**
@@ -31,7 +29,6 @@ export class LoginService {
     private readonly logger = inject(LogService)
     private readonly dataService = inject(DataService)
     private readonly toastService = inject(ToastService)
-    private readonly loadingService = inject(LoadingService)
     private readonly clerkService = inject(ClerkService)
     private readonly accountLanguage = inject(AccountLanguageService)
     private readonly document = inject(DOCUMENT)
@@ -182,22 +179,17 @@ export class LoginService {
      */
     private _fetchInitialUserData(userId: number): Observable<boolean> {
         this.logger.log(`LoginService: Triggering USER_DATA load for user ID: ${userId}`)
-        this.loadingService.start(LOADING_KEYS.USER_DATA)
 
         return this.api.getUserById(userId, withoutReadRetry()).pipe(
             tap((userData) => {
                 this.logger.log('LoginService: USER_DATA fetched successfully.')
                 this.dataService.currentUser.set(userData)
                 this.accountLanguage.followAccountLanguage(userData)
-                this.loadingService.finish(LOADING_KEYS.USER_DATA)
             }),
             map(() => true),
             catchError((err: unknown) => {
                 // Board Vault could not be reached: the sign-in is fine, so verifyClerkSession keeps it and tries again.
-                if (isServerUnreachable(err)) {
-                    this.loadingService.finish(LOADING_KEYS.USER_DATA)
-                    return throwError(() => err)
-                }
+                if (isServerUnreachable(err)) return throwError(() => err)
 
                 this.logger.error('LoginService: Critical error - Failed to fetch USER_DATA after successful auth. Logging out.', err)
                 this.toastService.error(
@@ -206,8 +198,6 @@ export class LoginService {
                 )
                 this._performLogoutCleanup()
                 this.router.navigate(['/'])
-                // Ensure USER_DATA loading is also marked as finished to prevent UI hangs
-                this.loadingService.finish(LOADING_KEYS.USER_DATA)
                 return of(false)
             }),
         )
@@ -226,8 +216,8 @@ export class LoginService {
         this.isAuthenticated.set(false)
         this.currentUserId.set(null)
         this.isCurrentUserAdmin.set(false)
-        this.dataService.currentUser.set(null) // Clear currentUser in DataService
-        this.loadingService.setAllLoadingTo(true) // Reset all loading states
+        // Clears what DataService holds: each piece goes back to loading for the next sign-in.
+        this.dataService.currentUser.set(null)
     }
 
     /** The next automatic try: 2 s, 5 s, 10 s, then every 30 s. A hidden tab waits until it is shown again. */

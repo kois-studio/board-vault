@@ -21,11 +21,10 @@ import { ContainerWrapperComponent } from '../../components/ui/container-wrapper
 import { IconComponent } from '../../components/ui/icon/icon.component'
 import { PageHeaderComponent } from '../../components/ui/page-header/page-header.component'
 import { SpinnerComponent } from '../../components/ui/spinner/spinner.component'
-import { LOADING_KEYS } from '../../core/enums/loading-keys-enum'
+import { isPending } from '../../core/async/resource-state'
 import { formatDateTime, formatList, intlLocale, isoDay } from '../../core/i18n/format'
 import { PlayersPipe } from '../../core/pipes/count.pipe'
 import { DataService } from '../../core/services/data.service'
-import { LoadingService } from '../../core/services/loading.service'
 import { isSaveOutcomeUnknown } from '../../core/utils/apiUnavailable'
 import { gameTitle } from '../../core/utils/gameTitle'
 import { canTakePart } from '../../core/utils/groupPeople'
@@ -109,7 +108,6 @@ export class LogSessionWizardComponent {
     //        DATA from services
     // --------------------------------------------------------------------------
     private readonly dataService = inject(DataService)
-    private readonly loadingService = inject(LoadingService)
     private readonly router = inject(Router)
     private readonly api = inject(Api)
     private readonly toastService = inject(ToastService)
@@ -170,12 +168,12 @@ export class LogSessionWizardComponent {
 
     public currentUser = this.dataService.currentUser
     public userGroups = this.dataService.userGroups
-    public userGroupsError = this.dataService.userGroupsError
+    public userGroupsError = computed(() => this.dataService.userGroupsState().status === 'error')
 
     // --------------------------------------------------------------------------
     //        LOADING STATES
     // --------------------------------------------------------------------------
-    public isLoadingGroups = computed(() => this.loadingService.loadingStatesIndex()[LOADING_KEYS.USER_GROUPS])
+    public isLoadingGroups = computed(() => isPending(this.dataService.userGroupsState()))
 
     // --------------------------------------------------------------------------
     //        WIZARD STATE

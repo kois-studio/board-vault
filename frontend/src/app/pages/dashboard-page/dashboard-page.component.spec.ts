@@ -4,9 +4,9 @@ import { provideRouter } from '@angular/router'
 import { of } from 'rxjs'
 import { Api } from '../../api/api'
 import { ToastService } from '../../components/toast/toast.service'
-import { LOADING_KEYS } from '../../core/enums/loading-keys-enum'
+import { type ResourceStatus } from '../../core/async/resource-state'
+import { withStates } from '../../core/async/resource-state.testing'
 import { DataService } from '../../core/services/data.service'
-import { LoadingService } from '../../core/services/loading.service'
 import { DashboardPageComponent } from './dashboard-page.component'
 
 const inDays = (days: number) => new Date(Date.now() + days * 86_400_000).toISOString()
@@ -39,28 +39,27 @@ function group(id: number, name: string) {
 
 const emptyNight = { attendeeStatuses: [], participants: [], participantStatuses: [], plannedGames: [], gameVotes: [] }
 
-async function renderHome(overrides: Record<string, unknown> = {}) {
+/** `statuses` makes a list load or fail: `{ userHistory: 'error' }` (#256). */
+async function renderHome(overrides: Record<string, unknown> = {}, statuses: Record<string, ResourceStatus> = {}) {
     const dataService = {
         currentUser: signal({ id: 1, username: 'dawichi', displayName: 'David', avatar: null }),
         userGroups: signal([]),
-        userGroupsError: signal(false),
         userMeets: signal([]),
-        userMeetsError: signal(false),
         userHistory: signal([]),
         userHistorySummary: signal<unknown>({ nights: 0, gamesPlayed: 0, uniqueGames: 0, people: 0, mostPlayed: null, myMostPlayed: [] }),
         userGames: signal([]),
+        userReviews: signal([]),
         userInvitations: signal([]),
-        userInvitationsError: signal(false),
-        userInvitationsLoading: signal(false),
         invitationsGroupIndex: signal({}),
         answerSession: vi.fn(),
+        refreshUserHistory: vi.fn(),
         ...overrides,
     }
 
     await TestBed.configureTestingModule({
         imports: [DashboardPageComponent],
         providers: [
-            { provide: DataService, useValue: dataService },
+            { provide: DataService, useValue: withStates(dataService, statuses) },
             {
                 provide: Api,
                 useValue: {
@@ -69,16 +68,6 @@ async function renderHome(overrides: Record<string, unknown> = {}) {
                 },
             },
             { provide: ToastService, useValue: { error: vi.fn() } },
-            {
-                provide: LoadingService,
-                useValue: {
-                    loadingStatesIndex: signal({
-                        [LOADING_KEYS.USER_GROUPS]: false,
-                        [LOADING_KEYS.USER_MEETS]: false,
-                        [LOADING_KEYS.USER_GAMES_HISTORY]: false,
-                    }),
-                },
-            },
             provideRouter([]),
         ],
     }).compileComponents()
@@ -109,6 +98,22 @@ describe('DashboardPageComponent (Home)', () => {
 
             expect(text(fixture.nativeElement)).toContain('1 of 3 done')
             expect(text(fixture.nativeElement)).toContain('Add the games you own (done)')
+        })
+
+        // #256: an empty shelf is only claimed once the shelf has loaded.
+        for (const status of ['loading', 'error'] as const) {
+            it(`never says "0 of 3 done" or asks for games while your games are ${status === 'loading' ? 'loading' : 'unavailable'}`, async () => {
+                const fixture = await renderHome({}, { userGames: status })
+
+                expect(text(fixture.nativeElement)).toContain('Getting set up')
+                expect(text(fixture.nativeElement)).not.toContain('of 3 done')
+            })
+        }
+
+        it('says "0 of 3 done" once your shelf has loaded empty', async () => {
+            const fixture = await renderHome()
+
+            expect(text(fixture.nativeElement)).toContain('0 of 3 done')
         })
     })
 
@@ -197,6 +202,38 @@ describe('DashboardPageComponent (Home)', () => {
             expect(element.querySelector('a[href="/play/log-session"]')).not.toBeNull()
         })
 
+        // #256: no "Nothing recorded yet" until the history has loaded empty.
+        it('does not say nothing is recorded while the history loads', async () => {
+            const fixture = await renderHome(oneGroup, { userHistory: 'loading' })
+
+            expect(text(fixture.nativeElement)).not.toContain('Nothing recorded yet')
+            expect(fixture.nativeElement.querySelector('app-async')?.getAttribute('aria-busy')).toBe('true')
+        })
+
+        it('says the history could not load, with Retry, instead of nothing recorded', async () => {
+            const fixture = await renderHome(oneGroup, { userHistory: 'error' })
+            const dataService = TestBed.inject(DataService) as unknown as { refreshUserHistory: ReturnType<typeof vi.fn> }
+            const failure = (fixture.nativeElement as HTMLElement).querySelector('[data-async="error"]')
+
+            expect(text(fixture.nativeElement)).not.toContain('Nothing recorded yet')
+            expect(text(failure)).toContain('Your recent game nights could not be loaded.')
+            failure?.querySelector('button')?.click()
+            expect(dataService.refreshUserHistory).toHaveBeenCalledTimes(1)
+        })
+
+        it('asks for games only once your shelf has loaded empty', async () => {
+            const addGames = (fixture: { nativeElement: HTMLElement }) =>
+                Array.from(fixture.nativeElement.querySelectorAll('a[href="/collection/browse"]')).some((link) =>
+                    text(link).includes('Add the games you own'),
+                )
+
+            expect(addGames(await renderHome(oneGroup))).toBe(true)
+            TestBed.resetTestingModule()
+            expect(addGames(await renderHome(oneGroup, { userGames: 'loading' }))).toBe(false)
+            TestBed.resetTestingModule()
+            expect(addGames(await renderHome(oneGroup, { userGames: 'error' }))).toBe(false)
+        })
+
         it('links to your own page, across all your groups', async () => {
             const fixture = await renderHome({
                 ...oneGroup,
@@ -215,6 +252,18 @@ describe('DashboardPageComponent (Home)', () => {
             })
 
             expect(text((fixture.nativeElement as HTMLElement).querySelector('a[href="/you"]'))).toContain('0 games · 42 nights played')
+        })
+
+        it('leaves your games out of your page link until they have loaded (#256)', async () => {
+            for (const status of ['loading', 'error'] as const) {
+                TestBed.resetTestingModule()
+                const fixture = await renderHome(oneGroup, { userGames: status })
+                const profile = text((fixture.nativeElement as HTMLElement).querySelector('a[href="/you"]'))
+
+                expect(profile).not.toMatch(/\d+ games?/)
+                expect(profile).toContain('0 nights played')
+                expect(profile).not.toContain('·')
+            }
         })
 
         it('leaves the nights out until they are counted, never saying 0', async () => {
@@ -372,5 +421,34 @@ describe('DashboardPageComponent (Home)', () => {
             expect(prompts).toHaveLength(1)
             expect(prompts[0]).toContain('Rate Root')
         })
+
+        // #256: unknown ratings are not "not rated".
+        for (const status of ['loading', 'error'] as const) {
+            it(`offers no rating while your ratings are ${status === 'loading' ? 'loading' : 'unavailable'}`, async () => {
+                const fixture = await renderHome(
+                    {
+                        ...groups,
+                        userHistory: signal([
+                            {
+                                meetData: meet(7, 10, -3, 'completed'),
+                                attendedBy: [{ id: 1 }],
+                                attendedByPeople: [],
+                                gamesPlayed: [
+                                    {
+                                        gameData: { id: 1, titleTranslations: { en: 'Root', es: 'Root' }, imageUrl: '' },
+                                        playedBy: [{ id: 1 }],
+                                        playedByPeople: [],
+                                    },
+                                ],
+                            },
+                        ]),
+                    },
+                    { userReviews: status },
+                )
+
+                expect(text(fixture.nativeElement)).toContain('Root')
+                expect((fixture.nativeElement as HTMLElement).querySelectorAll('app-rating-follow-up li')).toHaveLength(0)
+            })
+        }
     })
 })

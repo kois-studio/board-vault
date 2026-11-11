@@ -6,9 +6,9 @@ import { of, Subject, throwError } from 'rxjs'
 import { Api } from '../../api/api'
 import type { MeetWithAttendeesAndGamesType } from '../../api/api.types'
 import { ToastService } from '../../components/toast/toast.service'
-import { LOADING_KEYS } from '../../core/enums/loading-keys-enum'
+import { ResourceSignal } from '../../core/async/resource-state'
+import { withStates } from '../../core/async/resource-state.testing'
 import { DataService } from '../../core/services/data.service'
-import { LoadingService } from '../../core/services/loading.service'
 import { ApiUnavailableError } from '../../core/utils/apiUnavailable'
 import { MeetViewComponent } from './meet-view.component'
 
@@ -65,7 +65,7 @@ describe('MeetViewComponent participant safeguards', () => {
                 { provide: ActivatedRoute, useValue: { snapshot: { paramMap: convertToParamMap({ sessionId: '99' }) } } },
                 {
                     provide: DataService,
-                    useValue: dataService,
+                    useValue: withStates(dataService),
                 },
                 { provide: ToastService, useValue: toastService },
             ],
@@ -708,7 +708,7 @@ describe('MeetViewComponent rendered lifecycle actions', () => {
                 provideRouter([]),
                 { provide: Api, useValue: api },
                 { provide: ActivatedRoute, useValue: { snapshot: { paramMap: convertToParamMap({ sessionId: '59' }) } } },
-                { provide: DataService, useValue: dataService },
+                { provide: DataService, useValue: withStates(dataService) },
                 { provide: ToastService, useValue: { success: vi.fn(), error: vi.fn() } },
             ],
         }).compileComponents()
@@ -852,7 +852,7 @@ describe('MeetViewComponent invite changes that are not saved', () => {
                 { provide: ActivatedRoute, useValue: { snapshot: { paramMap: convertToParamMap({ sessionId: '59' }) } } },
                 {
                     provide: DataService,
-                    useValue: {
+                    useValue: withStates({
                         currentUser: signal({ id: 1, username: 'ana', displayName: 'Ana', avatar: null }),
                         userGroups: signal([
                             {
@@ -869,7 +869,7 @@ describe('MeetViewComponent invite changes that are not saved', () => {
                         userReviews: signal([]),
                         refreshUserMeets: vi.fn(),
                         refreshUserHistory: vi.fn(),
-                    },
+                    }),
                 },
                 { provide: ToastService, useValue: toastService },
             ],
@@ -1121,19 +1121,27 @@ describe('MeetViewComponent when its group is not known (#244)', () => {
     type Group = ReturnType<typeof group>
     type Groups = { list: Array<Group>; error?: boolean; loading?: boolean }
 
+    /** Starts a groups load, as a refresh from elsewhere does; `groupsAnswer` ends it. */
+    let startGroupsLoad: () => void = () => undefined
+
     const setup = async ({ list, error = false, loading = false }: Groups, details = of(night())) => {
         const api = {
             getSessionDetailsById: vi.fn().mockReturnValue(details),
             getGroupPeople: vi.fn().mockReturnValue(of({ people: [] })),
             getGroupPersonCatalog: vi.fn().mockReturnValue(of([])),
         }
-        const userGroups = signal<Array<Group>>(list)
-        const userGroupsError = signal(error)
-        // As DataService does: a refresh clears the error and marks the groups as loading.
-        const refreshUserGroups = vi.fn(() => {
-            userGroupsError.set(false)
-            TestBed.inject(LoadingService).start(LOADING_KEYS.USER_GROUPS)
-        })
+        // The groups as DataService holds them (#256): a refresh keeps what is listed, a failure keeps it too.
+        const groups = new ResourceSignal<Array<Group>>([])
+        let groupsLoad: Subject<Array<Group>> | undefined
+        startGroupsLoad = () => {
+            groupsLoad = new Subject<Array<Group>>()
+            groups.load(groupsLoad)
+        }
+        if (list.length > 0) groups.load(of(list))
+        if (error) groups.load(throwError(() => new Error('Board Vault could not be reached')))
+        else if (loading) startGroupsLoad()
+        else if (list.length === 0) groups.load(of(list))
+        const refreshUserGroups = vi.fn(() => startGroupsLoad())
         await TestBed.configureTestingModule({
             imports: [MeetViewComponent],
             providers: [
@@ -1142,22 +1150,19 @@ describe('MeetViewComponent when its group is not known (#244)', () => {
                 { provide: ActivatedRoute, useValue: { snapshot: { paramMap: convertToParamMap({ sessionId: '59' }) } } },
                 {
                     provide: DataService,
-                    useValue: {
+                    useValue: withStates({
                         currentUser: signal({ id: 1, username: 'ana', displayName: 'Ana', avatar: null }),
-                        userGroups,
-                        userGroupsError,
+                        userGroups: groups.value,
+                        userGroupsState: groups.state,
                         refreshUserGroups,
                         userReviews: signal([]),
                         refreshUserMeets: vi.fn(),
                         refreshUserHistory: vi.fn(),
-                    },
+                    }),
                 },
                 { provide: ToastService, useValue: { success: vi.fn(), error: vi.fn() } },
             ],
         }).compileComponents()
-        const loadingService = TestBed.inject(LoadingService)
-        if (loading) loadingService.start(LOADING_KEYS.USER_GROUPS)
-        else loadingService.finish(LOADING_KEYS.USER_GROUPS)
 
         const fixture = TestBed.createComponent(MeetViewComponent)
         fixture.autoDetectChanges()
@@ -1171,17 +1176,18 @@ describe('MeetViewComponent when its group is not known (#244)', () => {
         const retry = () => [...element.querySelectorAll('button')].find((button) => button.textContent?.trim() === 'Retry')
         /** The groups answer, as DataService records it. */
         const groupsAnswer = async (answer: Groups) => {
-            userGroups.set(answer.list)
-            userGroupsError.set(answer.error ?? false)
-            loadingService.finish(LOADING_KEYS.USER_GROUPS)
+            if (!groupsLoad) startGroupsLoad()
+            const load = groupsLoad as Subject<Array<Group>>
+            groupsLoad = undefined
+            if (answer.error) load.error(new Error('Board Vault could not be reached'))
+            else {
+                load.next(answer.list)
+                load.complete()
+            }
             await settle()
         }
-        /** The groups fail, as DataService records it: the error is set and the list is left as it was. */
-        const groupsFail = async () => {
-            userGroupsError.set(true)
-            loadingService.finish(LOADING_KEYS.USER_GROUPS)
-            await settle()
-        }
+        /** The groups fail, as DataService records it: the failure is kept and the list is left as it was. */
+        const groupsFail = () => groupsAnswer({ list: [], error: true })
         return {
             fixture,
             component: fixture.componentInstance,
@@ -1192,7 +1198,6 @@ describe('MeetViewComponent when its group is not known (#244)', () => {
             groupsAnswer,
             groupsFail,
             refreshUserGroups,
-            userGroupsError,
         }
     }
 
@@ -1281,11 +1286,6 @@ describe('MeetViewComponent when its group is not known (#244)', () => {
 
     it('does not stay loading when the fresh groups fail and older ones are still listed', async () => {
         const { component, text, retry, settle, groupsFail } = await setup({ list: [group(8, 'Sunday group')] })
-        // Any other list loading meanwhile re-runs the page's effect; it must keep listening for the groups.
-        TestBed.inject(LoadingService).start(LOADING_KEYS.USER_MEETS)
-        await settle()
-        TestBed.inject(LoadingService).finish(LOADING_KEYS.USER_MEETS)
-        await settle()
 
         retry()?.click()
         await settle()
@@ -1316,7 +1316,7 @@ describe('MeetViewComponent when its group is not known (#244)', () => {
         const { component, text, groupsAnswer } = await setup({ list: [group(7, 'Thursday group')] })
         expect(component.loaded).toBe(true)
 
-        TestBed.inject(LoadingService).start(LOADING_KEYS.USER_GROUPS)
+        startGroupsLoad()
         await groupsAnswer({ list: [], error: true })
 
         expect(component.loadError()).toBe(false)
@@ -1327,7 +1327,7 @@ describe('MeetViewComponent when its group is not known (#244)', () => {
     it('recovers by itself when the groups load again from elsewhere (the connection notice)', async () => {
         const { component, api, groupsAnswer } = await setup({ list: [], error: true })
 
-        TestBed.inject(LoadingService).start(LOADING_KEYS.USER_GROUPS)
+        startGroupsLoad()
         await groupsAnswer({ list: [group(7, 'Thursday group')] })
 
         expect(api.getSessionDetailsById).toHaveBeenCalledTimes(1)
@@ -1338,7 +1338,7 @@ describe('MeetViewComponent when its group is not known (#244)', () => {
     it('loads only the night on Retry when the groups recovered by themselves and then the night failed', async () => {
         const details = new Subject<MeetWithAttendeesAndGamesType>()
         const { component, api, retry, settle, groupsAnswer, refreshUserGroups } = await setup({ list: [], error: true }, details)
-        TestBed.inject(LoadingService).start(LOADING_KEYS.USER_GROUPS)
+        startGroupsLoad()
         await groupsAnswer({ list: [group(7, 'Thursday group')] })
         details.error(new ApiUnavailableError({ kind: 'network', outcomeUnknown: false, url: '/sessions/59' }))
         await settle()
@@ -1355,7 +1355,7 @@ describe('MeetViewComponent when its group is not known (#244)', () => {
     it('waits for a groups load already on its way instead of starting another on Retry', async () => {
         const { component, api, retry, settle, groupsAnswer, refreshUserGroups } = await setup({ list: [], error: true })
         // The connection notice started loading the groups again.
-        TestBed.inject(LoadingService).start(LOADING_KEYS.USER_GROUPS)
+        startGroupsLoad()
         await settle()
 
         retry()?.click()

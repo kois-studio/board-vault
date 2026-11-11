@@ -14,7 +14,7 @@
             description="Browse and manage your board game collection"
             cardLink="/collection/games"
         >
-            <app-badge class="app-card-section-badge" tone="primary" [text]="isLoadingUserGames() ? loadingLabel : gamesLabel(userGames$().length)" />
+            <app-badge class="app-card-section-badge" tone="primary" [text]="gamesBadge()" />
             <div></div>
             <span class="flex items-center text-sm font-medium text-bv-primary group-hover:underline" i18n="Link at the bottom of a card on the Collection page">View all &gt;</span>
         </app-card-section>
@@ -41,7 +41,7 @@
             description="Rate and review the games you’ve played"
             cardLink="/collection/reviews"
         >
-            <app-badge class="app-card-section-badge" tone="warning" [text]="isLoadingReviews() ? loadingLabel : reviewsLabel(userReviews$().length)" />
+            <app-badge class="app-card-section-badge" tone="warning" [text]="reviewsBadge()" />
             <div></div>
             <span class="flex items-center text-nowrap text-sm font-medium text-bv-primary group-hover:underline" i18n="Link at the bottom of a card on the Collection page">View all &gt;</span>
         </app-card-section>
@@ -55,7 +55,7 @@
             description="Keep track of games you want to add to your collection"
             cardLink="/collection/wishlist"
         >
-            <app-badge class="app-card-section-badge" tone="danger" [text]="isLoadingWishlist() ? loadingLabel : gamesLabel(userWishlist$().length)" />
+            <app-badge class="app-card-section-badge" tone="danger" [text]="wishlistBadge()" />
             <div></div>
             <span class="flex items-center text-sm font-medium text-bv-primary group-hover:underline" i18n="Link at the bottom of a card on the Collection page">View all &gt;</span>
         </app-card-section>

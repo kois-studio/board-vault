@@ -27,13 +27,12 @@ import { IconComponent } from '../../components/ui/icon/icon.component'
 import { ImageBackgroundComponent } from '../../components/ui/image-background/image-background.component'
 import { InPageLinkDirective } from '../../components/ui/in-page-link/in-page-link.directive'
 import { PageHeaderComponent } from '../../components/ui/page-header/page-header.component'
-import { LOADING_KEYS } from '../../core/enums/loading-keys-enum'
+import { isPending } from '../../core/async/resource-state'
 import { formatList, formatNumber, intlLocale } from '../../core/i18n/format'
 import { PlayersPipe } from '../../core/pipes/count.pipe'
 import { CustomDatePipe } from '../../core/pipes/customDate.pipe'
 import { GameTitlePipe } from '../../core/pipes/game-title.pipe'
 import { DataService } from '../../core/services/data.service'
-import { LoadingService } from '../../core/services/loading.service'
 import { isSaveOutcomeUnknown } from '../../core/utils/apiUnavailable'
 import { attendeeNames, formatAttendeeSummary } from '../../core/utils/formatAttendeeSummary'
 import { gameCoverAlt, gameTitle } from '../../core/utils/gameTitle'
@@ -90,7 +89,6 @@ export class GroupViewComponent {
     private readonly router = inject(Router)
     private readonly route = inject(ActivatedRoute)
     private readonly dataService = inject(DataService)
-    private readonly loadingService = inject(LoadingService)
     private readonly groupViewService = inject(GroupViewService)
     private readonly toastService = inject(ToastService)
     /**
@@ -112,11 +110,11 @@ export class GroupViewComponent {
     // dataService
     public readonly currentUser$ = this.dataService.currentUser
     public readonly userGroups$ = this.dataService.userGroups
-    public readonly userGroupsError = this.dataService.userGroupsError
+    public readonly userGroupsError = computed(() => this.dataService.userGroupsState().status === 'error')
     public readonly userMeets$ = this.dataService.userMeets
     public readonly invitationsGroupIndex$ = this.dataService.invitationsGroupIndex
     public readonly groupHistoryByGroupId$ = this.dataService.groupHistoryByGroupId
-    public readonly isLoadingGroups = computed(() => this.loadingService.loadingStatesIndex()[LOADING_KEYS.USER_GROUPS])
+    public readonly isLoadingGroups = computed(() => isPending(this.dataService.userGroupsState()))
 
     // groupViewService
     public readonly groupData$ = this.groupViewService.groupData

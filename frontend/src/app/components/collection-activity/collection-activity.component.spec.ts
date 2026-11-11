@@ -2,6 +2,8 @@ import { signal } from '@angular/core'
 import { TestBed } from '@angular/core/testing'
 import { provideRouter } from '@angular/router'
 import type { CollectionActivityWithGameDataType, GameCompleteType } from '../../api/api.types'
+import { type ResourceStatus } from '../../core/async/resource-state'
+import { withStates } from '../../core/async/resource-state.testing'
 import { DataService } from '../../core/services/data.service'
 import { CollectionActivityComponent } from './collection-activity.component'
 
@@ -26,14 +28,23 @@ function activity(id: number, actionType: CollectionActivityWithGameDataType['ac
     } satisfies CollectionActivityWithGameDataType
 }
 
-async function setup(activities: CollectionActivityWithGameDataType[]) {
+async function setup(activities: CollectionActivityWithGameDataType[], status: ResourceStatus = 'ready') {
+    const refreshUserCollectionActivity = vi.fn()
     await TestBed.configureTestingModule({
         imports: [CollectionActivityComponent],
         providers: [
             provideRouter([]),
             {
                 provide: DataService,
-                useValue: { userGames: signal([]), userWishlist: signal([]), userCollectionActivity: signal(activities) },
+                useValue: withStates(
+                    {
+                        userGames: signal([]),
+                        userWishlist: signal([]),
+                        userCollectionActivity: signal(activities),
+                        refreshUserCollectionActivity,
+                    },
+                    { userCollectionActivity: status },
+                ),
             },
         ],
     }).compileComponents()
@@ -41,7 +52,7 @@ async function setup(activities: CollectionActivityWithGameDataType[]) {
     fixture.detectChanges()
     const lines = () =>
         [...fixture.nativeElement.querySelectorAll('li p.text-sm')].map((p: HTMLElement) => p.textContent?.replace(/\s+/g, ' ').trim())
-    return { fixture, lines }
+    return { fixture, lines, refreshUserCollectionActivity }
 }
 
 describe('CollectionActivityComponent', () => {
@@ -93,5 +104,29 @@ describe('CollectionActivityComponent', () => {
 
         expect(lines()).toHaveLength(6)
         expect(toggle.textContent?.trim()).toBe('Show less')
+    })
+
+    // #256: "No recent activity" only once the activity has loaded empty.
+    it('says there is no recent activity once it loaded empty', async () => {
+        const { fixture } = await setup([])
+
+        expect(fixture.nativeElement.textContent).toContain('No recent activity found.')
+    })
+
+    it('does not say there is no activity while it loads', async () => {
+        const { fixture } = await setup([], 'loading')
+
+        expect(fixture.nativeElement.textContent).not.toContain('No recent activity found.')
+        expect(fixture.nativeElement.querySelector('app-async')?.getAttribute('aria-busy')).toBe('true')
+    })
+
+    it('says the activity could not load, with Retry, instead of none', async () => {
+        const { fixture, refreshUserCollectionActivity } = await setup([], 'error')
+        const failure = fixture.nativeElement.querySelector('[data-async="error"]') as HTMLElement
+
+        expect(fixture.nativeElement.textContent).not.toContain('No recent activity found.')
+        expect(failure.textContent).toContain('Your recent activity could not be loaded.')
+        failure.querySelector('button')?.click()
+        expect(refreshUserCollectionActivity).toHaveBeenCalledTimes(1)
     })
 })

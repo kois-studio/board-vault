@@ -5,11 +5,10 @@ import { ButtonComponent } from '../../../components/ui/button/button.component'
 import { ContainerWrapperComponent } from '../../../components/ui/container-wrapper/container-wrapper.component'
 import { IconComponent } from '../../../components/ui/icon/icon.component'
 import { PageHeaderComponent } from '../../../components/ui/page-header/page-header.component'
-import { LOADING_KEYS } from '../../../core/enums/loading-keys-enum'
+import { isPending } from '../../../core/async/resource-state'
 import { intlLocale } from '../../../core/i18n/format'
 import { CustomDatePipe } from '../../../core/pipes/customDate.pipe'
 import { DataService } from '../../../core/services/data.service'
-import { LoadingService } from '../../../core/services/loading.service'
 import { relativeDay, sessionDateParts, type UpcomingState, upcomingState } from '../../../core/utils/sessionTiming'
 
 type UpcomingSection = { state: UpcomingState; title: string; hint: string; sessions: Array<AccountMeetType> }
@@ -52,7 +51,6 @@ import { SessionAnswerComponent } from '../../../components/session-answer/sessi
 })
 export class UpcomingSessionsPageComponent {
     private readonly dataService = inject(DataService)
-    private readonly loadingService = inject(LoadingService)
     private readonly route = inject(ActivatedRoute)
     private readonly router = inject(Router)
 
@@ -63,12 +61,11 @@ export class UpcomingSessionsPageComponent {
     // --------------------------------------------------------------------------
     // dataService
     public readonly userGroups$ = this.dataService.userGroups
-    public readonly groupsError = this.dataService.userGroupsError
+    public readonly groupsError = computed(() => this.dataService.userGroupsState().status === 'error')
     public readonly userMeets$ = this.dataService.userMeets
-    // loadingService
-    public readonly isLoadingGroups = computed(() => this.loadingService.loadingStatesIndex()[LOADING_KEYS.USER_GROUPS])
-    public readonly isLoadingMeets = computed(() => this.loadingService.loadingStatesIndex()[LOADING_KEYS.USER_MEETS])
-    public readonly meetsError = this.dataService.userMeetsError
+    public readonly isLoadingGroups = computed(() => isPending(this.dataService.userGroupsState()))
+    public readonly isLoadingMeets = computed(() => isPending(this.dataService.userMeetsState()))
+    public readonly meetsError = computed(() => this.dataService.userMeetsState().status === 'error')
 
     // --------------------------------------------------------------------------
     //        Computed

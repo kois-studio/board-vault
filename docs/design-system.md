@@ -247,6 +247,30 @@ not the only label for an action.
   person typed or picked so trying again is one click. A toast alone is not
   enough: it fades while the wrong value stays (see
   [architecture](architecture.md#slow-and-failed-requests)).
+- **Loading, failed, empty (#256):** render a piece of loaded data through
+  its one state, `ResourceState<T>` (`core/async/resource-state.ts`):
+  `loading` (nothing loaded yet), `refreshing` (a newer copy is on its way,
+  the old one stays), `error` (with what loaded before, if anything) or
+  `ready`. `DataService` gives one per list (`userGroupsState`, …), and
+  `ResourceSignal` or `toResourceState(observable$)` makes one elsewhere.
+  Show it with `<app-async [state]="state()" loadingLabel="Loading your
+  groups" errorMessage="Your groups could not be loaded." (retry)="…">` and
+  `<ng-template>` slots: `appAsyncLoading` (the skeleton, in the shape of
+  what comes), `appAsyncEmpty`, `appAsyncError` (optional; the default is
+  the message with Retry) and `appAsyncReady let-value`. It shows nothing
+  for the first 150 ms, then the skeleton for at least 300 ms, so nothing
+  flashes; after 8 s it says the load is taking longer than usual and offers
+  Retry. A refresh keeps the content, with a small "Refreshing…"; a failed
+  refresh keeps it too, with "This may be out of date." and Retry. It sets
+  `aria-busy` while loading and a screen-reader label in a `role="status"`,
+  and skeletons pulse only under `motion-safe:`. The empty state appears only
+  after a successful load: never say "0", "nothing yet" or "nobody" while a
+  list loads or after it failed. A count that has not loaded reads
+  "Loading…" or "Unavailable". `mapState` derives one state from another
+  (the games waiting for your rating come from your groups),
+  `settledValue` reads a value only once it is loaded and current, and a
+  page-wide skeleton waits on `isFirstLoad(state)`, not `isPending`, so a
+  refresh never takes the content away.
 - **Undo:** for a quick, reversible action, act at once and pass an action
   to the toast instead of asking for confirmation first:
   `toastService.success('Removed from your wishlist', { label: 'Undo', run: () => … })`.

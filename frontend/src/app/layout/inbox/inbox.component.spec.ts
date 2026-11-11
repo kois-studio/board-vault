@@ -2,6 +2,7 @@ import { signal } from '@angular/core'
 import { ComponentFixture, TestBed } from '@angular/core/testing'
 import { provideRouter } from '@angular/router'
 import type { NotificationType } from '../../api/api.types'
+import { withStates } from '../../core/async/resource-state.testing'
 import { DataService } from '../../core/services/data.service'
 import { INBOX_CHECK_MS, InboxComponent } from './inbox.component'
 
@@ -17,13 +18,9 @@ describe('InboxComponent', () => {
             data: null,
         }) as unknown as NotificationType
 
-    const dataService = {
+    const dataService = withStates({
         userInvitations: signal<Array<unknown>>([]),
-        userInvitationsLoading: signal(false),
-        userInvitationsError: signal(false),
         userNotifications: signal<Array<NotificationType>>([]),
-        userNotificationsLoading: signal(false),
-        userNotificationsError: signal(false),
         markAllNotificationsRead: vi.fn(),
         retryUserInvitations: vi.fn(),
         retryUserNotifications: vi.fn(),
@@ -32,7 +29,7 @@ describe('InboxComponent', () => {
         refreshSharedActivity: vi.fn(),
         refreshInbox: vi.fn(),
         inboxArrivals: signal(0),
-    }
+    })
 
     const element = () => fixture.nativeElement as HTMLElement
     const trigger = () => element().querySelector('button[aria-expanded]') as HTMLButtonElement

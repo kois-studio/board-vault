@@ -9,10 +9,9 @@ import { ContainerWrapperComponent } from '../../../components/ui/container-wrap
 import { IconComponent } from '../../../components/ui/icon/icon.component'
 import { PageHeaderComponent } from '../../../components/ui/page-header/page-header.component'
 import { WishlistToggleComponent } from '../../../components/wishlist-toggle/wishlist-toggle.component'
-import { LOADING_KEYS } from '../../../core/enums/loading-keys-enum'
+import { isFirstLoad } from '../../../core/async/resource-state'
 import { GameTitlePipe } from '../../../core/pipes/game-title.pipe'
 import { DataService } from '../../../core/services/data.service'
-import { LoadingService } from '../../../core/services/loading.service'
 import { ShelfEditionService } from '../../../core/services/shelf-edition.service'
 import { gameTitle } from '../../../core/utils/gameTitle'
 @Component({
@@ -32,7 +31,6 @@ import { gameTitle } from '../../../core/utils/gameTitle'
 export class WishlistPageComponent {
     private readonly dataService = inject(DataService)
     private readonly shelfEditions = inject(ShelfEditionService)
-    private readonly loadingService = inject(LoadingService)
     private readonly toastService = inject(ToastService)
 
     // --------------------------------------------------------------------------
@@ -41,9 +39,8 @@ export class WishlistPageComponent {
     // dataService
     public readonly currentUser$ = this.dataService.currentUser
     public readonly userWishlist$ = this.dataService.userWishlist
-    public readonly wishlistError = this.dataService.userWishlistError
-    // loadingService
-    public readonly isLoadingWishlist = computed(() => this.loadingService.loadingStatesIndex()[LOADING_KEYS.USER_WISHLIST])
+    public readonly wishlistError = computed(() => this.dataService.userWishlistState().status === 'error')
+    public readonly isLoadingWishlist = computed(() => isFirstLoad(this.dataService.userWishlistState()))
 
     // --------------------------------------------------------------------------
     //        Component props

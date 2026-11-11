@@ -80,12 +80,12 @@ export class YouPageComponent {
     public readonly ratedCount = computed(() => this.dataService.userReviews().filter((review) => review.review > 0).length)
 
     /** Your groups did not load: the page cannot know them, so it never says you are in none. */
-    public readonly groupsFailed = this.dataService.userGroupsError
+    public readonly groupsFailed = computed(() => this.dataService.userGroupsState().status === 'error')
     /** The totals add up every group's line, so one group that did not load makes them wrong, not zero. */
     public readonly totalsUnknown = computed(() => this.groupsFailed() || this.groups().some((group) => group.failed))
-    public readonly gamesFailed = this.dataService.userGamesError
-    public readonly historyFailed = this.dataService.userHistorySummaryError
-    public readonly reviewsFailed = this.dataService.userReviewsError
+    public readonly gamesFailed = computed(() => this.dataService.userGamesState().status === 'error')
+    public readonly historyFailed = computed(() => this.dataService.userHistorySummaryState().status === 'error')
+    public readonly reviewsFailed = computed(() => this.dataService.userReviewsState().status === 'error')
     /**
      * Something on the page did not load: it says so once, and what is missing shows as a dash, never as 0 or
      * "none yet" (#248). Stats alone only feed the "paid" line, which is left out without them, so they do not count.
@@ -104,7 +104,7 @@ export class YouPageComponent {
     public retry(): void {
         if (this.groupsFailed()) this.dataService.refreshUserGroups()
         if (this.gamesFailed()) this.dataService.refreshUserGames()
-        if (this.dataService.userStatsError()) this.dataService.refreshUserStats()
+        if (this.dataService.userStatsState().status === 'error') this.dataService.refreshUserStats()
         if (this.historyFailed()) this.dataService.refreshUserHistory()
         if (this.reviewsFailed()) this.dataService.refreshGameReviews()
 

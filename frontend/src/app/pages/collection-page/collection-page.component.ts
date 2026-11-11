@@ -6,10 +6,9 @@ import { BadgeComponent } from '../../components/ui/badge/badge.component'
 import { ButtonComponent } from '../../components/ui/button/button.component'
 import { ContainerWrapperComponent } from '../../components/ui/container-wrapper/container-wrapper.component'
 import { PageHeaderComponent } from '../../components/ui/page-header/page-header.component'
-import { LOADING_KEYS } from '../../core/enums/loading-keys-enum'
+import type { ResourceState } from '../../core/async/resource-state'
 import { intlLocale } from '../../core/i18n/format'
 import { DataService } from '../../core/services/data.service'
-import { LoadingService } from '../../core/services/loading.service'
 
 /** The Collection landing page: one card per subpage, then recent activity. */
 @Component({
@@ -26,7 +25,6 @@ import { LoadingService } from '../../core/services/loading.service'
 })
 export class CollectionPageComponent {
     private readonly dataService = inject(DataService)
-    private readonly loadingService = inject(LoadingService)
 
     // --------------------------------------------------------------------------
     //        signals
@@ -34,11 +32,20 @@ export class CollectionPageComponent {
     public readonly userGames$ = this.dataService.userGames
     public readonly userReviews$ = this.dataService.userReviews
     public readonly userWishlist$ = this.dataService.userWishlist
-    public readonly isLoadingUserGames = computed(() => this.loadingService.loadingStatesIndex()[LOADING_KEYS.USER_GAMES])
-    public readonly isLoadingReviews = computed(() => this.loadingService.loadingStatesIndex()[LOADING_KEYS.USER_REVIEWS])
-    public readonly isLoadingWishlist = computed(() => this.loadingService.loadingStatesIndex()[LOADING_KEYS.USER_WISHLIST])
+    /** Each card counts only what has loaded: never "0 games" while it loads or after it failed (#256). */
+    public readonly gamesBadge = computed(() => this.badge(this.dataService.userGamesState(), (count) => this.gamesLabel(count)))
+    public readonly reviewsBadge = computed(() => this.badge(this.dataService.userReviewsState(), (count) => this.reviewsLabel(count)))
+    public readonly wishlistBadge = computed(() => this.badge(this.dataService.userWishlistState(), (count) => this.gamesLabel(count)))
 
     public readonly loadingLabel = $localize`:Badge on a Collection card while its count loads:Loading…`
+    public readonly unavailableLabel = $localize`:Badge on a Collection card when its count could not load:Unavailable`
+
+    /** A refresh keeps the count it had; a failure says the count is unavailable. */
+    private badge(state: ResourceState<ReadonlyArray<unknown>>, label: (count: number) => string): string {
+        if (state.status === 'loading') return this.loadingLabel
+        if (state.status === 'error') return this.unavailableLabel
+        return label(state.value.length)
+    }
 
     /** "1 game", "3 games". */
     public gamesLabel(count: number): string {

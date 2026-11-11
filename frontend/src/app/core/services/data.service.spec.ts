@@ -356,14 +356,14 @@ describe('DataService while Board Vault cannot be reached (#241)', () => {
 
         signIn()
 
-        expect(service.userHistorySummaryError()).toBe(true)
+        expect(service.userHistorySummaryState().status === 'error').toBe(true)
         expect(toast.error).toHaveBeenCalledWith('Your game night totals could not load')
 
         down.value = false
         connectivity.retry()
 
         expect(calls['getUserHistorySummary']).toBe(2)
-        expect(service.userHistorySummaryError()).toBe(false)
+        expect(service.userHistorySummaryState().status === 'error').toBe(false)
     })
 
     it('still toasts a list that failed while Board Vault is reachable', () => {
@@ -383,9 +383,9 @@ describe('DataService while Board Vault cannot be reached (#241)', () => {
 
         expect(toast.error).not.toHaveBeenCalled()
         // Each list still knows it failed, so its page can say so in place.
-        expect(service.userGamesError()).toBe(true)
-        expect(service.userGroupsError()).toBe(true)
-        expect(service.userStatsError()).toBe(true)
+        expect(service.userGamesState().status === 'error').toBe(true)
+        expect(service.userGroupsState().status === 'error').toBe(true)
+        expect(service.userStatsState().status === 'error').toBe(true)
     })
 
     it('leaves out the toast for a group’s invitations during an outage', () => {
@@ -403,7 +403,7 @@ describe('DataService while Board Vault cannot be reached (#241)', () => {
         const { service, connectivity, calls, down, signIn } = setup(['getUserGames', 'getUserStats'])
         connectivity.reportUnreachable()
         signIn()
-        expect(service.userGamesError()).toBe(true)
+        expect(service.userGamesState().status === 'error').toBe(true)
         down.value = false
 
         connectivity.retry()
@@ -411,8 +411,8 @@ describe('DataService while Board Vault cannot be reached (#241)', () => {
         expect(calls['getUserGames']).toBe(2)
         expect(calls['getUserStats']).toBe(2)
         expect(calls['getUserReviews']).toBe(1)
-        expect(service.userGamesError()).toBe(false)
-        expect(service.userStatsError()).toBe(false)
+        expect(service.userGamesState().status === 'error').toBe(false)
+        expect(service.userStatsState().status === 'error').toBe(false)
         // The quiet refresh always asks, so Try again also finds out whether Board Vault answers.
         expect(calls['getUserMeets']).toBe(2)
     })
@@ -593,5 +593,170 @@ describe('DataService saving the profile (#242)', () => {
 
         await expect(service.updateCurrentUserData({ displayName: 'Host' })).rejects.toThrow()
         expect(updateUser).not.toHaveBeenCalled()
+    })
+})
+
+describe('DataService lists while they reload (#256)', () => {
+    /** Every read answers once with something to show; later reads wait on `later` (or fail with it). */
+    const setup = () => {
+        const later = new Subject<never>()
+        const calls: Record<string, number> = {}
+        const first: Record<string, unknown> = {
+            getUserGames: [{ id: 1 }],
+            getUserGroups: [{ id: 7, name: 'Fridays', members: [] }],
+            getUserReviews: [{ gameId: 1, review: 8 }],
+            getUserMeets: [{ id: 3 }],
+            getUserGamesHistory: { entries: [{ meetData: { id: 4 } }], hasMore: false },
+            getUserHistorySummary: { nights: 1, gamesPlayed: 1, uniqueGames: 1, people: 1, mostPlayed: null, myMostPlayed: [] },
+            getUserWishlist: [{ id: 2 }],
+            getUserCollectionActivity: [{ id: 5 }],
+            getUserProposals: [{ id: 6 }],
+            getUserStats: { totalGamesValue: 40 },
+            createGroup: {},
+            acceptInvitation: {},
+        }
+        const fake = new Proxy(
+            {},
+            {
+                get: (_target, name) => () => {
+                    const key = name as string
+                    calls[key] = (calls[key] ?? 0) + 1
+                    if (key === 'createGroup' || key === 'acceptInvitation') return of({})
+                    return calls[key] === 1 ? of(first[key] ?? []) : later
+                },
+            },
+        )
+        TestBed.configureTestingModule({
+            providers: [
+                { provide: Api, useValue: fake },
+                { provide: ToastService, useValue: { success: vi.fn(), error: vi.fn() } },
+            ],
+        })
+        const service = TestBed.inject(DataService)
+        service.currentUser.set({ id: 1 } as never)
+        TestBed.tick()
+        return { service, later }
+    }
+
+    const lists = (service: DataService) => ({
+        games: [service.userGames(), service.userGamesState().status],
+        groups: [service.userGroups(), service.userGroupsState().status],
+        reviews: [service.userReviews(), service.userReviewsState().status],
+        meets: [service.userMeets(), service.userMeetsState().status],
+        history: [service.userHistory(), service.userHistoryState().status],
+        summary: [service.userHistorySummary(), service.userHistorySummaryState().status],
+        wishlist: [service.userWishlist(), service.userWishlistState().status],
+        activity: [service.userCollectionActivity(), service.userCollectionActivityState().status],
+        proposals: [service.userProposals(), service.userProposalsState().status],
+        stats: [service.userStats(), service.userStatsState().status],
+    })
+    const refreshAll = (service: DataService) => {
+        service.refreshUserGames()
+        service.refreshUserGroups()
+        service.refreshGameReviews()
+        service.refreshUserMeets()
+        service.refreshUserHistory()
+        service.refreshUserWishlist()
+        service.refreshUserCollectionActivity()
+        service.refreshUserProposals()
+        service.refreshUserStats()
+    }
+
+    it('is loading, not empty, before the first answer', () => {
+        TestBed.configureTestingModule({
+            providers: [
+                { provide: Api, useValue: new Proxy({}, { get: () => () => new Subject() }) },
+                { provide: ToastService, useValue: { success: vi.fn(), error: vi.fn() } },
+            ],
+        })
+        const service = TestBed.inject(DataService)
+        service.currentUser.set({ id: 1 } as never)
+        TestBed.tick()
+
+        expect(service.userGamesState()).toEqual({ status: 'loading', value: undefined })
+        expect(service.userHistoryState().status).toBe('loading')
+        expect(service.userReviewsState().status).toBe('loading')
+    })
+
+    it('never empties a list on refresh: it keeps what it shows and says it is refreshing', () => {
+        const { service } = setup()
+        const before = lists(service)
+        for (const [, status] of Object.values(before)) expect(status).toBe('ready')
+
+        refreshAll(service)
+
+        const during = lists(service)
+        for (const [name, [value, status]] of Object.entries(during)) {
+            expect([name, value]).toEqual([name, before[name as keyof typeof before][0]])
+            expect([name, status]).toEqual([name, 'refreshing'])
+        }
+    })
+
+    it('keeps the groups listed while they reload after creating a group or joining one', async () => {
+        const { service } = setup()
+        const groups = service.userGroups()
+
+        await firstValueFrom(service.createGroup('Sundays'))
+        expect(service.userGroups()).toBe(groups)
+        expect(service.userGroupsState().status).toBe('refreshing')
+
+        await firstValueFrom(service.acceptInvitation(9))
+        expect(service.userGroups()).toBe(groups)
+    })
+
+    it('keeps what it showed when the refresh fails, and says it failed', () => {
+        const { service, later } = setup()
+        const before = lists(service)
+
+        refreshAll(service)
+        later.error(new Error('offline'))
+
+        for (const [name, [value, status]] of Object.entries(lists(service))) {
+            expect([name, value]).toEqual([name, before[name as keyof typeof before][0]])
+            expect([name, status]).toEqual([name, 'error'])
+        }
+    })
+
+    it('starts from loading again for the next person who signs in', () => {
+        const { service } = setup()
+
+        service.currentUser.set(null)
+        TestBed.tick()
+
+        expect(service.userGames()).toEqual([])
+        expect(service.userGamesState().status).toBe('loading')
+    })
+
+    it('shows nothing of the last person to the next one, even while it loads', () => {
+        const { service } = setup()
+        expect(service.userGames()).toEqual([{ id: 1 }])
+
+        service.currentUser.set({ id: 2 } as never)
+        TestBed.tick()
+
+        expect(service.userGames()).toEqual([])
+        expect(service.userGamesState().status).toBe('loading')
+    })
+
+    it('keeps the lists, refreshing, when the same person is read again', () => {
+        const { service } = setup()
+        const games = service.userGames()
+
+        service.currentUser.set({ id: 1, username: 'renamed' } as never)
+        TestBed.tick()
+
+        expect(service.userGames()).toBe(games)
+        expect(service.userGamesState().status).toBe('refreshing')
+    })
+
+    it('takes no stopped load for a failure when the person changes', () => {
+        const { service } = setup()
+        const toast = TestBed.inject(ToastService) as unknown as { error: ReturnType<typeof vi.fn> }
+        service.refreshUserGames()
+
+        service.currentUser.set(null)
+        TestBed.tick()
+        expect(toast.error).not.toHaveBeenCalled()
+        expect(service.userGamesState().status).toBe('loading')
     })
 })

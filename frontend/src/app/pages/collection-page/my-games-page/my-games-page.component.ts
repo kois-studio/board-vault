@@ -6,11 +6,10 @@ import { ButtonComponent } from '../../../components/ui/button/button.component'
 import { ContainerWrapperComponent } from '../../../components/ui/container-wrapper/container-wrapper.component'
 import { IconComponent } from '../../../components/ui/icon/icon.component'
 import { PageHeaderComponent } from '../../../components/ui/page-header/page-header.component'
-import { LOADING_KEYS } from '../../../core/enums/loading-keys-enum'
+import { isFirstLoad } from '../../../core/async/resource-state'
 import { intlLocale } from '../../../core/i18n/format'
 import { GameTitlePipe } from '../../../core/pipes/game-title.pipe'
 import { DataService } from '../../../core/services/data.service'
-import { LoadingService } from '../../../core/services/loading.service'
 import { gameTitle } from '../../../core/utils/gameTitle'
 @Component({
     imports: [
@@ -27,16 +26,14 @@ import { gameTitle } from '../../../core/utils/gameTitle'
 })
 export class MyGamesPageComponent {
     private readonly dataService = inject(DataService)
-    private readonly loadingService = inject(LoadingService)
     // --------------------------------------------------------------------------
     //        Services signals
     // --------------------------------------------------------------------------
-    // loadingService
-    public readonly isLoadingUserGames = computed(() => this.loadingService.loadingStatesIndex()[LOADING_KEYS.USER_GAMES])
+    public readonly isLoadingUserGames = computed(() => isFirstLoad(this.dataService.userGamesState()))
     // dataService
     public readonly currentUser$ = this.dataService.currentUser
     public readonly userGames$ = this.dataService.userGames
-    public readonly userGamesError = this.dataService.userGamesError
+    public readonly userGamesError = computed(() => this.dataService.userGamesState().status === 'error')
 
     // Filter and sort, all client-side: a shelf is small. A short shelf is
     // easier to scan than to filter, so the toolbar appears from TOOLBAR_FROM games.

@@ -4,9 +4,8 @@ import { ActivatedRoute, convertToParamMap, provideRouter, Router } from '@angul
 import { type Observable, of, Subject, throwError } from 'rxjs'
 import { Api } from '../../../api/api'
 import type { HistoryPageOptions } from '../../../api/api.types'
-import { LOADING_KEYS } from '../../../core/enums/loading-keys-enum'
+import { withStates } from '../../../core/async/resource-state.testing'
 import { DataService } from '../../../core/services/data.service'
-import { LoadingService } from '../../../core/services/loading.service'
 import { HistoryPageComponent } from './history-page.component'
 
 type Page = { entries: Array<unknown>; hasMore: boolean }
@@ -36,15 +35,13 @@ async function setup({
     const dataService = {
         currentUser: signal<{ id: number; displayName?: string }>({ id: 1 }),
         userGroups: signal(groups),
-        userGroupsError: signal(false),
         userHistoryRevision: signal(0),
     }
     await TestBed.configureTestingModule({
         imports: [HistoryPageComponent],
         providers: [
             { provide: Api, useValue: api },
-            { provide: DataService, useValue: dataService },
-            { provide: LoadingService, useValue: { loadingStatesIndex: signal({ [LOADING_KEYS.USER_GROUPS]: false }) } },
+            { provide: DataService, useValue: withStates(dataService) },
             provideRouter([]),
             // After the router, which provides a route of its own.
             {

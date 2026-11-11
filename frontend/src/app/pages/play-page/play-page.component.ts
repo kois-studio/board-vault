@@ -5,10 +5,9 @@ import { BadgeComponent } from '../../components/ui/badge/badge.component'
 import { ButtonComponent } from '../../components/ui/button/button.component'
 import { ContainerWrapperComponent } from '../../components/ui/container-wrapper/container-wrapper.component'
 import { PageHeaderComponent } from '../../components/ui/page-header/page-header.component'
-import { LOADING_KEYS } from '../../core/enums/loading-keys-enum'
+import { isFirstLoad } from '../../core/async/resource-state'
 import { intlLocale } from '../../core/i18n/format'
 import { DataService } from '../../core/services/data.service'
-import { LoadingService } from '../../core/services/loading.service'
 import { relativeDay, upcomingState } from '../../core/utils/sessionTiming'
 
 /** The Play landing page: one card per subpage. */
@@ -18,7 +17,6 @@ import { relativeDay, upcomingState } from '../../core/utils/sessionTiming'
 })
 export class PlayPageComponent {
     private readonly dataService = inject(DataService)
-    private readonly loadingService = inject(LoadingService)
 
     // --------------------------------------------------------------------------
     //        signals
@@ -27,10 +25,10 @@ export class PlayPageComponent {
     public readonly userGroups$ = this.dataService.userGroups
     public readonly userMeets$ = this.dataService.userMeets
     public readonly userHistory$ = this.dataService.userHistory
-    public readonly userMeetsError = this.dataService.userMeetsError
-    public readonly userHistoryError = this.dataService.userHistoryError
-    public readonly isLoadingMeets = computed(() => this.loadingService.loadingStatesIndex()[LOADING_KEYS.USER_MEETS])
-    public readonly isLoadingHistory = computed(() => this.loadingService.loadingStatesIndex()[LOADING_KEYS.USER_GAMES_HISTORY])
+    public readonly userMeetsError = computed(() => this.dataService.userMeetsState().status === 'error')
+    public readonly userHistoryError = computed(() => this.dataService.userHistoryState().status === 'error')
+    public readonly isLoadingMeets = computed(() => isFirstLoad(this.dataService.userMeetsState()))
+    public readonly isLoadingHistory = computed(() => isFirstLoad(this.dataService.userHistoryState()))
     public readonly upcomingSessions = computed(() =>
         [...this.userMeets$()]
             .filter((meet) => upcomingState(meet) !== null)
@@ -42,10 +40,10 @@ export class PlayPageComponent {
      * The History badge: every night recorded, counted by the server, since the app holds only the latest ones (#252).
      */
     public readonly historyBadge = computed(() => {
-        const loading = this.loadingService.loadingStatesIndex()
-        if (loading[LOADING_KEYS.USER_GAMES_HISTORY] || loading[LOADING_KEYS.USER_HISTORY_SUMMARY]) return this.loadingLabel
+        if (isFirstLoad(this.dataService.userHistoryState()) || isFirstLoad(this.dataService.userHistorySummaryState()))
+            return this.loadingLabel
         const nights = this.dataService.userHistorySummary()?.nights
-        if (this.userHistoryError() || this.dataService.userHistorySummaryError()) return this.unavailableLabel
+        if (this.userHistoryError() || this.dataService.userHistorySummaryState().status === 'error') return this.unavailableLabel
         return nights === undefined ? this.loadingLabel : this.sessionsLabel(nights)
     })
     public readonly lastSession = computed(
