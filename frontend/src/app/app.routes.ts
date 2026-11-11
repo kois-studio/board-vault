@@ -101,6 +101,8 @@ export const routes: Routes = [
                 path: 'games/:gameId',
                 loadComponent: () => import('./pages/games/game-view/game-view.component').then((m) => m.GameViewPageComponent),
                 canActivate: [AuthOnlyGuard],
+                // Another game (Similar games, a notification) gets a page of its own: no copy details or rating carried over.
+                data: remountOnParamChange,
             },
             {
                 path: 'play',
@@ -148,11 +150,14 @@ export const routes: Routes = [
                 path: 'groups/:groupId/members/:accountId',
                 loadComponent: () => import('./pages/group-person/group-person-page.component').then((m) => m.GroupPersonPageComponent),
                 canActivate: [AuthOnlyGuard],
+                // A shelf notification may lead to someone in another group, whose games this page has not loaded.
+                data: remountOnParamChange,
             },
             {
                 path: 'groups/:groupId/people/:personId',
                 loadComponent: () => import('./pages/group-person/group-person-page.component').then((m) => m.GroupPersonPageComponent),
                 canActivate: [AuthOnlyGuard],
+                data: remountOnParamChange,
             },
             {
                 path: 'sessions/:sessionId',

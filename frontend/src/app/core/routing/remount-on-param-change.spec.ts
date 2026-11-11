@@ -57,7 +57,18 @@ describe('RemountOnParamChangeStrategy', () => {
 describe('the app’s routes (#258 follow-up)', () => {
     const find = (path: string) => routes.flatMap((route) => [route, ...(route.children ?? [])]).find((route) => route.path === path)
 
-    it('give each game night a page of its own', () => {
-        expect(find('sessions/:sessionId')?.data).toEqual(remountOnParamChange)
+    it('give each game night, game and group person a page of its own', () => {
+        for (const path of [
+            'sessions/:sessionId',
+            'games/:gameId',
+            'groups/:groupId/members/:accountId',
+            'groups/:groupId/people/:personId',
+        ]) {
+            expect(find(path)?.data, path).toEqual(remountOnParamChange)
+        }
+    })
+
+    it('keep the group page, which follows its address itself (the group switcher)', () => {
+        expect(find('groups/:groupId')?.data).toBeUndefined()
     })
 })
