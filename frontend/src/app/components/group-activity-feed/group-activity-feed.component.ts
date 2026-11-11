@@ -14,8 +14,11 @@ function storedTime(value: string): number {
     return new Date(value.includes('T') ? value : `${value.replace(' ', 'T')}Z`).getTime()
 }
 
-/** `takeover`: the person a "took over" entry is about, while that takeover can still be undone (ADR-0027). */
-export type GroupActivityRow = { id: number; text: string; when: string; meetId: number | null; takeoverPersonId: number | null }
+/**
+ * `takeoverAccountId`: while a "took over" entry can still be undone (ADR-0027), the member who took the person over.
+ * Their page (`members/:accountId`, as for any member) is where the undo is.
+ */
+export type GroupActivityRow = { id: number; text: string; when: string; meetId: number | null; takeoverAccountId: number | null }
 
 /**
  * The group history (ADR-0020): who changed what, newest first, ten at a time. Read-only: a
@@ -82,10 +85,10 @@ export class GroupActivityFeedComponent {
                 : undefined
         return {
             id: entry.id,
-            text: describeActivity(entry),
+            text: describeActivity(entry, { previousName: takeover?.previousName }),
             when: timeAgo(storedTime(entry.createdAt)),
             meetId: entry.meetId,
-            takeoverPersonId: takeover?.groupPersonId ?? null,
+            takeoverAccountId: takeover?.accountId ?? null,
         }
     }
 }

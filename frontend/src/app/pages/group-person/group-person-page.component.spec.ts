@@ -67,7 +67,10 @@ describe('GroupPersonPageComponent', () => {
                 provideRouter([]),
                 { provide: ActivatedRoute, useValue: { paramMap: of(convertToParamMap({ groupId: '10', ...params })) } },
                 { provide: Api, useValue: api },
-                { provide: DataService, useValue: { userGroups: () => groups, currentUser: () => ({ id: 99 }) } },
+                {
+                    provide: DataService,
+                    useValue: { userGroups: () => groups, currentUser: () => ({ id: 99 }), refreshUserGroups: vi.fn() },
+                },
                 { provide: ToastService, useValue: { success: vi.fn(), error: vi.fn() } },
             ],
         })
@@ -179,8 +182,9 @@ describe('GroupPersonPageComponent', () => {
         element.querySelector<HTMLButtonElement>('[data-testid="takeover-undo-confirm"]')?.click()
         await fixture.whenStable()
         expect(api.undoGroupPersonTakeover).toHaveBeenCalledWith(10, 30)
-        // The page loads again, to show the member as themselves.
+        // The page loads again, to show the member as themselves, and so do the group's people everywhere else.
         expect(api.getGroupCollection).toHaveBeenCalledTimes(2)
+        expect(TestBed.inject(DataService).refreshUserGroups).toHaveBeenCalledTimes(1)
     })
 
     it('shows no undo for someone without a takeover', async () => {
