@@ -149,6 +149,13 @@ export const routes: Routes = [
                 canActivate: [AuthOnlyGuard],
             },
             {
+                // "Who are you in this group?" (#278), before `people/:personId`: someone who joined picks who they are, or says they are new.
+                path: 'groups/:groupId/people/choose',
+                loadComponent: () =>
+                    import('./pages/group-person-choose/group-person-choose.component').then((m) => m.GroupPersonChooseComponent),
+                canActivate: [AuthOnlyGuard],
+            },
+            {
                 path: 'groups/:groupId/people/:personId',
                 loadComponent: () => import('./pages/group-person/group-person-page.component').then((m) => m.GroupPersonPageComponent),
                 canActivate: [AuthOnlyGuard],

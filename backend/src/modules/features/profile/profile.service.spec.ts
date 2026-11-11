@@ -132,12 +132,12 @@ describe('ProfileService invitation acceptance', () => {
                 {} as NotificationsService,
                 {} as GroupsService,
                 invitationsService as unknown as InvitationsService,
-                fakeDatabase({ acceptInvitationAtomically: vi.fn().mockResolvedValue({ success: true, joined }) }),
+                fakeDatabase({ acceptInvitationAtomically: vi.fn().mockResolvedValue({ success: true, joined, choosePerson: !joined }) }),
                 {} as GameProposalService,
                 notifier,
             )
 
-            await expect(service.acceptInvitation(8, 1)).resolves.toEqual({ success: true })
+            await expect(service.acceptInvitation(8, 1)).resolves.toEqual({ success: true, groupId: 12, choosePerson: !joined })
             return notifier.memberJoined
         }
 

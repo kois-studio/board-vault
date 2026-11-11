@@ -169,6 +169,7 @@ describe('RecommendationsPageComponent when the group people cannot be loaded', 
         ownership: [],
         preferences: [],
         claimable: false,
+        suggested: false,
     })
     const people = [person(11, 1, 'Organizer'), person(13, null, 'Guest')]
 

@@ -23,6 +23,7 @@ export const GROUP_ACTIVITY_TYPES = [
     'person_archived',
     'person_restored',
     'person_claimed',
+    'person_takeover_undone',
     'person_game_set',
     'person_preference_set',
     'person_preference_removed',

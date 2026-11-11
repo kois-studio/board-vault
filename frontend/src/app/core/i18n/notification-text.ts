@@ -65,6 +65,10 @@ function wordNotification(notification: NotificationType, context: NotificationC
                 ? ownChange(String(data['change'] ?? ''), actor, game, group)
                 : groupPersonChange(String(data['change'] ?? ''), actor, person, game, group)
         }
+        case 'group_person_takeover_undone':
+            return actor && person && group
+                ? $localize`:Notification to someone whose takeover of a person in a group was undone; person is the name that person has again:${actor}:actor: undid your takeover of ${person}:person: in ${group}:group:. You’re in the group as yourself.`
+                : null
         case 'game_proposal_approved':
             return typeof data['gameTitle'] === 'string' ? $localize`Your game proposal "${data['gameTitle']}:title:" was approved!` : null
         case 'game_proposal_submitted':

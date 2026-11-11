@@ -7,6 +7,9 @@
                     @if (row.meetId !== null) {
                         <a class="ml-1 font-medium text-bv-primary underline underline-offset-2" [routerLink]="['/sessions', row.meetId]" i18n="Link after a line in the group's history of changes that opens the game night">Open</a>
                     }
+                    @if (row.takeoverPersonId !== null) {
+                        <a class="ml-1 font-medium text-bv-primary underline underline-offset-2" [routerLink]="['/groups', groupId(), 'people', row.takeoverPersonId]" data-testid="history-undo-takeover" i18n="Link after a line in the group's history saying someone took over a person, to that person's page where the takeover can be undone">Undo…</a>
+                    }
                 </p>
                 <p class="shrink-0 text-xs text-secondary">{{ row.when }}</p>
             </li>

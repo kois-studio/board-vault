@@ -13,6 +13,17 @@ Release notes must describe product boundaries honestly and must not include
 credentials, personal data, provider identifiers, or private operational
 details.
 
+### Added
+
+- "This is me" (#278). Someone who joins a group that recorded people
+  without an account picks which of them they are, or says they're new. The
+  page shows each person's games and game nights; an invitation that
+  suggested someone puts them first, as "Is this you?". For 30 days anyone in
+  the group can undo a wrong pick from that member's page: the person gets
+  their name, games and earlier game nights back, and the member stays as
+  themselves with the nights since. The history shows the undo, and the
+  member is told (ADR-0027).
+
 ## 0.1.0 — 2026-11-11
 
 The public launch. Anyone can now create an account (#157), and the app speaks

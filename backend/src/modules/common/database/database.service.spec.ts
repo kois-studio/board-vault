@@ -838,6 +838,8 @@ describe('DatabaseService logging', () => {
                 .mockResolvedValueOnce({ rows: [[42, null]] })
                 .mockResolvedValueOnce({ rowsAffected: 1 })
                 .mockResolvedValueOnce({ rowsAffected: 1 })
+                // Nobody without an account to take over (#278).
+                .mockResolvedValueOnce({ rows: [] })
                 .mockResolvedValueOnce({ rowsAffected: 1 })
                 .mockResolvedValueOnce({ rowsAffected: 1 }),
             commit: vi.fn().mockResolvedValue(undefined),
@@ -849,7 +851,11 @@ describe('DatabaseService logging', () => {
             transaction: vi.fn().mockResolvedValue(transaction),
         }
 
-        await expect(service.invitations.acceptInvitationAtomically(42, 7, 12)).resolves.toEqual({ success: true, joined: true })
+        await expect(service.invitations.acceptInvitationAtomically(42, 7, 12)).resolves.toEqual({
+            success: true,
+            joined: true,
+            choosePerson: false,
+        })
         expect(transaction.execute).toHaveBeenNthCalledWith(1, {
             sql: expect.stringContaining('SELECT i.id, i.groupPersonId'),
             args: [42, 12, 7],
@@ -865,10 +871,14 @@ describe('DatabaseService logging', () => {
         })
         expect(transaction.execute.mock.calls[2]?.[0].sql).toContain('WHERE changes() > 0')
         expect(transaction.execute).toHaveBeenNthCalledWith(4, {
+            sql: expect.stringContaining("kind = 'placeholder' AND status = 'active' AND accountId IS NULL"),
+            args: [12, 7, 12],
+        })
+        expect(transaction.execute).toHaveBeenNthCalledWith(5, {
             sql: expect.stringContaining('INSERT INTO GroupPerson'),
             args: [12, 12, 7, 12, 7],
         })
-        expect(transaction.execute).toHaveBeenNthCalledWith(5, {
+        expect(transaction.execute).toHaveBeenNthCalledWith(6, {
             sql: expect.stringContaining('DELETE FROM Invitation'),
             args: [42, 12, 7],
         })
@@ -895,7 +905,11 @@ describe('DatabaseService logging', () => {
             transaction: vi.fn().mockResolvedValue(transaction),
         }
 
-        await expect(service.invitations.acceptInvitationAtomically(42, 7, 12)).resolves.toEqual({ success: true, joined: true })
+        await expect(service.invitations.acceptInvitationAtomically(42, 7, 12)).resolves.toEqual({
+            success: true,
+            joined: true,
+            choosePerson: true,
+        })
         expect(transaction.execute).toHaveBeenNthCalledWith(4, {
             sql: expect.stringContaining("kind = 'placeholder' AND status = 'active' AND accountId IS NULL"),
             args: [21, 12],
@@ -905,7 +919,41 @@ describe('DatabaseService logging', () => {
         expect(transaction.commit).toHaveBeenCalledTimes(1)
     })
 
-    it('authorises a claim by the invitation to the account, never by an email (#277)', async () => {
+    it('lets someone who joined without a suggestion choose who they are, without a new person (#278)', async () => {
+        const service = new DatabaseService({} as ConfigService)
+        const transaction = {
+            execute: vi
+                .fn()
+                .mockResolvedValueOnce({ rows: [[42, null]] })
+                .mockResolvedValueOnce({ rowsAffected: 1 })
+                .mockResolvedValueOnce({ rowsAffected: 1 })
+                // The group has someone without an account, and they are not one of its people.
+                .mockResolvedValueOnce({ rows: [[1]] })
+                .mockResolvedValueOnce({ rowsAffected: 1 }),
+            commit: vi.fn().mockResolvedValue(undefined),
+            rollback: vi.fn().mockResolvedValue(undefined),
+            close: vi.fn(),
+        }
+
+        ;(service as unknown as { tursoClient: unknown }).tursoClient = {
+            transaction: vi.fn().mockResolvedValue(transaction),
+        }
+
+        await expect(service.invitations.acceptInvitationAtomically(42, 7, 12)).resolves.toEqual({
+            success: true,
+            joined: true,
+            choosePerson: true,
+        })
+        expect(transaction.execute).toHaveBeenCalledTimes(5)
+        expect(transaction.execute.mock.calls.map(call => call[0].sql).join('\n')).not.toContain('INSERT INTO GroupPerson')
+        // The invitation is used up: there is no suggestion to keep.
+        expect(transaction.execute).toHaveBeenNthCalledWith(5, {
+            sql: expect.stringContaining('DELETE FROM Invitation'),
+            args: [42, 12, 7],
+        })
+    })
+
+    it('lists every person without an account as claimable, the suggested ones marked, never by an email (#277, #278)', async () => {
         const service = new DatabaseService({} as ConfigService)
         const execute = vi.fn().mockResolvedValue({ rows: [] })
 
@@ -915,8 +963,10 @@ describe('DatabaseService logging', () => {
 
         expect(execute).toHaveBeenCalledWith({
             sql: expect.stringContaining('ci.groupPersonId = gp.id AND ci.toAccountId = ?'),
-            args: [12, 7],
+            args: [7, 12, 7],
         })
+        // Only while the account is not one of the group's people already.
+        expect(execute.mock.calls[0]![0].sql).toContain('own.accountId = ?')
         expect(execute.mock.calls[0]![0].sql).not.toContain('claimEmail')
     })
 

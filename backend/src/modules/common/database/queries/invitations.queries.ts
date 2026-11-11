@@ -6,27 +6,48 @@ import { activityStatements } from './group-activity.queries.js'
 
 import type { CreateInvitationBody, CreateInvitationByUsernameBody } from '../../../../common/types/invitation.type.js'
 import type { DatabaseService } from '../database.service.js'
+import type { Transaction } from '@libsql/client'
 
 /**
  * An invitation that suggested a placeholder (`groupPersonId`) is not used up when accepted: it
- * stays as the claim ticket that lets that account, and only that account, claim the placeholder
- * until the invitation expires (#277). Claiming, or leaving the group, uses it up. A ticket is no
- * longer a pending invitation, so it is never listed, accepted, or declined again. Email
- * addresses play no part.
+ * stays as the suggestion ("Is this you?") shown to that account until the invitation expires
+ * (#277). Since #278 any member who is not one of the group's people yet may take over any
+ * placeholder; the suggestion only puts that one first. Taking someone over, or leaving the
+ * group, uses it up. A suggestion kept this way is no longer a pending invitation, so it is never
+ * listed, accepted, or declined again. Email addresses play no part.
  */
 const IS_PENDING = (alias: string) =>
     `(${alias}.groupPersonId IS NULL OR NOT EXISTS (SELECT 1 FROM GroupMembership pm WHERE pm.groupId = ${alias}.groupId AND pm.accountId = ${alias}.toAccountId))`
 
 /**
  * True when the placeholder `gp` was suggested to the account bound to `?` by an invitation that
- * has not expired. The caller still checks that the account is a member and the placeholder is
- * active and unlinked.
+ * has not expired: the person shown first, as "Is this you?" (#278).
  */
-export const CLAIM_TICKET = `EXISTS (
+export const SUGGESTED_PERSON = `EXISTS (
     SELECT 1 FROM Invitation ci
     WHERE ci.groupId = gp.groupId AND ci.groupPersonId = gp.id AND ci.toAccountId = ?
       AND (ci.expiresAt IS NULL OR ci.expiresAt > CURRENT_TIMESTAMP)
 )`
+
+/**
+ * True when the account is not one of the group's people and the group has someone without an account it could take
+ * over (#278): the account chooses who it is, or joins as someone new.
+ */
+export async function choosesPerson(transaction: Transaction, groupId: number, accountId: number): Promise<boolean> {
+    const result = await transaction.execute({
+        sql: `
+            SELECT 1
+            WHERE NOT EXISTS (SELECT 1 FROM GroupPerson WHERE groupId = ? AND accountId = ?)
+              AND EXISTS (
+                  SELECT 1 FROM GroupPerson
+                  WHERE groupId = ? AND kind = 'placeholder' AND status = 'active' AND accountId IS NULL
+              )
+        `,
+        args: [groupId, accountId, groupId],
+    })
+
+    return result.rows.length === 1
+}
 
 /** Group invitations. */
 export class InvitationQueries {
@@ -147,12 +168,16 @@ export class InvitationQueries {
         })
     }
 
-    /** Accepts an invitation; `joined` is false when the account was already a member (the invitation is still used up). */
+    /**
+     * Accepts an invitation; `joined` is false when the account was already a member (the invitation is still used up).
+     * `choosePerson` is true when the account is not one of the group's people yet and may take one over (#278): the
+     * invitation suggested someone, or the group has people without an account. Otherwise it joins as a new person.
+     */
     async acceptInvitationAtomically(
         invitationId: number,
         accountId: number,
         groupId: number,
-    ): Promise<{ success: true; joined: boolean }> {
+    ): Promise<{ success: true; joined: boolean; choosePerson: boolean }> {
         const transaction = await this.database.transaction('write')
 
         try {
@@ -201,7 +226,11 @@ export class InvitationQueries {
                     })
                 ).rows.length === 1
 
-            if (!keepsTicket) {
+            // Without a suggestion, someone the group recorded before they joined picks who they are (#278): no new
+            // person while the group has people without an account and they are not one of its people already.
+            const choosesFromGroup = !keepsTicket && (await choosesPerson(transaction, groupId, accountId))
+
+            if (!keepsTicket && !choosesFromGroup) {
                 await transaction.execute({
                     sql: `
                         INSERT INTO GroupPerson (groupId, accountId, kind, status, displayName, avatar, createdByAccountId, claimedAt)
@@ -219,7 +248,7 @@ export class InvitationQueries {
                 })
             }
 
-            // An invitation with a placeholder still to claim stays as the claim ticket; any other is used up.
+            // An invitation with a suggested person still there stays as that suggestion ("Is this you?"); any other is used up.
             if (!keepsTicket) {
                 const deletedInvitation = await transaction.execute({
                     sql: 'DELETE FROM Invitation WHERE id = ? AND groupId = ? AND toAccountId = ?',
@@ -231,8 +260,10 @@ export class InvitationQueries {
                 }
             }
 
+            const choosePerson = keepsTicket || choosesFromGroup
+
             await transaction.commit()
-            return { success: true, joined: membership.rowsAffected === 1 }
+            return { success: true, joined: membership.rowsAffected === 1, choosePerson }
         } catch (error) {
             await transaction.rollback()
             throw error

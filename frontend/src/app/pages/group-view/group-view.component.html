@@ -576,6 +576,15 @@
                         <p class="mt-1 text-sm text-secondary" i18n="Shown on the group page when a person without an account was prepared for you; the placeholder is that person's name">Review the games and preferences recorded for {{ claimablePerson.person.displayName }}, then link that history to your account.</p>
                         <a appButton class="mt-3" [routerLink]="['/groups', group.id, 'people', claimablePerson.person.id, 'claim']" i18n="Button on the group page to take over a person prepared for you">Review and claim</a>
                     </div>
+                } @else if (canChooseGroupPersonComputed()) {
+                    <div class="mt-5 rounded-2xl border border-bv-primary/30 bg-bv-primary-soft p-4" role="status" data-testid="choose-person-banner">
+                        <p class="font-semibold" i18n="Shown on the group page to a member who is not one of the group's people yet, when the group has people without an account">Are you already one of this group’s people?</p>
+                        <p class="mt-1 text-sm text-secondary" i18n="Shown on the group page to a member who is not one of the group's people yet, when the group has people without an account">Someone may have added you before you joined. Find yourself to keep your games and game nights.</p>
+                        <div class="mt-3 flex flex-wrap gap-2">
+                            <a appButton [routerLink]="['/groups', group.id, 'people', 'choose']" i18n="Button on the group page to the page where you say who you are in the group">Find yourself</a>
+                            <button appButton variant="secondary" type="button" [disabled]="groupPersonMutationId() !== null" (click)="joinAsNewGroupPerson()" i18n="Button on the group page for a member who is none of the group's people without an account">I’m new here</button>
+                        </div>
+                    </div>
                 } @else if (!currentUserHasGroupPersonComputed() && !isGroupOwnerComputed()) {
                     <div class="mt-5 rounded-2xl border border-bv-border bg-bv-surface p-4">
                         <p class="font-semibold" i18n="Shown on the group page to a member who is not one of the group's people yet">You’re not in this group’s game nights yet</p>

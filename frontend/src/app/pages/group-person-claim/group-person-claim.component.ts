@@ -133,7 +133,7 @@ export class GroupPersonClaimComponent {
             this.claimSummary.set(claimSummary)
         } catch {
             this.error.set(
-                $localize`:Error when taking over a person prepared for you in a group fails:This claim could not be completed. The invitation may have expired or already been used.`,
+                $localize`:Error when taking over a person in a group fails:This person couldn’t be linked to you. Someone may have taken them over already, or you are one of the group’s people already.`,
             )
         } finally {
             this.isSaving.set(false)

@@ -44,6 +44,7 @@ describe('GroupPersonClaimComponent', () => {
             },
         ],
         claimable: true,
+        suggested: false,
     }
 
     type PeopleAnswer = { people: Array<typeof person> }

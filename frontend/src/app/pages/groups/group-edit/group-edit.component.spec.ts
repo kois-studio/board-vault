@@ -24,6 +24,7 @@ describe('GroupEditComponent (Manage group)', () => {
         ownership: [],
         preferences: [],
         claimable: false,
+        suggested: false,
     })
 
     const setup = async (query: Record<string, string> = {}, loadingGroups = false, groups = { list: [group], failed: false }) => {

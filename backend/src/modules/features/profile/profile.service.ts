@@ -1,7 +1,7 @@
 import { BadRequestException, ForbiddenException, Injectable, Logger } from '@nestjs/common'
 
 import { LogFeature } from '../../../common/decorators/logger.decorator.js'
-import { InvitationWithExtraData } from '../../../common/types/invitation.type.js'
+import { InvitationWithExtraData, type AcceptInvitationResponseDto } from '../../../common/types/invitation.type.js'
 import { DatabaseService } from '../../common/database/database.service.js'
 import { GameProposalService } from '../../core/game-proposal/game-proposal.service.js'
 import { GroupsService } from '../../core/groups/groups.service.js'
@@ -11,7 +11,6 @@ import { NotificationsService } from '../../core/notifications/notifications.ser
 import { UsersService } from '../../core/users/users.service.js'
 
 import type { Locale } from '../../../common/i18n/locale.js'
-import type { SuccessDto } from '../../../common/types/auth.type.js'
 import type { CreateGameProposalBody, GameProposalDto } from '../../../common/types/game-proposal.type.js'
 import type { NotificationDto } from '../../../common/types/notification.type.js'
 import type { UserProposalStatsDto } from '../../../common/types/stats.type.js'
@@ -68,7 +67,7 @@ export class ProfileService {
     }
 
     @LogFeature(new Logger('ProfileService'))
-    async acceptInvitation(userId: number, invitationId: number): Promise<SuccessDto> {
+    async acceptInvitation(userId: number, invitationId: number): Promise<AcceptInvitationResponseDto> {
         // Step 1: get invitation data
         const invitationData = await this.invitationsService.getInvitationById(invitationId)
 
@@ -81,12 +80,16 @@ export class ProfileService {
         }
 
         // Membership creation and invitation consumption must commit together.
-        const { joined } = await this.databaseService.invitations.acceptInvitationAtomically(invitationId, userId, invitationData.groupId)
+        const { joined, choosePerson } = await this.databaseService.invitations.acceptInvitationAtomically(
+            invitationId,
+            userId,
+            invitationData.groupId,
+        )
 
         // Someone who was already in the group is not news to it.
         if (joined) await this.activityNotifier.memberJoined(invitationData.groupId, userId)
 
-        return { success: true }
+        return { success: true, groupId: invitationData.groupId, choosePerson }
     }
 
     @LogFeature(new Logger('ProfileService'))

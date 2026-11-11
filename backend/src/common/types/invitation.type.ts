@@ -73,3 +73,18 @@ export class InvitationWithExtraData extends InvitationDto {
     @ApiProperty({ description: 'The group data of the group the user was invited to.' })
     group: GroupDto
 }
+
+export class AcceptInvitationResponseDto {
+    @ApiProperty({ example: true })
+    success: true
+
+    @ApiProperty({ example: 3, description: 'The group joined.' })
+    groupId: number
+
+    @ApiProperty({
+        example: true,
+        description:
+            'The account is not one of the group\'s people yet and may take one over (#278): open the group\'s "Who are you?" page. False when it joined as a new person.',
+    })
+    choosePerson: boolean
+}

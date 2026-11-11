@@ -19,6 +19,9 @@ import type {
     UpdateGroupPersonOwnershipBody,
     UpdateGroupPersonPreferenceBody,
     ClaimGroupPersonBody,
+    GroupPersonChoiceDto,
+    GroupPersonTakeoverDto,
+    UndoGroupPersonTakeoverResponseDto,
 } from '../../../common/types/group-person.type.js'
 import type { AvatarDto } from '../../../common/types/user.type.js'
 import type { ResultSet } from '@libsql/client'
@@ -55,6 +58,7 @@ export class GroupPeopleService {
             this.databaseService.groups.getGroupPeoplePreferences(groupId),
         ])
         const claimableIds = new Set(claimable.rows.map(row => Number(row[0])))
+        const suggestedIds = new Set(claimable.rows.filter(row => Number(row[1]) === 1).map(row => Number(row[0])))
         const ownershipByPerson = groupByPerson(ownership.rows, (row, offset) => this.mapOwnershipRow(row, offset))
         const preferencesByPerson = groupByPerson(preferences.rows, (row, offset) => this.mapPreferenceRow(row, offset))
 
@@ -66,6 +70,7 @@ export class GroupPeopleService {
                 ownership: ownershipByPerson.get(person.id) ?? [],
                 preferences: preferencesByPerson.get(person.id) ?? [],
                 claimable: claimableIds.has(person.id),
+                suggested: suggestedIds.has(person.id),
             }
         })
     }
@@ -277,10 +282,61 @@ export class GroupPeopleService {
         })
 
         if (result.alreadyClaimed) return { success: true, alreadyClaimed: true }
-        if (!result.claimed) throw new ForbiddenException('This placeholder is not assigned to your account')
+        if (!result.claimed) {
+            throw new ForbiddenException(
+                "This person can't be taken over: they have an account, or you are one of the group's people already",
+            )
+        }
         // Games brought over to the claimer's own shelf are news to their other groups too.
         await this.activityNotifier.shelfChanged(actorAccountId, { added: result.addedToShelf })
         return { success: true, alreadyClaimed: false }
+    }
+
+    /** The people the caller may say "this is me" about, with what the group recorded for each (#278). */
+    async getChoices(actorAccountId: number, groupId: number, locale: Locale): Promise<Array<GroupPersonChoiceDto>> {
+        await this.assertGroupMember(actorAccountId, groupId)
+        const { people, games } = await this.databaseService.takeovers.getChoices(groupId, actorAccountId, locale)
+        const gamesByPerson = groupByPerson(games, (row, offset) => ({
+            id: Number(row[offset]),
+            title: row[offset + 1] === null ? null : String(row[offset + 1]),
+        }))
+
+        return people.map(row => {
+            const person = this.mapPersonRow(row)
+
+            return {
+                person,
+                suggested: Number(row.suggested) === 1,
+                games: gamesByPerson.get(person.id) ?? [],
+                nights: Number(row.nights ?? 0),
+                lastNight: row.lastNight === null || row.lastNight === undefined ? null : String(row.lastNight),
+            }
+        })
+    }
+
+    /** Takeovers in the group that can still be undone (ADR-0027). */
+    async getTakeovers(actorAccountId: number, groupId: number): Promise<Array<GroupPersonTakeoverDto>> {
+        await this.assertGroupMember(actorAccountId, groupId)
+        return this.databaseService.takeovers.getOpen(groupId)
+    }
+
+    /**
+     * Gives a person back as it was before someone took it over (ADR-0027). Any member may, the one who took it over
+     * included; that account becomes a new person of the group and hears about it when someone else did it.
+     */
+    async undoTakeover(actorAccountId: number, groupId: number, personId: number): Promise<UndoGroupPersonTakeoverResponseDto> {
+        await this.assertGroupMember(actorAccountId, groupId)
+        const result = await this.databaseService.takeovers.undo({ groupId, groupPersonId: personId, actorAccountId })
+
+        if (!result)
+            throw new NotFoundException('There is no takeover of this person to undo: it was undone, or it is more than 30 days old')
+        await this.activityNotifier.takeoverUndone({
+            groupId,
+            actorAccountId,
+            accountId: result.accountId,
+            groupPersonId: personId,
+        })
+        return { groupPersonId: personId, newPersonId: result.newPersonId }
     }
 
     async joinAsNewPerson(actorAccountId: number, groupId: number): Promise<GroupPersonDto> {
