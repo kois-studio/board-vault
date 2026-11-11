@@ -6,7 +6,8 @@ import type { Observable } from 'rxjs'
 
 /**
  * The reader's browser may reuse the answer for five minutes. For a day after that it may still show
- * it once more while it fetches a fresh one in the background, so a change can take a load to show. `private`: only the browser keeps it, never a shared cache.
+ * it once more while it fetches a fresh one in the background, so a change can take a load to show.
+ * `private`: only the browser keeps it, never a shared cache.
  */
 export const RARELY_CHANGING_CACHE = 'private, max-age=300, stale-while-revalidate=86400'
 
