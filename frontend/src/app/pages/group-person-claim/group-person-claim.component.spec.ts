@@ -5,6 +5,7 @@ import { type Observable, of, Subject, throwError } from 'rxjs'
 
 import { Api } from '../../api/api'
 import { ToastService } from '../../components/toast/toast.service'
+import { DataService } from '../../core/services/data.service'
 import { ApiUnavailableError } from '../../core/utils/apiUnavailable'
 import { GroupPersonClaimComponent } from './group-person-claim.component'
 
@@ -65,6 +66,10 @@ describe('GroupPersonClaimComponent', () => {
         }
         const router = { events: of(), navigate: vi.fn().mockName('navigate').mockResolvedValue(true) }
         const toastService = { success: vi.fn().mockName('success') }
+        const dataService = {
+            refreshUserGroups: vi.fn().mockName('refreshUserGroups'),
+            refreshUserGames: vi.fn().mockName('refreshUserGames'),
+        }
 
         await TestBed.configureTestingModule({
             imports: [GroupPersonClaimComponent],
@@ -72,6 +77,7 @@ describe('GroupPersonClaimComponent', () => {
                 { provide: Api, useValue: api },
                 { provide: Router, useValue: router },
                 { provide: ToastService, useValue: toastService },
+                { provide: DataService, useValue: dataService },
                 {
                     provide: ActivatedRoute,
                     useValue: { snapshot: { paramMap: convertToParamMap({ groupId: '12', personId: '21' }) } },
@@ -84,7 +90,7 @@ describe('GroupPersonClaimComponent', () => {
         fixture.detectChanges()
         const byTestId = (id: string) => (fixture.nativeElement as HTMLElement).querySelector<HTMLElement>(`[data-testid="${id}"]`)
         const text = () => (fixture.nativeElement as HTMLElement).textContent ?? ''
-        return { fixture, component: fixture.componentInstance, api, router, toastService, byTestId, text }
+        return { fixture, component: fixture.componentInstance, api, router, toastService, dataService, byTestId, text }
     }
 
     const unreachable = () =>
@@ -99,7 +105,7 @@ describe('GroupPersonClaimComponent', () => {
     }
 
     it('loads a claimable placeholder and preserves the review selections', async () => {
-        const { component, api } = await createComponent()
+        const { component, api, dataService } = await createComponent()
 
         expect(component.person()?.person.displayName).toBe('Ana')
         expect(component.selectedOwnership()).toEqual(new Set([42]))
@@ -121,6 +127,9 @@ describe('GroupPersonClaimComponent', () => {
             preferencesDiscarded: 0,
             importedOwnership: true,
         })
+        // The group's people changed, and so did your shelf: both load again.
+        expect(dataService.refreshUserGroups).toHaveBeenCalledTimes(1)
+        expect(dataService.refreshUserGames).toHaveBeenCalledTimes(1)
     })
 
     it('does not expose a non-claimable placeholder as claimable data', async () => {

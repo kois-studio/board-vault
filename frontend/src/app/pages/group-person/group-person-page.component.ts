@@ -114,6 +114,8 @@ export class GroupPersonPageComponent {
         try {
             await firstValueFrom(this.api.undoGroupPersonTakeover(this.groupId(), takeover.groupPersonId))
             this.confirmingUndo.set(false)
+            // The person is back without an account and the taker is a new person: the group's people changed.
+            this.dataService.refreshUserGroups()
             this.toastService.success(
                 $localize`:Toast after undoing a takeover in a group; name is the name the person gets back:${takeover.previousName}:name: is back as before.`,
             )

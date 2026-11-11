@@ -68,8 +68,9 @@ describe('GroupActivityFeedComponent', () => {
         expect(text()).toContain('Ana (left) joined the group')
     })
 
-    it('links a takeover that can still be undone to the person, where the undo is (ADR-0027)', async () => {
-        const carlos = { id: 12, name: 'Ana', standing: 'member' as const, accountId: 3 }
+    it('links a takeover that can still be undone to the member who took over, where the undo is (ADR-0027)', async () => {
+        // Rita (account 3) took Carlos over: the person has her name now.
+        const carlos = { id: 12, name: 'Rita', standing: 'member' as const, accountId: 3 }
         await render(
             [
                 {
@@ -94,7 +95,32 @@ describe('GroupActivityFeedComponent', () => {
 
         const links = (fixture.nativeElement as HTMLElement).querySelectorAll('[data-testid="history-undo-takeover"]')
         expect(links).toHaveLength(1)
-        expect(links[0]?.getAttribute('href')).toBe('/groups/10/people/12')
+        // A member's page is found by their account: their person id would read as "not in this group".
+        expect(links[0]?.getAttribute('href')).toBe('/groups/10/members/3')
+        const lines = [...(fixture.nativeElement as HTMLElement).querySelectorAll('li p:first-child')].map((line) =>
+            line.textContent?.trim(),
+        )
+        // The open takeover still knows the name the group used; the older one only that it was Rita's history.
+        expect(lines[0]).toContain('Rita took over Carlos')
+        expect(lines[1]).toBe('Rita took over the history the group had recorded for them')
+    })
+
+    it('names the person as they are now once a takeover of them was undone', async () => {
+        await render([
+            {
+                entries: [
+                    entry(4, {
+                        type: 'person_claimed',
+                        actor: { id: 5, name: 'Leo', standing: 'member' },
+                        person: { id: 12, name: 'Carlos', standing: 'member', accountId: null },
+                    }),
+                ],
+                hasMore: false,
+            },
+        ])
+
+        expect((fixture.nativeElement as HTMLElement).textContent).toContain('Leo linked Carlos to their account')
+        expect((fixture.nativeElement as HTMLElement).querySelector('[data-testid="history-undo-takeover"]')).toBeNull()
     })
 
     it('says who gave a person back after a takeover', async () => {

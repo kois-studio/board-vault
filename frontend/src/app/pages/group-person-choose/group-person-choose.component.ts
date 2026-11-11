@@ -96,6 +96,7 @@ export class GroupPersonChooseComponent {
         this.isSaving.set(true)
         try {
             await firstValueFrom(this.api.joinGroupAsNewPerson(this.groupId))
+            this.dataService.refreshUserGroups()
             this.toastService.success(
                 $localize`:Toast after joining a group as a new person instead of taking over one prepared for you:You joined the group as a new person.`,
             )

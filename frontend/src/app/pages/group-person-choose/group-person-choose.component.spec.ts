@@ -53,7 +53,7 @@ describe('GroupPersonChooseComponent', () => {
                 provideRouter([]),
                 { provide: ActivatedRoute, useValue: { snapshot: { paramMap: convertToParamMap({ groupId: '10' }) } } },
                 { provide: Api, useValue: api },
-                { provide: DataService, useValue: { userGroups: () => [{ id: 10, name: 'Thursdays' }] } },
+                { provide: DataService, useValue: { userGroups: () => [{ id: 10, name: 'Thursdays' }], refreshUserGroups: vi.fn() } },
                 { provide: ToastService, useValue: { success: vi.fn(), error: vi.fn() } },
             ],
         })
@@ -89,6 +89,7 @@ describe('GroupPersonChooseComponent', () => {
         await fixture.whenStable()
 
         expect(api.joinGroupAsNewPerson).toHaveBeenCalledWith(10)
+        expect(TestBed.inject(DataService).refreshUserGroups).toHaveBeenCalledTimes(1)
         expect(navigate).toHaveBeenCalledWith(['/groups', 10])
     })
 

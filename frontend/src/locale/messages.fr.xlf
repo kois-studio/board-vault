@@ -3825,6 +3825,15 @@
         <target>Système</target>
       </segment>
     </unit>
+    <unit id="2983566338890800481">
+      <notes>
+        <note category="description">Group history line, someone taking over a person the group had recorded; actor and person are names</note>
+      </notes>
+      <segment state="translated">
+        <source><ph id="0" equiv="actor" disp="actor"/> took over <ph id="1" equiv="person" disp="context.previousName"/></source>
+        <target><ph id="0" equiv="actor" disp="actor"/> a repris <ph id="1" equiv="person" disp="context.previousName"/></target>
+      </segment>
+    </unit>
     <unit id="2986050913571419509">
       <notes>
         <note category="description">Hint under a planned game night&apos;s shortlist</note>
@@ -9835,6 +9844,15 @@
       <segment state="translated">
         <source>Use at most <ph id="0" equiv="INTERPOLATION" disp="{{ maxLength }}"/> characters.</source>
         <target>Utilise <ph id="0" equiv="INTERPOLATION" disp="{{ maxLength }}"/> caractères au maximum.</target>
+      </segment>
+    </unit>
+    <unit id="6012817409173171715">
+      <notes>
+        <note category="description">Group history line, someone taking over a person the group had recorded, once the earlier name is no longer kept; actor is a name</note>
+      </notes>
+      <segment state="translated">
+        <source><ph id="0" equiv="actor" disp="actor"/> took over the history the group had recorded for them</source>
+        <target><ph id="0" equiv="actor" disp="actor"/> a repris son historique dans le groupe</target>
       </segment>
     </unit>
     <unit id="6014549998701676062">
