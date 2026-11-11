@@ -27,7 +27,9 @@ persists. Frontend guards and hidden buttons are UX only.
    query classes on
    [`DatabaseService`](../backend/src/modules/common/database/database.service.ts)
    (for example `databaseService.groups.getGroupById`). Queries are
-   parameterized. Services map rows to DTOs.
+   parameterized. Services map rows to DTOs. Notifications for other people
+   (`ActivityNotifier`) are sent once the change is saved. On Vercel they are
+   sent after the response, so the request does not wait for them (#253).
 6. Errors go through [`ApiErrorFilter`](../backend/src/common/http/api-error.filter.ts),
    which returns `{ statusCode, code, message, requestId }` and never leaks SQL
    or provider payloads.
@@ -60,6 +62,7 @@ attempt may already have been applied.
 | `common/types/` | DTOs with `class-validator` decorators; they define the OpenAPI contract. |
 | `common/schemas/` | zod schemas that parse database rows. |
 | `common/validators/validateEnv.ts` | Startup environment checks. |
+| `common/utils/after-response.ts` | `afterResponse(work)`: inside a Vercel request it hands `work` to `waitUntil` (`@vercel/functions`), so the response does not wait and the function stays alive until `work` ends. Anywhere else (locally, in tests, or with no `waitUntil` on offer) it awaits `work`, because work left running after a response can be frozen and lost. `work` logs its own failures. It still counts toward the function's duration, and work cut off at the maximum duration leaves no log line. |
 | `common/artwork/` | Game artwork without Nest (ADR-0015): the guarded download (public http(s) only, 8 MB, 10 s) and the compression to WebP within 800 px. sharp loads on the first image, not on every cold start (#254). `backend/scripts/import-artwork.mjs` uses it too. |
 | `modules/common/auth/` | Clerk token verification, account resolution, `GET /auth/clerk/status`. |
 | `modules/common/database/` | `DatabaseService`: the connection, `execute`, and `transaction`. |

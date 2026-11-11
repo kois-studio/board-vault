@@ -1,3 +1,5 @@
+import { Logger } from '@nestjs/common'
+
 import { fakeDatabase } from '../../../../test/fake-database.js'
 
 import { ActivityNotifier, formatSessionDate } from './activity-notifier.service.js'
@@ -186,10 +188,62 @@ describe('ActivityNotifier', () => {
         expect(database.createNotifications).not.toHaveBeenCalled()
     })
 
-    it('never fails the request that caused it', async () => {
+    it('never fails the request that caused it, and logs which notification failed', async () => {
+        const warn = vi.spyOn(Logger.prototype, 'warn').mockImplementation(() => undefined)
         const { notifier } = setup([[2, 'pending']], vi.fn().mockRejectedValue(new Error('database down')))
 
         await expect(notifier.sessionPlanned(21, 1)).resolves.toBeUndefined()
+        expect(warn).toHaveBeenCalledWith('{"event":"notification_failed","notification":"session_planned","error":"Error"}')
+        warn.mockRestore()
+    })
+
+    describe('on Vercel (#253)', () => {
+        const VERCEL_REQUEST_CONTEXT = Symbol.for('@vercel/request-context')
+        const contexts = globalThis as Record<symbol, unknown>
+        let kept: Array<Promise<unknown>>
+
+        beforeEach(() => {
+            kept = []
+            contexts[VERCEL_REQUEST_CONTEXT] = { get: () => ({ waitUntil: (promise: Promise<unknown>) => kept.push(promise) }) }
+        })
+
+        afterEach(() => {
+            delete contexts[VERCEL_REQUEST_CONTEXT]
+        })
+
+        it('answers before the notification is written, and still writes it after the response', async () => {
+            let write!: () => void
+            const written = new Promise<void>(resolve => (write = resolve))
+            const createNotifications = vi.fn(async () => {
+                await written
+                return { rowsAffected: 1 }
+            })
+            const { database, notifier } = setup(
+                [
+                    [1, 'accepted'],
+                    [2, 'pending'],
+                ],
+                createNotifications,
+            )
+
+            await notifier.sessionPlanned(21, 1)
+
+            expect(kept).toHaveLength(1)
+            await vi.waitFor(() => expect(createNotifications).toHaveBeenCalledOnce())
+            write()
+            await Promise.all(kept)
+            expect(sentTo(database.createNotifications)).toEqual([2])
+        })
+
+        it('logs a notification that fails after the response, and the kept work never rejects', async () => {
+            const warn = vi.spyOn(Logger.prototype, 'warn').mockImplementation(() => undefined)
+            const { notifier } = setup([[2, 'pending']], vi.fn().mockRejectedValue(new Error('database down')))
+
+            await expect(notifier.sessionPlanned(21, 1)).resolves.toBeUndefined()
+            await expect(Promise.all(kept)).resolves.toEqual([undefined])
+            expect(warn).toHaveBeenCalledWith('{"event":"notification_failed","notification":"session_planned","error":"Error"}')
+            warn.mockRestore()
+        })
     })
 
     it('formats the date in the session timezone, and in UTC for an unknown one', () => {

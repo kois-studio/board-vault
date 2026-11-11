@@ -1,6 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common'
 
 import { safeErrorName, structuredLog } from '../../../common/logging/structured-log.js'
+import { afterResponse } from '../../../common/utils/after-response.js'
 import { shortName } from '../../../common/utils/display-name.js'
 import { parseStoredDate } from '../../../common/utils/stored-date.js'
 import { DatabaseService } from '../../common/database/database.service.js'
@@ -31,8 +32,15 @@ export function formatSessionDate(storedDate: string, timezone: string): string 
 /**
  * In-app notifications for what happens in a group: a game night planned, started, finished or
  * cancelled, someone joining or leaving, someone's shelf changing, and someone changing what another
- * member entered for a group person. Sent after the change is saved; a failure is logged and never
- * fails the request that caused it. The person who acted is never notified.
+ * member entered for a group person. Sent after the change is saved, and on Vercel after the response,
+ * so the request does not wait for them (#253); a failure is logged and never fails the request that
+ * caused it. The person who acted is never notified.
+ *
+ * The reads behind a notification happen when it is sent, so they see the change that caused it.
+ * On Vercel, two changes a moment apart may be notified in either order. Shelf and join/leave
+ * notifications merge or cancel each other by content, so a game added and removed (or someone
+ * joining and leaving) ends the same either way; only a game added, removed and added again within
+ * moments could lose its "added" line.
  */
 @Injectable()
 export class ActivityNotifier {
@@ -42,11 +50,13 @@ export class ActivityNotifier {
 
     async sessionPlanned(sessionId: number, actorAccountId: number): Promise<void> {
         await this.guard('session_planned', async () => {
-            const context = await this.sessionContext(sessionId)
+            const [context, actor, invited] = await Promise.all([
+                this.sessionContext(sessionId),
+                this.accountName(actorAccountId),
+                this.invitedAccounts(sessionId),
+            ])
 
             if (!context) return
-            const actor = await this.accountName(actorAccountId)
-            const invited = await this.invitedAccounts(sessionId)
 
             await this.send(
                 invited.map(({ accountId }) => accountId),
@@ -60,11 +70,13 @@ export class ActivityNotifier {
 
     async sessionChanged(sessionId: number, actorAccountId: number, status: SessionChange): Promise<void> {
         await this.guard('session_changed', async () => {
-            const context = await this.sessionContext(sessionId)
+            const [context, actor, invited] = await Promise.all([
+                this.sessionContext(sessionId),
+                this.accountName(actorAccountId),
+                this.invitedAccounts(sessionId),
+            ])
 
             if (!context) return
-            const actor = await this.accountName(actorAccountId)
-            const invited = await this.invitedAccounts(sessionId)
             // A cancellation reaches everyone invited; starting and finishing only those who did not decline.
             const recipients = invited.filter(({ rsvpStatus }) => status === 'cancelled' || rsvpStatus !== 'declined')
             const message = {
@@ -86,10 +98,9 @@ export class ActivityNotifier {
     /** The other members hear it; someone who left and comes back before they read it is no news. */
     async memberJoined(groupId: number, accountId: number): Promise<void> {
         await this.guard('member_joined', async () => {
-            const members = await this.groupMembers(groupId)
+            const [members, name] = await Promise.all([this.groupMembers(groupId), this.accountName(accountId)])
 
             if (!members) return
-            const name = await this.accountName(accountId)
 
             await this.databaseService.notifications.createOrCancel(
                 this.addressed(
@@ -113,14 +124,15 @@ export class ActivityNotifier {
      */
     async memberLeft(groupId: number, memberAccountId: number, actorAccountId: number): Promise<void> {
         await this.guard('member_left', async () => {
-            const members = await this.groupMembers(groupId)
+            const removed = actorAccountId !== memberAccountId
+            const [members, member, actor] = await Promise.all([
+                this.groupMembers(groupId),
+                this.accountName(memberAccountId),
+                removed ? this.accountName(actorAccountId) : null,
+            ])
 
             if (!members) return
-            const member = await this.accountName(memberAccountId)
-            const message =
-                actorAccountId === memberAccountId
-                    ? `${member} left ${members.groupName}.`
-                    : `${await this.accountName(actorAccountId)} removed ${member} from ${members.groupName}.`
+            const message = removed ? `${actor} removed ${member} from ${members.groupName}.` : `${member} left ${members.groupName}.`
 
             await this.databaseService.notifications.createOrCancel(
                 this.addressed(members.accountIds, [actorAccountId, memberAccountId], NotificationTypeEnum.USER_LEFT_GROUP, message, {
@@ -162,15 +174,17 @@ export class ActivityNotifier {
     }): Promise<void> {
         if (change.enteredByAccountId === change.actorAccountId) return
         await this.guard('group_person_changed', async () => {
-            const rows = (await this.databaseService.notifications.getGroupNotificationContext(change.groupId)).rows
-            const groupName = rows[0] ? String(rows[0][0]) : null
+            const [members, personRows, gameRows, actor] = await Promise.all([
+                this.groupMembers(change.groupId),
+                this.databaseService.groups.getGroupPersonById(change.groupPersonId, change.groupId),
+                this.databaseService.groupActivity.getGameTitles([change.gameId], 'en'),
+                this.accountName(change.actorAccountId),
+            ])
+            const [personRow] = personRows.rows
+            const [gameRow] = gameRows.rows
 
-            if (!groupName || !rows.some(row => Number(row[1]) === change.enteredByAccountId)) return
-            const [personRow] = (await this.databaseService.groups.getGroupPersonById(change.groupPersonId, change.groupId)).rows
-            const [gameRow] = (await this.databaseService.groupActivity.getGameTitles([change.gameId], 'en')).rows
-
-            if (!personRow) return
-            const actor = await this.accountName(change.actorAccountId)
+            if (!members?.accountIds.includes(change.enteredByAccountId) || !personRow) return
+            const groupName = members.groupName
             const person = shortName(String(personRow[5]))
             const game = gameRow?.[1] ? String(gameRow[1]) : 'a game'
             // Someone changing their own games (a member's group person) speaks of themselves, not of their name twice.
@@ -201,12 +215,16 @@ export class ActivityNotifier {
         })
     }
 
+    /** Runs `work` after the response on Vercel, awaited anywhere else (afterResponse), and logs instead of throwing. */
     private async guard(event: string, work: () => Promise<void>): Promise<void> {
-        try {
-            await work()
-        } catch (error) {
-            this.LOGGER.warn(structuredLog('notification_failed', { event, error: safeErrorName(error) }))
-        }
+        await afterResponse(async () => {
+            try {
+                await work()
+            } catch (error) {
+                // `notification`, not `event`: structuredLog's own `event` would be overwritten.
+                this.LOGGER.warn(structuredLog('notification_failed', { notification: event, error: safeErrorName(error) }))
+            }
+        })
     }
 
     private async send(
