@@ -57,6 +57,9 @@ export class SectionPreloadingStrategy implements PreloadingStrategy {
             // Checked again when its turn comes: the account may have signed out, or the browser started saving data.
             if (!this.wanted(isAdmin)) return
             // Until it completes: the router's `load()` for a page emits once at once, then again when its code arrives.
+            // The router's `load()` completes only after it has preloaded the route's lazy children, and their turns queue
+            // behind this one: a section page with lazy child routes would stall the queue. None has any today; if one
+            // gets them, stop waiting here for them (e.g. resolve on the chunk, not on `load()` completing).
             await lastValueFrom(load(), { defaultValue: null })
         })
         // A chunk that fails to load is asked for again when its page is opened; the queue goes on.
