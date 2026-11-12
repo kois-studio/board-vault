@@ -3,6 +3,7 @@ import { inject } from '@angular/core'
 import { ActivatedRouteSnapshot, CanActivateFn, Router, UrlTree } from '@angular/router'
 import { from, map, Observable, of, switchMap } from 'rxjs'
 
+import { AccountPendingService } from '../services/account-pending.service'
 import { ClerkService } from '../services/clerk.service'
 import { LoginService } from '../services/login.service'
 
@@ -18,6 +19,10 @@ export const SHOWS_AUTH_HANDOFF = 'showsAuthHandoff'
  * a blank page while /auth/clerk/status answers. Both layouts render it, so
  * every page behind this guard does (#239). Other routes wait for the
  * verification.
+ *
+ * Before Clerk has loaded nobody knows yet whether someone is signed in, so the
+ * first page waits here; `AppComponent` shows the app's frame and a page
+ * skeleton meanwhile instead of a blank page (#259).
  */
 export const AuthOnlyGuard: CanActivateFn = (route: ActivatedRouteSnapshot): Observable<boolean | UrlTree> => {
     const loginService = inject(LoginService)
@@ -28,6 +33,7 @@ export const AuthOnlyGuard: CanActivateFn = (route: ActivatedRouteSnapshot): Obs
         return of(true)
     }
 
+    inject(AccountPendingService).showBootFrameWhileWaiting(route)
     return from(clerkService.whenLoaded()).pipe(switchMap(() => afterClerkLoaded(route, loginService, clerkService, router)))
 }
 

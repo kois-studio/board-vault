@@ -6,6 +6,11 @@
     Skip to main content
 </a>
 
+<!-- The first page's frame while it waits for sign-in, instead of a blank page (#259). -->
+@if (bootFrame()) {
+<app-boot-frame />
+}
+
 <router-outlet />
 
 <!-- general toast for the app -->
