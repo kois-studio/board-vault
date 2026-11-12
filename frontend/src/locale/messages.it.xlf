@@ -4997,6 +4997,15 @@
         <target>Non è stato possibile salvare chi porta il gioco. Riprova.</target>
       </segment>
     </unit>
+    <unit id="3551741988843494057">
+      <notes>
+        <note category="description">Accessible name of the thin bar along the top of the window while the next page opens</note>
+      </notes>
+      <segment state="translated">
+        <source>Opening the page</source>
+        <target>Apertura della pagina</target>
+      </segment>
+    </unit>
     <unit id="3558858121912696601">
       <notes>
         <note category="description">Shown on the group page before anyone suggests a game to buy</note>

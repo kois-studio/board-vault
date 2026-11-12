@@ -330,6 +330,17 @@ frame the skeleton alone.
 chunk that only admins download): sidebar and section side by side on desktop, and on phones a
 list of sections at the base route that opens each section full width.
 
+Every page but the landing page is a lazy chunk. `SectionPreloadingStrategy`
+(`core/routing/section-preloading.ts`, #264) loads the pages of Home,
+Collection and Play ahead (the paths in `APP_SECTIONS`), so a first visit
+to a section does not wait for its code: only once you are signed in, one
+chunk at a time in an idle moment, and never when the browser asks to save
+data or the connection is 2G. Administration loads ahead for admins only;
+every other page loads when it is opened. When moving to another page takes
+more than 300 ms (its code still loading, a guard waiting), a thin bar along
+the top says so (`layout/navigation-progress`); the first page has the boot
+frame instead.
+
 `ThemeService` owns the colour scheme: `localStorage.theme` is `system`
 (the default), `light`, or `dark`. `system` follows the OS live, and the
 service keeps the `theme-color` meta tags on the theme actually shown. The

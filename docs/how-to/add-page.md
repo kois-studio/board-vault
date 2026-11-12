@@ -8,7 +8,9 @@
    `input()`, `input.required()`, and `output()`, not the `@Input` and
    `@Output` decorators.
 2. **Register the route** in `frontend/src/app/app.routes.ts` with
-   `loadComponent`. Signed-in pages use `canActivate: [AuthOnlyGuard]`. Use
+   `loadComponent`. A page of Home, Collection or Play listed in
+   `layout/app-sections.ts` also loads ahead once you are signed in (#264);
+   any other page loads when it is opened. Signed-in pages use `canActivate: [AuthOnlyGuard]`. Use
    `LayoutCompleteComponent` for browsing and `LayoutBasicComponent` for a
    focused action, inside that layout's parent, never after the not-found
    wildcard at the end. Both parents carry `SHOWS_AUTH_HANDOFF`, so a

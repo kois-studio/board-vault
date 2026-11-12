@@ -5085,6 +5085,15 @@
         <source>Could not save who brings the game. Try again.</source>
       </segment>
     </unit>
+    <unit id="3551741988843494057">
+      <notes>
+        <note category="location">src/app/layout/navigation-progress/navigation-progress.component.ts</note>
+        <note category="description">Accessible name of the thin bar along the top of the window while the next page opens</note>
+      </notes>
+      <segment>
+        <source>Opening the page</source>
+      </segment>
+    </unit>
     <unit id="3558858121912696601">
       <notes>
         <note category="location">src/app/pages/group-view/group-view.component.html</note>

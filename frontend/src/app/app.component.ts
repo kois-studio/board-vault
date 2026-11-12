@@ -11,12 +11,20 @@ import { AccountPendingService } from './core/services/account-pending.service'
 import { ThemeService } from './core/services/theme.service'
 import { UsageService } from './core/services/usage.service'
 import { BootFrameComponent } from './layout/boot-frame/boot-frame.component'
+import { NavigationProgressComponent } from './layout/navigation-progress/navigation-progress.component'
 
 /** Paths search engines may index (#157): the public pages a visitor can open without an account. */
 const INDEXABLE_PATHS = new Set(['/', '/privacy', '/login', '/register'])
 @Component({
     selector: 'app-root',
-    imports: [RouterOutlet, ToastComponent, EditionChoiceDialogComponent, InPageLinkDirective, BootFrameComponent],
+    imports: [
+        RouterOutlet,
+        ToastComponent,
+        EditionChoiceDialogComponent,
+        InPageLinkDirective,
+        BootFrameComponent,
+        NavigationProgressComponent,
+    ],
     templateUrl: './app.component.html',
 })
 export class AppComponent {
