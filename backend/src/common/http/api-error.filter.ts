@@ -3,11 +3,17 @@ import { randomUUID } from 'node:crypto'
 import { ArgumentsHost, Catch, ExceptionFilter, HttpException, HttpStatus, Logger } from '@nestjs/common'
 
 import { structuredLog } from '../logging/structured-log.js'
+import { afterResponse } from '../utils/after-response.js'
 
 import { API_ERROR_CODES, BoardVaultHttpException } from './api-error.js'
 import { ProviderTimeoutError } from './provider-timeout.js'
 
 import type { Request, Response } from 'express'
+
+/** What the filter needs to keep an unexpected exception as a problem report (`ProblemsService`). */
+export type ProblemRecorder = {
+    recordFromApi(error: unknown, request: { method: string; route?: { path?: string }; requestId?: string }): Promise<void>
+}
 
 export type ApiErrorResponse = {
     statusCode: number
@@ -26,6 +32,9 @@ export type ApiErrorResponse = {
 @Catch()
 export class ApiErrorFilter implements ExceptionFilter {
     private readonly logger = new Logger(ApiErrorFilter.name)
+
+    /** `problems` keeps unexpected exceptions as problem reports (ADR-0028); without it they are only logged. */
+    constructor(private readonly problems?: ProblemRecorder) {}
 
     catch(caught: unknown, host: ArgumentsHost): void {
         const http = host.switchToHttp()
@@ -63,6 +72,17 @@ export class ApiErrorFilter implements ExceptionFilter {
                     statusCode,
                 }),
             )
+            // After the answer on Vercel; recordFromApi catches and logs its own failure.
+            const problems = this.problems
+
+            if (problems)
+                void afterResponse(() =>
+                    problems.recordFromApi(caught, {
+                        method: request.method,
+                        route: (request as Request & { route?: { path?: string } }).route,
+                        requestId,
+                    }),
+                )
         }
 
         // An error answer is never kept by a browser, even on a route that lets it keep its answers (#254).

@@ -16,13 +16,14 @@ import { HomeQueries } from './queries/home.queries.js'
 import { IdempotencyQueries } from './queries/idempotency.queries.js'
 import { InvitationQueries } from './queries/invitations.queries.js'
 import { NotificationQueries } from './queries/notifications.queries.js'
+import { ProblemQueries } from './queries/problem.queries.js'
 import { RecommendationQueries } from './queries/recommendations.queries.js'
 import { RecordingQueries } from './queries/session-recording.queries.js'
 import { SessionQueries } from './queries/sessions.queries.js'
 import { TakeoverQueries } from './queries/takeover.queries.js'
 import { UsageQueries } from './queries/usage.queries.js'
 
-export const CURRENT_SCHEMA_VERSION = '0034'
+export const CURRENT_SCHEMA_VERSION = '0035'
 
 /** Statements that only read, so running them twice is harmless. Any write keyword, even inside a `WITH`, makes it a write. */
 const READ_ONLY_SQL = /^\s*(SELECT|WITH)\b/i
@@ -54,6 +55,7 @@ export class DatabaseService implements OnModuleInit, OnModuleDestroy {
     readonly idempotency = new IdempotencyQueries(this)
     readonly invitations = new InvitationQueries(this)
     readonly notifications = new NotificationQueries(this)
+    readonly problems = new ProblemQueries(this)
     readonly recommendations = new RecommendationQueries(this)
     readonly sessions = new SessionQueries(this)
     readonly takeovers = new TakeoverQueries(this)

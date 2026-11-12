@@ -10,6 +10,7 @@ import { getCorsOrigins } from './common/http/cors.js'
 import { applySecurityHeaders, createBodyParsers } from './common/http/http-hardening.js'
 import { JsonLogger } from './common/logging/json-logger.js'
 import { validateEnv } from './common/validators/index.js'
+import { ProblemsService } from './modules/core/problems/problems.service.js'
 
 const port = process.env.PORT || 3000
 const logger = new Logger('Init')
@@ -45,7 +46,8 @@ async function bootstrap() {
     // Close the database client when the runtime stops the process.
     app.enableShutdownHooks()
 
-    app.useGlobalFilters(new ApiErrorFilter())
+    // Unexpected exceptions are also kept as problem reports (ADR-0028): Vercel keeps logs for about an hour.
+    app.useGlobalFilters(new ApiErrorFilter(app.get(ProblemsService)))
 
     // Keep every DTO boundary strict, including routes added without a local pipe.
     app.useGlobalPipes(

@@ -25,6 +25,7 @@ import { MeetAccountGamesModule } from './modules/core/meet-account-games/meet-a
 import { MeetAttendeesModule } from './modules/core/meet-attendees/meet-attendees.module.js'
 import { MeetsModule } from './modules/core/meets/meets.module.js'
 import { NotificationsModule } from './modules/core/notifications/notifications.module.js'
+import { ProblemsModule } from './modules/core/problems/problems.module.js'
 import { ReviewsModule } from './modules/core/reviews/reviews.module.js'
 import { TagCategoryModule } from './modules/core/tag-category/tag-category.module.js'
 import { TagsModule } from './modules/core/tags/tags.module.js'
@@ -66,6 +67,7 @@ import { SessionsModule } from './modules/features/sessions/sessions.module.js'
         ReviewsModule,
         TagCategoryModule,
         TagsModule,
+        ProblemsModule,
         UsageModule,
         UsersModule,
         WishlistModule,

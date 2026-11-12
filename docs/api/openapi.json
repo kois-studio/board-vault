@@ -2354,6 +2354,61 @@
         ]
       }
     },
+    "/problems": {
+      "post": {
+        "operationId": "ProblemsController_report",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ProblemReportBody"
+              }
+            }
+          }
+        },
+        "responses": {
+          "204": {
+            "description": "Recorded, or left out past the daily limit of distinct problems."
+          },
+          "429": {
+            "description": "Too many reports from this address."
+          }
+        },
+        "summary": "Report a problem the app ran into; scrubbed, with no account or IP address (ADR-0028)",
+        "tags": [
+          "problems"
+        ]
+      }
+    },
+    "/admin/problems": {
+      "get": {
+        "operationId": "ProblemsController_getReport",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemReportDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Problems of the last 30 days, most recent first (admins only)",
+        "tags": [
+          "problems"
+        ]
+      }
+    },
     "/navigation": {
       "post": {
         "operationId": "UsageController_navigation",
@@ -8733,6 +8788,199 @@
           "gameResults",
           "gameVotes",
           "gameBringers"
+        ]
+      },
+      "ProblemReportBody": {
+        "type": "object",
+        "properties": {
+          "kind": {
+            "type": "string",
+            "enum": [
+              "error",
+              "rejection",
+              "chunk",
+              "request"
+            ],
+            "description": "error: thrown in the app; rejection: a promise nobody handled; chunk: a page whose code could not load; request: an API call that got no answer or a 5xx."
+          },
+          "name": {
+            "type": "string",
+            "example": "TypeError"
+          },
+          "message": {
+            "type": "string",
+            "example": "Cannot read properties of undefined (reading 'id')"
+          },
+          "stack": {
+            "type": "string",
+            "description": "The stack, if any; cut to 4000 characters and scrubbed."
+          },
+          "view": {
+            "type": "string",
+            "example": "/groups/:groupId",
+            "description": "The screen it happened on, as a route template."
+          },
+          "method": {
+            "type": "string",
+            "example": "GET",
+            "description": "For a request: its method."
+          },
+          "path": {
+            "type": "string",
+            "example": "/dashboard/users/:id/group-overviews",
+            "description": "For a request: its path; ids are replaced by the API."
+          },
+          "status": {
+            "type": "number",
+            "example": 503,
+            "description": "For a request: the status, 0 when there was no answer."
+          },
+          "requestId": {
+            "type": "string",
+            "description": "For a request: the API's requestId from the error answer, to find its log lines."
+          },
+          "release": {
+            "type": "string",
+            "example": "a1b2c3d",
+            "description": "The build of the app."
+          },
+          "locale": {
+            "type": "string",
+            "example": "es",
+            "description": "The language of the app."
+          }
+        },
+        "required": [
+          "kind",
+          "name",
+          "message"
+        ]
+      },
+      "ProblemSummaryDto": {
+        "type": "object",
+        "properties": {
+          "fingerprint": {
+            "type": "string"
+          },
+          "source": {
+            "type": "string",
+            "enum": [
+              "app",
+              "api"
+            ]
+          },
+          "kind": {
+            "type": "string",
+            "enum": [
+              "error",
+              "rejection",
+              "chunk",
+              "request",
+              "exception"
+            ]
+          },
+          "name": {
+            "type": "string"
+          },
+          "message": {
+            "type": "string"
+          },
+          "stack": {
+            "type": "string",
+            "nullable": true
+          },
+          "view": {
+            "type": "string",
+            "nullable": true
+          },
+          "endpoint": {
+            "type": "string",
+            "nullable": true,
+            "example": "GET /dashboard/users/:id/group-overviews"
+          },
+          "status": {
+            "type": "number",
+            "nullable": true
+          },
+          "requestId": {
+            "type": "string",
+            "nullable": true,
+            "description": "The latest one."
+          },
+          "release": {
+            "type": "string",
+            "nullable": true,
+            "description": "The latest one."
+          },
+          "locale": {
+            "type": "string",
+            "nullable": true,
+            "description": "The latest one."
+          },
+          "browser": {
+            "type": "string",
+            "nullable": true,
+            "example": "Firefox 133 · Windows",
+            "description": "The latest one."
+          },
+          "occurrences": {
+            "type": "number",
+            "description": "How many times, over the last 30 days."
+          },
+          "days": {
+            "type": "number",
+            "description": "On how many days it happened."
+          },
+          "firstSeenAt": {
+            "type": "string"
+          },
+          "lastSeenAt": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "fingerprint",
+          "source",
+          "kind",
+          "name",
+          "message",
+          "stack",
+          "view",
+          "endpoint",
+          "status",
+          "requestId",
+          "release",
+          "locale",
+          "browser",
+          "occurrences",
+          "days",
+          "firstSeenAt",
+          "lastSeenAt"
+        ]
+      },
+      "ProblemReportDto": {
+        "type": "object",
+        "properties": {
+          "problems": {
+            "description": "Most recent first.",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ProblemSummaryDto"
+            }
+          },
+          "dailyLimit": {
+            "type": "number",
+            "description": "Distinct problems a day can add; past it, only problems already seen that day are counted."
+          },
+          "limitReached": {
+            "type": "boolean",
+            "description": "Whether a day of the last 30 reached the limit, so some problems may be missing."
+          }
+        },
+        "required": [
+          "problems",
+          "dailyLimit",
+          "limitReached"
         ]
       },
       "NavigationBody": {
