@@ -205,6 +205,14 @@ export class GroupQueries {
         })
     }
 
+    /** The memberships of many groups in one query (#262). */
+    getGroupMembershipsByGroupIds(ids: Array<number>) {
+        return this.database.execute({
+            sql: `SELECT * FROM GroupMembership WHERE groupId IN (${ids.map(() => '?').join(', ')})`,
+            args: ids,
+        })
+    }
+
     async getGroupMemberIds(groupId: number): Promise<Array<number>> {
         const resultSet = await this.database.execute({
             sql: 'SELECT accountId FROM GroupMembership WHERE groupId = ?',

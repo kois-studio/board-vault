@@ -79,6 +79,14 @@ export class CollectionQueries {
         })
     }
 
+    /** Everyone's owned games in one query (#262). */
+    getOwnedGamesByAccountIds(ids: Array<number>) {
+        return this.database.execute({
+            sql: `SELECT * FROM OwnedGame WHERE accountId IN (${ids.map(() => '?').join(', ')})`,
+            args: ids,
+        })
+    }
+
     isGameIdOwnedByAccountId(accountId: number, gameId: number) {
         return this.database.execute({
             sql: 'SELECT * FROM OwnedGame WHERE accountId = ? AND gameId = ?',
@@ -445,6 +453,14 @@ export class CollectionQueries {
         return this.database.execute({
             sql: 'SELECT * FROM GameReview WHERE accountId = ?',
             args: [accountId],
+        })
+    }
+
+    /** Everyone's reviews in one query (#262). */
+    getGameReviewsByAccountIds(ids: Array<number>) {
+        return this.database.execute({
+            sql: `SELECT * FROM GameReview WHERE accountId IN (${ids.map(() => '?').join(', ')})`,
+            args: ids,
         })
     }
 

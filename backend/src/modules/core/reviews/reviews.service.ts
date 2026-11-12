@@ -77,6 +77,15 @@ export class ReviewsService {
         return this._parseResultSet(resultSet)
     }
 
+    /** Many accounts' reviews in one query (#262). */
+    async getGameReviewsByAccountIds(accountIds: Array<number>): Promise<Array<GameReviewDto>> {
+        const ids = [...new Set(accountIds)]
+
+        if (ids.length === 0) return []
+
+        return this._parseResultSet(await this.databaseService.collection.getGameReviewsByAccountIds(ids))
+    }
+
     async saveGameReview(accountId: number, gameId: number, review: number) {
         this.LOGGER.log('Saving game review')
         try {

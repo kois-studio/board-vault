@@ -67,6 +67,15 @@ export class GamesOwnedService {
         return this._parseResultSet(resultSet)
     }
 
+    /** Many accounts' owned games in one query (#262). */
+    async getGamesOwnedByAccountIds(accountIds: Array<number>): Promise<Array<GameOwnedDto>> {
+        const ids = [...new Set(accountIds)]
+
+        if (ids.length === 0) return []
+
+        return this._parseResultSet(await this.databaseService.collection.getOwnedGamesByAccountIds(ids))
+    }
+
     // TODO: boolean? what is this method for?
     async isGameIdOwnedByAccountId(accountId: number, gameId: number, throwError = true): Promise<GameOwnedDto | null> {
         this.LOGGER.log('Getting owned game by composite id')

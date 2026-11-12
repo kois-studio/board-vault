@@ -157,6 +157,32 @@ A person's history grows with every night, so no response carries all of it
   previous frontend release while both deploy. It is deprecated and is removed
   in a later release.
 
+## Groups
+
+What a group answers no longer grows with every game its people own (#262).
+Each route checks that the caller is the user in the address, and the routes
+for one group that the caller is a member of it (`403` otherwise). Each takes
+the same few queries however many groups, people and games there are.
+
+- `GET /dashboard/users/:userId/group-overviews` answers the account's groups:
+  each group's fields, `gameCount` (the
+  group's games, each counted once), `members` (public profile, `joinedAt`,
+  `gameCount`) and `placeholders` (the group's active people without an
+  account: `id`, `displayName`, `avatar`, `gameCount`). No games, ratings or
+  emails, so its size does not change with what anyone owns.
+- `GET /dashboard/users/:userId/group-overviews/:groupId` answers one of them,
+  as in the list, for a page about that group.
+- `GET /dashboard/users/:userId/groups/:groupId/shelf` answers what a page
+  about the group's games needs: `games` (each once, with its title in the
+  reader's language, sorted by it), `owners` (one entry per member with
+  `accountId`, then per active person without an account with
+  `groupPersonId`, each with the `gameIds` they bring) and `reviews` (the
+  members' ratings).
+- `GET /dashboard/users/:userId/groups` and
+  `GET /dashboard/users/:userId/groups/:groupId` still answer every member's
+  games and ratings, for the previous frontend release while both deploy.
+  They are deprecated and are removed in a later release.
+
 ## Browser caching
 
 Answers are not cached by default. A route whose answer changes rarely and is

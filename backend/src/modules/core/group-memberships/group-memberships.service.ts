@@ -87,6 +87,15 @@ export class GroupMembershipsService {
         return this._parseResultSet(resultSet)
     }
 
+    /** The memberships of many groups in one query (#262). */
+    async getGroupMembershipsByGroupIds(groupIds: Array<number>): Promise<Array<GroupMembershipDto>> {
+        const ids = [...new Set(groupIds)]
+
+        if (ids.length === 0) return []
+
+        return this._parseResultSet(await this.databaseService.groups.getGroupMembershipsByGroupIds(ids))
+    }
+
     async createGroupMembership(membershipDto: CreateGroupMembershipBody) {
         this.LOGGER.log('Creating membership')
         try {

@@ -16,10 +16,25 @@ import { buildHistoryRecords, parseAvatar } from '../play/history-records.js'
 
 import type { Locale } from '../../../common/i18n/locale.js'
 import type { SuccessDto } from '../../../common/types/auth.type.js'
-import type { CreatedGroupDto, GroupMemberWithGames, GroupWithMembersAndGames } from '../../../common/types/group.type.js'
+import type { GameCompleteDto } from '../../../common/types/game.type.js'
+import type {
+    CreatedGroupDto,
+    GroupDto,
+    GroupMemberWithGames,
+    GroupOverviewDto,
+    GroupShelfDto,
+    GroupWithMembersAndGames,
+} from '../../../common/types/group.type.js'
 import type { UserStatsDto } from '../../../common/types/stats.type.js'
-import type { UserPublicWithGames } from '../../../common/types/user.type.js'
+import type { UserPublicDto, UserPublicWithGames } from '../../../common/types/user.type.js'
 import type { HistoryRecordDto } from '../play/play.types.js'
+
+/** A group as loaded once for the overview, the shelf and the deprecated full shape: games as ids only. */
+type LoadedGroup = {
+    group: GroupDto
+    members: Array<{ accountId: number; user: UserPublicDto; joinedAt: string; gameIds: Array<number> }>
+    placeholders: Array<{ id: number; displayName: string; avatar: ReturnType<typeof parseAvatar>; gameIds: Array<number> }>
+}
 
 @Injectable()
 export class DashboardService {
@@ -47,20 +62,20 @@ export class DashboardService {
         }
     }
 
+    /**
+     * Every group of the user with every member's games and reviews. Deprecated (#262): it grows with everyone's
+     * collection. Kept for the previous frontend release while both deploy (docs/api.md, Compatibility); use
+     * `getGroupOverviewsOfUser` and `getGroupShelf`.
+     */
     @LogFeature(new Logger('DashboardService'))
     async getGroupsOfUser(userId: number, locale: Locale): Promise<Array<GroupWithMembersAndGames>> {
-        const memberships = await this.groupMembershipsService.getGroupMembershipsByAccountId(userId)
-
-        return this.groupsWithMembersAndGames(
-            memberships.map(membership => membership.groupId),
-            locale,
-        )
+        return this.groupsWithMembersAndGames(await this.groupIdsOfUser(userId), locale)
     }
 
     /**
      * One of the user's groups, shaped like an entry of `getGroupsOfUser`, for a page about that group: a session
      * page needs its own group, not every group with every member's games and reviews (#258). The route's guards
-     * check that the caller is the user and a member.
+     * check that the caller is the user and a member. Deprecated with `getGroupsOfUser` (#262).
      */
     @LogFeature(new Logger('DashboardService'))
     async getGroupOfUser(groupId: number, locale: Locale): Promise<GroupWithMembersAndGames> {
@@ -71,77 +86,156 @@ export class DashboardService {
         return group
     }
 
-    private async groupsWithMembersAndGames(groupIdsOfUser: Array<number>, locale: Locale): Promise<Array<GroupWithMembersAndGames>> {
-        const groups = await Promise.all(
-            groupIdsOfUser.map(async groupId => ({
-                group: await this.groupsService.getGroupById(groupId),
-                memberships: await this.groupMembershipsService.getGroupMembershipsByGroupId(groupId),
-            })),
-        )
+    /** The user's groups with their people and counts, the same size however many games anyone owns (#262). */
+    @LogFeature(new Logger('DashboardService'))
+    async getGroupOverviewsOfUser(userId: number): Promise<Array<GroupOverviewDto>> {
+        return this.groupOverviews(await this.groupIdsOfUser(userId))
+    }
 
-        // Load every member, game, and translation once, in set-based queries,
-        // instead of once per group, member, and game.
-        const memberIds = [...new Set(groups.flatMap(entry => entry.memberships.map(item => item.accountId)))]
-        const groupIds = groups.map(entry => entry.group.id)
-        const [users, ownedByMember, reviewsByMember, placeholderRows, ownershipRows] = await Promise.all([
-            this.usersService.getPublicUsersByIds(memberIds),
-            Promise.all(memberIds.map(async id => [id, await this.gamesOwnedService.getGamesOwnedByAccountId(id)] as const)).then(
-                entries => new Map(entries),
-            ),
-            Promise.all(memberIds.map(async id => [id, await this.reviewsService.getGameReviewsByAccountId(id)] as const)).then(
-                entries => new Map(entries),
-            ),
-            groupIds.length ? this.databaseService.groups.getActivePlaceholdersByGroupIds(groupIds) : { rows: [] },
-            groupIds.length ? this.databaseService.groups.getAssertedOwnershipByGroupIds(groupIds) : { rows: [] },
+    /** One of the user's groups, as in `getGroupOverviewsOfUser`. The route's guards check the caller is a member. */
+    @LogFeature(new Logger('DashboardService'))
+    async getGroupOverviewOfUser(groupId: number): Promise<GroupOverviewDto> {
+        const [group] = await this.groupOverviews([groupId])
+
+        if (!group) throw new NotFoundException(`Group with id ${groupId} not found`)
+
+        return group
+    }
+
+    /**
+     * A group's games, once each, who owns them, and the members' ratings, for a page about the group (#262). The
+     * route's guards check the caller is a member.
+     */
+    @LogFeature(new Logger('DashboardService'))
+    async getGroupShelf(groupId: number, locale: Locale): Promise<GroupShelfDto> {
+        const [loaded] = await this.loadGroups([groupId])
+
+        if (!loaded) throw new NotFoundException(`Group with id ${groupId} not found`)
+
+        const owners = [
+            ...loaded.members.map(member => ({ accountId: member.accountId, groupPersonId: null, gameIds: member.gameIds })),
+            ...loaded.placeholders.map(person => ({ accountId: null, groupPersonId: person.id, gameIds: person.gameIds })),
+        ]
+        const gameIds = [...new Set(owners.flatMap(owner => owner.gameIds))]
+        const [games, reviews] = await Promise.all([
+            this.completeGamesByIds(gameIds, locale),
+            this.reviewsService.getGameReviewsByAccountIds(loaded.members.map(member => member.accountId)),
         ])
+
+        return {
+            games: [...games.values()].sort((a, b) => a.title.localeCompare(b.title, locale)),
+            owners,
+            reviews,
+        }
+    }
+
+    private async groupIdsOfUser(userId: number): Promise<Array<number>> {
+        const memberships = await this.groupMembershipsService.getGroupMembershipsByAccountId(userId)
+
+        return memberships.map(membership => membership.groupId)
+    }
+
+    /**
+     * Groups with their members, their people without an account and the games each owns, as ids, in a fixed
+     * number of set-based queries however many groups, people and games there are (#251, #262). Groups keep the
+     * order asked for; one that no longer exists is left out.
+     */
+    private async loadGroups(groupIds: Array<number>): Promise<Array<LoadedGroup>> {
+        const ids = [...new Set(groupIds)]
+
+        if (ids.length === 0) return []
+
+        const [groups, memberships, placeholderRows, ownershipRows] = await Promise.all([
+            this.groupsService.getGroupsByIds(ids),
+            this.groupMembershipsService.getGroupMembershipsByGroupIds(ids),
+            this.databaseService.groups.getActivePlaceholdersByGroupIds(ids),
+            this.databaseService.groups.getAssertedOwnershipByGroupIds(ids),
+        ])
+        const memberIds = [...new Set(memberships.map(membership => membership.accountId))]
+        const [users, owned] = await Promise.all([
+            this.usersService.getPublicUsersByIds(memberIds),
+            this.gamesOwnedService.getGamesOwnedByAccountIds(memberIds),
+        ])
+        const gamesByAccount = new Map<number, Array<number>>()
         const gamesByPerson = new Map<number, Array<number>>()
 
+        for (const item of owned) gamesByAccount.set(item.accountId, [...(gamesByAccount.get(item.accountId) ?? []), item.gameId])
         for (const row of ownershipRows.rows) {
             const personId = Number(row.groupPersonId)
 
             gamesByPerson.set(personId, [...(gamesByPerson.get(personId) ?? []), Number(row.gameId)])
         }
-        // Placeholders' games join the members' in the same lookup, so the group's library can show them.
-        const gameIds = [
-            ...new Set([...[...ownedByMember.values()].flat().map(owned => owned.gameId), ...[...gamesByPerson.values()].flat()]),
-        ]
-        const games = new Map(
-            (await this.gameTranslationService.withTitles([...(await this.gamesService.getGamesByIds(gameIds)).values()], locale)).map(
-                game => [game.id, game],
-            ),
-        )
-        const completeGames = (ids: Array<number>) => ids.map(id => games.get(id)).filter(game => game !== undefined)
-        const placeholders = placeholderRows.rows.map(row => {
-            const personGameIds = gamesByPerson.get(Number(row.id)) ?? []
 
-            return {
-                groupId: Number(row.groupId),
-                summary: {
-                    id: Number(row.id),
-                    displayName: String(row.displayName),
-                    avatar: parseAvatar(row.avatar),
-                    gameIds: personGameIds,
-                    games: completeGames(personGameIds),
+        return ids.flatMap(groupId => {
+            const group = groups.get(groupId)
+
+            if (!group) return []
+
+            return [
+                {
+                    group,
+                    members: memberships
+                        .filter(membership => membership.groupId === groupId && users.has(membership.accountId))
+                        .map(membership => ({
+                            accountId: membership.accountId,
+                            user: users.get(membership.accountId)!,
+                            joinedAt: membership.joinedAt,
+                            gameIds: gamesByAccount.get(membership.accountId) ?? [],
+                        })),
+                    placeholders: placeholderRows.rows
+                        .filter(row => Number(row.groupId) === groupId)
+                        .map(row => ({
+                            id: Number(row.id),
+                            displayName: String(row.displayName),
+                            avatar: parseAvatar(row.avatar),
+                            gameIds: gamesByPerson.get(Number(row.id)) ?? [],
+                        })),
                 },
-            }
+            ]
         })
+    }
 
-        return groups.map(({ group, memberships: groupMemberships }) => ({
+    private async groupOverviews(groupIds: Array<number>): Promise<Array<GroupOverviewDto>> {
+        return (await this.loadGroups(groupIds)).map(({ group, members, placeholders }) => ({
             ...group,
-            placeholders: placeholders.filter(item => item.groupId === group.id).map(item => item.summary),
-            members: groupMemberships
-                .filter(membership => users.has(membership.accountId))
-                .map(membership => {
-                    const ownedGames = completeGames((ownedByMember.get(membership.accountId) ?? []).map(owned => owned.gameId))
-                    const userWithGames: UserPublicWithGames = { ...users.get(membership.accountId)!, games: ownedGames }
-
-                    return {
-                        ...userWithGames,
-                        joinedAt: membership.joinedAt,
-                        reviews: reviewsByMember.get(membership.accountId) ?? [],
-                    } satisfies GroupMemberWithGames
-                }),
+            gameCount: new Set([...members, ...placeholders].flatMap(owner => owner.gameIds)).size,
+            members: members.map(member => ({ ...member.user, joinedAt: member.joinedAt, gameCount: member.gameIds.length })),
+            placeholders: placeholders.map(({ gameIds, ...person }) => ({ ...person, gameCount: gameIds.length })),
         }))
+    }
+
+    private async groupsWithMembersAndGames(groupIds: Array<number>, locale: Locale): Promise<Array<GroupWithMembersAndGames>> {
+        const loaded = await this.loadGroups(groupIds)
+        const memberIds = [...new Set(loaded.flatMap(entry => entry.members.map(member => member.accountId)))]
+        const gameIds = [...new Set(loaded.flatMap(entry => [...entry.members, ...entry.placeholders].flatMap(owner => owner.gameIds)))]
+        const [games, reviews] = await Promise.all([
+            this.completeGamesByIds(gameIds, locale),
+            this.reviewsService.getGameReviewsByAccountIds(memberIds),
+        ])
+        const completeGames = (ids: Array<number>) => ids.map(id => games.get(id)).filter(game => game !== undefined)
+
+        return loaded.map(({ group, members, placeholders }) => ({
+            ...group,
+            placeholders: placeholders.map(person => ({ ...person, games: completeGames(person.gameIds) })),
+            members: members.map(member => {
+                const userWithGames: UserPublicWithGames = { ...member.user, games: completeGames(member.gameIds) }
+
+                return {
+                    ...userWithGames,
+                    joinedAt: member.joinedAt,
+                    reviews: reviews.filter(review => review.accountId === member.accountId),
+                } satisfies GroupMemberWithGames
+            }),
+        }))
+    }
+
+    /** Games with their titles in the reader's language, keyed by id. */
+    private async completeGamesByIds(gameIds: Array<number>, locale: Locale): Promise<Map<number, GameCompleteDto>> {
+        if (gameIds.length === 0) return new Map()
+
+        const games = await this.gameTranslationService.withTitles([...(await this.gamesService.getGamesByIds(gameIds)).values()], locale)
+
+        return new Map(games.map(game => [game.id, game]))
     }
 
     @LogFeature(new Logger('DashboardService'))

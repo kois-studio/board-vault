@@ -4161,7 +4161,7 @@
     },
     "/dashboard/users/{userId}/groups": {
       "get": {
-        "deprecated": false,
+        "deprecated": true,
         "operationId": "DashboardController_getGroupsOfUser",
         "parameters": [
           {
@@ -4193,7 +4193,7 @@
             "bearer": []
           }
         ],
-        "summary": "Get all groups of a user with members and games",
+        "summary": "Get all groups of a user with every member's games and reviews. Deprecated: use GET /dashboard/users/:userId/group-overviews and GET /dashboard/users/:userId/groups/:groupId/shelf (#262)",
         "tags": [
           "dashboard"
         ]
@@ -4248,9 +4248,142 @@
         ]
       }
     },
+    "/dashboard/users/{userId}/group-overviews": {
+      "get": {
+        "operationId": "DashboardController_getGroupOverviewsOfUser",
+        "parameters": [
+          {
+            "name": "userId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The groups of the user",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/GroupOverviewDto"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get all groups of a user with their people and how many games each brings (#262)",
+        "tags": [
+          "dashboard"
+        ]
+      }
+    },
+    "/dashboard/users/{userId}/group-overviews/{groupId}": {
+      "get": {
+        "operationId": "DashboardController_getGroupOverviewOfUser",
+        "parameters": [
+          {
+            "name": "userId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "groupId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The group, with its people and their game counts",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GroupOverviewDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Not this user, or not a member of the group."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get one group of a user, as in the list of group overviews (#262)",
+        "tags": [
+          "dashboard"
+        ]
+      }
+    },
+    "/dashboard/users/{userId}/groups/{groupId}/shelf": {
+      "get": {
+        "operationId": "DashboardController_getGroupShelf",
+        "parameters": [
+          {
+            "name": "userId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "groupId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The group's games, owners and ratings",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GroupShelfDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Not this user, or not a member of the group."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get a group's games once each, who owns them, and the members' ratings (#262)",
+        "tags": [
+          "dashboard"
+        ]
+      }
+    },
     "/dashboard/users/{userId}/groups/{groupId}": {
       "get": {
-        "deprecated": false,
+        "deprecated": true,
         "operationId": "DashboardController_getGroupOfUser",
         "parameters": [
           {
@@ -4290,7 +4423,7 @@
             "bearer": []
           }
         ],
-        "summary": "Get one group of a user with members and games, as in the list of all groups",
+        "summary": "Get one group of a user with members and games, as in the list of all groups. Deprecated: use GET /dashboard/users/:userId/group-overviews/:groupId and GET /dashboard/users/:userId/groups/:groupId/shelf (#262)",
         "tags": [
           "dashboard"
         ]
@@ -10570,6 +10703,191 @@
         "required": [
           "success",
           "groupId"
+        ]
+      },
+      "GroupOverviewMember": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number",
+            "example": 1
+          },
+          "username": {
+            "type": "string",
+            "example": "sample-user"
+          },
+          "displayName": {
+            "type": "string",
+            "example": "Sample User"
+          },
+          "avatar": {
+            "description": "The avatar of the user.",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/AvatarDto"
+              }
+            ]
+          },
+          "joinedAt": {
+            "type": "string",
+            "example": "2024-09-28 10:02:39",
+            "description": "The date and time the user joined the group."
+          },
+          "gameCount": {
+            "type": "number",
+            "example": 14,
+            "description": "How many games this member owns."
+          }
+        },
+        "required": [
+          "id",
+          "username",
+          "displayName",
+          "avatar",
+          "joinedAt",
+          "gameCount"
+        ]
+      },
+      "GroupOverviewPlaceholder": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number",
+            "example": 12
+          },
+          "displayName": {
+            "type": "string",
+            "example": "Lucía"
+          },
+          "avatar": {
+            "nullable": true,
+            "type": "object",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/AvatarDto"
+              }
+            ]
+          },
+          "gameCount": {
+            "type": "number",
+            "example": 3,
+            "description": "How many games are recorded as owned by this person in the group."
+          }
+        },
+        "required": [
+          "id",
+          "displayName",
+          "avatar",
+          "gameCount"
+        ]
+      },
+      "GroupOverviewDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number",
+            "example": 12345
+          },
+          "name": {
+            "type": "string",
+            "example": "Example Group"
+          },
+          "createdBy": {
+            "type": "number",
+            "example": 12345
+          },
+          "createdAt": {
+            "type": "string",
+            "example": "2024-09-28 10:02:39"
+          },
+          "gameCount": {
+            "type": "number",
+            "example": 37,
+            "description": "Distinct games anyone in the group owns, members or people without an account."
+          },
+          "members": {
+            "description": "The members of the group.",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/GroupOverviewMember"
+            }
+          },
+          "placeholders": {
+            "description": "Active group people without an account.",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/GroupOverviewPlaceholder"
+            }
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "createdBy",
+          "createdAt",
+          "gameCount",
+          "members",
+          "placeholders"
+        ]
+      },
+      "GroupShelfOwnerDto": {
+        "type": "object",
+        "properties": {
+          "accountId": {
+            "type": "object",
+            "example": 4,
+            "nullable": true,
+            "description": "Set for a member with an account."
+          },
+          "groupPersonId": {
+            "type": "object",
+            "example": 12,
+            "nullable": true,
+            "description": "Set for an active person in the group without an account."
+          },
+          "gameIds": {
+            "description": "The games they own; empty when they own none.",
+            "type": "array",
+            "items": {
+              "type": "number"
+            }
+          }
+        },
+        "required": [
+          "accountId",
+          "groupPersonId",
+          "gameIds"
+        ]
+      },
+      "GroupShelfDto": {
+        "type": "object",
+        "properties": {
+          "games": {
+            "description": "Every game anyone in the group owns, once each.",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/GameCompleteDto"
+            }
+          },
+          "owners": {
+            "description": "Members first, then people without an account.",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/GroupShelfOwnerDto"
+            }
+          },
+          "reviews": {
+            "description": "The members' ratings, of any game.",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/GameReviewDto"
+            }
+          }
+        },
+        "required": [
+          "games",
+          "owners",
+          "reviews"
         ]
       },
       "HistoryUserDto": {

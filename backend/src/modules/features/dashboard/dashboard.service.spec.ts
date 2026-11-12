@@ -1,3 +1,5 @@
+import { NotFoundException } from '@nestjs/common'
+
 import { fakeActivityNotifier } from '../../../../test/fake-activity-notifier.js'
 import { fakeDatabase } from '../../../../test/fake-database.js'
 
@@ -85,61 +87,100 @@ describe('DashboardService group creation', () => {
     })
 })
 
-describe('DashboardService groups overview', () => {
-    it('loads members, games, and titles once, however many games members own', async () => {
-        const owned = (accountId: number) => [1, 2, 3].map(n => ({ accountId, gameId: accountId * 10 + n }))
-        const users = {
-            getPublicUsersByIds: vi.fn(async (ids: Array<number>) => new Map(ids.map(id => [id, { id, username: `u${id}` }]))),
-        }
-        const games = {
-            getGamesByIds: vi.fn(async (ids: Array<number>) => new Map(ids.map(id => [id, { id, imageUrl: '' }]))),
-            getGameById: vi.fn(),
-        }
-        const translations = {
-            withTitles: vi.fn(async (games: Array<{ id: number }>) =>
-                games.map(game => ({
-                    ...game,
-                    title: `Game ${game.id}`,
-                    titleLanguage: 'es',
-                    titleTranslations: { es: `Game ${game.id}` },
-                })),
-            ),
-            getGameTranslations: vi.fn(),
-        }
-        const database = {
-            getActivePlaceholdersByGroupIds: vi
-                .fn()
-                .mockResolvedValue({ rows: [{ id: 9, groupId: 2, displayName: 'Lucía', avatar: null }] }),
-            getAssertedOwnershipByGroupIds: vi.fn().mockResolvedValue({ rows: [{ groupPersonId: 9, gameId: 77 }] }),
-        }
-        const service = new DashboardService(
-            users as never,
-            fakeDatabase(database),
-            { getGroupById: vi.fn(async (id: number) => ({ id, name: `Group ${id}`, createdBy: 1 })) } as never,
-            {
-                getGroupMembershipsByAccountId: vi.fn().mockResolvedValue([{ groupId: 1 }, { groupId: 2 }]),
-                getGroupMembershipsByGroupId: vi.fn().mockResolvedValue([
-                    { accountId: 1, joinedAt: '2026-01-01' },
-                    { accountId: 2, joinedAt: '2026-01-02' },
-                ]),
-            } as never,
-            { getGamesOwnedByAccountId: vi.fn(async (id: number) => owned(id)) } as never,
-            games as never,
-            { getGameReviewsByAccountId: vi.fn().mockResolvedValue([]) } as never,
-            {} as never,
-            translations as never,
-            {} as never,
-            {} as never,
-        )
+// Groups 1 and 2 both have Ada (1) and Bea (2); group 2 also has Lucía (9), a person without an account.
+// Each member owns three games (Ada 11–13, Bea 21–23); Lucía brings game 77, which Bea also rates.
+const createGroupsService = () => {
+    const owned = (accountId: number) => [1, 2, 3].map(n => ({ accountId, gameId: accountId * 10 + n }))
+    const users = {
+        getPublicUsersByIds: vi.fn(async (ids: Array<number>) => new Map(ids.map(id => [id, { id, username: `u${id}` }]))),
+    }
+    const groups = {
+        getGroupsByIds: vi.fn(async (ids: Array<number>) => new Map(ids.map(id => [id, { id, name: `Group ${id}`, createdBy: 1 }]))),
+        getGroupById: vi.fn(),
+    }
+    const memberships = {
+        getGroupMembershipsByAccountId: vi.fn().mockResolvedValue([{ groupId: 1 }, { groupId: 2 }]),
+        getGroupMembershipsByGroupIds: vi.fn(async (ids: Array<number>) =>
+            ids.flatMap(groupId => [
+                { accountId: 1, groupId, joinedAt: '2026-01-01' },
+                { accountId: 2, groupId, joinedAt: '2026-01-02' },
+            ]),
+        ),
+        getGroupMembershipsByGroupId: vi.fn(),
+    }
+    const gamesOwned = {
+        getGamesOwnedByAccountIds: vi.fn(async (ids: Array<number>) => ids.flatMap(id => owned(id))),
+        getGamesOwnedByAccountId: vi.fn(),
+    }
+    const games = {
+        getGamesByIds: vi.fn(async (ids: Array<number>) => new Map(ids.map(id => [id, { id, imageUrl: '' }]))),
+        getGameById: vi.fn(),
+    }
+    const reviews = {
+        getGameReviewsByAccountIds: vi.fn().mockResolvedValue([
+            { accountId: 2, gameId: 77, review: 8, reviewDate: '2026-02-01' },
+            { accountId: 1, gameId: 11, review: 6, reviewDate: '2026-02-02' },
+        ]),
+        getGameReviewsByAccountId: vi.fn(),
+    }
+    const translations = {
+        withTitles: vi.fn(async (games: Array<{ id: number }>) =>
+            games.map(game => ({
+                ...game,
+                title: `Game ${game.id}`,
+                titleLanguage: 'es',
+                titleTranslations: { es: `Game ${game.id}` },
+            })),
+        ),
+        getGameTranslations: vi.fn(),
+    }
+    const database = {
+        getActivePlaceholdersByGroupIds: vi.fn().mockResolvedValue({ rows: [{ id: 9, groupId: 2, displayName: 'Lucía', avatar: null }] }),
+        getAssertedOwnershipByGroupIds: vi.fn().mockResolvedValue({ rows: [{ groupPersonId: 9, gameId: 77 }] }),
+    }
+    const service = new DashboardService(
+        users as never,
+        fakeDatabase(database),
+        groups as never,
+        memberships as never,
+        gamesOwned as never,
+        games as never,
+        reviews as never,
+        {} as never,
+        translations as never,
+        {} as never,
+        {} as never,
+    )
+    // Every lookup the group endpoints may make; each must run once per request, never once per group or person.
+    const lookups = [
+        users.getPublicUsersByIds,
+        groups.getGroupsByIds,
+        memberships.getGroupMembershipsByGroupIds,
+        gamesOwned.getGamesOwnedByAccountIds,
+        database.getActivePlaceholdersByGroupIds,
+        database.getAssertedOwnershipByGroupIds,
+    ]
+    const perItem = [
+        groups.getGroupById,
+        memberships.getGroupMembershipsByGroupId,
+        gamesOwned.getGamesOwnedByAccountId,
+        reviews.getGameReviewsByAccountId,
+        games.getGameById,
+        translations.getGameTranslations,
+    ]
+
+    return { service, groups, memberships, games, reviews, translations, database, lookups, perItem }
+}
+
+describe('DashboardService groups with every game (deprecated, #262)', () => {
+    it('loads groups, members, games, reviews, and titles once, however many groups and games there are', async () => {
+        const { service, games, reviews, translations, database, lookups, perItem } = createGroupsService()
 
         const groups = await service.getGroupsOfUser(1, 'es')
 
         expect(groups).toHaveLength(2)
         expect(groups[0]?.members[1]?.games.map(game => game.title)).toEqual(['Game 21', 'Game 22', 'Game 23'])
-        expect(users.getPublicUsersByIds).toHaveBeenCalledTimes(1)
-        expect(games.getGamesByIds).toHaveBeenCalledTimes(1)
-        expect(translations.withTitles).toHaveBeenCalledTimes(1)
-        expect(games.getGameById).not.toHaveBeenCalled()
+        expect(groups[0]?.members[1]?.reviews).toEqual([{ accountId: 2, gameId: 77, review: 8, reviewDate: '2026-02-01' }])
         expect(groups[0]?.placeholders).toEqual([])
         expect(groups[1]?.placeholders).toEqual([
             {
@@ -150,64 +191,123 @@ describe('DashboardService groups overview', () => {
                 games: [{ id: 77, imageUrl: '', title: 'Game 77', titleLanguage: 'es', titleTranslations: { es: 'Game 77' } }],
             },
         ])
-        expect(database.getActivePlaceholdersByGroupIds).toHaveBeenCalledTimes(1)
-        expect(translations.getGameTranslations).not.toHaveBeenCalled()
+        for (const lookup of [...lookups, games.getGamesByIds, reviews.getGameReviewsByAccountIds, translations.withTitles]) {
+            expect(lookup).toHaveBeenCalledTimes(1)
+        }
+        for (const lookup of perItem) expect(lookup).not.toHaveBeenCalled()
+        expect(database.getActivePlaceholdersByGroupIds).toHaveBeenCalledWith([1, 2])
     })
-})
 
-describe('DashboardService one group (#258)', () => {
-    const createService = () => {
-        const memberships = {
-            getGroupMembershipsByAccountId: vi.fn(),
-            getGroupMembershipsByGroupId: vi.fn(async (groupId: number) =>
-                groupId === 2
-                    ? [
-                          { accountId: 1, joinedAt: '2026-01-01' },
-                          { accountId: 3, joinedAt: '2026-01-03' },
-                      ]
-                    : [],
-            ),
-        }
-        const database = {
-            getActivePlaceholdersByGroupIds: vi
-                .fn()
-                .mockResolvedValue({ rows: [{ id: 9, groupId: 2, displayName: 'Lucía', avatar: null }] }),
-            getAssertedOwnershipByGroupIds: vi.fn().mockResolvedValue({ rows: [] }),
-        }
-        const service = new DashboardService(
-            { getPublicUsersByIds: vi.fn(async (ids: Array<number>) => new Map(ids.map(id => [id, { id, username: `u${id}` }]))) } as never,
-            fakeDatabase(database),
-            { getGroupById: vi.fn(async (id: number) => ({ id, name: `Group ${id}`, createdBy: 1 })) } as never,
-            memberships as never,
-            { getGamesOwnedByAccountId: vi.fn(async (id: number) => [{ accountId: id, gameId: id * 10 }]) } as never,
-            { getGamesByIds: vi.fn(async (ids: Array<number>) => new Map(ids.map(id => [id, { id, imageUrl: '' }]))) } as never,
-            { getGameReviewsByAccountId: vi.fn(async (id: number) => [{ accountId: id, gameId: id * 10, review: 8 }]) } as never,
-            {} as never,
-            {
-                withTitles: vi.fn(async (games: Array<{ id: number }>) => games.map(game => ({ ...game, title: `Game ${game.id}` }))),
-            } as never,
-            {} as never,
-            {} as never,
-        )
-
-        return { service, memberships, database }
-    }
-
-    it('answers that group as in the list of all groups, with its members, their games and reviews, and its placeholders', async () => {
-        const { service, memberships, database } = createService()
+    it('answers one group as in the list of all groups, and reads only that group (#258)', async () => {
+        const { service, memberships, database } = createGroupsService()
 
         const group = await service.getGroupOfUser(2, 'es')
 
         expect(group.id).toBe(2)
         expect(group.name).toBe('Group 2')
-        expect(group.members.map(member => member.id)).toEqual([1, 3])
-        expect(group.members[1]?.games.map(game => game.title)).toEqual(['Game 30'])
-        expect(group.members[1]?.reviews).toEqual([{ accountId: 3, gameId: 30, review: 8 }])
+        expect(group.members.map(member => member.id)).toEqual([1, 2])
+        expect(group.members[0]?.games.map(game => game.title)).toEqual(['Game 11', 'Game 12', 'Game 13'])
+        expect(group.members[0]?.reviews.map(review => review.gameId)).toEqual([11])
         expect(group.placeholders.map(person => person.displayName)).toEqual(['Lucía'])
         // Only that group is read, never the caller's other groups.
         expect(memberships.getGroupMembershipsByAccountId).not.toHaveBeenCalled()
-        expect(memberships.getGroupMembershipsByGroupId).toHaveBeenCalledTimes(1)
+        expect(memberships.getGroupMembershipsByGroupIds).toHaveBeenCalledWith([2])
         expect(database.getActivePlaceholdersByGroupIds).toHaveBeenCalledWith([2])
+    })
+
+    it('says a group that no longer exists is not found, in every shape', async () => {
+        const { service, groups } = createGroupsService()
+
+        groups.getGroupsByIds.mockResolvedValue(new Map())
+
+        await expect(service.getGroupOfUser(2, 'es')).rejects.toThrow(NotFoundException)
+        await expect(service.getGroupOverviewOfUser(2)).rejects.toThrow(NotFoundException)
+        await expect(service.getGroupShelf(2, 'es')).rejects.toThrow(NotFoundException)
+    })
+})
+
+describe('DashboardService group overviews (#262)', () => {
+    it('counts games instead of sending them, in a fixed number of lookups', async () => {
+        const { service, games, reviews, translations, lookups, perItem } = createGroupsService()
+
+        const groups = await service.getGroupOverviewsOfUser(1)
+
+        expect(groups).toEqual([
+            {
+                id: 1,
+                name: 'Group 1',
+                createdBy: 1,
+                gameCount: 6,
+                members: [
+                    { id: 1, username: 'u1', joinedAt: '2026-01-01', gameCount: 3 },
+                    { id: 2, username: 'u2', joinedAt: '2026-01-02', gameCount: 3 },
+                ],
+                placeholders: [],
+            },
+            {
+                id: 2,
+                name: 'Group 2',
+                createdBy: 1,
+                gameCount: 7,
+                members: [
+                    { id: 1, username: 'u1', joinedAt: '2026-01-01', gameCount: 3 },
+                    { id: 2, username: 'u2', joinedAt: '2026-01-02', gameCount: 3 },
+                ],
+                placeholders: [{ id: 9, displayName: 'Lucía', avatar: null, gameCount: 1 }],
+            },
+        ])
+        for (const lookup of lookups) expect(lookup).toHaveBeenCalledTimes(1)
+        // No game, title or review is read at all.
+        for (const lookup of [...perItem, games.getGamesByIds, reviews.getGameReviewsByAccountIds, translations.withTitles]) {
+            expect(lookup).not.toHaveBeenCalled()
+        }
+    })
+
+    it('counts a game two people own once for the group', async () => {
+        const { service, database } = createGroupsService()
+
+        database.getAssertedOwnershipByGroupIds.mockResolvedValue({ rows: [{ groupPersonId: 9, gameId: 11 }] })
+
+        const group = await service.getGroupOverviewOfUser(2)
+
+        expect(group.gameCount).toBe(6)
+        expect(group.placeholders[0]?.gameCount).toBe(1)
+    })
+})
+
+describe('DashboardService group shelf (#262)', () => {
+    it("answers the group's games once each, by title, who owns them, and the members' ratings", async () => {
+        const { service, games, reviews, translations, lookups, perItem, memberships } = createGroupsService()
+
+        const shelf = await service.getGroupShelf(2, 'es')
+
+        expect(shelf.games.map(game => game.id)).toEqual([11, 12, 13, 21, 22, 23, 77])
+        expect(shelf.owners).toEqual([
+            { accountId: 1, groupPersonId: null, gameIds: [11, 12, 13] },
+            { accountId: 2, groupPersonId: null, gameIds: [21, 22, 23] },
+            { accountId: null, groupPersonId: 9, gameIds: [77] },
+        ])
+        expect(shelf.reviews.map(review => [review.accountId, review.gameId])).toEqual([
+            [2, 77],
+            [1, 11],
+        ])
+        expect(reviews.getGameReviewsByAccountIds).toHaveBeenCalledWith([1, 2])
+        expect(memberships.getGroupMembershipsByGroupIds).toHaveBeenCalledWith([2])
+        for (const lookup of [...lookups, games.getGamesByIds, translations.withTitles]) expect(lookup).toHaveBeenCalledTimes(1)
+        for (const lookup of perItem) expect(lookup).not.toHaveBeenCalled()
+    })
+
+    it('reads no games when nobody owns any', async () => {
+        const { service, games, memberships, database } = createGroupsService()
+
+        memberships.getGroupMembershipsByGroupIds.mockResolvedValue([])
+        database.getAssertedOwnershipByGroupIds.mockResolvedValue({ rows: [] })
+
+        const shelf = await service.getGroupShelf(2, 'es')
+
+        expect(shelf.games).toEqual([])
+        expect(shelf.owners).toEqual([{ accountId: null, groupPersonId: 9, gameIds: [] }])
+        expect(games.getGamesByIds).not.toHaveBeenCalled()
     })
 })
 
