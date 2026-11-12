@@ -407,6 +407,9 @@ export class MeetViewComponent {
     }
 
     #indexReviews(groupData: GroupWithMembersAndGames): void {
+        // Built afresh on every load: a Retry must not keep the reviews of someone who has left since.
+        this.gameReviews = {}
+        this.avgReviewsIndex = {}
         // Step 1: Index all reviews by gameId and userId
         for (const member of groupData.members) {
             for (const review of member.reviews) {

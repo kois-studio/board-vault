@@ -2,6 +2,7 @@ import { Routes } from '@angular/router'
 import { AdminGuard } from './core/guards/admin.guard'
 import { AuthOnlyGuard, SHOWS_AUTH_HANDOFF } from './core/guards/auth.guard'
 import { GuestOnlyGuard } from './core/guards/auth-redirect.guard'
+import { remountOnParamChange } from './core/routing/remount-on-param-change'
 import { LayoutBasicComponent } from './layout/layout-basic/layout-basic.component'
 import { LayoutCompleteComponent } from './layout/layout-complete/layout-complete.component'
 import { LandingComponent } from './pages/landing/landing.component'
@@ -100,6 +101,8 @@ export const routes: Routes = [
                 path: 'games/:gameId',
                 loadComponent: () => import('./pages/games/game-view/game-view.component').then((m) => m.GameViewPageComponent),
                 canActivate: [AuthOnlyGuard],
+                // Another game (Similar games, a notification) gets a page of its own: no copy details or rating carried over.
+                data: remountOnParamChange,
             },
             {
                 path: 'play',
@@ -147,6 +150,8 @@ export const routes: Routes = [
                 path: 'groups/:groupId/members/:accountId',
                 loadComponent: () => import('./pages/group-person/group-person-page.component').then((m) => m.GroupPersonPageComponent),
                 canActivate: [AuthOnlyGuard],
+                // A shelf notification may lead to someone in another group, whose games this page has not loaded.
+                data: remountOnParamChange,
             },
             {
                 // "Who are you in this group?" (#278), before `people/:personId`: someone who joined picks who they are, or says they are new.
@@ -159,11 +164,14 @@ export const routes: Routes = [
                 path: 'groups/:groupId/people/:personId',
                 loadComponent: () => import('./pages/group-person/group-person-page.component').then((m) => m.GroupPersonPageComponent),
                 canActivate: [AuthOnlyGuard],
+                data: remountOnParamChange,
             },
             {
                 path: 'sessions/:sessionId',
                 loadComponent: () => import('./pages/meet-view/meet-view.component').then((m) => m.MeetViewComponent),
                 canActivate: [AuthOnlyGuard],
+                // Another night (a notification opened from this page) gets a page of its own.
+                data: remountOnParamChange,
             },
             {
                 path: 'meets/:meetId',

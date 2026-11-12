@@ -1370,6 +1370,27 @@ describe('MeetViewComponent loading a night without waiting for your groups (#25
         expect(component.recordingError).toBe(false)
     })
 
+    it('builds the reviews afresh on Retry, without those of someone who has left since', async () => {
+        const reviewed = group(7, 'Thursday group')
+        const withReview = {
+            ...reviewed,
+            members: reviewed.members.map((member) => ({
+                ...member,
+                reviews: [{ accountId: 1, gameId: 5, review: 8, reviewDate: '2026-01-01' }],
+            })),
+        } as unknown as Group
+        const { component, api, settle } = await setup({ list: [withReview] })
+        expect(component.avgReviewsIndex[5]).toBe(8)
+
+        api.getUserGroup.mockReturnValue(of({ ...reviewed, members: [] }))
+        component.retryLoad()
+        await settle()
+
+        expect(component.loaded).toBe(true)
+        expect(component.avgReviewsIndex[5]).toBeUndefined()
+        expect(component.gameReviews).toEqual({})
+    })
+
     it('applies nothing that arrives after leaving the page', async () => {
         const details = new Subject<MeetWithAttendeesAndGamesType>()
         const { fixture, component, api } = await setup({ list: [group(7, 'Thursday group')] }, { details })
