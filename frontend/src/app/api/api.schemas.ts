@@ -505,6 +505,7 @@ const groupWithMembersAndGamesSchema: z.ZodMiniType<GroupWithMembersAndGames, un
 })
 
 export const userGroupsSchema = z.array(groupWithMembersAndGamesSchema)
+export const userGroupSchema = groupWithMembersAndGamesSchema
 
 const groupPersonSchema = z.object({
     id: z.number(),

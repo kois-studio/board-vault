@@ -68,6 +68,7 @@ import {
     usageReportSchema,
     userCollectionActivitySchema,
     userGamesSchema,
+    userGroupSchema,
     userGroupsSchema,
     userHistorySchema,
     userInvitationsSchema,
@@ -639,6 +640,13 @@ export class Api {
         return this.http
             .get<Array<GroupWithMembersAndGames>>(`${this.url}/dashboard/users/${userId}/groups`)
             .pipe(map((response) => userGroupsSchema.parse(response)))
+    }
+
+    /** One of your groups, as in `getUserGroups`: for a page about that group, without loading them all (#258). */
+    getUserGroup(userId: number, groupId: number) {
+        return this.http
+            .get<GroupWithMembersAndGames>(`${this.url}/dashboard/users/${userId}/groups/${groupId}`)
+            .pipe(map((response) => userGroupSchema.parse(response)))
     }
 
     createGroup(userId: number, groupName: string) {

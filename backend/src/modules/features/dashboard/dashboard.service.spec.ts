@@ -155,6 +155,62 @@ describe('DashboardService groups overview', () => {
     })
 })
 
+describe('DashboardService one group (#258)', () => {
+    const createService = () => {
+        const memberships = {
+            getGroupMembershipsByAccountId: vi.fn(),
+            getGroupMembershipsByGroupId: vi.fn(async (groupId: number) =>
+                groupId === 2
+                    ? [
+                          { accountId: 1, joinedAt: '2026-01-01' },
+                          { accountId: 3, joinedAt: '2026-01-03' },
+                      ]
+                    : [],
+            ),
+        }
+        const database = {
+            getActivePlaceholdersByGroupIds: vi
+                .fn()
+                .mockResolvedValue({ rows: [{ id: 9, groupId: 2, displayName: 'Lucía', avatar: null }] }),
+            getAssertedOwnershipByGroupIds: vi.fn().mockResolvedValue({ rows: [] }),
+        }
+        const service = new DashboardService(
+            { getPublicUsersByIds: vi.fn(async (ids: Array<number>) => new Map(ids.map(id => [id, { id, username: `u${id}` }]))) } as never,
+            fakeDatabase(database),
+            { getGroupById: vi.fn(async (id: number) => ({ id, name: `Group ${id}`, createdBy: 1 })) } as never,
+            memberships as never,
+            { getGamesOwnedByAccountId: vi.fn(async (id: number) => [{ accountId: id, gameId: id * 10 }]) } as never,
+            { getGamesByIds: vi.fn(async (ids: Array<number>) => new Map(ids.map(id => [id, { id, imageUrl: '' }]))) } as never,
+            { getGameReviewsByAccountId: vi.fn(async (id: number) => [{ accountId: id, gameId: id * 10, review: 8 }]) } as never,
+            {} as never,
+            {
+                withTitles: vi.fn(async (games: Array<{ id: number }>) => games.map(game => ({ ...game, title: `Game ${game.id}` }))),
+            } as never,
+            {} as never,
+            {} as never,
+        )
+
+        return { service, memberships, database }
+    }
+
+    it('answers that group as in the list of all groups, with its members, their games and reviews, and its placeholders', async () => {
+        const { service, memberships, database } = createService()
+
+        const group = await service.getGroupOfUser(2, 'es')
+
+        expect(group.id).toBe(2)
+        expect(group.name).toBe('Group 2')
+        expect(group.members.map(member => member.id)).toEqual([1, 3])
+        expect(group.members[1]?.games.map(game => game.title)).toEqual(['Game 30'])
+        expect(group.members[1]?.reviews).toEqual([{ accountId: 3, gameId: 30, review: 8 }])
+        expect(group.placeholders.map(person => person.displayName)).toEqual(['Lucía'])
+        // Only that group is read, never the caller's other groups.
+        expect(memberships.getGroupMembershipsByAccountId).not.toHaveBeenCalled()
+        expect(memberships.getGroupMembershipsByGroupId).toHaveBeenCalledTimes(1)
+        expect(database.getActivePlaceholdersByGroupIds).toHaveBeenCalledWith([2])
+    })
+})
+
 describe('DashboardService leaving and removing', () => {
     const createService = (left = true) => {
         const notifier = fakeActivityNotifier()

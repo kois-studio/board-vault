@@ -13,6 +13,7 @@ import type {
     MeetWithAttendeesAndGamesType,
     PublicUserType,
     RecommendationsType,
+    SessionRecording,
     UpdateSessionAttendeesRequest,
     UserType,
 } from '../../api/api.types'
@@ -27,7 +28,7 @@ import { IconComponent } from '../../components/ui/icon/icon.component'
 import { ImageBackgroundComponent } from '../../components/ui/image-background/image-background.component'
 import { InPageLinkDirective } from '../../components/ui/in-page-link/in-page-link.directive'
 import { StarRatingComponent } from '../../components/ui/star-rating/star-rating.component'
-import { isPending } from '../../core/async/resource-state'
+import { settledValue } from '../../core/async/resource-state'
 import { formatList, intlLocale } from '../../core/i18n/format'
 import { PlayersPipe } from '../../core/pipes/count.pipe'
 import { CustomDatePipe } from '../../core/pipes/customDate.pipe'
@@ -89,29 +90,25 @@ export class MeetViewComponent {
     /** Arrived straight from saving a recording: the confirmation and follow-ups show this once. */
     public justSaved = false
     private readonly router = inject(Router)
+    /** Everything the page needs has arrived: the night, its group, its people and its plays. */
     public loaded = false
+    /** Until the night itself arrives: its header shows then, and the rest while it loads (#258). */
     public readonly isLoading = signal(true)
     public readonly loadError = signal(false)
     private requestedMeetId: number | null = null
-    /**
-     * The last failure came from the groups: they failed to load, or the night's group was not among them. Retry then
-     * loads the groups again and waits for them before loading the night (#244).
-     */
-    private retryReloadsGroups = false
-    /** Retry asked for fresh groups: the night waits for them even while older ones are listed. */
-    private awaitingFreshGroups = false
+    /** Bumped on every load, so a Retry's answers replace the earlier ones and never the other way round. */
+    private loadVersion = 0
 
     // DataService data (filled on init -> effect)
     public userData: ReturnType<typeof this.dataService.currentUser> = null
-    private userGroups: ReturnType<typeof this.dataService.userGroups> = []
-    public groupData: Nullable<(typeof this.userGroups)[number]> = null
+    public groupData: Nullable<GroupWithMembersAndGames> = null
     public groupPeople: Array<GroupPersonWorkspaceType> = []
     public groupPersonCatalog: Array<GameCompleteType> = []
     public meetData: Nullable<MeetWithAttendeesAndGamesType> = null
     public meetDataCopyOriginal: Nullable<MeetWithAttendeesAndGamesType> = null // to compare changes
 
     // Component state
-    public recording: import('../../api/api.types').SessionRecording | null = null
+    public recording: SessionRecording | null = null
     public ownershipTarget: Record<number, string> = {}
     public ownershipSaving: Record<number, boolean> = {}
     public ownershipSaved: Record<number, boolean> = {}
@@ -167,29 +164,11 @@ export class MeetViewComponent {
             })
         effect(() => {
             this.userData = this.dataService.currentUser()
-            this.userGroups = this.dataService.userGroups()
-            // Read on every run, before any early return: the end of a groups load must always run this again, even
-            // one that fails without changing the list (Retry waits for it).
-            const groupsLoading = isPending(this.dataService.userGroupsState())
 
-            // Get Meet Details
+            // Only the address and who you are: the night never waits for the list of your groups (#258).
             const sessionId = Number.parseInt(this.route.snapshot.paramMap.get('sessionId') || '', 10)
             if (!this.userData || Number.isNaN(sessionId) || this.requestedMeetId === sessionId) {
                 return
-            }
-
-            // The night needs its group. Listed groups are enough, unless Retry asked for fresh ones; with none listed,
-            // wait until the groups have loaded: a failure, or no group at all, must not leave "Loading session…" up.
-            if (this.userGroups.length === 0 || this.awaitingFreshGroups) {
-                if (groupsLoading) return
-                this.awaitingFreshGroups = false
-                if (this.userGroups.length === 0 && this.dataService.userGroupsState().status === 'error') {
-                    this.retryReloadsGroups = true
-                    this.loaded = false
-                    this.loadError.set(true)
-                    this.isLoading.set(false)
-                    return
-                }
             }
 
             this.requestedMeetId = sessionId
@@ -197,93 +176,125 @@ export class MeetViewComponent {
         })
     }
 
+    /** Loads the whole night again, its group asked for afresh: it may be one you have just joined. */
     public retryLoad(): void {
         const sessionId = Number.parseInt(this.route.snapshot.paramMap.get('sessionId') || '', 10)
         if (Number.isNaN(sessionId)) return
 
-        this.requestedMeetId = null
-        this.loaded = false
-        this.loadError.set(false)
-        this.isLoading.set(true)
-        if (this.retryReloadsGroups) {
-            // The page's effect loads the night once the groups answer. A load already on its way (the connection
-            // notice, another action) is waited for instead of starting a second one.
-            this.retryReloadsGroups = false
-            this.awaitingFreshGroups = true
-            if (!isPending(this.dataService.userGroupsState())) this.dataService.refreshUserGroups()
-            return
-        }
         this.requestedMeetId = sessionId
-        void this.loadMeetDetails(sessionId)
+        void this.loadMeetDetails(sessionId, true)
     }
 
-    private async loadMeetDetails(meetId: number): Promise<void> {
+    /**
+     * Three waves at most (#258): the night and its plays, which need only the address; then its group, people,
+     * catalogue and suggestions, which need its group; then, rarely, a played game no one in the group has.
+     * The header shows as soon as the night arrives.
+     */
+    private async loadMeetDetails(meetId: number, freshGroup = false): Promise<void> {
+        const version = ++this.loadVersion
+        const current = () => version === this.loadVersion && !this.destroyRef.destroyed
+        this.loaded = false
         this.isLoading.set(true)
         this.loadError.set(false)
-        this.retryReloadsGroups = false
         try {
-            // Get Meet Details
-            this.meetData = await firstValueFrom(this.api.getSessionDetailsById(meetId))
-            this.plannedGameIdsDraft = [...this.meetData.plannedGames]
-            this.meetDataCopyOriginal = JSON.parse(JSON.stringify(this.meetData))
+            // Asked for with the night; it never fails the page (its own message offers Retry).
+            const recording = this.#fetchRecording(meetId, current)
+            const meetData = await firstValueFrom(this.api.getSessionDetailsById(meetId))
+            if (!current()) return
+            if (!meetData) throw new Error('No session')
+            this.meetData = meetData
+            this.plannedGameIdsDraft = [...meetData.plannedGames]
+            this.meetDataCopyOriginal = JSON.parse(JSON.stringify(meetData))
+            this.isLoading.set(false)
+            this.changeDetector.markForCheck()
+            void this.loadSuggestions()
 
-            if (!this.meetData) {
-                this.loadError.set(true)
-                return
-            }
-
-            // Group Data
-            const groupData = this.userGroups.find((group) => group.id === this.meetData?.groupId)
-
-            if (!this.userData || !groupData) {
-                // Perhaps the groups are out of date (just joined, or they failed to load): Retry loads them again.
-                this.retryReloadsGroups = true
-                this.loadError.set(true)
-                return
-            }
-
-            this.groupData = groupData
-
-            if (typeof this.api.getGroupPeople === 'function') {
+            const [groupData, groupPeople, groupPersonCatalog] = await Promise.all([
+                this.#groupOf(meetData.groupId, freshGroup),
                 // Archived and former people too: the session may have them, and keeps them (ADR-0018).
-                this.groupPeople = (await firstValueFrom(this.api.getGroupPeople(this.meetData.groupId, true))).people
-            }
-            if (this.isGroupPersonSession && typeof this.api.getGroupPersonCatalog === 'function') {
-                this.groupPersonCatalog = await firstValueFrom(this.api.getGroupPersonCatalog(this.meetData.groupId))
-            }
+                typeof this.api.getGroupPeople === 'function'
+                    ? firstValueFrom(this.api.getGroupPeople(meetData.groupId, true)).then((answer) => answer.people)
+                    : [],
+                this.isGroupPersonSession && typeof this.api.getGroupPersonCatalog === 'function'
+                    ? firstValueFrom(this.api.getGroupPersonCatalog(meetData.groupId))
+                    : [],
+            ])
+            if (!current()) return
+            this.groupData = groupData
+            this.groupPeople = groupPeople
+            this.groupPersonCatalog = groupPersonCatalog
 
-            await this.loadRecordingDetails()
+            const played = await recording
+            if (!current()) return
+            await this.#applyRecording(played, current)
+            if (!current()) return
 
             // After getting group data, index all reviews by gameId
             this.#indexReviews(groupData)
 
             this.loaded = true
-            void this.loadSuggestions()
         } catch {
+            if (!current()) return
             this.loaded = false
             this.loadError.set(true)
         } finally {
-            this.changeDetector.markForCheck()
-            this.isLoading.set(false)
+            if (current()) {
+                this.isLoading.set(false)
+                this.changeDetector.markForCheck()
+            }
         }
     }
 
-    public async loadRecordingDetails(): Promise<void> {
-        if (!this.meetData || typeof this.api.getSessionRecording !== 'function') return
+    /**
+     * The night's group, with its members' games and reviews: the one already listed when your groups have
+     * loaded, or else that group alone, rather than waiting for all of them (#258).
+     */
+    async #groupOf(groupId: number, fresh: boolean): Promise<GroupWithMembersAndGames> {
+        const listed = fresh ? undefined : settledValue(this.dataService.userGroupsState())?.find((group) => group.id === groupId)
+        if (listed) return listed
+        const accountId = this.userData?.id
+        if (!accountId) throw new Error('Signed out')
+        return firstValueFrom(this.api.getUserGroup(accountId, groupId))
+    }
+
+    /** The plays of a night; null when they could not be read, which the page says next to them. */
+    #fetchRecording(meetId: number, current: () => boolean): Promise<SessionRecording | null> {
+        if (typeof this.api.getSessionRecording !== 'function') return Promise.resolve(null)
         this.recordingError = false
+        return firstValueFrom(this.api.getSessionRecording(meetId)).catch(() => {
+            if (current()) this.recordingError = true
+            return null
+        })
+    }
+
+    /**
+     * Shows the plays, with the details of any game played that no one in the group has. `current` says whether
+     * the load that asked for them still counts: a newer load or leaving the page makes them count for nothing.
+     */
+    async #applyRecording(recording: SessionRecording | null, current: () => boolean): Promise<void> {
+        if (!recording || !current()) return
+        this.recording = recording
         try {
-            this.recording = await firstValueFrom(this.api.getSessionRecording(this.meetData.id))
             const known = new Set(this.totalGames.map((game) => game.id))
-            const missing = [...new Set(this.recording.games.map((play) => play.gameId))].filter((id) => !known.has(id))
+            const missing = [...new Set(recording.games.map((play) => play.gameId))].filter((id) => !known.has(id))
             const accountId = this.userData?.id
-            if (accountId) {
+            if (accountId && missing.length > 0) {
                 const games = await Promise.all(missing.map((id) => firstValueFrom(this.api.getGameView(accountId, id))))
+                if (!current()) return
                 this.groupPersonCatalog.push(...games.map((game) => game.gameData))
             }
         } catch {
-            this.recordingError = true
+            if (current()) this.recordingError = true
         }
-        this.changeDetector.markForCheck()
+    }
+
+    /** Retry next to the plays: reads them again, unless the night is loaded again meanwhile. */
+    public async loadRecordingDetails(): Promise<void> {
+        if (!this.meetData) return
+        const version = this.loadVersion
+        const current = () => version === this.loadVersion && !this.destroyRef.destroyed
+        await this.#applyRecording(await this.#fetchRecording(this.meetData.id, current), current)
+        if (current()) this.changeDetector.markForCheck()
     }
 
     get hasRepeatedPlays(): boolean {
