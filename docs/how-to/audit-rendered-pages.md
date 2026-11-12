@@ -46,8 +46,10 @@ passing score does not mean a page is accessible.
 `ng build` also checks the size of the initial bundle (`budgets` in
 [`frontend/angular.json`](../../frontend/angular.json)): a warning above
 1 MB, a failed build above 1.25 MB. Angular measures it uncompressed; what
-a browser downloads is about a fifth of that (October 2026: 853 kB raw,
-158 kB transferred). The budget is an alarm for a sudden jump, such as a
+a browser downloads is about a fifth of that (November 2026: 731 kB raw,
+184 kB transferred, after icons became data instead of one component each,
+[#110](https://github.com/kois-studio/board-vault/issues/110); it was 987 kB raw
+before). The budget is an alarm for a sudden jump, such as a
 large library pulled into the first load by mistake, not a cap on features:
 when normal growth reaches the warning, check what grew, then raise it with
 some headroom. How fast pages load is judged by the Lighthouse thresholds

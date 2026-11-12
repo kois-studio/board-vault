@@ -1,176 +1,176 @@
-import { NgComponentOutlet } from '@angular/common'
-import { Component, computed, input, Type } from '@angular/core'
+import { ChangeDetectionStrategy, Component, computed, input } from '@angular/core'
 import {
-    LucideArrowLeft,
-    LucideArrowRight,
-    LucideBan,
-    LucideBell,
-    LucideBookmark,
-    LucideBookmarkCheck,
-    LucideBookPlus,
-    LucideCalendar,
-    LucideCalendarCheck,
-    LucideCalendarClock,
-    LucideCalendarHeart,
-    LucideCalendarPlus,
-    LucideCamera,
-    LucideCheck,
-    LucideChevronDown,
-    LucideChevronRight,
-    LucideCircleAlert,
-    LucideCircleCheck,
-    LucideCirclePlus,
-    LucideCircleQuestionMark,
-    LucideCircleX,
-    LucideClock,
-    LucideCloud,
-    LucideCloudOff,
-    LucideCoffee,
-    LucideDice5,
-    LucideDices,
-    LucideFileText,
-    LucideFilter,
-    LucideGamepad2,
-    LucideGlobe2,
-    LucideHand,
-    LucideHeart,
-    LucideHeartOff,
-    LucideHistory,
-    LucideHome,
-    LucideImage,
-    LucideInfo,
-    LucideLanguages,
-    LucideLayoutDashboard,
-    LucideLibrary,
-    LucideLightbulb,
-    LucideLoaderCircle,
-    LucideLockKeyhole,
-    LucideLogOut,
-    LucideMail,
-    LucideMailPlus,
-    LucideMenu,
-    LucideMerge,
-    LucideMonitor,
-    LucideMoon,
-    LucideMusic2,
-    LucideNotebookPen,
-    LucidePalette,
-    LucidePanelLeft,
-    LucidePencil,
-    LucidePin,
-    LucidePlus,
-    LucideRefreshCw,
-    LucideSearch,
-    LucideSettings,
-    LucideShieldAlert,
-    LucideShieldLock,
-    LucideShoppingBag,
-    LucideSlidersHorizontal,
-    LucideSparkles,
-    LucideStar,
-    LucideStarHalf,
-    LucideSun,
-    LucideTag,
-    LucideThumbsDown,
-    LucideThumbsUp,
-    LucideTrash,
-    LucideTrendingUp,
-    LucideTriangleAlert,
-    LucideUserCheck,
-    LucideUserCircle,
-    LucideUserPlus,
-    LucideUsers,
-    LucideX,
-    LucideZap,
-} from '@lucide/angular'
-
-type IconType = Type<unknown>
+    ArrowLeft,
+    ArrowRight,
+    Ban,
+    Bell,
+    Bookmark,
+    BookmarkCheck,
+    BookPlus,
+    Calendar,
+    CalendarCheck,
+    CalendarClock,
+    CalendarHeart,
+    CalendarPlus,
+    Camera,
+    Check,
+    ChevronDown,
+    ChevronRight,
+    CircleAlert,
+    CircleCheck,
+    CirclePlus,
+    CircleQuestionMark,
+    CircleX,
+    Clock,
+    Cloud,
+    CloudOff,
+    Coffee,
+    Dice5,
+    Dices,
+    FileText,
+    Filter,
+    Gamepad2,
+    Globe2,
+    Hand,
+    Heart,
+    HeartOff,
+    History,
+    Home,
+    type IconNode,
+    Image,
+    Info,
+    Languages,
+    LayoutDashboard,
+    Library,
+    Lightbulb,
+    LoaderCircle,
+    LockKeyhole,
+    LogOut,
+    Mail,
+    MailPlus,
+    Menu,
+    Merge,
+    Monitor,
+    Moon,
+    Music2,
+    NotebookPen,
+    Palette,
+    PanelLeft,
+    Pencil,
+    Pin,
+    Plus,
+    RefreshCw,
+    Search,
+    Settings,
+    ShieldAlert,
+    ShieldLock,
+    ShoppingBag,
+    SlidersHorizontal,
+    Sparkles,
+    Star,
+    StarHalf,
+    Sun,
+    Tag,
+    ThumbsDown,
+    ThumbsUp,
+    Trash,
+    TrendingUp,
+    TriangleAlert,
+    UserCheck,
+    UserCircle,
+    UserPlus,
+    Users,
+    X,
+    Zap,
+} from 'lucide'
 
 // Named imports, so the build keeps only these icons. Importing the whole module
-// pulled every Lucide icon (about 6.5 MB) into the first page load.
-const ICON_EXPORTS: Record<string, IconType> = {
-    'arrow-left': LucideArrowLeft,
-    'arrow-right': LucideArrowRight,
-    'chevron-down': LucideChevronDown,
-    ban: LucideBan,
-    bell: LucideBell,
-    'book-plus': LucideBookPlus,
-    bookmark: LucideBookmark,
-    'bookmark-check': LucideBookmarkCheck,
-    'sliders-horizontal': LucideSlidersHorizontal,
-    'calendar-heart': LucideCalendarHeart,
-    calendar: LucideCalendar,
-    'calendar-check': LucideCalendarCheck,
-    'calendar-clock': LucideCalendarClock,
-    'calendar-plus': LucideCalendarPlus,
-    camera: LucideCamera,
-    check: LucideCheck,
-    'chevron-right': LucideChevronRight,
-    cloud: LucideCloud,
-    'cloud-off': LucideCloudOff,
-    coffee: LucideCoffee,
-    'circle-alert': LucideCircleAlert,
-    'circle-check': LucideCircleCheck,
-    'circle-help': LucideCircleQuestionMark,
-    'circle-plus': LucideCirclePlus,
-    'circle-x': LucideCircleX,
-    clock: LucideClock,
-    dice: LucideDices,
-    dices: LucideDices,
-    'dice-5': LucideDice5,
-    filter: LucideFilter,
-    'file-text': LucideFileText,
-    gamepad: LucideGamepad2,
-    globe: LucideGlobe2,
-    hand: LucideHand,
-    history: LucideHistory,
-    heart: LucideHeart,
-    'heart-off': LucideHeartOff,
-    home: LucideHome,
-    image: LucideImage,
-    info: LucideInfo,
-    languages: LucideLanguages,
-    'layout-dashboard': LucideLayoutDashboard,
-    library: LucideLibrary,
-    loader: LucideLoaderCircle,
-    lightbulb: LucideLightbulb,
-    lock: LucideLockKeyhole,
-    logout: LucideLogOut,
-    mail: LucideMail,
-    'mail-plus': LucideMailPlus,
-    menu: LucideMenu,
-    merge: LucideMerge,
-    monitor: LucideMonitor,
-    moon: LucideMoon,
-    music: LucideMusic2,
-    'notebook-pen': LucideNotebookPen,
-    'panel-left': LucidePanelLeft,
-    palette: LucidePalette,
-    pencil: LucidePencil,
-    pin: LucidePin,
-    plus: LucidePlus,
-    refresh: LucideRefreshCw,
-    search: LucideSearch,
-    settings: LucideSettings,
-    'shield-alert': LucideShieldAlert,
-    'shield-lock': LucideShieldLock,
-    'shopping-bag': LucideShoppingBag,
-    sparkle: LucideSparkles,
-    star: LucideStar,
-    'star-half': LucideStarHalf,
-    sun: LucideSun,
-    tag: LucideTag,
-    'thumbs-down': LucideThumbsDown,
-    'thumbs-up': LucideThumbsUp,
-    trash: LucideTrash,
-    trending: LucideTrendingUp,
-    'triangle-alert': LucideTriangleAlert,
-    'user-check': LucideUserCheck,
-    'user-circle': LucideUserCircle,
-    'user-plus': LucideUserPlus,
-    users: LucideUsers,
-    x: LucideX,
-    zap: LucideZap,
+// pulled every Lucide icon (about 6.5 MB) into the first page load. They are data
+// (`lucide`), not one Angular component each (`@lucide/angular`), so one template
+// draws them all (#110).
+const ICON_EXPORTS: Record<string, IconNode> = {
+    'arrow-left': ArrowLeft,
+    'arrow-right': ArrowRight,
+    'chevron-down': ChevronDown,
+    ban: Ban,
+    bell: Bell,
+    'book-plus': BookPlus,
+    bookmark: Bookmark,
+    'bookmark-check': BookmarkCheck,
+    'sliders-horizontal': SlidersHorizontal,
+    'calendar-heart': CalendarHeart,
+    calendar: Calendar,
+    'calendar-check': CalendarCheck,
+    'calendar-clock': CalendarClock,
+    'calendar-plus': CalendarPlus,
+    camera: Camera,
+    check: Check,
+    'chevron-right': ChevronRight,
+    cloud: Cloud,
+    'cloud-off': CloudOff,
+    coffee: Coffee,
+    'circle-alert': CircleAlert,
+    'circle-check': CircleCheck,
+    'circle-help': CircleQuestionMark,
+    'circle-plus': CirclePlus,
+    'circle-x': CircleX,
+    clock: Clock,
+    dice: Dices,
+    dices: Dices,
+    'dice-5': Dice5,
+    filter: Filter,
+    'file-text': FileText,
+    gamepad: Gamepad2,
+    globe: Globe2,
+    hand: Hand,
+    history: History,
+    heart: Heart,
+    'heart-off': HeartOff,
+    home: Home,
+    image: Image,
+    info: Info,
+    languages: Languages,
+    'layout-dashboard': LayoutDashboard,
+    library: Library,
+    loader: LoaderCircle,
+    lightbulb: Lightbulb,
+    lock: LockKeyhole,
+    logout: LogOut,
+    mail: Mail,
+    'mail-plus': MailPlus,
+    menu: Menu,
+    merge: Merge,
+    monitor: Monitor,
+    moon: Moon,
+    music: Music2,
+    'notebook-pen': NotebookPen,
+    'panel-left': PanelLeft,
+    palette: Palette,
+    pencil: Pencil,
+    pin: Pin,
+    plus: Plus,
+    refresh: RefreshCw,
+    search: Search,
+    settings: Settings,
+    'shield-alert': ShieldAlert,
+    'shield-lock': ShieldLock,
+    'shopping-bag': ShoppingBag,
+    sparkle: Sparkles,
+    star: Star,
+    'star-half': StarHalf,
+    sun: Sun,
+    tag: Tag,
+    'thumbs-down': ThumbsDown,
+    'thumbs-up': ThumbsUp,
+    trash: Trash,
+    trending: TrendingUp,
+    'triangle-alert': TriangleAlert,
+    'user-check': UserCheck,
+    'user-circle': UserCircle,
+    'user-plus': UserPlus,
+    users: Users,
+    x: X,
+    zap: Zap,
 }
 
 const LEGACY_ALIASES: Record<string, string> = {
@@ -215,10 +215,72 @@ const LEGACY_ALIASES: Record<string, string> = {
     'x-circle': 'circle-x',
 }
 
+/** The SVG elements a Lucide icon is drawn with; an unknown one is skipped. */
+const SHAPES = new Set(['path', 'circle', 'rect', 'line', 'polyline', 'polygon', 'ellipse'])
+
+/**
+ * A Lucide icon by name, drawn from its data in one template. The `<svg>` carries the attributes Lucide's own
+ * components gave it (24-unit view box, `currentColor` stroke, round caps and joins, `lucide lucide-<name>` classes),
+ * and hides from screen readers unless it has a `label`.
+ */
 @Component({
     selector: 'app-icon',
-    imports: [NgComponentOutlet],
-    template: '<ng-container *ngComponentOutlet="iconComponent(); inputs: iconInputs()" />',
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    template: `
+        <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            [attr.width]="size()"
+            [attr.height]="size()"
+            [attr.stroke-width]="strokeWidth()"
+            [attr.class]="svgClass()"
+            [attr.aria-hidden]="label() ? null : 'true'"
+            [attr.role]="label() ? 'img' : null"
+        >
+            @if (label(); as title) {
+                <svg:title>{{ title }}</svg:title>
+            }
+            @for (shape of shapes(); track $index) {
+                @let a = shape[1];
+                @switch (shape[0]) {
+                    @case ('path') {
+                        <svg:path [attr.d]="a['d']" [attr.fill]="a['fill']" [attr.stroke]="a['stroke']" [attr.opacity]="a['opacity']" />
+                    }
+                    @case ('circle') {
+                        <svg:circle [attr.cx]="a['cx']" [attr.cy]="a['cy']" [attr.r]="a['r']" [attr.fill]="a['fill']" [attr.stroke]="a['stroke']" />
+                    }
+                    @case ('rect') {
+                        <svg:rect
+                            [attr.x]="a['x']"
+                            [attr.y]="a['y']"
+                            [attr.width]="a['width']"
+                            [attr.height]="a['height']"
+                            [attr.rx]="a['rx']"
+                            [attr.ry]="a['ry']"
+                            [attr.fill]="a['fill']"
+                            [attr.stroke]="a['stroke']"
+                        />
+                    }
+                    @case ('line') {
+                        <svg:line [attr.x1]="a['x1']" [attr.y1]="a['y1']" [attr.x2]="a['x2']" [attr.y2]="a['y2']" [attr.stroke]="a['stroke']" />
+                    }
+                    @case ('polyline') {
+                        <svg:polyline [attr.points]="a['points']" [attr.fill]="a['fill']" [attr.stroke]="a['stroke']" />
+                    }
+                    @case ('polygon') {
+                        <svg:polygon [attr.points]="a['points']" [attr.fill]="a['fill']" [attr.stroke]="a['stroke']" />
+                    }
+                    @case ('ellipse') {
+                        <svg:ellipse [attr.cx]="a['cx']" [attr.cy]="a['cy']" [attr.rx]="a['rx']" [attr.ry]="a['ry']" [attr.fill]="a['fill']" [attr.stroke]="a['stroke']" />
+                    }
+                }
+            }
+        </svg>
+    `,
     // The size in rem as well (styles.css), so icons grow with the text size chosen in Settings → Appearance.
     host: { '[style.--icon-size]': 'remSize()' },
 })
@@ -230,14 +292,21 @@ export class IconComponent {
     readonly label = input<string | null>(null)
     readonly className = input('')
 
-    public readonly iconComponent = computed<IconType>(() => ICON_EXPORTS[this.normalizedName()] ?? LucideCircleQuestionMark)
+    /** The icon's name as drawn, after legacy aliases; an unknown name draws the help icon. */
+    public readonly iconName = computed(() => (ICON_EXPORTS[this.normalizedName()] ? this.normalizedName() : 'circle-help'))
 
-    public readonly iconInputs = computed(() => ({
-        class: `${this.className()} ${this.fill() === 'none' ? 'fill-none' : 'fill-current'}`.trim(),
-        size: this.size(),
-        strokeWidth: this.strokeWidth(),
-        title: this.label(),
-    }))
+    protected readonly shapes = computed(
+        () =>
+            (ICON_EXPORTS[this.iconName()] ?? CircleQuestionMark).filter(([tag]) => SHAPES.has(tag)) as Array<
+                [string, Record<string, string | number | undefined>]
+            >,
+    )
+
+    protected readonly svgClass = computed(() =>
+        `lucide lucide-${this.iconName()} ${this.className()} ${this.fill() === 'none' ? 'fill-none' : 'fill-current'}`
+            .replace(/\s+/g, ' ')
+            .trim(),
+    )
 
     /** `size` in rem (16px to the rem), or null when it is not a plain number. */
     public readonly remSize = computed(() => {

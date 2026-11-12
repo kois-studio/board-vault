@@ -166,8 +166,11 @@ tinted `bg-bv-warning/10` on the page are checked for text, muted text, and
 the warning icon. Add new
 pairs to the script before using them.
 
-Use `lucide-angular` icons alongside text; icons are supporting language,
-not the only label for an action.
+Use Lucide icons through `<app-icon name="…">` alongside text; icons are
+supporting language, not the only label for an action. `IconComponent` draws
+them from the `lucide` package's data in one template (#110): to add one,
+import it by name from `lucide` and add it to `ICON_EXPORTS`. An icon is hidden
+from screen readers unless it has a `label`.
 
 ## Type and spacing
 
