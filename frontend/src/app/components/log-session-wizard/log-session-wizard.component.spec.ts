@@ -775,7 +775,7 @@ describe('LogSessionWizardComponent games step', () => {
             component.selectGroup({ ...group, id: 2, name: 'Other group' })
             fixture.detectChanges()
             slowPeople.error(new Error('late failure'))
-            fixture.detectChanges()
+            await shelfRead()
 
             expect(byTestId('people-error')).toBeNull()
             expect(byTestId('people-grid')).not.toBeNull()

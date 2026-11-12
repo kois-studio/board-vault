@@ -774,12 +774,13 @@ describe('DataService group shelves (#262)', () => {
     })
     const shelf = { games: [], owners: [], reviews: [] }
 
-    const setup = () => {
+    const setup = (overrides: Record<string, (...args: Array<unknown>) => unknown> = {}) => {
         const calls: Record<string, number> = {}
         const answers: Record<string, (...args: Array<unknown>) => unknown> = {
             getGroupOverviews: () => of([overview(7), overview(8)]),
             getGroupShelf: () => of(shelf),
             saveGameReview: () => of({}),
+            ...overrides,
         }
         const api = new Proxy(
             {},
@@ -866,5 +867,31 @@ describe('DataService group shelves (#262)', () => {
         openPage()
         await settle()
         expect(calls['getGroupShelf']).toBe(6)
+    })
+
+    it('reloads the game counts after a collection change without reading the invitations again', async () => {
+        const { service, calls, settle } = setup()
+        await settle()
+        expect(calls['getGroupInvitations']).toBe(2)
+
+        service.refreshUserGames()
+        await settle()
+
+        expect(calls['getGroupOverviews']).toBe(2)
+        expect(calls['getGroupInvitations']).toBe(2)
+    })
+
+    it('still reads the invitations when a collection change replaces the first load of your groups', async () => {
+        const first = new Subject<Array<ReturnType<typeof overview>>>()
+        let overviewCalls = 0
+        const { service, calls, settle } = setup({
+            getGroupOverviews: () => (++overviewCalls === 1 ? first : of([overview(7), overview(8)])),
+        })
+
+        service.refreshUserGames()
+        first.next([overview(7)])
+        await settle()
+
+        expect(calls['getGroupInvitations']).toBe(2)
     })
 })

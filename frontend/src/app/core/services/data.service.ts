@@ -139,6 +139,8 @@ export class DataService {
     /** The shelves revision `userGroupsWithShelves` was read at, so a page opened later reads it only when stale. */
     private groupsWithShelvesRevision = -1
     public readonly groupShelvesRevision = signal(0)
+    /** The next answer for your groups also reads the invitations of the groups you own. */
+    private groupInvitationsWanted = false
 
     private get groupsWithShelvesWanted(): boolean {
         return this.groupsWithShelvesUsers > 0
@@ -236,6 +238,7 @@ export class DataService {
         for (const resource of this.resources) resource.reset()
         this.shelves.clear()
         this.groupsWithShelvesRevision = -1
+        this.groupInvitationsWanted = false
         this.groupHistoryByGroupId.set({})
         this.invitationsGroupIndex.set({})
     }
@@ -378,12 +381,20 @@ export class DataService {
         })
     }
 
-    private _getUserGroups(accountId: number) {
+    /**
+     * Your groups, and the pending invitations of those you own. `withInvitations: false` is for a change that only
+     * moves the game counts (your collection), so it costs one request, not one per group you own (#262). A load
+     * replaces one still on its way, so the invitations stay wanted until a load that reads them has answered.
+     */
+    private _getUserGroups(accountId: number, { withInvitations = true } = {}) {
         this.failedLoads.delete('groups')
+        this.groupInvitationsWanted ||= withInvitations
         this.groups.load(this.api.getGroupOverviews(accountId).pipe(takeUntil(this.userChanged)), {
             apply: (groups) => {
                 this.userGroups.set(groups)
                 this.forgetGroupShelves(groups)
+                if (!this.groupInvitationsWanted) return
+                this.groupInvitationsWanted = false
 
                 for (const group of groups) {
                     if (group.createdBy !== accountId) {
@@ -897,7 +908,7 @@ export class DataService {
         this._getUserGames(currentUser.id)
         this._getUserCollectionActivity(currentUser.id)
         // The groups count your games once each among everyone's, which only the server knows (#262).
-        this._getUserGroups(currentUser.id)
+        this._getUserGroups(currentUser.id, { withInvitations: false })
     }
 
     public refreshUserCollectionActivity(): void {
