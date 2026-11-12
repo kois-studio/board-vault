@@ -2,11 +2,11 @@ import { HttpErrorResponse } from '@angular/common/http'
 import { signal } from '@angular/core'
 import { TestBed } from '@angular/core/testing'
 import { ActivatedRoute, convertToParamMap, provideRouter } from '@angular/router'
-import { type Observable, of, Subject, throwError } from 'rxjs'
+import { firstValueFrom, type Observable, of, Subject, throwError } from 'rxjs'
 import { Api } from '../../api/api'
 import type { MeetWithAttendeesAndGamesType } from '../../api/api.types'
 import { ToastService } from '../../components/toast/toast.service'
-import { ResourceSignal } from '../../core/async/resource-state'
+import { ResourceSignal, settledValue } from '../../core/async/resource-state'
 import { withStates } from '../../core/async/resource-state.testing'
 import { DataService } from '../../core/services/data.service'
 import { ApiUnavailableError } from '../../core/utils/apiUnavailable'
@@ -1168,7 +1168,7 @@ describe('MeetViewComponent loading a night without waiting for your groups (#25
         const api = {
             getSessionDetailsById: vi.fn().mockReturnValue(answers.details ?? of(night())),
             getSessionRecording: vi.fn().mockReturnValue(answers.recording ?? of({ sessionId: 59, revision: 1, games: [] })),
-            getUserGroup: vi.fn().mockReturnValue(answers.group ?? of(group(7, 'Thursday group'))),
+            getGroupOverview: vi.fn().mockReturnValue(answers.group ?? of(group(7, 'Thursday group'))),
             getGroupPeople: vi.fn().mockReturnValue(of({ people: [] })),
             getGroupPersonCatalog: vi.fn().mockReturnValue(of([])),
             getRecommendations: vi.fn().mockReturnValue(of({ recommendations: [] })),
@@ -1198,6 +1198,11 @@ describe('MeetViewComponent loading a night without waiting for your groups (#25
                         userGroups: groups.value,
                         userGroupsState: groups.state,
                         refreshUserGroups,
+                        // As DataService reads one group with its games (#262): the listed one, unless asked afresh.
+                        groupWithShelf: (groupId: number, fresh: boolean) => {
+                            const listed = fresh ? undefined : settledValue(groups.state())?.find((candidate) => candidate.id === groupId)
+                            return listed ? Promise.resolve(listed) : firstValueFrom(api.getGroupOverview(1, groupId))
+                        },
                         userReviews: signal([]),
                         refreshUserMeets: vi.fn(),
                         refreshUserHistory: vi.fn(),
@@ -1240,7 +1245,7 @@ describe('MeetViewComponent loading a night without waiting for your groups (#25
         expect(api.getSessionDetailsById).toHaveBeenCalledWith(59)
         expect(api.getSessionRecording).toHaveBeenCalledWith(59)
         // The group, its people and its catalogue need the night's group: asked for once it is known.
-        expect(api.getUserGroup).not.toHaveBeenCalled()
+        expect(api.getGroupOverview).not.toHaveBeenCalled()
         expect(api.getGroupPeople).not.toHaveBeenCalled()
         expect(text()).toContain('Loading session…')
     })
@@ -1250,7 +1255,7 @@ describe('MeetViewComponent loading a night without waiting for your groups (#25
         const { component, api, text, header, settle } = await setup({ list: [], loading: true }, { group: answer })
 
         // One wave: the group alone, its people, and the suggestions, all asked for together.
-        expect(api.getUserGroup).toHaveBeenCalledWith(1, 7)
+        expect(api.getGroupOverview).toHaveBeenCalledWith(1, 7)
         expect(api.getGroupPeople).toHaveBeenCalledWith(7, true)
         expect(api.getRecommendations).toHaveBeenCalledTimes(1)
         expect(header()).not.toBeNull()
@@ -1304,14 +1309,14 @@ describe('MeetViewComponent loading a night without waiting for your groups (#25
     it('uses the group already listed, asking for nothing more', async () => {
         const { component, api } = await setup({ list: [group(7, 'Thursday group')] })
 
-        expect(api.getUserGroup).not.toHaveBeenCalled()
+        expect(api.getGroupOverview).not.toHaveBeenCalled()
         expect(component.loaded).toBe(true)
     })
 
     it('asks for the night’s group alone when it is not listed, as for a group just joined', async () => {
         const { component, api } = await setup({ list: [group(8, 'Sunday group')] })
 
-        expect(api.getUserGroup).toHaveBeenCalledWith(1, 7)
+        expect(api.getGroupOverview).toHaveBeenCalledWith(1, 7)
         expect(component.loaded).toBe(true)
         expect(component.groupData?.name).toBe('Thursday group')
     })
@@ -1320,7 +1325,7 @@ describe('MeetViewComponent loading a night without waiting for your groups (#25
         const { component, api, text } = await setup({ list: [], error: true })
 
         expect(api.getSessionDetailsById).toHaveBeenCalledTimes(1)
-        expect(api.getUserGroup).toHaveBeenCalledWith(1, 7)
+        expect(api.getGroupOverview).toHaveBeenCalledWith(1, 7)
         expect(component.loaded).toBe(true)
         expect(text()).not.toContain('This session could not be loaded.')
     })
@@ -1337,12 +1342,12 @@ describe('MeetViewComponent loading a night without waiting for your groups (#25
         expect(text()).not.toContain('This session could not be loaded.')
         expect(text()).not.toContain('Loading session…')
 
-        api.getUserGroup.mockReturnValue(of(group(7, 'Thursday group')))
+        api.getGroupOverview.mockReturnValue(of(group(7, 'Thursday group')))
         retry()?.click()
         await settle()
 
         expect(api.getSessionDetailsById).toHaveBeenCalledTimes(2)
-        expect(api.getUserGroup).toHaveBeenCalledTimes(2)
+        expect(api.getGroupOverview).toHaveBeenCalledTimes(2)
         expect(refreshUserGroups).not.toHaveBeenCalled()
         expect(component.loaded).toBe(true)
         expect(component.loadError()).toBe(false)
@@ -1351,13 +1356,13 @@ describe('MeetViewComponent loading a night without waiting for your groups (#25
     it('asks for the night’s group afresh on Retry, even when it is listed', async () => {
         const { component, api, retry, settle } = await setup({ list: [group(7, 'Thursday group')] }, { details: down() })
         expect(component.loadError()).toBe(true)
-        expect(api.getUserGroup).not.toHaveBeenCalled()
+        expect(api.getGroupOverview).not.toHaveBeenCalled()
 
         api.getSessionDetailsById.mockReturnValue(of(night()))
         retry()?.click()
         await settle()
 
-        expect(api.getUserGroup).toHaveBeenCalledWith(1, 7)
+        expect(api.getGroupOverview).toHaveBeenCalledWith(1, 7)
         expect(component.loaded).toBe(true)
     })
 
@@ -1417,7 +1422,7 @@ describe('MeetViewComponent loading a night without waiting for your groups (#25
         const { component, api, settle } = await setup({ list: [withReview] })
         expect(component.avgReviewsIndex[5]).toBe(8)
 
-        api.getUserGroup.mockReturnValue(of({ ...reviewed, members: [] }))
+        api.getGroupOverview.mockReturnValue(of({ ...reviewed, members: [] }))
         component.retryLoad()
         await settle()
 

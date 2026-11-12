@@ -22,7 +22,7 @@ const LOOPBACK_HOSTS = new Set(['localhost', '127.0.0.1', '[::1]'])
  * Sends every call to the API through one `page.route` that answers by the current mode (#248).
  *
  * The mode can change mid-test (`set`), and `override` makes some paths answer differently, for example only
- * `/dashboard/users/:id/groups` failing. Overrides live in this one handler, checked newest first, instead of in
+ * `/dashboard/users/:id/group-overviews` failing. Overrides live in this one handler, checked newest first, instead of in
  * separate `page.route` calls: Playwright runs the last registered handler first, so a catch-all added after an
  * override would hide it. Override patterns must not use the `g` or `y` flag, which make `test()` stateful.
  */

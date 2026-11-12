@@ -113,13 +113,31 @@ describe('Api response contracts', () => {
         await expect(response).rejects.toThrow()
     })
 
-    it('rejects a malformed group workspace response at the API boundary', async () => {
-        const response = firstValueFrom(api.getUserGroups(7))
-        const request = http.expectOne(`${environment.apiUrl}/dashboard/users/7/groups`)
+    it('rejects a malformed group overview response at the API boundary', async () => {
+        const response = firstValueFrom(api.getGroupOverviews(7))
+        const request = http.expectOne(`${environment.apiUrl}/dashboard/users/7/group-overviews`)
 
         request.flush([{ id: 7, name: 'Friday Crew', createdBy: 1, createdAt: '2026-09-04' }])
 
         await expect(response).rejects.toThrow()
+    })
+
+    it("reads a group's shelf: its games once, who owns them, and the members' ratings (#262)", async () => {
+        const response = firstValueFrom(api.getGroupShelf(7, 3))
+        const request = http.expectOne(`${environment.apiUrl}/dashboard/users/7/groups/3/shelf`)
+
+        request.flush({
+            games: [],
+            owners: [
+                { accountId: 7, groupPersonId: null, gameIds: [11] },
+                { accountId: null, groupPersonId: 21, gameIds: [] },
+            ],
+            reviews: [{ accountId: 7, gameId: 11, review: 8, reviewDate: '2026-09-04' }],
+        })
+
+        await expect(response).resolves.toEqual(
+            expect.objectContaining({ owners: expect.arrayContaining([expect.objectContaining({ groupPersonId: 21 })]) }),
+        )
     })
 
     it('accepts the group-person workspace and its actor-specific claim flag', async () => {

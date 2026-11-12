@@ -8,7 +8,7 @@ import type {
     GameType,
     GroupPersonWorkspaceType,
     GroupStanding,
-    GroupWithMembersAndGames,
+    GroupWithShelfType,
     MeetType,
     MeetWithAttendeesAndGamesType,
     PublicUserType,
@@ -33,7 +33,7 @@ import { IconComponent } from '../../components/ui/icon/icon.component'
 import { ImageBackgroundComponent } from '../../components/ui/image-background/image-background.component'
 import { InPageLinkDirective } from '../../components/ui/in-page-link/in-page-link.directive'
 import { StarRatingComponent } from '../../components/ui/star-rating/star-rating.component'
-import { loadingState, type ResourceState, readyState, settledValue } from '../../core/async/resource-state'
+import { loadingState, type ResourceState, readyState } from '../../core/async/resource-state'
 import { formatList, intlLocale } from '../../core/i18n/format'
 import { PlayersPipe } from '../../core/pipes/count.pipe'
 import { CustomDatePipe } from '../../core/pipes/customDate.pipe'
@@ -122,7 +122,7 @@ export class MeetViewComponent {
 
     // DataService data (filled on init -> effect)
     public userData: ReturnType<typeof this.dataService.currentUser> = null
-    public groupData: Nullable<GroupWithMembersAndGames> = null
+    public groupData: Nullable<GroupWithShelfType> = null
     public groupPeople: Array<GroupPersonWorkspaceType> = []
     public groupPersonCatalog: Array<GameCompleteType> = []
     public meetData: Nullable<MeetWithAttendeesAndGamesType> = null
@@ -275,14 +275,10 @@ export class MeetViewComponent {
 
     /**
      * The night's group, with its members' games and reviews: the one already listed when your groups have
-     * loaded, or else that group alone, rather than waiting for all of them (#258).
+     * loaded, or else that group alone, rather than waiting for all of them (#258), with its shelf (#262).
      */
-    async #groupOf(groupId: number, fresh: boolean): Promise<GroupWithMembersAndGames> {
-        const listed = fresh ? undefined : settledValue(this.dataService.userGroupsState())?.find((group) => group.id === groupId)
-        if (listed) return listed
-        const accountId = this.userData?.id
-        if (!accountId) throw new Error('Signed out')
-        return firstValueFrom(this.api.getUserGroup(accountId, groupId))
+    #groupOf(groupId: number, fresh: boolean): Promise<GroupWithShelfType> {
+        return this.dataService.groupWithShelf(groupId, fresh)
     }
 
     /** The plays of a night; null when they could not be read, which the page says next to them. */
@@ -434,7 +430,7 @@ export class MeetViewComponent {
         return this.myPlayedGames.filter((game) => this.getMyRating(game.id) === null)
     }
 
-    #indexReviews(groupData: GroupWithMembersAndGames): void {
+    #indexReviews(groupData: GroupWithShelfType): void {
         // Built afresh on every load: a Retry must not keep the reviews of someone who has left since.
         this.gameReviews = {}
         this.avgReviewsIndex = {}

@@ -1,5 +1,5 @@
 import { computed, effect, Injectable, inject, signal, untracked } from '@angular/core'
-import { GameCompleteType, GameType, GroupWithMembersAndGames, UserType } from '../../api/api.types'
+import { GameCompleteType, GameType, GroupWithShelfType, UserType } from '../../api/api.types'
 import { DataService } from '../../core/services/data.service'
 
 /**
@@ -11,7 +11,7 @@ export class GroupViewService {
     // --------------------------------------------------------------------------
     // #region           signals
     // --------------------------------------------------------------------------
-    public readonly groupData = signal<GroupWithMembersAndGames | null>(null)
+    public readonly groupData = signal<GroupWithShelfType | null>(null)
 
     /** Library filter: only games for this many players; null shows every game. */
     public readonly playerCount = signal<number | null>(null)

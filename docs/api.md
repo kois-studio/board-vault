@@ -181,7 +181,8 @@ the same few queries however many groups, people and games there are.
 - `GET /dashboard/users/:userId/groups` and
   `GET /dashboard/users/:userId/groups/:groupId` still answer every member's
   games and ratings, for the previous frontend release while both deploy.
-  They are deprecated and are removed in a later release.
+  The frontend no longer reads them. They are deprecated and are removed in a
+  later release.
 
 ## Browser caching
 

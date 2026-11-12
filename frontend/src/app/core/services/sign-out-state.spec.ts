@@ -1,7 +1,7 @@
 import { TestBed } from '@angular/core/testing'
 import { of, Subject } from 'rxjs'
 import { Api } from '../../api/api'
-import type { GameCompleteType, GroupWithMembersAndGames, UserType } from '../../api/api.types'
+import type { GameCompleteType, GroupWithShelfType, UserType } from '../../api/api.types'
 import { ToastService } from '../../components/toast/toast.service'
 import { AdminGamesManageService } from '../../modules/admin/components/admin-games-manage/admin-games-manage.service'
 import { BrowsePageService } from '../../pages/collection-page/browse-page/browse-page.service'
@@ -12,7 +12,15 @@ import { PendingProposalsService } from './pending-proposals.service'
 
 const user = { id: 1 } as UserType
 const game = { id: 10 } as GameCompleteType
-const group = { id: 5, name: 'Friday', createdBy: 1, members: [] } as unknown as GroupWithMembersAndGames
+const group = {
+    id: 5,
+    name: 'Friday',
+    createdBy: 1,
+    createdAt: '2026-09-01',
+    gameCount: 0,
+    members: [],
+    placeholders: [],
+} as unknown as GroupWithShelfType
 const proposalStats = {
     totalProposals: 2,
     approvedProposals: 1,
@@ -27,7 +35,8 @@ const proposalStats = {
 function fakeApi(overrides: Record<string, () => unknown> = {}) {
     const answers: Record<string, () => unknown> = {
         getUserGames: () => of([game]),
-        getUserGroups: () => of([group]),
+        getGroupOverviews: () => of([group]),
+        getGroupShelf: () => of({ games: [], owners: [], reviews: [] }),
         getGroupInvitations: () => of([{ id: 9 }]),
         getUserNotifications: () => of([{ id: 3 }]),
         getUserInvitations: () => of([{ id: 4 }]),

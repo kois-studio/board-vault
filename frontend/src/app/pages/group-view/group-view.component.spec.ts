@@ -11,10 +11,16 @@ import { ApiUnavailableError } from '../../core/utils/apiUnavailable'
 import { formatAttendeeSummary } from '../../core/utils/formatAttendeeSummary'
 import { GroupViewComponent, shouldShowFirstGroupSetup } from './group-view.component'
 
+/** The group shows once its shelf is read (#262): let that answer arrive. */
+async function shelfRead(): Promise<void> {
+    await new Promise((resolve) => setTimeout(resolve))
+    TestBed.tick()
+}
+
 describe('GroupViewComponent switching groups', () => {
     const group = (id: number, name: string) => ({ id, name, createdBy: 6, members: [{ id: 6, games: [] }], placeholders: [] })
 
-    const setup = () => {
+    const setup = async () => {
         const params = new BehaviorSubject(convertToParamMap({ groupId: '1' }))
         const collections: Record<number, Subject<unknown>> = { 1: new Subject(), 4: new Subject() }
         const api = {
@@ -45,15 +51,15 @@ describe('GroupViewComponent switching groups', () => {
             ],
         })
         const component = TestBed.runInInjectionContext(() => new GroupViewComponent())
-        TestBed.tick()
+        await shelfRead()
         return { component, params, collections, api, dataService }
     }
 
-    it('shows the night that comes next, not one that is waiting for results', () => {
+    it('shows the night that comes next, not one that is waiting for results', async () => {
         vi.useFakeTimers({ toFake: ['Date'] })
         vi.setSystemTime(new Date('2026-10-15T12:00:00Z'))
         try {
-            const { component, dataService } = setup()
+            const { component, dataService } = await setup()
             const meet = (id: number, groupId: number, meetDate: string, status = 'scheduled') => ({
                 id,
                 groupId,
@@ -98,7 +104,7 @@ describe('GroupViewComponent switching groups', () => {
     })
 
     it('reloads the groups after a placeholder game changes, so the library shows it', async () => {
-        const { component, api, dataService } = setup()
+        const { component, api, dataService } = await setup()
         const person = { person: { id: 9 } } as Parameters<typeof component.setGroupPersonOwnership>[0]
 
         await component.setGroupPersonOwnership(person, 42, { target: { value: 'asserted' } } as unknown as Event)
@@ -107,20 +113,20 @@ describe('GroupViewComponent switching groups', () => {
         expect(dataService.refreshUserGroups).toHaveBeenCalled()
     })
 
-    it('shows the group the switcher moved to, without a reload', () => {
-        const { component, params, api } = setup()
+    it('shows the group the switcher moved to, without a reload', async () => {
+        const { component, params, api } = await setup()
         expect(component.groupData$()?.id).toBe(1)
 
         params.next(convertToParamMap({ groupId: '4' }))
-        TestBed.tick()
+        await shelfRead()
 
         expect(component.groupData$()?.name).toBe('Private group')
         expect(api.getGroupCollection).toHaveBeenLastCalledWith(4)
         expect(api.getGroupMeetings).toHaveBeenLastCalledWith(6, 4)
     })
 
-    it('does not stay loading when it leaves a group whose history was still loading', () => {
-        const { component, params, api, dataService } = setup()
+    it('does not stay loading when it leaves a group whose history was still loading', async () => {
+        const { component, params, api, dataService } = await setup()
         const pending = new Subject<never>()
         api.getGroupMeetings.mockReturnValueOnce(pending)
 
@@ -136,8 +142,8 @@ describe('GroupViewComponent switching groups', () => {
         expect(component.isLoading()).toBe(false)
     })
 
-    it('ignores an answer for the previous group that arrives after switching', () => {
-        const { component, params, collections } = setup()
+    it('ignores an answer for the previous group that arrives after switching', async () => {
+        const { component, params, collections } = await setup()
 
         params.next(convertToParamMap({ groupId: '4' }))
         TestBed.tick()
@@ -245,7 +251,7 @@ describe('group standings presentation', () => {
 })
 
 describe('GroupViewComponent collection worth', () => {
-    const setup = (collection: Observable<unknown>) => {
+    const setup = async (collection: Observable<unknown>) => {
         const api = {
             getGroupCollection: vi.fn(() => collection),
             getGroupInsights: vi.fn(() => of(null)),
@@ -278,20 +284,20 @@ describe('GroupViewComponent collection worth', () => {
             ],
         })
         const component = TestBed.runInInjectionContext(() => new GroupViewComponent())
-        TestBed.tick()
+        await shelfRead()
         return { component, api }
     }
 
-    it('shows it is loading, instead of the line for a group without data', () => {
+    it('shows it is loading, instead of the line for a group without data', async () => {
         const pending = new Subject<never>()
-        const { component } = setup(pending)
+        const { component } = await setup(pending)
 
         expect(component.collectionLoading()).toBe(true)
         expect(component.collectionError()).toBe(false)
     })
 
-    it('says when it could not be loaded, and loads it again on retry', () => {
-        const { component, api } = setup(throwError(() => new Error('offline')))
+    it('says when it could not be loaded, and loads it again on retry', async () => {
+        const { component, api } = await setup(throwError(() => new Error('offline')))
 
         expect(component.collectionLoading()).toBe(false)
         expect(component.collectionError()).toBe(true)
@@ -307,7 +313,7 @@ describe('GroupViewComponent collection worth', () => {
 })
 
 describe('GroupViewComponent collection worth retries', () => {
-    it('keeps the newest answer when an older retry fails late', () => {
+    it('keeps the newest answer when an older retry fails late', async () => {
         const first = new Subject<never>()
         const api = {
             getGroupCollection: vi.fn<(groupId: number) => Observable<unknown>>(() => first),
@@ -343,7 +349,7 @@ describe('GroupViewComponent collection worth retries', () => {
             ],
         })
         const component = TestBed.runInInjectionContext(() => new GroupViewComponent())
-        TestBed.tick()
+        await shelfRead()
 
         api.getGroupCollection.mockReturnValue(of({ worth: 567, copies: 29, pricedCopies: 20, people: [] }))
         component.retryCollection()

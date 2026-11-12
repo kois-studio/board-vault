@@ -1,7 +1,7 @@
 import { signal } from '@angular/core'
 import { ComponentFixture, TestBed } from '@angular/core/testing'
 import { provideRouter } from '@angular/router'
-import type { GroupWithMembersAndGames, InvitationWithAccountsData } from '../../api/api.types'
+import type { GroupOverviewType, InvitationWithAccountsData } from '../../api/api.types'
 import { DataService } from '../../core/services/data.service'
 import { CardGroupComponent } from './card-group.component'
 
@@ -15,8 +15,7 @@ describe('CardGroupComponent (Home)', () => {
         displayName: `User ${id}`,
         avatar: { backgroundColor: '#fff', iconName: null, emoji: null, type: 'initials' as const, initials: `U${id}` },
         joinedAt: '2026-09-01T10:00:00.000Z',
-        games: gameIds.map((gameId) => ({ id: gameId })),
-        reviews: [],
+        gameCount: gameIds.length,
     })
 
     const group = {
@@ -24,9 +23,11 @@ describe('CardGroupComponent (Home)', () => {
         name: 'Friday crew',
         createdBy: 1,
         createdAt: '2026-09-01T10:00:00.000Z',
+        // Game 11 is both members': the group has two games.
+        gameCount: 2,
         members: [member(1, [11]), member(2, [11, 12])],
         placeholders: [],
-    } as unknown as GroupWithMembersAndGames
+    } as GroupOverviewType
 
     const element = () => fixture.nativeElement as HTMLElement
 
@@ -65,7 +66,9 @@ describe('CardGroupComponent (Home)', () => {
     it('counts people without an account and their games, like the group page', () => {
         fixture.componentRef.setInput('group', {
             ...group,
-            placeholders: [{ id: 5, displayName: 'Nora', avatar: null, gameIds: [12, 13], games: [] }],
+            // Nora brings 12, which Bea has, and 13: three games in the group.
+            gameCount: 3,
+            placeholders: [{ id: 5, displayName: 'Nora', avatar: null, gameCount: 2 }],
         })
         fixture.detectChanges()
 

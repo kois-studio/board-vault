@@ -33,10 +33,13 @@ import {
     groupCollectionSchema,
     groupInsightsSchema,
     groupInvitationsSchema,
+    groupOverviewSchema,
+    groupOverviewsSchema,
     groupPeopleSchema,
     groupPersonChoicesSchema,
     groupPersonSchemaResponse,
     groupPersonTakeoversSchema,
+    groupShelfSchema,
     historyPageSchema,
     historySummarySchema,
     homePreferencesSchema,
@@ -68,8 +71,6 @@ import {
     usageReportSchema,
     userCollectionActivitySchema,
     userGamesSchema,
-    userGroupSchema,
-    userGroupsSchema,
     userHistorySchema,
     userInvitationsSchema,
     userMeetsSchema,
@@ -109,9 +110,10 @@ import type {
     GroupActivityPageType,
     GroupCollectionType,
     GroupInsightsType,
+    GroupOverviewType,
     GroupPersonType,
     GroupPersonWorkspaceType,
-    GroupWithMembersAndGames,
+    GroupShelfType,
     HistoryPageOptions,
     HistoryPageType,
     HistoryRecordType,
@@ -636,17 +638,25 @@ export class Api {
             .pipe(map((response) => userStatsSchema.parse(response)))
     }
 
-    getUserGroups(userId: number) {
+    /** Your groups with their people and game counts, the same size however many games anyone owns (#262). */
+    getGroupOverviews(userId: number) {
         return this.http
-            .get<Array<GroupWithMembersAndGames>>(`${this.url}/dashboard/users/${userId}/groups`)
-            .pipe(map((response) => userGroupsSchema.parse(response)))
+            .get<Array<GroupOverviewType>>(`${this.url}/dashboard/users/${userId}/group-overviews`)
+            .pipe(map((response) => groupOverviewsSchema.parse(response)))
     }
 
-    /** One of your groups, as in `getUserGroups`: for a page about that group, without loading them all (#258). */
-    getUserGroup(userId: number, groupId: number) {
+    /** One of your groups, as in `getGroupOverviews`: for a page about that group, without loading them all (#258). */
+    getGroupOverview(userId: number, groupId: number) {
         return this.http
-            .get<GroupWithMembersAndGames>(`${this.url}/dashboard/users/${userId}/groups/${groupId}`)
-            .pipe(map((response) => userGroupSchema.parse(response)))
+            .get<GroupOverviewType>(`${this.url}/dashboard/users/${userId}/group-overviews/${groupId}`)
+            .pipe(map((response) => groupOverviewSchema.parse(response)))
+    }
+
+    /** A group's games once each, who owns them, and the members' ratings (#262). */
+    getGroupShelf(userId: number, groupId: number) {
+        return this.http
+            .get<GroupShelfType>(`${this.url}/dashboard/users/${userId}/groups/${groupId}/shelf`)
+            .pipe(map((response) => groupShelfSchema.parse(response)))
     }
 
     createGroup(userId: number, groupName: string) {

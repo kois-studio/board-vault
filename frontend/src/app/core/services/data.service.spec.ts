@@ -319,7 +319,7 @@ describe('DataService while Board Vault cannot be reached (#241)', () => {
 
     const allLists = [
         'getUserGames',
-        'getUserGroups',
+        'getGroupOverviews',
         'getUserNotifications',
         'getUserInvitations',
         'getUserReviews',
@@ -390,7 +390,7 @@ describe('DataService while Board Vault cannot be reached (#241)', () => {
 
     it('leaves out the toast for a group’s invitations during an outage', () => {
         const { connectivity, toast, signIn } = setup(['getGroupInvitations'], {
-            getUserGroups: () => of([{ id: 10, name: 'Friday Crew', createdBy: 1, members: [] }]),
+            getGroupOverviews: () => of([{ id: 10, name: 'Friday Crew', createdBy: 1, members: [] }]),
         })
         connectivity.reportUnreachable()
 
@@ -419,7 +419,7 @@ describe('DataService while Board Vault cannot be reached (#241)', () => {
 
     it('loads only that group’s invitations again, not the groups', () => {
         const { connectivity, calls, down, signIn } = setup(['getGroupInvitations'], {
-            getUserGroups: vi.fn(() => of([{ id: 10, name: 'Friday Crew', createdBy: 1, members: [] }])),
+            getGroupOverviews: vi.fn(() => of([{ id: 10, name: 'Friday Crew', createdBy: 1, members: [] }])),
         })
         signIn()
         down.value = false
@@ -603,7 +603,7 @@ describe('DataService lists while they reload (#256)', () => {
         const calls: Record<string, number> = {}
         const first: Record<string, unknown> = {
             getUserGames: [{ id: 1 }],
-            getUserGroups: [{ id: 7, name: 'Fridays', members: [] }],
+            getGroupOverviews: [{ id: 7, name: 'Fridays', members: [] }],
             getUserReviews: [{ gameId: 1, review: 8 }],
             getUserMeets: [{ id: 3 }],
             getUserGamesHistory: { entries: [{ meetData: { id: 4 } }], hasMore: false },
@@ -758,5 +758,109 @@ describe('DataService lists while they reload (#256)', () => {
         TestBed.tick()
         expect(toast.error).not.toHaveBeenCalled()
         expect(service.userGamesState().status).toBe('loading')
+    })
+})
+
+describe('DataService group shelves (#262)', () => {
+    const user = { id: 1, username: 'ana', displayName: 'Ana', avatar: null } as unknown as UserType
+    const overview = (id: number) => ({
+        id,
+        name: `Group ${id}`,
+        createdBy: 1,
+        createdAt: '2026-09-01',
+        gameCount: 1,
+        members: [],
+        placeholders: [],
+    })
+    const shelf = { games: [], owners: [], reviews: [] }
+
+    const setup = () => {
+        const calls: Record<string, number> = {}
+        const answers: Record<string, (...args: Array<unknown>) => unknown> = {
+            getGroupOverviews: () => of([overview(7), overview(8)]),
+            getGroupShelf: () => of(shelf),
+            saveGameReview: () => of({}),
+        }
+        const api = new Proxy(
+            {},
+            {
+                get:
+                    (_target, name: string) =>
+                    (...args: Array<unknown>) => {
+                        calls[name] = (calls[name] ?? 0) + 1
+                        return (answers[name] ?? (() => of([])))(...args)
+                    },
+            },
+        )
+        TestBed.configureTestingModule({
+            providers: [
+                { provide: Api, useValue: api },
+                { provide: ToastService, useValue: { success: vi.fn(), error: vi.fn() } },
+            ],
+        })
+        const service = TestBed.inject(DataService)
+        service.currentUser.set(user)
+        TestBed.tick()
+        const settle = () => new Promise((resolve) => setTimeout(resolve))
+        /** A page showing every group's games, open until `close`. */
+        const openPage = () => {
+            const destroyed: Array<() => void> = []
+            service.loadUserGroupsWithShelves({ onDestroy: (callback: () => void) => destroyed.push(callback) } as never)
+            return { close: () => destroyed.forEach((callback) => callback()) }
+        }
+        return { service, calls, settle, openPage }
+    }
+
+    it('reads a shelf once, and again after your groups load again', async () => {
+        const { service, calls } = setup()
+
+        await service.groupShelf(7)
+        await service.groupShelf(7)
+        expect(calls['getGroupShelf']).toBe(1)
+
+        const revision = service.groupShelvesRevision()
+        service.refreshUserGroups()
+        await service.groupShelf(7)
+        expect(calls['getGroupShelf']).toBe(2)
+        expect(service.groupShelvesRevision()).toBe(revision + 1)
+    })
+
+    it('reads the shelves again after you rate a game, since they hold the ratings', async () => {
+        const { service, calls } = setup()
+        await service.groupShelf(7)
+        const revision = service.groupShelvesRevision()
+
+        service.saveGameReview(1, 42, 8)
+        await service.groupShelf(7)
+
+        expect(calls['getGroupShelf']).toBe(2)
+        expect(service.groupShelvesRevision()).toBe(revision + 1)
+    })
+
+    it('follows your groups only while a page showing every group’s games is open', async () => {
+        const { service, calls, settle, openPage } = setup()
+
+        const page = openPage()
+        await settle()
+        expect(calls['getGroupShelf']).toBe(2)
+        expect(service.userGroupsWithShelves().map((group) => group.id)).toEqual([7, 8])
+
+        service.refreshUserGroups()
+        await settle()
+        expect(calls['getGroupShelf']).toBe(4)
+
+        page.close()
+        service.refreshUserGroups()
+        await settle()
+        expect(calls['getGroupShelf']).toBe(4)
+
+        // Opened again: read afresh, since the groups changed meanwhile; not when nothing did.
+        const again = openPage()
+        await settle()
+        expect(calls['getGroupShelf']).toBe(6)
+        again.close()
+        openPage()
+        await settle()
+        expect(calls['getGroupShelf']).toBe(6)
     })
 })

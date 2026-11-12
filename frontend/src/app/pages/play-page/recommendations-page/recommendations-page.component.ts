@@ -4,8 +4,8 @@ import { firstValueFrom } from 'rxjs'
 import { Api } from '../../../api/api'
 import type {
     AccountMeetType,
+    GroupOverviewType,
     GroupPersonWorkspaceType,
-    GroupWithMembersAndGames,
     RecommendationSignalsType,
     RecommendationsType,
     RecommendationType,
@@ -173,7 +173,7 @@ export class RecommendationsPageComponent {
                 id: member.id,
                 name: member.displayName || member.username,
                 avatar: member.avatar,
-                games: member.games.length,
+                games: member.gameCount,
             }))
         }
         return people.map((person) => ({
@@ -453,7 +453,7 @@ export class RecommendationsPageComponent {
         return (result.participantIds ?? result.attendeeIds).join(',')
     }
 
-    public getDecisionTitle(group: Pick<GroupWithMembersAndGames, 'name'> | null): string {
+    public getDecisionTitle(group: Pick<GroupOverviewType, 'name'> | null): string {
         return group
             ? $localize`:Title of What to play for a group; the placeholder is the group name:What should ${group.name}:group: play?`
             : $localize`:Title of What to play before a group is chosen:Decide what to play`
@@ -535,7 +535,7 @@ export class RecommendationsPageComponent {
         return { type: 'initials', initials, backgroundColor: '#64748b', iconName: null, emoji: null }
     }
 
-    public getMemberName(group: GroupWithMembersAndGames, accountId: number): string {
+    public getMemberName(group: GroupOverviewType, accountId: number): string {
         const person = this.groupPeople().find((candidate) => candidate.person.id === accountId)
         if (person) return person.person.displayName
         const member = group.members.find((candidate) => candidate.id === accountId)
@@ -546,13 +546,13 @@ export class RecommendationsPageComponent {
         return person.ownership.filter((ownership) => ownership.status === 'asserted').length
     }
 
-    public selectedAttendeeNames(group: GroupWithMembersAndGames): string {
+    public selectedAttendeeNames(group: GroupOverviewType): string {
         return this.selectedAttendeeIds()
             .map((accountId) => this.getMemberName(group, accountId))
             .join(', ')
     }
 
-    private readRequestedAttendeeIds(group: GroupWithMembersAndGames): Array<number> | undefined {
+    private readRequestedAttendeeIds(group: GroupOverviewType): Array<number> | undefined {
         const rawValue = this.route.snapshot.queryParamMap.get('attendeeIds')
         if (!rawValue) return undefined
 
@@ -566,7 +566,7 @@ export class RecommendationsPageComponent {
     }
 
     private readRequestedParticipantIds(
-        group: GroupWithMembersAndGames | undefined,
+        group: GroupOverviewType | undefined,
         requestedAttendeeIds: Array<number> | undefined,
         people: Array<GroupPersonWorkspaceType>,
     ): Array<number> | undefined {

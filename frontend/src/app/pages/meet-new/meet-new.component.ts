@@ -4,7 +4,13 @@ import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms'
 import { ActivatedRoute, Router, RouterLink } from '@angular/router'
 import { firstValueFrom } from 'rxjs'
 import { Api } from '../../api/api'
-import type { GameCompleteType, GroupPersonWorkspaceType, PublicUserType, ScheduleSessionRequest } from '../../api/api.types'
+import type {
+    GameCompleteType,
+    GroupPersonWorkspaceType,
+    GroupShelfType,
+    PublicUserType,
+    ScheduleSessionRequest,
+} from '../../api/api.types'
 import { ImageProfileComponent } from '../../components/image-profile/image-profile.component'
 import { SkeletonPeopleGridComponent } from '../../components/skeletons/skeleton-people-grid/skeleton-people-grid.component'
 import { ToastService } from '../../components/toast/toast.service'
@@ -107,6 +113,10 @@ export class MeetNewComponent {
 
     public readonly groupPeople = signal<Array<GroupPersonWorkspaceType>>([])
     private readonly personCatalog = signal<Array<GameCompleteType>>([])
+    /** The group's games and who owns them (#262), read with its people. */
+    private readonly shelf = signal<GroupShelfType | null>(null)
+    /** A game asked for by a recommendation ("Plan this"), picked once the group's games are known. */
+    private requestedGameId: number | null = null
     public readonly selectedAttendeeIds = signal<Array<number>>([])
     public readonly selectedPlannedGameIds = signal<Array<number>>([])
     public readonly notes = signal('')
@@ -137,6 +147,11 @@ export class MeetNewComponent {
         return group ? group.members.length + (group.placeholders?.length ?? 0) : 3
     })
 
+    /** The games a member brings, from the group's shelf. */
+    private memberGameIds(accountId: number | null): Array<number> {
+        return this.shelf()?.owners.find((owner) => owner.accountId !== null && owner.accountId === accountId)?.gameIds ?? []
+    }
+
     /** Groups with group people invite those; older groups invite member accounts. */
     public readonly useGroupPeople = computed(() => this.groupPeople().length > 0)
 
@@ -148,7 +163,7 @@ export class MeetNewComponent {
                 id: member.id,
                 name: member.displayName || member.username,
                 avatar: member.avatar,
-                gameIds: new Set(member.games.map((game) => game.id)),
+                gameIds: new Set(this.memberGameIds(member.id)),
             }))
         }
         return this.groupPeople()
@@ -156,7 +171,7 @@ export class MeetNewComponent {
             .map(({ person, ownership }) => {
                 const linked = person.accountId === null ? undefined : group.members.find((member) => member.id === person.accountId)
                 const gameIds = new Set(ownership.filter((entry) => entry.status === 'asserted').map((entry) => entry.gameId))
-                for (const game of linked?.games ?? []) gameIds.add(game.id)
+                for (const gameId of this.memberGameIds(linked?.id ?? null)) gameIds.add(gameId)
                 return {
                     id: person.id,
                     name: person.displayName,
@@ -174,9 +189,9 @@ export class MeetNewComponent {
     /** Every game someone in the group owns, by title. */
     public readonly availableGames = computed<Array<GameCompleteType>>(() => {
         const games = new Map<number, GameCompleteType>()
-        for (const member of this.groupData()?.members ?? []) {
-            for (const game of member.games) games.set(game.id, game)
-        }
+        const shelf = this.shelf()
+        const memberGameIds = new Set(shelf?.owners.filter((owner) => owner.accountId !== null).flatMap((owner) => owner.gameIds))
+        for (const game of shelf?.games ?? []) if (memberGameIds.has(game.id)) games.set(game.id, game)
         for (const game of this.personCatalog()) games.set(game.id, game)
         return [...games.values()].sort((a, b) => this.titleOf(a).localeCompare(this.titleOf(b)))
     })
@@ -251,6 +266,7 @@ export class MeetNewComponent {
                     this.peopleError.set(false)
                     this.groupPeople.set([])
                     this.personCatalog.set([])
+                    this.shelf.set(null)
                     this.selectedAttendeeIds.set([])
                     this.selectedPlannedGameIds.set([])
                     return
@@ -385,9 +401,8 @@ export class MeetNewComponent {
         )
 
         const requestedGameId = Number(query.get('plannedGameId'))
-        this.selectedPlannedGameIds.set(
-            Number.isInteger(requestedGameId) && this.availableGames().some((game) => game.id === requestedGameId) ? [requestedGameId] : [],
-        )
+        this.requestedGameId = Number.isInteger(requestedGameId) && requestedGameId > 0 ? requestedGameId : null
+        this.selectedPlannedGameIds.set([])
 
         this.requestedIds = requestedIds
         this.peopleError.set(false)
@@ -395,33 +410,48 @@ export class MeetNewComponent {
     }
 
     /**
-     * Loads the group's people and the games only they own, and applies both at once. If either
-     * can't be loaded, the page says so rather than inviting only the member accounts.
+     * Loads the group's people, its games, and the games only its people without an account own, and applies
+     * them at once. If any can't be loaded, the page says so rather than inviting only the member accounts.
      */
     private async loadGroupPeople(groupId: number, requestedIds: Array<number>, retrying = false): Promise<void> {
         const version = ++this.peopleLoadVersion
         const isCurrent = () => this.peopleLoadVersion === version && this.initializedGroupId === groupId
         this.peopleLoading.set(true)
         try {
-            const { people } = await firstValueFrom(this.api.getGroupPeople(groupId))
+            const [{ people }, shelf] = await Promise.all([
+                firstValueFrom(this.api.getGroupPeople(groupId)),
+                this.dataService.groupShelf(groupId, retrying),
+            ])
             // A group without people (yet) invites member accounts, as before.
             const catalog = people.length === 0 ? [] : await firstValueFrom(this.api.getGroupPersonCatalog(groupId))
             if (!isCurrent()) return
             this.peopleLoading.set(false)
             this.peopleError.set(false)
+            this.shelf.set(shelf)
             if (retrying) this.#focusFirstPerson()
-            if (people.length === 0) return
+            if (people.length === 0) {
+                this.#pickRequestedGame()
+                return
+            }
             this.groupPeople.set(people)
             this.personCatalog.set(catalog)
 
             const activeIds = this.people().map((person) => person.id)
             const requested = requestedIds.filter((id) => activeIds.includes(id))
             this.selectedAttendeeIds.set(requested.length > 0 ? [...new Set(requested)] : activeIds)
+            this.#pickRequestedGame()
         } catch {
             if (!isCurrent()) return
             this.peopleLoading.set(false)
             this.peopleError.set(true)
         }
+    }
+
+    /** Picks the game a recommendation asked for, once the group's games are known, if the group has it. */
+    #pickRequestedGame(): void {
+        const gameId = this.requestedGameId
+        if (gameId === null || this.selectedPlannedGameIds().length > 0) return
+        if (this.availableGames().some((game) => game.id === gameId)) this.selectedPlannedGameIds.set([gameId])
     }
 
     /** The Retry button goes away once the people load: put focus on the first person instead of losing it. */

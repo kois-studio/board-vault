@@ -2119,6 +2119,15 @@
         <source>Any length</source>
       </segment>
     </unit>
+    <unit id="2116675010887708654">
+      <notes>
+        <note category="location">src/app/core/services/data.service.ts</note>
+        <note category="description">Toast when the games of your groups could not load</note>
+      </notes>
+      <segment>
+        <source>Error retrieving your groups’ games</source>
+      </segment>
+    </unit>
     <unit id="2120057704151430913">
       <notes>
         <note category="location">src/app/core/i18n/notification-text.ts</note>

@@ -1,4 +1,4 @@
-import { Component, computed, inject, signal } from '@angular/core'
+import { Component, computed, DestroyRef, inject, signal } from '@angular/core'
 import { RouterLink } from '@angular/router'
 import type { GameCompleteType } from '../../../api/api.types'
 import { SkeletonReviewGameComponent } from '../../../components/skeletons/skeleton-review-game/skeleton-review-game.component'
@@ -30,12 +30,17 @@ const byTitle = (a: GameCompleteType, b: GameCompleteType) => gameTitle(a).local
 export class ReviewsPageComponent {
     private readonly dataService = inject(DataService)
 
-    public readonly userGroups$ = this.dataService.userGroups
+    /** Your groups with their games (#262), read when this page opens. */
+    public readonly userGroups$ = this.dataService.userGroupsWithShelves
     public readonly userReviews$ = this.dataService.userReviews
     public readonly reviewsError = computed(() => this.dataService.userReviewsState().status === 'error')
     public readonly isLoadingReviews = computed(() => isFirstLoad(this.dataService.userReviewsState()))
 
     public readonly sortBy = signal<ReviewSort>('title')
+
+    constructor() {
+        this.dataService.loadUserGroupsWithShelves(inject(DestroyRef))
+    }
 
     /** Your ratings in the chosen order. A–Z is the default because it doesn't move a row you just rated. */
     public readonly sortedReviews = computed(() => {
@@ -65,7 +70,7 @@ export class ReviewsPageComponent {
     })
 
     /** The games waiting for your rating, as the state of your groups, which they come from. */
-    public readonly pendingState = computed(() => mapState(this.dataService.userGroupsState(), () => this.pendingReviews()))
+    public readonly pendingState = computed(() => mapState(this.dataService.userGroupsWithShelvesState(), () => this.pendingReviews()))
 
     public setSort(value: string): void {
         if (value === 'title' || value === 'rating' || value === 'recent') this.sortBy.set(value)

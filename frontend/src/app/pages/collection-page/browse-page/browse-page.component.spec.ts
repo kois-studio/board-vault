@@ -35,7 +35,14 @@ async function setup(query: Record<string, string> = {}) {
             { provide: ToastService, useValue: { success: vi.fn(), error: vi.fn() } },
             {
                 provide: DataService,
-                useValue: { currentUser: signal({ id: 7 }), userGroups: signal([]), userGames: signal([]), userWishlist: signal([]) },
+                useValue: {
+                    currentUser: signal({ id: 7 }),
+                    userGroups: signal([]),
+                    userGames: signal([]),
+                    userWishlist: signal([]),
+                    groupShelvesRevision: signal(0),
+                    groupShelf: vi.fn(),
+                },
             },
             { provide: ActivatedRoute, useValue: { snapshot: { queryParamMap: convertToParamMap(query) } } },
         ],

@@ -124,7 +124,7 @@ for the previous account are cancelled, so the next account starts empty
 
 | Owner | Holds |
 | --- | --- |
-| `DataService` | The current user and everything loaded for them: games, groups, invitations, notifications, reviews, sessions, history (the latest page, with totals the server counts; screens that page further read their own), wishlist, activity, proposals, stats. Each list is a `ResourceSignal`: `userX` is its value and `userXState` its `ResourceState` (loading, refreshing, error, ready), so a page tells "not loaded yet" and "failed" from "empty" (#256). A reload never empties a list first: it stays on screen, `refreshing`, until the answer replaces it, and a failed reload keeps it. Signing out puts every list back to `loading`. `refreshInbox()` quietly reloads notifications and invitations when the inbox opens and every minute while the page is in view; an answer still on its way is dropped when a newer look or a read or delete starts. `refreshSharedActivity()` also reloads game nights (at most once a minute) when the tab comes back into view. |
+| `DataService` | The current user and everything loaded for them: games, groups, invitations, notifications, reviews, sessions, history (the latest page, with totals the server counts; screens that page further read their own), wishlist, activity, proposals, stats. Each list is a `ResourceSignal`: `userX` is its value and `userXState` its `ResourceState` (loading, refreshing, error, ready), so a page tells "not loaded yet" and "failed" from "empty" (#256). A reload never empties a list first: it stays on screen, `refreshing`, until the answer replaces it, and a failed reload keeps it. Signing out puts every list back to `loading`. `refreshInbox()` quietly reloads notifications and invitations when the inbox opens and every minute while the page is in view; an answer still on its way is dropped when a newer look or a read or delete starts. `refreshSharedActivity()` also reloads game nights (at most once a minute) when the tab comes back into view. Your groups are overviews: people and counts, no games (#262). A page about a group's games reads its shelf (`groupShelf(groupId)`: its games once, who brings which, the members' ratings), kept until your groups load again (adding or removing a game reloads them, for their counts) or you rate a game; `groupWithShelf(groupId)` gives one group with each person's games, and `userGroupsWithShelves` every group's, read and kept up to date only while a page showing it is open (`loadUserGroupsWithShelves(destroyRef)`: the game page and Reviews). |
 | `LoginService` | Whether the session is ready, the current user id, and whether they are an admin. |
 | `PendingProposalsService` | The pending proposal count behind the admin badges. |
 | `GroupViewService` | The open group and its library filter (number of players). |
@@ -251,8 +251,8 @@ An error never leaves a page without a way on (#244):
   night and its plays at once, shows the header when the night arrives, then
   asks for the night's group, its people and (for a night with group people)
   their catalogue together. The group comes from the groups already listed, or
-  alone (`GET /dashboard/users/:userId/groups/:groupId`) when it is not
-  listed or the list failed. Until the night arrives the page shows its
+  alone (`GET /dashboard/users/:userId/group-overviews/:groupId`) when it is
+  not listed or the list failed, with its shelf (#262). Until the night arrives the page shows its
   skeleton; then the header, with placeholders for its counts and buttons, and
   the body as a skeleton shaped by the night until its group has loaded
   (`detailsState`); the played games have their own (`recordingState`) (#260).

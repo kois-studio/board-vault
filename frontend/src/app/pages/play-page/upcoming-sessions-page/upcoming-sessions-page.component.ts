@@ -9,6 +9,7 @@ import { isFirstLoad } from '../../../core/async/resource-state'
 import { intlLocale } from '../../../core/i18n/format'
 import { CustomDatePipe } from '../../../core/pipes/customDate.pipe'
 import { DataService } from '../../../core/services/data.service'
+import { groupGameCount, groupPeopleCount } from '../../../core/utils/groupCounts'
 import { relativeDay, sessionDateParts, type UpcomingState, upcomingState } from '../../../core/utils/sessionTiming'
 
 type UpcomingSection = { state: UpcomingState; title: string; hint: string; sessions: Array<AccountMeetType> }
@@ -137,9 +138,7 @@ export class UpcomingSessionsPageComponent {
         const group = this.userGroups$().find((candidate) => candidate.id === groupId)
         if (!group) return null
 
-        const gameIds = new Set(group.members.flatMap((member) => member.games.map((game) => game.id)))
-        for (const person of group.placeholders ?? []) for (const gameId of person.gameIds) gameIds.add(gameId)
-        return { people: group.members.length + (group.placeholders?.length ?? 0), games: gameIds.size }
+        return { people: groupPeopleCount(group), games: groupGameCount(group) }
     }
 
     /** "1 session", "3 sessions": the hint next to Coming up. */

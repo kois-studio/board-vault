@@ -11,6 +11,8 @@ const fridayCrew = {
     name: 'Friday crew',
     createdBy: 1,
     createdAt: '2026-09-01T10:00:00.000Z',
+    // Game 12 is both members': three games in the group.
+    gameCount: 3,
     members: [
         { id: 1, games: [{ id: 11 }, { id: 12 }] },
         { id: 2, games: [{ id: 12 }, { id: 13 }] },

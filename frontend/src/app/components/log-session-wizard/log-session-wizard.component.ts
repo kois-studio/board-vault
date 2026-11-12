@@ -3,14 +3,14 @@ import { afterNextRender, Component, computed, DestroyRef, ElementRef, effect, I
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
 import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms'
 import { ActivatedRoute, Router, RouterLink } from '@angular/router'
-import { firstValueFrom } from 'rxjs'
+import { combineLatest, firstValueFrom, from, of } from 'rxjs'
 import { Api } from '../../api/api'
 import type {
     CreatePlaySessionRequest,
     GameCompleteType,
     GameReviewDto,
+    GroupOverviewType,
     GroupPersonWorkspaceType,
-    GroupWithMembersAndGames,
     MeetsAroundType,
     PublicUserType,
     ScheduleSessionRequest,
@@ -28,6 +28,7 @@ import { DataService } from '../../core/services/data.service'
 import { isSaveOutcomeUnknown } from '../../core/utils/apiUnavailable'
 import { gameTitle } from '../../core/utils/gameTitle'
 import { canTakePart } from '../../core/utils/groupPeople'
+import { withShelf } from '../../core/utils/groupShelf'
 import { SubmissionKey } from '../../core/utils/submissionKey'
 import { ImageProfileComponent } from '../image-profile/image-profile.component'
 import { SkeletonPeopleGridComponent } from '../skeletons/skeleton-people-grid/skeleton-people-grid.component'
@@ -204,7 +205,7 @@ export class LogSessionWizardComponent {
     // --------------------------------------------------------------------------
     //        STEP 1: WHO AND WHEN
     // --------------------------------------------------------------------------
-    public selectedGroup = signal<GroupWithMembersAndGames | null>(null)
+    public selectedGroup = signal<GroupOverviewType | null>(null)
     public groupPeople = signal<Array<GroupPersonWorkspaceType>>([])
     public groupPersonCatalog = signal<Array<GameCompleteType>>([])
     public usesGroupPeople = signal(false)
@@ -402,9 +403,10 @@ export class LogSessionWizardComponent {
         })
     }
 
-    private initializeForGroup(group: GroupWithMembersAndGames): void {
+    private initializeForGroup(group: GroupOverviewType): void {
         this.groupLoadVersion++
-        this.attendees.set(group.members.map((member) => ({ user: member, selected: false })))
+        // Their games arrive with the group's shelf (#262), read with its people.
+        this.attendees.set(group.members.map((member) => ({ user: { ...member, games: [], reviews: [] }, selected: false })))
         for (const id of this.pendingRecording?.attendeeIds ?? []) {
             if (this.attendees().some((attendee) => attendee.user.id === id)) continue
             this.attendees.update((attendees) => [
@@ -460,27 +462,41 @@ export class LogSessionWizardComponent {
         )
     }
 
-    private loadGroupPeople(group: GroupWithMembersAndGames, retrying = false): void {
-        const loader = this.api.getGroupPeople
-        if (typeof loader !== 'function') {
-            this.peopleLoading.set(false)
-            this.peopleError.set(false)
-            return
-        }
+    /**
+     * Loads the group's people together with its shelf (#262), which gives each member their games. Without the
+     * shelf the people's games would be missing, so the page says so with its Retry, as when the people fail.
+     */
+    private loadGroupPeople(overview: GroupOverviewType, retrying = false): void {
         this.peopleLoading.set(true)
 
         // Ignore a slow response for a group that is no longer selected.
         const version = this.groupLoadVersion
-        const isCurrentGroup = () => this.selectedGroup()?.id === group.id && this.groupLoadVersion === version
+        const isCurrentGroup = () => this.selectedGroup()?.id === overview.id && this.groupLoadVersion === version
         const fail = () => {
             if (!isCurrentGroup()) return
             this.peopleLoading.set(false)
             this.peopleError.set(true)
         }
 
-        loader.call(this.api, group.id, Boolean(this.editingId)).subscribe({
-            next: (response) => {
+        const loader = this.api.getGroupPeople
+        const people$ = typeof loader === 'function' ? loader.call(this.api, overview.id, Boolean(this.editingId)) : of(null)
+        combineLatest([from(this.dataService.groupShelf(overview.id, retrying)), people$]).subscribe({
+            next: ([shelf, response]) => {
                 if (!isCurrentGroup()) return
+                const group = withShelf(overview, shelf)
+                const members = new Map(group.members.map((member) => [member.id, member]))
+                // Members ticked meanwhile stay ticked, now with their games.
+                this.attendees.update((attendees) =>
+                    attendees.map((attendee) => {
+                        const member = members.get(attendee.user.id)
+                        return member ? { ...attendee, user: member } : attendee
+                    }),
+                )
+                if (!response) {
+                    this.peopleLoading.set(false)
+                    this.peopleError.set(false)
+                    return
+                }
                 const activePeople = response.people.filter(
                     (person) => canTakePart(person) || this.pendingRecording?.groupPersonIds?.includes(person.person.id),
                 )
@@ -653,7 +669,7 @@ export class LogSessionWizardComponent {
     // --------------------------------------------------------------------------
     //        GROUP AND ATTENDEES
     // --------------------------------------------------------------------------
-    public selectGroup(group: GroupWithMembersAndGames): void {
+    public selectGroup(group: GroupOverviewType): void {
         if (this.editingId && this.pendingRecording && group.id !== this.pendingRecording.groupId) return
         this.selectedGroup.set(group)
     }

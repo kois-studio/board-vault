@@ -116,6 +116,9 @@ export class BrowsePageComponent {
     public readonly acquisitionState = signal<Record<number, 'saving' | 'saved' | 'removing'>>({})
     public readonly acquisitionBoardLoading = signal(false)
     public readonly acquisitionBoardError = signal(false)
+    /** The games the members of the group buying for own (#262), read from its shelf; none until it loads. */
+    private readonly groupOwnedGameIds = signal<ReadonlySet<number>>(new Set())
+    private ownedGameIdsGroupId: number | null = null
     private readonly acquisitionBoard = signal<Array<{ gameData: { id: number }; interestedBy: Array<{ id: number }> }>>([])
     public readonly collectionState = signal<Record<number, 'saving' | 'saved'>>({})
 
@@ -125,11 +128,7 @@ export class BrowsePageComponent {
     public readonly gamesListComputed = computed(() => {
         const browseGames = this.browseGamesList$()
         const userGames = this.userGames$()
-        const groupOwnedGameIds = new Set(
-            this.userGroups$()
-                .find((group) => group.id === this.acquisitionGroupId())
-                ?.members.flatMap((member) => member.games.map((game) => game.id)) ?? [],
-        )
+        const groupOwnedGameIds = this.groupOwnedGameIds()
 
         return browseGames
             .filter((game) => !this.acquisitionGroupId() || !groupOwnedGameIds.has(game.id))
@@ -168,6 +167,28 @@ export class BrowsePageComponent {
             this.acquisitionGroupId.set(requestedGroupId)
             this.loadAcquisitionBoard(requestedGroupId)
         }
+
+        // What the group already owns is left out of the results; your groups or games loading again read it again.
+        effect(() => {
+            const groupId = this.acquisitionGroupId()
+            this.dataService.groupShelvesRevision()
+            if (groupId === null) return
+            untracked(() => {
+                // Another group starts from nothing; the same group keeps its list while it is read again.
+                if (this.ownedGameIdsGroupId !== groupId) this.groupOwnedGameIds.set(new Set())
+                this.ownedGameIdsGroupId = groupId
+                this.dataService
+                    .groupShelf(groupId)
+                    .then((shelf) => {
+                        if (this.acquisitionGroupId() !== groupId) return
+                        this.groupOwnedGameIds.set(
+                            new Set(shelf.owners.filter((owner) => owner.accountId !== null).flatMap((owner) => owner.gameIds)),
+                        )
+                    })
+                    // Without it, the results are simply not narrowed, as when your groups could not load.
+                    .catch(() => undefined)
+            })
+        })
 
         this.applyUrlState(this.route.snapshot.queryParamMap)
         if (this.catalogueTags$().length === 0) {

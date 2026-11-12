@@ -12,6 +12,7 @@ import type {
     GroupInsightsType,
     GroupPersonPreferenceType,
     GroupPersonWorkspaceType,
+    GroupShelfType,
     GroupStandingType,
     HistoryRecordType,
     PublicUserType,
@@ -40,6 +41,7 @@ import { isSaveOutcomeUnknown } from '../../core/utils/apiUnavailable'
 import { attendeeNames, formatAttendeeSummary } from '../../core/utils/formatAttendeeSummary'
 import { gameCoverAlt, gameTitle } from '../../core/utils/gameTitle'
 import { groupGameCount, groupPeopleCount } from '../../core/utils/groupCounts'
+import { withShelf } from '../../core/utils/groupShelf'
 import { formatWinners, historyWinnerNames, mergeHistoryParticipants } from '../../core/utils/historyParticipants'
 import { initialsAvatar } from '../../core/utils/initialsAvatar'
 import { upcomingState } from '../../core/utils/sessionTiming'
@@ -118,16 +120,27 @@ export class GroupViewComponent {
     // dataService
     public readonly currentUser$ = this.dataService.currentUser
     public readonly userGroups$ = this.dataService.userGroups
-    /** Only a failure with no groups to show: a failed refresh keeps the page (#260). */
+    /** The group's shelf (#262) is on its way, or could not be read; what is shown stays while it is read again. */
+    private readonly shelfLoading = signal(false)
+    private readonly shelfError = signal(false)
+    /** Which group and which revision of the shelves the page shows, so it is read once per change. */
+    private shelfKey: string | null = null
+    /** The shelf last read, so a change to the group itself (a name, someone leaving) shows at once. */
+    private shelf: { groupId: number; shelf: GroupShelfType } | null = null
+    private shelfVersion = 0
+
+    /** Only a failure with nothing to show: a failed refresh keeps the page (#260). */
     public readonly userGroupsError = computed(() => {
         const state = this.dataService.userGroupsState()
-        return state.status === 'error' && state.value === undefined
+        return (state.status === 'error' && state.value === undefined) || (this.shelfError() && !this.groupData$())
     })
     public readonly userMeets$ = this.dataService.userMeets
     public readonly invitationsGroupIndex$ = this.dataService.invitationsGroupIndex
     public readonly groupHistoryByGroupId$ = this.dataService.groupHistoryByGroupId
     /** The page skeleton is for the first load only: a refresh keeps the page as it is (#260). */
-    public readonly isLoadingGroups = computed(() => isFirstLoad(this.dataService.userGroupsState()))
+    public readonly isLoadingGroups = computed(
+        () => isFirstLoad(this.dataService.userGroupsState()) || (this.shelfLoading() && !this.groupData$()),
+    )
 
     // groupViewService
     public readonly groupData$ = this.groupViewService.groupData
@@ -464,11 +477,14 @@ export class GroupViewComponent {
 
             if (Number.isNaN(groupId) || !currentUser || !group) {
                 this.groupData$.set(null)
+                this.shelfKey = null
+                this.shelfLoading.set(false)
+                this.shelfError.set(false)
                 return
             }
 
-            // set the group data
-            this.groupData$.set(group)
+            // The group with its games: its shelf, read again when your groups or games load again (#262).
+            this.loadShelf(groupId, this.dataService.groupShelvesRevision())
 
             if (this.activeAcquisitionGroupId !== groupId) {
                 this.activeAcquisitionGroupId = groupId
@@ -496,6 +512,35 @@ export class GroupViewComponent {
                 this.loadGroupHistory(currentUser.id, groupId)
             }
         })
+    }
+
+    private loadShelf(groupId: number, revision: number): void {
+        const key = `${groupId}:${revision}`
+        if (this.shelfKey === key) {
+            const group = this.userGroups$().find((candidate) => candidate.id === groupId)
+            if (group && this.shelf?.groupId === groupId) this.groupData$.set(withShelf(group, this.shelf.shelf))
+            return
+        }
+        this.shelfKey = key
+        const version = ++this.shelfVersion
+        this.shelfLoading.set(true)
+        this.shelfError.set(false)
+        this.dataService.groupShelf(groupId).then(
+            (shelf) => {
+                if (version !== this.shelfVersion) return
+                this.shelfLoading.set(false)
+                this.shelf = { groupId, shelf }
+                const group = this.userGroups$().find((candidate) => candidate.id === groupId)
+                this.groupData$.set(group ? withShelf(group, shelf) : null)
+            },
+            () => {
+                if (version !== this.shelfVersion) return
+                this.shelfLoading.set(false)
+                this.shelfError.set(true)
+                // Retry reads it again.
+                this.shelfKey = null
+            },
+        )
     }
 
     public retryGroupHistory(): void {

@@ -1,6 +1,6 @@
 import { Component, computed, inject, input } from '@angular/core'
 import { RouterLink } from '@angular/router'
-import type { GroupWithMembersAndGames, InvitationWithAccountsData } from '../../api/api.types'
+import type { GroupOverviewType, InvitationWithAccountsData } from '../../api/api.types'
 import { DataService } from '../../core/services/data.service'
 import { groupGameCount, groupPeopleCount } from '../../core/utils/groupCounts'
 import { initialsAvatar } from '../../core/utils/initialsAvatar'
@@ -34,7 +34,7 @@ const ACTIVITY_CLASSES: Record<GroupActivity['tone'], string> = {
 export class CardGroupComponent {
     private readonly dataService = inject(DataService)
 
-    readonly group = input.required<GroupWithMembersAndGames>()
+    readonly group = input.required<GroupOverviewType>()
     readonly invitations = input.required<undefined | Array<InvitationWithAccountsData>>()
     /** Where the group stands, shown when Home has several groups; none hides it. */
     readonly activity = input<GroupActivity | null>(null)

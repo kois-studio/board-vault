@@ -1,7 +1,7 @@
 import { NgTemplateOutlet } from '@angular/common'
-import { Component, computed, inject } from '@angular/core'
+import { Component, computed, effect, inject, signal, untracked } from '@angular/core'
 import { RouterLink } from '@angular/router'
-import type { AccountMeetType, GameCompleteType, GroupWithMembersAndGames, HistoryRecordType } from '../../api/api.types'
+import type { AccountMeetType, GameCompleteType, GroupOverviewType, HistoryRecordType } from '../../api/api.types'
 import { CardGroupComponent, type GroupActivity } from '../../components/card-group/card-group.component'
 import { CardInvitationComponent } from '../../components/card-invitation/card-invitation.component'
 import { ImageProfileComponent } from '../../components/image-profile/image-profile.component'
@@ -94,18 +94,36 @@ export class DashboardPageComponent {
         return this.groupsById().get(groupId)?.name ?? $localize`:Name used on Home for a group that is no longer in your list:Your group`
     }
 
+    /** The next night's group's shelf (#262): read only for that group, once Home knows its next night. */
+    private readonly nextNightShelf = signal<{ groupId: number; games: Map<number, GameCompleteType> } | null>(null)
+
     /** Every game in the next night's group, members' and people's without an account, to show its shortlist. */
     public readonly nextNightGames = computed(() => {
-        const group = this.groupsById().get(this.nextNight()?.groupId ?? Number.NaN)
-        const games = new Map<number, GameCompleteType>()
-        for (const game of [
-            ...(group?.members ?? []).flatMap((member) => member.games),
-            ...(group?.placeholders ?? []).flatMap((person) => person.games),
-        ]) {
-            games.set(game.id, game)
-        }
-        return games
+        const shelf = this.nextNightShelf()
+        return shelf && shelf.groupId === this.nextNight()?.groupId ? shelf.games : new Map<number, GameCompleteType>()
     })
+
+    constructor() {
+        effect(() => {
+            const groupId = this.nextNight()?.groupId
+            // Your groups or games loaded again: read it again.
+            this.dataService.groupShelvesRevision()
+            // Only once your groups are listed, so the shelf is read with them, not before and again after.
+            const listed = settledValue(this.dataService.userGroupsState())?.some((group) => group.id === groupId)
+            if (groupId === undefined || !listed) return
+            untracked(() => {
+                this.dataService
+                    .groupShelf(groupId)
+                    .then((shelf) => {
+                        if (this.nextNight()?.groupId === groupId) {
+                            this.nextNightShelf.set({ groupId, games: new Map(shelf.games.map((game) => [game.id, game])) })
+                        }
+                    })
+                    // The card shows the night without its shortlist's names, as when the group is unknown.
+                    .catch(() => undefined)
+            })
+        })
+    }
 
     /** "Azul, Wingspan" for the games you said you'd bring; they are on your own shelf. */
     public gamesToBringLabel(meet: AccountMeetType): string {
@@ -185,8 +203,8 @@ export class DashboardPageComponent {
         const pins = this.home.preferences().pinnedGroupIds
         const rank = { live: 0, next: 1, past: 2, none: 3 }
         const activity = this.groupActivity()
-        const of = (group: GroupWithMembersAndGames) => activity.get(group.id) ?? { tone: 'none' as const, label: '', time: 0 }
-        const pinOrder = (group: GroupWithMembersAndGames) => (pins.includes(group.id) ? pins.indexOf(group.id) : Infinity)
+        const of = (group: GroupOverviewType) => activity.get(group.id) ?? { tone: 'none' as const, label: '', time: 0 }
+        const pinOrder = (group: GroupOverviewType) => (pins.includes(group.id) ? pins.indexOf(group.id) : Infinity)
         return [...this.userGroups$()].sort((a, b) => {
             if (pinOrder(a) !== pinOrder(b)) return pinOrder(a) - pinOrder(b)
             const left = of(a)
@@ -198,12 +216,12 @@ export class DashboardPageComponent {
         })
     })
 
-    public isPinned(group: GroupWithMembersAndGames): boolean {
+    public isPinned(group: GroupOverviewType): boolean {
         return this.home.preferences().pinnedGroupIds.includes(group.id)
     }
 
     /** What the pin on a group's row does, for screen readers. */
-    public pinLabel(group: GroupWithMembersAndGames, pinned: boolean): string {
+    public pinLabel(group: GroupOverviewType, pinned: boolean): string {
         return pinned
             ? $localize`:Pin button on a group in the list on Home, when the group is pinned:Unpin ${group.name}:group:`
             : $localize`:Pin button on a group in the list on Home:Pin ${group.name}:group: to the top`

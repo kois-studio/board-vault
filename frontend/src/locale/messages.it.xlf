@@ -2081,6 +2081,15 @@
         <target>Qualsiasi durata</target>
       </segment>
     </unit>
+    <unit id="2116675010887708654">
+      <notes>
+        <note category="description">Toast when the games of your groups could not load</note>
+      </notes>
+      <segment state="translated">
+        <source>Error retrieving your groups’ games</source>
+        <target>Impossibile caricare i giochi dei tuoi gruppi</target>
+      </segment>
+    </unit>
     <unit id="2120057704151430913">
       <segment state="translated">
         <source><ph id="0" equiv="person" disp="actor"/> planned a game night in <ph id="1" equiv="group" disp="group"/> for <ph id="2" equiv="date" disp="when"/>. Can you make it?</source>

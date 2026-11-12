@@ -3,10 +3,11 @@ import { ComponentFixture, TestBed } from '@angular/core/testing'
 import { ActivatedRoute, convertToParamMap, provideRouter, Router } from '@angular/router'
 import { isObservable, type Observable, of, Subject, throwError } from 'rxjs'
 import { Api } from '../../api/api'
-import type { GameCompleteType, GroupWithMembersAndGames, SessionRecording } from '../../api/api.types'
+import type { GameCompleteType, SessionRecording } from '../../api/api.types'
 import { withStates } from '../../core/async/resource-state.testing'
 import { DataService } from '../../core/services/data.service'
 import { ApiUnavailableError } from '../../core/utils/apiUnavailable'
+import { overviewAndShelf, type TestGroup } from '../../core/utils/groupShelf.testing'
 import { ToastService } from '../toast/toast.service'
 import { LogSessionWizardComponent } from './log-session-wizard.component'
 
@@ -26,7 +27,7 @@ const bloodyAvatar = { backgroundColor: '#EF4444', iconName: null, emoji: '😎'
 const nekoSyndicate = game(48, 'Neko Syndicate')
 const carcassonne = game(10, 'Carcassonne')
 
-const group: GroupWithMembersAndGames = {
+const fullGroup: TestGroup = {
     id: 1,
     name: 'DuckDevs TestGroup',
     createdBy: 1,
@@ -54,6 +55,9 @@ const group: GroupWithMembersAndGames = {
     placeholders: [],
 }
 
+// What the API answers for it: the group with counts, and its shelf (#262).
+const { overview: group, shelf } = overviewAndShelf(fullGroup)
+
 const linkedPerson = (id: number, accountId: number, displayName: string, gameIds: Array<number>) => ({
     person: {
         id,
@@ -74,6 +78,13 @@ const linkedPerson = (id: number, accountId: number, displayName: string, gameId
 
 describe('LogSessionWizardComponent games step', () => {
     let fixture: ComponentFixture<LogSessionWizardComponent>
+    /** The people are shown with the group's shelf (#262), which answers a moment later: let it. */
+    const shelfRead = async () => {
+        await new Promise((resolve) => setTimeout(resolve))
+        fixture.detectChanges()
+        await fixture.whenStable()
+        fixture.detectChanges()
+    }
     let component: LogSessionWizardComponent
 
     const setup = async (
@@ -97,6 +108,7 @@ describe('LogSessionWizardComponent games step', () => {
                         userGroups: signal([group]),
                         currentUser: signal({ id: 6 }),
                         refreshUserGroups: vi.fn(),
+                        groupShelf: vi.fn().mockResolvedValue(shelf),
                         refreshUserHistory: vi.fn(),
                         refreshUserMeets: vi.fn(),
                         userMeets: signal([]),
@@ -389,7 +401,7 @@ describe('LogSessionWizardComponent games step', () => {
         await fixture.whenStable()
         fixture.detectChanges()
         people.next({ people: [linkedPerson(11, 1, 'David', [48]), linkedPerson(12, 6, 'Bloody', [48])] })
-        fixture.detectChanges()
+        await shelfRead()
         expect(component.getSelectedAttendeeNames()).toContain('David')
         expect(component.getSelectedAttendeeNames()).toContain('Bloody')
         expect(component.recordedPlays()).toEqual([{ ...play, results: expect.arrayContaining(play.results) }])
@@ -500,7 +512,7 @@ describe('LogSessionWizardComponent games step', () => {
         await fixture.whenStable()
         fixture.detectChanges()
         people.next({ people: [linkedPerson(11, 1, 'David', [48])] })
-        fixture.detectChanges()
+        await shelfRead()
         expect(component.getSelectedAttendeeNames()).toContain('David (separate account entry)')
         expect(component.recordedPlays()).toEqual([{ ...play, results: expect.arrayContaining(play.results) }])
         expect(component.recordedPlays()[0]?.results).toHaveLength(2)
@@ -622,7 +634,7 @@ describe('LogSessionWizardComponent games step', () => {
             const api = TestBed.inject(Api)
             vi.mocked(api.correctSession).mockReturnValue(throwError(maybeSaved) as never)
             await fixture.whenStable()
-            fixture.detectChanges()
+            await shelfRead()
 
             component.currentStep.set('save')
             fixture.detectChanges()
@@ -667,7 +679,7 @@ describe('LogSessionWizardComponent games step', () => {
             component.selectedGroup.set(null)
             fixture.detectChanges()
             component.selectGroup(group)
-            fixture.detectChanges()
+            await shelfRead()
 
             expect(api.getGroupPersonCatalog).toHaveBeenCalledTimes(2)
             expect(byTestId('people-error')).not.toBeNull()
@@ -713,7 +725,7 @@ describe('LogSessionWizardComponent games step', () => {
             expect(api.getGroupPeople).toHaveBeenCalledTimes(2)
 
             retried.next({ people })
-            fixture.detectChanges()
+            await shelfRead()
             await fixture.whenStable()
 
             expect(byTestId('people-error')).toBeNull()
@@ -735,7 +747,7 @@ describe('LogSessionWizardComponent games step', () => {
             elsewhere.focus()
 
             retried.next({ people })
-            fixture.detectChanges()
+            await shelfRead()
             await fixture.whenStable()
             expect(document.activeElement).toBe(elsewhere)
         })
@@ -773,7 +785,7 @@ describe('LogSessionWizardComponent games step', () => {
             await setup(down())
             vi.mocked(TestBed.inject(Api).getGroupPeople).mockReturnValue(of({ people: [] }) as never)
             component.selectGroup({ ...group, id: 2, name: 'Other group' })
-            fixture.detectChanges()
+            await shelfRead()
 
             expect(byTestId('people-error')).toBeNull()
             component.toggleAttendee(6)
@@ -810,7 +822,7 @@ describe('LogSessionWizardComponent games step', () => {
 
             vi.mocked(TestBed.inject(Api).getGroupPeople).mockReturnValue(of({ people }) as never)
             byTestId('people-retry')?.click()
-            fixture.detectChanges()
+            await shelfRead()
 
             expect(byTestId('people-error')).toBeNull()
             expect(component.getSelectedAttendeeNames()).toBe('Bloody')
@@ -820,7 +832,7 @@ describe('LogSessionWizardComponent games step', () => {
         it('explains why a night whose group people are all gone cannot be corrected', async () => {
             await setup([], recordingWithPeople)
             await fixture.whenStable()
-            fixture.detectChanges()
+            await shelfRead()
 
             expect(byTestId('people-missing')?.getAttribute('role')).toBe('alert')
             expect(byTestId('people-grid')).toBeNull()

@@ -26,8 +26,9 @@ import type {
     GroupActivityPageType,
     GroupCollectionType,
     GroupInsightsType,
+    GroupOverviewType,
+    GroupShelfType,
     GroupType,
-    GroupWithMembersAndGames,
     HistoryPageType,
     HistoryRecordType,
     HistorySummaryType,
@@ -473,39 +474,24 @@ export const adminApprovalResponseSchema = z.object({
 })
 export const adminSuccessResponseSchema = z.object({ success: z.boolean() })
 
-const groupMemberSchema: z.ZodMiniType<GroupWithMembersAndGames['members'][number]> = z.object({
-    ...publicUserSchema.shape,
-    joinedAt: z.string(),
-    games: z.array(gameCompleteSchema),
-    reviews: z.array(gameReviewSchema),
-})
-
-const groupWithMembersAndGamesSchema: z.ZodMiniType<GroupWithMembersAndGames, unknown> = z.object({
+export const groupOverviewSchema: z.ZodMiniType<GroupOverviewType, unknown> = z.object({
     id: z.number(),
     name: z.string(),
     createdBy: z.number(),
     createdAt: z.string(),
-    members: z.array(groupMemberSchema),
-    // Older APIs do not send placeholders yet.
-    placeholders: z._default(
-        z.optional(
-            z.array(
-                z.object({
-                    id: z.number(),
-                    displayName: displayNameSchema,
-                    avatar: z.nullable(avatarSchema),
-                    gameIds: z.array(z.number()),
-                    // Older APIs send only the ids.
-                    games: z._default(z.optional(z.array(gameCompleteSchema)), []),
-                }),
-            ),
-        ),
-        [],
+    gameCount: z.number(),
+    members: z.array(z.object({ ...publicUserSchema.shape, joinedAt: z.string(), gameCount: z.number() })),
+    placeholders: z.array(
+        z.object({ id: z.number(), displayName: displayNameSchema, avatar: z.nullable(avatarSchema), gameCount: z.number() }),
     ),
 })
+export const groupOverviewsSchema = z.array(groupOverviewSchema)
 
-export const userGroupsSchema = z.array(groupWithMembersAndGamesSchema)
-export const userGroupSchema = groupWithMembersAndGamesSchema
+export const groupShelfSchema: z.ZodMiniType<GroupShelfType, unknown> = z.object({
+    games: z.array(gameCompleteSchema),
+    owners: z.array(z.object({ accountId: z.nullable(z.number()), groupPersonId: z.nullable(z.number()), gameIds: z.array(z.number()) })),
+    reviews: z.array(gameReviewSchema),
+})
 
 const groupPersonSchema = z.object({
     id: z.number(),

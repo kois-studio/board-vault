@@ -144,6 +144,8 @@ export class GameViewPageComponent {
     }
 
     constructor() {
+        // Who owns this game in each of your groups reads their shelves (#262).
+        this.dataService.loadUserGroupsWithShelves(inject(DestroyRef))
         this.route.paramMap.pipe(takeUntilDestroyed()).subscribe((params) => {
             const gameId = Number.parseInt(params.get('gameId') || '', 10)
             this._loadGameData(this.currentUser$()?.id, gameId)
@@ -450,7 +452,8 @@ export class GameViewPageComponent {
         const gameId = this.gameView$()?.gameData.id
         if (!gameId) return []
 
-        return this.userGroups$()
+        return this.dataService
+            .userGroupsWithShelves()
             .map((group) => ({
                 group,
                 owners: [
@@ -464,7 +467,9 @@ export class GameViewPageComponent {
     })
 
     /** Who owns it in your groups, as the state of your groups: it is only "nobody" once they have loaded. */
-    public readonly ownersState = computed(() => mapState(this.dataService.userGroupsState(), () => this.groupOwnershipComputed()))
+    public readonly ownersState = computed(() =>
+        mapState(this.dataService.userGroupsWithShelvesState(), () => this.groupOwnershipComputed()),
+    )
 
     public retryGroups(): void {
         this.dataService.refreshUserGroups()

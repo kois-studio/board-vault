@@ -120,23 +120,37 @@ export type CreatedGroupType = {
     groupId: number
 }
 
-export type GroupWithMembersAndGames = GroupType & {
-    members: Array<
-        PublicUserType & {
-            joinedAt: string
-            games: Array<GameCompleteType>
-            reviews: Array<GameReviewDto>
-        }
-    >
+/**
+ * One of your groups with its people and how many games each brings, never the games themselves, so it is the same
+ * size however many games anyone owns (#262). A page about the group's games reads its `GroupShelfType`.
+ */
+export type GroupOverviewType = GroupType & {
+    /** The group's games, each counted once. */
+    gameCount: number
+    members: Array<PublicUserType & { joinedAt: string; gameCount: number }>
     /** People in the group without an account (group-scoped placeholders). */
     placeholders: Array<{
         id: number
         displayName: string
         avatar: PublicUserType['avatar'] | null
-        gameIds: Array<number>
-        /** The same games with their details, for the group library. */
-        games: Array<GameCompleteType>
+        gameCount: number
     }>
+}
+
+/** Who brings which of a group's games: a member (`accountId`) or a person without an account (`groupPersonId`). */
+export type GroupShelfOwnerType = { accountId: number | null; groupPersonId: number | null; gameIds: Array<number> }
+
+/** A group's games once each, who owns them, and the members' ratings (#262). */
+export type GroupShelfType = {
+    games: Array<GameCompleteType>
+    owners: Array<GroupShelfOwnerType>
+    reviews: Array<GameReviewDto>
+}
+
+/** A group's overview with its shelf spread over its people, for a page about the group's games (#262). */
+export type GroupWithShelfType = Omit<GroupOverviewType, 'members' | 'placeholders'> & {
+    members: Array<GroupOverviewType['members'][number] & { games: Array<GameCompleteType>; reviews: Array<GameReviewDto> }>
+    placeholders: Array<GroupOverviewType['placeholders'][number] & { gameIds: Array<number>; games: Array<GameCompleteType> }>
 }
 
 /** Where someone stands in a group (ADR-0018): history keeps people who left or deleted their account. */

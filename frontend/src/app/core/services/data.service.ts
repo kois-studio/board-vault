@@ -1,6 +1,6 @@
-import { effect, Injectable, inject, signal, untracked } from '@angular/core'
+import { type DestroyRef, effect, Injectable, inject, signal, untracked } from '@angular/core'
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
-import { catchError, concatMap, firstValueFrom, forkJoin, map, type Observable, of, Subject, takeUntil, tap, throwError } from 'rxjs'
+import { catchError, concatMap, firstValueFrom, forkJoin, from, map, type Observable, of, Subject, takeUntil, tap, throwError } from 'rxjs'
 import { Api } from '../../api/api'
 import type {
     AccountMeetType,
@@ -9,7 +9,9 @@ import type {
     GameCompleteType,
     GameProposalType,
     GameReviewWithGameData,
-    GroupWithMembersAndGames,
+    GroupOverviewType,
+    GroupShelfType,
+    GroupWithShelfType,
     HistoryRecordType,
     HistorySummaryType,
     InvitationWithAccountsData,
@@ -20,9 +22,10 @@ import type {
     UserType,
 } from '../../api/api.types'
 import { ToastService } from '../../components/toast/toast.service'
-import { ResourceSignal } from '../async/resource-state'
+import { ResourceSignal, settledValue } from '../async/resource-state'
 import { intlLocale } from '../i18n/format'
 import { withoutReadRetry } from '../interceptors/resilience.interceptor'
+import { withShelf } from '../utils/groupShelf'
 import { rsvpToast } from '../utils/rsvp'
 import { ConnectivityService } from './connectivity.service'
 import { LogService } from './log.service'
@@ -47,7 +50,7 @@ export class DataService {
     // `userXState` says whether it is loading, refreshing, failed, or ready. A page renders the state, so an
     // empty list only reads as "nothing here" once it has loaded. A reload never empties what is shown.
     private readonly games = new ResourceSignal<Array<GameCompleteType>>([])
-    private readonly groups = new ResourceSignal<Array<GroupWithMembersAndGames>>([])
+    private readonly groups = new ResourceSignal<Array<GroupOverviewType>>([])
     private readonly notifications = new ResourceSignal<Array<NotificationType>>([])
     private readonly invitations = new ResourceSignal<Array<InvitationWithExtraData>>([])
     private readonly reviews = new ResourceSignal<Array<GameReviewWithGameData>>([])
@@ -67,6 +70,7 @@ export class DataService {
         reputationScore: 0,
     })
     private readonly stats = new ResourceSignal<UserStatsType>({ totalGamesValue: 0 })
+    private readonly groupsWithShelves = new ResourceSignal<Array<GroupWithShelfType>>([])
     private readonly resources = [
         this.games,
         this.groups,
@@ -81,6 +85,7 @@ export class DataService {
         this.proposals,
         this.proposalStats,
         this.stats,
+        this.groupsWithShelves,
     ]
 
     public readonly userGames = this.games.value
@@ -113,7 +118,31 @@ export class DataService {
     public readonly userProposalStatsState = this.proposalStats.state
     public readonly userStats = this.stats.value
     public readonly userStatsState = this.stats.state
+    /**
+     * Every group of yours with each person's games and the members' ratings, for the few pages that look across
+     * all of them (a game's owners, games to rate). Read only while a page that shows them is open, which asks with
+     * `loadUserGroupsWithShelves` (#262), and read again when your groups load or you rate a game meanwhile.
+     */
+    public readonly userGroupsWithShelves = this.groupsWithShelves.value
+    public readonly userGroupsWithShelvesState = this.groupsWithShelves.state
     public readonly groupHistoryByGroupId = signal<Record<number, Array<HistoryRecordType>>>({})
+
+    /**
+     * Each group's shelf, asked for the first time a page needs it (#262): your groups list only counts, so it
+     * stays small however many games anyone owns. Forgotten when your groups load again (adding or removing a game
+     * reloads them, for their counts) or you rate a game, and `groupShelvesRevision` goes up so pages showing one
+     * read it again.
+     */
+    private readonly shelves = new Map<number, Promise<GroupShelfType>>()
+    /** The open pages showing `userGroupsWithShelves`: it follows your groups only while there is one. */
+    private groupsWithShelvesUsers = 0
+    /** The shelves revision `userGroupsWithShelves` was read at, so a page opened later reads it only when stale. */
+    private groupsWithShelvesRevision = -1
+    public readonly groupShelvesRevision = signal(0)
+
+    private get groupsWithShelvesWanted(): boolean {
+        return this.groupsWithShelvesUsers > 0
+    }
 
     // --------------------------------------------------------------------------
     //         INDEXES (for fast access to data)
@@ -205,6 +234,8 @@ export class DataService {
 
     private _clearAllDerivedUserData(): void {
         for (const resource of this.resources) resource.reset()
+        this.shelves.clear()
+        this.groupsWithShelvesRevision = -1
         this.groupHistoryByGroupId.set({})
         this.invitationsGroupIndex.set({})
     }
@@ -217,7 +248,7 @@ export class DataService {
                 this.userGroups.update((groups) =>
                     groups.map((group) => ({
                         ...group,
-                        members: group.members.map((member) => (member.id === userId ? { ...member, games } : member)),
+                        members: group.members.map((member) => (member.id === userId ? { ...member, gameCount: games.length } : member)),
                     })),
                 )
             },
@@ -349,9 +380,10 @@ export class DataService {
 
     private _getUserGroups(accountId: number) {
         this.failedLoads.delete('groups')
-        this.groups.load(this.api.getUserGroups(accountId).pipe(takeUntil(this.userChanged)), {
+        this.groups.load(this.api.getGroupOverviews(accountId).pipe(takeUntil(this.userChanged)), {
             apply: (groups) => {
                 this.userGroups.set(groups)
+                this.forgetGroupShelves(groups)
 
                 for (const group of groups) {
                     if (group.createdBy !== accountId) {
@@ -362,17 +394,22 @@ export class DataService {
                     this._getGroupInvitations(group)
                 }
             },
-            failed: () =>
+            failed: (error) => {
+                // Groups still listed keep their games on screen; only groups never read take the failure.
+                if (this.groupsWithShelvesWanted && settledValue(this.groups.state()) === undefined) {
+                    this.groupsWithShelves.load(throwError(() => error))
+                }
                 this.loadFailed(
                     'groups',
                     () => this._getUserGroups(accountId),
                     $localize`:Toast when your groups could not load:Error retrieving user’s groups`,
-                ),
+                )
+            },
         })
     }
 
     /** The pending invitations of a group the user owns. */
-    private _getGroupInvitations(group: GroupWithMembersAndGames) {
+    private _getGroupInvitations(group: GroupOverviewType) {
         this.failedLoads.delete(`groupInvitations:${group.id}`)
         this.api
             .getGroupInvitations(group.id)
@@ -809,6 +846,8 @@ export class DataService {
                 // Reload without clearing first, so the reviews list doesn't flash empty.
                 this._getUserReviews(accountId)
                 this._getUserCollectionActivity(accountId)
+                // The shelves hold the members' ratings (#262).
+                this.forgetGroupShelves()
 
                 this.toastService.success($localize`:Toast after rating a game:Review saved`)
             },
@@ -857,6 +896,8 @@ export class DataService {
 
         this._getUserGames(currentUser.id)
         this._getUserCollectionActivity(currentUser.id)
+        // The groups count your games once each among everyone's, which only the server knows (#262).
+        this._getUserGroups(currentUser.id)
     }
 
     public refreshUserCollectionActivity(): void {
@@ -869,6 +910,84 @@ export class DataService {
         if (!currentUser) return
 
         this._getUserGroups(currentUser.id)
+    }
+
+    /**
+     * One of your groups' games once each, who owns them, and the members' ratings (#262), read once and kept
+     * until your groups or games load again; `fresh` reads it again. A failed read is not kept.
+     */
+    public groupShelf(groupId: number, fresh = false): Promise<GroupShelfType> {
+        const currentUser = this.currentUser()
+        if (!currentUser) return Promise.reject(new Error('No authenticated user'))
+        const kept = fresh ? undefined : this.shelves.get(groupId)
+        if (kept) return kept
+
+        const shelf = firstValueFrom(this.api.getGroupShelf(currentUser.id, groupId).pipe(takeUntil(this.userChanged)))
+        this.shelves.set(groupId, shelf)
+        shelf.catch(() => {
+            if (this.shelves.get(groupId) === shelf) this.shelves.delete(groupId)
+        })
+        return shelf
+    }
+
+    /**
+     * One of your groups with each person's games and the members' ratings, for a page about that group: the
+     * group already listed when your groups have loaded, or else that group alone, rather than waiting for all of
+     * them (#258), with its shelf (#262).
+     */
+    public async groupWithShelf(groupId: number, fresh = false): Promise<GroupWithShelfType> {
+        const currentUser = this.currentUser()
+        if (!currentUser) throw new Error('No authenticated user')
+        const listed = fresh ? undefined : settledValue(this.userGroupsState())?.find((group) => group.id === groupId)
+        const [group, shelf] = await Promise.all([
+            listed ?? firstValueFrom(this.api.getGroupOverview(currentUser.id, groupId)),
+            this.groupShelf(groupId, fresh),
+        ])
+        return withShelf(group, shelf)
+    }
+
+    /**
+     * For a page showing `userGroupsWithShelves`: reads it once your groups have loaded, unless it is up to date, and
+     * keeps it following your groups until the page is destroyed.
+     */
+    public loadUserGroupsWithShelves(destroyRef: DestroyRef): void {
+        this.groupsWithShelvesUsers++
+        destroyRef.onDestroy(() => {
+            this.groupsWithShelvesUsers = Math.max(0, this.groupsWithShelvesUsers - 1)
+        })
+        const groups = this.groups.state()
+        const listed = settledValue(groups)
+        if (listed !== undefined) {
+            const current =
+                this.groupsWithShelvesRevision === this.groupShelvesRevision() && this.groupsWithShelves.state().status === 'ready'
+            if (!current) this._getGroupsWithShelves()
+        } else if (groups.status === 'error') {
+            this.groupsWithShelves.load(throwError(() => groups.error))
+        }
+    }
+
+    /** Every group with its shelf: `groups` as they arrive, or else (Retry too) as listed when it runs. */
+    private _getGroupsWithShelves(groups = settledValue(this.groups.state()) ?? []): void {
+        this.failedLoads.delete('groupsWithShelves')
+        this.groupsWithShelvesRevision = this.groupShelvesRevision()
+        const all = Promise.all(groups.map(async (group) => withShelf(group, await this.groupShelf(group.id))))
+        this.groupsWithShelves.load(from(all).pipe(takeUntil(this.userChanged)), {
+            failed: () => {
+                this.groupsWithShelvesRevision = -1
+                this.loadFailed(
+                    'groupsWithShelves',
+                    () => this._getGroupsWithShelves(),
+                    $localize`:Toast when the games of your groups could not load:Error retrieving your groups’ games`,
+                )
+            },
+        })
+    }
+
+    /** Your groups or ratings have changed: shelves are read again, and the pages showing them follow. */
+    private forgetGroupShelves(groups?: Array<GroupOverviewType>): void {
+        this.shelves.clear()
+        this.groupShelvesRevision.update((revision) => revision + 1)
+        if (this.groupsWithShelvesWanted) this._getGroupsWithShelves(groups)
     }
 
     public refreshUserStats() {
