@@ -90,6 +90,25 @@ describe('UsageNoticeComponent', () => {
         under.dispatchEvent(new FocusEvent('focusin', { bubbles: true }))
         expect(scrollBy).toHaveBeenCalledWith({ top: 36, behavior: 'instant' })
 
+        // A control in a dialog over the card is not covered by it: the page behind stays put.
+        scrollBy.mockClear()
+        const dialog = document.createElement('div')
+        const inDialog = document.createElement('button')
+        dialog.append(inDialog)
+        inDialog.getBoundingClientRect = rect(480, 520, 40, 200)
+        document.body.append(dialog)
+        const elementFromPoint = vi.fn((): Element => inDialog)
+        Object.defineProperty(document, 'elementFromPoint', { configurable: true, value: elementFromPoint })
+        inDialog.dispatchEvent(new FocusEvent('focusin', { bubbles: true }))
+        expect(scrollBy).not.toHaveBeenCalled()
+
+        // Where the card is on top, it does cover the control.
+        elementFromPoint.mockImplementation(() => card)
+        under.dispatchEvent(new FocusEvent('focusin', { bubbles: true }))
+        expect(scrollBy).toHaveBeenCalledWith({ top: 36, behavior: 'instant' })
+
+        Reflect.deleteProperty(document, 'elementFromPoint')
+        dialog.remove()
         scrollBy.mockRestore()
         under.remove()
         beside.remove()

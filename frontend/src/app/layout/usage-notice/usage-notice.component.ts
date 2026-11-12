@@ -53,10 +53,17 @@ export class UsageNoticeComponent {
         if (!card || !(target instanceof Element) || card.contains(target)) return
         const covered = card.getBoundingClientRect()
         const focused = target.getBoundingClientRect()
-        const overlaps =
-            focused.bottom > covered.top && focused.top < covered.bottom && focused.right > covered.left && focused.left < covered.right
+        const top = Math.max(focused.top, covered.top)
+        const bottom = Math.min(focused.bottom, covered.bottom)
+        const left = Math.max(focused.left, covered.left)
+        const right = Math.min(focused.right, covered.right)
 
-        if (overlaps) window.scrollBy({ top: focused.bottom - covered.top + 16, behavior: 'instant' })
+        if (bottom <= top || right <= left) return
+        // A dialog, the inbox or a toast sits above the card: a control in one of them is not covered.
+        const onTop = document.elementFromPoint?.((left + right) / 2, (top + bottom) / 2)
+        if (onTop && !card.contains(onTop)) return
+
+        window.scrollBy({ top: focused.bottom - covered.top + 16, behavior: 'instant' })
     }
 
     async toggle(next: boolean): Promise<void> {
