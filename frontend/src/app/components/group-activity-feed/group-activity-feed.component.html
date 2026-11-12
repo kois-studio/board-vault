@@ -15,6 +15,19 @@
             </li>
         }
     </ol>
+} @else if (loading() && !failed()) {
+    <!-- The first page of changes, in the size of its rows (#260); "Loading the history…" stays for older ones. -->
+    <div role="status">
+        <span class="sr-only" i18n="Shown while the group's history of changes loads">Loading the history…</span>
+        <ol class="divide-y divide-bv-border rounded-2xl border border-bv-border bg-bv-surface motion-safe:animate-pulse" aria-hidden="true" data-testid="history-skeleton">
+            @for (row of [1, 2, 3, 4, 5]; track row) {
+                <li class="flex flex-col gap-1 px-4 py-3 sm:flex-row sm:items-center sm:justify-between sm:gap-4">
+                    <div class="flex h-5 min-w-0 flex-1 items-center"><div class="h-3.5 w-3/4 rounded bg-bv-border"></div></div>
+                    <div class="flex h-4 shrink-0 items-center"><div class="h-3 w-16 rounded bg-bv-border"></div></div>
+                </li>
+            }
+        </ol>
+    </div>
 } @else if (!loading() && !failed()) {
     <div class="rounded-2xl border border-dashed border-bv-border p-6 text-center text-sm text-secondary">
         <ng-container i18n="Shown in the group's history of changes before anything changed">Nothing has changed yet. Planning a night, recording games or editing someone’s games shows up here.</ng-container>
@@ -26,7 +39,7 @@
         <p i18n="Error in the group's history of changes">The history could not be loaded.</p>
         <button appButton variant="secondary" type="button" class="mt-3" (click)="retry()" i18n="Button under an error">Retry</button>
     </div>
-} @else if (loading()) {
+} @else if (loading() && rows().length > 0) {
     <p class="mt-3 text-center text-sm text-secondary" role="status" i18n="Shown while the group's history of changes loads">Loading the history…</p>
 } @else if (hasMore()) {
     <div class="mt-3 text-center">

@@ -271,6 +271,28 @@ not the only label for an action.
   `settledValue` reads a value only once it is loaded and current, and a
   page-wide skeleton waits on `isFirstLoad(state)`, not `isPending`, so a
   refresh never takes the content away.
+- **Page skeletons (#260):** a page that loads in parts shows each part as
+  soon as it can, and a skeleton in its place until then, in the grid, sizes
+  and spacing of the real markup so nothing moves when it comes. They live in
+  `components/skeletons/`: `app-skeleton-session-page` and
+  `app-skeleton-group-page` for a whole page, and per section
+  `app-skeleton-session-body`, `-session-actions`, `-played-games`,
+  `-recent-sessions`, `-standings` and `-library`. Shape one from what is
+  already known: a game night's body has as many rows as the night lists
+  games and people (up to a few), and a planned night with nothing played
+  shows no played section. A count whose label is known shows the label with
+  a placeholder for the number (`app-session-summary [statsLoading]`). A
+  skeleton inside another passes `[nested]="true"`, so only the outer one
+  pulses, and every skeleton is `aria-hidden` next to its own screen-reader
+  label. A section that is left out when it is empty (the group's standings)
+  keeps its skeleton while it loads and is hidden only once it is known to be
+  empty. A section with markup of its own (the shortlist of games to buy, the
+  people, the history of changes) draws its skeleton inline, with a
+  `data-testid` ending in `-skeleton`. For a part with content after it, use
+  `<app-async holdSpace>`: during the first 150 ms it keeps the skeleton's
+  space, invisible, so the sections under it do not jump down when it shows.
+  A count that varies (the recent nights) cannot be known before it loads, so
+  its skeleton holds the most the page shows.
 - **Undo:** for a quick, reversible action, act at once and pass an action
   to the toast instead of asking for confirmation first:
   `toastService.success('Removed from your wishlist', { label: 'Undo', run: () => … })`.

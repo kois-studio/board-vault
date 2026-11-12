@@ -252,9 +252,14 @@ An error never leaves a page without a way on (#244):
   asks for the night's group, its people and (for a night with group people)
   their catalogue together. The group comes from the groups already listed, or
   alone (`GET /dashboard/users/:userId/groups/:groupId`) when it is not
-  listed or the list failed. When the night or its group can't be loaded, the
-  page says so, and Retry asks for both again, the group afresh. A groups
-  refresh that fails after the night is shown leaves it on screen.
+  listed or the list failed. Until the night arrives the page shows its
+  skeleton; then the header, with placeholders for its counts and buttons, and
+  the body as a skeleton shaped by the night until its group has loaded
+  (`detailsState`); the played games have their own (`recordingState`) (#260).
+  When the night can't be loaded, the page says so; when its group can't, the
+  header stays and the failure shows under it. Either way Retry asks for both
+  again, the group afresh. A groups refresh that fails after the night is
+  shown leaves it on screen.
 - Opening another night, game or group person from one of those pages (a
   notification, Similar games) builds the page afresh. Their routes are marked
   `remountOnParamChange`, and `RemountOnParamChangeStrategy`

@@ -58,6 +58,8 @@ export class SessionSummaryComponent {
     readonly accessibleDate = input('')
     readonly notes = input<string | null>(null)
     readonly stats = input<Array<SessionStat>>([])
+    /** The counts are on their way (#260): their labels show, each number as a placeholder, so nothing moves when they come. */
+    readonly statsLoading = input(false)
     /** The session page's title is the page heading; elsewhere it sits under a section heading. */
     readonly headingLevel = input<1 | 3>(1)
     /** A planned night that is already over (`wrap-up` in sessionTiming): it waits for results, not answers. */

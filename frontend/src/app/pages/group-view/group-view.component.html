@@ -10,9 +10,9 @@
 
 <container-wrapper>
     @if (isLoadingGroups()) {
-        <div class="rounded-2xl border border-bv-border bg-bv-surface p-8 text-center shadow-sm" role="status" aria-live="polite">
-            <p class="text-lg font-semibold" i18n="Shown while the group page loads">Loading your group…</p>
-            <p class="mt-2 text-secondary" i18n="Shown while the group page loads">We are checking the group and its shared context.</p>
+        <div role="status" aria-live="polite">
+            <span class="sr-only" i18n="Shown while the group page loads">Loading your group…</span>
+            <app-skeleton-group-page aria-hidden="true" />
         </div>
     } @else if (userGroupsError()) {
         <div class="rounded-2xl border border-bv-warning/30 bg-bv-warning/10 p-8 text-center" role="alert">
@@ -103,25 +103,41 @@
             <section id="overview" class="grid grid-cols-1 gap-4 lg:grid-cols-3" aria-label="Group overview" i18n-aria-label="Name of the section at the top of the group page with the next game night and the group's numbers">
                 <article class="rounded-2xl bg-bv-primary p-6 text-bv-on-primary shadow-lg lg:col-span-2">
                     <p class="text-sm font-semibold uppercase tracking-[0.18em] text-bv-on-primary/80" i18n="Label of the next game night on the group page">Next game night</p>
-                    @if (nextMeetingComputed(); as nextMeeting) {
-                        <div class="mt-3 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-                            <div>
-                                <h2 class="text-3xl font-bold">{{ nextMeeting.meetDate | customDate: true: nextMeeting.timezone }}</h2>
-                                <p class="mt-2 text-bv-on-primary/90">
-                                    @if (nextMeeting.status === 'active') {
-                                        <ng-container i18n="Under the date of the next game night on the group page, while it is under way">This session is happening now.</ng-container>
-                                    } @else {
-                                        <ng-container i18n="Under the date of the next game night on the group page">Your next planned session.</ng-container>
-                                    }
-                                </p>
+                    <!-- "Nothing planned yet" only once your game nights have loaded (#260). -->
+                    <app-async holdSpace [state]="nextMeetingState()" loadingLabel="Loading the next game night" i18n-loadingLabel="Read by screen readers on the group page while the game nights load" (retry)="retryMeets()">
+                        <ng-template appAsyncLoading>
+                            <div class="motion-safe:animate-pulse">
+                                <div class="mt-3 flex h-9 items-center"><div class="h-7 w-64 max-w-full rounded bg-bv-on-primary/25"></div></div>
+                                <div class="mt-2 flex h-6 items-center"><div class="h-4 w-48 max-w-full rounded bg-bv-on-primary/25"></div></div>
                             </div>
-                            <a appButton variant="secondary" class="text-center" [routerLink]="['/sessions', nextMeeting.id]" i18n="Button that opens the next game night on the group page">Open session</a>
-                        </div>
-                    } @else {
-                        <h2 class="mt-3 text-3xl font-bold" i18n="Shown on the group page when no game night is planned">Nothing planned yet</h2>
-                        <p class="mt-2 max-w-xl text-bv-on-primary/90" i18n="Shown on the group page when no game night is planned">Give the group a date and let everyone know what you might play.</p>
-                        <a appButton variant="secondary" class="mt-5" [routerLink]="['/groups', group.id, 'sessions', 'new']" i18n="Link that plans a game night on the group page">Plan a session</a>
-                    }
+                        </ng-template>
+                        <ng-template appAsyncError>
+                            <p class="mt-3 text-bv-on-primary/90" role="alert" i18n="On the group page in place of the next game night, when the game nights could not be loaded">Your game nights could not be loaded, so the next one is unknown.</p>
+                            <button appButton variant="secondary" type="button" class="mt-4" icon="arrow-repeat" (click)="retryMeets()" i18n="Button under an error">Retry</button>
+                        </ng-template>
+                        <ng-template appAsyncEmpty>
+                            <h2 class="mt-3 text-3xl font-bold" i18n="Shown on the group page when no game night is planned">Nothing planned yet</h2>
+                            <p class="mt-2 max-w-xl text-bv-on-primary/90" i18n="Shown on the group page when no game night is planned">Give the group a date and let everyone know what you might play.</p>
+                            <a appButton variant="secondary" class="mt-5" [routerLink]="['/groups', group.id, 'sessions', 'new']" i18n="Link that plans a game night on the group page">Plan a session</a>
+                        </ng-template>
+                        <ng-template [appAsyncReady]="nextMeetingState()" let-nextMeeting>
+                            @if (nextMeeting) {
+                                <div class="mt-3 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+                                    <div>
+                                        <h2 class="text-3xl font-bold">{{ nextMeeting.meetDate | customDate: true: nextMeeting.timezone }}</h2>
+                                        <p class="mt-2 text-bv-on-primary/90">
+                                            @if (nextMeeting.status === 'active') {
+                                                <ng-container i18n="Under the date of the next game night on the group page, while it is under way">This session is happening now.</ng-container>
+                                            } @else {
+                                                <ng-container i18n="Under the date of the next game night on the group page">Your next planned session.</ng-container>
+                                            }
+                                        </p>
+                                    </div>
+                                    <a appButton variant="secondary" class="text-center" [routerLink]="['/sessions', nextMeeting.id]" i18n="Button that opens the next game night on the group page">Open session</a>
+                                </div>
+                            }
+                        </ng-template>
+                    </app-async>
                 </article>
 
                 <article class="rounded-2xl border border-bv-border bg-bv-surface p-6 shadow-sm">
@@ -137,57 +153,75 @@
                         </div>
                         <div class="rounded-xl bg-bv-bg p-3">
                             <dt class="text-xs text-secondary" i18n="One of the group's numbers on the group page, how many game nights it has played">Sessions</dt>
-                            @if (isLoading()) {
-                                <dd class="mt-1 text-2xl font-bold" aria-label="Sessions loading" i18n-aria-label="Read by screen readers while the number of game nights on the group page loads">—</dd>
-                            } @else {
-                                <dd class="mt-1 text-2xl font-bold">{{ groupHistory$().length }}</dd>
+                            @switch (historyState().status) {
+                                @case ('loading') {
+                                    <dd class="mt-1 flex h-8 items-center justify-center" data-testid="sessions-count-placeholder"><span class="h-6 w-8 rounded bg-bv-border motion-safe:animate-pulse" aria-hidden="true"></span><span class="sr-only" i18n="Read by screen readers while a section of a page loads">Loading…</span></dd>
+                                }
+                                @case ('error') {
+                                    <!-- Never "0" for game nights that could not be counted (#260). -->
+                                    <dd class="mt-1 text-2xl font-bold"><span aria-hidden="true">—</span><span class="sr-only" i18n="Read by screen readers in place of a count on the group page that could not be loaded">Unavailable</span></dd>
+                                }
+                                @default {
+                                    <dd class="mt-1 text-2xl font-bold">{{ groupHistory$().length }}</dd>
+                                }
                             }
                         </div>
                     </dl>
-                    @if (collection$(); as collection) {
-                        @if (collection.pricedCopies > 0) {
-                            <p class="mt-5 text-sm">
-                                <ng-container i18n="The group's collection worth on the group page; the placeholder is an amount in euros">Collection worth about <span class="font-semibold">{{ collection.worth | currency: 'EUR' : 'symbol' : '1.0-0' }}</span></ng-container>
-                                <span class="block text-xs text-secondary">
-                                    @if (collection.pricedCopies < collection.copies) {
-                                        <ng-container i18n="Under the group's collection worth, when only some copies have a price">From retail prices for {{ collection.pricedCopies }} of {{ collection.copies }} copies, not what anyone paid.</ng-container>
-                                    } @else {
-                                        <ng-container i18n="Under the group's collection worth">From retail prices, not what anyone paid.</ng-container>
+                    <app-async holdSpace [state]="collectionState()" loadingLabel="Adding up the collection…" i18n-loadingLabel="Shown on the group page while the collection worth loads" (retry)="retryCollection()">
+                        <ng-template appAsyncLoading>
+                            <!-- Who brings what; the worth line above it shows only when copies have a price. -->
+                            <div class="mt-4 motion-safe:animate-pulse" data-testid="collection-skeleton">
+                                <div class="flex h-4 items-center"><div class="h-3 w-24 rounded bg-bv-border"></div></div>
+                                <div class="mt-2 flex gap-2">
+                                    @for (face of [1, 2, 3, 4]; track face) {
+                                        <div class="h-7 w-7 rounded-full bg-bv-surface-2"></div>
                                     }
-                                </span>
-                            </p>
-                        }
-                        @if (collection.people.length > 0) {
-                            <div class="mt-4">
-                                <p class="text-xs text-secondary" i18n="Label of the faces on the group page that open each person's games">Who brings what</p>
-                                <ul class="mt-2 flex flex-wrap gap-2">
-                                    @for (person of collection.people; track person.accountId ?? 'person-' + person.groupPersonId) {
-                                        <li>
-                                            <a [routerLink]="personLink(group.id, person)" class="block rounded-full transition hover:opacity-80" [title]="person.displayName" [attr.aria-label]="bringsLabel(person.displayName)">
-                                                <app-image-profile size="small" [avatar]="person.avatar ?? initialsAvatar(person.displayName)" />
-                                            </a>
-                                        </li>
-                                    }
-                                </ul>
+                                </div>
                             </div>
-                        }
-                    } @else if (collectionLoading()) {
-                        <p class="mt-5 text-sm text-secondary" role="status" i18n="Shown on the group page while the collection worth loads">Adding up the collection…</p>
-                    } @else if (collectionError()) {
-                        <div class="mt-5 text-sm" role="alert">
-                            <p i18n="Error on the group page">The collection’s worth and who brings what could not be loaded.</p>
-                            <button type="button" class="mt-1 font-medium text-bv-primary underline" (click)="retryCollection()" i18n="Button under an error">Retry</button>
-                        </div>
-                    } @else {
-                        <p class="mt-5 text-sm text-secondary" i18n="Shown on the group page before the group has a collection worth">The more sessions you record, the better the group’s memory becomes.</p>
-                    }
+                        </ng-template>
+                        <ng-template appAsyncError>
+                            <div class="mt-5 text-sm" role="alert">
+                                <p i18n="Error on the group page">The collection’s worth and who brings what could not be loaded.</p>
+                                <button type="button" class="mt-1 font-medium text-bv-primary underline" (click)="retryCollection()" i18n="Button under an error">Retry</button>
+                            </div>
+                        </ng-template>
+                        <ng-template [appAsyncReady]="collectionState()" let-collection>
+                            @if (collection.pricedCopies > 0) {
+                                <p class="mt-5 text-sm">
+                                    <ng-container i18n="The group's collection worth on the group page; the placeholder is an amount in euros">Collection worth about <span class="font-semibold">{{ collection.worth | currency: 'EUR' : 'symbol' : '1.0-0' }}</span></ng-container>
+                                    <span class="block text-xs text-secondary">
+                                        @if (collection.pricedCopies < collection.copies) {
+                                            <ng-container i18n="Under the group's collection worth, when only some copies have a price">From retail prices for {{ collection.pricedCopies }} of {{ collection.copies }} copies, not what anyone paid.</ng-container>
+                                        } @else {
+                                            <ng-container i18n="Under the group's collection worth">From retail prices, not what anyone paid.</ng-container>
+                                        }
+                                    </span>
+                                </p>
+                            }
+                            @if (collection.people.length > 0) {
+                                <div class="mt-4">
+                                    <p class="text-xs text-secondary" i18n="Label of the faces on the group page that open each person's games">Who brings what</p>
+                                    <ul class="mt-2 flex flex-wrap gap-2">
+                                        @for (person of collection.people; track person.accountId ?? 'person-' + person.groupPersonId) {
+                                            <li>
+                                                <a [routerLink]="personLink(group.id, person)" class="block rounded-full transition hover:opacity-80" [title]="person.displayName" [attr.aria-label]="bringsLabel(person.displayName)">
+                                                    <app-image-profile size="small" [avatar]="person.avatar ?? initialsAvatar(person.displayName)" />
+                                                </a>
+                                            </li>
+                                        }
+                                    </ul>
+                                </div>
+                            }
+                        </ng-template>
+                    </app-async>
                 </article>
             </section>
 
             <nav class="overflow-x-auto rounded-2xl border border-bv-border bg-bv-surface p-2 shadow-sm" aria-label="Group workspace areas" i18n-aria-label="Name of the links to the sections of the group page">
                 <div class="flex min-w-max gap-2">
                     <a appInPageLink="history" class="rounded-xl px-3 py-2 text-sm font-medium text-bv-text-muted transition hover:bg-bv-surface-2" i18n="Link to a section of the group page">History</a>
-                    @if (insights$()) {
+                    <!-- Kept while the standings load, so the links do not move (#260); gone for a group with nothing to rank. -->
+                    @if (!hidesInsights()) {
                         <a appInPageLink="insights" class="rounded-xl px-3 py-2 text-sm font-medium text-bv-text-muted transition hover:bg-bv-surface-2" i18n="Link to a section of the group page">Standings</a>
                     }
                     <a appInPageLink="library" class="rounded-xl px-3 py-2 text-sm font-medium text-bv-text-muted transition hover:bg-bv-surface-2" i18n="Link to a section of the group page, the group's games">Library</a>
@@ -205,153 +239,161 @@
                     </div>
                 </div>
 
-                @if (isLoading()) {
-                    <div class="mt-5" role="status" aria-live="polite"><span class="sr-only" i18n="Read by screen readers while the recent game nights on the group page load">Loading recent sessions…</span><app-skeleton-history /></div>
-                } @else if (groupHistoryError()) {
-                    <div class="mt-5 rounded-2xl border border-bv-warning/30 bg-bv-warning/10 p-8 text-center" role="alert">
-                        <p class="font-medium" i18n="Error on the group page">Recent sessions could not be loaded.</p>
-                        <p class="mt-2 text-sm text-secondary" i18n="Under an error on the group page">Your group data is safe. Try again when the connection is ready.</p>
-                        <button appButton class="mt-4" icon="arrow-repeat" (click)="retryGroupHistory()" i18n="Button under an error">Retry</button>
-                    </div>
-                } @else if (groupHistory$().length === 0) {
-                    <div class="mt-5 rounded-2xl border border-dashed border-bv-border p-8 text-center">
-                        <app-icon name="calendar-heart" [size]="40" className="text-bv-primary" />
-                        <h3 class="mt-3 text-lg font-semibold" i18n="Shown on the group page before anything is recorded">Your group history starts here</h3>
-                        <p class="mt-2 text-secondary" i18n="Shown on the group page before anything is recorded">Record the next game night so recommendations can learn from what you really play.</p>
-                        <button appButton class="mt-5" icon="plus-lg" (click)="onClickNewMeet()" i18n="Link that plans a game night on the group page">Plan a session</button>
-                    </div>
-                } @else {
-                    <div class="mt-5 grid grid-cols-1 gap-4 lg:grid-cols-3">
-                        @for (historyRecord of recentGroupHistoryComputed(); track historyRecord.meetData.id) {
-                            <article class="rounded-2xl border border-bv-border bg-bv-surface p-5 shadow-sm">
-                                <div class="flex items-start justify-between gap-3">
-                                    <div class="min-w-0">
-                                        <p class="font-semibold">{{ historyRecord.meetData.meetDate | customDate: true: historyRecord.meetData.timezone }}</p>
-                                        <p class="mt-1 text-sm text-secondary wrap-anywhere">{{ getAttendeeSummary(historyRecord.attendedBy, historyRecord.attendedByPeople ?? []) }}</p>
-                                        <p class="mt-1 text-sm text-secondary" i18n="How many games a game night played">{historyRecord.gamesPlayed.length, plural, one {{{ historyRecord.gamesPlayed.length }} game played} other {{{ historyRecord.gamesPlayed.length }} games played}}</p>
+                <app-async class="mt-5" holdSpace [state]="historyState()" loadingLabel="Loading recent sessions…" i18n-loadingLabel="Read by screen readers while the recent game nights on the group page load" (retry)="retryGroupHistory()">
+                    <ng-template appAsyncLoading><app-skeleton-recent-sessions /></ng-template>
+                    <ng-template appAsyncError>
+                        <div class="rounded-2xl border border-bv-warning/30 bg-bv-warning/10 p-8 text-center" role="alert">
+                            <p class="font-medium" i18n="Error on the group page">Recent sessions could not be loaded.</p>
+                            <p class="mt-2 text-sm text-secondary" i18n="Under an error on the group page">Your group data is safe. Try again when the connection is ready.</p>
+                            <button appButton class="mt-4" icon="arrow-repeat" (click)="retryGroupHistory()" i18n="Button under an error">Retry</button>
+                        </div>
+                    </ng-template>
+                    <ng-template appAsyncEmpty>
+                        <div class="rounded-2xl border border-dashed border-bv-border p-8 text-center">
+                            <app-icon name="calendar-heart" [size]="40" className="text-bv-primary" />
+                            <h3 class="mt-3 text-lg font-semibold" i18n="Shown on the group page before anything is recorded">Your group history starts here</h3>
+                            <p class="mt-2 text-secondary" i18n="Shown on the group page before anything is recorded">Record the next game night so recommendations can learn from what you really play.</p>
+                            <button appButton class="mt-5" icon="plus-lg" (click)="onClickNewMeet()" i18n="Link that plans a game night on the group page">Plan a session</button>
+                        </div>
+                    </ng-template>
+                    <ng-template appAsyncReady>
+                        <div class="grid grid-cols-1 gap-4 lg:grid-cols-3">
+                            @for (historyRecord of recentGroupHistoryComputed(); track historyRecord.meetData.id) {
+                                <article class="rounded-2xl border border-bv-border bg-bv-surface p-5 shadow-sm">
+                                    <div class="flex items-start justify-between gap-3">
+                                        <div class="min-w-0">
+                                            <p class="font-semibold">{{ historyRecord.meetData.meetDate | customDate: true: historyRecord.meetData.timezone }}</p>
+                                            <p class="mt-1 text-sm text-secondary wrap-anywhere">{{ getAttendeeSummary(historyRecord.attendedBy, historyRecord.attendedByPeople ?? []) }}</p>
+                                            <p class="mt-1 text-sm text-secondary" i18n="How many games a game night played">{historyRecord.gamesPlayed.length, plural, one {{{ historyRecord.gamesPlayed.length }} game played} other {{{ historyRecord.gamesPlayed.length }} games played}}</p>
+                                        </div>
+                                        <a [routerLink]="['/sessions', historyRecord.meetData.id]" class="text-sm text-bv-primary hover:underline" i18n="Link on a played game night on the group page that opens it">View</a>
                                     </div>
-                                    <a [routerLink]="['/sessions', historyRecord.meetData.id]" class="text-sm text-bv-primary hover:underline" i18n="Link on a played game night on the group page that opens it">View</a>
-                                </div>
-                                @if (historyRecord.meetData.notes) {
-                                    <p class="mt-4 rounded-xl bg-bv-bg p-3 text-sm text-secondary wrap-anywhere">{{ historyRecord.meetData.notes }}</p>
-                                }
-                                <ul class="mt-4 space-y-3">
-                                    @for (gamePlayed of historyRecord.gamesPlayed; track gamePlayed.gameData.id) {
-                                        <li class="flex items-center gap-3">
-                                            <image-background class="block h-10 w-10 shrink-0 rounded-lg" [src]="gamePlayed.gameData.imageUrl" [alt]="coverAlt(gamePlayed.gameData)" />
-                                            <span class="min-w-0 flex-1">
-                                                <span class="block truncate text-sm font-medium">{{ gamePlayed.gameData | gameTitle }}</span>
-                                                @if (getWinners(gamePlayed); as winners) {
-                                                    <span class="block truncate text-xs font-medium text-bv-success" [title]="winners">{{ winners }}</span>
-                                                }
-                                            </span>
-                                            @if (getPlayerCount(gamePlayed) > 0) {
-                                                <span class="text-xs text-secondary" i18n="How many people played a game on a played game night">{getPlayerCount(gamePlayed), plural, one {{{ getPlayerCount(gamePlayed) }} played} other {{{ getPlayerCount(gamePlayed) }} played}}</span>
-                                            } @else {
-                                                <span class="text-xs text-secondary" i18n="On a game of a played game night that recorded nobody as playing it">Players not recorded</span>
-                                            }
-                                        </li>
+                                    @if (historyRecord.meetData.notes) {
+                                        <p class="mt-4 rounded-xl bg-bv-bg p-3 text-sm text-secondary wrap-anywhere">{{ historyRecord.meetData.notes }}</p>
                                     }
-                                </ul>
-                            </article>
+                                    <ul class="mt-4 space-y-3">
+                                        @for (gamePlayed of historyRecord.gamesPlayed; track gamePlayed.gameData.id) {
+                                            <li class="flex items-center gap-3">
+                                                <image-background class="block h-10 w-10 shrink-0 rounded-lg" [src]="gamePlayed.gameData.imageUrl" [alt]="coverAlt(gamePlayed.gameData)" />
+                                                <span class="min-w-0 flex-1">
+                                                    <span class="block truncate text-sm font-medium">{{ gamePlayed.gameData | gameTitle }}</span>
+                                                    @if (getWinners(gamePlayed); as winners) {
+                                                        <span class="block truncate text-xs font-medium text-bv-success" [title]="winners">{{ winners }}</span>
+                                                    }
+                                                </span>
+                                                @if (getPlayerCount(gamePlayed) > 0) {
+                                                    <span class="text-xs text-secondary" i18n="How many people played a game on a played game night">{getPlayerCount(gamePlayed), plural, one {{{ getPlayerCount(gamePlayed) }} played} other {{{ getPlayerCount(gamePlayed) }} played}}</span>
+                                                } @else {
+                                                    <span class="text-xs text-secondary" i18n="On a game of a played game night that recorded nobody as playing it">Players not recorded</span>
+                                                }
+                                            </li>
+                                        }
+                                    </ul>
+                                </article>
+                            }
+                        </div>
+                        @if (groupHistory$().length > 3) {
+                            <a routerLink="/play/history" [queryParams]="{ groupId: group.id }" class="mt-5 inline-block text-sm font-medium text-bv-primary hover:underline" i18n="Link on the group page to Play, History; the placeholder is the group name">See all {{ group.name }} sessions</a>
                         }
-                    </div>
-                    @if (groupHistory$().length > 3) {
-                        <a routerLink="/play/history" [queryParams]="{ groupId: group.id }" class="mt-5 inline-block text-sm font-medium text-bv-primary hover:underline" i18n="Link on the group page to Play, History; the placeholder is the group name">See all {{ group.name }} sessions</a>
-                    }
-                }
+                    </ng-template>
+                </app-async>
             </section>
 
-            @if (insights$(); as insights) {
-                @if (insights.sessions > 0 || insights.neverPlayedCount > 0) {
-                    <section id="insights" class="scroll-mt-24" aria-labelledby="insights-heading">
-                        <div>
-                            <h2 id="insights-heading" class="mt-1 text-2xl font-bold" i18n="Heading of a section on the group page">Standings and stats</h2>
-                            <p class="mt-1 text-secondary">
-                                @if (insights.sessions > 0) {
-                                    <ng-container i18n="Under Standings and stats on the group page, how many finished game nights and games played the numbers come from">{insights.sessions, plural, one {From {{ insights.sessions }} finished game night and {insights.gamesPlayed, plural, one {{{ insights.gamesPlayed }} game played.} other {{{ insights.gamesPlayed }} games played.}}} other {From {{ insights.sessions }} finished game nights and {insights.gamesPlayed, plural, one {{{ insights.gamesPlayed }} game played.} other {{{ insights.gamesPlayed }} games played.}}}}</ng-container>
-                                } @else {
-                                    <ng-container i18n="Under Standings and stats on the group page, before any game night is finished">Finish a game night to start the standings.</ng-container>
-                                }
-                            </p>
-                        </div>
-                        <div class="mt-5 grid grid-cols-1 gap-4 lg:grid-cols-2">
-                            @if (insights.standings.length > 0) {
-                                <article class="rounded-2xl border border-bv-border bg-bv-surface p-5 shadow-sm">
-                                    <h3 class="font-semibold" i18n="Heading of a group's standings">Standings</h3>
-                                    @if (insights.gamesWithWinner === 0) {
-                                        <p class="mt-1 text-sm text-secondary" i18n="Under a group's standings before any winner is recorded">No winners recorded yet. Mark who won on a session page and the table ranks by wins.</p>
-                                    }
-                                    <ol class="mt-4 space-y-3">
-                                        @for (standing of insights.standings; track standing.accountId ?? 'p' + standing.groupPersonId) {
-                                            <li class="flex min-w-0 items-center gap-3">
-                                                <span class="w-5 shrink-0 text-sm font-semibold" [class]="$index === 0 && standing.wins > 0 ? 'text-bv-success' : 'text-secondary'">{{ $index + 1 }}</span>
-                                                <app-image-profile size="small" class="shrink-0" [avatar]="standing.avatar ?? initialsAvatar(standing.displayName)" />
-                                                <span class="min-w-0 flex-1">
-                                                    <span class="block truncate text-sm font-medium" [title]="standing.displayName">{{ standing.displayName }}</span>
-                                                    <span class="block text-xs text-secondary">{{ standingSummary(standing) }}</span>
-                                                </span>
-                                                @if (standing.wins > 0) {
-                                                    <span class="flex shrink-0 items-center gap-1 rounded-full bg-bv-success/15 px-2 py-0.5 text-xs font-semibold text-bv-success" ><app-icon name="award-fill" [size]="12" aria-hidden="true" /><span aria-hidden="true">{{ standing.wins }}</span><span class="sr-only" i18n="Read by screen readers after the number of wins in a group's standings">{standing.wins, plural, one {{{ standing.wins }} win} other {{{ standing.wins }} wins}}</span></span>
-                                                }
-                                            </li>
-                                        }
-                                    </ol>
-                                </article>
-                            }
-                            @if (insights.mostPlayed.length > 0) {
-                                <article class="rounded-2xl border border-bv-border bg-bv-surface p-5 shadow-sm">
-                                    <h3 class="font-semibold" i18n="Heading of a group's most played games">Most played</h3>
-                                    <ol class="mt-4 space-y-3">
-                                        @for (item of insights.mostPlayed; track item.gameData.id) {
-                                            <li class="flex min-w-0 items-center gap-3">
-                                                <span class="w-5 shrink-0 text-sm text-secondary">{{ $index + 1 }}</span>
-                                                <image-background [src]="item.gameData.imageUrl" [alt]="coverAlt(item.gameData)" class="h-10 w-10 shrink-0 rounded-lg" />
-                                                <a class="min-w-0 flex-1 truncate text-sm font-medium hover:underline" [routerLink]="['/games', item.gameData.id]">{{ item.gameData | gameTitle }}</a>
-                                                <span class="shrink-0 text-right text-xs text-secondary"><ng-container i18n="On a group's most played game, how many game nights played it">{item.sessions, plural, one {{{ item.sessions }} night} other {{{ item.sessions }} nights}}</ng-container><br /><ng-container i18n="On a group's most played game; the placeholder is a date">last {{ item.lastPlayedAt | customDate }}</ng-container></span>
-                                            </li>
-                                        }
-                                    </ol>
-                                </article>
-                            }
-                            @if (insights.neverPlayedCount > 0) {
-                                <article class="rounded-2xl border border-bv-border bg-bv-surface p-5 shadow-sm">
-                                    <h3 class="font-semibold" i18n="Heading of the games a group owns and never played">On the shelf, never played</h3>
-                                    <p class="mt-1 text-sm text-secondary" i18n="Under On the shelf, never played on the group page">{insights.neverPlayedCount, plural, one {{{ insights.neverPlayedCount }} game someone in the group owns that has not hit the table yet.} other {{{ insights.neverPlayedCount }} games someone in the group owns that have not hit the table yet.}}</p>
-                                    <ul class="mt-4 flex flex-wrap gap-2">
-                                        @for (game of insights.neverPlayed; track game.id) {
-                                            <li class="max-w-full"><a class="app-chip max-w-full" [routerLink]="['/games', game.id]"><span class="truncate">{{ game | gameTitle }}</span></a></li>
-                                        }
-                                        @if (insights.neverPlayedCount > insights.neverPlayed.length) {
-                                            <li class="self-center text-sm text-secondary" i18n="After the never played games on the group page, how many more there are">{insights.neverPlayedCount - insights.neverPlayed.length, plural, one {and {{ insights.neverPlayedCount - insights.neverPlayed.length }} more} other {and {{ insights.neverPlayedCount - insights.neverPlayed.length }} more}}</li>
-                                        }
-                                    </ul>
-                                </article>
-                            }
-                            @if (revisitGamesComputed().length > 0) {
-                                <article class="rounded-2xl border border-bv-border bg-bv-surface p-5 shadow-sm">
-                                    <h3 class="font-semibold" i18n="Heading of the games a group played before but not lately">Worth revisiting</h3>
-                                    <p class="mt-1 text-sm text-secondary" i18n="Under Worth revisiting on the group page">Played before, but not in the last three game nights.</p>
-                                    <ul class="mt-4 space-y-3">
-                                        @for (item of revisitGamesComputed(); track item.gameData.id) {
-                                            <li class="flex min-w-0 items-center gap-3">
-                                                <image-background [src]="item.gameData.imageUrl" [alt]="coverAlt(item.gameData)" class="h-10 w-10 shrink-0 rounded-lg" />
-                                                <span class="min-w-0 flex-1 truncate text-sm font-medium">{{ item.gameData | gameTitle }}</span>
-                                                <span class="shrink-0 text-right text-xs text-secondary" i18n="On a game worth revisiting, how many game nights played it">{item.sessionCount, plural, one {{{ item.sessionCount }} night} other {{{ item.sessionCount }} nights}}</span>
-                                            </li>
-                                        }
-                                    </ul>
-                                </article>
-                            }
-                        </div>
+            <!-- Holds its place while it loads (#260); a group with nothing to rank shows no section at all. -->
+            <app-async holdSpace [class.hidden]="hidesInsights()" [state]="insightsState()" loadingLabel="Loading standings and stats" i18n-loadingLabel="Read by screen readers while the standings on the group page load" (retry)="loadInsights(group.id)">
+                <ng-template appAsyncLoading><app-skeleton-standings id="insights" class="scroll-mt-24" /></ng-template>
+                <ng-template appAsyncError>
+                    <section id="insights" class="scroll-mt-24 rounded-2xl border border-bv-warning/30 bg-bv-warning/10 p-5 text-sm" role="alert">
+                        <p i18n="Error on the group page">Standings and stats could not be loaded.</p>
+                        <button type="button" class="mt-2 font-medium text-bv-primary underline" (click)="loadInsights(group.id)" i18n="Button under an error">Retry</button>
                     </section>
-                }
-            } @else if (insightsError()) {
-                <section id="insights" class="scroll-mt-24 rounded-2xl border border-bv-warning/30 bg-bv-warning/10 p-5 text-sm" role="alert">
-                    <p i18n="Error on the group page">Standings and stats could not be loaded.</p>
-                    <button type="button" class="mt-2 font-medium text-bv-primary underline" (click)="loadInsights(group.id)" i18n="Button under an error">Retry</button>
-                </section>
-            }
+                </ng-template>
+                <ng-template [appAsyncReady]="insightsState()" let-insights>
+                    @if (insights.sessions > 0 || insights.neverPlayedCount > 0) {
+                        <section id="insights" class="scroll-mt-24" aria-labelledby="insights-heading">
+                            <div>
+                                <h2 id="insights-heading" class="mt-1 text-2xl font-bold" i18n="Heading of a section on the group page">Standings and stats</h2>
+                                <p class="mt-1 text-secondary">
+                                    @if (insights.sessions > 0) {
+                                        <ng-container i18n="Under Standings and stats on the group page, how many finished game nights and games played the numbers come from">{insights.sessions, plural, one {From {{ insights.sessions }} finished game night and {insights.gamesPlayed, plural, one {{{ insights.gamesPlayed }} game played.} other {{{ insights.gamesPlayed }} games played.}}} other {From {{ insights.sessions }} finished game nights and {insights.gamesPlayed, plural, one {{{ insights.gamesPlayed }} game played.} other {{{ insights.gamesPlayed }} games played.}}}}</ng-container>
+                                    } @else {
+                                        <ng-container i18n="Under Standings and stats on the group page, before any game night is finished">Finish a game night to start the standings.</ng-container>
+                                    }
+                                </p>
+                            </div>
+                            <div class="mt-5 grid grid-cols-1 gap-4 lg:grid-cols-2">
+                                @if (insights.standings.length > 0) {
+                                    <article class="rounded-2xl border border-bv-border bg-bv-surface p-5 shadow-sm">
+                                        <h3 class="font-semibold" i18n="Heading of a group's standings">Standings</h3>
+                                        @if (insights.gamesWithWinner === 0) {
+                                            <p class="mt-1 text-sm text-secondary" i18n="Under a group's standings before any winner is recorded">No winners recorded yet. Mark who won on a session page and the table ranks by wins.</p>
+                                        }
+                                        <ol class="mt-4 space-y-3">
+                                            @for (standing of insights.standings; track standing.accountId ?? 'p' + standing.groupPersonId) {
+                                                <li class="flex min-w-0 items-center gap-3">
+                                                    <span class="w-5 shrink-0 text-sm font-semibold" [class]="$index === 0 && standing.wins > 0 ? 'text-bv-success' : 'text-secondary'">{{ $index + 1 }}</span>
+                                                    <app-image-profile size="small" class="shrink-0" [avatar]="standing.avatar ?? initialsAvatar(standing.displayName)" />
+                                                    <span class="min-w-0 flex-1">
+                                                        <span class="block truncate text-sm font-medium" [title]="standing.displayName">{{ standing.displayName }}</span>
+                                                        <span class="block text-xs text-secondary">{{ standingSummary(standing) }}</span>
+                                                    </span>
+                                                    @if (standing.wins > 0) {
+                                                        <span class="flex shrink-0 items-center gap-1 rounded-full bg-bv-success/15 px-2 py-0.5 text-xs font-semibold text-bv-success" ><app-icon name="award-fill" [size]="12" aria-hidden="true" /><span aria-hidden="true">{{ standing.wins }}</span><span class="sr-only" i18n="Read by screen readers after the number of wins in a group's standings">{standing.wins, plural, one {{{ standing.wins }} win} other {{{ standing.wins }} wins}}</span></span>
+                                                    }
+                                                </li>
+                                            }
+                                        </ol>
+                                    </article>
+                                }
+                                @if (insights.mostPlayed.length > 0) {
+                                    <article class="rounded-2xl border border-bv-border bg-bv-surface p-5 shadow-sm">
+                                        <h3 class="font-semibold" i18n="Heading of a group's most played games">Most played</h3>
+                                        <ol class="mt-4 space-y-3">
+                                            @for (item of insights.mostPlayed; track item.gameData.id) {
+                                                <li class="flex min-w-0 items-center gap-3">
+                                                    <span class="w-5 shrink-0 text-sm text-secondary">{{ $index + 1 }}</span>
+                                                    <image-background [src]="item.gameData.imageUrl" [alt]="coverAlt(item.gameData)" class="h-10 w-10 shrink-0 rounded-lg" />
+                                                    <a class="min-w-0 flex-1 truncate text-sm font-medium hover:underline" [routerLink]="['/games', item.gameData.id]">{{ item.gameData | gameTitle }}</a>
+                                                    <span class="shrink-0 text-right text-xs text-secondary"><ng-container i18n="On a group's most played game, how many game nights played it">{item.sessions, plural, one {{{ item.sessions }} night} other {{{ item.sessions }} nights}}</ng-container><br /><ng-container i18n="On a group's most played game; the placeholder is a date">last {{ item.lastPlayedAt | customDate }}</ng-container></span>
+                                                </li>
+                                            }
+                                        </ol>
+                                    </article>
+                                }
+                                @if (insights.neverPlayedCount > 0) {
+                                    <article class="rounded-2xl border border-bv-border bg-bv-surface p-5 shadow-sm">
+                                        <h3 class="font-semibold" i18n="Heading of the games a group owns and never played">On the shelf, never played</h3>
+                                        <p class="mt-1 text-sm text-secondary" i18n="Under On the shelf, never played on the group page">{insights.neverPlayedCount, plural, one {{{ insights.neverPlayedCount }} game someone in the group owns that has not hit the table yet.} other {{{ insights.neverPlayedCount }} games someone in the group owns that have not hit the table yet.}}</p>
+                                        <ul class="mt-4 flex flex-wrap gap-2">
+                                            @for (game of insights.neverPlayed; track game.id) {
+                                                <li class="max-w-full"><a class="app-chip max-w-full" [routerLink]="['/games', game.id]"><span class="truncate">{{ game | gameTitle }}</span></a></li>
+                                            }
+                                            @if (insights.neverPlayedCount > insights.neverPlayed.length) {
+                                                <li class="self-center text-sm text-secondary" i18n="After the never played games on the group page, how many more there are">{insights.neverPlayedCount - insights.neverPlayed.length, plural, one {and {{ insights.neverPlayedCount - insights.neverPlayed.length }} more} other {and {{ insights.neverPlayedCount - insights.neverPlayed.length }} more}}</li>
+                                            }
+                                        </ul>
+                                    </article>
+                                }
+                                @if (revisitGamesComputed().length > 0) {
+                                    <article class="rounded-2xl border border-bv-border bg-bv-surface p-5 shadow-sm">
+                                        <h3 class="font-semibold" i18n="Heading of the games a group played before but not lately">Worth revisiting</h3>
+                                        <p class="mt-1 text-sm text-secondary" i18n="Under Worth revisiting on the group page">Played before, but not in the last three game nights.</p>
+                                        <ul class="mt-4 space-y-3">
+                                            @for (item of revisitGamesComputed(); track item.gameData.id) {
+                                                <li class="flex min-w-0 items-center gap-3">
+                                                    <image-background [src]="item.gameData.imageUrl" [alt]="coverAlt(item.gameData)" class="h-10 w-10 shrink-0 rounded-lg" />
+                                                    <span class="min-w-0 flex-1 truncate text-sm font-medium">{{ item.gameData | gameTitle }}</span>
+                                                    <span class="shrink-0 text-right text-xs text-secondary" i18n="On a game worth revisiting, how many game nights played it">{item.sessionCount, plural, one {{{ item.sessionCount }} night} other {{{ item.sessionCount }} nights}}</span>
+                                                </li>
+                                            }
+                                        </ul>
+                                    </article>
+                                }
+                            </div>
+                        </section>
+                    }
+                </ng-template>
+            </app-async>
 
             <section id="library" class="scroll-mt-24" aria-labelledby="library-heading">
                 <div class="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
@@ -439,7 +481,24 @@
                 </div>
 
                 @if (acquisitionBoardLoading()) {
-                    <div class="mt-5 rounded-2xl border border-dashed border-bv-border p-6 text-center text-secondary" role="status" i18n="Shown while the games the group might buy load">Loading the group shortlist…</div>
+                    <!-- In the size of a row of games to buy (#260). -->
+                    <div class="mt-5" role="status">
+                        <span class="sr-only" i18n="Shown while the games the group might buy load">Loading the group shortlist…</span>
+                        <div class="grid grid-cols-1 gap-4 motion-safe:animate-pulse md:grid-cols-2" aria-hidden="true" data-testid="acquire-skeleton">
+                            @for (card of [1, 2]; track card) {
+                                <div class="min-w-0 gap-4 rounded-2xl border border-bv-border bg-bv-surface p-4" [class]="card === 2 ? 'hidden md:flex' : 'flex'">
+                                    <div class="h-20 w-20 shrink-0 rounded-xl bg-bv-surface-2"></div>
+                                    <div class="min-w-0 flex-1">
+                                        <div class="flex h-6 items-center"><div class="h-4 w-2/3 rounded bg-bv-border"></div></div>
+                                        <div class="mt-2 flex h-5 items-center"><div class="h-3 w-1/3 rounded bg-bv-border"></div></div>
+                                        <div class="mt-3 flex gap-2"><div class="h-6 w-20 rounded-full bg-bv-surface-2"></div><div class="h-6 w-16 rounded-full bg-bv-surface-2"></div></div>
+                                        <div class="mt-3 flex h-4 items-center"><div class="h-3 w-1/2 rounded bg-bv-border"></div></div>
+                                        <div class="mt-3 h-9 w-32 rounded-lg bg-bv-surface-2"></div>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    </div>
                 } @else if (acquisitionBoardError()) {
                     <div class="mt-5 rounded-2xl border border-bv-warning/30 bg-bv-warning/10 p-6 text-center" role="alert">
                         <p class="font-medium" i18n="Error on the group page, about the games the group might buy">The group shortlist could not be loaded.</p>
@@ -585,7 +644,8 @@
                             <button appButton variant="secondary" type="button" [disabled]="groupPersonMutationId() !== null" (click)="joinAsNewGroupPerson()" i18n="Button on the group page for a member who is none of the group's people without an account">I’m new here</button>
                         </div>
                     </div>
-                } @else if (!currentUserHasGroupPersonComputed() && !isGroupOwnerComputed()) {
+                } @else if (!groupPeopleLoading() && !groupPeopleError() && !currentUserHasGroupPersonComputed() && !isGroupOwnerComputed()) {
+                    <!-- Only once the people have loaded: never "Add me" for someone who may already be one (#260). -->
                     <div class="mt-5 rounded-2xl border border-bv-border bg-bv-surface p-4">
                         <p class="font-semibold" i18n="Shown on the group page to a member who is not one of the group's people yet">You’re not in this group’s game nights yet</p>
                         <p class="mt-1 text-sm text-secondary" i18n="Shown on the group page to a member who is not one of the group's people yet">Add yourself so you can be invited to nights and show up in its history.</p>
@@ -594,7 +654,20 @@
                 }
 
                 @if (groupPeopleLoading()) {
-                    <div class="mt-5 rounded-2xl border border-dashed border-bv-primary/30 p-6 text-center text-secondary" role="status" i18n="Shown while the people of the group load">Loading group people…</div>
+                    <!-- In the size of the people's cards (#260). -->
+                    <div class="mt-5" role="status">
+                        <span class="sr-only" i18n="Shown while the people of the group load">Loading group people…</span>
+                        <div class="grid grid-cols-1 gap-4 motion-safe:animate-pulse md:grid-cols-2" aria-hidden="true" data-testid="people-skeleton">
+                            @for (card of [1, 2]; track card) {
+                                <div class="min-w-0 rounded-2xl border border-bv-border bg-bv-surface p-4" [class]="card === 2 ? 'hidden md:block' : ''">
+                                    <div class="flex h-6 items-center gap-2"><div class="h-4 w-32 rounded bg-bv-border"></div><div class="h-6 w-20 rounded-full bg-bv-surface-2"></div></div>
+                                    <div class="mt-1 flex h-4 items-center"><div class="h-3 w-40 rounded bg-bv-border"></div></div>
+                                    <div class="mt-3 flex gap-1.5"><div class="h-6 w-20 rounded-full bg-bv-surface-2"></div><div class="h-6 w-24 rounded-full bg-bv-surface-2"></div><div class="h-6 w-16 rounded-full bg-bv-surface-2"></div></div>
+                                    <div class="mt-3 flex h-5 items-center"><div class="h-3.5 w-44 rounded bg-bv-border"></div></div>
+                                </div>
+                            }
+                        </div>
+                    </div>
                 } @else if (groupPeopleError()) {
                     <div class="mt-5 rounded-2xl border border-bv-warning/30 bg-bv-warning/10 p-6 text-center" role="alert">
                         <p class="font-medium" i18n="Error on the group page">Group people could not be loaded.</p>

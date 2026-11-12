@@ -18,8 +18,11 @@ import type {
 } from '../../api/api.types'
 import { GroupActivityFeedComponent } from '../../components/group-activity-feed/group-activity-feed.component'
 import { ImageProfileComponent } from '../../components/image-profile/image-profile.component'
-import { SkeletonHistoryComponent } from '../../components/skeletons/skeleton-history/skeleton-history.component'
+import { SkeletonGroupPageComponent } from '../../components/skeletons/skeleton-group-page/skeleton-group-page.component'
+import { SkeletonRecentSessionsComponent } from '../../components/skeletons/skeleton-recent-sessions/skeleton-recent-sessions.component'
+import { SkeletonStandingsComponent } from '../../components/skeletons/skeleton-standings/skeleton-standings.component'
 import { ToastService } from '../../components/toast/toast.service'
+import { ASYNC } from '../../components/ui/async/async.component'
 import { ButtonComponent } from '../../components/ui/button/button.component'
 import { ContainerWrapperComponent } from '../../components/ui/container-wrapper/container-wrapper.component'
 import { DialogDirective } from '../../components/ui/dialog/dialog.directive'
@@ -27,7 +30,7 @@ import { IconComponent } from '../../components/ui/icon/icon.component'
 import { ImageBackgroundComponent } from '../../components/ui/image-background/image-background.component'
 import { InPageLinkDirective } from '../../components/ui/in-page-link/in-page-link.directive'
 import { PageHeaderComponent } from '../../components/ui/page-header/page-header.component'
-import { isPending } from '../../core/async/resource-state'
+import { isFirstLoad, loadingState, type ResourceState, readyState } from '../../core/async/resource-state'
 import { formatList, formatNumber, intlLocale } from '../../core/i18n/format'
 import { PlayersPipe } from '../../core/pipes/count.pipe'
 import { CustomDatePipe } from '../../core/pipes/customDate.pipe'
@@ -57,8 +60,10 @@ export function shouldShowFirstGroupSetup(input: {
     hasUpcomingSession: boolean
     historyLoading: boolean
     historyError: boolean
+    /** Your game nights have not loaded, or could not be: an open night may be there (#260). */
+    sessionsUnknown?: boolean
 }): boolean {
-    if (input.historyLoading || input.historyError) return false
+    if (input.historyLoading || input.historyError || input.sessionsUnknown) return false
 
     return input.memberCount <= 1 && input.gameCount === 0 && input.historyCount === 0 && !input.hasUpcomingSession
 }
@@ -77,7 +82,10 @@ export function shouldShowFirstGroupSetup(input: {
         ImageProfileComponent,
         ButtonComponent,
         DialogDirective,
-        SkeletonHistoryComponent,
+        SkeletonGroupPageComponent,
+        SkeletonRecentSessionsComponent,
+        SkeletonStandingsComponent,
+        ...ASYNC,
         PageHeaderComponent,
         InPageLinkDirective,
     ],
@@ -110,11 +118,16 @@ export class GroupViewComponent {
     // dataService
     public readonly currentUser$ = this.dataService.currentUser
     public readonly userGroups$ = this.dataService.userGroups
-    public readonly userGroupsError = computed(() => this.dataService.userGroupsState().status === 'error')
+    /** Only a failure with no groups to show: a failed refresh keeps the page (#260). */
+    public readonly userGroupsError = computed(() => {
+        const state = this.dataService.userGroupsState()
+        return state.status === 'error' && state.value === undefined
+    })
     public readonly userMeets$ = this.dataService.userMeets
     public readonly invitationsGroupIndex$ = this.dataService.invitationsGroupIndex
     public readonly groupHistoryByGroupId$ = this.dataService.groupHistoryByGroupId
-    public readonly isLoadingGroups = computed(() => isPending(this.dataService.userGroupsState()))
+    /** The page skeleton is for the first load only: a refresh keeps the page as it is (#260). */
+    public readonly isLoadingGroups = computed(() => isFirstLoad(this.dataService.userGroupsState()))
 
     // groupViewService
     public readonly groupData$ = this.groupViewService.groupData
@@ -228,6 +241,50 @@ export class GroupViewComponent {
 
     public readonly nextMeetingComputed = computed(() => this.upcomingMeetingsComputed()[0] ?? null)
 
+    /** Your game nights could not be loaded and none are known: no "Nothing planned yet" then (#260). */
+    private readonly meetsUnknown = computed(() => {
+        const state = this.dataService.userMeetsState()
+        return state.status === 'loading' || (state.status === 'error' && state.value === undefined)
+    })
+
+    /**
+     * The next game night as one state (#260): "Nothing planned yet" only once your game nights have loaded. A
+     * refresh, or a failed one, keeps what is shown without a note, which would not read on the primary card.
+     */
+    public readonly nextMeetingState = computed<ResourceState<ReturnType<typeof this.nextMeetingComputed>>>(() => {
+        const state = this.dataService.userMeetsState()
+        if (state.status === 'loading') return loadingState()
+        if (state.status === 'error' && state.value === undefined) return { status: 'error', value: undefined, error: state.error }
+        return readyState(this.nextMeetingComputed())
+    })
+
+    /** Recent game nights (#260): a skeleton while they load, never "starts here" for nights that could not load. */
+    public readonly historyState = computed<ResourceState<Array<HistoryRecordType>>>(() => {
+        if (this.groupHistoryError()) return { status: 'error', value: undefined, error: true }
+        if (this.isLoading()) return loadingState()
+        return readyState(this.groupHistory$())
+    })
+
+    /** Standings and stats (#260). */
+    public readonly insightsState = computed<ResourceState<GroupInsightsType>>(() => {
+        if (this.insightsError()) return { status: 'error', value: undefined, error: true }
+        const insights = this.insights$()
+        return insights ? readyState(insights) : loadingState()
+    })
+
+    /** A group with nothing to rank yet shows no Standings section, once that is known (#260). */
+    public readonly hidesInsights = computed(() => {
+        const state = this.insightsState()
+        return state.status === 'ready' && state.value.sessions === 0 && state.value.neverPlayedCount === 0
+    })
+
+    /** The collection worth and who brings what (#260). */
+    public readonly collectionState = computed<ResourceState<GroupCollectionType>>(() => {
+        if (this.collectionError()) return { status: 'error', value: undefined, error: true }
+        const collection = this.collection$()
+        return collection && !this.collectionLoading() ? readyState(collection) : loadingState()
+    })
+
     /** Any night not finished yet, including one waiting for results: the group is already under way. */
     public readonly hasOpenSessionComputed = computed(() => {
         const groupId = this.groupData$()?.id
@@ -245,6 +302,7 @@ export class GroupViewComponent {
             hasUpcomingSession: this.hasOpenSessionComputed(),
             historyLoading: this.isLoading(),
             historyError: this.groupHistoryError(),
+            sessionsUnknown: this.meetsUnknown(),
         })
     })
 
@@ -369,7 +427,7 @@ export class GroupViewComponent {
         // Scroll to the section once what sits above it has loaded, so it does not move away again.
         effect(() => {
             const fragment = this.routeFragment()
-            if (!fragment || !this.groupData$() || this.isLoading() || this.collectionLoading()) return
+            if (!fragment || !this.groupData$() || this.isLoading() || this.collectionLoading() || isFirstLoad(this.insightsState())) return
             const key = `${this.routeGroupId()}#${fragment}`
             if (this.scrolledToFragment === key) return
             this.scrolledToFragment = key
@@ -446,6 +504,11 @@ export class GroupViewComponent {
         if (!currentUser || Number.isNaN(groupId)) return
 
         this.loadGroupHistory(currentUser.id, groupId)
+    }
+
+    /** Your game nights, behind the next one on this page. */
+    public retryMeets(): void {
+        this.dataService.refreshUserMeets()
     }
 
     public retryGroups(): void {

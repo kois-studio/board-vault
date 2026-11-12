@@ -1256,9 +1256,11 @@ describe('MeetViewComponent loading a night without waiting for your groups (#25
         expect(header()).not.toBeNull()
         expect(header()?.textContent).toContain('Dec')
         expect(header()?.textContent).not.toMatch(/^\s*·/m)
-        // Nothing that depends on the group yet: no counts, no answers to give, no "not available".
-        expect(header()?.textContent).not.toContain('Invited')
-        expect(text()).toContain('Loading session…')
+        // Nothing that depends on the group yet: each count a placeholder under its label (#260), no "not available".
+        const placeholders = header()?.querySelectorAll('[data-testid="stat-placeholder"]') ?? []
+        expect(placeholders.length).toBeGreaterThan(0)
+        expect(header()?.querySelector('dl')?.getAttribute('aria-busy')).toBe('true')
+        expect(component.detailsState().status).toBe('loading')
         expect(text()).not.toContain('This session could not be loaded.')
         expect(component.loaded).toBe(false)
 
@@ -1270,7 +1272,33 @@ describe('MeetViewComponent loading a night without waiting for your groups (#25
         expect(text()).not.toContain('Loading session…')
         expect(header()?.textContent).toContain('Thursday group')
         expect(header()?.textContent).toContain('Invited')
+        expect(header()?.querySelector('[data-testid="stat-placeholder"]')).toBeNull()
         expect(text()).toContain('Thursday group')
+    })
+
+    it('holds the place of the games and people in the shape of the night while its group loads (#260)', async () => {
+        const answer = new Subject<Group>()
+        const { text, header, settle } = await setup({ list: [], loading: true }, { group: answer })
+        // Past the 150 ms in which `<app-async>` shows nothing.
+        await new Promise((resolve) => setTimeout(resolve, 200))
+        await settle()
+
+        const body = () => document.querySelector('[data-testid="session-body-skeleton"]')
+        expect(body()).not.toBeNull()
+        // A planned night with nothing played and nothing shortlisted, one person invited.
+        expect(body()?.querySelector('[data-testid="played-games-skeleton"]')).toBeNull()
+        expect(body()?.querySelectorAll('[data-testid="shortlist-skeleton"] li')).toHaveLength(0)
+        expect(body()?.querySelectorAll('[data-testid="people-skeleton"] li')).toHaveLength(1)
+        expect(header()?.querySelector('[data-testid="session-actions-skeleton"]')).not.toBeNull()
+        expect(text()).toContain('Loading session…')
+
+        answer.next(group(7, 'Thursday group'))
+        answer.complete()
+        await new Promise((resolve) => setTimeout(resolve, 350))
+        await settle()
+
+        expect(body()).toBeNull()
+        expect(header()?.querySelector('[data-testid="session-actions-skeleton"]')).toBeNull()
     })
 
     it('uses the group already listed, asking for nothing more', async () => {
@@ -1297,11 +1325,16 @@ describe('MeetViewComponent loading a night without waiting for your groups (#25
         expect(text()).not.toContain('This session could not be loaded.')
     })
 
-    it('says the night could not be loaded when its group could not be, and Retry asks for both again', async () => {
-        const { component, api, text, retry, settle, refreshUserGroups } = await setup({ list: [] }, { group: down() })
+    it('keeps the header when the night’s group could not be loaded, says so under it, and Retry asks for both again', async () => {
+        const { component, api, text, header, retry, settle, refreshUserGroups } = await setup({ list: [] }, { group: down() })
 
-        expect(component.loadError()).toBe(true)
-        expect(text()).toContain('This session could not be loaded.')
+        // The night arrived: its header stays, and the failure is said where the games and people go (#260).
+        expect(component.loadError()).toBe(false)
+        expect(component.detailsState().status).toBe('error')
+        expect(header()?.textContent).toContain('Dec')
+        expect(header()?.querySelector('[data-testid="stat-placeholder"]')).toBeNull()
+        expect(text()).toContain('The games and people of this game night could not be loaded.')
+        expect(text()).not.toContain('This session could not be loaded.')
         expect(text()).not.toContain('Loading session…')
 
         api.getUserGroup.mockReturnValue(of(group(7, 'Thursday group')))
@@ -1354,7 +1387,9 @@ describe('MeetViewComponent loading a night without waiting for your groups (#25
     it('ignores the plays of an older load that answer after a newer one', async () => {
         const late = new Subject<unknown>()
         const { component, api, settle } = await setup({ list: [group(7, 'Thursday group')] }, { recording: late })
-        expect(component.loaded).toBe(false)
+        // The night and its group are shown; the plays have their own placeholder (#260).
+        expect(component.loaded).toBe(true)
+        expect(component.recordingState().status).toBe('loading')
 
         const fresh = { sessionId: 59, revision: 2, games: [] }
         api.getSessionRecording.mockReturnValue(of(fresh))

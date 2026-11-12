@@ -173,3 +173,44 @@ describe('AsyncComponent (#256)', () => {
         expect(view.has('[data-test="ready"]')).toBe(true)
     })
 })
+
+@Component({
+    imports: [ASYNC],
+    template: `
+        <app-async holdSpace [state]="state()">
+            <ng-template appAsyncLoading><div data-test="skeleton"></div></ng-template>
+            <ng-template appAsyncReady><p data-test="ready">Azul</p></ng-template>
+        </app-async>
+    `,
+})
+class HoldingHostComponent {
+    readonly state = signal<ResourceState<string[]>>(loadingState())
+}
+
+describe('AsyncComponent holdSpace (#260)', () => {
+    beforeEach(() => vi.useFakeTimers())
+    afterEach(() => vi.useRealTimers())
+
+    it('holds the skeleton’s place, unseen, before it shows, and lets the content take it', () => {
+        const fixture = TestBed.createComponent(HoldingHostComponent)
+        fixture.detectChanges()
+        const element = fixture.nativeElement as HTMLElement
+        const holding = () => element.querySelector('[data-async="holding"]')
+
+        expect(holding()?.classList.contains('invisible')).toBe(true)
+        expect(holding()?.getAttribute('aria-hidden')).toBe('true')
+        expect(holding()?.querySelector('[data-test="skeleton"]')).not.toBeNull()
+        expect(element.querySelector('[role="status"]')).toBeNull()
+
+        vi.advanceTimersByTime(SKELETON_DELAY_MS)
+        fixture.detectChanges()
+        expect(holding()).toBeNull()
+        expect(element.querySelector('[role="status"] [data-test="skeleton"]')).not.toBeNull()
+
+        fixture.componentInstance.state.set(readyState(['Azul']))
+        vi.advanceTimersByTime(SKELETON_MIN_MS)
+        fixture.detectChanges()
+        expect(element.querySelector('[data-test="skeleton"]')).toBeNull()
+        expect(element.querySelector('[data-test="ready"]')).not.toBeNull()
+    })
+})

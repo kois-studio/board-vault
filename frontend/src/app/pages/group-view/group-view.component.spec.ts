@@ -4,6 +4,7 @@ import { TestBed } from '@angular/core/testing'
 import { ActivatedRoute, convertToParamMap, provideRouter } from '@angular/router'
 import { BehaviorSubject, type Observable, of, Subject, throwError } from 'rxjs'
 import { Api } from '../../api/api'
+import type { ResourceStatus } from '../../core/async/resource-state'
 import { withStates } from '../../core/async/resource-state.testing'
 import { DataService } from '../../core/services/data.service'
 import { ApiUnavailableError } from '../../core/utils/apiUnavailable'
@@ -185,6 +186,7 @@ describe('shouldShowFirstGroupSetup', () => {
         expect(shouldShowFirstGroupSetup({ ...emptyGroup, memberCount: 2 })).toBe(false)
         expect(shouldShowFirstGroupSetup({ ...emptyGroup, gameCount: 1 })).toBe(false)
         expect(shouldShowFirstGroupSetup({ ...emptyGroup, hasUpcomingSession: true })).toBe(false)
+        expect(shouldShowFirstGroupSetup({ ...emptyGroup, sessionsUnknown: true })).toBe(false)
     })
 })
 
@@ -374,6 +376,17 @@ describe('GroupViewComponent page layout', () => {
         placeholders: [],
     }
 
+    /** A group with nothing to rank yet, as the API answers it. */
+    const noInsights = {
+        sessions: 0,
+        gamesPlayed: 0,
+        gamesWithWinner: 0,
+        standings: [],
+        mostPlayed: [],
+        neverPlayed: [],
+        neverPlayedCount: 0,
+    }
+
     const render = async (currentUserId: number, groupData: unknown = group, fragment: string | null = null) => {
         const params = new BehaviorSubject(convertToParamMap({ groupId: '1' }))
         await TestBed.configureTestingModule({
@@ -385,7 +398,7 @@ describe('GroupViewComponent page layout', () => {
                     provide: Api,
                     useValue: {
                         getGroupCollection: vi.fn(() => of(null)),
-                        getGroupInsights: vi.fn(() => of(null)),
+                        getGroupInsights: vi.fn(() => of(noInsights)),
                         getGroupActivity: vi.fn(() => of({ entries: [], hasMore: false })),
                         getGroupAcquisitionBoard: vi.fn(() => of([])),
                         getGroupPeople: vi.fn(() => of({ people: [] })),
@@ -675,5 +688,199 @@ describe('GroupViewComponent page layout', () => {
         fixture.componentInstance.insights$.set({ ...insights, sessions: 3, gamesPlayed: 7 })
         fixture.detectChanges()
         expect(summary()).toBe('From 3 finished game nights and 7 games played.')
+    })
+})
+
+describe('GroupViewComponent while its parts load (#260)', () => {
+    const group = {
+        id: 1,
+        name: 'DuckDevs',
+        createdBy: 6,
+        members: [{ id: 6, username: 'owner', displayName: 'Owner', avatar: null, games: [], reviews: [] }],
+        placeholders: [],
+    }
+    const noInsights = {
+        sessions: 0,
+        gamesPlayed: 0,
+        gamesWithWinner: 0,
+        standings: [],
+        mostPlayed: [],
+        neverPlayed: [],
+        neverPlayedCount: 0,
+    }
+    /** Past the 150 ms in which `<app-async>` shows nothing, so a skeleton is on screen. */
+    const pastSkeletonDelay = () => new Promise((resolve) => setTimeout(resolve, 200))
+
+    const render = async (
+        options: {
+            groups?: ResourceStatus
+            meets?: ResourceStatus
+            history?: Observable<unknown>
+            insights?: Observable<unknown>
+            people?: Observable<unknown>
+            userId?: number
+        } = {},
+    ) => {
+        const groupsStatus = signal<ResourceStatus>(options.groups ?? 'ready')
+        const meetsStatus = signal<ResourceStatus>(options.meets ?? 'ready')
+        const refreshUserMeets = vi.fn()
+        await TestBed.configureTestingModule({
+            imports: [GroupViewComponent],
+            providers: [
+                provideRouter([]),
+                {
+                    provide: ActivatedRoute,
+                    useValue: {
+                        paramMap: of(convertToParamMap({ groupId: '1' })),
+                        fragment: of(null),
+                        snapshot: { paramMap: convertToParamMap({ groupId: '1' }) },
+                    },
+                },
+                {
+                    provide: Api,
+                    useValue: {
+                        getGroupCollection: vi.fn(() => of({ worth: 0, copies: 0, pricedCopies: 0, people: [] })),
+                        getGroupInsights: vi.fn(() => options.insights ?? of(noInsights)),
+                        getGroupActivity: vi.fn(() => of({ entries: [], hasMore: false })),
+                        getGroupAcquisitionBoard: vi.fn(() => of([])),
+                        getGroupPeople: vi.fn(() => options.people ?? of({ people: [] })),
+                        getGroupPersonCatalog: vi.fn(() => of([])),
+                        getGroupMeetings: vi.fn(() => options.history ?? of([])),
+                    },
+                },
+                {
+                    provide: DataService,
+                    useValue: withStates(
+                        {
+                            currentUser: signal({ id: options.userId ?? 6 }),
+                            userGroups: signal([group]),
+                            userMeets: signal([]),
+                            refreshUserMeets,
+                            invitationsGroupIndex: signal({}),
+                            groupHistoryByGroupId: signal({}),
+                        },
+                        { userGroups: groupsStatus, userMeets: meetsStatus },
+                    ),
+                },
+            ],
+        }).compileComponents()
+        const fixture = TestBed.createComponent(GroupViewComponent)
+        fixture.autoDetectChanges()
+        await fixture.whenStable()
+        const element = fixture.nativeElement as HTMLElement
+        const text = () => element.textContent ?? ''
+        const testId = (id: string) => element.querySelector(`[data-testid="${id}"]`)
+        const settle = async () => {
+            await new Promise((resolve) => setTimeout(resolve))
+            await fixture.whenStable()
+        }
+        return { element, text, testId, settle, refreshUserMeets, groupsStatus, meetsStatus }
+    }
+
+    it('shows the page in outline while your groups first load, and keeps the page while they refresh', async () => {
+        const { text, testId, settle, groupsStatus } = await render({ groups: 'loading' })
+
+        expect(testId('group-page-skeleton')).not.toBeNull()
+        expect(text()).toContain('Loading your group…')
+        expect(text()).not.toContain('Group pulse')
+
+        groupsStatus.set('ready')
+        await settle()
+        expect(testId('group-page-skeleton')).toBeNull()
+
+        groupsStatus.set('refreshing')
+        await settle()
+        expect(testId('group-page-skeleton')).toBeNull()
+        expect(text()).toContain('Group pulse')
+    })
+
+    it('counts no game nights and says the history starts here only once they have loaded', async () => {
+        const history = new Subject<Array<never>>()
+        const { text, testId, settle } = await render({ history })
+        await pastSkeletonDelay()
+
+        expect(testId('sessions-count-placeholder')).not.toBeNull()
+        expect(testId('recent-sessions-skeleton')).not.toBeNull()
+        expect(text()).not.toContain('Your group history starts here')
+
+        history.next([])
+        history.complete()
+        // The skeleton stays its 300 ms, so it never blinks.
+        await new Promise((resolve) => setTimeout(resolve, 350))
+        await settle()
+
+        expect(testId('sessions-count-placeholder')).toBeNull()
+        expect(testId('recent-sessions-skeleton')).toBeNull()
+        expect(text()).toContain('Your group history starts here')
+    })
+
+    it('never counts game nights that could not be loaded as none', async () => {
+        const { element, text } = await render({ history: throwError(() => new Error('Board Vault could not be reached')) })
+
+        expect(text()).toContain('Recent sessions could not be loaded.')
+        expect(text()).not.toContain('Your group history starts here')
+        const sessions = [...element.querySelectorAll('dt')].find((label) => label.textContent?.trim() === 'Sessions')
+        expect(sessions?.nextElementSibling?.textContent).toContain('Unavailable')
+        expect(sessions?.nextElementSibling?.textContent).not.toContain('0')
+    })
+
+    it('says nothing is planned only once your game nights have loaded, and says so when they could not be', async () => {
+        const { element, text, settle, meetsStatus, refreshUserMeets } = await render({ meets: 'loading' })
+        expect(text()).not.toContain('Nothing planned yet')
+        // A new group whose game nights are unknown may have one planned: no first steps yet.
+        expect(text()).not.toContain('First steps for this group')
+
+        meetsStatus.set('error')
+        await settle()
+        expect(text()).not.toContain('Nothing planned yet')
+        expect(text()).toContain('Your game nights could not be loaded, so the next one is unknown.')
+        expect(text()).not.toContain('First steps for this group')
+
+        const retry = [...element.querySelectorAll('#overview button')].find((button) => button.textContent?.trim() === 'Retry')
+        ;(retry as HTMLButtonElement).click()
+        expect(refreshUserMeets).toHaveBeenCalledTimes(1)
+
+        meetsStatus.set('ready')
+        await settle()
+        expect(text()).toContain('Nothing planned yet')
+        expect(text()).toContain('First steps for this group')
+    })
+
+    it('holds the place of the standings while they load, and leaves no gap for a group with nothing to rank', async () => {
+        const insights = new Subject<typeof noInsights>()
+        const { element, testId, settle } = await render({ insights })
+        await pastSkeletonDelay()
+
+        expect(testId('standings-skeleton')).not.toBeNull()
+        const standingsLink = () => [...element.querySelectorAll('nav a')].find((link) => link.textContent?.trim() === 'Standings')
+        expect(standingsLink()).toBeDefined()
+
+        insights.next(noInsights)
+        insights.complete()
+        await new Promise((resolve) => setTimeout(resolve, 350))
+        await settle()
+
+        expect(testId('standings-skeleton')).toBeNull()
+        expect(element.querySelector('app-async.hidden')).not.toBeNull()
+        expect(standingsLink()).toBeUndefined()
+    })
+
+    it('asks a member to add themselves only once the people have loaded, never while they load or after they failed', async () => {
+        const people = new Subject<{ people: Array<never> }>()
+        const { text, settle } = await render({ people, userId: 7 })
+        expect(text()).toContain('Loading group people…')
+        expect(text()).not.toContain('Add me')
+
+        people.next({ people: [] })
+        people.complete()
+        await settle()
+        expect(text()).toContain('Add me')
+    })
+
+    it('does not ask a member to add themselves when the people could not be loaded', async () => {
+        const { text } = await render({ people: throwError(() => new Error('Board Vault could not be reached')), userId: 7 })
+
+        expect(text()).toContain('Group people could not be loaded.')
+        expect(text()).not.toContain('Add me')
     })
 })
