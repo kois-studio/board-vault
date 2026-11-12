@@ -68,7 +68,6 @@ describe('account resolution cache (e2e)', () => {
         app = moduleFixture.createNestApplication()
         await app.init()
         app.get(ClerkIdentityService).deleteClerkUser = vi.fn().mockResolvedValue(undefined)
-        app.get(ClerkIdentityService).revokeInvitationsFrom = vi.fn().mockResolvedValue({ revoked: 0, failed: 0 })
         accountCache = app.get(AccountCache)
         clock = Date.now()
         accountCache.now = () => clock
