@@ -159,11 +159,18 @@ export class DashboardService {
         const gamesByAccount = new Map<number, Array<number>>()
         const gamesByPerson = new Map<number, Array<number>>()
 
-        for (const item of owned) gamesByAccount.set(item.accountId, [...(gamesByAccount.get(item.accountId) ?? []), item.gameId])
+        const append = (map: Map<number, Array<number>>, key: number, gameId: number) => {
+            const list = map.get(key)
+
+            if (list) list.push(gameId)
+            else map.set(key, [gameId])
+        }
+
+        for (const item of owned) append(gamesByAccount, item.accountId, item.gameId)
         for (const row of ownershipRows.rows) {
             const personId = Number(row.groupPersonId)
 
-            gamesByPerson.set(personId, [...(gamesByPerson.get(personId) ?? []), Number(row.gameId)])
+            append(gamesByPerson, personId, Number(row.gameId))
         }
 
         return ids.flatMap(groupId => {
