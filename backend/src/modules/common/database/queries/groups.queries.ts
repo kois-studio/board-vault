@@ -208,7 +208,8 @@ export class GroupQueries {
     /** The memberships of many groups in one query (#262). */
     getGroupMembershipsByGroupIds(ids: Array<number>) {
         return this.database.execute({
-            sql: `SELECT * FROM GroupMembership WHERE groupId IN (${ids.map(() => '?').join(', ')})`,
+            // In account order within each group, as one group's members have always come (#289).
+            sql: `SELECT * FROM GroupMembership WHERE groupId IN (${ids.map(() => '?').join(', ')}) ORDER BY groupId, accountId`,
             args: ids,
         })
     }

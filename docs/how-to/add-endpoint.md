@@ -16,7 +16,12 @@ Example: `GET /collection/users/:userId/stats` for the signed-in user.
    `backend/test/fake-database.ts`. Always use parameters (`args: [...]`), never string concatenation. Name columns
    explicitly.
 4. **Add the service method** that calls it, maps rows to the DTO, and
-   enforces domain rules.
+   enforces domain rules. A list reads what its rows need for all of them at
+   once, with the set-based lookups (`getGroupsByIds`,
+   `getGamesOwnedByAccountIds`, `getGameReviewsByAccountIds`,
+   `getPublicUsersByIds`, `gameTranslationService.withTitles`, …), never one
+   query per group, member or game: on Turso every query is a round trip
+   (#251, #289).
 5. **Add the controller route.** The controller already has
    `@UseGuards(AuthGuard)`. Add the guard that authorizes the target:
    `UserOwnershipGuard` for `:userId`, `UserInGroupGuard` or `GroupOwnerGuard`
@@ -27,7 +32,9 @@ Example: `GET /collection/users/:userId/stats` for the signed-in user.
 6. **Test it.** A controller spec with `Test.createTestingModule` and
    `overrideGuard(...)` (see `profile.controller.spec.ts`) for validation, plus
    a service spec for the rules. Cover: unauthorized caller, malformed input,
-   and that private fields don't leak.
+   and that private fields don't leak. For a list, an e2e spec that counts the
+   queries of a small answer and a large one and expects the same number (see
+   `backend/test/dashboard-query-counts.e2e-spec.ts`).
 7. **Regenerate the contract** and commit it with the change:
 
    ```shell

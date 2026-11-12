@@ -1,6 +1,7 @@
 import { BadRequestException, ForbiddenException, Injectable, Logger, NotFoundException } from '@nestjs/common'
 
 import { LogFeature } from '../../../common/decorators/logger.decorator.js'
+import { groupBy } from '../../../common/utils/group-by.js'
 import { DatabaseService } from '../../common/database/database.service.js'
 import { GameTranslationService } from '../../core/game-translation/game-translation.service.js'
 import { GamesService } from '../../core/games/games.service.js'
@@ -156,22 +157,19 @@ export class DashboardService {
             this.usersService.getPublicUsersByIds(memberIds),
             this.gamesOwnedService.getGamesOwnedByAccountIds(memberIds),
         ])
-        const gamesByAccount = new Map<number, Array<number>>()
-        const gamesByPerson = new Map<number, Array<number>>()
-
-        const append = (map: Map<number, Array<number>>, key: number, gameId: number) => {
-            const list = map.get(key)
-
-            if (list) list.push(gameId)
-            else map.set(key, [gameId])
-        }
-
-        for (const item of owned) append(gamesByAccount, item.accountId, item.gameId)
-        for (const row of ownershipRows.rows) {
-            const personId = Number(row.groupPersonId)
-
-            append(gamesByPerson, personId, Number(row.gameId))
-        }
+        // Each list read once, not once per group (#289).
+        const membershipsByGroup = groupBy(memberships, membership => membership.groupId)
+        const placeholdersByGroup = groupBy(placeholderRows.rows, row => Number(row.groupId))
+        const gamesByAccount = groupBy(
+            owned,
+            item => item.accountId,
+            item => item.gameId,
+        )
+        const gamesByPerson = groupBy(
+            ownershipRows.rows,
+            row => Number(row.groupPersonId),
+            row => Number(row.gameId),
+        )
 
         return ids.flatMap(groupId => {
             const group = groups.get(groupId)
@@ -181,22 +179,20 @@ export class DashboardService {
             return [
                 {
                     group,
-                    members: memberships
-                        .filter(membership => membership.groupId === groupId && users.has(membership.accountId))
+                    members: (membershipsByGroup.get(groupId) ?? [])
+                        .filter(membership => users.has(membership.accountId))
                         .map(membership => ({
                             accountId: membership.accountId,
                             user: users.get(membership.accountId)!,
                             joinedAt: membership.joinedAt,
                             gameIds: gamesByAccount.get(membership.accountId) ?? [],
                         })),
-                    placeholders: placeholderRows.rows
-                        .filter(row => Number(row.groupId) === groupId)
-                        .map(row => ({
-                            id: Number(row.id),
-                            displayName: String(row.displayName),
-                            avatar: parseAvatar(row.avatar),
-                            gameIds: gamesByPerson.get(Number(row.id)) ?? [],
-                        })),
+                    placeholders: (placeholdersByGroup.get(groupId) ?? []).map(row => ({
+                        id: Number(row.id),
+                        displayName: String(row.displayName),
+                        avatar: parseAvatar(row.avatar),
+                        gameIds: gamesByPerson.get(Number(row.id)) ?? [],
+                    })),
                 },
             ]
         })
@@ -220,6 +216,7 @@ export class DashboardService {
             this.reviewsService.getGameReviewsByAccountIds(memberIds),
         ])
         const completeGames = (ids: Array<number>) => ids.map(id => games.get(id)).filter(game => game !== undefined)
+        const reviewsByAccount = groupBy(reviews, review => review.accountId)
 
         return loaded.map(({ group, members, placeholders }) => ({
             ...group,
@@ -230,7 +227,7 @@ export class DashboardService {
                 return {
                     ...userWithGames,
                     joinedAt: member.joinedAt,
-                    reviews: reviews.filter(review => review.accountId === member.accountId),
+                    reviews: reviewsByAccount.get(member.accountId) ?? [],
                 } satisfies GroupMemberWithGames
             }),
         }))

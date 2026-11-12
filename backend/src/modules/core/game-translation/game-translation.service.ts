@@ -1,6 +1,7 @@
 import { ResultSet } from '@libsql/client'
 import { Injectable, Logger } from '@nestjs/common'
 
+import { groupBy } from '../../../common/utils/group-by.js'
 import { cacheKeys } from '../../common/cache/cache-keys.js'
 import { CacheService } from '../../common/cache/cache.service.js'
 import { DatabaseService } from '../../common/database/database.service.js'
@@ -61,13 +62,10 @@ export class GameTranslationService {
         }
 
         const translations = this._parseResultSet(await this.databaseService.games.getGameTranslationsByGameIds(uniqueIds))
+        // Each game's translations found at once, not by reading every translation once per game (#289).
+        const byGame = groupBy(translations, translation => translation.gameId)
 
-        return new Map(
-            uniqueIds.map(gameId => [
-                gameId,
-                this._reduceGameTranslations(translations.filter(translation => translation.gameId === gameId)),
-            ]),
-        )
+        return new Map(uniqueIds.map(gameId => [gameId, this._reduceGameTranslations(byGame.get(gameId) ?? [])]))
     }
 
     /** Each game's title for a reader (ADR-0025: their language, else the primary edition) and the language it is in. */
