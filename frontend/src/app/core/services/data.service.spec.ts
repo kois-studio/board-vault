@@ -806,7 +806,11 @@ describe('DataService group shelves (#262)', () => {
         const openPage = () => {
             const destroyed: Array<() => void> = []
             service.loadUserGroupsWithShelves({ onDestroy: (callback: () => void) => destroyed.push(callback) } as never)
-            return { close: () => destroyed.forEach((callback) => callback()) }
+            return {
+                close: () => {
+                    for (const callback of destroyed) callback()
+                },
+            }
         }
         return { service, calls, settle, openPage }
     }
