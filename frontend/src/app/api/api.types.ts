@@ -259,6 +259,29 @@ export type UsageReportType = {
     months: Array<{ month: string; events: number; pageViews: number }>
 }
 
+/** One problem of the last 30 days, its days added up, with its latest sample (ADR-0028, admins only). */
+export type ProblemSummaryType = {
+    fingerprint: string
+    source: 'app' | 'api'
+    kind: 'error' | 'rejection' | 'chunk' | 'request' | 'exception'
+    name: string
+    message: string
+    stack: string | null
+    view: string | null
+    endpoint: string | null
+    status: number | null
+    requestId: string | null
+    release: string | null
+    locale: string | null
+    browser: string | null
+    occurrences: number
+    days: number
+    firstSeenAt: string
+    lastSeenAt: string
+}
+
+export type ProblemReportType = { problems: Array<ProblemSummaryType>; dailyLimit: number; limitReached: boolean }
+
 export type PrivacySettingsType = { usageAnalytics: boolean }
 
 /** The privacy settings as the API answers them: also whether the usage notice has been answered (#158). */

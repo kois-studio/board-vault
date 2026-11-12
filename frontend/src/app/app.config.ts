@@ -1,12 +1,14 @@
 import { provideHttpClient, withInterceptors, withXhr } from '@angular/common/http'
-import { ApplicationConfig, inject, provideAppInitializer, provideZoneChangeDetection } from '@angular/core'
+import { ApplicationConfig, ErrorHandler, inject, provideAppInitializer, provideZoneChangeDetection } from '@angular/core'
 import { provideRouter, RouteReuseStrategy, Router, withPreloading } from '@angular/router'
 import { routes } from './app.routes'
+import { listenForProblems, ProblemErrorHandler } from './core/errors/problem-error-handler'
 import { authInterceptor } from './core/interceptors/auth.interceptor'
 import { resilienceInterceptor } from './core/interceptors/resilience.interceptor'
 import { RemountOnParamChangeStrategy } from './core/routing/remount-on-param-change'
 import { SectionPreloadingStrategy } from './core/routing/section-preloading'
 import { afterFirstPagePaint, ClerkService } from './core/services/clerk.service'
+import { ProblemReportService } from './core/services/problem-report.service'
 import { usageViewInterceptor } from './core/services/usage.service'
 
 export const appConfig: ApplicationConfig = {
@@ -21,6 +23,11 @@ export const appConfig: ApplicationConfig = {
         // Guards and API tokens that need it sooner start it themselves (ClerkService.whenLoaded).
         provideAppInitializer(() => {
             inject(ClerkService).initialize(afterFirstPagePaint(inject(Router)))
+        }),
+        // Problems the app runs into are reported to Board Vault, scrubbed and with nobody named (#247, ADR-0028).
+        { provide: ErrorHandler, useClass: ProblemErrorHandler },
+        provideAppInitializer(() => {
+            if (typeof window !== 'undefined') listenForProblems(window, inject(ProblemReportService))
         }),
     ],
 }

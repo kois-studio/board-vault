@@ -18,6 +18,8 @@ const selfRegistrationEnabled = process.env.BOARD_VAULT_SELF_REGISTRATION_ENABLE
 // on a local machine and in Vercel previews. A Vercel build that does not say which environment it is
 // counts as production.
 const previewLocales = !process.env.VERCEL || process.env.VERCEL_ENV === 'preview'
+// The commit this build came from, so a problem report says which build it was (ADR-0028). The repository is public.
+const release = process.env.VERCEL_GIT_COMMIT_SHA?.slice(0, 7) || 'local'
 
 if (!publishableKey) {
     // Clerk is the only sign-in method, so the app builds but nobody can sign in.
@@ -28,6 +30,7 @@ const runtimeConfig = {
     clerkPublishableKey: publishableKey,
     selfRegistrationEnabled,
     previewLocales,
+    release,
 }
 
 await writeFile(

@@ -141,7 +141,14 @@ Only public values may go there. The API base URL is fixed per build in
   `usage.daily_maintenance` log line with how many daily counts it made and
   how many raw usage events it deleted, and one
   `idempotency.expired_keys_deleted` line with how many expired
-  Idempotency-Key records it deleted. A missed day is caught up on the next
-  run. To run it by hand:
+  Idempotency-Key records it deleted, and one `problem.expired_reports_deleted`
+  line with how many problem reports older than 30 days it deleted. A missed
+  day is caught up on the next run. To run it by hand:
   `curl -H "Authorization: Bearer $CRON_SECRET" https://backend.board-vault.com/internal/daily-maintenance`.
 - **Usage:** Administration → Usage in the app (ADR-0021).
+- **Problems:** Administration → Problems in the app lists what broke in the
+  app or the API in the last 30 days, scrubbed and with nobody named
+  ([ADR-0028](adr/0028-problem-reports-of-our-own.md)). Each shows the build
+  (the commit, from `VERCEL_GIT_COMMIT_SHA`, which Vercel sets for both
+  projects) and, for a request, the `requestId` to look for in the logs while
+  they last. Only production builds send reports.
