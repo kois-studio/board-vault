@@ -309,6 +309,23 @@ export class GroupQueries {
     }
 
     /**
+     * The people of many groups in one query, as `getGroupPeople` reads one group's: the same columns, and the same
+     * order within each group. A history of nights in several groups reads its people once, not once per group.
+     * `groupIds` must not be empty.
+     */
+    getGroupPeopleByGroupIds(groupIds: Array<number>, includeArchived = false) {
+        return this.database.execute({
+            sql: `
+                SELECT ${PERSON_COLUMNS}
+                FROM GroupPerson gp
+                WHERE gp.groupId IN (${groupIds.map(() => '?').join(', ')}) ${includeArchived ? '' : "AND gp.status = 'active'"}
+                ORDER BY gp.groupId ASC, gp.status ASC, ${PERSON_NAME} COLLATE NOCASE ASC, gp.id ASC
+            `,
+            args: groupIds,
+        })
+    }
+
+    /**
      * The people this account may take over in the group, with whether an invitation suggested them (#278): every active
      * person without an account, while the account is not one of the group's people itself. Membership is the caller's.
      */

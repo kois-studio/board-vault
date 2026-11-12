@@ -41,7 +41,7 @@ describe('DashboardService group history', () => {
                 personPlays: empty,
                 accountPlays: empty,
             }),
-            getGroupPeople: vi.fn().mockResolvedValue({ rows: [] }),
+            getGroupPeopleByGroupIds: vi.fn().mockResolvedValue({ rows: [] }),
         }
 
         const service = new DashboardService(

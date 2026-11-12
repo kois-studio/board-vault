@@ -36,7 +36,7 @@ describe('PlayService history', () => {
                 personPlays: new Map(),
                 accountPlays: new Map([[10, [{ gameId: 42, accountId: 1 }]]]),
             }),
-            getGroupPeople: vi.fn().mockResolvedValue({ rows: [] }),
+            getGroupPeopleByGroupIds: vi.fn().mockResolvedValue({ rows: [] }),
             getAccountStandings: vi.fn().mockResolvedValue({ rows: [{ groupId: 7, accountId: 1, standing: 'left' }] }),
         })
         const service = new PlayService(
@@ -96,7 +96,7 @@ describe('PlayService history', () => {
                 ]),
                 accountPlays: new Map(),
             }),
-            getGroupPeople: vi.fn().mockResolvedValue({
+            getGroupPeopleByGroupIds: vi.fn().mockResolvedValue({
                 rows: [
                     [3, 7, 6, 'linked', 'active', 'bloddsword', null, null, null, null, 'member'],
                     [9, 7, null, 'placeholder', 'active', 'Guest', JSON.stringify(guestAvatar), null, null, null, 'member'],

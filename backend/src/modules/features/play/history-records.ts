@@ -20,8 +20,9 @@ export type HistoryRecordSources = {
 
 /**
  * Builds history records for completed sessions with a fixed number of
- * queries: session details, games, translations, accounts, and group people
- * are each loaded once for the whole list.
+ * queries: session details, games, translations, accounts, and the people of
+ * every group the nights are in are each loaded once for the whole list, however
+ * many groups that is.
  *
  * Everyone recorded stays in the record (ADR-0018): people who left the group
  * or deleted their account are kept, with their standing, so counts never change.
@@ -62,9 +63,7 @@ export async function buildHistoryRecords(meets: Array<MeetDto>, sources: Histor
     const [games, users, peopleByGroup, accountStandings] = await Promise.all([
         gamesService.getGamesByIds(gameIds).then(found => gameTranslationService.withTitles([...found.values()], locale)),
         usersService.getPublicUsersByIds(accountIds),
-        Promise.all(
-            groupIds.map(async groupId => [groupId, peopleById(await databaseService.groups.getGroupPeople(groupId, true))] as const),
-        ).then(entries => new Map(entries)),
+        databaseService.groups.getGroupPeopleByGroupIds(groupIds, true).then(peopleByGroupId),
         loadAccountStandings(databaseService, groupIds, [...new Set(accountIds)]),
     ])
     // Linked people keep their avatar on the account: load any linked account not already loaded (at most one query).
@@ -122,19 +121,27 @@ export async function buildHistoryRecords(meets: Array<MeetDto>, sources: Histor
     }))
 }
 
-function peopleById(groupPeople: Awaited<ReturnType<DatabaseService['groups']['getGroupPeople']>>): Map<number, HistoryPersonDto> {
-    return new Map(
-        groupPeople.rows.map(row => [
-            Number(row[0]),
-            {
-                id: Number(row[0]),
-                displayName: String(row[5]),
-                avatar: parseAvatar(row[6]),
-                accountId: row[2] === null || row[2] === undefined ? null : Number(row[2]),
-                standing: String(row[10] ?? 'member') as GroupPersonStanding,
-            },
-        ]),
-    )
+/** Each group's people by id, from one read of every group's (`PERSON_COLUMNS`: id, groupId, accountId, …). */
+function peopleByGroupId(
+    groupPeople: Awaited<ReturnType<DatabaseService['groups']['getGroupPeopleByGroupIds']>>,
+): Map<number, Map<number, HistoryPersonDto>> {
+    const byGroup = new Map<number, Map<number, HistoryPersonDto>>()
+
+    for (const row of groupPeople.rows) {
+        const groupId = Number(row[1])
+        const people = byGroup.get(groupId) ?? new Map<number, HistoryPersonDto>()
+
+        people.set(Number(row[0]), {
+            id: Number(row[0]),
+            displayName: String(row[5]),
+            avatar: parseAvatar(row[6]),
+            accountId: row[2] === null || row[2] === undefined ? null : Number(row[2]),
+            standing: String(row[10] ?? 'member') as GroupPersonStanding,
+        })
+        byGroup.set(groupId, people)
+    }
+
+    return byGroup
 }
 
 /** Standing keyed by `groupId:accountId`; one query, and none without accounts. */
