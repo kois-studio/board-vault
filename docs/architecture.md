@@ -247,12 +247,21 @@ cannot load them would leave those people out without saying so:
 
 An error never leaves a page without a way on (#244):
 
-- A game night's page needs the night's group. It waits for the groups only
-  while none are listed and they are still loading. When they failed, or the
-  night's group is not among them, the page says the night couldn't be loaded,
-  and Retry loads the groups again (`refreshUserGroups`) before the night. A
-  groups refresh that fails after the night is shown leaves it on screen.
-  Waiting for no groups at all is #258.
+- A game night's page never waits for your groups (#258). It asks for the
+  night and its plays at once, shows the header when the night arrives, then
+  asks for the night's group, its people and (for a night with group people)
+  their catalogue together. The group comes from the groups already listed, or
+  alone (`GET /dashboard/users/:userId/groups/:groupId`) when it is not
+  listed or the list failed. When the night or its group can't be loaded, the
+  page says so, and Retry asks for both again, the group afresh. A groups
+  refresh that fails after the night is shown leaves it on screen.
+- Opening another night, game or group person from one of those pages (a
+  notification, Similar games) builds the page afresh. Their routes are marked
+  `remountOnParamChange`, and `RemountOnParamChangeStrategy`
+  (`core/routing`) keeps Angular's own reuse for every other route. Anything
+  the first page was still waiting for, saves included, then belongs to the
+  page that was left; nothing typed or loaded for it carries over. The group
+  page is not marked: it follows its address itself, for the group switcher.
 - Taking over a person prepared for you tells two failures apart. "Not there
   for you" (a 403 or 404, or a person you can't claim) still offers joining as
   a new person. Board Vault not answering offers only Retry, since joining as

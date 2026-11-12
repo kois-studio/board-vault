@@ -28,7 +28,7 @@
                 }
             </h3>
             }
-            <p class="mt-1 text-sm text-bv-text-muted wrap-anywhere">{{ groupName() }} · {{ when.weekday }} {{ when.day }} {{ when.month }} {{ when.year }} · {{ timezone() }}</p>
+            <p class="mt-1 text-sm text-bv-text-muted wrap-anywhere">@if (groupName()) {{{ groupName() }} · }{{ when.weekday }} {{ when.day }} {{ when.month }} {{ when.year }} · {{ timezone() }}</p>
             <p class="mt-3 max-w-2xl text-sm text-bv-text-muted">{{ tone().description }}</p>
         </div>
     </div>
