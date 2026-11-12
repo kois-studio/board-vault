@@ -42,6 +42,7 @@ import type {
     NotificationType,
     OwnedGameCompleteType,
     PrivacySettingsStateType,
+    ProblemReportType,
     RecommendationSignalsType,
     RecommendationsType,
     ScheduledSessionCreatedType,
@@ -341,6 +342,32 @@ export const usageReportSchema: z.ZodMiniType<UsageReportType> = z.object({
     ),
     funnels: z.array(z.object({ name: z.string(), steps: z.array(z.object({ label: z.string(), people: z.number() })) })),
     months: z.array(z.object({ month: z.string(), events: z.number(), pageViews: z.number() })),
+})
+
+export const problemReportSchema: z.ZodMiniType<ProblemReportType> = z.object({
+    problems: z.array(
+        z.object({
+            fingerprint: z.string(),
+            source: z.enum(['app', 'api']),
+            kind: z.enum(['error', 'rejection', 'chunk', 'request', 'exception']),
+            name: z.string(),
+            message: z.string(),
+            stack: z.nullable(z.string()),
+            view: z.nullable(z.string()),
+            endpoint: z.nullable(z.string()),
+            status: z.nullable(z.number()),
+            requestId: z.nullable(z.string()),
+            release: z.nullable(z.string()),
+            locale: z.nullable(z.string()),
+            browser: z.nullable(z.string()),
+            occurrences: z.number(),
+            days: z.number(),
+            firstSeenAt: z.string(),
+            lastSeenAt: z.string(),
+        }),
+    ),
+    dailyLimit: z.number(),
+    limitReached: z.boolean(),
 })
 
 const groupActivityNameSchema = z.object({

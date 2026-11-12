@@ -32,7 +32,8 @@ persists. Frontend guards and hidden buttons are UX only.
    sent after the response, so the request does not wait for them (#253).
 6. Errors go through [`ApiErrorFilter`](../backend/src/common/http/api-error.filter.ts),
    which returns `{ statusCode, code, message, requestId }` and never leaks SQL
-   or provider payloads.
+   or provider payloads. An exception it did not expect (a 500) is also kept
+   as a problem report, after the response ([Problem reports](#problem-reports)).
 
 Every provider call is bounded
 ([`provider-timeout.ts`](../backend/src/common/http/provider-timeout.ts)):
@@ -71,6 +72,7 @@ attempt may already have been applied.
 | `modules/common/health/` | `/health` (liveness) and `/health/ready` (database, cache, schema version). |
 | `modules/core/artwork` | `GET /artwork/<gameId>-<hash>.webp` (public, cached for a year) and the copying of artwork when an admin approves or edits a game. `ArtworkDownloader` is its own provider so tests answer without the network. |
 | `modules/core/*` | One module per domain entity: games, tags, translations, owned games, wishlist, reviews, collection activity, game proposals, groups (`UserGroup`; `GET /groups/:groupId/collection` gives everyone's games and approximate worth), memberships, group people, invitations, notifications, meets (sessions), attendees, users. |
+| `modules/core/problems` | Problem reports ([ADR-0028](adr/0028-problem-reports-of-our-own.md)): `POST /problems` (no sign-in, rate-limited), `GET /admin/problems`, the scrubbing (`problem-scrub.ts`), and `recordFromApi` for the error filter. |
 | `modules/features/admin` | `/admin`: the overview (work queues and catalogue counts), the catalogue (list with data-quality filters, one-request game edits with retail prices, artwork uploads), tags and categories (including merge), and game proposals (admins only). |
 | `modules/features/collection` | `/collection/users/:userId/…`: private shelf, wishlist, reviews, activity. |
 | `modules/features/dashboard` | `/dashboard/users/:userId/…`: stats, groups, group creation and membership management. |
@@ -109,6 +111,7 @@ List `AuthGuard` first; the others read `request.user`.
 | `core/services/connectivity.service.ts` | Whether Board Vault can be reached; drives the "can't reach Board Vault" banner ([Slow and failed requests](#slow-and-failed-requests)). |
 | `core/guards/` | `AuthOnlyGuard`, `GuestOnlyGuard`, `AdminGuard`. |
 | `core/interceptors/resilience.interceptor.ts` | Registered first. No request waits forever: reads give up after 12 s and are tried once more after 1 s on no answer, a timeout, or a 502/503/504; writes give up after 20 s and are never tried again. Failures without a usable answer become an `ApiUnavailableError` (`core/utils/apiUnavailable.ts`). |
+| `core/services/problem-report.service.ts`, `core/errors/problem-error-handler.ts` | Problem reports ([Problem reports](#problem-reports)): `ProblemErrorHandler` replaces Angular's `ErrorHandler`, `listenForProblems` catches what happens outside Angular, and `ProblemReportService` sends them. |
 | `core/interceptors/auth.interceptor.ts` | Adds the Clerk token; on 401 signs out and redirects to `/login`. |
 | `pages/` | One folder per route (landing, auth, dashboard, groups, group view, collection, games, play, sessions, settings, errors). |
 | `components/` | Reusable UI: cards, modals, forms, `ui/` primitives (button, icon, dialog). |
@@ -424,6 +427,32 @@ are written without the prefix; the base address adds it.
 
 How to mark text, translate it, and which words to use:
 [i18n.md](i18n.md).
+
+## Problem reports
+
+When something breaks for someone, we hear of it without being told
+([ADR-0028](adr/0028-problem-reports-of-our-own.md), #247):
+
+- **In the app**, `ProblemErrorHandler` (Angular's `ErrorHandler`) and
+  `listenForProblems` (the window's `error` and `unhandledrejection`, scripts
+  from other origins ignored) report errors nobody caught; a failed page chunk
+  is told apart as `chunk`. `resilienceInterceptor` reports a request that,
+  after its retry, timed out or got a 5xx, with the API's `requestId`.
+- `ProblemReportService` sends each with `fetch` and `keepalive`, outside
+  `HttpClient` (no token, no time limit, no banner), with the screen as a route
+  template, the build (`environment.release`, the commit, from
+  `runtime-config.js`) and the language. The same problem goes once a visit,
+  at most 10 a visit, and only from production builds
+  (`PROBLEM_REPORTS_ENABLED`).
+- **In the API**, `ApiErrorFilter` hands unexpected exceptions to
+  `ProblemsService.recordFromApi` through `afterResponse`.
+- The API scrubs every text, keeps the browser as a family only, and adds to
+  one `ProblemReport` row per problem per day
+  ([data-model.md](data-model.md#tables)). Administration → Problems lists the
+  last 30 days.
+
+A handler that shows its own error (a toast) should catch the rejection
+afterwards, so it isn't reported as unhandled.
 
 ## Security context
 

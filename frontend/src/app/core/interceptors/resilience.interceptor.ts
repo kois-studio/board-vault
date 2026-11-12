@@ -10,6 +10,7 @@ import {
 import { inject } from '@angular/core'
 import { catchError, Observable, retry, tap, throwError, timer } from 'rxjs'
 import { ConnectivityService } from '../services/connectivity.service'
+import { ProblemReportService } from '../services/problem-report.service'
 import { ApiUnavailableError } from '../utils/apiUnavailable'
 
 /** A read with no answer after this long gives up (#240). */
@@ -58,6 +59,7 @@ const RETRYABLE_STATUSES = new Set([0, 502, 503, 504])
  */
 export const resilienceInterceptor: HttpInterceptorFn = (req, next) => {
     const connectivity = inject(ConnectivityService)
+    const problems = inject(ProblemReportService)
     const isRead = READ_METHODS.has(req.method) || req.context.get(READ_ONLY)
     const limit = req.context.get(REQUEST_TIMEOUT_MS) ?? (isRead ? READ_TIMEOUT_MS : WRITE_TIMEOUT_MS)
 
@@ -81,9 +83,28 @@ export const resilienceInterceptor: HttpInterceptorFn = (req, next) => {
             next: (event) => {
                 if (event.type === HttpEventType.Response) connectivity.reportAnswered()
             },
-            error: (error: unknown) => reportFailure(connectivity, error),
+            error: (error: unknown) => {
+                reportFailure(connectivity, error)
+                reportProblem(problems, req, error)
+            },
         }),
     )
+}
+
+/**
+ * A request that timed out or got a 5xx, after its retry, is a problem worth knowing about (ADR-0028). No answer at
+ * all (offline, refused) is not: the report could not get through either, and it is the network, not Board Vault.
+ */
+function reportProblem(problems: ProblemReportService, req: HttpRequest<unknown>, error: unknown): void {
+    if (!(error instanceof ApiUnavailableError) || error.kind === 'network') return
+    const body: unknown = error.error
+    const requestId =
+        typeof body === 'object' && body !== null && typeof (body as { requestId?: unknown }).requestId === 'string'
+            ? (body as { requestId: string }).requestId
+            : null
+    const code = typeof body === 'object' && body !== null ? (body as { code?: unknown }).code : undefined
+    const message = error.kind === 'timeout' ? 'No answer in time' : `${error.status}${typeof code === 'string' ? ` ${code}` : ''}`
+    problems.reportRequest({ method: req.method, url: req.url, status: error.status, requestId }, message)
 }
 
 /**

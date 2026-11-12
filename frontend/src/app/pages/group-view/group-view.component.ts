@@ -1134,6 +1134,8 @@ export class GroupViewComponent {
         try {
             await firstValueFrom(this.dataService.leaveGroup(groupId))
             await this.router.navigate(['/dashboard'])
+        } catch {
+            // The data service already said why in a toast; nothing is left unhandled (#247).
         } finally {
             this.isLeavingGroup.set(false)
         }

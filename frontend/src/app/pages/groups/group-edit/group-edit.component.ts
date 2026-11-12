@@ -293,6 +293,8 @@ export class GroupEditComponent {
         try {
             await firstValueFrom(this.dataService.deleteGroup(this.groupData.id))
             await this.router.navigate(['/dashboard'])
+        } catch {
+            // The data service already said why in a toast; nothing is left unhandled (#247).
         } finally {
             this.isDeletingGroup.set(false)
         }

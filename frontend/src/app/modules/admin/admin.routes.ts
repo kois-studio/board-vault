@@ -4,6 +4,7 @@ import { AdminGameEditComponent } from './components/admin-game-edit/admin-game-
 import { AdminGameProposalsComponent } from './components/admin-game-proposals/admin-game-proposals.component'
 import { AdminGamesManageComponent } from './components/admin-games-manage/admin-games-manage.component'
 import { AdminPageComponent } from './components/admin-page/admin-page.component'
+import { AdminProblemsComponent } from './components/admin-problems/admin-problems.component'
 import { AdminProposalReviewComponent } from './components/admin-proposal-review/admin-proposal-review.component'
 import { AdminShellComponent } from './components/admin-shell/admin-shell.component'
 import { AdminTagsManageComponent } from './components/admin-tags-manage/admin-tags-manage.component'
@@ -21,6 +22,7 @@ export const ADMIN_ROUTES: Routes = [
             { path: 'manage-games/:id', component: AdminGameEditComponent },
             { path: 'manage-tags', component: AdminTagsManageComponent },
             { path: 'usage', component: AdminUsageComponent },
+            { path: 'problems', component: AdminProblemsComponent },
         ],
     },
 ]

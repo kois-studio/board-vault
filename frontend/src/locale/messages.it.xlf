@@ -897,6 +897,15 @@
         <target>Impossibile caricare le tue proposte.</target>
       </segment>
     </unit>
+    <unit id="1524243416860725672">
+      <notes>
+        <note category="description">What Board Vault keeps, on the privacy page; the browser example is a browser and a system</note>
+      </notes>
+      <segment state="translated">
+        <source><pc id="0" equivStart="START_TAG_STRONG" equivEnd="CLOSE_TAG_STRONG" type="other" dispStart="&lt;strong&gt;" dispEnd="&lt;/strong&gt;">Problem reports:</pc> when something breaks, the app tells us what failed, on which page, in which version and language, and the kind of browser, such as “Firefox on Windows”. They never say who you are: no account, and email addresses and long numbers are removed. Your IP address only limits how many reports can be sent and is forgotten within minutes. They don&apos;t follow the usage statistics switch, since they say nothing about you. </source>
+        <target><pc id="0" equivStart="START_TAG_STRONG" equivEnd="CLOSE_TAG_STRONG" type="other" dispStart="&lt;strong&gt;" dispEnd="&lt;/strong&gt;">Segnalazioni di problemi:</pc> quando qualcosa si rompe, l’app ci dice cosa non ha funzionato, in quale pagina, in quale versione e lingua, e il tipo di browser, ad esempio “Firefox su Windows”. Non dicono mai chi sei: nessun account, e gli indirizzi email e i numeri lunghi vengono rimossi. Il tuo indirizzo IP serve solo a limitare quante segnalazioni si possono inviare e viene dimenticato entro pochi minuti. Non dipendono dall’interruttore delle statistiche di utilizzo, perché non dicono nulla di te.</target>
+      </segment>
+    </unit>
     <unit id="1524457585440632012">
       <notes>
         <note category="description">Link to a section of the group page</note>
@@ -1433,6 +1442,15 @@
       <segment state="translated">
         <source>Remove the title in <ph id="0" equiv="language" disp="row.languageCode ? languageName(row.languageCode) : &apos;…&apos;"/></source>
         <target>Rimuovi il titolo in <ph id="0" equiv="language" disp="row.languageCode ? languageName(row.languageCode) : &apos;…&apos;"/></target>
+      </segment>
+    </unit>
+    <unit id="1804244816298799090">
+      <notes>
+        <note category="description">Legal bases on the privacy page; GDPR is the EU data protection law</note>
+      </notes>
+      <segment state="translated">
+        <source> Your account and what you add are needed to give you the service you sign up for (GDPR, Article 6(1)(b)). Usage statistics, problem reports, technical records and your emails to us rest on legitimate interests: keeping Board Vault working, safe and getting better, and answering you (Article 6(1)(f)). </source>
+        <target>Il tuo account e ciò che aggiungi servono a darti il servizio a cui ti iscrivi (GDPR, articolo 6, paragrafo 1, lettera b)). Le statistiche di utilizzo, le segnalazioni di problemi, i registri tecnici e le tue email a noi si basano su legittimi interessi: mantenere Board Vault funzionante, sicuro e in miglioramento, e risponderti (articolo 6, paragrafo 1, lettera f)).</target>
       </segment>
     </unit>
     <unit id="1804981326505301788">
@@ -5139,15 +5157,6 @@
       <segment state="translated">
         <source>You’re going</source>
         <target>Ci sei</target>
-      </segment>
-    </unit>
-    <unit id="3636673508955703154">
-      <notes>
-        <note category="description">Legal bases on the privacy page; GDPR is the EU data protection law</note>
-      </notes>
-      <segment state="translated">
-        <source> Your account and what you add are needed to give you the service you sign up for (GDPR, Article 6(1)(b)). Usage statistics, technical records and your emails to us rest on legitimate interests: keeping Board Vault working, safe and getting better, and answering you (Article 6(1)(f)). </source>
-        <target> Il tuo account e ciò che aggiungi servono a darti il servizio a cui ti iscrivi (GDPR, articolo 6, paragrafo 1, lettera b)). Le statistiche di utilizzo, i registri tecnici e le tue email a noi si basano su legittimi interessi: mantenere Board Vault funzionante, sicuro e in miglioramento, e risponderti (articolo 6, paragrafo 1, lettera f)). </target>
       </segment>
     </unit>
     <unit id="3642217425045834854">
@@ -16324,6 +16333,15 @@
       <segment state="translated">
         <source><ph id="0" equiv="person" disp="actor"/> removed <ph id="1" equiv="games" disp="removedList"/> from their shelf.</source>
         <target><ph id="0" equiv="person" disp="actor"/> ha tolto <ph id="1" equiv="games" disp="removedList"/> dal suo scaffale.</target>
+      </segment>
+    </unit>
+    <unit id="9185232496731511896">
+      <notes>
+        <note category="description">How long data is kept, on the privacy page</note>
+      </notes>
+      <segment state="translated">
+        <source><pc id="0" equivStart="START_TAG_STRONG" equivEnd="CLOSE_TAG_STRONG" type="other" dispStart="&lt;strong&gt;" dispEnd="&lt;/strong&gt;">Problem reports</pc> are deleted after 30 days. </source>
+        <target><pc id="0" equivStart="START_TAG_STRONG" equivEnd="CLOSE_TAG_STRONG" type="other" dispStart="&lt;strong&gt;" dispEnd="&lt;/strong&gt;">Le segnalazioni di problemi</pc> vengono eliminate dopo 30 giorni.</target>
       </segment>
     </unit>
     <unit id="9186249481537655672">

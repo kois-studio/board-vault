@@ -49,6 +49,7 @@ import {
     meetsAroundSchema,
     mergeTagResultSchema,
     privacySettingsSchema,
+    problemReportSchema,
     publicUserSchema,
     recommendationSignalsSchema,
     recommendationsSchema,
@@ -128,6 +129,7 @@ import type {
     NotificationType,
     PrivacySettingsStateType,
     PrivacySettingsType,
+    ProblemReportType,
     PublicUserType,
     RecommendationSignalsType,
     RecommendationsType,
@@ -702,6 +704,11 @@ export class Api {
         return this.http
             .put<PrivacySettingsStateType>(`${this.url}/settings/privacy`, settings)
             .pipe(map((response) => privacySettingsSchema.parse(response)))
+    }
+
+    /** Problems the app and the API ran into in the last 30 days (ADR-0028, admins only). */
+    getAdminProblems() {
+        return this.http.get<ProblemReportType>(`${this.url}/admin/problems`).pipe(map((response) => problemReportSchema.parse(response)))
     }
 
     getAdminUsage() {

@@ -184,6 +184,23 @@ the same few queries however many groups, people and games there are.
   The frontend no longer reads them. They are deprecated and are removed in a
   later release.
 
+## Problem reports
+
+[ADR-0028](adr/0028-problem-reports-of-our-own.md):
+
+- `POST /problems` takes a problem the app ran into: `kind` (`error`,
+  `rejection`, `chunk` or `request`), `name`, `message`, and optionally
+  `stack`, `view` (a route template), `release`, `locale`, and for a request
+  `method`, `path`, `status` and `requestId`. It needs no sign-in, answers
+  `204`, and is limited to 30 per address per 10 minutes (`429`). The API
+  scrubs the text, replaces ids in `path` with `:id`, and keeps the browser
+  only as a family, major version and system. Unknown fields are refused, so
+  a new field ships in the API first.
+- `GET /admin/problems` (admins only) answers the last 30 days: `problems`,
+  one per problem with `occurrences` and `days` added up and its latest
+  sample, most recent first; `dailyLimit`; and `limitReached`, whether a day
+  hit the limit of distinct problems.
+
 ## Browser caching
 
 Answers are not cached by default. A route whose answer changes rarely and is

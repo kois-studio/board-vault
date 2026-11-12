@@ -27,6 +27,12 @@
                 <strong>Usage statistics:</strong> which pages you open and which features you use, under a pseudonym instead of your name, never what you write. You
                 can turn them off in <a class="font-medium text-bv-primary underline" routerLink="/settings/privacy">Settings → Privacy</a>.
             </li>
+            <li i18n="What Board Vault keeps, on the privacy page; the browser example is a browser and a system">
+                <strong>Problem reports:</strong> when something breaks, the app tells us what failed, on which page, in which version and language, and the
+                kind of browser, such as “Firefox on Windows”. They never say who you are: no account, and email addresses and long numbers are removed. Your
+                IP address only limits how many reports can be sent and is forgotten within minutes. They don't follow the usage statistics switch, since they
+                say nothing about you.
+            </li>
             <li i18n="What Board Vault keeps, on the privacy page; Vercel is the hosting company">
                 <strong>Technical records:</strong> for each request, the server notes the page or route asked for, whether it worked, and your account number. When
                 you are not signed in, your IP address is used to limit repeated requests and is forgotten within minutes.
@@ -40,8 +46,9 @@
             avatar and everything you add are optional.
         </p>
         <p class="mt-4 leading-7" i18n="Legal bases on the privacy page; GDPR is the EU data protection law">
-            Your account and what you add are needed to give you the service you sign up for (GDPR, Article 6(1)(b)). Usage statistics, technical records and your
-            emails to us rest on legitimate interests: keeping Board Vault working, safe and getting better, and answering you (Article 6(1)(f)).
+            Your account and what you add are needed to give you the service you sign up for (GDPR, Article 6(1)(b)). Usage statistics, problem reports,
+            technical records and your emails to us rest on legitimate interests: keeping Board Vault working, safe and getting better, and answering you
+            (Article 6(1)(f)).
         </p>
         <p class="mt-4 leading-7" i18n="On the privacy page">Board Vault shows no ads, sells no data and does not track you on other sites.</p>
     </section>
@@ -116,6 +123,9 @@
             </li>
             <li i18n="How long data is kept, on the privacy page">
                 <strong>Individual usage events</strong> are deleted after 30 days. Only daily totals with no account attached are kept.
+            </li>
+            <li i18n="How long data is kept, on the privacy page">
+                <strong>Problem reports</strong> are deleted after 30 days.
             </li>
             <li i18n="How long data is kept, on the privacy page">
                 <strong>Technical records</strong> last about an hour, and the short-lived copies up to a day.

@@ -56,6 +56,7 @@ export class SettingsPageComponent {
                     { label: 'Games', icon: 'gamepad', link: '/admin/manage-games' },
                     { label: 'Tags', icon: 'tag', link: '/admin/manage-tags' },
                     { label: 'Usage', icon: 'graph-up', link: '/admin/usage' },
+                    { label: 'Problems', icon: 'triangle-alert', link: '/admin/problems' },
                 ],
             },
         ]

@@ -5,6 +5,7 @@ import { ApiExcludeController } from '@nestjs/swagger'
 
 import { structuredLog } from '../../../common/logging/structured-log.js'
 import { DatabaseService } from '../../common/database/database.service.js'
+import { ProblemsService } from '../problems/problems.service.js'
 
 import { UsageService } from './usage.service.js'
 
@@ -18,8 +19,8 @@ function sameSecret(given: string, expected: string): boolean {
 /**
  * The daily job, called by Vercel Cron (`backend/vercel.json`) with `Authorization: Bearer
  * $CRON_SECRET`. Without `CRON_SECRET` the route does not exist. It rolls up usage events and
- * deletes Idempotency-Key records older than 24 hours (#246) and takeover snapshots past their
- * 30-day undo window (ADR-0027).
+ * deletes Idempotency-Key records older than 24 hours (#246), takeover snapshots past their
+ * 30-day undo window (ADR-0027) and problem reports older than 30 days (ADR-0028).
  */
 @ApiExcludeController()
 @Controller('internal')
@@ -29,6 +30,7 @@ export class MaintenanceController {
     constructor(
         private readonly usageService: UsageService,
         private readonly databaseService: DatabaseService,
+        private readonly problemsService: ProblemsService,
     ) {}
 
     @Get('/daily-maintenance')
@@ -42,9 +44,11 @@ export class MaintenanceController {
         const expiredIdempotencyKeys = (await this.databaseService.idempotency.deleteExpired()).rowsAffected
 
         const expiredTakeovers = (await this.databaseService.takeovers.deleteExpired()).rowsAffected
+        const expiredProblems = await this.problemsService.deleteExpired()
 
         this.LOGGER.log(structuredLog('idempotency.expired_keys_deleted', { expiredIdempotencyKeys }))
         this.LOGGER.log(structuredLog('takeover.expired_snapshots_deleted', { expiredTakeovers }))
-        return { usage, expiredIdempotencyKeys, expiredTakeovers }
+        this.LOGGER.log(structuredLog('problem.expired_reports_deleted', { expiredProblems }))
+        return { usage, expiredIdempotencyKeys, expiredTakeovers, expiredProblems }
     }
 }

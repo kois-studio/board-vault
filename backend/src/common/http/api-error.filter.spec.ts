@@ -23,6 +23,20 @@ function createHost(exception: unknown) {
 }
 
 describe('ApiErrorFilter', () => {
+    it('keeps an unexpected exception as a problem report, but not an expected answer (ADR-0028)', async () => {
+        const recordFromApi = vi.fn().mockResolvedValue(undefined)
+        const filter = new ApiErrorFilter({ recordFromApi })
+        const crash = new TypeError('boom')
+        const unexpected = createHost(crash)
+
+        filter.catch(crash, unexpected.host as never)
+        filter.catch(new BadRequestException('no'), createHost(new BadRequestException('no')).host as never)
+        await Promise.resolve()
+
+        expect(recordFromApi).toHaveBeenCalledTimes(1)
+        expect(recordFromApi).toHaveBeenCalledWith(crash, { method: 'POST', route: undefined, requestId: expect.any(String) })
+    })
+
     it('never lets the browser keep an error answer (#254)', () => {
         const { exception, host, response } = createHost(new Error('failed while sending a cacheable answer'))
 
