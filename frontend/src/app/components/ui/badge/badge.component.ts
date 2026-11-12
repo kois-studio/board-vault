@@ -28,6 +28,8 @@ export class BadgeComponent {
     readonly showIndicator = input(false)
     readonly tone = input<Tone>('primary')
     readonly text = input.required<string | number>()
+    /** The count is still loading (#261): a pulsing pill in the badge's size; `text` is read by screen readers. */
+    readonly loading = input(false)
 
     protected readonly badgeClass = computed(() => BADGE[this.tone()])
     protected readonly indicatorClass = computed(() => INDICATOR[this.tone()])

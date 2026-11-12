@@ -77,7 +77,10 @@
                             <button appButton variant="secondary" type="button" class="mt-3" icon="arrow-repeat" [attr.aria-busy]="peopleLoading() ? 'true' : null" (click)="retryGroupPeople()" data-testid="people-retry" i18n="Button that loads a list again after an error">Retry</button>
                         </div>
                     } @else if (peopleLoading()) {
-                        <p class="mt-3 text-sm text-bv-text-muted" role="status" data-testid="people-loading" i18n="Plan form while the group's people load">Loading the group’s people…</p>
+                        <div class="mt-3" role="status" data-testid="people-loading">
+                            <span class="sr-only" i18n="Plan form while the group's people load">Loading the group’s people…</span>
+                            <app-skeleton-people-grid [count]="expectedPeople()" />
+                        </div>
                     } @else if (people().length === 0) {
                         <p class="mt-3 text-sm text-bv-text-muted" i18n="Plan form for a group without people">Nobody in this group yet.</p>
                     } @else {

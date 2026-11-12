@@ -6,6 +6,7 @@ import { firstValueFrom } from 'rxjs'
 import { Api } from '../../api/api'
 import type { GameCompleteType, GroupPersonWorkspaceType, PublicUserType, ScheduleSessionRequest } from '../../api/api.types'
 import { ImageProfileComponent } from '../../components/image-profile/image-profile.component'
+import { SkeletonPeopleGridComponent } from '../../components/skeletons/skeleton-people-grid/skeleton-people-grid.component'
 import { ToastService } from '../../components/toast/toast.service'
 import { BackLinkComponent } from '../../components/ui/back-link/back-link.component'
 import { ButtonComponent } from '../../components/ui/button/button.component'
@@ -61,6 +62,7 @@ function initialsAvatar(name: string): PublicUserType['avatar'] {
 
 @Component({
     imports: [
+        SkeletonPeopleGridComponent,
         CoverAltPipe,
         PlayersPipe,
         ReactiveFormsModule,
@@ -127,6 +129,12 @@ export class MeetNewComponent {
     public readonly groupData = computed(() => {
         if (!this.dataService.currentUser()) return null
         return this.dataService.userGroups().find((group) => group.id === this.groupId) ?? null
+    })
+
+    /** How many people the group says it has, for the tiles held while its people load (#261). */
+    public readonly expectedPeople = computed(() => {
+        const group = this.groupData()
+        return group ? group.members.length + (group.placeholders?.length ?? 0) : 3
     })
 
     /** Groups with group people invite those; older groups invite member accounts. */

@@ -377,6 +377,8 @@ describe('MeetNewComponent social handoff', () => {
 
             expect(byTestId(fixture, 'people-loading')?.getAttribute('role')).toBe('status')
             expect(byTestId(fixture, 'people-grid')).toBeNull()
+            // #261: the people in their tiles, one per person the group already lists.
+            expect(byTestId(fixture, 'people-grid-skeleton')?.querySelectorAll('.rounded-lg')).toHaveLength(component.expectedPeople())
             expect(component.canCreate()).toBe(false)
 
             slowPeople.next({ people: [organizerPerson, guest] })

@@ -21,7 +21,18 @@
                 <button type="button" class="rounded text-sm font-medium text-bv-text-muted underline underline-offset-2 hover:text-bv-text" (click)="isSchedulingASession.set(false)" i18n="Button that closes the group choice when planning a game night">Cancel</button>
             </div>
             @if (isLoadingGroups()) {
-                <p class="mt-4 text-sm text-bv-text-muted" role="status" i18n="Group choice when planning a game night, while the groups load">Loading groups…</p>
+                <div class="mt-4" role="status">
+                    <span class="sr-only" i18n="Group choice when planning a game night, while the groups load">Loading groups…</span>
+                    <!-- Two groups in the size of their buttons (#261). -->
+                    <div class="grid grid-cols-1 gap-3 motion-safe:animate-pulse sm:grid-cols-2" aria-hidden="true" data-testid="plan-groups-skeleton">
+                        @for (item of [1, 2]; track item) {
+                            <div class="rounded-lg border border-bv-border p-4">
+                                <div class="flex h-6 items-center"><div class="h-4 w-32 rounded bg-bv-border"></div></div>
+                                <div class="flex h-5 items-center"><div class="h-3 w-28 rounded bg-bv-border"></div></div>
+                            </div>
+                        }
+                    </div>
+                </div>
             } @else if (groupsError()) {
                 <div class="mt-4 text-sm text-bv-text-muted" role="alert">
                     <p i18n="Group choice when planning a game night, when the groups could not load">Groups could not be loaded.</p>
@@ -52,7 +63,24 @@
     }
 
     @if (isLoadingMeets()) {
-        <div class="py-8 text-center text-bv-text-muted" role="status" aria-live="polite" i18n="Upcoming page while it loads">Loading upcoming sessions…</div>
+        <div role="status">
+            <span class="sr-only" i18n="Upcoming page while it loads">Loading upcoming sessions…</span>
+            <!-- A section of two nights in the size of their rows (#261). -->
+            <div class="motion-safe:animate-pulse" aria-hidden="true" data-testid="upcoming-skeleton">
+                <div class="mb-3 flex h-7 items-center"><div class="h-4 w-28 rounded bg-bv-border"></div></div>
+                <ul class="space-y-3">
+                    @for (item of [1, 2]; track item) {
+                        <li class="flex items-center gap-4 rounded-lg border border-bv-border bg-bv-surface p-4 sm:gap-5">
+                            <div class="h-14 w-14 shrink-0 rounded-lg bg-bv-surface-2"></div>
+                            <div class="min-w-0 flex-1">
+                                <div class="flex h-6 items-center"><div class="h-4 w-40 max-w-full rounded bg-bv-border"></div></div>
+                                <div class="flex h-5 items-center"><div class="h-3 w-56 max-w-full rounded bg-bv-border"></div></div>
+                            </div>
+                        </li>
+                    }
+                </ul>
+            </div>
+        </div>
     } @else if (meetsError()) {
         <div class="py-8 text-center text-bv-text-muted" role="alert">
             <p i18n="Upcoming page when the game nights could not load">Upcoming sessions could not be loaded.</p>

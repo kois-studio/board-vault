@@ -32,15 +32,21 @@ export class NextNightCardComponent {
     /** "Azul, Wingspan", or empty. */
     readonly bringing = input('')
 
-    readonly summary = signal<NightSummary | null>(null)
+    /** Who is going: undefined while it loads, null when it could not load (#261). */
+    readonly summary = signal<NightSummary | null | undefined>(undefined)
 
     constructor() {
         // Answering here refreshes the night list, which hands in a new night: read it again for fresh counts.
         effect(() => {
             const id = this.night().id
+            // Another night has other counts; the same night keeps its counts while they refresh.
+            if (id !== this.loadedId) this.summary.set(undefined)
+            this.loadedId = id
             void this.load(id)
         })
     }
+
+    private loadedId: number | null = null
 
     private async load(id: number): Promise<void> {
         try {

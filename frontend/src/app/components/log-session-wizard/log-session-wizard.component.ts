@@ -30,6 +30,7 @@ import { gameTitle } from '../../core/utils/gameTitle'
 import { canTakePart } from '../../core/utils/groupPeople'
 import { SubmissionKey } from '../../core/utils/submissionKey'
 import { ImageProfileComponent } from '../image-profile/image-profile.component'
+import { SkeletonPeopleGridComponent } from '../skeletons/skeleton-people-grid/skeleton-people-grid.component'
 import { ToastService } from '../toast/toast.service'
 import { ImageBackgroundComponent } from '../ui/image-background/image-background.component'
 
@@ -90,6 +91,7 @@ function todayInputValue(): string {
     selector: 'app-log-session-wizard',
     templateUrl: './log-session-wizard.component.html',
     imports: [
+        SkeletonPeopleGridComponent,
         PlayersPipe,
         CommonModule,
         ReactiveFormsModule,
@@ -207,6 +209,11 @@ export class LogSessionWizardComponent {
     public groupPersonCatalog = signal<Array<GameCompleteType>>([])
     public usesGroupPeople = signal(false)
     /** The group's people (and the games only they own) are on their way; who came can't be settled yet. */
+    /** How many people the chosen group says it has, for the tiles held while its people load (#261). */
+    public readonly expectedPeople = computed(() => {
+        const group = this.selectedGroup()
+        return group ? group.members.length + (group.placeholders?.length ?? 0) : 3
+    })
     public readonly peopleLoading = signal(false)
     /** The group's people couldn't be loaded, so people without an account would be missing from the list. */
     public readonly peopleError = signal(false)

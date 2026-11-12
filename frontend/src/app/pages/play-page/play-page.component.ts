@@ -44,7 +44,8 @@ export class PlayPageComponent {
             return this.loadingLabel
         const nights = this.dataService.userHistorySummary()?.nights
         if (this.userHistoryError() || this.dataService.userHistorySummaryState().status === 'error') return this.unavailableLabel
-        return nights === undefined ? this.loadingLabel : this.sessionsLabel(nights)
+        // Loaded but with no summary: say it is unavailable rather than pulse forever.
+        return nights === undefined ? this.unavailableLabel : this.sessionsLabel(nights)
     })
     public readonly lastSession = computed(
         () =>

@@ -682,6 +682,9 @@ describe('LogSessionWizardComponent games step', () => {
             fixture.detectChanges()
 
             expect(byTestId('people-loading')?.getAttribute('role')).toBe('status')
+            // #261: tiles in place of the members alone, which would grow and reorder when the people come.
+            expect(byTestId('people-grid-skeleton')).not.toBeNull()
+            expect(byTestId('people-grid')).toBeNull()
             expect(component.canProceedToNextStep()).toBe(false)
 
             slowPeople.next({ people })

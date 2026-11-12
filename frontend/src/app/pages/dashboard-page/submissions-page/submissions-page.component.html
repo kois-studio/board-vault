@@ -7,21 +7,40 @@
     <!-- Stats Section -->
     <div class="mb-8">
         <h2 class="text-lg font-semibold text-bv-text mb-4" i18n="Heading of the numbers about your game proposals">Your Submission Stats</h2>
+        @if (proposalStatsLoading()) {
+            <span class="sr-only" role="status" i18n="While the numbers about your game proposals load">Loading your submission stats…</span>
+        }
         <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
             <div class="bg-bv-surface p-4 rounded-lg border border-bv-border">
-                <div class="text-2xl font-bold text-bv-primary">{{ proposalStatsLoading() || proposalStatsError() ? '—' : userProposalStats$().totalProposals }}</div>
+                @if (proposalStatsLoading()) {
+                    <div class="flex h-8 items-center" aria-hidden="true" data-testid="stat-skeleton"><span class="h-6 w-10 rounded bg-bv-surface-2 motion-safe:animate-pulse"></span></div>
+                } @else {
+                    <div class="text-2xl font-bold text-bv-primary">{{ proposalStatsError() ? '—' : userProposalStats$().totalProposals }}</div>
+                }
                 <div class="text-sm text-bv-text-muted" i18n="Label under the number of game proposals you sent">Total Proposals</div>
             </div>
             <div class="bg-bv-surface p-4 rounded-lg border border-bv-border">
-                <div class="text-2xl font-bold text-bv-success">{{ proposalStatsLoading() || proposalStatsError() ? '—' : userProposalStats$().approvedProposals }}</div>
+                @if (proposalStatsLoading()) {
+                    <div class="flex h-8 items-center" aria-hidden="true" data-testid="stat-skeleton"><span class="h-6 w-10 rounded bg-bv-surface-2 motion-safe:animate-pulse"></span></div>
+                } @else {
+                    <div class="text-2xl font-bold text-bv-success">{{ proposalStatsError() ? '—' : userProposalStats$().approvedProposals }}</div>
+                }
                 <div class="text-sm text-bv-text-muted" i18n="proposals approved|Label under the number of your game proposals that were approved">Approved</div>
             </div>
             <div class="bg-bv-surface p-4 rounded-lg border border-bv-border">
-                <div class="text-2xl font-bold text-bv-danger">{{ proposalStatsLoading() || proposalStatsError() ? '—' : userProposalStats$().rejectedProposals }}</div>
+                @if (proposalStatsLoading()) {
+                    <div class="flex h-8 items-center" aria-hidden="true" data-testid="stat-skeleton"><span class="h-6 w-10 rounded bg-bv-surface-2 motion-safe:animate-pulse"></span></div>
+                } @else {
+                    <div class="text-2xl font-bold text-bv-danger">{{ proposalStatsError() ? '—' : userProposalStats$().rejectedProposals }}</div>
+                }
                 <div class="text-sm text-bv-text-muted" i18n="proposals rejected|Label under the number of your game proposals that were rejected">Rejected</div>
             </div>
             <div class="bg-bv-surface p-4 rounded-lg border border-bv-border">
-                <div class="text-2xl font-bold text-bv-primary">{{ proposalStatsLoading() || proposalStatsError() ? '—' : userProposalStats$().reputationScore }}</div>
+                @if (proposalStatsLoading()) {
+                    <div class="flex h-8 items-center" aria-hidden="true" data-testid="stat-skeleton"><span class="h-6 w-10 rounded bg-bv-surface-2 motion-safe:animate-pulse"></span></div>
+                } @else {
+                    <div class="text-2xl font-bold text-bv-primary">{{ proposalStatsError() ? '—' : userProposalStats$().reputationScore }}</div>
+                }
                 <div class="text-sm text-bv-text-muted" i18n="Label under your score as someone who proposes games">Reputation Score</div>
             </div>
         </div>
@@ -38,7 +57,22 @@
     <div>
         <h2 class="text-lg font-semibold text-bv-text mb-4" i18n="Heading of the list of your game proposals">Your Game Proposals</h2>
         @if (proposalsLoading()) {
-            <div class="py-12 text-center text-bv-text-muted" role="status" i18n="While the list of your game proposals loads">Loading your proposals…</div>
+            <div role="status">
+                <span class="sr-only" i18n="While the list of your game proposals loads">Loading your proposals…</span>
+                <!-- Two proposals in the shape of their cards (#261). -->
+                <div class="space-y-4 motion-safe:animate-pulse" aria-hidden="true" data-testid="proposals-skeleton">
+                    @for (item of [1, 2]; track item) {
+                        <div class="rounded-lg border border-bv-border bg-bv-surface p-6">
+                            <div class="mb-2 flex h-7 items-center gap-3"><div class="h-5 w-40 rounded bg-bv-border"></div><div class="h-6 w-20 rounded-full bg-bv-surface-2"></div></div>
+                            <div class="mb-4 grid grid-cols-1 gap-4 md:grid-cols-2">
+                                <div class="flex h-5 items-center"><div class="h-3 w-32 rounded bg-bv-border"></div></div>
+                                <div class="flex h-5 items-center"><div class="h-3 w-24 rounded bg-bv-border"></div></div>
+                            </div>
+                            <div class="flex h-5 items-center"><div class="h-3 w-36 rounded bg-bv-border"></div></div>
+                        </div>
+                    }
+                </div>
+            </div>
         } @else if (!proposalsError() && userProposals$().length === 0) {
             <div class="text-center py-12">
                 <div class="text-bv-text-muted mb-4">

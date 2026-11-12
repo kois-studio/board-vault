@@ -451,4 +451,52 @@ describe('DashboardPageComponent (Home)', () => {
             })
         }
     })
+
+    // #261: Home shows once your groups, invitations and game nights are known, so no block arrives later and pushes it down.
+    describe('while it loads', () => {
+        const withGroup = () => ({ userGroups: signal([group(1, 'Friday Night')]), userMeets: signal([meet(10, 1, 2)]) })
+
+        for (const list of ['userGroups', 'userInvitations', 'userMeets'] as const) {
+            it(`holds the page in its shape while ${list} load for the first time`, async () => {
+                const fixture = await renderHome(withGroup(), { [list]: 'loading' })
+                const element = fixture.nativeElement as HTMLElement
+
+                expect(element.querySelector('[data-testid="home-skeleton"]')).not.toBeNull()
+                expect(element.querySelectorAll('[data-testid="group-card-skeleton"]')).toHaveLength(2)
+                expect(element.querySelector('[data-testid="home-actions-skeleton"]')).not.toBeNull()
+                expect(text(element)).toContain('Loading your groups')
+                expect(text(element)).not.toContain('Next game night')
+                expect(text(element)).not.toContain('Plan a game night')
+                expect(text(element)).not.toContain('Create your first group')
+            })
+        }
+
+        it('keeps the page while a list refreshes', async () => {
+            const fixture = await renderHome(withGroup(), {
+                userGroups: 'refreshing',
+                userInvitations: 'refreshing',
+                userMeets: 'refreshing',
+            })
+            const element = fixture.nativeElement as HTMLElement
+
+            expect(element.querySelector('[data-testid="home-skeleton"]')).toBeNull()
+            expect(text(element)).toContain('Friday Night')
+            expect(text(element)).toContain('Next game night')
+        })
+
+        it('keeps a new account on its first steps while its groups refresh', async () => {
+            const fixture = await renderHome({}, { userGroups: 'refreshing' })
+
+            expect(text(fixture.nativeElement)).toContain('Create your first group')
+        })
+
+        it('shows the page with the invitations error once they fail', async () => {
+            const fixture = await renderHome(withGroup(), { userInvitations: 'error' })
+            const element = fixture.nativeElement as HTMLElement
+
+            expect(element.querySelector('[data-testid="home-skeleton"]')).toBeNull()
+            expect(text(element)).toContain('Invitations are temporarily unavailable')
+            expect(text(element)).toContain('Friday Night')
+        })
+    })
 })

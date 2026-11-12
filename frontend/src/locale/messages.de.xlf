@@ -6099,6 +6099,15 @@
         <target>Die Ergebnisse konnten nicht gespeichert werden. Deine Änderungen sind noch im Formular; versuch es noch einmal.</target>
       </segment>
     </unit>
+    <unit id="4053516146953953907">
+      <notes>
+        <note category="description">Read by screen readers in the Privacy settings while your usage statistics choice loads</note>
+      </notes>
+      <segment state="translated">
+        <source>Loading your choice…</source>
+        <target>Deine Auswahl wird geladen…</target>
+      </segment>
+    </unit>
     <unit id="4053701949944299149">
       <notes>
         <note category="description">Whether a person came to a game night</note>
@@ -9247,15 +9256,6 @@
       <segment state="translated">
         <source>Board Vault works around a group: the people you play with and the games you all own.</source>
         <target>Board Vault dreht sich um eine Gruppe: die Leute, mit denen du spielst, und die Spiele, die ihr besitzt.</target>
-      </segment>
-    </unit>
-    <unit id="5683597377302812381">
-      <notes>
-        <note category="description">Name of the placeholder on Home while game nights load</note>
-      </notes>
-      <segment state="translated">
-        <source>Loading game nights</source>
-        <target>Spieleabende werden geladen</target>
       </segment>
     </unit>
     <unit id="5704826947758383316">
@@ -13707,6 +13707,15 @@
       <segment state="translated">
         <source><ph id="0" equiv="INTERPOLATION" disp="{{ user.username }}"/> · Only you see this page</source>
         <target><ph id="0" equiv="INTERPOLATION" disp="{{ user.username }}"/> · Nur du siehst diese Seite</target>
+      </segment>
+    </unit>
+    <unit id="79023103072360058">
+      <notes>
+        <note category="description">While the numbers about your game proposals load</note>
+      </notes>
+      <segment state="translated">
+        <source>Loading your submission stats…</source>
+        <target>Statistiken deiner Vorschläge werden geladen…</target>
       </segment>
     </unit>
     <unit id="7903843199053930">

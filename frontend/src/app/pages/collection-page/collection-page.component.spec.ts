@@ -71,6 +71,9 @@ describe('CollectionPageComponent', () => {
         const cards = Array.from((fixture.nativeElement as HTMLElement).querySelectorAll('app-card-section'))
 
         expect(cards[0]?.textContent).toContain('Loading…')
+        // #261: a pill in the badge's size, the label read by screen readers.
+        expect(cards[0]?.querySelector('[data-testid="badge-skeleton"]')).not.toBeNull()
+        expect(cards[2]?.querySelector('[data-testid="badge-skeleton"]')).toBeNull()
         expect(cards[0]?.textContent).not.toContain('0 games')
         expect(cards[2]?.textContent).toContain('Unavailable')
         expect(cards[2]?.textContent).not.toMatch(/\d+ reviews?/)

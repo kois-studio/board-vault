@@ -1,8 +1,9 @@
 @if (isLoadingGameData()) {
-  <p class="flex min-h-[50vh] flex-col items-center justify-center gap-x-2 text-bv-text-muted">
-    <app-spinner size="large" />
-    <ng-container i18n="While a game page loads">Loading game data…</ng-container>
-  </p>
+  <!-- The page in its shape while it loads (#261), not a spinner, so nothing moves when it comes. -->
+  <div role="status" aria-busy="true">
+    <span class="sr-only" i18n="While a game page loads">Loading game data…</span>
+    <app-skeleton-game-page />
+  </div>
 } @else if (gameLoadError()) {
   <div class="flex min-h-[50vh] flex-col items-center justify-center gap-3 px-4 text-center text-secondary" role="alert">
     <h1 class="text-xl font-semibold" i18n="Error on a game page">Game data could not be loaded.</h1>

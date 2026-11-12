@@ -1,6 +1,7 @@
 import { signal } from '@angular/core'
 import { TestBed } from '@angular/core/testing'
 import { ActivatedRoute, convertToParamMap, provideRouter, Router } from '@angular/router'
+import type { ResourceStatus } from '../../../core/async/resource-state'
 import { withStates } from '../../../core/async/resource-state.testing'
 import { DataService } from '../../../core/services/data.service'
 import { UpcomingSessionsPageComponent } from './upcoming-sessions-page.component'
@@ -20,7 +21,12 @@ const sundayClub = { ...fridayCrew, id: 8, name: 'Sunday club' }
 const meet = (id: number, status: string, meetDate: string) => ({ id, groupId: 7, status, meetDate, timezone: 'UTC', notes: null })
 
 describe('UpcomingSessionsPageComponent', () => {
-    const setup = async ({ groups = [fridayCrew, sundayClub], meets = [] as Array<object>, query = {} } = {}) => {
+    const setup = async ({
+        groups = [fridayCrew, sundayClub],
+        meets = [] as Array<object>,
+        query = {},
+        statuses = {} as Record<string, ResourceStatus>,
+    } = {}) => {
         const dataService = {
             userGroups: signal(groups),
             userMeets: signal(meets),
@@ -33,7 +39,7 @@ describe('UpcomingSessionsPageComponent', () => {
             providers: [
                 // Before the ActivatedRoute override, which provideRouter would otherwise replace.
                 provideRouter([]),
-                { provide: DataService, useValue: withStates(dataService) },
+                { provide: DataService, useValue: withStates(dataService, statuses) },
                 { provide: ActivatedRoute, useValue: { snapshot: { queryParamMap: convertToParamMap(query) } } },
             ],
         }).compileComponents()
@@ -83,5 +89,34 @@ describe('UpcomingSessionsPageComponent', () => {
 
         expect(component.isSchedulingASession()).toBe(true)
         expect(element.textContent).toContain('Which group is it for?')
+    })
+
+    // #261: the nights in the shape of their rows on the first load, and kept while they refresh.
+    it('holds the shape of the nights while they load for the first time', async () => {
+        const { element } = await setup({ statuses: { userMeets: 'loading' } })
+
+        expect(element.querySelector('[data-testid="upcoming-skeleton"]')).not.toBeNull()
+        expect(element.querySelector('[role="status"]')?.textContent).toContain('Loading upcoming sessions…')
+        expect(element.textContent).not.toContain('No game nights planned')
+    })
+
+    it('keeps the nights while they refresh', async () => {
+        const { element } = await setup({
+            meets: [
+                {
+                    id: 3,
+                    groupId: 7,
+                    meetDate: new Date(Date.now() + 86_400_000).toISOString(),
+                    status: 'scheduled',
+                    timezone: 'Europe/Madrid',
+                    notes: null,
+                    myRsvpStatus: null,
+                },
+            ],
+            statuses: { userMeets: 'refreshing' },
+        })
+
+        expect(element.querySelector('[data-testid="upcoming-skeleton"]')).toBeNull()
+        expect(element.querySelector('a[href="/sessions/3"]')).not.toBeNull()
     })
 })

@@ -1,7 +1,7 @@
 import { signal } from '@angular/core'
 import { ComponentFixture, TestBed } from '@angular/core/testing'
 import { provideRouter } from '@angular/router'
-import { of, throwError } from 'rxjs'
+import { of, Subject, throwError } from 'rxjs'
 import { Api } from '../../api/api'
 import type { AccountMeetType, GameCompleteType } from '../../api/api.types'
 import { DataService } from '../../core/services/data.service'
@@ -106,5 +106,43 @@ describe('NextNightCardComponent', () => {
         expect(element.textContent).toContain('Friday crew')
         expect(element.textContent).not.toContain('going ·')
         expect(element.querySelector('ul[aria-label="Shortlist"]')).toBeNull()
+    })
+
+    it('holds the place of who is going while it loads, then says it (#261)', async () => {
+        const answer = new Subject<typeof details>()
+        getSessionDetailsById.mockReturnValue(answer)
+        const element = await render()
+
+        expect(element.querySelector('[data-testid="night-counts-skeleton"]')).not.toBeNull()
+        expect(text(element)).not.toContain('2 going')
+
+        answer.next(details)
+        answer.complete()
+        await fixture.whenStable()
+        fixture.detectChanges()
+        expect(element.querySelector('[data-testid="night-counts-skeleton"]')).toBeNull()
+        expect(text(element)).toContain('2 going')
+    })
+
+    it('drops the placeholder when who is going cannot be read (#261)', async () => {
+        getSessionDetailsById.mockReturnValue(throwError(() => new Error('offline')))
+        const element = await render()
+
+        expect(element.querySelector('[data-testid="night-counts-skeleton"]')).toBeNull()
+    })
+
+    it('keeps the counts while the same night is read again, and holds their place for another night (#261)', async () => {
+        const element = await render()
+        const again = new Subject<typeof details>()
+        getSessionDetailsById.mockReturnValue(again)
+
+        fixture.componentRef.setInput('night', night({ myRsvpStatus: 'declined' }))
+        fixture.detectChanges()
+        expect(text(element)).toContain('2 going')
+        expect(element.querySelector('[data-testid="night-counts-skeleton"]')).toBeNull()
+
+        fixture.componentRef.setInput('night', night({ id: 5 }))
+        fixture.detectChanges()
+        expect(element.querySelector('[data-testid="night-counts-skeleton"]')).not.toBeNull()
     })
 })

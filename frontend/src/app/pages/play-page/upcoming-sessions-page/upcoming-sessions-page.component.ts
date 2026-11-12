@@ -5,7 +5,7 @@ import { ButtonComponent } from '../../../components/ui/button/button.component'
 import { ContainerWrapperComponent } from '../../../components/ui/container-wrapper/container-wrapper.component'
 import { IconComponent } from '../../../components/ui/icon/icon.component'
 import { PageHeaderComponent } from '../../../components/ui/page-header/page-header.component'
-import { isPending } from '../../../core/async/resource-state'
+import { isFirstLoad } from '../../../core/async/resource-state'
 import { intlLocale } from '../../../core/i18n/format'
 import { CustomDatePipe } from '../../../core/pipes/customDate.pipe'
 import { DataService } from '../../../core/services/data.service'
@@ -63,8 +63,9 @@ export class UpcomingSessionsPageComponent {
     public readonly userGroups$ = this.dataService.userGroups
     public readonly groupsError = computed(() => this.dataService.userGroupsState().status === 'error')
     public readonly userMeets$ = this.dataService.userMeets
-    public readonly isLoadingGroups = computed(() => isPending(this.dataService.userGroupsState()))
-    public readonly isLoadingMeets = computed(() => isPending(this.dataService.userMeetsState()))
+    /** Only before anything has loaded (#261): a refresh keeps the list and the groups on the page. */
+    public readonly isLoadingGroups = computed(() => isFirstLoad(this.dataService.userGroupsState()))
+    public readonly isLoadingMeets = computed(() => isFirstLoad(this.dataService.userMeetsState()))
     public readonly meetsError = computed(() => this.dataService.userMeetsState().status === 'error')
 
     // --------------------------------------------------------------------------

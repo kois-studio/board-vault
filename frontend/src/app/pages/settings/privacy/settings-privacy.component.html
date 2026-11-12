@@ -11,6 +11,12 @@
         </div>
         @if (usageAnalytics() !== null) {
             <app-switch class="mt-1" [checked]="usageAnalytics() === true" labelledBy="usage-heading" [disabled]="saving()" (toggled)="toggle()" />
+        } @else if (!failed()) {
+            <!-- The switch in its size while your choice loads (#261), so it is not missing and then pops in. -->
+            <div class="mt-1 shrink-0" role="status" data-testid="switch-skeleton">
+                <span class="sr-only" i18n="Read by screen readers in the Privacy settings while your usage statistics choice loads">Loading your choice…</span>
+                <div class="h-7 w-12 rounded-full bg-bv-surface-2 motion-safe:animate-pulse" aria-hidden="true"></div>
+            </div>
         }
     </div>
 

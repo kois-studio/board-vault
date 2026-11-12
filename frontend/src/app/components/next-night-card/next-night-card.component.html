@@ -20,7 +20,10 @@
             </h2>
             <p class="mt-1 text-sm text-secondary">
                 {{ groupName() }}
-                @if (summary(); as summary) {
+                @if (summary() === undefined) {
+                    <!-- The counts hold their place while they load (#261), so the line does not grow when they come. -->
+                    <span aria-hidden="true" data-testid="night-counts-skeleton">· <span class="inline-block h-3 w-36 rounded bg-bv-primary/20 align-middle motion-safe:animate-pulse"></span></span>
+                } @else if (summary(); as summary) {
                     · <ng-container i18n="How many people are going to a game night, on the game night card on Home">{summary.going, plural, one {{{ summary.going }} going} other {{{ summary.going }} going}}</ng-container>
                     @if (summary.waiting > 0) {
                         · <ng-container i18n="How many invited people have not answered a game night, on the game night card on Home">{summary.waiting, plural, one {{{ summary.waiting }} hasn’t answered} other {{{ summary.waiting }} haven’t answered}}</ng-container>

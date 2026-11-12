@@ -6205,6 +6205,15 @@
         <source>Could not save the results. Your changes are still in the form; try again.</source>
       </segment>
     </unit>
+    <unit id="4053516146953953907">
+      <notes>
+        <note category="location">src/app/pages/settings/privacy/settings-privacy.component.html</note>
+        <note category="description">Read by screen readers in the Privacy settings while your usage statistics choice loads</note>
+      </notes>
+      <segment>
+        <source>Loading your choice…</source>
+      </segment>
+    </unit>
     <unit id="4053701949944299149">
       <notes>
         <note category="location">src/app/pages/meet-view/meet-view.component.html</note>
@@ -9405,15 +9414,6 @@
       </notes>
       <segment>
         <source>Board Vault works around a group: the people you play with and the games you all own.</source>
-      </segment>
-    </unit>
-    <unit id="5683597377302812381">
-      <notes>
-        <note category="location">src/app/pages/dashboard-page/dashboard-page.component.html</note>
-        <note category="description">Name of the placeholder on Home while game nights load</note>
-      </notes>
-      <segment>
-        <source>Loading game nights</source>
       </segment>
     </unit>
     <unit id="5704826947758383316">
@@ -13939,6 +13939,15 @@
       </notes>
       <segment>
         <source><ph id="0" equiv="INTERPOLATION" disp="{{ user.username }}"/> · Only you see this page</source>
+      </segment>
+    </unit>
+    <unit id="79023103072360058">
+      <notes>
+        <note category="location">src/app/pages/dashboard-page/submissions-page/submissions-page.component.html</note>
+        <note category="description">While the numbers about your game proposals load</note>
+      </notes>
+      <segment>
+        <source>Loading your submission stats…</source>
       </segment>
     </unit>
     <unit id="7903843199053930">

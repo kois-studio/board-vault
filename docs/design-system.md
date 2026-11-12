@@ -293,6 +293,16 @@ not the only label for an action.
   space, invisible, so the sections under it do not jump down when it shows.
   A count that varies (the recent nights) cannot be known before it loads, so
   its skeleton holds the most the page shows.
+- **More skeletons (#261):** Home waits for your groups, invitations and
+  nights together (`isLoadingHome`), so it shows one skeleton for the whole
+  page, its header buttons included, instead of filling in part by part. The
+  game page uses `app-skeleton-game-page`, and a list of people to pick (plan
+  a night, record a session) uses `app-skeleton-people-grid [count]`, sized
+  from the group's people. A hub tile whose count is still loading passes
+  `[loading]="true"` to `app-badge`, which keeps the pill's size and reads the
+  label to screen readers. A number that is loading (the night's counts, your
+  proposal stats) shows a bar its size, and a switch whose value is loading
+  (the privacy choice) shows a pill instead of a wrong position.
 - **Undo:** for a quick, reversible action, act at once and pass an action
   to the toast instead of asking for confirmation first:
   `toastService.success('Removed from your wishlist', { label: 'Undo', run: () => … })`.

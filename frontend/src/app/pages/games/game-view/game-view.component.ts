@@ -8,6 +8,7 @@ import { Api } from '../../../api/api'
 import type { GameViewType, UpdateGameOwnedType } from '../../../api/api.types'
 import { CardGameComponent } from '../../../components/card-game/card-game.component'
 import { ImageProfileComponent } from '../../../components/image-profile/image-profile.component'
+import { SkeletonGamePageComponent } from '../../../components/skeletons/skeleton-game-page/skeleton-game-page.component'
 import { TagsComponent } from '../../../components/tags/tags.component'
 import { ToastService } from '../../../components/toast/toast.service'
 import { ASYNC } from '../../../components/ui/async/async.component'
@@ -15,7 +16,6 @@ import { ButtonComponent } from '../../../components/ui/button/button.component'
 import { ContainerWrapperComponent } from '../../../components/ui/container-wrapper/container-wrapper.component'
 import { IconComponent } from '../../../components/ui/icon/icon.component'
 import { ImageBackgroundComponent } from '../../../components/ui/image-background/image-background.component'
-import { SpinnerComponent } from '../../../components/ui/spinner/spinner.component'
 import { WishlistToggleComponent } from '../../../components/wishlist-toggle/wishlist-toggle.component'
 import { mapState } from '../../../core/async/resource-state'
 import { formatList, formatNumber } from '../../../core/i18n/format'
@@ -47,7 +47,7 @@ const PLAYS_MORE = 20
         TagsComponent,
         ButtonComponent,
         CardGameComponent,
-        SpinnerComponent,
+        SkeletonGamePageComponent,
         ReactiveFormsModule,
         ImageProfileComponent,
         CustomDatePipe,

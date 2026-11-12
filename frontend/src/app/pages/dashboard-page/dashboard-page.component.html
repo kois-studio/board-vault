@@ -22,7 +22,13 @@
                     <p class="mt-1 max-w-xl text-sm text-secondary" i18n="Line under the greeting on Home for a new account">Board Vault works around a group: the people you play with and the games you all own.</p>
                 }
             </div>
-            @if (userGroups$().length > 0) {
+            @if (isLoadingHome()) {
+                <!-- The two buttons hold their place while it is not yet known that there is a group (#261). -->
+                <div class="grid w-full grid-cols-2 gap-2 motion-safe:animate-pulse sm:flex sm:w-auto" aria-hidden="true" data-testid="home-actions-skeleton">
+                    <div class="h-[42px] rounded-lg bg-bv-surface-2 sm:w-44"></div>
+                    <div class="h-[42px] rounded-lg bg-bv-surface-2 sm:w-44"></div>
+                </div>
+            } @else if (userGroups$().length > 0) {
                 <div class="grid w-full grid-cols-2 gap-2 sm:flex sm:w-auto">
                     <a appButton icon="plus" class="justify-center" routerLink="/play/log-session" [queryParams]="userGroups$().length === 1 ? { groupId: userGroups$()[0]?.id } : null" i18n="Button at the top of Home that records a game night that already happened">Record a session</a>
                     <a appButton variant="secondary" class="justify-center" [routerLink]="planLink().link" [queryParams]="planLink().query" i18n="Button at the top of Home">Plan a game night</a>
@@ -30,14 +36,32 @@
             }
         </header>
 
-        <!-- Invitations come first: they are the only thing waiting on you. -->
-        @if (!isLoadingInvitations() && userInvitationsError()) {
+        <!-- Invitations come first: they are the only thing waiting on you. Home waits for them (#261), so they never push it down. -->
+        @if (isLoadingHome()) {
+            <div role="status" aria-busy="true" data-testid="home-skeleton">
+                <span class="sr-only" i18n="Name of the placeholder shown on Home while your groups load">Loading your groups</span>
+                <div class="grid grid-cols-1 gap-8 lg:grid-cols-[minmax(0,1fr)_22rem] lg:items-start" aria-hidden="true">
+                    <div class="min-w-0">
+                        <div class="mb-3 flex h-7 items-center"><div class="h-4 w-28 rounded bg-bv-border motion-safe:animate-pulse"></div></div>
+                        <div class="space-y-4">
+                            @for (item of [1, 2]; track item) {
+                                <app-skeleton-card-group />
+                            }
+                        </div>
+                    </div>
+                    <div class="min-w-0 motion-safe:animate-pulse">
+                        <div class="mb-3 flex h-7 items-center"><div class="h-4 w-32 rounded bg-bv-border"></div></div>
+                        <ng-container *ngTemplateOutlet="historyRows" />
+                    </div>
+                </div>
+            </div>
+        } @else if (userInvitationsError()) {
             <section class="rounded-2xl border border-bv-warning/30 bg-bv-warning/10 p-6" aria-labelledby="invitations-error-heading">
                 <h2 id="invitations-error-heading" class="text-lg font-bold" i18n="Heading on Home when your group invitations could not be loaded">Invitations are temporarily unavailable</h2>
                 <p class="mt-2 text-sm text-secondary" i18n="Text on Home when your group invitations could not be loaded">We could not refresh your pending group invitations. Your groups are still available below.</p>
                 <button appButton variant="secondary" type="button" class="mt-4" (click)="retryInvitations()" i18n="Button on Home when your group invitations could not be loaded">Retry invitations</button>
             </section>
-        } @else if (!isLoadingInvitations() && userInvitations$().length > 0) {
+        } @else if (userInvitations$().length > 0) {
             <section class="rounded-2xl border border-bv-primary/30 bg-bv-primary-soft p-6" aria-labelledby="pending-invitations-heading">
                 <div class="flex flex-wrap items-start justify-between gap-3">
                     <div>
@@ -54,12 +78,8 @@
             </section>
         }
 
-        @if (isLoadingGroups() && userGroups$().length === 0) {
-            <div class="space-y-4" aria-busy="true" aria-label="Loading your groups" i18n-aria-label="Name of the placeholder shown on Home while your groups load">
-                @for (item of [1, 2]; track item) {
-                    <app-skeleton-card-group />
-                }
-            </div>
+        @if (isLoadingHome()) {
+            <!-- Shown above, with the invitations. -->
         } @else if (userGroupsError()) {
             <div class="rounded-2xl border border-bv-warning/30 bg-bv-warning/10 p-8 text-center" role="alert">
                 <p class="text-lg font-medium" i18n="Error on Home when your groups could not be loaded">Your groups could not be loaded.</p>
@@ -127,11 +147,9 @@
                 <!-- What's next: the night, then the group(s). -->
                 <div class="min-w-0 space-y-8">
                     <!-- Only when there is a night to show: planning lives in the header, so nothing planned shows nothing. -->
-                    @if ((isLoadingMeets() && !nextNight()) || userMeetsError() || nextNight()) {
+                    @if (userMeetsError() || nextNight()) {
                     <section aria-label="Game nights" i18n-aria-label="Name of the section on Home with the next game nights" class="space-y-3">
-                        @if (isLoadingMeets() && !nextNight()) {
-                            <div class="h-44 animate-pulse rounded-2xl bg-bv-surface-2" aria-busy="true" aria-label="Loading game nights" i18n-aria-label="Name of the placeholder on Home while game nights load"></div>
-                        } @else if (userMeetsError()) {
+                        @if (userMeetsError()) {
                             <p class="rounded-2xl border border-bv-warning/30 bg-bv-warning/10 p-5 text-sm" role="alert">
                                 <ng-container i18n="Error on Home">Game nights could not be loaded.</ng-container>
                                 <button type="button" class="ml-2 font-semibold underline" (click)="retryGroups()" i18n="Button under an error">Retry</button>
@@ -211,17 +229,7 @@
                         </div>
                         <app-async [state]="historyState()" loadingLabel="Loading your recent game nights" i18n-loadingLabel="Read by screen readers on Home while your last game nights load" errorMessage="Your recent game nights could not be loaded." i18n-errorMessage="Error on Home when your last game nights could not be loaded" (retry)="retryHistory()">
                             <ng-template appAsyncLoading>
-                                <div class="divide-y divide-bv-border rounded-2xl border border-bv-border bg-bv-surface">
-                                    @for (row of [1, 2]; track row) {
-                                        <div class="flex items-center gap-3 p-3 motion-safe:animate-pulse">
-                                            <span class="h-11 w-11 shrink-0 rounded-lg bg-bv-surface-2"></span>
-                                            <span class="min-w-0 flex-1 space-y-2">
-                                                <span class="block h-4 w-2/3 rounded bg-bv-surface-2"></span>
-                                                <span class="block h-3 w-1/2 rounded bg-bv-surface-2"></span>
-                                            </span>
-                                        </div>
-                                    }
-                                </div>
+                                <div class="motion-safe:animate-pulse"><ng-container *ngTemplateOutlet="historyRows" /></div>
                             </ng-template>
                             <ng-template appAsyncReady>
                                 <ul class="divide-y divide-bv-border rounded-2xl border border-bv-border bg-bv-surface">
@@ -299,3 +307,18 @@
         }
     </div>
 </container-wrapper>
+
+<!-- Two of your last game nights while they load, in the size of their rows; the caller pulses it. -->
+<ng-template #historyRows>
+    <div class="divide-y divide-bv-border rounded-2xl border border-bv-border bg-bv-surface">
+        @for (row of [1, 2]; track row) {
+            <div class="flex items-center gap-3 p-3">
+                <span class="h-11 w-11 shrink-0 rounded-lg bg-bv-surface-2"></span>
+                <span class="min-w-0 flex-1 space-y-2">
+                    <span class="block h-4 w-2/3 rounded bg-bv-surface-2"></span>
+                    <span class="block h-3 w-1/2 rounded bg-bv-surface-2"></span>
+                </span>
+            </div>
+        }
+    </div>
+</ng-template>

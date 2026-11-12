@@ -14,7 +14,7 @@
             description="Game nights your groups have planned"
             cardLink="/play/upcoming-sessions"
         >
-            <app-badge class="app-card-section-badge" tone="primary" [text]="isLoadingMeets() ? loadingLabel : userMeetsError() ? unavailableLabel : sessionsLabel(upcomingSessions().length)" />
+            <app-badge class="app-card-section-badge" tone="primary" [text]="isLoadingMeets() ? loadingLabel : userMeetsError() ? unavailableLabel : sessionsLabel(upcomingSessions().length)" [loading]="isLoadingMeets()" />
             @if (isLoadingMeets()) {
                 <p class="text-sm text-bv-text-muted" i18n="Upcoming card on the Play page while it loads">Loading your sessions…</p>
             } @else if (userMeetsError()) {
@@ -57,7 +57,7 @@
             description="Every game night your groups have recorded"
             cardLink="/play/history"
         >
-            <app-badge class="app-card-section-badge" tone="success" [text]="historyBadge()" />
+            <app-badge class="app-card-section-badge" tone="success" [text]="historyBadge()" [loading]="historyBadge() === loadingLabel" />
             @if (isLoadingHistory()) {
                 <p class="text-sm text-bv-text-muted" i18n="History card on the Play page while it loads">Loading your history…</p>
             } @else if (userHistoryError()) {

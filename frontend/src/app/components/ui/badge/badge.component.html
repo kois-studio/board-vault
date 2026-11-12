@@ -1,6 +1,14 @@
-<span class="flex shrink-0 items-center whitespace-nowrap rounded-full px-2.5 py-0.5 text-sm font-medium" [class]="badgeClass()">
-    @if (showIndicator()) {
-        <span class="mr-1 block h-2 w-2 rounded-full" [class]="indicatorClass()" aria-hidden="true"></span>
-    }
-    {{ text() }}
-</span>
+@if (loading()) {
+    <!-- A count that has not loaded (#261): the badge in its size, pulsing, with the label read by screen readers. -->
+    <span class="flex shrink-0 items-center rounded-full px-2.5 py-0.5 text-sm motion-safe:animate-pulse" [class]="badgeClass()" data-testid="badge-skeleton">
+        <span class="sr-only">{{ text() }}</span>
+        <span class="my-1 block h-3 w-12 rounded-full bg-current opacity-25" aria-hidden="true"></span>
+    </span>
+} @else {
+    <span class="flex shrink-0 items-center whitespace-nowrap rounded-full px-2.5 py-0.5 text-sm font-medium" [class]="badgeClass()">
+        @if (showIndicator()) {
+            <span class="mr-1 block h-2 w-2 rounded-full" [class]="indicatorClass()" aria-hidden="true"></span>
+        }
+        {{ text() }}
+    </span>
+}

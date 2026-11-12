@@ -1,3 +1,4 @@
+import { NgTemplateOutlet } from '@angular/common'
 import { Component, computed, inject } from '@angular/core'
 import { RouterLink } from '@angular/router'
 import type { AccountMeetType, GameCompleteType, GroupWithMembersAndGames, HistoryRecordType } from '../../api/api.types'
@@ -12,7 +13,7 @@ import { ASYNC } from '../../components/ui/async/async.component'
 import { ButtonComponent } from '../../components/ui/button/button.component'
 import { ContainerWrapperComponent } from '../../components/ui/container-wrapper/container-wrapper.component'
 import { IconComponent } from '../../components/ui/icon/icon.component'
-import { isPending, settledValue } from '../../core/async/resource-state'
+import { isFirstLoad, settledValue } from '../../core/async/resource-state'
 import { DataService } from '../../core/services/data.service'
 import { HomePreferencesService } from '../../core/services/home-preferences.service'
 import { gameTitle } from '../../core/utils/gameTitle'
@@ -35,6 +36,7 @@ import { daysUntil, relativeDay, sessionDate, upcomingState } from '../../core/u
         IconComponent,
         ImageProfileComponent,
         NextNightCardComponent,
+        NgTemplateOutlet,
         RouterLink,
         SessionAnswerComponent,
         SkeletonCardGroupComponent,
@@ -51,11 +53,19 @@ export class DashboardPageComponent {
     public readonly userMeetsError = computed(() => this.dataService.userMeetsState().status === 'error')
     public readonly userInvitations$ = this.dataService.userInvitations
     public readonly userInvitationsError = computed(() => this.dataService.userInvitationsState().status === 'error')
-    public readonly isLoadingInvitations = computed(() => isPending(this.dataService.userInvitationsState()))
     public readonly invitationsGroupIndex$ = this.dataService.invitationsGroupIndex
 
-    public readonly isLoadingGroups = computed(() => isPending(this.dataService.userGroupsState()))
-    public readonly isLoadingMeets = computed(() => isPending(this.dataService.userMeetsState()))
+    /**
+     * Home waits for your groups, invitations and game nights the first time (#261): they load together, and each one
+     * adds or moves a block (the invitations strip, the next night, the buttons), so the page shows once, where it stays.
+     * A refresh keeps the page; a failure shows the page with that part's error.
+     */
+    public readonly isLoadingHome = computed(
+        () =>
+            isFirstLoad(this.dataService.userGroupsState()) ||
+            isFirstLoad(this.dataService.userInvitationsState()) ||
+            isFirstLoad(this.dataService.userMeetsState()),
+    )
     /** Your latest nights, as one state: "Nothing recorded yet" only once they have loaded (#256). */
     public readonly historyState = this.dataService.userHistoryState
 
@@ -65,7 +75,7 @@ export class DashboardPageComponent {
     })
 
     /** No group yet, and nothing failed or still loading: the page is about making the first one. */
-    public readonly isNew = computed(() => !this.isLoadingGroups() && !this.userGroupsError() && this.userGroups$().length === 0)
+    public readonly isNew = computed(() => !this.isLoadingHome() && !this.userGroupsError() && this.userGroups$().length === 0)
     public readonly hasGames = computed(() => this.dataService.userGames().length > 0)
     /**
      * How many of the three first steps are done; null until your games have loaded, so it never reads

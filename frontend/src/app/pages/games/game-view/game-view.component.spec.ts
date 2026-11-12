@@ -2,7 +2,7 @@ import { HttpErrorResponse } from '@angular/common/http'
 import { signal } from '@angular/core'
 import { TestBed } from '@angular/core/testing'
 import { ActivatedRoute, convertToParamMap, provideRouter } from '@angular/router'
-import { type Observable, of, throwError } from 'rxjs'
+import { NEVER, type Observable, of, throwError } from 'rxjs'
 import { Api } from '../../../api/api'
 import type { GameCompleteType, GameViewType, HistoryPageOptions, HistoryRecordType, PublicUserType } from '../../../api/api.types'
 import { ToastService } from '../../../components/toast/toast.service'
@@ -321,5 +321,14 @@ describe('GameViewPageComponent plays', () => {
 
             expect(getGameView).toHaveBeenCalledTimes(1)
         })
+    })
+
+    it('shows the page in its shape while the game loads, not a spinner (#261)', async () => {
+        const { element } = await setup(vi.fn().mockReturnValue(NEVER))
+
+        expect(element.querySelector('[data-testid="game-page-skeleton"]')).not.toBeNull()
+        expect(element.querySelector('[role="status"]')?.textContent).toContain('Loading game data…')
+        expect(element.querySelector('app-spinner')).toBeNull()
+        expect(element.querySelector('#game-title')).toBeNull()
     })
 })
