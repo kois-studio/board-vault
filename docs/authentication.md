@@ -62,6 +62,20 @@ account is known, so a signed-in link to it shows the screen on Home and
 opens Administration once the account is known, unless the person went
 elsewhere; `AdminGuard` then checks the admin flag as usual.
 
+What a signed-in link shows before the page (#259):
+
+- **Until Clerk has loaded**, nobody knows yet whether someone is signed in,
+  so `AuthOnlyGuard` (and `AdminGuard`) hold the first page.
+  `AppComponent` shows the app's frame meanwhile: the header with the
+  section links, the section tabs, a page skeleton and the app footer, or
+  the skeleton alone for a focused page. It never says anything about
+  sign-in, since the visitor may be signed out; then the landing page opens.
+- **While Board Vault confirms the account**, both layouts show the same
+  frame and skeleton (`AccountPendingService`, `<app-account-pending>`).
+  The account's own controls (inbox, avatar menu, language) wait for it.
+- **"Connecting you…"** appears only once that takes longer than 2 s. The
+  "can't reach Board Vault" and linking-error screens appear at once.
+
 `CLERK_SECRET_KEY` is required in every environment, and
 `CLERK_AUTHORIZED_PARTIES` in production ([environments.md](environments.md)).
 The browser receives only the publishable key through generated runtime

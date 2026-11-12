@@ -1,0 +1,9 @@
+@if (frame() === 'focused') {
+<app-account-pending [fillsViewport]="true" />
+} @else {
+<app-layout-header />
+<app-layout-section-tabs />
+<app-account-pending />
+<app-layout-footer />
+<app-layout-bottom-tabs />
+}

@@ -1,0 +1,8 @@
+@if (showsHandoffCard()) {
+<app-auth-handoff [fillsViewport]="fillsViewport()" />
+} @else {
+<main id="main-content" tabindex="-1" class="outline-none" [class.min-h-dvh]="fillsViewport()" aria-busy="true">
+    <p class="sr-only" role="status" i18n="Read by screen readers while the page waits for the signed-in account, from the first moment a page opens">Loading…</p>
+    <app-skeleton-page />
+</main>
+}

@@ -7,14 +7,16 @@ import { EditionChoiceDialogComponent } from './components/edition-choice-dialog
 import { ToastComponent } from './components/toast/toast.component'
 import { InPageLinkDirective } from './components/ui/in-page-link/in-page-link.directive'
 import { OFFERED_LOCALES, SOURCE_LOCALE } from './core/i18n/locales'
+import { AccountPendingService } from './core/services/account-pending.service'
 import { ThemeService } from './core/services/theme.service'
 import { UsageService } from './core/services/usage.service'
+import { BootFrameComponent } from './layout/boot-frame/boot-frame.component'
 
 /** Paths search engines may index (#157): the public pages a visitor can open without an account. */
 const INDEXABLE_PATHS = new Set(['/', '/privacy', '/login', '/register'])
 @Component({
     selector: 'app-root',
-    imports: [RouterOutlet, ToastComponent, EditionChoiceDialogComponent, InPageLinkDirective],
+    imports: [RouterOutlet, ToastComponent, EditionChoiceDialogComponent, InPageLinkDirective, BootFrameComponent],
     templateUrl: './app.component.html',
 })
 export class AppComponent {
@@ -23,6 +25,8 @@ export class AppComponent {
     private readonly document = inject(DOCUMENT)
     private readonly title = inject(Title)
     private readonly meta = inject(Meta)
+
+    public readonly bootFrame = inject(AccountPendingService).bootFrame
 
     constructor() {
         // Created at startup so a System theme follows OS changes on every page.

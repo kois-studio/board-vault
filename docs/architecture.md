@@ -112,7 +112,7 @@ List `AuthGuard` first; the others read `request.user`.
 | `core/interceptors/auth.interceptor.ts` | Adds the Clerk token; on 401 signs out and redirects to `/login`. |
 | `pages/` | One folder per route (landing, auth, dashboard, groups, group view, collection, games, play, sessions, settings, errors). |
 | `components/` | Reusable UI: cards, modals, forms, `ui/` primitives (button, icon, dialog). |
-| `layout/` | `layout-complete` (header, footer, handoff) and `layout-basic` (focused actions). Both show `connectivity-banner` above the page. |
+| `layout/` | `layout-complete` (header, footer, handoff) and `layout-basic` (focused actions). Both show `connectivity-banner` above the page, and `account-pending` (a page skeleton, then the handoff) while the account is confirmed; `boot-frame` is the frame before the first layout exists. |
 | `modules/admin/` | Lazy-loaded admin area. |
 
 ### Shared state
@@ -316,11 +316,15 @@ focused actions (create, edit, claim, propose) without navigation; each of
 those pages starts with a back link (`appBackLink`) instead. The
 not-found page (`**`) sits in `LayoutCompleteComponent` too, in a parent of
 its own after both, so the wildcard only matches once no page in either
-layout did. Both layouts are marked `SHOWS_AUTH_HANDOFF` and show the auth
-handoff screen instead of the page while a signed-in account is still being
-resolved, so `AuthOnlyGuard` lets the first navigation through instead of
+layout did. Both layouts are marked `SHOWS_AUTH_HANDOFF` and show a page
+skeleton in the app's frame instead of the page while a signed-in account is
+still being resolved (the handoff screen once that is slow or fails; see
+[authentication.md](authentication.md)), so `AuthOnlyGuard` lets the first navigation through instead of
 holding it on a blank page; `auth.guard.spec.ts` fails if a guarded page sits
-in a layout without that flag.
+in a layout without that flag. Before the first page's layout exists,
+`AppComponent` draws the same frame (`layout/boot-frame`) while the guard
+waits for Clerk (#259); the focused layout's `FOCUSED_LAYOUT` data makes that
+frame the skeleton alone.
 `SidebarLayoutComponent` is the shell for areas with their own sections
 (Settings, and Administration under `/admin`, which stays a lazy-loaded
 chunk that only admins download): sidebar and section side by side on desktop, and on phones a

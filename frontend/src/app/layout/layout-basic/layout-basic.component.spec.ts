@@ -11,7 +11,7 @@ import { LayoutBasicComponent } from './layout-basic.component'
 class FocusedPageComponent {}
 
 describe('LayoutBasicComponent', () => {
-    async function open(options: { signedIn: boolean; authenticated: boolean }) {
+    async function open(options: { signedIn: boolean; authenticated: boolean; handoffState?: string }) {
         const isSignedIn = signal(options.signedIn)
         const isAuthenticated = signal(options.authenticated)
         TestBed.configureTestingModule({
@@ -24,7 +24,7 @@ describe('LayoutBasicComponent', () => {
                     useValue: {
                         isAuthenticated,
                         isClerkAuthHandoffActive: computed(() => isSignedIn() && !isAuthenticated()),
-                        clerkAuthHandoffState: signal('linking'),
+                        clerkAuthHandoffState: signal(options.handoffState ?? 'linking'),
                         clerkAuthHandoffError: signal(null),
                         isReconnecting: signal(false),
                         retryClerkSession: vi.fn(),
@@ -37,22 +37,33 @@ describe('LayoutBasicComponent', () => {
         return { harness, isAuthenticated }
     }
 
-    it('shows the handoff screen, full height, instead of a blank page while the account is resolved (#239)', async () => {
+    it('shows a page skeleton, full height, instead of a blank page while the account is resolved (#239, #259)', async () => {
         const { harness, isAuthenticated } = await open({ signedIn: true, authenticated: false })
         const root = harness.fixture.nativeElement as HTMLElement
 
-        const handoff = root.querySelector('app-auth-handoff main') as HTMLElement
-        expect(handoff).not.toBeNull()
-        expect(handoff.id).toBe('main-content')
-        expect(handoff.classList).toContain('min-h-dvh')
+        const pending = root.querySelector('main#main-content') as HTMLElement
+        expect(pending.getAttribute('aria-busy')).toBe('true')
+        expect(pending.classList).toContain('min-h-dvh')
+        expect(pending.querySelector('[data-testid="page-skeleton"]')).not.toBeNull()
+        expect(root.querySelector('app-auth-handoff')).toBeNull()
         expect(root.textContent).not.toContain('New game night')
 
         isAuthenticated.set(true)
         harness.fixture.detectChanges()
         await harness.fixture.whenStable()
 
-        expect(root.querySelector('app-auth-handoff')).toBeNull()
+        expect(root.querySelector('[data-testid="page-skeleton"]')).toBeNull()
         expect(root.querySelector('main#main-content h1')?.textContent).toBe('New game night')
+    })
+
+    it('shows the handoff screen, full height, at once when Board Vault cannot be reached (#238)', async () => {
+        const { harness } = await open({ signedIn: true, authenticated: false, handoffState: 'unavailable' })
+        const root = harness.fixture.nativeElement as HTMLElement
+
+        const handoff = root.querySelector('app-auth-handoff main') as HTMLElement
+        expect(handoff.id).toBe('main-content')
+        expect(handoff.classList).toContain('min-h-dvh')
+        expect(root.querySelector('[data-testid="page-skeleton"]')).toBeNull()
     })
 
     it('shows the page when nobody is signing in', async () => {

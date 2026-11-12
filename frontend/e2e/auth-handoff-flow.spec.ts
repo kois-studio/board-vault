@@ -1,12 +1,17 @@
-import { expect, test } from '@playwright/test'
+import { expect, type Page, test } from '@playwright/test'
 
 const storageState = process.env['PLAYWRIGHT_AUTH_STORAGE_STATE']
+
+const connecting = (page: Page) => page.getByRole('heading', { name: /Connecting you to your Board Vault/i })
+const appFrame = (page: Page) => page.getByRole('link', { name: 'Board Vault home' })
+const pageSkeleton = (page: Page) => page.getByTestId('page-skeleton')
+const home = (page: Page) => page.getByRole('heading', { level: 1, name: /^(Hi|Welcome)\b/ })
 
 test.describe('authenticated Clerk handoff', () => {
     test.skip(!storageState, 'Set PLAYWRIGHT_AUTH_STORAGE_STATE to a local disposable Clerk storage-state file.')
     test.use({ storageState })
 
-    test('keeps the handoff visible while local account readiness is delayed', async ({ page }) => {
+    test('shows the app frame and a page skeleton, not a blank page, while the account is confirmed (#259)', async ({ page }) => {
         await page.route('**/auth/clerk/status', async (route) => {
             await new Promise((resolve) => setTimeout(resolve, 1200))
             await route.continue()
@@ -19,19 +24,25 @@ test.describe('authenticated Clerk handoff', () => {
             await page.setViewportSize(viewport)
             await page.goto('/dashboard', { waitUntil: 'domcontentloaded' })
 
-            await expect(page.getByRole('heading', { name: /Connecting you to your Board Vault/i })).toBeVisible({ timeout: 15_000 })
+            await expect(appFrame(page)).toBeVisible({ timeout: 15_000 })
+            await expect(pageSkeleton(page)).toBeVisible()
+            // A quick confirmation never flashes "Connecting you…".
+            await expect(connecting(page)).toHaveCount(0)
             await expect(page.locator('header [role="status"]')).toHaveCount(0)
             expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(viewport.width)
-            await expect(page.getByRole('heading', { level: 1, name: /^(Hi|Welcome)\b/ })).toBeVisible({ timeout: 15_000 })
+            await expect(home(page)).toBeVisible({ timeout: 15_000 })
+            await expect(connecting(page)).toHaveCount(0)
         }
     })
 
     test('shows recovery controls when local account readiness fails, then retries', async ({ page }) => {
+        // The account cannot be linked this time. (A request with no answer says Board Vault can't be reached
+        // instead, #238.)
         let shouldFail = true
         await page.route('**/auth/clerk/status', async (route) => {
             if (shouldFail) {
                 shouldFail = false
-                await route.abort('failed')
+                await route.fulfill({ json: { isValid: false } })
                 return
             }
 
@@ -46,24 +57,26 @@ test.describe('authenticated Clerk handoff', () => {
         await expect(page.getByRole('button', { name: 'Try again', exact: true })).toBeVisible()
         await expect(page.getByRole('button', { name: 'Sign out', exact: true })).toBeVisible()
 
+        // The card stays on Try again instead of going back to the skeleton.
         await page.getByRole('button', { name: 'Try again', exact: true }).click()
-        await expect(page.getByRole('heading', { name: /Connecting you to your Board Vault/i })).toBeVisible({ timeout: 5_000 })
-        await expect(page.getByRole('heading', { level: 1, name: /^(Hi|Welcome)\b/ })).toBeVisible({ timeout: 15_000 })
+        await expect(connecting(page)).toBeVisible({ timeout: 5_000 })
+        await expect(home(page)).toBeVisible({ timeout: 15_000 })
     })
 
-    test('preserves the requested protected route after a refresh', async ({ page }) => {
+    test('says "Connecting you…" once confirming takes a while, and keeps the page asked for after a refresh', async ({ page }) => {
         await page.route('**/auth/clerk/status', async (route) => {
-            await new Promise((resolve) => setTimeout(resolve, 900))
+            await new Promise((resolve) => setTimeout(resolve, 3500))
             await route.continue()
         })
 
         await page.goto('/dashboard', { waitUntil: 'domcontentloaded' })
-        await expect(page.getByRole('heading', { name: /Connecting you to your Board Vault/i })).toBeVisible({ timeout: 15_000 })
-        await expect(page.getByRole('heading', { level: 1, name: /^(Hi|Welcome)\b/ })).toBeVisible({ timeout: 15_000 })
+        await expect(pageSkeleton(page)).toBeVisible({ timeout: 15_000 })
+        await expect(connecting(page)).toBeVisible({ timeout: 15_000 })
+        await expect(home(page)).toBeVisible({ timeout: 15_000 })
 
         await page.reload({ waitUntil: 'domcontentloaded' })
-        await expect(page.getByRole('heading', { name: /Connecting you to your Board Vault/i })).toBeVisible({ timeout: 15_000 })
+        await expect(connecting(page)).toBeVisible({ timeout: 15_000 })
         await expect(page).toHaveURL(/\/dashboard(?:\?.*)?$/)
-        await expect(page.getByRole('heading', { level: 1, name: /^(Hi|Welcome)\b/ })).toBeVisible({ timeout: 15_000 })
+        await expect(home(page)).toBeVisible({ timeout: 15_000 })
     })
 })

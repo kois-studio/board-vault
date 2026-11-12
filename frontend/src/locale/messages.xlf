@@ -2602,6 +2602,7 @@
         <note category="location">src/app/components/session-summary/session-summary.component.html</note>
         <note category="location">src/app/components/ui/async/async.component.ts</note>
         <note category="location">src/app/core/i18n/clerk-localization.ts</note>
+        <note category="location">src/app/layout/account-pending/account-pending.component.html</note>
         <note category="location">src/app/pages/collection-page/collection-page.component.ts</note>
         <note category="location">src/app/pages/group-view/group-view.component.html</note>
         <note category="location">src/app/pages/play-page/play-page.component.ts</note>

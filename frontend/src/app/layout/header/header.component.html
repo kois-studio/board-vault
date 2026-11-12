@@ -1,7 +1,7 @@
 <header class="relative z-40 border-b border-bv-border bg-bv-surface">
     <div class="container mx-auto flex h-16 max-w-6xl items-center gap-6 px-4">
         <a
-            [routerLink]="isAuthenticated() ? '/dashboard' : '/'"
+            [routerLink]="showsAppFrame() ? '/dashboard' : '/'"
             aria-label="Board Vault home"
             i18n-aria-label="Link on the logo in the header, to Home or the landing page"
             class="flex min-h-11 shrink-0 items-center gap-2 rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-bv-primary"
@@ -10,7 +10,7 @@
             <span class="text-xl font-bold text-bv-text sm:text-2xl">Board Vault</span>
         </a>
 
-        @if (isAuthenticated()) {
+        @if (showsAppFrame()) {
         <nav aria-label="Section navigation" i18n-aria-label="Name of the main sections bar in the header on a computer" class="hidden h-full lg:block">
             <ul class="flex h-full items-stretch gap-1">
                 @for (section of sections; track section.path) {
@@ -28,6 +28,8 @@
             </ul>
         </nav>
 
+        <!-- The account's own controls wait until the account is known (#259). -->
+        @if (isAuthenticated()) {
         <div class="ml-auto flex items-center gap-2">
             @if (languages.length) {
             <app-language-menu [locales]="languages" />
@@ -35,6 +37,7 @@
             <app-inbox />
             <app-profile-menu />
         </div>
+        }
         } @else if (!clerkIsSignedIn()) {
         <div class="ml-auto hidden items-center gap-6 lg:flex">
             <nav aria-label="Primary navigation" i18n-aria-label="Name of the landing page links in the signed-out header" class="flex items-center gap-6">
