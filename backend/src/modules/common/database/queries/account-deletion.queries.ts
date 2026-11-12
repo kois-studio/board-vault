@@ -89,6 +89,8 @@ export class AccountDeletionQueries {
                     `,
                     args: [DELETED_ACCOUNT_NAME, DELETED_ACCOUNT_AVATAR, accountId],
                 },
+                // People they took over can no longer be given back (ADR-0027).
+                { sql: 'DELETE FROM GroupPersonTakeover WHERE accountId = ?', args: [accountId] },
                 { sql: `DELETE FROM GroupPersonGameOwnership WHERE groupPersonId IN (${linkedPeople})`, args: [accountId] },
                 { sql: `DELETE FROM GroupPersonGamePreference WHERE groupPersonId IN (${linkedPeople})`, args: [accountId] },
                 // Private data.

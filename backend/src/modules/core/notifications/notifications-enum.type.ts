@@ -7,6 +7,7 @@ export enum NotificationTypeEnum {
     USER_JOINED_GROUP = 'user_joined_group',
     USER_LEFT_GROUP = 'user_left_group',
     GROUP_PERSON_CHANGED = 'group_person_changed',
+    GROUP_PERSON_TAKEOVER_UNDONE = 'group_person_takeover_undone',
     GAME_PROPOSAL_APPROVED = 'game_proposal_approved',
     GAME_PROPOSAL_REJECTED = 'game_proposal_rejected',
     GAME_PROPOSAL_SUBMITTED = 'game_proposal_submitted',
@@ -64,6 +65,12 @@ export type NotificationDataMap = {
         game: number
         /** What changed; rows written before it was stored only have it in their message. */
         change?: GroupPersonChange
+    }
+    // {account} undid your takeover of {person} in {group}: {person} is back as before, and you are in it as yourself (ADR-0027)
+    [NotificationTypeEnum.GROUP_PERSON_TAKEOVER_UNDONE]: {
+        account: number
+        group: number
+        person: number
     }
     // Your game proposal "{gameTitle}" was approved
     [NotificationTypeEnum.GAME_PROPOSAL_APPROVED]: {

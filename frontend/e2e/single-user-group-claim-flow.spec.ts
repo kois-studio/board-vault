@@ -57,15 +57,15 @@ test.describe('single-user group claim flow', () => {
                 await expect(page.getByRole('heading', { name: displayName, exact: true })).toBeVisible()
             }
 
+            // A person's games and preferences are edited in their card on the group page.
             const anaCard = page.locator('article').filter({ has: page.getByRole('heading', { name: 'Ana', exact: true }) })
-            const ownershipButton = anaCard.getByRole('button', { name: new RegExp(`not recorded ownership for ${gameTitle}`, 'i') })
-            await ownershipButton.click()
-            await expect(anaCard.getByRole('button', { name: new RegExp(`asserted ownership for ${gameTitle}`, 'i') })).toBeVisible()
-
-            const preferenceButton = anaCard.getByRole('button', { name: `Preference for ${gameTitle}` })
-            await preferenceButton.click()
-            await preferenceButton.click()
-            await expect(preferenceButton).toContainText('favorite')
+            await anaCard.getByRole('button', { name: 'Edit games and preferences' }).click()
+            await anaCard.getByLabel(`${gameTitle} ownership for Ana`).selectOption('asserted')
+            await expect(anaCard.getByLabel(`${gameTitle} ownership for Ana`)).toHaveValue('asserted')
+            await expect(anaCard.getByLabel(`${gameTitle} ownership for Ana`)).toBeEnabled()
+            await anaCard.getByLabel(`${gameTitle} preference for Ana`).selectOption('favorite')
+            await expect(anaCard.getByLabel(`${gameTitle} preference for Ana`)).toHaveValue('favorite')
+            await expect(anaCard.getByLabel(`${gameTitle} preference for Ana`)).toBeEnabled()
 
             await page.goto(`${baseURL}/groups/${groupId}/edit`)
             const claimPersonSelect = page.getByLabel('Are they someone already in this group?')
@@ -79,22 +79,31 @@ test.describe('single-user group claim flow', () => {
             const accepted = inviteePage.waitForResponse((response) => /\/invitations\/\d+\/accept$/.test(response.url()) && response.ok())
             await inviteePage.getByRole('button', { name: /Accept/ }).first().click()
             await accepted
+            // Accepting opens "Who are you in this group?", with the suggested person first (#278).
+            await expect(inviteePage).toHaveURL(new RegExp(`/groups/${groupId}/people/choose$`))
+            await expect(inviteePage.getByTestId('choice').first()).toContainText('Is this you?')
+            await expect(inviteePage.getByTestId('choice').first()).toContainText('Ana')
             await inviteePage.goto(`${baseURL}/groups/${groupId}`)
             await expect(inviteePage.getByText('A group person is waiting for you')).toBeVisible()
             await inviteePage.getByRole('link', { name: 'Review and claim' }).click()
             await expect(inviteePage.getByRole('heading', { name: 'Is this Ana?' })).toBeVisible()
+            const anaId = Number(inviteePage.url().match(/\/people\/(\d+)\/claim$/)?.[1])
+            expect(anaId).toBeGreaterThan(0)
 
             const reviewCheckboxes = inviteePage.getByRole('checkbox')
             await expect(reviewCheckboxes).toHaveCount(3)
             await reviewCheckboxes.nth(1).uncheck()
             await reviewCheckboxes.nth(2).check()
-            await inviteePage.getByRole('button', { name: 'Yes, claim this history' }).click()
+            await inviteePage.getByRole('button', { name: 'Save my choices and claim history' }).click()
+            await expect(inviteePage.getByRole('heading', { name: 'Your choices are saved' })).toBeVisible()
+            await inviteePage.getByRole('link', { name: 'Return to group' }).click()
             await expect(inviteePage).toHaveURL(new RegExp(`/groups/${groupId}$`))
-            await expect(inviteePage.getByRole('heading', { name: 'Ana', exact: true }).locator('..')).toContainText('Account linked')
+            // Ana is now the invitee, under their own name, everywhere on the group page.
+            await expect(inviteePage.getByRole('heading', { name: 'Ana', exact: true })).toHaveCount(0)
+            await expect(inviteePage.locator('p', { hasText: /^Owned by .*\bAna\b/ })).toHaveCount(0)
+            await expect(inviteePage.getByText(/\btook over Ana\b/)).toBeVisible()
 
-            const groupPersonRows = queryDatabase(
-                `SELECT id, accountId, kind FROM GroupPerson WHERE groupId = ${Number(groupId)} AND displayName = 'Ana';`,
-            )
+            const groupPersonRows = queryDatabase(`SELECT id, accountId, kind FROM GroupPerson WHERE id = ${anaId};`)
             expect(groupPersonRows).toHaveLength(1)
             expect(groupPersonRows[0]).toEqual(expect.objectContaining({ kind: 'linked' }))
             // The claim used up the invitation that allowed it (#277).
@@ -109,9 +118,11 @@ test.describe('single-user group claim flow', () => {
                 ),
             ).toEqual([{ gameId: expect.any(Number), status: 'asserted', source: 'claimed_import', enteredByAccountId: accountId }])
             expect(queryDatabase(`SELECT gameId FROM GroupPersonGamePreference WHERE groupPersonId = ${groupPersonId};`)).toEqual([])
-            expect(queryDatabase(`SELECT gameId FROM OwnedGame WHERE accountId = ${accountId};`)).toEqual([
-                { gameId: expect.any(Number) },
-            ])
+            // The kept game was copied to the invitee's own shelf, next to what was there already.
+            const [{ gameId: claimedGameId }] = queryDatabase(
+                `SELECT gameId FROM GroupPersonGameOwnership WHERE groupPersonId = ${groupPersonId};`,
+            )
+            expect(queryDatabase(`SELECT gameId FROM OwnedGame WHERE accountId = ${accountId};`)).toContainEqual({ gameId: claimedGameId })
         } finally {
             await inviteeContext.close()
         }

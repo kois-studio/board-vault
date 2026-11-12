@@ -132,18 +132,21 @@ describe('MeetNewComponent social handoff', () => {
                 ownership: [],
                 preferences: [],
                 claimable: false,
+                suggested: false,
             },
             {
                 person: { id: 13, accountId: null, displayName: 'Guest', status: 'active', avatar: null },
                 ownership: [{ gameId: 42, status: 'asserted' }],
                 preferences: [],
                 claimable: false,
+                suggested: false,
             },
             {
                 person: { id: 14, accountId: null, displayName: 'Gone', status: 'archived', avatar: null },
                 ownership: [],
                 preferences: [],
                 claimable: false,
+                suggested: false,
             },
             // Left the group: still an active group person, so their history stays, but not invitable.
             {
@@ -151,6 +154,7 @@ describe('MeetNewComponent social handoff', () => {
                 ownership: [],
                 preferences: [],
                 claimable: false,
+                suggested: false,
             },
         ] as unknown as Array<GroupPersonWorkspaceType>
         const { fixture, component, api } = await setup({}, group, people)
@@ -325,12 +329,14 @@ describe('MeetNewComponent social handoff', () => {
             ownership: [{ gameId: 42, status: 'asserted' }],
             preferences: [],
             claimable: false,
+            suggested: false,
         } as unknown as GroupPersonWorkspaceType
         const organizerPerson = {
             person: { id: 12, accountId: 1, displayName: 'Organizer', status: 'active', avatar: null },
             ownership: [],
             preferences: [],
             claimable: false,
+            suggested: false,
         } as unknown as GroupPersonWorkspaceType
         const page = (fixture: { nativeElement: unknown }) => fixture.nativeElement as HTMLElement
         const byTestId = (fixture: { nativeElement: unknown }, id: string) =>

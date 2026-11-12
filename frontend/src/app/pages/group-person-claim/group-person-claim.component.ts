@@ -7,6 +7,7 @@ import type { GameCompleteType, GroupPersonPreferenceType, GroupPersonWorkspaceT
 import { ToastService } from '../../components/toast/toast.service'
 import { BackLinkComponent } from '../../components/ui/back-link/back-link.component'
 import { ButtonComponent } from '../../components/ui/button/button.component'
+import { DataService } from '../../core/services/data.service'
 import { gameTitle as titleOf } from '../../core/utils/gameTitle'
 
 type ClaimSummary = {
@@ -26,6 +27,7 @@ export class GroupPersonClaimComponent {
     public readonly route = inject(ActivatedRoute)
     private readonly router = inject(Router)
     private readonly toastService = inject(ToastService)
+    private readonly dataService = inject(DataService)
     private readonly destroyRef = inject(DestroyRef)
     private readonly injector = inject(Injector)
     private readonly host = inject<ElementRef<HTMLElement>>(ElementRef)
@@ -131,9 +133,12 @@ export class GroupPersonClaimComponent {
                 $localize`:Toast after taking over a person prepared for you in a group:Your group history is now linked to your account.`,
             )
             this.claimSummary.set(claimSummary)
+            // The group's people changed (the library names its owners from them), and so did your shelf if you copied games to it.
+            this.dataService.refreshUserGroups()
+            if (claimSummary.importedOwnership) this.dataService.refreshUserGames()
         } catch {
             this.error.set(
-                $localize`:Error when taking over a person prepared for you in a group fails:This claim could not be completed. The invitation may have expired or already been used.`,
+                $localize`:Error when taking over a person in a group fails:This person couldn’t be linked to you. Someone may have taken them over already, or you are one of the group’s people already.`,
             )
         } finally {
             this.isSaving.set(false)
@@ -147,6 +152,7 @@ export class GroupPersonClaimComponent {
         this.isSaving.set(true)
         try {
             await firstValueFrom(this.api.joinGroupAsNewPerson(groupId))
+            this.dataService.refreshUserGroups()
             this.toastService.success(
                 $localize`:Toast after joining a group as a new person instead of taking over one prepared for you:You joined the group as a new person.`,
             )

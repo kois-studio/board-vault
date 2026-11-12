@@ -144,6 +144,7 @@ describe('Api response contracts', () => {
                     ownership: [],
                     preferences: [],
                     claimable: true,
+                    suggested: false,
                 },
             ],
         })

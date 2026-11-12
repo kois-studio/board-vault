@@ -68,7 +68,7 @@ export class CardNotificationComponent {
         if (notification.type === 'shelf_changed' && typeof groupId === 'number' && typeof accountId === 'number') {
             return { path: ['/groups', groupId, 'members', accountId], label: $localize`:Link on a notification:See their games` }
         }
-        const groupTypes = ['user_joined_group', 'user_left_group', 'group_person_changed']
+        const groupTypes = ['user_joined_group', 'user_left_group', 'group_person_changed', 'group_person_takeover_undone']
         if (groupTypes.includes(notification.type) && typeof groupId === 'number') {
             return { path: ['/groups', groupId], label: $localize`:Link on a notification:Open the group` }
         }
@@ -124,6 +124,7 @@ export class CardNotificationComponent {
                 user_left_group: 'logout',
                 shelf_changed: 'library',
                 group_person_changed: 'pencil',
+                group_person_takeover_undone: 'arrow-repeat',
             }[type] ?? 'info'
         )
     }

@@ -18,7 +18,8 @@ function sameSecret(given: string, expected: string): boolean {
 /**
  * The daily job, called by Vercel Cron (`backend/vercel.json`) with `Authorization: Bearer
  * $CRON_SECRET`. Without `CRON_SECRET` the route does not exist. It rolls up usage events and
- * deletes Idempotency-Key records older than 24 hours (#246).
+ * deletes Idempotency-Key records older than 24 hours (#246) and takeover snapshots past their
+ * 30-day undo window (ADR-0027).
  */
 @ApiExcludeController()
 @Controller('internal')
@@ -40,7 +41,10 @@ export class MaintenanceController {
         const usage = await this.usageService.runDailyMaintenance()
         const expiredIdempotencyKeys = (await this.databaseService.idempotency.deleteExpired()).rowsAffected
 
+        const expiredTakeovers = (await this.databaseService.takeovers.deleteExpired()).rowsAffected
+
         this.LOGGER.log(structuredLog('idempotency.expired_keys_deleted', { expiredIdempotencyKeys }))
-        return { usage, expiredIdempotencyKeys }
+        this.LOGGER.log(structuredLog('takeover.expired_snapshots_deleted', { expiredTakeovers }))
+        return { usage, expiredIdempotencyKeys, expiredTakeovers }
     }
 }

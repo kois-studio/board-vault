@@ -37,7 +37,7 @@ The types:
 | Area | Types |
 | --- | --- |
 | Game nights | `session_planned`, `session_recorded`, `session_started`, `session_finished`, `session_cancelled`, `session_invites_changed`, `session_shortlist_changed`, `session_bringer_changed`, `session_played_changed`, `session_rsvp`, `session_attendance_changed`, `session_results_changed` |
-| Group people | `person_added`, `person_updated`, `person_archived`, `person_restored`, `person_claimed`, `person_game_set`, `person_preference_set`, `person_preference_removed` |
+| Group people | `person_added`, `person_updated`, `person_archived`, `person_restored`, `person_claimed`, `person_takeover_undone` (ADR-0027), `person_game_set`, `person_preference_set`, `person_preference_removed` |
 | Membership | `member_joined`, `member_left`, `member_removed` |
 
 Votes are not recorded: a vote is someone's own wish, it changes nothing

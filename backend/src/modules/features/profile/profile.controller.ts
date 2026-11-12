@@ -5,9 +5,8 @@ import { RequestLocale } from '../../../common/decorators/request-locale.decorat
 import { AuthGuard } from '../../../common/guards/auth.guard.js'
 import { UserOwnershipGuard } from '../../../common/guards/ownership.guard.js'
 import { RateLimit, RateLimitGuard } from '../../../common/guards/rate-limit.guard.js'
-import { SuccessDto } from '../../../common/types/auth.type.js'
 import { CreateGameProposalBody, GameProposalDto } from '../../../common/types/game-proposal.type.js'
-import { InvitationWithExtraData } from '../../../common/types/invitation.type.js'
+import { AcceptInvitationResponseDto, InvitationWithExtraData } from '../../../common/types/invitation.type.js'
 import { NotificationDto } from '../../../common/types/notification.type.js'
 import { UserProposalStatsDto } from '../../../common/types/stats.type.js'
 import { UserSelfDto } from '../../../common/types/user.type.js'
@@ -52,7 +51,7 @@ export class ProfileController {
     @UseGuards(UserOwnershipGuard)
     @Post('/users/:userId/invitations/:invitationId/accept')
     @ApiOperation({ summary: 'Accept invitation', deprecated: false })
-    @ApiResponse({ status: 200, type: SuccessDto, description: 'Invitation accepted' })
+    @ApiResponse({ status: 200, type: AcceptInvitationResponseDto, description: 'Invitation accepted' })
     @ApiResponse({ status: 404, description: 'Invitation not found' })
     acceptInvitation(@Param('userId', ParseIntPipe) userId: number, @Param('invitationId', ParseIntPipe) invitationId: number) {
         return this.profileService.acceptInvitation(userId, invitationId)

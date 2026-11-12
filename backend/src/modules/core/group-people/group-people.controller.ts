@@ -7,6 +7,7 @@ import {
     ParseIntPipe,
     ParseBoolPipe,
     DefaultValuePipe,
+    HttpCode,
     Patch,
     Post,
     Query,
@@ -33,6 +34,9 @@ import {
     UpdateGroupPersonOwnershipBody,
     UpdateGroupPersonPreferenceBody,
     ClaimGroupPersonBody,
+    GroupPersonChoicesResponseDto,
+    GroupPersonTakeoversResponseDto,
+    UndoGroupPersonTakeoverResponseDto,
 } from '../../../common/types/group-person.type.js'
 
 import { GroupPeopleService } from './group-people.service.js'
@@ -70,6 +74,24 @@ export class GroupPeopleController {
         return this.groupPeopleService.getCatalog(request.user.userId, groupId, locale, query.search)
     }
 
+    @Get('groups/:groupId/people/choices')
+    @ApiOperation({ summary: 'List the people without an account the caller may take over ("this is me", #278)' })
+    @ApiResponse({ status: 200, type: GroupPersonChoicesResponseDto })
+    async getChoices(
+        @Req() request: { user: { userId: number } },
+        @Param('groupId', ParseIntPipe) groupId: number,
+        @RequestLocale() locale: Locale,
+    ) {
+        return { choices: await this.groupPeopleService.getChoices(request.user.userId, groupId, locale) }
+    }
+
+    @Get('groups/:groupId/people/takeovers')
+    @ApiOperation({ summary: 'List the takeovers of group people that can still be undone (ADR-0027)' })
+    @ApiResponse({ status: 200, type: GroupPersonTakeoversResponseDto })
+    async getTakeovers(@Req() request: { user: { userId: number } }, @Param('groupId', ParseIntPipe) groupId: number) {
+        return { takeovers: await this.groupPeopleService.getTakeovers(request.user.userId, groupId) }
+    }
+
     @Post('groups/:groupId/people')
     @ApiOperation({ summary: 'Create a placeholder person in a group' })
     @ApiResponse({ status: 201, type: GroupPersonDto })
@@ -97,8 +119,21 @@ export class GroupPeopleController {
         return this.groupPeopleService.update(request.user.userId, groupId, personId, body)
     }
 
+    @Post('groups/:groupId/people/:personId/takeover/undo')
+    @HttpCode(200)
+    @ApiOperation({ summary: 'Undo a takeover: give the person back as it was, within 30 days (ADR-0027)' })
+    @ApiResponse({ status: 200, type: UndoGroupPersonTakeoverResponseDto })
+    @ApiResponse({ status: 404, description: 'Nothing to undo: no takeover, already undone, or older than 30 days.' })
+    undoTakeover(
+        @Req() request: { user: { userId: number } },
+        @Param('groupId', ParseIntPipe) groupId: number,
+        @Param('personId', ParseIntPipe) personId: number,
+    ) {
+        return this.groupPeopleService.undoTakeover(request.user.userId, groupId, personId)
+    }
+
     @Post('groups/:groupId/people/:personId/claim')
-    @ApiOperation({ summary: 'Claim a targeted placeholder as the authenticated account' })
+    @ApiOperation({ summary: 'Take over a person without an account as the authenticated account ("this is me", #278)' })
     claimPerson(
         @Req() request: { user: { userId: number } },
         @Param('groupId', ParseIntPipe) groupId: number,

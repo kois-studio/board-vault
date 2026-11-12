@@ -1,0 +1,65 @@
+<div class="min-h-[calc(100vh-8rem)] bg-bv-bg px-4 py-8 sm:px-6 lg:px-8 lg:py-12">
+    <div class="mx-auto max-w-3xl">
+        <a appBackLink [routerLink]="['/groups', groupId]" i18n="Link on the page where you say who you are in a group, back to the group page">Back to group</a>
+
+        @if (isLoading() && !loadFailed()) {
+            <section class="mt-8 rounded-3xl border border-bv-border bg-bv-surface p-8 text-center shadow-sm" role="status" aria-live="polite">
+                <p class="text-lg font-semibold" i18n="Shown while the page loads where you say who you are in a group">Loading the group’s people…</p>
+            </section>
+        } @else if (loadFailed()) {
+            <section class="mt-8 rounded-3xl border border-bv-warning/30 bg-bv-warning/10 p-8" role="alert" data-testid="choose-load-failed">
+                <h1 class="text-2xl font-bold" i18n="Error on the page where you say who you are in a group, when Board Vault did not answer">The group’s people couldn’t be loaded</h1>
+                <p class="mt-2 text-secondary" i18n="Error on the page where you say who you are in a group, when Board Vault did not answer">Check your connection and try again.</p>
+                <button appButton type="button" class="mt-5" icon="arrow-repeat" [attr.aria-busy]="isLoading() ? 'true' : null" (click)="retry()" i18n="Button under an error">Retry</button>
+            </section>
+        } @else if (unavailable()) {
+            <section class="mt-8 rounded-3xl border border-bv-warning/30 bg-bv-warning/10 p-8" role="alert">
+                <h1 class="text-2xl font-bold" i18n="Error on the page where you say who you are in a group, when you are not in it or it is gone">This group isn’t available</h1>
+                <p class="mt-2 text-secondary" i18n="Error on the page where you say who you are in a group, when you are not in it or it is gone">You may have left it, or it was deleted.</p>
+                <a appButton class="mt-5" routerLink="/" i18n="Button under an error, to the home page">Go to Home</a>
+            </section>
+        } @else if (choices().length === 0) {
+            <section class="mt-8 rounded-3xl border border-bv-border bg-bv-surface p-8" data-testid="choose-nothing">
+                <h1 class="text-2xl font-bold" i18n="On the page where you say who you are in a group, when there is no one to choose">There’s no one to choose</h1>
+                <p class="mt-2 text-secondary" i18n="On the page where you say who you are in a group, when there is no one to choose">You’re already one of this group’s people, or everyone in it has an account.</p>
+                <a appButton class="mt-5" [routerLink]="['/groups', groupId]" i18n="Button on the page where you say who you are in a group, to the group page">Go to the group</a>
+            </section>
+        } @else {
+            <header class="mt-8 rounded-3xl border border-bv-primary/30 bg-bv-primary-soft p-6 sm:p-8">
+                <p class="text-sm font-semibold uppercase tracking-[0.18em] text-bv-primary" i18n="Label on the page where you say who you are in a group">Join your group’s history</p>
+                <h1 class="mt-2 text-3xl font-bold text-bv-text wrap-anywhere">
+                    @if (groupName(); as name) {
+                        <ng-container i18n="Heading of the page where you say who you are in a group; the placeholder is the group name">Who are you in {{ name }}?</ng-container>
+                    } @else {
+                        <ng-container i18n="Heading of the page where you say who you are in a group, before the group name loads">Who are you in this group?</ng-container>
+                    }
+                </h1>
+                <p class="mt-3 leading-7 text-secondary" i18n="Text on the page where you say who you are in a group">The group may have added you before you joined, with your games and the game nights you came to. Pick yourself to keep them. If you pick the wrong person, anyone in the group can undo it for 30 days.</p>
+            </header>
+
+            <ul class="mt-6 space-y-3" aria-label="People without an account" i18n-aria-label="Name of the list on the page where you say who you are in a group">
+                @for (choice of choices(); track choice.person.id) {
+                    <li class="flex flex-col gap-4 rounded-3xl border bg-bv-surface p-5 shadow-sm sm:flex-row sm:items-center" [class.border-bv-primary]="choice.suggested" [class.border-bv-border]="!choice.suggested" data-testid="choice">
+                        <app-image-profile class="shrink-0" [avatar]="choice.person.avatar ?? initialsAvatar(choice.person.displayName)" />
+                        <div class="min-w-0 flex-1">
+                            @if (choice.suggested) {
+                                <p class="text-xs font-semibold uppercase tracking-[0.18em] text-bv-primary" i18n="Label over the person an invitation suggested, on the page where you say who you are in a group">Is this you?</p>
+                            }
+                            <h2 class="text-lg font-bold wrap-anywhere">{{ choice.person.displayName }}</h2>
+                            @if (gamesLine(choice); as games) {
+                                <p class="mt-1 text-sm text-secondary">{{ games }}</p>
+                            }
+                            <p class="mt-1 text-sm text-secondary">{{ nightsLine(choice) }}</p>
+                        </div>
+                        <a appButton class="shrink-0" [variant]="choice.suggested ? 'primary' : 'secondary'" [routerLink]="['/groups', groupId, 'people', choice.person.id, 'claim']" [attr.aria-label]="thisIsMeLabel(choice.person.displayName)" i18n="Button on the page where you say who you are in a group, next to a person">This is me</a>
+                    </li>
+                }
+            </ul>
+
+            <section class="mt-6 flex flex-col gap-3 rounded-3xl border border-dashed border-bv-border p-6 sm:flex-row sm:items-center sm:justify-between">
+                <p class="text-secondary" i18n="On the page where you say who you are in a group, before the button to join as someone new">None of these is you?</p>
+                <button appButton variant="secondary" type="button" [disabled]="isSaving()" (click)="joinAsNew()" data-testid="choose-new" i18n="Button on the page where you say who you are in a group, when you are none of its people">I’m new here</button>
+            </section>
+        }
+    </div>
+</div>

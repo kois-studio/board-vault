@@ -215,6 +215,32 @@ export class ActivityNotifier {
         })
     }
 
+    /**
+     * Someone undid a takeover (ADR-0027): the account that had taken the person over hears it, unless it undid it
+     * itself or is no longer in the group.
+     */
+    async takeoverUndone(change: { groupId: number; actorAccountId: number; accountId: number; groupPersonId: number }): Promise<void> {
+        if (change.accountId === change.actorAccountId) return
+        await this.guard('group_person_takeover_undone', async () => {
+            const members = await this.groupMembers(change.groupId)
+
+            if (!members || !members.accountIds.includes(change.accountId)) return
+            const [personRow] = (await this.databaseService.groups.getGroupPersonById(change.groupPersonId, change.groupId)).rows
+
+            if (!personRow) return
+            const actor = await this.accountName(change.actorAccountId)
+            const person = shortName(String(personRow[5]))
+
+            await this.send(
+                [change.accountId],
+                change.actorAccountId,
+                NotificationTypeEnum.GROUP_PERSON_TAKEOVER_UNDONE,
+                `${actor} undid your takeover of ${person} in ${members.groupName}. You are in the group as yourself.`,
+                { account: change.actorAccountId, group: change.groupId, person: change.groupPersonId },
+            )
+        })
+    }
+
     /** Runs `work` after the response on Vercel, awaited anywhere else (afterResponse), and logs instead of throwing. */
     private async guard(event: string, work: () => Promise<void>): Promise<void> {
         await afterResponse(async () => {

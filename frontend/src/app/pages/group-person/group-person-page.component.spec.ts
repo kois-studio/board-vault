@@ -2,7 +2,8 @@ import { TestBed } from '@angular/core/testing'
 import { ActivatedRoute, convertToParamMap, provideRouter } from '@angular/router'
 import { type Observable, of, throwError } from 'rxjs'
 import { Api } from '../../api/api'
-import type { GameCompleteType, GroupCollectionType } from '../../api/api.types'
+import type { GameCompleteType, GroupCollectionType, GroupPersonTakeoverType } from '../../api/api.types'
+import { ToastService } from '../../components/toast/toast.service'
 import { DataService } from '../../core/services/data.service'
 import { GroupPersonPageComponent } from './group-person-page.component'
 
@@ -48,11 +49,17 @@ describe('GroupPersonPageComponent', () => {
 
     const render = async (
         params: Record<string, string>,
-        { insights = of({ standings }) as Observable<unknown>, groups = [{ id: 10, name: 'Thursdays' }] } = {},
+        {
+            insights = of({ standings }) as Observable<unknown>,
+            groups = [{ id: 10, name: 'Thursdays' }],
+            takeovers = [] as Array<GroupPersonTakeoverType>,
+        } = {},
     ) => {
         const api = {
             getGroupCollection: vi.fn().mockReturnValue(of(collection)),
             getGroupInsights: vi.fn().mockReturnValue(insights),
+            getGroupPersonTakeovers: vi.fn().mockReturnValue(of(takeovers)),
+            undoGroupPersonTakeover: vi.fn().mockReturnValue(of({ groupPersonId: 30, newPersonId: 31 })),
         }
         TestBed.configureTestingModule({
             imports: [GroupPersonPageComponent],
@@ -60,7 +67,11 @@ describe('GroupPersonPageComponent', () => {
                 provideRouter([]),
                 { provide: ActivatedRoute, useValue: { paramMap: of(convertToParamMap({ groupId: '10', ...params })) } },
                 { provide: Api, useValue: api },
-                { provide: DataService, useValue: { userGroups: () => groups, currentUser: () => ({ id: 99 }) } },
+                {
+                    provide: DataService,
+                    useValue: { userGroups: () => groups, currentUser: () => ({ id: 99 }), refreshUserGroups: vi.fn() },
+                },
+                { provide: ToastService, useValue: { success: vi.fn(), error: vi.fn() } },
             ],
         })
         const fixture = TestBed.createComponent(GroupPersonPageComponent)
@@ -151,5 +162,47 @@ describe('GroupPersonPageComponent', () => {
         const { element } = await render({ accountId: '99' })
 
         expect(element.textContent).toContain('This person is not in this group.')
+    })
+
+    it("offers to undo a member's takeover, after asking first (ADR-0027)", async () => {
+        const takeover = {
+            groupPersonId: 30,
+            accountId: 1,
+            previousName: 'Carlos',
+            takenAt: '2026-11-10 10:00:00',
+            undoableUntil: '2026-12-10 10:00:00',
+        }
+        const { element, api, fixture } = await render({ accountId: '1' }, { takeovers: [takeover] })
+
+        expect(element.querySelector('[data-testid="takeover-undo"]')?.textContent).toContain('Ana Ruiz took over Carlos')
+        element.querySelector<HTMLButtonElement>('[data-testid="takeover-undo-start"]')?.click()
+        fixture.detectChanges()
+        expect(api.undoGroupPersonTakeover).not.toHaveBeenCalled()
+
+        element.querySelector<HTMLButtonElement>('[data-testid="takeover-undo-confirm"]')?.click()
+        await fixture.whenStable()
+        expect(api.undoGroupPersonTakeover).toHaveBeenCalledWith(10, 30)
+        // The page loads again, to show the member as themselves, and so do the group's people everywhere else.
+        expect(api.getGroupCollection).toHaveBeenCalledTimes(2)
+        expect(TestBed.inject(DataService).refreshUserGroups).toHaveBeenCalledTimes(1)
+    })
+
+    it('shows no undo for someone without a takeover', async () => {
+        const { element } = await render(
+            { personId: '20' },
+            {
+                takeovers: [
+                    {
+                        groupPersonId: 30,
+                        accountId: 1,
+                        previousName: 'Carlos',
+                        takenAt: '2026-11-10 10:00:00',
+                        undoableUntil: '2026-12-10 10:00:00',
+                    },
+                ],
+            },
+        )
+
+        expect(element.querySelector('[data-testid="takeover-undo"]')).toBeNull()
     })
 })
