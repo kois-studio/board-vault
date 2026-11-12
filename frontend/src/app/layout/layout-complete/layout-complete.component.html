@@ -9,7 +9,8 @@
 @if (isClerkAuthHandoffActive()) {
 <app-account-pending />
 } @else {
-<main id="main-content" tabindex="-1" class="outline-none">
+<!-- While the usage notice floats at the bottom, room under the page so it can scroll clear of it. -->
+<main id="main-content" tabindex="-1" class="outline-none has-[[data-usage-notice]]:pb-96 lg:has-[[data-usage-notice]]:pb-80">
     @if (isAuthenticated()) {
     <app-usage-notice />
     }

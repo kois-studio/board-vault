@@ -32,8 +32,8 @@ group.
 
 Settings → **Privacy** has one switch, "Help improve Board Vault", on by
 default: usage statistics of our own ([ADR-0021](adr/0021-own-usage-analytics.md)).
-Everyone is told once: until an account answers, a "Lend us a hand?" card above every signed-in page
-explains it with the switch and "Got it". Flipping the switch or "Got it"
+Everyone is told once: until an account answers, a "Lend us a hand?" card floating at the bottom of every signed-in page
+(above the tabs on a phone; it never pushes the page down when it arrives) explains it with the switch and "Got it". Flipping the switch or "Got it"
 answers it for good; turning it off gets "No problem, thanks for playing
 anyway!".
 While signed in, each page shown is counted with the page before it, and

@@ -1,4 +1,4 @@
-import { Component, effect, inject, signal } from '@angular/core'
+import { Component, type ElementRef, effect, inject, signal, viewChild } from '@angular/core'
 import { RouterLink } from '@angular/router'
 import { firstValueFrom } from 'rxjs'
 import { Api } from '../../api/api'
@@ -16,6 +16,7 @@ import { LoginService } from '../../core/services/login.service'
     selector: 'app-usage-notice',
     imports: [RouterLink, ButtonComponent, SwitchComponent],
     templateUrl: './usage-notice.component.html',
+    host: { '(document:focusin)': 'keepFocusClear($event)' },
 })
 export class UsageNoticeComponent {
     private readonly api = inject(Api)
@@ -28,6 +29,8 @@ export class UsageNoticeComponent {
     readonly answered = signal(false)
     readonly saving = signal(false)
 
+    private readonly card = viewChild<ElementRef<HTMLElement>>('card')
+
     private asked = false
 
     constructor() {
@@ -37,6 +40,23 @@ export class UsageNoticeComponent {
                 void this.load()
             }
         })
+    }
+
+    /**
+     * The card floats over the bottom of the page, so a control reached with the keyboard can land
+     * under it; scroll just enough to show it (WCAG 2.4.11, focus not obscured).
+     */
+    keepFocusClear(event: FocusEvent): void {
+        const card = this.card()?.nativeElement
+        const target = event.target
+
+        if (!card || !(target instanceof Element) || card.contains(target)) return
+        const covered = card.getBoundingClientRect()
+        const focused = target.getBoundingClientRect()
+        const overlaps =
+            focused.bottom > covered.top && focused.top < covered.bottom && focused.right > covered.left && focused.left < covered.right
+
+        if (overlaps) window.scrollBy({ top: focused.bottom - covered.top + 16, behavior: 'instant' })
     }
 
     async toggle(next: boolean): Promise<void> {

@@ -46,6 +46,8 @@ describe('UsageNoticeComponent', () => {
         expect(element.textContent).toContain('Lend us a hand?')
         expect(toggle?.getAttribute('aria-checked')).toBe('true')
         expect(element.querySelector('a')?.getAttribute('href')).toBe('/settings/privacy')
+        // It floats over the page, so it never pushes the page down when it arrives late.
+        expect(element.querySelector('[data-testid="usage-notice"]')?.classList).toContain('fixed')
 
         toggle?.click()
         await settle()
@@ -66,5 +68,30 @@ describe('UsageNoticeComponent', () => {
 
         expect(updatePrivacySettings).toHaveBeenCalledWith({ usageAnalytics: true })
         expect(element.querySelector('section')).toBeNull()
+    })
+
+    it('scrolls a control the keyboard reaches out from under the card, and leaves the rest alone', async () => {
+        const { element } = await render({ usageAnalytics: true, noticeAnswered: false })
+        const card = element.querySelector<HTMLElement>('[data-testid="usage-notice"]')
+        const rect = (top: number, bottom: number, left: number, right: number) => () => ({ top, bottom, left, right }) as DOMRect
+        if (!card) throw new Error('no card')
+        card.getBoundingClientRect = rect(500, 800, 16, 432)
+        const under = document.createElement('a')
+        under.getBoundingClientRect = rect(480, 520, 40, 200)
+        const beside = document.createElement('a')
+        beside.getBoundingClientRect = rect(480, 520, 600, 800)
+        document.body.append(under, beside)
+        const scrollBy = vi.spyOn(window, 'scrollBy').mockImplementation(() => undefined)
+
+        beside.dispatchEvent(new FocusEvent('focusin', { bubbles: true }))
+        card.querySelector('button')?.dispatchEvent(new FocusEvent('focusin', { bubbles: true }))
+        expect(scrollBy).not.toHaveBeenCalled()
+
+        under.dispatchEvent(new FocusEvent('focusin', { bubbles: true }))
+        expect(scrollBy).toHaveBeenCalledWith({ top: 36, behavior: 'instant' })
+
+        scrollBy.mockRestore()
+        under.remove()
+        beside.remove()
     })
 })

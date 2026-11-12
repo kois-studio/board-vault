@@ -1,31 +1,40 @@
 @if (usageAnalytics() !== null) {
-<div class="container mx-auto max-w-6xl px-4 pt-4 md:pt-6">
-    <section class="rounded-xl border border-bv-primary/30 bg-bv-primary-soft p-5 shadow-sm" aria-labelledby="usage-notice-heading">
-        <p id="usage-notice-heading" class="text-lg font-semibold text-bv-text" i18n="Heading of the card that asks once about usage statistics">Lend us a hand? 🎲</p>
-        <p class="mt-1 text-sm leading-6 text-bv-text-muted" i18n="Text on the card that asks once about usage statistics">
-            Board Vault is made by a tiny indie team. Leaving this on lets us count which pages get opened and where game nights get stuck, so
-            we know what to fix next.
-        </p>
-        <p class="mt-1 text-sm leading-6 text-bv-text-muted" i18n="Text on the card that asks once about usage statistics">Just counts under a pseudonym, in our own database. No cookies, no ads, nothing shared.</p>
+<!--
+    Fixed at the bottom, above the bottom tabs on a phone, so it never pushes the page down when the
+    answer arrives after the page has drawn. The layout pads the end of <main> while it shows, so it
+    never covers the last of the page for good, and keyboard focus that lands under it scrolls clear.
+-->
+<section
+    class="fixed inset-x-3 bottom-[calc(4.75rem+env(safe-area-inset-bottom))] z-30 max-h-[70vh] overflow-y-auto rounded-xl border border-bv-primary/30 bg-bv-primary-soft p-5 shadow-lg sm:inset-x-auto sm:left-4 sm:w-[26rem] lg:bottom-4"
+    aria-labelledby="usage-notice-heading"
+    #card
+    data-usage-notice
+    data-testid="usage-notice"
+>
+    <p id="usage-notice-heading" class="text-lg font-semibold text-bv-text" i18n="Heading of the card that asks once about usage statistics">Lend us a hand? 🎲</p>
+    <p class="mt-1 text-sm leading-6 text-bv-text-muted" i18n="Text on the card that asks once about usage statistics">
+        Board Vault is made by a tiny indie team. Leaving this on lets us count which pages get opened and where game nights get stuck, so
+        we know what to fix next.
+    </p>
+    <p class="mt-1 text-sm leading-6 text-bv-text-muted" i18n="Text on the card that asks once about usage statistics">Just counts under a pseudonym, in our own database. No cookies, no ads, nothing shared.</p>
 
-        <div class="mt-4 flex flex-wrap items-center justify-between gap-4">
-            <div class="flex items-center gap-3">
-                <app-switch [checked]="usageAnalytics() === true" labelledBy="usage-notice-switch" [disabled]="saving()" (toggled)="toggle($event)" />
-                <span id="usage-notice-switch" class="font-medium text-bv-text" i18n="Label of the usage statistics switch in the card that asks about usage statistics; the same switch is in Settings, Privacy">Help improve Board Vault</span>
-            </div>
-            <button appButton type="button" variant="secondary" [disabled]="saving()" (click)="close()" i18n="Button that closes the card that asks once about usage statistics">Got it</button>
+    <div class="mt-4 flex flex-wrap items-center justify-between gap-4">
+        <div class="flex items-center gap-3">
+            <app-switch [checked]="usageAnalytics() === true" labelledBy="usage-notice-switch" [disabled]="saving()" (toggled)="toggle($event)" />
+            <span id="usage-notice-switch" class="font-medium text-bv-text" i18n="Label of the usage statistics switch in the card that asks about usage statistics; the same switch is in Settings, Privacy">Help improve Board Vault</span>
         </div>
+        <button appButton type="button" variant="secondary" [disabled]="saving()" (click)="close()" i18n="Button that closes the card that asks once about usage statistics">Got it</button>
+    </div>
 
-        <p class="mt-3 text-sm text-bv-text-muted" aria-live="polite">
-            @if (answered()) {
-                @if (usageAnalytics()) {
-                <ng-container i18n="Thanks on the card that asks once about usage statistics after turning statistics on">Thank you, that really helps! 🙌</ng-container>&ngsp;
-                } @else {
-                <ng-container i18n="Answer on the card that asks once about usage statistics after turning statistics off">No problem, thanks for playing anyway!</ng-container>&ngsp;
-                }
+    <p class="mt-3 text-sm text-bv-text-muted" aria-live="polite">
+        @if (answered()) {
+            @if (usageAnalytics()) {
+            <ng-container i18n="Thanks on the card that asks once about usage statistics after turning statistics on">Thank you, that really helps! 🙌</ng-container>&ngsp;
+            } @else {
+            <ng-container i18n="Answer on the card that asks once about usage statistics after turning statistics off">No problem, thanks for playing anyway!</ng-container>&ngsp;
             }
-            <ng-container i18n="Line at the bottom of the card that asks once about usage statistics; Settings → Privacy names the place in the app">Change it anytime in <a routerLink="/settings/privacy" class="font-medium text-bv-primary underline">Settings → Privacy</a>.</ng-container>
-        </p>
-    </section>
-</div>
+        }
+        <ng-container i18n="Line at the bottom of the card that asks once about usage statistics; Settings → Privacy names the place in the app">Change it anytime in <a routerLink="/settings/privacy" class="font-medium text-bv-primary underline">Settings → Privacy</a>.</ng-container>
+    </p>
+</section>
 }
