@@ -208,12 +208,12 @@ export class LogSessionWizardComponent {
     public groupPeople = signal<Array<GroupPersonWorkspaceType>>([])
     public groupPersonCatalog = signal<Array<GameCompleteType>>([])
     public usesGroupPeople = signal(false)
-    /** The group's people (and the games only they own) are on their way; who came can't be settled yet. */
     /** How many people the chosen group says it has, for the tiles held while its people load (#261). */
     public readonly expectedPeople = computed(() => {
         const group = this.selectedGroup()
         return group ? group.members.length + (group.placeholders?.length ?? 0) : 3
     })
+    /** The group's people (and the games only they own) are on their way; who came can't be settled yet. */
     public readonly peopleLoading = signal(false)
     /** The group's people couldn't be loaded, so people without an account would be missing from the list. */
     public readonly peopleError = signal(false)
