@@ -212,6 +212,15 @@
         <source>Loading group management…</source>
       </segment>
     </unit>
+    <unit id="1089059468427781482">
+      <notes>
+        <note category="location">src/app/pages/meet-view/meet-view.component.html</note>
+        <note category="description">On a game night&apos;s page, under its header, when its group could not be loaded</note>
+      </notes>
+      <segment>
+        <source>The games and people of this game night could not be loaded.</source>
+      </segment>
+    </unit>
     <unit id="1096616252302957220">
       <notes>
         <note category="location">src/app/pages/collection-page/collection-page.component.html</note>
@@ -1145,15 +1154,6 @@
         <source>Review the proposal</source>
       </segment>
     </unit>
-    <unit id="1631772354564614293">
-      <notes>
-        <note category="location">src/app/pages/group-view/group-view.component.html</note>
-        <note category="description">Read by screen readers while the number of game nights on the group page loads</note>
-      </notes>
-      <segment>
-        <source>Sessions loading</source>
-      </segment>
-    </unit>
     <unit id="1633454937322260760">
       <notes>
         <note category="location">src/app/pages/dashboard-page/submissions-page/submissions-page.component.html</note>
@@ -1874,6 +1874,15 @@
         <source>Password compromised</source>
       </segment>
     </unit>
+    <unit id="19935782383075343">
+      <notes>
+        <note category="location">src/app/pages/group-view/group-view.component.html</note>
+        <note category="description">Read by screen readers while the standings on the group page load</note>
+      </notes>
+      <segment>
+        <source>Loading standings and stats</source>
+      </segment>
+    </unit>
     <unit id="1997128271700793348">
       <notes>
         <note category="location">src/app/pages/meet-view/meet-view.component.ts</note>
@@ -2359,15 +2368,6 @@
         <source><ph id="0" equiv="actor" disp="actor"/> removed what they think of <ph id="1" equiv="game" disp="game"/></source>
       </segment>
     </unit>
-    <unit id="2237775413745074505">
-      <notes>
-        <note category="location">src/app/pages/group-view/group-view.component.html</note>
-        <note category="description">Shown while the group page loads</note>
-      </notes>
-      <segment>
-        <source>We are checking the group and its shared context.</source>
-      </segment>
-    </unit>
     <unit id="2239575659977649041">
       <notes>
         <note category="location">src/app/pages/games/game-view/game-view.component.html</note>
@@ -2599,10 +2599,12 @@
     </unit>
     <unit id="2369742814572661392">
       <notes>
+        <note category="location">src/app/components/session-summary/session-summary.component.html</note>
         <note category="location">src/app/components/ui/async/async.component.ts</note>
         <note category="location">src/app/core/i18n/clerk-localization.ts</note>
         <note category="location">src/app/layout/account-pending/account-pending.component.html</note>
         <note category="location">src/app/pages/collection-page/collection-page.component.ts</note>
+        <note category="location">src/app/pages/group-view/group-view.component.html</note>
         <note category="location">src/app/pages/play-page/play-page.component.ts</note>
         <note category="description">Read by screen readers while a section of a page loads</note>
       </notes>
@@ -4961,6 +4963,15 @@
       </notes>
       <segment>
         <source>Welcome</source>
+      </segment>
+    </unit>
+    <unit id="3499118516626858073">
+      <notes>
+        <note category="location">src/app/pages/meet-view/meet-view.component.html</note>
+        <note category="description">Read by screen readers while the played games of a game night load</note>
+      </notes>
+      <segment>
+        <source>Loading what was played</source>
       </segment>
     </unit>
     <unit id="3501859429132712649">
@@ -7436,6 +7447,15 @@
         <source>Save results</source>
       </segment>
     </unit>
+    <unit id="4663580373618474486">
+      <notes>
+        <note category="location">src/app/pages/group-view/group-view.component.html</note>
+        <note category="description">On the group page in place of the next game night, when the game nights could not be loaded</note>
+      </notes>
+      <segment>
+        <source>Your game nights could not be loaded, so the next one is unknown.</source>
+      </segment>
+    </unit>
     <unit id="4666533801389851565">
       <notes>
         <note category="location">src/app/components/session-summary/session-summary.component.html</note>
@@ -9307,6 +9327,7 @@
     <unit id="5643561794785412000">
       <notes>
         <note category="location">src/app/pages/collection-page/collection-page.component.ts</note>
+        <note category="location">src/app/pages/group-view/group-view.component.html</note>
         <note category="location">src/app/pages/play-page/play-page.component.ts</note>
         <note category="description">Badge on a Collection card when its count could not load</note>
       </notes>
@@ -12754,15 +12775,6 @@
         <source>Me · My Games</source>
       </segment>
     </unit>
-    <unit id="7359245677792133477">
-      <notes>
-        <note category="location">src/app/pages/group-view/group-view.component.html</note>
-        <note category="description">Shown on the group page before the group has a collection worth</note>
-      </notes>
-      <segment>
-        <source>The more sessions you record, the better the group’s memory becomes.</source>
-      </segment>
-    </unit>
     <unit id="7360250126742640921">
       <notes>
         <note category="location">src/app/layout/footer/footer.component.html</note>
@@ -13337,6 +13349,15 @@
       </notes>
       <segment>
         <source>Your page in <ph id="0" equiv="INTERPOLATION" disp="{{ group.name }}"/></source>
+      </segment>
+    </unit>
+    <unit id="7661655949395403117">
+      <notes>
+        <note category="location">src/app/pages/group-view/group-view.component.html</note>
+        <note category="description">Read by screen readers on the group page while the game nights load</note>
+      </notes>
+      <segment>
+        <source>Loading the next game night</source>
       </segment>
     </unit>
     <unit id="7662015208795302518">

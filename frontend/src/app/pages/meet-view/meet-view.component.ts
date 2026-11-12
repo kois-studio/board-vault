@@ -20,7 +20,12 @@ import type {
 import { ImageProfileComponent } from '../../components/image-profile/image-profile.component'
 import { RecommendationCardComponent } from '../../components/recommendation-card/recommendation-card.component'
 import { type SessionStat, SessionSummaryComponent } from '../../components/session-summary/session-summary.component'
+import { SkeletonPlayedGamesComponent } from '../../components/skeletons/skeleton-played-games/skeleton-played-games.component'
+import { SkeletonSessionActionsComponent } from '../../components/skeletons/skeleton-session-actions/skeleton-session-actions.component'
+import { SkeletonSessionBodyComponent } from '../../components/skeletons/skeleton-session-body/skeleton-session-body.component'
+import { SkeletonSessionPageComponent } from '../../components/skeletons/skeleton-session-page/skeleton-session-page.component'
 import { ToastService } from '../../components/toast/toast.service'
+import { ASYNC } from '../../components/ui/async/async.component'
 import { ButtonComponent } from '../../components/ui/button/button.component'
 import { ContainerWrapperComponent } from '../../components/ui/container-wrapper/container-wrapper.component'
 import { DialogDirective } from '../../components/ui/dialog/dialog.directive'
@@ -28,7 +33,7 @@ import { IconComponent } from '../../components/ui/icon/icon.component'
 import { ImageBackgroundComponent } from '../../components/ui/image-background/image-background.component'
 import { InPageLinkDirective } from '../../components/ui/in-page-link/in-page-link.directive'
 import { StarRatingComponent } from '../../components/ui/star-rating/star-rating.component'
-import { settledValue } from '../../core/async/resource-state'
+import { loadingState, type ResourceState, readyState, settledValue } from '../../core/async/resource-state'
 import { formatList, intlLocale } from '../../core/i18n/format'
 import { PlayersPipe } from '../../core/pipes/count.pipe'
 import { CustomDatePipe } from '../../core/pipes/customDate.pipe'
@@ -83,6 +88,11 @@ const resultKey = (entry: Pick<GameResultEntryType, 'accountId' | 'groupPersonId
         DialogDirective,
         RecommendationCardComponent,
         StarRatingComponent,
+        ASYNC,
+        SkeletonSessionPageComponent,
+        SkeletonSessionBodyComponent,
+        SkeletonSessionActionsComponent,
+        SkeletonPlayedGamesComponent,
     ],
     templateUrl: 'meet-view.component.html',
 })
@@ -90,11 +100,22 @@ export class MeetViewComponent {
     /** Arrived straight from saving a recording: the confirmation and follow-ups show this once. */
     public justSaved = false
     private readonly router = inject(Router)
-    /** Everything the page needs has arrived: the night, its group, its people and its plays. */
-    public loaded = false
     /** Until the night itself arrives: its header shows then, and the rest while it loads (#258). */
     public readonly isLoading = signal(true)
+    /** The night itself could not be loaded: the page says so instead of anything else. */
     public readonly loadError = signal(false)
+    /**
+     * The night's group, its people and catalogue (#260): everything under the header waits on them, with a skeleton
+     * in its shape, and says so under the header when they could not be loaded.
+     */
+    public readonly detailsState = signal<ResourceState<true>>(loadingState())
+    /** The night's plays: the played games wait on them, with their own placeholder. A failure says so next to them. */
+    public readonly recordingState = signal<ResourceState<true>>(loadingState())
+
+    /** The night, its group and its people have arrived; the plays may still be on their way. */
+    public get loaded(): boolean {
+        return this.detailsState().status === 'ready'
+    }
     private requestedMeetId: number | null = null
     /** Bumped on every load, so a Retry's answers replace the earlier ones and never the other way round. */
     private loadVersion = 0
@@ -188,20 +209,24 @@ export class MeetViewComponent {
     /**
      * Three waves at most (#258): the night and its plays, which need only the address; then its group, people,
      * catalogue and suggestions, which need its group; then, rarely, a played game no one in the group has.
-     * The header shows as soon as the night arrives.
+     * The header shows as soon as the night arrives, the rest once its group has, and the played games once the
+     * plays have (#260). A Retry keeps the header on screen while the night is asked for again.
      */
     private async loadMeetDetails(meetId: number, freshGroup = false): Promise<void> {
         const version = ++this.loadVersion
         const current = () => version === this.loadVersion && !this.destroyRef.destroyed
-        this.loaded = false
-        this.isLoading.set(true)
+        let nightArrived = false
+        if (!this.meetData) this.isLoading.set(true)
         this.loadError.set(false)
+        this.detailsState.set(loadingState())
+        this.recordingState.set(loadingState())
         try {
             // Asked for with the night; it never fails the page (its own message offers Retry).
             const recording = this.#fetchRecording(meetId, current)
             const meetData = await firstValueFrom(this.api.getSessionDetailsById(meetId))
             if (!current()) return
             if (!meetData) throw new Error('No session')
+            nightArrived = true
             this.meetData = meetData
             this.plannedGameIdsDraft = [...meetData.plannedGames]
             this.meetDataCopyOriginal = JSON.parse(JSON.stringify(meetData))
@@ -224,19 +249,22 @@ export class MeetViewComponent {
             this.groupPeople = groupPeople
             this.groupPersonCatalog = groupPersonCatalog
 
+            // After getting group data, index all reviews by gameId
+            this.#indexReviews(groupData)
+            this.detailsState.set(readyState(true))
+            this.changeDetector.markForCheck()
+
             const played = await recording
             if (!current()) return
             await this.#applyRecording(played, current)
             if (!current()) return
-
-            // After getting group data, index all reviews by gameId
-            this.#indexReviews(groupData)
-
-            this.loaded = true
-        } catch {
+            // Shown even when the plays failed: the games marked as played, with the failure and its Retry.
+            this.recordingState.set(readyState(true))
+        } catch (error: unknown) {
             if (!current()) return
-            this.loaded = false
-            this.loadError.set(true)
+            // The night is on screen: only what waits on its group says it failed. Otherwise the whole page does.
+            if (nightArrived) this.detailsState.set({ status: 'error', value: undefined, error })
+            else this.loadError.set(true)
         } finally {
             if (current()) {
                 this.isLoading.set(false)
@@ -909,6 +937,15 @@ export class MeetViewComponent {
         }
 
         return this.meetData.attendeeStatuses.find((attendee) => attendee.accountId === currentUserId)?.rsvpStatus ?? null
+    }
+
+    /**
+     * While the group loads, whether "Can you make it?" is likely to show, so its place is held (#260). With group
+     * people, who you are among them is only known once they arrive: a night that takes answers holds it.
+     */
+    get mayAskForAnswer(): boolean {
+        if (!this.canEditSession || this.isAwaitingResults) return false
+        return this.isGroupPersonSession || this.currentRsvpStatus !== null
     }
 
     get canRespondToRsvp(): boolean {

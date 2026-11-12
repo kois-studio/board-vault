@@ -1,5 +1,6 @@
 import { NgTemplateOutlet } from '@angular/common'
 import {
+    booleanAttribute,
     Component,
     computed,
     contentChild,
@@ -80,6 +81,18 @@ export function isEmptyValue(value: unknown): boolean {
     host: { class: 'block', '[attr.aria-busy]': 'busy() ? "true" : null' },
     template: `
         @switch (view()) {
+            @case ('waiting') {
+                @if (holdSpace()) {
+                    <!-- Unseen, so nothing flashes, but in its place, so nothing below moves when it shows (#260). -->
+                    <div class="invisible" aria-hidden="true" data-async="holding">
+                        @if (loadingTemplate(); as loading) {
+                            <ng-container [ngTemplateOutlet]="loading.template" />
+                        } @else {
+                            <div class="h-24"></div>
+                        }
+                    </div>
+                }
+            }
             @case ('skeleton') {
                 <div role="status">
                     <span class="sr-only">{{ loadingLabel() || defaultLoadingLabel }}</span>
@@ -139,6 +152,11 @@ export class AsyncComponent<T> {
     readonly loadingLabel = input<string>('')
     /** Says what failed when there is no error template, such as "Your groups could not be loaded." */
     readonly errorMessage = input<string>('')
+    /**
+     * Holds the skeleton's space, unseen, in the first 150 ms too, for a section in the flow of a page, so what
+     * follows it does not move twice (#260).
+     */
+    readonly holdSpace = input(false, { transform: booleanAttribute })
     /** Retry was pressed: load it again. */
     readonly retry = output<void>()
 

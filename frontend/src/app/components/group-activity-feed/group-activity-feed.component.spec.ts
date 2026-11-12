@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing'
 import { provideRouter } from '@angular/router'
-import { of, throwError } from 'rxjs'
+import { of, Subject, throwError } from 'rxjs'
 import { Api } from '../../api/api'
 import type { GroupActivityPageType, GroupActivityType, GroupPersonTakeoverType } from '../../api/api.types'
 import { GroupActivityFeedComponent } from './group-activity-feed.component'
@@ -151,5 +151,30 @@ describe('GroupActivityFeedComponent', () => {
         await render([new Error('offline')])
 
         expect(text()).toContain('The history could not be loaded.')
+    })
+
+    it('holds the place of the first changes in their size while they load, never saying nothing changed (#260)', async () => {
+        const page = new Subject<GroupActivityPageType>()
+        getGroupActivity = vi.fn().mockReturnValue(page)
+        getGroupPersonTakeovers = vi.fn().mockReturnValue(of([]))
+        await TestBed.configureTestingModule({
+            imports: [GroupActivityFeedComponent],
+            providers: [provideRouter([]), { provide: Api, useValue: { getGroupActivity, getGroupPersonTakeovers } }],
+        }).compileComponents()
+        fixture = TestBed.createComponent(GroupActivityFeedComponent)
+        fixture.componentRef.setInput('groupId', 10)
+        fixture.detectChanges()
+        const element = fixture.nativeElement as HTMLElement
+
+        expect(element.querySelector('[data-testid="history-skeleton"]')).not.toBeNull()
+        expect(element.querySelector('[role="status"]')?.textContent).toContain('Loading the history…')
+        expect(text()).not.toContain('Nothing has changed yet')
+
+        page.next({ entries: [entry(1)], hasMore: false })
+        page.complete()
+        await fixture.whenStable()
+        fixture.detectChanges()
+        expect(element.querySelector('[data-testid="history-skeleton"]')).toBeNull()
+        expect(element.querySelectorAll('ol li')).toHaveLength(1)
     })
 })

@@ -208,6 +208,15 @@
         <target>Caricamento della gestione del gruppo…</target>
       </segment>
     </unit>
+    <unit id="1089059468427781482">
+      <notes>
+        <note category="description">On a game night&apos;s page, under its header, when its group could not be loaded</note>
+      </notes>
+      <segment state="translated">
+        <source>The games and people of this game night could not be loaded.</source>
+        <target>Non è stato possibile caricare i giochi e le persone di questa serata di giochi.</target>
+      </segment>
+    </unit>
     <unit id="1096616252302957220">
       <notes>
         <note category="description">Description of the My Games card on the Collection page</note>
@@ -1123,15 +1132,6 @@
         <target>Esamina la proposta</target>
       </segment>
     </unit>
-    <unit id="1631772354564614293">
-      <notes>
-        <note category="description">Read by screen readers while the number of game nights on the group page loads</note>
-      </notes>
-      <segment state="translated">
-        <source>Sessions loading</source>
-        <target>Caricamento delle serate</target>
-      </segment>
-    </unit>
     <unit id="1633454937322260760">
       <notes>
         <note category="description">While the list of your game proposals loads</note>
@@ -1840,6 +1840,15 @@
         <target>Password compromessa</target>
       </segment>
     </unit>
+    <unit id="19935782383075343">
+      <notes>
+        <note category="description">Read by screen readers while the standings on the group page load</note>
+      </notes>
+      <segment state="translated">
+        <source>Loading standings and stats</source>
+        <target>Caricamento di classifica e statistiche</target>
+      </segment>
+    </unit>
     <unit id="1997128271700793348">
       <notes>
         <note category="description">Toast after recording who owns a game played on a game night; the placeholder is a name or My Games</note>
@@ -2310,15 +2319,6 @@
       <segment state="translated">
         <source><ph id="0" equiv="actor" disp="actor"/> removed what they think of <ph id="1" equiv="game" disp="game"/></source>
         <target><ph id="0" equiv="actor" disp="actor"/> ha rimosso la propria opinione su <ph id="1" equiv="game" disp="game"/></target>
-      </segment>
-    </unit>
-    <unit id="2237775413745074505">
-      <notes>
-        <note category="description">Shown while the group page loads</note>
-      </notes>
-      <segment state="translated">
-        <source>We are checking the group and its shared context.</source>
-        <target>Stiamo controllando il gruppo e ciò che condivide.</target>
       </segment>
     </unit>
     <unit id="2239575659977649041">
@@ -4879,6 +4879,15 @@
         <target>Ti diamo il benvenuto</target>
       </segment>
     </unit>
+    <unit id="3499118516626858073">
+      <notes>
+        <note category="description">Read by screen readers while the played games of a game night load</note>
+      </notes>
+      <segment state="translated">
+        <source>Loading what was played</source>
+        <target>Caricamento di ciò che è stato giocato</target>
+      </segment>
+    </unit>
     <unit id="3501859429132712649">
       <notes>
         <note category="description">Hint in the Account settings about who keeps your sign-in details</note>
@@ -7314,6 +7323,15 @@
       <segment state="translated">
         <source>Save results</source>
         <target>Salva i risultati</target>
+      </segment>
+    </unit>
+    <unit id="4663580373618474486">
+      <notes>
+        <note category="description">On the group page in place of the next game night, when the game nights could not be loaded</note>
+      </notes>
+      <segment state="translated">
+        <source>Your game nights could not be loaded, so the next one is unknown.</source>
+        <target>Non è stato possibile caricare le tue serate di giochi, quindi la prossima non è nota.</target>
       </segment>
     </unit>
     <unit id="4666533801389851565">
@@ -12550,15 +12568,6 @@
         <target>Io · I miei giochi</target>
       </segment>
     </unit>
-    <unit id="7359245677792133477">
-      <notes>
-        <note category="description">Shown on the group page before the group has a collection worth</note>
-      </notes>
-      <segment state="translated">
-        <source>The more sessions you record, the better the group’s memory becomes.</source>
-        <target>Più serate registrate, migliore diventa la memoria del gruppo.</target>
-      </segment>
-    </unit>
     <unit id="7360250126742640921">
       <notes>
         <note category="description">Under the contact link in the footer of the public pages; the placeholder is the contact email address</note>
@@ -13119,6 +13128,15 @@
       <segment state="translated">
         <source>Your page in <ph id="0" equiv="INTERPOLATION" disp="{{ group.name }}"/></source>
         <target>La tua pagina in <ph id="0" equiv="INTERPOLATION" disp="{{ group.name }}"/></target>
+      </segment>
+    </unit>
+    <unit id="7661655949395403117">
+      <notes>
+        <note category="description">Read by screen readers on the group page while the game nights load</note>
+      </notes>
+      <segment state="translated">
+        <source>Loading the next game night</source>
+        <target>Caricamento della prossima serata di giochi</target>
       </segment>
     </unit>
     <unit id="7662015208795302518">
