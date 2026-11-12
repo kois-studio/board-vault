@@ -63,7 +63,7 @@ function preferenceSet(actor: string, person: string, game: string, preference: 
  * What one history entry says, as a sentence that starts with who did it: "Rita removed Catan
  * from Pedro's games". Unknown types still read as something, so an older app never shows a blank.
  */
-export function describeActivity(entry: GroupActivityType): string {
+export function describeActivity(entry: GroupActivityType, context: { previousName?: string } = {}): string {
     const actor = activityName(entry.actor)
     const person = activityName(entry.person)
     const game = entry.game?.title ?? aGame()
@@ -168,7 +168,18 @@ export function describeActivity(entry: GroupActivityType): string {
         case 'person_restored':
             return $localize`:Group history line; actor and person are names:${actor}:actor: brought back ${person}:person:`
         case 'person_claimed':
+            // While the takeover can be undone, its snapshot still has the name the group used (ADR-0027).
+            if (context.previousName)
+                return $localize`:Group history line, someone taking over a person the group had recorded; actor and person are names:${actor}:actor: took over ${context.previousName}:person:`
+            // Linked to them, so it has their name now: "Ana linked Ana to their account" would say nothing.
+            if (own)
+                return $localize`:Group history line, someone taking over a person the group had recorded, once the earlier name is no longer kept; actor is a name:${actor}:actor: took over the history the group had recorded for them`
             return $localize`:Group history line, someone linking a group person to their own account; actor and person are names:${actor}:actor: linked ${person}:person: to their account`
+        case 'person_takeover_undone':
+            // The person has their name back; the subject is who had taken them over (ADR-0027).
+            if (entry.subject?.id === entry.actor.id)
+                return $localize`:Group history line, someone saying they are not a person they had taken over; actor and person are names:${actor}:actor: said they aren’t ${person}:person: and gave them back to the group`
+            return $localize`:Group history line, someone undoing a takeover; actor, person and member are names:${actor}:actor: gave ${person}:person: back to the group; ${activityName(entry.subject)}:member: stays as themselves`
         case 'person_game_set': {
             const status = entry.data['status']
             if (own) {

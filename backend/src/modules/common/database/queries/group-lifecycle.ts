@@ -9,7 +9,7 @@ import type { Transaction } from '@libsql/client'
  * Completed sessions keep the account and its group person untouched, so history
  * counts never change. Sessions that have not happened yet drop them, and the
  * sessions they organised that are still scheduled or running pass to the group
- * owner, who can then manage them. Invitations to them in the group go, claim tickets included. Their votes and the games they said they would bring go from
+ * owner, who can then manage them. Invitations to them in the group go, suggestions of a person to take over included. Their votes and the games they said they would bring go from
  * those upcoming sessions too, and so do their notifications about the group, which would only
  * lead to pages they can no longer open, and what the others were told about their shelf there.
  * Run it after any ownership change.
@@ -20,7 +20,7 @@ export async function departGroup(transaction: Transaction, accountId: number, g
 
     await transaction.batch([
         { sql: 'DELETE FROM GroupMembership WHERE accountId = ? AND groupId = ?', args: [accountId, groupId] },
-        // A placeholder they were still invited to claim is not theirs once they are gone (#277); coming back takes a new invitation.
+        // A suggestion of a person to take over goes with them (#277); coming back takes a new invitation.
         { sql: 'DELETE FROM Invitation WHERE toAccountId = ? AND groupId = ?', args: [accountId, groupId] },
         { sql: `DELETE FROM MeetGameResult WHERE accountId = ? AND meetId IN (${upcoming})`, args: [accountId, groupId] },
         {
@@ -64,6 +64,8 @@ export async function deleteGroupRows(transaction: Transaction, groupId: number)
         { sql: `DELETE FROM MeetPersonGame WHERE meetId IN (${meets})`, args: [groupId] },
         { sql: `DELETE FROM MeetPersonAttendee WHERE meetId IN (${meets})`, args: [groupId] },
         { sql: 'DELETE FROM Meet WHERE groupId = ?', args: [groupId] },
+        // Takeover snapshots (ADR-0027): the cascade does this too, unless foreign keys are off.
+        { sql: 'DELETE FROM GroupPersonTakeover WHERE groupId = ?', args: [groupId] },
         // Everyone's notifications about the group lead nowhere once it is gone.
         forgetGroupNotifications(groupId, null),
         // Its row count tells the caller whether the group went (read as the second to last result).

@@ -6,7 +6,8 @@ product decisions.
 | Term | Meaning | Avoid saying |
 | --- | --- | --- |
 | Group | A private workspace for one recurring game group. It owns shared decisions, sessions, and memory. | Community, public club |
-| Group person | A person represented inside one group (`GroupPerson`). It is either `linked` to a member's account, or a `placeholder` with no account until its owner claims it. The UI marks placeholders as “No account yet”. | Fake user, synthetic account, phantom member |
+| Group person | A person represented inside one group (`GroupPerson`). It is either `linked` to a member's account, or a `placeholder` with no account until someone who joins says “this is me” and takes it over (ADR-0027). The UI marks placeholders as “No account yet”. | Fake user, synthetic account, phantom member |
+| Takeover | A member saying “this is me” about a group person without an account, which links that person and their history to the member's account (`GroupPersonTakeover`, ADR-0027). Anyone in the group can undo it for 30 days. | Claim (in the UI), merge |
 | Shelf | One account's private list of games they can bring, labelled “My Games” in the Collection section. It is not automatically visible as a global catalogue. | Library (that is the group's tab), catalogue |
 | Shared shelf | The group view derived from member-owned games and group-scoped ownership records. It is the input to recommendations and planning. | Marketplace, public library |
 | Session | One planned or completed game night. The API still contains historical `Meet` names for compatibility. | Event when discussing game-night state |

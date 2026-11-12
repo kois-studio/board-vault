@@ -69,6 +69,7 @@ const linkedPerson = (id: number, accountId: number, displayName: string, gameId
     ownership: gameIds.map((gameId) => ({ gameId, status: 'asserted' as const, source: 'account_collection' })),
     preferences: [],
     claimable: false,
+    suggested: false,
 })
 
 describe('LogSessionWizardComponent games step', () => {

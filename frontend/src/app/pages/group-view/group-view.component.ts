@@ -168,7 +168,12 @@ export class GroupViewComponent {
     public readonly isLeaveDialogOpen = signal(false)
     public readonly isLeavingGroup = signal(false)
 
-    public readonly claimableGroupPersonComputed = computed(() => this.groupPeople$().find((person) => person.claimable) ?? null)
+    /** The person an invitation suggested to you, while you are not one of the group's people yet (#278). */
+    public readonly claimableGroupPersonComputed = computed(
+        () => this.groupPeople$().find((person) => person.claimable && person.suggested) ?? null,
+    )
+    /** Whether you may say "this is me" about someone without an account (#278). */
+    public readonly canChooseGroupPersonComputed = computed(() => this.groupPeople$().some((person) => person.claimable))
     /** The people list: members who left or deleted their account show only with the archived people (ADR-0018). */
     public readonly visibleGroupPeopleComputed = computed(() =>
         this.groupPeople$().filter(

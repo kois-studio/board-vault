@@ -549,8 +549,44 @@ export const groupPeopleSchema = z.object({
             ownership: z.array(groupPersonOwnershipSchema),
             preferences: z.array(groupPersonPreferenceSchema),
             claimable: z._default(z.boolean(), false),
+            suggested: z._default(z.boolean(), false),
         }),
     ),
+})
+
+/** The people a new member may say "this is me" about (#278). */
+export const groupPersonChoicesSchema = z.object({
+    choices: z.array(
+        z.object({
+            person: groupPersonSchema,
+            suggested: z.boolean(),
+            games: z.array(z.object({ id: z.number(), title: z.nullable(z.string()) })),
+            nights: z.number(),
+            lastNight: z.nullable(z.string()),
+        }),
+    ),
+})
+
+/** Takeovers the group can still undo (ADR-0027). */
+export const groupPersonTakeoversSchema = z.object({
+    takeovers: z.array(
+        z.object({
+            groupPersonId: z.number(),
+            accountId: z.number(),
+            previousName: z.string(),
+            takenAt: z.string(),
+            undoableUntil: z.string(),
+        }),
+    ),
+})
+
+export const undoGroupPersonTakeoverSchema = z.object({ groupPersonId: z.number(), newPersonId: z.number() })
+
+export const acceptInvitationSchema = z.object({
+    success: z.literal(true),
+    // Older API versions answered only `success`: nothing to choose then.
+    groupId: z.optional(z.number()),
+    choosePerson: z._default(z.boolean(), false),
 })
 
 export const groupPersonSchemaResponse = groupPersonSchema

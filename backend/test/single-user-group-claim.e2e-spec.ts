@@ -17,7 +17,7 @@ const testDatabasePath = resolve(__dirname, 'single-user-group-claim.e2e.sqlite'
 
 const sqlLiteral = (value: string): string => `'${value.replaceAll("'", "''")}'`
 
-describe('single-user group claim workflow (e2e)', () => {
+describe('taking over a group person (e2e)', () => {
     let app: INestApplication
     let database: Client
 
@@ -166,16 +166,33 @@ describe('single-user group claim workflow (e2e)', () => {
 
         expect(untouched.rows[0]?.n).toBe(0)
 
-        // Someone else in the group, invited without a suggestion, sees nothing to claim and cannot claim it.
+        // Someone else, invited without a suggestion, joins without a person and may say "this is me" about anyone
+        // without an account (#278). They say they are new instead, and then there is nobody left for them to take over.
         await request(app.getHttpServer())
             .post('/invitations/byUsername')
             .set(withAuth(organizerToken))
             .send({ groupId, username: 'other' })
             .expect(201)
-        await request(app.getHttpServer()).post('/memberships').set(withAuth(otherToken)).send({ groupId }).expect(201)
+        await request(app.getHttpServer())
+            .post('/memberships')
+            .set(withAuth(otherToken))
+            .send({ groupId })
+            .expect(201)
+            .expect({ success: true, groupId, choosePerson: true })
         const otherWorkspace = await request(app.getHttpServer()).get(`/groups/${groupId}/people`).set(withAuth(otherToken)).expect(200)
 
-        expect(otherWorkspace.body.people.filter((person: { claimable: boolean }) => person.claimable)).toEqual([])
+        expect(
+            otherWorkspace.body.people
+                .filter((person: { claimable: boolean }) => person.claimable)
+                .map((person: { person: { id: number }; suggested: boolean }) => [person.person.id, person.suggested]),
+        ).toEqual([
+            [anaId, false],
+            [exampleMemberId, false],
+        ])
+        await request(app.getHttpServer()).post(`/groups/${groupId}/people/join`).set(withAuth(otherToken)).expect(201)
+        const otherAfterJoining = await request(app.getHttpServer()).get(`/groups/${groupId}/people`).set(withAuth(otherToken)).expect(200)
+
+        expect(otherAfterJoining.body.people.filter((person: { claimable: boolean }) => person.claimable)).toEqual([])
         await request(app.getHttpServer()).post(`/groups/${groupId}/people/${anaId}/claim`).set(withAuth(otherToken)).send({}).expect(403)
 
         await request(app.getHttpServer()).post('/memberships').set(withAuth(memberToken)).send({ groupId }).expect(201)
@@ -192,16 +209,17 @@ describe('single-user group claim workflow (e2e)', () => {
         expect(claimablePerson).toEqual(
             expect.objectContaining({
                 claimable: true,
+                suggested: true,
                 person: expect.objectContaining({ id: anaId, kind: 'placeholder', accountId: null, displayName: 'person_one' }),
             }),
         )
 
-        // The ticket names one placeholder: the other one is not theirs to claim.
-        await request(app.getHttpServer())
-            .post(`/groups/${groupId}/people/${exampleMemberId}/claim`)
-            .set(withAuth(memberToken))
-            .send({})
-            .expect(403)
+        // The suggestion only puts one person first: the other one is there to choose too, unsuggested.
+        const otherPlaceholder = memberWorkspace.body.people.find(
+            (person: { person: { id: number } }) => person.person.id === exampleMemberId,
+        )
+
+        expect(otherPlaceholder).toEqual(expect.objectContaining({ claimable: true, suggested: false }))
 
         await request(app.getHttpServer())
             .post(`/groups/${groupId}/people/${anaId}/claim`)
@@ -261,6 +279,32 @@ describe('single-user group claim workflow (e2e)', () => {
 
         expect(Number(Object.values(invitationCount.rows[0] ?? {})[0])).toBe(0)
 
+        // The takeover kept a snapshot of the person as it was, for the group's undo (ADR-0027).
+        const takeover = await database.execute({
+            sql: 'SELECT accountId, snapshot FROM GroupPersonTakeover WHERE groupPersonId = ?',
+            args: [anaId],
+        })
+
+        expect(takeover.rows[0]?.accountId).toBe(2)
+        expect(JSON.parse(String(takeover.rows[0]?.snapshot))).toEqual(
+            expect.objectContaining({
+                displayName: 'person_one',
+                ownership: [
+                    expect.objectContaining({ gameId: 10, status: 'asserted', source: 'placeholder_setup', enteredByAccountId: 1 }),
+                    expect.objectContaining({ gameId: 11, status: 'asserted', source: 'placeholder_setup', enteredByAccountId: 1 }),
+                ],
+                preferences: [expect.objectContaining({ gameId: 10, preference: 'favorite' })],
+                meetIds: [],
+            }),
+        )
+
+        // Now one of the group's people, they cannot take over anyone else.
+        await request(app.getHttpServer())
+            .post(`/groups/${groupId}/people/${exampleMemberId}/claim`)
+            .set(withAuth(memberToken))
+            .send({})
+            .expect(403)
+
         await request(app.getHttpServer())
             .post(`/groups/${groupId}/people/${anaId}/claim`)
             .set(withAuth(memberToken))
@@ -276,7 +320,7 @@ describe('single-user group claim workflow (e2e)', () => {
         expect(remainingPlaceholder.rows).toEqual([{ id: exampleMemberId }])
     })
 
-    it('lets nobody but the invited account claim, and the ticket goes when they leave', async () => {
+    it('lets only members take someone over; a suggestion expires or goes when they leave', async () => {
         const organizerToken = sessionFor('user_organizer')
         const otherToken = sessionFor('user_other')
 
@@ -309,18 +353,20 @@ describe('single-user group claim workflow (e2e)', () => {
         await request(app.getHttpServer()).post('/memberships').set(withAuth(otherToken)).send({ groupId }).expect(201)
         const workspace = await request(app.getHttpServer()).get(`/groups/${groupId}/people`).set(withAuth(otherToken)).expect(200)
 
-        expect(workspace.body.people.find((entry: { person: { id: number } }) => entry.person.id === personId).claimable).toBe(true)
+        expect(workspace.body.people.find((entry: { person: { id: number } }) => entry.person.id === personId)).toEqual(
+            expect.objectContaining({ claimable: true, suggested: true }),
+        )
 
-        // An expired ticket no longer counts.
+        // An expired suggestion is no longer "Is this you?", but the person is still theirs to choose (#278).
         await database.execute({
             sql: "UPDATE Invitation SET expiresAt = datetime('now', '-1 minute') WHERE groupId = ? AND toAccountId = 3",
             args: [groupId],
         })
-        await request(app.getHttpServer())
-            .post(`/groups/${groupId}/people/${personId}/claim`)
-            .set(withAuth(otherToken))
-            .send({})
-            .expect(403)
+        const afterExpiry = await request(app.getHttpServer()).get(`/groups/${groupId}/people`).set(withAuth(otherToken)).expect(200)
+
+        expect(afterExpiry.body.people.find((entry: { person: { id: number } }) => entry.person.id === personId)).toEqual(
+            expect.objectContaining({ claimable: true, suggested: false }),
+        )
         await database.execute({
             sql: "UPDATE Invitation SET expiresAt = datetime('now', '+1 day') WHERE groupId = ? AND toAccountId = 3",
             args: [groupId],

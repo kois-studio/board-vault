@@ -188,6 +188,26 @@ export type GroupPersonWorkspaceType = {
     ownership: Array<GroupPersonOwnershipType>
     preferences: Array<GroupPersonPreferenceType>
     claimable: boolean
+    /** An invitation to you suggested this person: shown first, as "Is this you?" (#278). */
+    suggested: boolean
+}
+
+/** Someone you may say "this is me" about, with what the group recorded for them (#278). */
+export type GroupPersonChoiceType = {
+    person: GroupPersonType
+    suggested: boolean
+    games: Array<{ id: number; title: string | null }>
+    nights: number
+    lastNight: string | null
+}
+
+/** A takeover the group can still undo, for 30 days (ADR-0027). */
+export type GroupPersonTakeoverType = {
+    groupPersonId: number
+    accountId: number
+    previousName: string
+    takenAt: string
+    undoableUntil: string
 }
 
 /** One person in a group's standings; a group person linked to an account counts as that account. */

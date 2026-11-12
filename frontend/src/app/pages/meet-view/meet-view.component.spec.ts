@@ -436,8 +436,20 @@ describe('MeetViewComponent participant safeguards', () => {
         ]
         meetData.playedGamePersonParticipants = []
         component.groupPeople = [
-            { person: { id: 12, accountId: null, displayName: 'Ana' } as never, ownership: [], preferences: [], claimable: false },
-            { person: { id: 13, accountId: 1, displayName: 'Carlos' } as never, ownership: [], preferences: [], claimable: false },
+            {
+                person: { id: 12, accountId: null, displayName: 'Ana' } as never,
+                ownership: [],
+                preferences: [],
+                claimable: false,
+                suggested: false,
+            },
+            {
+                person: { id: 13, accountId: 1, displayName: 'Carlos' } as never,
+                ownership: [],
+                preferences: [],
+                claimable: false,
+                suggested: false,
+            },
         ]
         api.updateSessionAttendees.mockReturnValue(of({ sessionId: 99, attendeeIds: [], groupPersonIds: [13] }))
 
@@ -454,8 +466,20 @@ describe('MeetViewComponent participant safeguards', () => {
         meetData.participants = [12, 13]
         meetData.playedGamePersonParticipants = []
         component.groupPeople = [
-            { person: { id: 12, accountId: null, displayName: 'Ana' } as never, ownership: [], preferences: [], claimable: false },
-            { person: { id: 13, accountId: 1, displayName: 'Carlos' } as never, ownership: [], preferences: [], claimable: false },
+            {
+                person: { id: 12, accountId: null, displayName: 'Ana' } as never,
+                ownership: [],
+                preferences: [],
+                claimable: false,
+                suggested: false,
+            },
+            {
+                person: { id: 13, accountId: 1, displayName: 'Carlos' } as never,
+                ownership: [],
+                preferences: [],
+                claimable: false,
+                suggested: false,
+            },
         ]
         api.updateSessionAttendees.mockReturnValue(throwError(() => new HttpErrorResponse({ status: 503 })))
 
@@ -480,8 +504,20 @@ describe('MeetViewComponent participant safeguards', () => {
         ]
         meetData.playedGamePersonParticipants = []
         component.groupPeople = [
-            { person: { id: 12, accountId: null, displayName: 'Ana' } as never, ownership: [], preferences: [], claimable: false },
-            { person: { id: 13, accountId: 1, displayName: 'Carlos' } as never, ownership: [], preferences: [], claimable: false },
+            {
+                person: { id: 12, accountId: null, displayName: 'Ana' } as never,
+                ownership: [],
+                preferences: [],
+                claimable: false,
+                suggested: false,
+            },
+            {
+                person: { id: 13, accountId: 1, displayName: 'Carlos' } as never,
+                ownership: [],
+                preferences: [],
+                claimable: false,
+                suggested: false,
+            },
         ]
         // The removal was saved after all: the night as stored no longer has Ana.
         const stored = { ...structuredClone(meetData), participants: [13] }

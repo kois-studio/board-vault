@@ -85,7 +85,10 @@ PLAYWRIGHT_GROUP_ID=1 \
 
 Each spec's `test.skip` line lists any extra variables it needs (for example
 the claim journey needs `PLAYWRIGHT_SINGLE_USER_GROUP_CLAIM=1`, an invitee
-storage state and its username). Never commit storage-state files, and delete them when
+storage state and its username; the "This is me" journey,
+`e2e/this-is-me-flow.spec.ts`, needs `PLAYWRIGHT_THIS_IS_ME=1`, the same
+invitee, a fixture game title and the local SQLite path, and writes
+screenshots of its screens to `PLAYWRIGHT_THIS_IS_ME_SCREENSHOTS` if set). Never commit storage-state files, and delete them when
 you are done.
 
 ## Everyday-play browser regression

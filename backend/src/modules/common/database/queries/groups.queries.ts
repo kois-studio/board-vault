@@ -5,8 +5,9 @@ import { resolvedTitleSql } from '../resolved-title.js'
 
 import { activityStatements, recordInTransaction } from './group-activity.queries.js'
 import { deleteGroupRows, departGroup } from './group-lifecycle.js'
-import { CLAIM_TICKET } from './invitations.queries.js'
+import { SUGGESTED_PERSON } from './invitations.queries.js'
 
+import type { TakeoverSnapshot } from './takeover.queries.js'
 import type { GroupActivityEntry } from '../../../../common/types/group-activity.type.js'
 import type { GroupGameInterestBody } from '../../../../common/types/group-game-interest.type.js'
 import type { CreateGroupMembershipBody } from '../../../../common/types/group-membership.type.js'
@@ -45,7 +46,7 @@ export const PERSON_STANDING = `
 export const PERSON_NAME = `COALESCE((SELECT COALESCE(NULLIF(TRIM(pa.displayName), ''), pa.username) FROM Account pa WHERE pa.id = gp.accountId), gp.displayName)`
 export const PERSON_AVATAR = `CASE WHEN gp.accountId IS NULL THEN gp.avatar ELSE (SELECT pa.avatar FROM Account pa WHERE pa.id = gp.accountId) END`
 
-const PERSON_COLUMNS = `gp.id, gp.groupId, gp.accountId, gp.kind, gp.status, ${PERSON_NAME} AS displayName, ${PERSON_AVATAR} AS avatar, gp.createdAt, gp.updatedAt, gp.claimedAt, ${PERSON_STANDING}`
+export const PERSON_COLUMNS = `gp.id, gp.groupId, gp.accountId, gp.kind, gp.status, ${PERSON_NAME} AS displayName, ${PERSON_AVATAR} AS avatar, gp.createdAt, gp.updatedAt, gp.claimedAt, ${PERSON_STANDING}`
 
 /** Groups, memberships, group people, and acquisition interest. */
 export class GroupQueries {
@@ -298,18 +299,21 @@ export class GroupQueries {
         })
     }
 
-    /** The placeholders this account may claim in the group: those an invitation to it suggested (#277). */
+    /**
+     * The people this account may take over in the group, with whether an invitation suggested them (#278): every active
+     * person without an account, while the account is not one of the group's people itself. Membership is the caller's.
+     */
     getClaimableGroupPersonIds(groupId: number, accountId: number) {
         return this.database.execute({
             sql: `
-                SELECT gp.id
+                SELECT gp.id, CASE WHEN ${SUGGESTED_PERSON} THEN 1 ELSE 0 END AS suggested
                 FROM GroupPerson gp
                 WHERE gp.groupId = ? AND gp.status = 'active' AND gp.kind = 'placeholder'
                   AND gp.accountId IS NULL
-                  AND ${CLAIM_TICKET}
+                  AND NOT EXISTS (SELECT 1 FROM GroupPerson own WHERE own.groupId = gp.groupId AND own.accountId = ?)
                 ORDER BY gp.id ASC
             `,
-            args: [groupId, accountId],
+            args: [accountId, groupId, accountId],
         })
     }
 
@@ -443,6 +447,11 @@ export class GroupQueries {
         return { rowsAffected: result?.rowsAffected ?? 0 }
     }
 
+    /**
+     * Takes over a person without an account (#278, ADR-0027): any member who is not one of the group's people yet may
+     * take over any active one. Before changing anything it keeps a snapshot of the person (`GroupPersonTakeover`), so
+     * the group can undo a wrong pick for 30 days.
+     */
     async claimGroupPerson(input: {
         groupId: number
         groupPersonId: number
@@ -457,16 +466,18 @@ export class GroupQueries {
         try {
             const candidate = await transaction.execute({
                 sql: `
-                    SELECT gp.id, gp.accountId, gp.kind
+                    SELECT gp.id, gp.displayName, gp.avatar, gp.status
                     FROM GroupPerson gp
                     WHERE gp.id = ? AND gp.groupId = ? AND gp.status = 'active'
                       AND gp.kind = 'placeholder' AND gp.accountId IS NULL
-                      AND ${CLAIM_TICKET}
+                      AND EXISTS (SELECT 1 FROM GroupMembership gm WHERE gm.groupId = gp.groupId AND gm.accountId = ?)
+                      AND NOT EXISTS (SELECT 1 FROM GroupPerson own WHERE own.groupId = gp.groupId AND own.accountId = ?)
                 `,
-                args: [input.groupPersonId, input.groupId, input.accountId],
+                args: [input.groupPersonId, input.groupId, input.accountId, input.accountId],
             })
+            const [person] = candidate.rows
 
-            if (candidate.rows.length === 0) {
+            if (!person) {
                 const existing = await transaction.execute({
                     sql: 'SELECT accountId FROM GroupPerson WHERE id = ? AND groupId = ?',
                     args: [input.groupPersonId, input.groupId],
@@ -477,13 +488,48 @@ export class GroupQueries {
             }
 
             const ownership = await transaction.execute({
-                sql: "SELECT gameId FROM GroupPersonGameOwnership WHERE groupPersonId = ? AND status = 'asserted'",
+                sql: `
+                    SELECT gameId, status, source, enteredByAccountId, confirmedByAccountId, createdAt, updatedAt
+                    FROM GroupPersonGameOwnership WHERE groupPersonId = ?
+                `,
                 args: [input.groupPersonId],
             })
             const preferences = await transaction.execute({
-                sql: 'SELECT gameId FROM GroupPersonGamePreference WHERE groupPersonId = ?',
+                sql: 'SELECT gameId, preference, source, enteredByAccountId, createdAt, updatedAt FROM GroupPersonGamePreference WHERE groupPersonId = ?',
                 args: [input.groupPersonId],
             })
+            const meets = await transaction.execute({
+                sql: `
+                    SELECT meetId FROM MeetPersonAttendee WHERE groupPersonId = ?
+                    UNION SELECT meetId FROM MeetPersonGame WHERE groupPersonId = ?
+                    UNION SELECT meetId FROM MeetGameResult WHERE groupPersonId = ?
+                    UNION SELECT meetId FROM MeetGame WHERE broughtByPersonId = ?
+                `,
+                args: [input.groupPersonId, input.groupPersonId, input.groupPersonId, input.groupPersonId],
+            })
+            const snapshot: TakeoverSnapshot = {
+                displayName: String(person.displayName),
+                avatar: person.avatar === null ? null : String(person.avatar),
+                status: String(person.status),
+                ownership: ownership.rows.map(row => ({
+                    gameId: Number(row.gameId),
+                    status: String(row.status),
+                    source: String(row.source),
+                    enteredByAccountId: Number(row.enteredByAccountId),
+                    confirmedByAccountId: row.confirmedByAccountId === null ? null : Number(row.confirmedByAccountId),
+                    createdAt: row.createdAt === null ? null : String(row.createdAt),
+                    updatedAt: row.updatedAt === null ? null : String(row.updatedAt),
+                })),
+                preferences: preferences.rows.map(row => ({
+                    gameId: Number(row.gameId),
+                    preference: String(row.preference),
+                    source: String(row.source),
+                    enteredByAccountId: Number(row.enteredByAccountId),
+                    createdAt: row.createdAt === null ? null : String(row.createdAt),
+                    updatedAt: row.updatedAt === null ? null : String(row.updatedAt),
+                })),
+                meetIds: meets.rows.map(row => Number(row[0])),
+            }
             const keepOwnership = new Set(input.keepOwnershipGameIds)
             const keepPreferences = new Set(input.keepPreferenceGameIds)
 
@@ -501,10 +547,14 @@ export class GroupQueries {
                 return { claimed: false, alreadyClaimed: false, addedToShelf: [] }
             }
 
-            // The claim uses up the invitation that allowed it (#277). The claimer is now someone in
-            // the group, so no other placeholder there is theirs to claim either. Anyone else invited
-            // to be this placeholder loses that suggestion: a member's leftover ticket goes, and an
-            // invitation not accepted yet stays as a plain invitation to the group.
+            await transaction.execute({
+                sql: 'INSERT OR REPLACE INTO GroupPersonTakeover (groupPersonId, groupId, accountId, snapshot) VALUES (?, ?, ?, ?)',
+                args: [input.groupPersonId, input.groupId, input.accountId, JSON.stringify(snapshot)],
+            })
+
+            // Taking someone over uses up any suggestion to the claimer in this group (#277). Anyone else suggested this
+            // person loses that suggestion: a member's leftover one goes, and an invitation not accepted yet stays as a
+            // plain invitation to the group.
             await transaction.batch([
                 { sql: 'DELETE FROM Invitation WHERE groupId = ? AND toAccountId = ?', args: [input.groupId, input.accountId] },
                 {
@@ -522,26 +572,23 @@ export class GroupQueries {
             ])
 
             await transaction.batch(
-                ownership.rows.map(row => ({
-                    sql: `
-                        UPDATE GroupPersonGameOwnership
-                        SET status = ?, source = 'claimed_import', enteredByAccountId = ?, updatedAt = CURRENT_TIMESTAMP
-                        WHERE groupPersonId = ? AND gameId = ?
-                    `,
-                    args: [
-                        keepOwnership.has(Number(row[0])) ? 'asserted' : 'rejected',
-                        input.accountId,
-                        input.groupPersonId,
-                        Number(row[0]),
-                    ],
-                })),
+                snapshot.ownership
+                    .filter(row => row.status === 'asserted')
+                    .map(row => ({
+                        sql: `
+                            UPDATE GroupPersonGameOwnership
+                            SET status = ?, source = 'claimed_import', enteredByAccountId = ?, updatedAt = CURRENT_TIMESTAMP
+                            WHERE groupPersonId = ? AND gameId = ?
+                        `,
+                        args: [keepOwnership.has(row.gameId) ? 'asserted' : 'rejected', input.accountId, input.groupPersonId, row.gameId],
+                    })),
             )
             await transaction.batch(
-                preferences.rows
-                    .filter(row => !keepPreferences.has(Number(row[0])))
+                snapshot.preferences
+                    .filter(row => !keepPreferences.has(row.gameId))
                     .map(row => ({
                         sql: 'DELETE FROM GroupPersonGamePreference WHERE groupPersonId = ? AND gameId = ?',
-                        args: [input.groupPersonId, Number(row[0])],
+                        args: [input.groupPersonId, row.gameId],
                     })),
             )
 

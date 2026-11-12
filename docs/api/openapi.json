@@ -851,6 +851,78 @@
         ]
       }
     },
+    "/groups/{groupId}/people/choices": {
+      "get": {
+        "operationId": "GroupPeopleController_getChoices",
+        "parameters": [
+          {
+            "name": "groupId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GroupPersonChoicesResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "List the people without an account the caller may take over (\"this is me\", #278)",
+        "tags": [
+          "group-people"
+        ]
+      }
+    },
+    "/groups/{groupId}/people/takeovers": {
+      "get": {
+        "operationId": "GroupPeopleController_getTakeovers",
+        "parameters": [
+          {
+            "name": "groupId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GroupPersonTakeoversResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "List the takeovers of group people that can still be undone (ADR-0027)",
+        "tags": [
+          "group-people"
+        ]
+      }
+    },
     "/groups/{groupId}/people/{personId}": {
       "patch": {
         "operationId": "GroupPeopleController_updatePerson",
@@ -908,6 +980,53 @@
         ]
       }
     },
+    "/groups/{groupId}/people/{personId}/takeover/undo": {
+      "post": {
+        "operationId": "GroupPeopleController_undoTakeover",
+        "parameters": [
+          {
+            "name": "groupId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "personId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UndoGroupPersonTakeoverResponseDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Nothing to undo: no takeover, already undone, or older than 30 days."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Undo a takeover: give the person back as it was, within 30 days (ADR-0027)",
+        "tags": [
+          "group-people"
+        ]
+      }
+    },
     "/groups/{groupId}/people/{personId}/claim": {
       "post": {
         "operationId": "GroupPeopleController_claimPerson",
@@ -949,7 +1068,7 @@
             "bearer": []
           }
         ],
-        "summary": "Claim a targeted placeholder as the authenticated account",
+        "summary": "Take over a person without an account as the authenticated account (\"this is me\", #278)",
         "tags": [
           "group-people"
         ]
@@ -4947,7 +5066,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/SuccessDto"
+                  "$ref": "#/components/schemas/AcceptInvitationResponseDto"
                 }
               }
             }
@@ -6882,14 +7001,20 @@
           "claimable": {
             "type": "boolean",
             "example": false,
-            "description": "Whether the authenticated account may claim this placeholder."
+            "description": "Whether the authenticated account may take over this person: it has no account, and the caller is a member who is not one of the group's people yet (#278)."
+          },
+          "suggested": {
+            "type": "boolean",
+            "example": false,
+            "description": "Whether an invitation to the authenticated account suggested this person (\"Is this you?\")."
           }
         },
         "required": [
           "person",
           "ownership",
           "preferences",
-          "claimable"
+          "claimable",
+          "suggested"
         ]
       },
       "GroupPeopleResponseDto": {
@@ -6963,6 +7088,128 @@
           "titleTranslations"
         ]
       },
+      "GroupPersonChoiceGameDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number",
+            "example": 42
+          },
+          "title": {
+            "type": "object",
+            "example": "Codenames",
+            "nullable": true,
+            "description": "The game's title in the page's language (ADR-0025)."
+          }
+        },
+        "required": [
+          "id",
+          "title"
+        ]
+      },
+      "GroupPersonChoiceDto": {
+        "type": "object",
+        "properties": {
+          "person": {
+            "$ref": "#/components/schemas/GroupPersonDto"
+          },
+          "suggested": {
+            "type": "boolean",
+            "example": true,
+            "description": "An invitation to the authenticated account suggested this person: shown first, as \"Is this you?\"."
+          },
+          "games": {
+            "description": "The games the group says this person owns.",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/GroupPersonChoiceGameDto"
+            }
+          },
+          "nights": {
+            "type": "number",
+            "example": 4,
+            "description": "Finished game nights this person came to."
+          },
+          "lastNight": {
+            "type": "object",
+            "example": "2026-10-30 19:00:00",
+            "nullable": true,
+            "description": "The date of the last of those nights."
+          }
+        },
+        "required": [
+          "person",
+          "suggested",
+          "games",
+          "nights",
+          "lastNight"
+        ]
+      },
+      "GroupPersonChoicesResponseDto": {
+        "type": "object",
+        "properties": {
+          "choices": {
+            "description": "Empty when the caller is one of the group's people already.",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/GroupPersonChoiceDto"
+            }
+          }
+        },
+        "required": [
+          "choices"
+        ]
+      },
+      "GroupPersonTakeoverDto": {
+        "type": "object",
+        "properties": {
+          "groupPersonId": {
+            "type": "number",
+            "example": 12,
+            "description": "The person that was taken over."
+          },
+          "accountId": {
+            "type": "number",
+            "example": 7,
+            "description": "The account that took it over."
+          },
+          "previousName": {
+            "type": "string",
+            "example": "Carlos",
+            "description": "The name the person had before, which undo gives back."
+          },
+          "takenAt": {
+            "type": "string",
+            "example": "2026-11-11 10:00:00"
+          },
+          "undoableUntil": {
+            "type": "string",
+            "example": "2026-12-11 10:00:00",
+            "description": "Undo is possible until then (30 days)."
+          }
+        },
+        "required": [
+          "groupPersonId",
+          "accountId",
+          "previousName",
+          "takenAt",
+          "undoableUntil"
+        ]
+      },
+      "GroupPersonTakeoversResponseDto": {
+        "type": "object",
+        "properties": {
+          "takeovers": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/GroupPersonTakeoverDto"
+            }
+          }
+        },
+        "required": [
+          "takeovers"
+        ]
+      },
       "CreateGroupPersonBody": {
         "type": "object",
         "properties": {
@@ -7008,6 +7255,25 @@
             ]
           }
         }
+      },
+      "UndoGroupPersonTakeoverResponseDto": {
+        "type": "object",
+        "properties": {
+          "groupPersonId": {
+            "type": "number",
+            "example": 12,
+            "description": "The person given back its name, games and earlier game nights."
+          },
+          "newPersonId": {
+            "type": "number",
+            "example": 31,
+            "description": "The new person of the account that had taken it over."
+          }
+        },
+        "required": [
+          "groupPersonId",
+          "newPersonId"
+        ]
       },
       "ClaimGroupPersonBody": {
         "type": "object",
@@ -7307,6 +7573,7 @@
               "person_archived",
               "person_restored",
               "person_claimed",
+              "person_takeover_undone",
               "person_game_set",
               "person_preference_set",
               "person_preference_removed",
@@ -11252,6 +11519,30 @@
           "expiresAt",
           "fromAccount",
           "group"
+        ]
+      },
+      "AcceptInvitationResponseDto": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "example": true
+          },
+          "groupId": {
+            "type": "number",
+            "example": 3,
+            "description": "The group joined."
+          },
+          "choosePerson": {
+            "type": "boolean",
+            "example": true,
+            "description": "The account is not one of the group's people yet and may take one over (#278): open the group's \"Who are you?\" page. False when it joined as a new person."
+          }
+        },
+        "required": [
+          "success",
+          "groupId",
+          "choosePerson"
         ]
       },
       "GameProposalDto": {

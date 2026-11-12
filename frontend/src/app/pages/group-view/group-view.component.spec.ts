@@ -442,12 +442,45 @@ describe('GroupViewComponent page layout', () => {
         expect(api['updateGroupPersonOwnership']).toHaveBeenCalledWith(1, 3, 42, 'rejected')
     })
 
+    describe("for a member who is not one of the group's people yet (#278)", () => {
+        const placeholder = (id: number, suggested: boolean) => ({
+            person: { id, displayName: `Person ${id}`, kind: 'placeholder', status: 'active', accountId: null },
+            ownership: [],
+            preferences: [],
+            claimable: true,
+            suggested,
+        })
+
+        it('asks them to find themselves among the people without an account, or say they are new', async () => {
+            const fixture = await render(7)
+            fixture.componentInstance.groupPeople$.set([placeholder(3, false), placeholder(4, false)] as never)
+            fixture.detectChanges()
+            const banner = (fixture.nativeElement as HTMLElement).querySelector('[data-testid="choose-person-banner"]')
+
+            expect(banner?.textContent).toContain('Are you already one of this group’s people?')
+            expect(banner?.querySelector('a')?.getAttribute('href')).toBe('/groups/1/people/choose')
+            expect(banner?.textContent).toContain('I’m new here')
+        })
+
+        it('goes straight to the person an invitation suggested', async () => {
+            const fixture = await render(7)
+            fixture.componentInstance.groupPeople$.set([placeholder(3, false), placeholder(4, true)] as never)
+            fixture.detectChanges()
+            const element = fixture.nativeElement as HTMLElement
+
+            expect(element.querySelector('[data-testid="choose-person-banner"]')).toBeNull()
+            expect(element.textContent).toContain('A group person is waiting for you')
+            expect(element.querySelector('a[href="/groups/1/people/4/claim"]')).not.toBeNull()
+        })
+    })
+
     describe("when a change to a person's games is not saved (#242)", () => {
         const person = {
             person: { id: 3, displayName: 'Sam', kind: 'placeholder', status: 'active' },
             ownership: [{ gameId: 42, status: 'asserted', source: null }],
             preferences: [{ gameId: 42, preference: 'like' }],
             claimable: false,
+            suggested: false,
         }
 
         const openEditor = async (fail: unknown) => {

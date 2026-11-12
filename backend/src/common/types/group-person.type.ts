@@ -173,8 +173,83 @@ export class GroupPersonWorkspaceDto {
     @ApiProperty({ type: [GroupPersonGamePreferenceDto] })
     preferences: Array<GroupPersonGamePreferenceDto>
 
-    @ApiProperty({ example: false, description: 'Whether the authenticated account may claim this placeholder.' })
+    @ApiProperty({
+        example: false,
+        description:
+            "Whether the authenticated account may take over this person: it has no account, and the caller is a member who is not one of the group's people yet (#278).",
+    })
     claimable: boolean
+
+    @ApiProperty({
+        example: false,
+        description: 'Whether an invitation to the authenticated account suggested this person ("Is this you?").',
+    })
+    suggested: boolean
+}
+
+export class GroupPersonChoiceGameDto {
+    @ApiProperty({ example: 42 })
+    id: number
+
+    @ApiProperty({ example: 'Codenames', nullable: true, description: "The game's title in the page's language (ADR-0025)." })
+    title: string | null
+}
+
+/** Someone a new member may say "this is me" about (#278). */
+export class GroupPersonChoiceDto {
+    @ApiProperty({ type: () => GroupPersonDto })
+    person: GroupPersonDto
+
+    @ApiProperty({
+        example: true,
+        description: 'An invitation to the authenticated account suggested this person: shown first, as "Is this you?".',
+    })
+    suggested: boolean
+
+    @ApiProperty({ type: [GroupPersonChoiceGameDto], description: 'The games the group says this person owns.' })
+    games: Array<GroupPersonChoiceGameDto>
+
+    @ApiProperty({ example: 4, description: 'Finished game nights this person came to.' })
+    nights: number
+
+    @ApiProperty({ example: '2026-10-30 19:00:00', nullable: true, description: 'The date of the last of those nights.' })
+    lastNight: string | null
+}
+
+export class GroupPersonChoicesResponseDto {
+    @ApiProperty({ type: [GroupPersonChoiceDto], description: "Empty when the caller is one of the group's people already." })
+    choices: Array<GroupPersonChoiceDto>
+}
+
+/** A takeover the group can still undo (ADR-0027). */
+export class GroupPersonTakeoverDto {
+    @ApiProperty({ example: 12, description: 'The person that was taken over.' })
+    groupPersonId: number
+
+    @ApiProperty({ example: 7, description: 'The account that took it over.' })
+    accountId: number
+
+    @ApiProperty({ example: 'Carlos', description: 'The name the person had before, which undo gives back.' })
+    previousName: string
+
+    @ApiProperty({ example: '2026-11-11 10:00:00' })
+    takenAt: string
+
+    @ApiProperty({ example: '2026-12-11 10:00:00', description: 'Undo is possible until then (30 days).' })
+    undoableUntil: string
+}
+
+export class GroupPersonTakeoversResponseDto {
+    @ApiProperty({ type: [GroupPersonTakeoverDto] })
+    takeovers: Array<GroupPersonTakeoverDto>
+}
+
+export class UndoGroupPersonTakeoverResponseDto {
+    @ApiProperty({ example: 12, description: 'The person given back its name, games and earlier game nights.' })
+    groupPersonId: number
+
+    @ApiProperty({ example: 31, description: 'The new person of the account that had taken it over.' })
+    newPersonId: number
 }
 
 export class GroupPeopleResponseDto {
