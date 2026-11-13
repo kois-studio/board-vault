@@ -54,6 +54,13 @@ export function validateEnv(): void {
             err.push('A long random value (openssl rand -hex 32). It turns account ids into usage pseudonyms (ADR-0021).\n')
         }
 
+        if (!process.env.RATE_LIMIT_KEY_SECRET?.trim()) {
+            err.push('Missing in production environment: RATE_LIMIT_KEY_SECRET')
+            err.push(
+                'A long random value (openssl rand -hex 32). It keys the rate-limit counters so they cannot be reversed to IP addresses (#321).\n',
+            )
+        }
+
         if (!process.env.CRON_SECRET?.trim()) {
             err.push('Missing in production environment: CRON_SECRET')
             err.push('A long random value. Vercel Cron sends it to GET /internal/daily-maintenance.\n')

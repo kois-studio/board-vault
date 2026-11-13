@@ -49,3 +49,55 @@ describe('validateEnv and CLERK_JWT_KEY (#250)', () => {
         expect(logged.join('\n')).not.toContain('sk_test_example')
     })
 })
+
+describe('validateEnv and RATE_LIMIT_KEY_SECRET (#321)', () => {
+    const saved = { ...process.env }
+    let exit: ReturnType<typeof vi.spyOn>
+    let logged: Array<string>
+
+    beforeEach(() => {
+        process.env = {
+            ...saved,
+            NODE_ENV: 'production',
+            TURSO_DATABASE_URL: 'file:local.sqlite',
+            CLERK_SECRET_KEY: 'sk_test_example',
+            CLERK_AUTHORIZED_PARTIES: 'https://board-vault.com',
+            USAGE_PSEUDONYM_SECRET: 'usage-secret',
+            CRON_SECRET: 'cron-secret',
+            RATE_LIMIT_KEY_SECRET: 'rate-limit-secret',
+            UPSTASH_REDIS_REST_DISABLE: 'true',
+        }
+        delete process.env.CLERK_JWT_KEY
+        logged = []
+        exit = vi.spyOn(process, 'exit').mockImplementation((() => undefined) as never)
+        vi.spyOn(Logger.prototype, 'error').mockImplementation(message => void logged.push(String(message)))
+        vi.spyOn(Logger.prototype, 'warn').mockImplementation(() => undefined)
+    })
+
+    afterEach(() => {
+        process.env = saved
+        vi.restoreAllMocks()
+    })
+
+    it('starts in production with the secret set', () => {
+        validateEnv()
+
+        expect(exit).not.toHaveBeenCalled()
+    })
+
+    it('refuses to start in production without it', () => {
+        delete process.env.RATE_LIMIT_KEY_SECRET
+        validateEnv()
+
+        expect(exit).toHaveBeenCalledWith(1)
+        expect(logged).toContain('Missing in production environment: RATE_LIMIT_KEY_SECRET')
+    })
+
+    it('is optional outside production', () => {
+        process.env.NODE_ENV = 'development'
+        delete process.env.RATE_LIMIT_KEY_SECRET
+        validateEnv()
+
+        expect(exit).not.toHaveBeenCalled()
+    })
+})
