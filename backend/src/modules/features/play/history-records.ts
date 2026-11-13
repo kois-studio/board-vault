@@ -3,7 +3,7 @@ import type { Locale } from '../../../common/i18n/locale.js'
 import type { GroupPersonStanding } from '../../../common/types/group-person.type.js'
 import type { MeetDto } from '../../../common/types/meet.type.js'
 import type { DatabaseService } from '../../common/database/database.service.js'
-import type { GameTranslationService } from '../../core/game-translation/game-translation.service.js'
+import type { GameTitlesService } from '../../core/game-titles/game-titles.service.js'
 import type { GamesService } from '../../core/games/games.service.js'
 import type { MeetAccountGamesService } from '../../core/meet-account-games/meet-account-games.service.js'
 import type { UsersService } from '../../core/users/users.service.js'
@@ -11,7 +11,7 @@ import type { UsersService } from '../../core/users/users.service.js'
 export type HistoryRecordSources = {
     databaseService: DatabaseService
     gamesService: GamesService
-    gameTranslationService: GameTranslationService
+    gameTitlesService: GameTitlesService
     usersService: UsersService
     /** The reader's interface language, for the titles of the games. */
     locale: Locale
@@ -32,7 +32,7 @@ export async function buildHistoryRecords(meets: Array<MeetDto>, sources: Histor
         return []
     }
 
-    const { databaseService, gamesService, gameTranslationService, usersService, locale } = sources
+    const { databaseService, gamesService, gameTitlesService, usersService, locale } = sources
     const details = await databaseService.sessions.getHistoryDetailsByMeetIds(meets.map(meet => meet.id))
     const sessions = meets.map(meet => {
         const gameIds = details.playedGameIds.get(meet.id) ?? []
@@ -61,7 +61,7 @@ export async function buildHistoryRecords(meets: Array<MeetDto>, sources: Histor
     const gameIds = sessions.flatMap(session => session.gameIds)
     const accountIds = sessions.flatMap(session => [...session.attendedByIds, ...[...session.accountParticipants.values()].flat()])
     const [games, users, peopleByGroup, accountStandings] = await Promise.all([
-        gamesService.getGamesByIds(gameIds).then(found => gameTranslationService.withTitles([...found.values()], locale)),
+        gamesService.getGamesByIds(gameIds).then(found => gameTitlesService.withTitles([...found.values()], locale)),
         usersService.getPublicUsersByIds(accountIds),
         databaseService.groups.getGroupPeopleByGroupIds(groupIds, true).then(peopleByGroupId),
         loadAccountStandings(databaseService, groupIds, [...new Set(accountIds)]),

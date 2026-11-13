@@ -292,33 +292,11 @@ export class GameQueries {
         })
     }
 
-    getGameTranslationsByGameIds(gameIds: Array<number>) {
+    getEditionTitlesByGameIds(gameIds: Array<number>) {
         return this.database.execute({
             sql: `SELECT gameId, languageCode, title, normalizedTitle FROM GameEdition WHERE gameId IN (${gameIds.map(() => '?').join(', ')})`,
             args: gameIds,
         })
-    }
-
-    getGameTranslations(gameId: number) {
-        return this.database.execute({
-            sql: 'SELECT gameId, languageCode, title, normalizedTitle FROM GameEdition WHERE gameId = ?',
-            args: [gameId],
-        })
-    }
-
-    /** Adds an edition; fails when the game already has one in that language. The first edition is primary. */
-    createGameTranslation(gameId: number, languageCode: string, title: string, normalizedTitle: string) {
-        return this.database.execute({
-            sql: `
-                INSERT INTO GameEdition (gameId, languageCode, title, normalizedTitle, isPrimary)
-                SELECT ?, ?, ?, ?, NOT EXISTS (SELECT 1 FROM GameEdition WHERE gameId = ? AND isPrimary = 1)`,
-            args: [gameId, languageCode, title, normalizedTitle, gameId],
-        })
-    }
-
-    /** Sets a game's title in one language, on its edition. */
-    upsertGameTranslation(gameId: number, languageCode: string, title: string, normalizedTitle: string) {
-        return this.database.execute(gameEditionUpsert(gameId, languageCode, title, normalizedTitle))
     }
 
     /** One page of catalogue game ids, filtered and sorted for Browse. */

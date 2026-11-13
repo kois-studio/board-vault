@@ -4,7 +4,7 @@ import { CacheModule } from '../../common/cache/cache.module.js'
 import { DatabaseModule } from '../../common/database/database.module.js'
 import { CollectionActivityModule } from '../../core/collection-activity/collection-activity.module.js'
 import { GameTagsModule } from '../../core/game-tags/game-tags.module.js'
-import { GameTranslationModule } from '../../core/game-translation/game-translation.module.js'
+import { GameTitlesModule } from '../../core/game-titles/game-titles.module.js'
 import { GamesModule } from '../../core/games/games.module.js'
 import { GamesOwnedModule } from '../../core/games-owned/games-owned.module.js'
 import { NotificationsModule } from '../../core/notifications/notifications.module.js'
@@ -27,7 +27,7 @@ import { CollectionService } from './collection.service.js'
         GameTagsModule,
         GamesOwnedModule,
         TagCategoryModule,
-        GameTranslationModule,
+        GameTitlesModule,
         CollectionActivityModule,
         NotificationsModule,
     ],

@@ -4,7 +4,7 @@ import { fakeDatabase } from '../../../../test/fake-database.js'
 
 import { GroupPeopleService } from './group-people.service.js'
 
-import type { GameTranslationService } from '../game-translation/game-translation.service.js'
+import type { GameTitlesService } from '../game-titles/game-titles.service.js'
 import type { ActivityNotifier } from '../notifications/activity-notifier.service.js'
 import type { Mock } from 'vitest'
 
@@ -44,15 +44,15 @@ describe('GroupPeopleService participant boundaries', () => {
             shelfChanged: vi.fn().mockResolvedValue(undefined),
         }
 
-        const gameTranslationService = {
-            getTranslationsByGameIds: vi.fn().mockResolvedValue(new Map([[42, { en: 'Catan', es: 'Catán' }]])),
+        const gameTitlesService = {
+            getTitlesByLanguage: vi.fn().mockResolvedValue(new Map([[42, { en: 'Catan', es: 'Catán' }]])),
         }
 
         return {
             service: new GroupPeopleService(
                 fakeDatabase(databaseService),
                 activityNotifier as unknown as ActivityNotifier,
-                gameTranslationService as unknown as GameTranslationService,
+                gameTitlesService as unknown as GameTitlesService,
             ),
             databaseService,
             activityNotifier,

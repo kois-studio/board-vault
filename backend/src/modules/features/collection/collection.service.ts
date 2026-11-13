@@ -4,7 +4,7 @@ import { LogFeature } from '../../../common/decorators/logger.decorator.js'
 import { compareNames } from '../../../common/i18n/locale.js'
 import { AddGameToCollectionBody, UpdateGameOwnedDto } from '../../../common/types/game-owned.type.js'
 import { CollectionActivityService } from '../../../modules/core/collection-activity/collection-activity.service.js'
-import { GameTranslationService } from '../../../modules/core/game-translation/game-translation.service.js'
+import { GameTitlesService } from '../../../modules/core/game-titles/game-titles.service.js'
 import { DatabaseService } from '../../common/database/database.service.js'
 import { GamesService } from '../../core/games/games.service.js'
 import { GamesOwnedService } from '../../core/games-owned/games-owned.service.js'
@@ -34,7 +34,7 @@ export class CollectionService {
         private readonly reviewsService: ReviewsService,
         private readonly wishlistService: WishlistService,
         private readonly gamesOwnedService: GamesOwnedService,
-        private readonly gameTranslationService: GameTranslationService,
+        private readonly gameTitlesService: GameTitlesService,
         private readonly collectionActivityService: CollectionActivityService,
         private readonly databaseService: DatabaseService,
         private readonly activityNotifier: ActivityNotifier,
@@ -46,7 +46,7 @@ export class CollectionService {
             this.gamesOwnedService.getGamesOwnedByAccountId(userId),
             this.databaseService.collection.getOwnedTitlesByAccountId(userId, locale),
         ])
-        const titled = await this.gameTranslationService.withTitles(await this.gamesInOrder(gamesOwned.map(game => game.gameId)), locale)
+        const titled = await this.gameTitlesService.withTitles(await this.gamesInOrder(gamesOwned.map(game => game.gameId)), locale)
         // ADR-0025 rule 1: a copy shows the title of the edition its owner said they own.
         const copies = new Map(ownedTitles.rows.map(row => [Number(row[0]), row]))
 
@@ -99,7 +99,7 @@ export class CollectionService {
 
     @LogFeature(new Logger('CollectionService'))
     async browseCatalogue(userId: number, query: BrowseGamesQuery, locale: Locale): Promise<BrowseGamesResultDto> {
-        const search = this.gameTranslationService.normalizeTitle(query.search)
+        const search = this.gameTitlesService.normalizeTitle(query.search)
 
         // Punctuation alone, such as `%%`, normalizes to nothing: a search with no match, not the whole catalogue.
         if (search === '' && query.search.trim() !== '') {
@@ -121,7 +121,7 @@ export class CollectionService {
         const found = gameIds.flatMap(gameId => games.get(gameId) ?? [])
 
         return {
-            games: await this.gameTranslationService.withTitles(found, locale),
+            games: await this.gameTitlesService.withTitles(found, locale),
             pagination: {
                 currentPage: query.page,
                 totalPages: Math.ceil(total / query.limit),
@@ -160,7 +160,7 @@ export class CollectionService {
             .sort((a, b) => compare(a.category, b.category) || compare(a.tag, b.tag))
 
         // Step 2: Construct the GameView. The game and the similar ones get their titles together.
-        const [gameWithTitles, ...similarWithTitles] = await this.gameTranslationService.withTitles([gameData, ...similarGames], locale)
+        const [gameWithTitles, ...similarWithTitles] = await this.gameTitlesService.withTitles([gameData, ...similarGames], locale)
         // Rule 1 for "your copy": the title of the edition the reader owns, else the one the game shows.
         const ownedEdition = editions.find(edition => edition.id === ownedGameData?.editionId)
 
@@ -262,7 +262,7 @@ export class CollectionService {
     async getReviewsOfUser(userId: number, locale: Locale): Promise<Array<GameReviewWithGameDataDto>> {
         const reviews = await this.reviewsService.getUserReviews(userId)
         const games = await this.gamesInOrder(reviews.map(review => review.gameId))
-        const titled = new Map((await this.gameTranslationService.withTitles(games, locale)).map(game => [game.id, game]))
+        const titled = new Map((await this.gameTitlesService.withTitles(games, locale)).map(game => [game.id, game]))
 
         return reviews.flatMap(review => {
             const gameData = titled.get(review.gameId)
@@ -284,14 +284,14 @@ export class CollectionService {
         const wishlist = await this.wishlistService.getWishlistByAccountId(userId)
         const games = await this.gamesInOrder(wishlist)
 
-        return this.gameTranslationService.withTitles(games, locale)
+        return this.gameTitlesService.withTitles(games, locale)
     }
 
     @LogFeature(new Logger('CollectionService'))
     async getUserCollectionActivities(userId: number, locale: Locale): Promise<Array<CollectionActivityWithGameDataDto>> {
         const activities = await this.collectionActivityService.getUserCollectionActivities(userId)
         const games = await this.gamesInOrder(activities.map(activity => activity.gameId))
-        const titled = new Map((await this.gameTranslationService.withTitles(games, locale)).map(game => [game.id, game]))
+        const titled = new Map((await this.gameTitlesService.withTitles(games, locale)).map(game => [game.id, game]))
 
         return activities.flatMap(activity => {
             const gameData = titled.get(activity.gameId)

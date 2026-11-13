@@ -78,7 +78,10 @@ One rule, applied in the API:
 Every game in a response carries `title` and `titleLanguage` resolved by that
 rule. Responses that need the alternatives (the game page's "Also known as",
 Administration) add `editions`. The `titleTranslations` map leaves the
-contract once the frontend no longer reads it. The frontend shows titles
+contract once the frontend no longer reads it. (Revisited in #190, 2026-11-13: it
+stays. It is built from `GameEdition`, one title per edition by language
+code, and the frontend's searches match a game by any of them; replacing it
+with `editions` on every game would only add weight and churn.) The frontend shows titles
 only through `core/utils/gameTitle.ts`, and wraps a title whose language is
 not the page's in an element with that `lang`.
 

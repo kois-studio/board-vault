@@ -24,7 +24,7 @@ import { TagDto, GameTagWithCategoryDto } from '../../../common/types/tag.type.j
 import { ArtworkService } from '../../../modules/core/artwork/artwork.service.js'
 import { GameProposalService } from '../../../modules/core/game-proposal/game-proposal.service.js'
 import { GameTagsService } from '../../../modules/core/game-tags/game-tags.service.js'
-import { GameTranslationService } from '../../../modules/core/game-translation/game-translation.service.js'
+import { GameTitlesService } from '../../../modules/core/game-titles/game-titles.service.js'
 import { GamesService } from '../../../modules/core/games/games.service.js'
 import { ActivityNotifier } from '../../../modules/core/notifications/activity-notifier.service.js'
 import { NotificationTypeEnum } from '../../../modules/core/notifications/notifications-enum.type.js'
@@ -52,7 +52,7 @@ export class AdminService {
         private readonly gameService: GamesService,
         private readonly gameTagsService: GameTagsService,
         private readonly tagCategoryService: TagCategoryService,
-        private readonly gameTranslationService: GameTranslationService,
+        private readonly gameTitlesService: GameTitlesService,
         private readonly gameProposalService: GameProposalService,
         private readonly databaseService: DatabaseService,
         private readonly cacheService: CacheService,
@@ -188,7 +188,7 @@ export class AdminService {
     @LogFeature(new Logger('AdminService'))
     async getAdminGames(query: AdminGamesQuery): Promise<AdminGamesResponseDto> {
         const filters = {
-            search: this.gameTranslationService.normalizeTitle(query.search ?? ''),
+            search: this.gameTitlesService.normalizeTitle(query.search ?? ''),
             players: query.players,
             length: query.length,
             tagIds: query.tags,
@@ -264,7 +264,6 @@ export class AdminService {
 
         await Promise.all([
             this.cacheService.deleteOne(cacheKeys.gameById(gameId)),
-            this.cacheService.deleteOne(cacheKeys.gameTranslations(gameId)),
             this.cacheService.deleteOne(cacheKeys.gameTags(gameId)),
         ])
 
@@ -303,7 +302,7 @@ export class AdminService {
     }
 
     private withNormalizedTitles(editions: Array<EditionInput>) {
-        return editions.map(edition => ({ ...edition, normalizedTitle: this.gameTranslationService.normalizeTitle(edition.title) }))
+        return editions.map(edition => ({ ...edition, normalizedTitle: this.gameTitlesService.normalizeTitle(edition.title) }))
     }
 
     private async toAdminGames(rows: Array<Record<string, unknown>>): Promise<Array<AdminGameDto>> {
