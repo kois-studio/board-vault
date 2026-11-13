@@ -150,8 +150,10 @@ read results and the rate-limit counters, through
 [`CacheService`](../backend/src/modules/common/cache/cache.service.ts).
 
 - **Keys:** `<area>:<selector>:<id>`, for example `games:byId:12` or
-  `reviews:avgGlobalRating:12`. Rate limits use `rate-limit:…` keys that
-  expire with their window.
+  `reviews:avgGlobalRating:12`. Rate limits use `rate-limit:<HMAC>` keys that
+  expire with their window; the HMAC of the route, caller (account id, or IP
+  address when signed out) and window uses `RATE_LIMIT_KEY_SECRET`, so no key
+  gives away who it counts (#321).
 - **Shared keys:** a key that one service caches and another invalidates is
   built in [`cache-keys.ts`](../backend/src/modules/common/cache/cache-keys.ts),
   never written by hand. A write must clear every key built from what it
