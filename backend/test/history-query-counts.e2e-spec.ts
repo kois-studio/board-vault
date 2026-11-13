@@ -51,10 +51,8 @@ describe('history in a fixed number of queries (e2e)', () => {
             INSERT INTO Game (id, imageUrl, gameAvgDuration, minPlayers, maxPlayers) VALUES
                 (1, 'https://example.test/1.jpg', 45, 2, 4), (2, 'https://example.test/2.jpg', 60, 2, 4),
                 (3, 'https://example.test/3.jpg', 30, 2, 6);
-            INSERT INTO GameTranslation (gameId, languageCode, title, normalizedTitle) VALUES
-                (1, 'en', 'Azul', 'azul'), (2, 'en', 'Brass', 'brass'), (3, 'en', 'Codenames', 'codenames');
-            INSERT INTO GameEdition (gameId, languageCode, title, normalizedTitle, isPrimary)
-            SELECT gameId, languageCode, title, normalizedTitle, 1 FROM GameTranslation;
+            INSERT INTO GameEdition (gameId, languageCode, title, normalizedTitle, isPrimary) VALUES
+                (1, 'en', 'Azul', 'azul', 1), (2, 'en', 'Brass', 'brass', 1), (3, 'en', 'Codenames', 'codenames', 1);
 
             INSERT INTO UserGroup (id, name, createdBy) VALUES (10, 'Fridays', 1), (11, 'Weekend', 1), (12, 'Family', 1), (20, 'Eve', 5);
             INSERT INTO GroupMembership (accountId, groupId) VALUES

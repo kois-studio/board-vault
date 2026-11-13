@@ -1,0 +1,22 @@
+-- Drop GameTranslation (#190, ADR-0025). GameEdition replaced it in 0028 and
+-- every read has used GameEdition since; the API kept writing GameTranslation
+-- only so a rollback past 0028 could read it again. v0.1.0 shipped on
+-- GameEdition, and the code deployed before this migration no longer writes
+-- it, so nothing touches the table any more.
+--
+-- Deploy the code first, then migrate: the code works with or without the
+-- table, and only /health/ready (schema: down) notices the gap.
+--
+-- Rollback: rebuild it from the editions, which hold the same titles.
+--   CREATE TABLE GameTranslation (
+--       gameId INTEGER NOT NULL,
+--       languageCode TEXT NOT NULL,
+--       title TEXT NOT NULL,
+--       normalizedTitle TEXT NOT NULL,
+--       FOREIGN KEY (gameId) REFERENCES Game(id) ON DELETE CASCADE,
+--       PRIMARY KEY (gameId, languageCode)
+--   );
+--   INSERT INTO GameTranslation (gameId, languageCode, title, normalizedTitle)
+--   SELECT gameId, languageCode, title, normalizedTitle FROM GameEdition;
+
+DROP TABLE GameTranslation;

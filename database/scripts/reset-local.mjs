@@ -134,8 +134,8 @@ async function seedLocalScenario() {
     try {
         await client.execute('PRAGMA foreign_keys = ON')
         const migration = await client.execute('SELECT MAX(version) AS version FROM SchemaMigrations')
-        if (String(migration.rows[0]?.version ?? '') !== '0035') {
-            throw new Error('Local fixtures can only be added after migrations reach 0035.')
+        if (String(migration.rows[0]?.version ?? '') !== '0036') {
+            throw new Error('Local fixtures can only be added after migrations reach 0036.')
         }
 
         const clerkUserIds = await resolveFixtureClerkUsers()
@@ -174,10 +174,6 @@ async function seedLocalScenario() {
             const gameId = Number(result.lastInsertRowid)
             games[key] = gameId
             for (const [languageCode, title] of [['en', titleEn], ['es', titleEs]]) {
-                await transaction.execute({
-                    sql: 'INSERT INTO GameTranslation (gameId, languageCode, title, normalizedTitle) VALUES (?, ?, ?, ?)',
-                    args: [gameId, languageCode, title, title.toLowerCase()],
-                })
                 await transaction.execute({
                     sql: 'INSERT INTO GameEdition (gameId, languageCode, title, normalizedTitle, isPrimary) VALUES (?, ?, ?, ?, ?)',
                     args: [gameId, languageCode, title, title.toLowerCase(), languageCode === 'en' ? 1 : 0],

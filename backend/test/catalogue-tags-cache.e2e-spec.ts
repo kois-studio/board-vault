@@ -42,9 +42,7 @@ describe('catalogue tags in the browser cache (e2e)', () => {
                 INSERT INTO Account (id, email, username, avatar, displayName, clerkUserId, isAdmin, isDeleted)
                 VALUES (1, 'player@example.test', 'player', ${avatar}, 'Player', 'user_player', 0, 0);
                 INSERT INTO Game (id, imageUrl) VALUES (1, '');
-                INSERT INTO GameTranslation (gameId, languageCode, title, normalizedTitle) VALUES (1, 'en', 'Azul', 'azul');
-                INSERT INTO GameEdition (gameId, languageCode, title, normalizedTitle, isPrimary)
-                SELECT gameId, languageCode, title, normalizedTitle, 1 FROM GameTranslation;
+                INSERT INTO GameEdition (gameId, languageCode, title, normalizedTitle, isPrimary) VALUES (1, 'en', 'Azul', 'azul', 1);
                 INSERT INTO TagCategory (id, name) VALUES (1, 'Genre');
                 INSERT INTO Tag (id, name, categoryId) VALUES (1, 'Abstract', 1);
                 INSERT INTO GameTag (gameId, tagId) VALUES (1, 1);

@@ -27,7 +27,6 @@ try {
     const existing = await transaction.execute("SELECT gameId FROM GameEdition WHERE languageCode = 'en' AND normalizedTitle = 'borrowed-fixture'")
     if (!existing.rows.length) {
         const game = await transaction.execute("INSERT INTO Game (imageUrl, gameAvgDuration, minPlayers, maxPlayers) VALUES ('', 15, 1, 8)")
-        await transaction.execute({ sql: "INSERT INTO GameTranslation (gameId, languageCode, title, normalizedTitle) VALUES (?, 'en', 'Borrowed Fixture', 'borrowed-fixture')", args: [Number(game.lastInsertRowid)] })
         await transaction.execute({ sql: "INSERT INTO GameEdition (gameId, languageCode, title, normalizedTitle, isPrimary) VALUES (?, 'en', 'Borrowed Fixture', 'borrowed-fixture', 1)", args: [Number(game.lastInsertRowid)] })
     }
     await transaction.commit()

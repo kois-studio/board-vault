@@ -132,7 +132,6 @@ const createGroupsService = () => {
                 titleTranslations: { es: `Game ${game.id}` },
             })),
         ),
-        getGameTranslations: vi.fn(),
     }
     const database = {
         getActivePlaceholdersByGroupIds: vi.fn().mockResolvedValue({ rows: [{ id: 9, groupId: 2, displayName: 'Lucía', avatar: null }] }),
@@ -166,7 +165,6 @@ const createGroupsService = () => {
         gamesOwned.getGamesOwnedByAccountId,
         reviews.getGameReviewsByAccountId,
         games.getGameById,
-        translations.getGameTranslations,
     ]
 
     return { service, groups, memberships, games, reviews, translations, database, lookups, perItem }

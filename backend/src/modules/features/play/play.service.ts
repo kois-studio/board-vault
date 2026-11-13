@@ -4,7 +4,7 @@ import { LogFeature } from '../../../common/decorators/logger.decorator.js'
 import { titleFieldsFromRow } from '../../../common/utils/game-title.js'
 import { toIsoDate } from '../../../common/utils/stored-date.js'
 import { DatabaseService } from '../../common/database/database.service.js'
-import { GameTranslationService } from '../../core/game-translation/game-translation.service.js'
+import { GameTitlesService } from '../../core/game-titles/game-titles.service.js'
 import { GamesService } from '../../core/games/games.service.js'
 import { MeetAccountGamesService } from '../../core/meet-account-games/meet-account-games.service.js'
 import { MeetsService } from '../../core/meets/meets.service.js'
@@ -46,7 +46,7 @@ export class PlayService {
         private readonly gamesService: GamesService,
         private readonly meetsService: MeetsService,
         private readonly meetAccountGamesService: MeetAccountGamesService,
-        private readonly gameTranslationService: GameTranslationService,
+        private readonly gameTitlesService: GameTitlesService,
     ) {}
 
     @LogFeature(new Logger('PlayService'))
@@ -552,7 +552,7 @@ export class PlayService {
         return buildHistoryRecords(meets, {
             databaseService: this.databaseService,
             gamesService: this.gamesService,
-            gameTranslationService: this.gameTranslationService,
+            gameTitlesService: this.gameTitlesService,
             usersService: this.usersService,
             locale,
             meetAccountGamesService: this.meetAccountGamesService,
@@ -565,9 +565,10 @@ export class PlayService {
         const summary = await this.databaseService.sessions.getHistorySummary(userId, { groupId: query.groupId, gameId: query.gameId })
         const gameIds = [...new Set([...summary.mostPlayedCandidates, ...summary.myMostPlayed].map(game => game.gameId))]
         const games = new Map(
-            (await this.gameTranslationService.withTitles([...(await this.gamesService.getGamesByIds(gameIds)).values()], locale)).map(
-                game => [game.id, game],
-            ),
+            (await this.gameTitlesService.withTitles([...(await this.gamesService.getGamesByIds(gameIds)).values()], locale)).map(game => [
+                game.id,
+                game,
+            ]),
         )
         // The game played on the most nights; a tie goes to the first title, as the reader would sort them.
         const collator = new Intl.Collator(locale)

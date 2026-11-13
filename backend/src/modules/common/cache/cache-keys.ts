@@ -7,8 +7,6 @@
 export const cacheKeys = {
     /** `GamesService.getGameById`. */
     gameById: (gameId: number) => `games:byId:${gameId}`,
-    /** `GameTranslationService.getGameTranslations`. */
-    gameTranslations: (gameId: number) => `game-translation:byGameId:${gameId}`,
     /** `GameTagsService.getGameTags`. */
     gameTags: (gameId: number) => `game-tags:byGameId:${gameId}`,
     /** `CollectionActivityService`: a person's recent shelf and wishlist activity. */

@@ -44,14 +44,10 @@ describe('rating averages, rating activity, and title search (e2e)', () => {
                     (1, 'https://example.test/azul.jpg', 45, 2, 4),
                     (2, 'https://example.test/under-score.jpg', 30, 2, 4),
                     (3, 'https://example.test/catan.jpg', 90, 3, 4);
-                INSERT INTO GameTranslation (gameId, languageCode, title, normalizedTitle) VALUES
-                    (1, 'en', 'Azul', 'azul'), (1, 'es', 'Azul', 'azul'),
-                    (2, 'en', 'Under_Score', 'under_score'), (2, 'es', 'Under_Score', 'under_score'),
-                    (3, 'en', 'Catan', 'catan'), (3, 'es', 'Catan', 'catan');
-                INSERT INTO GameEdition (gameId, languageCode, title, normalizedTitle, isPrimary)
-                SELECT gameId, languageCode, title, normalizedTitle,
-                       ROW_NUMBER() OVER (PARTITION BY gameId ORDER BY languageCode = 'en' DESC, languageCode) = 1
-                FROM GameTranslation ORDER BY gameId, languageCode;
+                INSERT INTO GameEdition (gameId, languageCode, title, normalizedTitle, isPrimary) VALUES
+                    (1, 'en', 'Azul', 'azul', 1), (1, 'es', 'Azul', 'azul', 0),
+                    (2, 'en', 'Under_Score', 'under_score', 1), (2, 'es', 'Under_Score', 'under_score', 0),
+                    (3, 'en', 'Catan', 'catan', 1), (3, 'es', 'Catan', 'catan', 0);
 
                 INSERT INTO GameReview (accountId, gameId, review) VALUES (1, 1, 6), (2, 1, 10), (3, 1, 2), (4, 1, 4);
             `,

@@ -48,10 +48,8 @@ describe('batched lookups (e2e)', () => {
                 ${rows(senders, id => `(${id}, 's${id}@example.test', 'sender${id}', ${avatar}, 'Sender ${id}', 'user_s${id}', 0, 0)`)};
             INSERT INTO Game (id, imageUrl, gameAvgDuration, minPlayers, maxPlayers) VALUES
                 ${rows(games, id => `(${id}, 'https://example.test/${id}.jpg', 45, 2, 4)`)};
-            INSERT INTO GameTranslation (gameId, languageCode, title, normalizedTitle) VALUES
-                ${rows(games, id => `(${id}, 'en', 'Game ${id}', 'game-${id}')`)};
-            INSERT INTO GameEdition (gameId, languageCode, title, normalizedTitle, isPrimary)
-            SELECT gameId, languageCode, title, normalizedTitle, 1 FROM GameTranslation ORDER BY gameId;
+            INSERT INTO GameEdition (gameId, languageCode, title, normalizedTitle, isPrimary) VALUES
+                ${rows(games, id => `(${id}, 'en', 'Game ${id}', 'game-${id}', 1)`)};
 
             INSERT INTO OwnedGame (accountId, gameId) VALUES (2, 2), ${rows(many, id => `(3, ${id})`)};
             INSERT INTO WishlistedGame (accountId, gameId) VALUES (2, 9), ${rows(many, id => `(3, ${id + 7})`)};

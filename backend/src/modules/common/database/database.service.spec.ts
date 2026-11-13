@@ -176,7 +176,6 @@ describe('DatabaseService logging', () => {
                 .mockResolvedValueOnce({ rowsAffected: 1 })
                 .mockResolvedValueOnce({ rowsAffected: 1 })
                 .mockResolvedValueOnce({ rowsAffected: 1 })
-                .mockResolvedValueOnce({ rowsAffected: 1 })
                 .mockResolvedValueOnce({ rows: [[4, null]] })
                 .mockResolvedValueOnce({ rowsAffected: 1 }),
             commit: vi.fn().mockResolvedValue(undefined),
@@ -214,29 +213,28 @@ describe('DatabaseService logging', () => {
             1,
             expect.objectContaining({ sql: expect.stringContaining('INSERT INTO Game') }),
         )
-        expect(transaction.execute).toHaveBeenNthCalledWith(2, expect.objectContaining({ sql: expect.stringContaining('GameTranslation') }))
         expect(transaction.execute).toHaveBeenNthCalledWith(
-            3,
+            2,
             expect.objectContaining({ sql: expect.stringContaining('INTO GameEdition') }),
         )
-        expect(transaction.execute).toHaveBeenNthCalledWith(4, {
+        expect(transaction.execute).toHaveBeenNthCalledWith(3, {
             sql: 'INSERT OR IGNORE INTO GameTag (gameId, tagId) VALUES (?, ?)',
             args: [88, 2],
         })
         expect(transaction.execute).toHaveBeenNthCalledWith(
-            5,
+            4,
             expect.objectContaining({ sql: expect.stringContaining("status = 'approved'") }),
         )
         expect(transaction.execute).toHaveBeenNthCalledWith(
-            6,
+            5,
             expect.objectContaining({ sql: expect.stringContaining('SELECT submittedBy, addTo FROM GameProposal') }),
         )
         expect(transaction.execute).toHaveBeenNthCalledWith(
-            7,
+            6,
             expect.objectContaining({ sql: expect.stringContaining('INSERT INTO Notification') }),
         )
         expect(transaction.execute).toHaveBeenNthCalledWith(
-            7,
+            6,
             expect.objectContaining({
                 args: [
                     4,
@@ -257,7 +255,6 @@ describe('DatabaseService logging', () => {
             execute: vi
                 .fn()
                 .mockResolvedValueOnce({ lastInsertRowid: 88 })
-                .mockResolvedValueOnce({ rowsAffected: 1 })
                 .mockResolvedValueOnce({ rowsAffected: 1 })
                 .mockResolvedValueOnce({ rowsAffected: 1 })
                 .mockResolvedValueOnce({ rowsAffected: 1 })

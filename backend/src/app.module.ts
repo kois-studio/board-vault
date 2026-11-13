@@ -14,7 +14,7 @@ import { ArtworkModule } from './modules/core/artwork/artwork.module.js'
 import { CollectionActivityModule } from './modules/core/collection-activity/collection-activity.module.js'
 import { GameProposalModule } from './modules/core/game-proposal/game-proposal.module.js'
 import { GameTagsModule } from './modules/core/game-tags/game-tags.module.js'
-import { GameTranslationModule } from './modules/core/game-translation/game-translation.module.js'
+import { GameTitlesModule } from './modules/core/game-titles/game-titles.module.js'
 import { GamesModule } from './modules/core/games/games.module.js'
 import { GamesOwnedModule } from './modules/core/games-owned/games-owned.module.js'
 import { GroupMembershipsModule } from './modules/core/group-memberships/group-memberships.module.js'
@@ -53,7 +53,7 @@ import { SessionsModule } from './modules/features/sessions/sessions.module.js'
         CollectionActivityModule,
         GameProposalModule,
         GameTagsModule,
-        GameTranslationModule,
+        GameTitlesModule,
         GamesModule,
         GamesOwnedModule,
         GroupMembershipsModule,

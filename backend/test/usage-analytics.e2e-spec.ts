@@ -43,11 +43,7 @@ describe('usage analytics (e2e)', () => {
             INSERT INTO UserGroup (id, name, createdBy) VALUES (10, 'Fridays', 2);
             INSERT INTO GroupMembership (accountId, groupId) VALUES (2, 10), (3, 10);
             INSERT INTO Game (id, imageUrl, gameAvgDuration, minPlayers, maxPlayers) VALUES (1, 'https://example.test/azul.jpg', 45, 2, 4);
-            INSERT INTO GameTranslation (gameId, languageCode, title, normalizedTitle) VALUES (1, 'en', 'Azul', 'azul');
-            INSERT INTO GameEdition (gameId, languageCode, title, normalizedTitle, isPrimary)
-            SELECT gameId, languageCode, title, normalizedTitle,
-                   ROW_NUMBER() OVER (PARTITION BY gameId ORDER BY languageCode = 'en' DESC, languageCode) = 1
-            FROM GameTranslation ORDER BY gameId, languageCode;
+            INSERT INTO GameEdition (gameId, languageCode, title, normalizedTitle, isPrimary) VALUES (1, 'en', 'Azul', 'azul', 1);
         `)
 
         process.env.NODE_ENV = 'test'

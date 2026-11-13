@@ -85,14 +85,6 @@ export function gameEditionUpsert(
     }
 }
 
-/** The legacy GameTranslation row, still written until a later migration drops the table. */
-function gameTranslationUpsert(gameId: number, languageCode: string, title: string, normalizedTitle: string): InStatement {
-    return {
-        sql: 'INSERT OR REPLACE INTO GameTranslation (gameId, languageCode, title, normalizedTitle) VALUES (?, ?, ?, ?)',
-        args: [gameId, languageCode, title, normalizedTitle],
-    }
-}
-
 const CATALOGUE_ORDER: Record<BrowseSort, string> = {
     title: 'COALESCE(reader.title, t.title) COLLATE NOCASE ASC, g.id ASC',
     shortest: 'g.gameAvgDuration IS NULL, g.gameAvgDuration ASC, COALESCE(reader.title, t.title) COLLATE NOCASE ASC, g.id ASC',
@@ -140,12 +132,9 @@ export class GameQueries {
             }
 
             for (const edition of input.editions) {
-                for (const statement of [
-                    gameTranslationUpsert(createdGameId, edition.languageCode, edition.title, edition.normalizedTitle),
+                await transaction.execute(
                     gameEditionUpsert(createdGameId, edition.languageCode, edition.title, edition.normalizedTitle, edition.isPrimary),
-                ]) {
-                    await transaction.execute(statement)
-                }
+                )
             }
 
             for (const tagId of input.tagIds) {
@@ -303,42 +292,11 @@ export class GameQueries {
         })
     }
 
-    getGameTranslationsByGameIds(gameIds: Array<number>) {
+    getEditionTitlesByGameIds(gameIds: Array<number>) {
         return this.database.execute({
             sql: `SELECT gameId, languageCode, title, normalizedTitle FROM GameEdition WHERE gameId IN (${gameIds.map(() => '?').join(', ')})`,
             args: gameIds,
         })
-    }
-
-    getGameTranslations(gameId: number) {
-        return this.database.execute({
-            sql: 'SELECT gameId, languageCode, title, normalizedTitle FROM GameEdition WHERE gameId = ?',
-            args: [gameId],
-        })
-    }
-
-    /** Adds a title; fails when the game already has one in that language. Writes the edition and the legacy translation together. */
-    createGameTranslation(gameId: number, languageCode: string, title: string, normalizedTitle: string) {
-        return this.database.batch([
-            {
-                sql: 'INSERT INTO GameTranslation (gameId, languageCode, title, normalizedTitle) VALUES (?, ?, ?, ?)',
-                args: [gameId, languageCode, title, normalizedTitle],
-            },
-            {
-                sql: `
-                    INSERT INTO GameEdition (gameId, languageCode, title, normalizedTitle, isPrimary)
-                    SELECT ?, ?, ?, ?, NOT EXISTS (SELECT 1 FROM GameEdition WHERE gameId = ? AND isPrimary = 1)`,
-                args: [gameId, languageCode, title, normalizedTitle, gameId],
-            },
-        ])
-    }
-
-    /** Sets a game's title in one language, on its edition and on the legacy translation, in one batch. */
-    upsertGameTranslation(gameId: number, languageCode: string, title: string, normalizedTitle: string) {
-        return this.database.batch([
-            gameTranslationUpsert(gameId, languageCode, title, normalizedTitle),
-            gameEditionUpsert(gameId, languageCode, title, normalizedTitle),
-        ])
     }
 
     /** One page of catalogue game ids, filtered and sorted for Browse. */
@@ -864,7 +822,6 @@ export class GameQueries {
                         sql: `UPDATE OwnedGame SET editionId = NULL WHERE editionId IN (SELECT id FROM GameEdition WHERE gameId = ? AND ${gone})`,
                         args: [input.gameId, ...languages],
                     },
-                    { sql: `DELETE FROM GameTranslation WHERE gameId = ? AND ${gone}`, args: [input.gameId, ...languages] },
                     { sql: `DELETE FROM GameEdition WHERE gameId = ? AND ${gone}`, args: [input.gameId, ...languages] },
                     { sql: 'UPDATE GameEdition SET isPrimary = 0 WHERE gameId = ?', args: [input.gameId] },
                 ]) {
@@ -872,12 +829,9 @@ export class GameQueries {
                 }
 
                 for (const edition of input.editions) {
-                    for (const statement of [
-                        gameTranslationUpsert(input.gameId, edition.languageCode, edition.title, edition.normalizedTitle),
+                    await transaction.execute(
                         gameEditionUpsert(input.gameId, edition.languageCode, edition.title, edition.normalizedTitle, edition.isPrimary),
-                    ]) {
-                        await transaction.execute(statement)
-                    }
+                    )
                 }
             }
 

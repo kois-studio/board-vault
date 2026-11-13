@@ -232,10 +232,6 @@ describe('proposing a game (e2e)', () => {
                 sql: 'SELECT imageUrl, gameAvgDuration, minPlayers, maxPlayers, retailPriceCents FROM Game WHERE id = ?',
                 args: [gameId],
             })
-            const titles = await database.execute({
-                sql: 'SELECT languageCode, title FROM GameTranslation WHERE gameId = ? ORDER BY languageCode',
-                args: [gameId],
-            })
             const editions = await database.execute({
                 sql: 'SELECT languageCode, title, isPrimary FROM GameEdition WHERE gameId = ? ORDER BY languageCode',
                 args: [gameId],
@@ -256,10 +252,6 @@ describe('proposing a game (e2e)', () => {
                 maxPlayers: 8,
                 retailPriceCents: 2495,
             })
-            expect(titles.rows.map(row => [row.languageCode, row.title])).toEqual([
-                ['en', 'Codenames'],
-                ['es', 'Código Secreto'],
-            ])
             expect(editions.rows.map(row => [row.languageCode, row.title, Number(row.isPrimary)])).toEqual([
                 ['en', 'Codenames', 1],
                 ['es', 'Código Secreto', 0],
@@ -310,16 +302,11 @@ describe('proposing a game (e2e)', () => {
                 sql: 'SELECT languageCode, title, isPrimary FROM GameEdition WHERE gameId = ? ORDER BY languageCode',
                 args: [Number(approved.body.createdGameId)],
             })
-            const translations = await database.execute({
-                sql: 'SELECT languageCode FROM GameTranslation WHERE gameId = ? ORDER BY languageCode',
-                args: [Number(approved.body.createdGameId)],
-            })
 
             expect(editions.rows.map(row => [row.languageCode, row.title, Number(row.isPrimary)])).toEqual([
                 ['de', 'Die Siedler von Catan', 1],
                 ['en', 'Catan', 0],
             ])
-            expect(translations.rows.map(row => row.languageCode)).toEqual(['de', 'en'])
         })
 
         it('refuses bad title languages and other titles on a proposal', async () => {
@@ -405,10 +392,6 @@ describe('proposing a game (e2e)', () => {
             const catanId = Number(catan.rows[0]?.id)
 
             await database.batch([
-                {
-                    sql: "INSERT INTO GameTranslation (gameId, languageCode, title, normalizedTitle) VALUES (?, 'en', 'Catan', 'catan')",
-                    args: [catanId],
-                },
                 {
                     sql: "INSERT INTO GameEdition (gameId, languageCode, title, normalizedTitle, isPrimary) VALUES (?, 'en', 'Catan', 'catan', 1)",
                     args: [catanId],

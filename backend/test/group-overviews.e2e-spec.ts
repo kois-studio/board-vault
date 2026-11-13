@@ -46,10 +46,8 @@ describe('group overviews and shelves (e2e)', () => {
                 (6, 'ugo@example.test', 'ugoplays', ${avatar}, 'Ugo', 'user_ugo', 0, 0);
             INSERT INTO Game (id, imageUrl, gameAvgDuration, minPlayers, maxPlayers) VALUES
                 ${rows(six, id => `(${id}, 'https://example.test/${id}.jpg', 45, 2, 4)`)};
-            INSERT INTO GameTranslation (gameId, languageCode, title, normalizedTitle) VALUES
-                ${rows(six, id => `(${id}, 'en', 'Game ${id}', 'game-${id}')`)};
-            INSERT INTO GameEdition (gameId, languageCode, title, normalizedTitle, isPrimary)
-            SELECT gameId, languageCode, title, normalizedTitle, 1 FROM GameTranslation ORDER BY gameId;
+            INSERT INTO GameEdition (gameId, languageCode, title, normalizedTitle, isPrimary) VALUES
+                ${rows(six, id => `(${id}, 'en', 'Game ${id}', 'game-${id}', 1)`)};
 
             INSERT INTO UserGroup (id, name, createdBy) VALUES (10, 'Group A', 1), (11, 'Group B', 1), (12, 'Group C', 5);
             INSERT INTO GroupMembership (accountId, groupId, joinedAt) VALUES

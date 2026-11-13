@@ -3,7 +3,7 @@ import { BadRequestException, ForbiddenException, Injectable, Logger, NotFoundEx
 import { LogFeature } from '../../../common/decorators/logger.decorator.js'
 import { groupBy } from '../../../common/utils/group-by.js'
 import { DatabaseService } from '../../common/database/database.service.js'
-import { GameTranslationService } from '../../core/game-translation/game-translation.service.js'
+import { GameTitlesService } from '../../core/game-titles/game-titles.service.js'
 import { GamesService } from '../../core/games/games.service.js'
 import { GamesOwnedService } from '../../core/games-owned/games-owned.service.js'
 import { GroupMembershipsService } from '../../core/group-memberships/group-memberships.service.js'
@@ -48,7 +48,7 @@ export class DashboardService {
         private readonly gamesService: GamesService,
         private readonly reviewsService: ReviewsService,
         private readonly meetsService: MeetsService,
-        private readonly gameTranslationService: GameTranslationService,
+        private readonly gameTitlesService: GameTitlesService,
         private readonly meetAccountGamesService: MeetAccountGamesService,
         private readonly activityNotifier: ActivityNotifier,
     ) {}
@@ -237,7 +237,7 @@ export class DashboardService {
     private async completeGamesByIds(gameIds: Array<number>, locale: Locale): Promise<Map<number, GameCompleteDto>> {
         if (gameIds.length === 0) return new Map()
 
-        const games = await this.gameTranslationService.withTitles([...(await this.gamesService.getGamesByIds(gameIds)).values()], locale)
+        const games = await this.gameTitlesService.withTitles([...(await this.gamesService.getGamesByIds(gameIds)).values()], locale)
 
         return new Map(games.map(game => [game.id, game]))
     }
@@ -275,7 +275,7 @@ export class DashboardService {
         return buildHistoryRecords(groupMeetings, {
             databaseService: this.databaseService,
             gamesService: this.gamesService,
-            gameTranslationService: this.gameTranslationService,
+            gameTitlesService: this.gameTitlesService,
             usersService: this.usersService,
             locale,
             meetAccountGamesService: this.meetAccountGamesService,

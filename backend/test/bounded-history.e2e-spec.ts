@@ -50,9 +50,7 @@ describe('bounded history (e2e)', () => {
                 (3, 'cai@example.test', 'caiplays', ${avatar}, 'Cai', 'user_cai', 0, 0);
             INSERT INTO Game (id, imageUrl, gameAvgDuration, minPlayers, maxPlayers) VALUES
                 (1, 'https://example.test/1.jpg', 45, 2, 4), (2, 'https://example.test/2.jpg', 60, 2, 4);
-            INSERT INTO GameTranslation (gameId, languageCode, title, normalizedTitle) VALUES (1, 'en', 'Azul', 'azul'), (2, 'en', 'Brass', 'brass');
-            INSERT INTO GameEdition (gameId, languageCode, title, normalizedTitle, isPrimary)
-            SELECT gameId, languageCode, title, normalizedTitle, 1 FROM GameTranslation;
+            INSERT INTO GameEdition (gameId, languageCode, title, normalizedTitle, isPrimary) VALUES (1, 'en', 'Azul', 'azul', 1), (2, 'en', 'Brass', 'brass', 1);
 
             -- Fridays (10) is Ana's and Bea's; Cai's (11) is not Ana's; Ana left Old (12); Recent (14) is Ana's.
             INSERT INTO UserGroup (id, name, createdBy) VALUES (10, 'Fridays', 1), (11, 'Cai', 3), (12, 'Old', 3), (14, 'Recent', 1);

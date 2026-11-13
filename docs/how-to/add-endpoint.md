@@ -19,7 +19,7 @@ Example: `GET /collection/users/:userId/stats` for the signed-in user.
    enforces domain rules. A list reads what its rows need for all of them at
    once, with the set-based lookups (`getGroupsByIds`,
    `getGamesOwnedByAccountIds`, `getGameReviewsByAccountIds`,
-   `getPublicUsersByIds`, `gameTranslationService.withTitles`, …), never one
+   `getPublicUsersByIds`, `gameTitlesService.withTitles`, …), never one
    query per group, member or game: on Turso every query is a round trip
    (#251, #289).
 5. **Add the controller route.** The controller already has

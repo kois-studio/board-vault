@@ -3,7 +3,7 @@ import { fakeDatabase } from '../../../../test/fake-database.js'
 import { PlayService } from './play.service.js'
 
 import type { DatabaseService } from '../../common/database/database.service.js'
-import type { GameTranslationService } from '../../core/game-translation/game-translation.service.js'
+import type { GameTitlesService } from '../../core/game-titles/game-titles.service.js'
 import type { GamesService } from '../../core/games/games.service.js'
 import type { MeetAccountGamesService } from '../../core/meet-account-games/meet-account-games.service.js'
 import type { MeetsService } from '../../core/meets/meets.service.js'
@@ -13,7 +13,7 @@ const titledGames = {
     withTitles: vi.fn(async (games: Array<{ id: number }>) =>
         games.map(game => ({ ...game, title: 'Juego', titleLanguage: 'es', titleTranslations: { es: 'Juego' } })),
     ),
-} as unknown as GameTranslationService
+} as unknown as GameTitlesService
 
 describe('PlayService history', () => {
     it('includes only completed sessions in personal history, with a fixed number of queries', async () => {
@@ -146,7 +146,7 @@ describe('PlayService history', () => {
             {} as GamesService,
             meets as unknown as MeetsService,
             {} as MeetAccountGamesService,
-            {} as GameTranslationService,
+            {} as GameTitlesService,
         )
 
         await expect(service.getUserMeets(1)).resolves.toEqual([
@@ -173,7 +173,7 @@ describe('PlayService history', () => {
             {} as GamesService,
             {} as MeetsService,
             {} as MeetAccountGamesService,
-            {} as GameTranslationService,
+            {} as GameTitlesService,
         )
 
         await expect(
@@ -220,7 +220,7 @@ describe('PlayService history', () => {
             {} as GamesService,
             {} as MeetsService,
             {} as MeetAccountGamesService,
-            {} as GameTranslationService,
+            {} as GameTitlesService,
         )
 
         await expect(
@@ -269,7 +269,7 @@ describe('PlayService history', () => {
             {} as GamesService,
             {} as MeetsService,
             {} as MeetAccountGamesService,
-            {} as GameTranslationService,
+            {} as GameTitlesService,
         )
 
         await expect(
@@ -321,7 +321,7 @@ describe('PlayService history', () => {
             {} as GamesService,
             {} as MeetsService,
             {} as MeetAccountGamesService,
-            {} as GameTranslationService,
+            {} as GameTitlesService,
         )
 
         await expect(service.getRecommendations(1, { groupId: 7, attendeeIds: [1, 2] }, 'es')).resolves.toMatchObject({
@@ -345,7 +345,7 @@ describe('PlayService history', () => {
             {} as GamesService,
             {} as MeetsService,
             {} as MeetAccountGamesService,
-            {} as GameTranslationService,
+            {} as GameTitlesService,
         )
 
         await expect(service.getRecommendations(1, { groupId: 7, attendeeIds: [1, 99] }, 'es')).rejects.toThrow(
@@ -366,7 +366,7 @@ describe('PlayService history', () => {
             {} as GamesService,
             {} as MeetsService,
             {} as MeetAccountGamesService,
-            {} as GameTranslationService,
+            {} as GameTitlesService,
         )
 
         await expect(service.getRecommendations(1, { groupId: 7, attendeeIds: [1, 2], availableMinutes: 60 }, 'es')).resolves.toMatchObject(
@@ -390,7 +390,7 @@ describe('PlayService history', () => {
             {} as GamesService,
             {} as MeetsService,
             {} as MeetAccountGamesService,
-            {} as GameTranslationService,
+            {} as GameTitlesService,
         )
 
         await expect(
@@ -423,7 +423,7 @@ describe('PlayService history', () => {
             {} as GamesService,
             {} as MeetsService,
             {} as MeetAccountGamesService,
-            {} as GameTranslationService,
+            {} as GameTitlesService,
         )
 
         await expect(
@@ -456,7 +456,7 @@ describe('PlayService history', () => {
             {} as GamesService,
             {} as MeetsService,
             {} as MeetAccountGamesService,
-            {} as GameTranslationService,
+            {} as GameTitlesService,
         )
 
         await expect(service.getRecommendationSignals(1, 7)).resolves.toEqual({
@@ -486,7 +486,7 @@ describe('PlayService history', () => {
             {} as GamesService,
             {} as MeetsService,
             {} as MeetAccountGamesService,
-            {} as GameTranslationService,
+            {} as GameTitlesService,
         )
 
         await expect(service.getRecommendationSignals(1, 7)).rejects.toThrow('You must belong to the group to view recommendation signals')

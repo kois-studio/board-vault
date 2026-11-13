@@ -54,10 +54,8 @@ describe('dashboard reads in a fixed number of queries (e2e, #289)', () => {
                 (9, 'ugo@example.test', 'ugoplays', ${avatar}, 'Ugo', 'user_ugo', 0, 0);
             INSERT INTO Game (id, imageUrl, gameAvgDuration, minPlayers, maxPlayers) VALUES
                 ${rows(twelve, id => `(${id}, 'https://example.test/${id}.jpg', 45, 2, 4)`)};
-            INSERT INTO GameTranslation (gameId, languageCode, title, normalizedTitle) VALUES
-                ${rows(twelve, id => `(${id}, 'en', 'Game ${String(id).padStart(2, '0')}', 'game-${id}')`)};
-            INSERT INTO GameEdition (gameId, languageCode, title, normalizedTitle, isPrimary)
-            SELECT gameId, languageCode, title, normalizedTitle, 1 FROM GameTranslation ORDER BY gameId;
+            INSERT INTO GameEdition (gameId, languageCode, title, normalizedTitle, isPrimary) VALUES
+                ${rows(twelve, id => `(${id}, 'en', 'Game ${String(id).padStart(2, '0')}', 'game-${id}', 1)`)};
 
             INSERT INTO UserGroup (id, name, createdBy) VALUES
                 (10, 'Tuesday', 1), (11, 'Weekend', 1), (12, 'Family', 1), (20, 'Eve''s table', 5);

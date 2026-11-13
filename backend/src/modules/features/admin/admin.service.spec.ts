@@ -30,7 +30,7 @@ describe('AdminService', () => {
             notifier = fakeActivityNotifier()
             artworkService = { copyFromAddress: vi.fn().mockImplementation(async (address: string) => ({ ...copied, sourceUrl: address })) }
             const gameProposalService = { getGameProposalById: vi.fn().mockResolvedValue(proposal) }
-            const gameTranslationService = { normalizeTitle: (title: string) => title.toLowerCase() }
+            const gameTitlesService = { normalizeTitle: (title: string) => title.toLowerCase() }
             const cacheService = { deleteOne: vi.fn().mockResolvedValue(undefined) }
             const tagService = { getTags: vi.fn().mockResolvedValue([{ id: 5 }, { id: 6 }]) }
 
@@ -39,7 +39,7 @@ describe('AdminService', () => {
                 {} as never,
                 {} as never,
                 {} as never,
-                gameTranslationService as never,
+                gameTitlesService as never,
                 gameProposalService as never,
                 fakeDatabase({ approveGameProposalAtomically }),
                 cacheService as never,

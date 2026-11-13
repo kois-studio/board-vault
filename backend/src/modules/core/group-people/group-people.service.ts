@@ -2,8 +2,8 @@ import { BadRequestException, ForbiddenException, Injectable, NotFoundException 
 
 import { titleFieldsFromRow } from '../../../common/utils/game-title.js'
 import { DatabaseService } from '../../common/database/database.service.js'
-import { GameTranslationService } from '../game-translation/game-translation.service.js'
-import { normalizeTitle } from '../game-translation/normalize-title.js'
+import { GameTitlesService } from '../game-titles/game-titles.service.js'
+import { normalizeTitle } from '../game-titles/normalize-title.js'
 import { ActivityNotifier } from '../notifications/activity-notifier.service.js'
 
 import type { Locale } from '../../../common/i18n/locale.js'
@@ -45,7 +45,7 @@ export class GroupPeopleService {
     constructor(
         private readonly databaseService: DatabaseService,
         private readonly activityNotifier: ActivityNotifier,
-        private readonly gameTranslationService: GameTranslationService,
+        private readonly gameTitlesService: GameTitlesService,
     ) {}
 
     async getWorkspace(actorAccountId: number, groupId: number, includeArchived = false): Promise<Array<GroupPersonWorkspaceDto>> {
@@ -85,7 +85,7 @@ export class GroupPeopleService {
         const result = await this.databaseService.groups.getGroupPersonGameCatalog(normalizedSearch, locale)
 
         // The people editor and the log-session wizard filter this list on any title, so it carries every edition.
-        const editions = await this.gameTranslationService.getTranslationsByGameIds(result.rows.map(row => Number(row[0])))
+        const editions = await this.gameTitlesService.getTitlesByLanguage(result.rows.map(row => Number(row[0])))
 
         return result.rows.map(row => {
             const title = titleFieldsFromRow(row[5], row[6])
