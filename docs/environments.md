@@ -77,6 +77,7 @@ checks them at startup.
 | `UPSTASH_REDIS_REST_URL` | When Redis is on | Upstash REST endpoint. |
 | `UPSTASH_REDIS_REST_TOKEN` | When Redis is on | Upstash REST token. |
 | `USAGE_PSEUDONYM_SECRET` | Production | Long random value (`openssl rand -hex 32`) that turns account ids into usage pseudonyms ([ADR-0021](adr/0021-own-usage-analytics.md)). Unset, nothing is recorded. Changing it starts every pseudonym afresh. |
+| `RATE_LIMIT_KEY_SECRET` | Production | Long random value (`openssl rand -hex 32`) that keys the rate-limit counters (HMAC), so a stored key cannot be reversed to an IP address or account id (#321). Unset locally, the counters still work. Changing it only restarts the counters. |
 | `CRON_SECRET` | Production | Long random value. Vercel Cron sends it as `Authorization: Bearer …` to `GET /internal/daily-maintenance` (`backend/vercel.json`, daily at 03:30 UTC), which rolls up and expires usage events and deletes expired Idempotency-Key records. Unset, the route answers `404`. |
 | `CORS_ORIGINS` | No | Extra comma-separated browser origins. Local defaults already allow ports 4200 and 4300. |
 

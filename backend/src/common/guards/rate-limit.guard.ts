@@ -1,4 +1,4 @@
-import { createHash } from 'node:crypto'
+import { createHmac } from 'node:crypto'
 
 import { CanActivate, ExecutionContext, HttpException, HttpStatus, Injectable, SetMetadata } from '@nestjs/common'
 import { Reflector } from '@nestjs/core'
@@ -11,6 +11,9 @@ export type RateLimitOptions = {
     limit: number
     windowSeconds: number
 }
+
+/** Required in production (`validateEnv`); locally the counters work without it. */
+const rateLimitKeySecret = (): string => process.env.RATE_LIMIT_KEY_SECRET?.trim() ?? ''
 
 export const RateLimit = (limit: number, windowSeconds: number) => SetMetadata(RATE_LIMIT_METADATA, { limit, windowSeconds })
 
@@ -44,7 +47,9 @@ export class RateLimitGuard implements CanActivate {
                 : `ip:${request.ip ?? request.socket?.remoteAddress ?? 'unknown'}`
         const endpoint = request.route?.path ?? request.path ?? 'unknown'
         const bucket = Math.floor(Date.now() / 1000 / options.windowSeconds)
-        const identifier = createHash('sha256').update(`${endpoint}:${caller}:${bucket}`).digest('hex')
+        // A keyed hash, so a stored key can't be reversed to an IP address or an account id by
+        // trying them all (#321). Changing the secret only restarts the counters.
+        const identifier = createHmac('sha256', rateLimitKeySecret()).update(`${endpoint}:${caller}:${bucket}`).digest('hex')
         const count = await this.cacheService.increment(`${RATE_LIMIT_KEY_PREFIX}${identifier}`, options.windowSeconds)
 
         // Redis is intentionally optional for local development. Production must
