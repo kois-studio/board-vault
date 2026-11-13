@@ -62,14 +62,10 @@ describe('taking over a group person (e2e)', () => {
             VALUES
                 (10, 'https://example.test/game-10.png', 60, 2, 4),
                 (11, 'https://example.test/game-11.png', 90, 2, 4);
-            INSERT INTO GameTranslation (gameId, languageCode, title, normalizedTitle)
-            VALUES
-                (10, 'en', 'Game Ten', 'game ten'),
-                (11, 'en', 'Game Eleven', 'game eleven');
             INSERT INTO GameEdition (gameId, languageCode, title, normalizedTitle, isPrimary)
-            SELECT gameId, languageCode, title, normalizedTitle,
-                   ROW_NUMBER() OVER (PARTITION BY gameId ORDER BY languageCode = 'en' DESC, languageCode) = 1
-            FROM GameTranslation ORDER BY gameId, languageCode;
+            VALUES
+                (10, 'en', 'Game Ten', 'game ten', 1),
+                (11, 'en', 'Game Eleven', 'game eleven', 1);
         `
 
         execFileSync('sqlite3', [testDatabasePath], { input: fixture, encoding: 'utf8' })

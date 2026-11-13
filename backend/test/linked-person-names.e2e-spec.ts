@@ -47,11 +47,7 @@ describe('names of group people with an account (e2e)', () => {
                     (1, 'ana@example.test', 'anita', '${JSON.stringify(emoji('😎'))}', 'Ana Ruiz', 'user_ana'),
                     (2, 'bruno@example.test', 'bruno_old', '${JSON.stringify(emoji('🎲'))}', 'Bruno García', 'user_bruno');
                 INSERT INTO Game (id, imageUrl, gameAvgDuration, minPlayers, maxPlayers) VALUES (10, '', 60, 2, 4);
-                INSERT INTO GameTranslation (gameId, languageCode, title, normalizedTitle) VALUES (10, 'en', 'Catan', 'catan');
-                INSERT INTO GameEdition (gameId, languageCode, title, normalizedTitle, isPrimary)
-                SELECT gameId, languageCode, title, normalizedTitle,
-                       ROW_NUMBER() OVER (PARTITION BY gameId ORDER BY languageCode = 'en' DESC, languageCode) = 1
-                FROM GameTranslation ORDER BY gameId, languageCode;
+                INSERT INTO GameEdition (gameId, languageCode, title, normalizedTitle, isPrimary) VALUES (10, 'en', 'Catan', 'catan', 1);
             `,
             encoding: 'utf8',
         })

@@ -73,8 +73,7 @@ at least one, titles trimmed and not empty (200 characters), language codes
 unique and exactly one primary, else 400. A language code is two or three
 letters and an optional region, canonicalized (`pt-br` becomes `pt-BR`); an
 edition may be in any language, not only an interface language. Editions whose
-language stays keep their `id`; the ones left out are deleted, and the legacy
-`GameTranslation` rows follow. The admin `issue` filter and the overview's
+language stays keep their `id`; the ones left out are deleted. The admin `issue` filter and the overview's
 `catalogueIssues` count `no-title` (no edition), `no-artwork`, `no-primary`
 (editions but none primary), `no-tags`, and `no-price`; the catalogue search
 matches any edition's title.

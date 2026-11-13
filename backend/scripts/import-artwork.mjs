@@ -35,7 +35,7 @@ const client = createClient({ url, ...(url.startsWith('file:') ? {} : { authToke
 const games = await client.execute(`
     SELECT g.id, g.imageUrl, COALESCE(en.title, '') AS title
     FROM Game g
-    LEFT JOIN GameTranslation en ON en.gameId = g.id AND en.languageCode = 'en'
+    LEFT JOIN GameEdition en ON en.gameId = g.id AND en.isPrimary = 1
     WHERE g.imageUrl <> '' AND g.imageUrl NOT LIKE '/artwork/%'
     ORDER BY g.id
 `)

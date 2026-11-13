@@ -45,12 +45,8 @@ describe('game artwork (e2e)', () => {
                 INSERT INTO Game (id, imageUrl, gameAvgDuration, minPlayers, maxPlayers) VALUES
                     (1, 'https://example.test/azul.jpg', 45, 2, 4),
                     (2, '', 90, 3, 4);
-                INSERT INTO GameTranslation (gameId, languageCode, title, normalizedTitle) VALUES
-                    (1, 'en', 'Azul', 'azul'), (2, 'en', 'Catan', 'catan');
-                INSERT INTO GameEdition (gameId, languageCode, title, normalizedTitle, isPrimary)
-                SELECT gameId, languageCode, title, normalizedTitle,
-                       ROW_NUMBER() OVER (PARTITION BY gameId ORDER BY languageCode = 'en' DESC, languageCode) = 1
-                FROM GameTranslation ORDER BY gameId, languageCode;
+                INSERT INTO GameEdition (gameId, languageCode, title, normalizedTitle, isPrimary) VALUES
+                    (1, 'en', 'Azul', 'azul', 1), (2, 'en', 'Catan', 'catan', 1);
             `,
             encoding: 'utf8',
         })

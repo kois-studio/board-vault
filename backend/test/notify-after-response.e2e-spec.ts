@@ -62,9 +62,7 @@ describe('notifications after the response (e2e)', () => {
                 INSERT INTO UserGroup (id, name, createdBy) VALUES (10, 'Fridays', 1);
                 INSERT INTO GroupMembership (accountId, groupId) VALUES (1, 10), (2, 10);
                 INSERT INTO Game (id, imageUrl) VALUES (101, '');
-                INSERT INTO GameTranslation (gameId, languageCode, title, normalizedTitle) VALUES (101, 'en', 'Catan', 'catan');
-                INSERT INTO GameEdition (gameId, languageCode, title, normalizedTitle, isPrimary)
-                SELECT gameId, languageCode, title, normalizedTitle, 1 FROM GameTranslation;
+                INSERT INTO GameEdition (gameId, languageCode, title, normalizedTitle, isPrimary) VALUES (101, 'en', 'Catan', 'catan', 1);
             `,
             encoding: 'utf8',
         })

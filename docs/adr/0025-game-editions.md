@@ -52,7 +52,8 @@ version of the game in one language: the thing on someone's shelf.
 - The migration is additive: create `GameEdition`, copy every
   `GameTranslation` row, mark the English row primary (or the only row when
   there is no English one), move the reads, and drop `GameTranslation` in a
-  later migration once a release has run on the new table.
+  later migration once a release has run on the new table. (Done: migration
+  0036, #190, after v0.1.0.)
 
 ### People can say which edition they own
 

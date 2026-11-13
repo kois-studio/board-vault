@@ -59,12 +59,8 @@ describe('session dates, last played, and artwork addresses (e2e)', () => {
                 INSERT INTO Game (id, imageUrl, gameAvgDuration, minPlayers, maxPlayers) VALUES
                     (1, 'https://example.test/azul.jpg', 45, 2, 4),
                     (2, 'https://example.test/catan.jpg', 60, 2, 4);
-                INSERT INTO GameTranslation (gameId, languageCode, title, normalizedTitle) VALUES
-                    (1, 'en', 'Azul', 'azul'), (2, 'en', 'Catan', 'catan');
-                INSERT INTO GameEdition (gameId, languageCode, title, normalizedTitle, isPrimary)
-                SELECT gameId, languageCode, title, normalizedTitle,
-                       ROW_NUMBER() OVER (PARTITION BY gameId ORDER BY languageCode = 'en' DESC, languageCode) = 1
-                FROM GameTranslation ORDER BY gameId, languageCode;
+                INSERT INTO GameEdition (gameId, languageCode, title, normalizedTitle, isPrimary) VALUES
+                    (1, 'en', 'Azul', 'azul', 1), (2, 'en', 'Catan', 'catan', 1);
                 INSERT INTO OwnedGame (accountId, gameId) VALUES (1, 1), (2, 2);
 
                 -- Thursdays, recorded with group people by the session wizard: Ana played Azul.

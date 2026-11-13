@@ -43,14 +43,10 @@ describe('admin catalogue (e2e)', () => {
                     (2, '', 90, 3, 4, 4495),
                     (3, 'https://example.test/hanabi.jpg', 60, 2, 4, 1295),
                     (4, 'https://example.test/orphan.jpg', 30, 1, 2, NULL);
-                INSERT INTO GameTranslation (gameId, languageCode, title, normalizedTitle) VALUES
-                    (1, 'en', 'Azul', 'azul'), (1, 'es', 'Azul (edición)', 'azul (edicion)'),
-                    (2, 'en', 'Catan', 'catan'), (2, 'es', 'Catan', 'catan'),
-                    (3, 'en', 'Hanabi', 'hanabi');
-                INSERT INTO GameEdition (gameId, languageCode, title, normalizedTitle, isPrimary)
-                SELECT gameId, languageCode, title, normalizedTitle,
-                       ROW_NUMBER() OVER (PARTITION BY gameId ORDER BY languageCode = 'en' DESC, languageCode) = 1
-                FROM GameTranslation ORDER BY gameId, languageCode;
+                INSERT INTO GameEdition (gameId, languageCode, title, normalizedTitle, isPrimary) VALUES
+                    (1, 'en', 'Azul', 'azul', 1), (1, 'es', 'Azul (edición)', 'azul (edicion)', 0),
+                    (2, 'en', 'Catan', 'catan', 1), (2, 'es', 'Catan', 'catan', 0),
+                    (3, 'en', 'Hanabi', 'hanabi', 1);
                 INSERT INTO GameProposal (submittedBy, status, title, createdGameId, reviewedBy, reviewedAt, submittedAt) VALUES
                     (2, 'approved', 'Hanabi', 3, 1, datetime('now', '-2 days'), datetime('now', '-3 days')),
                     (2, 'rejected', 'Monopoly', NULL, 1, datetime('now', '-40 days'), datetime('now', '-41 days')),
@@ -245,16 +241,7 @@ describe('admin catalogue (e2e)', () => {
             { id: english.id, languageCode: 'en', title: 'Azul', isPrimary: false },
             { id: expect.any(Number), languageCode: 'es', title: 'Azul (edición)', isPrimary: false },
         ])
-        // The legacy translations follow, and Browse's search finds the new title.
-        const translations = await database.execute(
-            'SELECT languageCode, title FROM GameTranslation WHERE gameId = 1 ORDER BY languageCode',
-        )
-
-        expect(translations.rows.map(row => [row.languageCode, row.title])).toEqual([
-            ['de', 'Azul (Deutsch)'],
-            ['en', 'Azul'],
-            ['es', 'Azul (edición)'],
-        ])
+        // Browse's search finds the new title.
         expect(await titlesFor({ search: 'deutsch' })).toEqual(['Azul (Deutsch)'])
     })
 
@@ -270,9 +257,6 @@ describe('admin catalogue (e2e)', () => {
         expect(game.body.editions).toEqual([{ id: expect.any(Number), languageCode: 'de', title: 'Azul (Deutsch)', isPrimary: true }])
         expect(game.body).toEqual(expect.objectContaining({ minPlayers: 2, maxPlayers: 4 }))
         expect(game.body.tags).toHaveLength(3)
-        const translations = await database.execute('SELECT languageCode FROM GameTranslation WHERE gameId = 1')
-
-        expect(translations.rows.map(row => row.languageCode)).toEqual(['de'])
     })
 
     it('finds games whose editions have no primary one', async () => {

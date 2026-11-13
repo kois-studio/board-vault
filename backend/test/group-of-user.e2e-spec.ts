@@ -39,7 +39,6 @@ describe('one group of a user (e2e)', () => {
             INSERT INTO GroupMembership (accountId, groupId) VALUES (1, 10), (2, 10), (4, 20);
             INSERT INTO GroupPerson (id, groupId, kind, status, displayName, createdByAccountId) VALUES (7, 10, 'placeholder', 'active', 'Pedro', 1);
             INSERT INTO Game (id, imageUrl, gameAvgDuration, minPlayers, maxPlayers) VALUES (1, 'https://example.test/azul.jpg', 45, 2, 4);
-            INSERT INTO GameTranslation (gameId, languageCode, title, normalizedTitle) VALUES (1, 'en', 'Azul', 'azul');
             INSERT INTO GameEdition (gameId, languageCode, title, normalizedTitle, isPrimary) VALUES (1, 'en', 'Azul', 'azul', 1);
             INSERT INTO OwnedGame (accountId, gameId) VALUES (2, 1);
             INSERT INTO GameReview (accountId, gameId, review) VALUES (2, 1, 8);

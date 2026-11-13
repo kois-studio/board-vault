@@ -41,10 +41,6 @@ describe('owned game edition (e2e)', () => {
                 INSERT INTO Game (id, imageUrl, gameAvgDuration, minPlayers, maxPlayers) VALUES
                     (1, '', 30, 2, 8), (2, '', 45, 1, 2), (3, '', 20, 2, 4);
                 -- Game 1: English (primary) and Spanish. Game 2: only German. Game 3: English (primary) and French.
-                INSERT INTO GameTranslation (gameId, languageCode, title, normalizedTitle) VALUES
-                    (1, 'en', 'Codenames', 'codenames'), (1, 'es', 'Código Secreto', 'codigo-secreto'),
-                    (2, 'de', 'Bärenpark', 'barenpark'),
-                    (3, 'en', 'Citadels', 'citadels'), (3, 'fr', 'Citadelles', 'citadelles');
                 INSERT INTO GameEdition (gameId, languageCode, title, normalizedTitle, isPrimary) VALUES
                     (1, 'en', 'Codenames', 'codenames', 1), (1, 'es', 'Código Secreto', 'codigo-secreto', 0),
                     (2, 'de', 'Bärenpark', 'barenpark', 1),

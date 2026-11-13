@@ -69,9 +69,7 @@ describe('creating a game night with an Idempotency-Key (e2e)', () => {
                     (1, 'ana@example.test', 'anita', ${avatar}, 'Ana Ruiz', 'user_ana'),
                     (2, 'bruno@example.test', 'bruno', ${avatar}, 'Bruno', 'user_bruno');
                 INSERT INTO Game (id, imageUrl, gameAvgDuration, minPlayers, maxPlayers) VALUES (10, '', 60, 2, 4);
-                INSERT INTO GameTranslation (gameId, languageCode, title, normalizedTitle) VALUES (10, 'en', 'Catan', 'catan');
-                INSERT INTO GameEdition (gameId, languageCode, title, normalizedTitle, isPrimary)
-                SELECT gameId, languageCode, title, normalizedTitle, 1 FROM GameTranslation;
+                INSERT INTO GameEdition (gameId, languageCode, title, normalizedTitle, isPrimary) VALUES (10, 'en', 'Catan', 'catan', 1);
                 INSERT INTO OwnedGame (accountId, gameId) VALUES (1, 10);
             `,
             encoding: 'utf8',

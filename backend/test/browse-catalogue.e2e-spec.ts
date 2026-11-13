@@ -40,16 +40,12 @@ describe('browsing the catalogue with filters (e2e)', () => {
                     (3, 'https://example.test/love-letter.jpg', 20, 2, 6),
                     (4, 'https://example.test/twilight.jpg', 240, 3, 6),
                     (5, 'https://example.test/codenames.jpg', 15, 2, 8);
-                INSERT INTO GameTranslation (gameId, languageCode, title, normalizedTitle) VALUES
-                    (1, 'en', 'Azul', 'azul'), (1, 'es', 'Azul', 'azul'),
-                    (2, 'en', 'Catan', 'catan'), (2, 'es', 'Los colonos de Catán', 'los-colonos-de-catan'),
-                    (3, 'en', 'Love Letter', 'love-letter'), (3, 'es', 'Love Letter', 'love-letter'),
-                    (4, 'en', 'Twilight Imperium', 'twilight-imperium'), (4, 'es', 'Twilight Imperium', 'twilight-imperium'),
-                    (5, 'en', 'Codenames', 'codenames'), (5, 'es', 'Código Secreto', 'codigo-secreto');
-                INSERT INTO GameEdition (gameId, languageCode, title, normalizedTitle, isPrimary)
-                SELECT gameId, languageCode, title, normalizedTitle,
-                       ROW_NUMBER() OVER (PARTITION BY gameId ORDER BY languageCode = 'en' DESC, languageCode) = 1
-                FROM GameTranslation ORDER BY gameId, languageCode;
+                INSERT INTO GameEdition (gameId, languageCode, title, normalizedTitle, isPrimary) VALUES
+                    (1, 'en', 'Azul', 'azul', 1), (1, 'es', 'Azul', 'azul', 0),
+                    (2, 'en', 'Catan', 'catan', 1), (2, 'es', 'Los colonos de Catán', 'los-colonos-de-catan', 0),
+                    (3, 'en', 'Love Letter', 'love-letter', 1), (3, 'es', 'Love Letter', 'love-letter', 0),
+                    (4, 'en', 'Twilight Imperium', 'twilight-imperium', 1), (4, 'es', 'Twilight Imperium', 'twilight-imperium', 0),
+                    (5, 'en', 'Codenames', 'codenames', 1), (5, 'es', 'Código Secreto', 'codigo-secreto', 0);
 
                 INSERT INTO TagCategory (id, name) VALUES (1, 'Genre'), (2, 'Mechanic');
                 INSERT INTO Tag (id, name, categoryId) VALUES (1, 'Abstract', 1), (2, 'Strategy', 1), (3, 'Trading', 2), (4, 'Unused', 2);
@@ -133,7 +129,6 @@ describe('browsing the catalogue with filters (e2e)', () => {
 
         await database.batch([
             "INSERT INTO Game (id, imageUrl, gameAvgDuration, minPlayers, maxPlayers) VALUES (6, 'https://example.test/barenpark.jpg', 30, 2, 4)",
-            "INSERT INTO GameTranslation (gameId, languageCode, title, normalizedTitle) VALUES (6, 'de', 'Bärenpark', 'barenpark')",
             "INSERT INTO GameEdition (gameId, languageCode, title, normalizedTitle, isPrimary) VALUES (6, 'de', 'Bärenpark', 'barenpark', 1)",
         ])
 
