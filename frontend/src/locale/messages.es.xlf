@@ -529,6 +529,16 @@
         <target>Juego añadido a <ph id="0" equiv="name" disp="this.name()"/>.</target>
       </segment>
     </unit>
+    <unit id="1256153488403650902">
+      <notes>
+        <note category="description">Label under the number of your game proposals still waiting for review</note>
+        <note category="meaning">proposals pending</note>
+      </notes>
+      <segment state="translated">
+        <source>Pending</source>
+        <target>Pendientes</target>
+      </segment>
+    </unit>
     <unit id="1257763851250011113">
       <notes>
         <note category="description">Group history line, someone changing their own games or preferences; actor is a name, game is a game title</note>
@@ -14377,15 +14387,6 @@
       <segment state="translated">
         <source>No games owned by the selected attendees support <ph id="0" equiv="players" disp="players"/> players.</source>
         <target>Ningún juego de quienes vienen admite <ph id="0" equiv="players" disp="players"/> jugadores.</target>
-      </segment>
-    </unit>
-    <unit id="8208743343075501136">
-      <notes>
-        <note category="description">Label under your score as someone who proposes games</note>
-      </notes>
-      <segment state="translated">
-        <source>Reputation Score</source>
-        <target>Puntuación de reputación</target>
       </segment>
     </unit>
     <unit id="8211116588599494869">

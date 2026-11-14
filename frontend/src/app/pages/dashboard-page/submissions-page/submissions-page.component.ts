@@ -39,15 +39,6 @@ export class SubmissionsPageComponent {
         this.modalGameSubmission.showDialog()
     }
 
-    public onProposalSubmitted(): void {
-        // Refresh proposals data
-        const currentUser = this.currentUser$()
-        if (currentUser) {
-            this.dataService.refreshUserProposals()
-            this.dataService.refreshUserProposalStats()
-        }
-    }
-
     public retryProposals(): void {
         this.dataService.refreshUserProposals()
         this.dataService.refreshUserProposalStats()

@@ -168,6 +168,10 @@ export class FormGameSubmissionComponent implements OnInit, OnChanges {
             }
 
             await firstValueFrom(this.api.createGameProposal(currentUser.id, proposalData))
+            // Every way of proposing goes through here, so My submissions and the avatar menu's count
+            // include the new proposal wherever it was sent from (#326).
+            this.dataService.refreshUserProposals()
+            this.dataService.refreshUserProposalStats()
 
             this.toastService.success($localize`:Toast after sending a game proposal:Game proposal submitted successfully!`)
             this.proposalSubmitted.emit()

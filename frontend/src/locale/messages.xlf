@@ -541,6 +541,16 @@
         <source>Game added for <ph id="0" equiv="name" disp="this.name()"/>.</source>
       </segment>
     </unit>
+    <unit id="1256153488403650902">
+      <notes>
+        <note category="location">src/app/pages/dashboard-page/submissions-page/submissions-page.component.html</note>
+        <note category="description">Label under the number of your game proposals still waiting for review</note>
+        <note category="meaning">proposals pending</note>
+      </notes>
+      <segment>
+        <source>Pending</source>
+      </segment>
+    </unit>
     <unit id="1257763851250011113">
       <notes>
         <note category="location">src/app/core/utils/groupActivity.ts</note>
@@ -14639,15 +14649,6 @@
       </notes>
       <segment>
         <source>No games owned by the selected attendees support <ph id="0" equiv="players" disp="players"/> players.</source>
-      </segment>
-    </unit>
-    <unit id="8208743343075501136">
-      <notes>
-        <note category="location">src/app/pages/dashboard-page/submissions-page/submissions-page.component.html</note>
-        <note category="description">Label under your score as someone who proposes games</note>
-      </notes>
-      <segment>
-        <source>Reputation Score</source>
       </segment>
     </unit>
     <unit id="8211116588599494869">
