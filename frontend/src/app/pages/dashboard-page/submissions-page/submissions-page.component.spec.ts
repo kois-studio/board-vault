@@ -12,7 +12,7 @@ class ModalStubComponent {
     readonly proposalSubmitted = output<void>()
 }
 
-const stats = { totalProposals: 4, approvedProposals: 2, rejectedProposals: 1, reputationScore: 9 }
+const stats = { totalProposals: 4, pendingProposals: 1, approvedProposals: 2, rejectedProposals: 1, reputationScore: 9 }
 
 async function render(statuses: Record<string, ResourceStatus> = {}) {
     await TestBed.configureTestingModule({
@@ -61,7 +61,9 @@ describe('SubmissionsPageComponent while it loads', () => {
         const loaded = await render()
         expect(loaded.querySelector('[data-testid="stat-skeleton"]')).toBeNull()
         const numbers = [...loaded.querySelectorAll('.grid .text-2xl')].map((number) => number.textContent?.trim())
-        expect(numbers).toEqual(['4', '2', '1', '9'])
+        // Total, pending, approved, rejected. No reputation score: nothing explained or used it (#326).
+        expect(numbers).toEqual(['4', '1', '2', '1'])
+        expect(loaded.textContent).not.toContain('Reputation')
         expect(loaded.textContent).toContain('No proposals yet')
 
         TestBed.resetTestingModule()

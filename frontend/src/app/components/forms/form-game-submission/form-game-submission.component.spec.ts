@@ -1,6 +1,6 @@
 import { signal } from '@angular/core'
 import { TestBed } from '@angular/core/testing'
-import { of } from 'rxjs'
+import { of, throwError } from 'rxjs'
 import { Api } from '../../../api/api'
 import { DataService } from '../../../core/services/data.service'
 import { ToastService } from '../../toast/toast.service'
@@ -11,17 +11,42 @@ describe('FormGameSubmissionComponent', () => {
 
     const setup = () => {
         const createGameProposal = vi.fn().mockReturnValue(of({}))
+        const refreshUserProposals = vi.fn()
+        const refreshUserProposalStats = vi.fn()
         TestBed.configureTestingModule({
             imports: [FormGameSubmissionComponent],
             providers: [
                 { provide: Api, useValue: { createGameProposal } },
-                { provide: DataService, useValue: { currentUser: signal({ id: 2 }) } },
+                { provide: DataService, useValue: { currentUser: signal({ id: 2 }), refreshUserProposals, refreshUserProposalStats } },
                 { provide: ToastService, useValue: { success: vi.fn(), error: vi.fn() } },
             ],
         })
         const component = TestBed.createComponent(FormGameSubmissionComponent).componentInstance
-        return { component, createGameProposal }
+        return { component, createGameProposal, refreshUserProposals, refreshUserProposalStats }
     }
+
+    // #326: the propose page and the My submissions dialog both send through this form, so it reloads
+    // your proposals and their numbers itself; the avatar menu's count and My submissions include the new one.
+    it('reloads your proposals and their numbers after sending one', async () => {
+        const { component, refreshUserProposals, refreshUserProposalStats } = setup()
+        component.gameSubmissionForm.patchValue({ title: 'Terraforming Mars' })
+
+        await component.onSubmit()
+
+        expect(refreshUserProposals).toHaveBeenCalledOnce()
+        expect(refreshUserProposalStats).toHaveBeenCalledOnce()
+    })
+
+    it('reloads nothing when sending fails', async () => {
+        const { component, createGameProposal, refreshUserProposals, refreshUserProposalStats } = setup()
+        createGameProposal.mockReturnValue(throwError(() => new Error('offline')))
+        component.gameSubmissionForm.patchValue({ title: 'Terraforming Mars' })
+
+        await component.onSubmit()
+
+        expect(refreshUserProposals).not.toHaveBeenCalled()
+        expect(refreshUserProposalStats).not.toHaveBeenCalled()
+    })
 
     it('asks for the approved game on your shelf by default', async () => {
         const { component, createGameProposal } = setup()

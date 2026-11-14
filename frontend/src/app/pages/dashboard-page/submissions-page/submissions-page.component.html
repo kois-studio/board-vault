@@ -23,6 +23,14 @@
                 @if (proposalStatsLoading()) {
                     <div class="flex h-8 items-center" aria-hidden="true" data-testid="stat-skeleton"><span class="h-6 w-10 rounded bg-bv-surface-2 motion-safe:animate-pulse"></span></div>
                 } @else {
+                    <div class="text-2xl font-bold text-bv-warning">{{ proposalStatsError() ? '—' : userProposalStats$().pendingProposals }}</div>
+                }
+                <div class="text-sm text-bv-text-muted" i18n="proposals pending|Label under the number of your game proposals still waiting for review">Pending</div>
+            </div>
+            <div class="bg-bv-surface p-4 rounded-lg border border-bv-border">
+                @if (proposalStatsLoading()) {
+                    <div class="flex h-8 items-center" aria-hidden="true" data-testid="stat-skeleton"><span class="h-6 w-10 rounded bg-bv-surface-2 motion-safe:animate-pulse"></span></div>
+                } @else {
                     <div class="text-2xl font-bold text-bv-success">{{ proposalStatsError() ? '—' : userProposalStats$().approvedProposals }}</div>
                 }
                 <div class="text-sm text-bv-text-muted" i18n="proposals approved|Label under the number of your game proposals that were approved">Approved</div>
@@ -34,14 +42,6 @@
                     <div class="text-2xl font-bold text-bv-danger">{{ proposalStatsError() ? '—' : userProposalStats$().rejectedProposals }}</div>
                 }
                 <div class="text-sm text-bv-text-muted" i18n="proposals rejected|Label under the number of your game proposals that were rejected">Rejected</div>
-            </div>
-            <div class="bg-bv-surface p-4 rounded-lg border border-bv-border">
-                @if (proposalStatsLoading()) {
-                    <div class="flex h-8 items-center" aria-hidden="true" data-testid="stat-skeleton"><span class="h-6 w-10 rounded bg-bv-surface-2 motion-safe:animate-pulse"></span></div>
-                } @else {
-                    <div class="text-2xl font-bold text-bv-primary">{{ proposalStatsError() ? '—' : userProposalStats$().reputationScore }}</div>
-                }
-                <div class="text-sm text-bv-text-muted" i18n="Label under your score as someone who proposes games">Reputation Score</div>
             </div>
         </div>
     </div>
@@ -163,4 +163,4 @@
 </container-wrapper>
 
 <!-- Game Submission Modal -->
-<app-modal-game-submission (proposalSubmitted)="onProposalSubmitted()"></app-modal-game-submission> 
+<app-modal-game-submission></app-modal-game-submission> 
