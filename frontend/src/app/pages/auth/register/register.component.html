@@ -1,5 +1,5 @@
-<main class="min-h-[calc(100vh-8rem)] bg-gradient-to-b from-bv-primary-soft to-bv-surface px-4 py-16 sm:px-6 lg:py-24">
-    <section class="mx-auto max-w-xl rounded-3xl border border-bv-border bg-bv-surface p-8 shadow-xl sm:p-12">
+<main class="min-h-[calc(100vh-8rem)] bg-gradient-to-b from-bv-primary-soft to-bv-surface px-4 py-10 sm:px-6 lg:py-16">
+    <section class="mx-auto max-w-md rounded-3xl border border-bv-border bg-bv-surface p-6 shadow-xl sm:p-8">
         @if (!selfRegistrationEnabled()) {
             <div class="text-center">
                 <div class="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-bv-primary-soft text-3xl text-bv-on-primary-soft" aria-hidden="true">
@@ -17,15 +17,11 @@
                 </div>
                 <p class="mt-8 text-sm text-bv-text-muted" i18n="Note at the bottom of the sign-up page while new accounts are paused">Already have an account? Sign in with it as usual.</p>
             </div>
-        } @else if (clerkIsAvailable()) {
-            <div class="text-center">
-                <p class="text-sm font-semibold uppercase tracking-[0.2em] text-bv-primary" i18n="Small heading of the sign-up page">Create your shelf</p>
-                <h1 class="mt-3 text-4xl font-bold tracking-tight text-bv-text" i18n="Heading of the sign-up page">Create your Board Vault account</h1>
-                <p class="mt-5 text-bv-text-muted" i18n="Text on the sign-up page; Clerk is the sign-in service">Set up your identity securely with Clerk.</p>
-                <button appButton type="button" class="mt-8" (click)="openClerkSignUp()" i18n="Button on the sign-up page that opens the sign-up window">Open secure sign-up</button>
-                <p class="mt-6 text-sm text-bv-text-muted" i18n="Line at the bottom of the sign-up page with a link to the sign-in page">Already have an account? <a routerLink="/login" class="underline">Sign in</a></p>
-                <p class="mt-2 text-sm text-bv-text-muted" i18n="Line at the bottom of the sign-up pages with a link to the privacy page">See what Board Vault keeps about you in the <a routerLink="/privacy" class="underline">privacy notice</a>.</p>
-            </div>
+        } @else if (clerkIsAvailable() || !clerkIsLoaded()) {
+            <h1 class="text-center text-4xl font-bold tracking-tight text-bv-text" i18n="Heading of the sign-up page">Create your Board Vault account</h1>
+            <!-- Clerk's form, on the page (#324), with its own "Sign in" link. -->
+            <app-clerk-form class="mt-6 block" kind="sign-up" />
+            <p class="mt-6 text-center text-sm text-bv-text-muted" i18n="Line at the bottom of the sign-up pages with a link to the privacy page">See what Board Vault keeps about you in the <a routerLink="/privacy" class="underline">privacy notice</a>.</p>
         } @else {
             <div class="text-center">
                 <div class="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-bv-warning/10 text-3xl text-bv-warning" aria-hidden="true">
@@ -36,7 +32,7 @@
                 <p class="mt-5 text-bv-text-muted" i18n="Text on the sign-up page when the sign-up service is down">Your account has not been created. Please try again shortly.</p>
                 <div class="mt-8 flex flex-col gap-3 sm:flex-row sm:justify-center">
                     @if (clerkIsConfigured()) {
-                        <button appButton type="button" (click)="openClerkSignUp()" i18n="Button on the sign-up page when the sign-up service is down">Try secure sign-up again</button>
+                        <button appButton type="button" (click)="retry()" i18n="Button on the sign-up page when the sign-up service is down">Try secure sign-up again</button>
                     }
                     <a appButton variant="secondary" routerLink="/login" class="text-center" i18n="Button that goes to the sign-in page">Sign in</a>
                 </div>

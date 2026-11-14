@@ -82,6 +82,14 @@ The browser receives only the publishable key through generated runtime
 configuration. Without it, the sign-in page
 reports that sign-in is not configured.
 
+`/login` and `/register` show Clerk's sign-in and sign-up forms on the page
+(`mountSignIn` / `mountSignUp`, hash routing for Clerk's own steps), under
+the page's heading, not a button that opens a pop-up (#324). Clerk's title is
+hidden; its footer stays for "Use another method" and the link between the
+two pages, which point at the app's own addresses under the page's language
+prefix, as does the redirect after signing in. The header's Sign in and Sign
+up buttons still open Clerk's pop-up.
+
 Tests do not need Clerk: backend e2e tests replace `ClerkTokenVerifier` with a
 fake, and frontend unit tests stub `ClerkService`. Browser journeys that sign
 in use the development instance and `+clerk_test` addresses.
@@ -152,7 +160,7 @@ webhook log.
 | Requires a resolved account | [`backend/src/common/guards/auth.guard.ts`](../backend/src/common/guards/auth.guard.ts) |
 | Self-registration policy | [`backend/src/common/registration-policy.ts`](../backend/src/common/registration-policy.ts) |
 | `GET /auth/clerk/status` | [`backend/src/modules/common/auth/auth.controller.ts`](../backend/src/modules/common/auth/auth.controller.ts) |
-| Clerk JS lifecycle, sign-in and sign-up modals | [`frontend/src/app/core/services/clerk.service.ts`](../frontend/src/app/core/services/clerk.service.ts) |
+| Clerk JS lifecycle, sign-in and sign-up forms (on the page and in pop-ups) | [`frontend/src/app/core/services/clerk.service.ts`](../frontend/src/app/core/services/clerk.service.ts) |
 | Session handoff and sign-out | [`frontend/src/app/core/services/login.service.ts`](../frontend/src/app/core/services/login.service.ts) |
 | Bearer token and 401 handling | [`frontend/src/app/core/interceptors/auth.interceptor.ts`](../frontend/src/app/core/interceptors/auth.interceptor.ts) |
 | Sign-in and sign-up pages | [`frontend/src/app/pages/auth/`](../frontend/src/app/pages/auth/) |

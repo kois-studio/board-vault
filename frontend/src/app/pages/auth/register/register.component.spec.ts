@@ -9,8 +9,10 @@ describe('RegisterComponent', () => {
         const clerkService = {
             isConfigured: signal(true),
             isAvailable: signal(true),
+            isLoaded: signal(true),
             isSelfRegistrationEnabled: signal(selfRegistrationEnabled),
-            openSignUp: vi.fn().mockName('openSignUp'),
+            mountSignUp: vi.fn().mockName('mountSignUp'),
+            unmountSignUp: vi.fn().mockName('unmountSignUp'),
         }
 
         TestBed.configureTestingModule({
@@ -23,12 +25,18 @@ describe('RegisterComponent', () => {
         return { fixture, clerkService, text: (fixture.nativeElement as HTMLElement).textContent ?? '' }
     }
 
-    it('opens Clerk sign-up while self-registration is open', () => {
+    // #324: the form is on the page, not behind a button that opens it.
+    it('puts Clerk sign-up on the page while self-registration is open, and takes it away on leaving', () => {
         const { fixture, clerkService, text } = render(true)
 
         expect(text).toContain('Create your Board Vault account')
-        ;(fixture.nativeElement as HTMLElement).querySelector<HTMLButtonElement>('button')?.click()
-        expect(clerkService.openSignUp).toHaveBeenCalled()
+        expect(text).not.toMatch(/secure|Clerk/)
+        expect((fixture.nativeElement as HTMLElement).querySelector('button')).toBeNull()
+        const host = (fixture.nativeElement as HTMLElement).querySelector('[data-testid="clerk-form"]')
+        expect(clerkService.mountSignUp).toHaveBeenCalledWith(host)
+
+        fixture.destroy()
+        expect(clerkService.unmountSignUp).toHaveBeenCalledWith(host)
     })
 
     it('says new accounts are paused while self-registration is off, without beta or invitation wording (#157)', () => {
