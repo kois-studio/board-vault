@@ -1,7 +1,10 @@
 import { Component, DestroyRef, inject, OnInit, signal } from '@angular/core'
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
 import { ActivatedRoute, RouterLink } from '@angular/router'
-import { FormGameSubmissionComponent } from '../../../components/forms/form-game-submission/form-game-submission.component'
+import {
+    FormGameSubmissionComponent,
+    type ProposalAddTo,
+} from '../../../components/forms/form-game-submission/form-game-submission.component'
 import { BackLinkComponent } from '../../../components/ui/back-link/back-link.component'
 import { ButtonComponent } from '../../../components/ui/button/button.component'
 import { ContainerWrapperComponent } from '../../../components/ui/container-wrapper/container-wrapper.component'
@@ -26,6 +29,8 @@ export class ProposeGamePageComponent implements OnInit {
 
     public readonly initialTitle = signal<string | undefined>(undefined)
     public isSubmitted = signal(false)
+    /** Where the approved game goes, so the thank-you says so. */
+    public readonly addTo = signal<ProposalAddTo>('shelf')
 
     ngOnInit() {
         // Get title from query params
@@ -34,8 +39,9 @@ export class ProposeGamePageComponent implements OnInit {
         })
     }
 
-    public onProposalSubmitted() {
-        // Show success message instead of navigating away
+    public onProposalSubmitted(addTo: ProposalAddTo) {
+        // The page says thank you and what happens next, so the form sends no toast.
+        this.addTo.set(addTo)
         this.isSubmitted.set(true)
     }
 }
