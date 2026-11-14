@@ -1,36 +1,18 @@
-import { Component, inject, OnInit, signal } from '@angular/core'
+import { Component, inject, OnInit } from '@angular/core'
 import { RouterLink } from '@angular/router'
-import type { ProposalStatus } from '../../../../api/api.types'
+import type { AdminGameProposalType, ProposalStatus } from '../../../../api/api.types'
 import { ButtonComponent } from '../../../../components/ui/button/button.component'
-import { DialogDirective } from '../../../../components/ui/dialog/dialog.directive'
-import { IconComponent } from '../../../../components/ui/icon/icon.component'
-import { ImageBackgroundComponent } from '../../../../components/ui/image-background/image-background.component'
 import { SpinnerComponent } from '../../../../components/ui/spinner/spinner.component'
-import { PlayersPipe } from '../../../../core/pipes/count.pipe'
 import { AdminPageHeaderComponent } from '../admin-page-header/admin-page-header.component'
 import { AdminGameProposalsService } from './admin-game-proposals.service'
 @Component({
-    imports: [
-        PlayersPipe,
-        AdminPageHeaderComponent,
-        ButtonComponent,
-        ImageBackgroundComponent,
-        SpinnerComponent,
-        IconComponent,
-        DialogDirective,
-        RouterLink,
-    ],
+    imports: [AdminPageHeaderComponent, ButtonComponent, SpinnerComponent, RouterLink],
     providers: [AdminGameProposalsService],
     selector: 'app-admin-game-proposals',
     templateUrl: './admin-game-proposals.component.html',
 })
 export class AdminGameProposalsComponent implements OnInit {
     private readonly adminGameProposalsService = inject(AdminGameProposalsService)
-
-    // --------------------------------------------------------------------------
-    //        Math reference for template
-    // --------------------------------------------------------------------------
-    protected readonly Math = Math
 
     // --------------------------------------------------------------------------
     //        Service signals
@@ -42,7 +24,6 @@ export class AdminGameProposalsComponent implements OnInit {
     public readonly currentPage = this.adminGameProposalsService.currentPage
     public readonly errorMessage = this.adminGameProposalsService.errorMessage
     public readonly statusCounts = this.adminGameProposalsService.statusCounts
-    public readonly pendingDeleteProposalId = signal<number | null>(null)
 
     // --------------------------------------------------------------------------
     //        Component methods
@@ -73,22 +54,6 @@ export class AdminGameProposalsComponent implements OnInit {
         await this.adminGameProposalsService.loadProposals(status)
     }
 
-    public async onDeleteProposal(proposalId: number): Promise<void> {
-        this.pendingDeleteProposalId.set(proposalId)
-    }
-
-    public cancelDeleteProposal(): void {
-        this.pendingDeleteProposalId.set(null)
-    }
-
-    public async confirmDeleteProposal(): Promise<void> {
-        const proposalId = this.pendingDeleteProposalId()
-        if (proposalId === null) return
-
-        this.pendingDeleteProposalId.set(null)
-        await this.adminGameProposalsService.deleteProposal(proposalId)
-    }
-
     public async retryProposals(): Promise<void> {
         await this.adminGameProposalsService.reload()
     }
@@ -108,8 +73,9 @@ export class AdminGameProposalsComponent implements OnInit {
         return this.adminGameProposalsService.formatDate(dateString)
     }
 
-    public truncateText(text: string, maxLength = 50): string {
-        if (!text) return ''
-        return text.length > maxLength ? `${text.substring(0, maxLength)}...` : text
+    public addToText(addTo: AdminGameProposalType['addTo']): string {
+        if (addTo === 'shelf') return 'Owns it'
+        if (addTo === 'wishlist') return 'Wants it'
+        return 'Catalogue only'
     }
 }

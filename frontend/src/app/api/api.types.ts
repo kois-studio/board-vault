@@ -906,7 +906,12 @@ export type CreateGameProposalType = {
 
 export type ProposalStatus = GameProposalType['status']
 
-export type AdminGameProposalType = GameProposalType & { submitterId: number; reviewerId?: number }
+export type AdminGameProposalType = GameProposalType & {
+    submitterId: number
+    /** The proposer's display name, else their username (#327). */
+    submitterName?: string
+    reviewerId?: number
+}
 
 export type AdminGameProposalsType = {
     proposals: Array<AdminGameProposalType>
