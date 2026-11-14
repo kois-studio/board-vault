@@ -7,22 +7,22 @@ import { ToastService } from '../../toast/toast.service'
 import { FormGameSubmissionComponent } from './form-game-submission.component'
 
 describe('FormGameSubmissionComponent', () => {
-    const firstKey = (component: FormGameSubmissionComponent) => component.otherTitles()[0]?.key ?? -1
-
     const setup = () => {
         const createGameProposal = vi.fn().mockReturnValue(of({}))
         const refreshUserProposals = vi.fn()
+        const toast = { success: vi.fn(), error: vi.fn() }
         const refreshUserProposalStats = vi.fn()
         TestBed.configureTestingModule({
             imports: [FormGameSubmissionComponent],
             providers: [
                 { provide: Api, useValue: { createGameProposal } },
                 { provide: DataService, useValue: { currentUser: signal({ id: 2 }), refreshUserProposals, refreshUserProposalStats } },
-                { provide: ToastService, useValue: { success: vi.fn(), error: vi.fn() } },
+                { provide: ToastService, useValue: toast },
             ],
         })
-        const component = TestBed.createComponent(FormGameSubmissionComponent).componentInstance
-        return { component, createGameProposal, refreshUserProposals, refreshUserProposalStats }
+        const fixture = TestBed.createComponent(FormGameSubmissionComponent)
+        const component = fixture.componentInstance
+        return { fixture, component, toast, createGameProposal, refreshUserProposals, refreshUserProposalStats }
     }
 
     // #326: the propose page and the My submissions dialog both send through this form, so it reloads
@@ -70,48 +70,63 @@ describe('FormGameSubmissionComponent', () => {
         expect(createGameProposal.mock.calls[1]?.[1]).not.toHaveProperty('addTo')
     })
 
-    it("sends the title's language (the page's by default) and the other titles, leaving blank rows out", async () => {
+    // #325: the proposer gives the title, notes, and where it goes; the admin fills in the rest at review.
+    it("sends the title in the page's language, trimmed notes, and nothing an admin fills in", async () => {
         const { component, createGameProposal } = setup()
 
-        component.gameSubmissionForm.patchValue({ title: 'Azul' })
-        await component.onSubmit()
-        expect(createGameProposal.mock.calls[0]?.[1]).toEqual(expect.objectContaining({ titleLanguage: 'en' }))
-        expect(createGameProposal.mock.calls[0]?.[1]).not.toHaveProperty('otherTitles')
-
-        component.gameSubmissionForm.patchValue({ title: 'Die Siedler von Catan' })
-        component.titleLanguage.set('de')
-        component.addTitle()
-        component.addTitle()
-        const [first, blank] = component.otherTitles()
-        component.setTitleText(first?.key ?? -1, ' Catan ')
-        component.setTitleLanguage(first?.key ?? -1, 'pt-br')
-        expect(blank?.title).toBe('')
+        component.gameSubmissionForm.patchValue({ title: ' Terraforming Mars ', notes: '  Stronghold Games, 2016  ' })
         await component.onSubmit()
 
-        expect(createGameProposal.mock.calls[1]?.[1]).toEqual(
-            expect.objectContaining({ titleLanguage: 'de', otherTitles: [{ languageCode: 'pt-BR', title: 'Catan' }] }),
-        )
-        // The form starts over after sending.
-        expect(component.otherTitles()).toEqual([])
-        expect(component.titleLanguage()).toBe('en')
+        expect(createGameProposal.mock.calls[0]?.[1]).toEqual({
+            title: 'Terraforming Mars',
+            titleLanguage: 'en',
+            notes: 'Stronghold Games, 2016',
+            addTo: 'shelf',
+        })
     })
 
-    it('will not send two titles in one language, or one in the title language', async () => {
+    it('sends no notes when they are blank, and starts over after sending', async () => {
         const { component, createGameProposal } = setup()
 
-        component.gameSubmissionForm.patchValue({ title: 'Azul' })
-        component.addTitle()
-        component.setTitleText(firstKey(component), 'Azul')
-        component.setTitleLanguage(firstKey(component), 'en')
-        expect(component.titleProblem()).toBe('duplicate')
+        component.gameSubmissionForm.patchValue({ title: 'Azul', notes: '   ', addTo: 'wishlist' })
         await component.onSubmit()
 
-        component.setTitleLanguage(firstKey(component), '')
-        expect(component.titleProblem()).toBe('language')
+        expect(createGameProposal.mock.calls[0]?.[1]).not.toHaveProperty('notes')
+        expect(component.gameSubmissionForm.getRawValue()).toEqual({ title: null, notes: null, addTo: 'shelf' })
+    })
+
+    it('shows what is missing instead of sending without a title', async () => {
+        const { component, createGameProposal } = setup()
+
         await component.onSubmit()
 
-        component.removeTitle(firstKey(component))
-        expect(component.titleProblem()).toBeNull()
         expect(createGameProposal).not.toHaveBeenCalled()
+        expect(component.title.touched).toBe(true)
+        expect(component.title.errors?.['required']).toBe(true)
+    })
+
+    it('tells the page where the approved game goes', async () => {
+        const { component } = setup()
+        const sent: Array<string> = []
+        component.proposalSubmitted.subscribe((addTo) => sent.push(addTo))
+
+        component.gameSubmissionForm.patchValue({ title: 'Cascadia', addTo: 'wishlist' })
+        await component.onSubmit()
+
+        expect(sent).toEqual(['wishlist'])
+    })
+
+    it('toasts the send unless the page says thank you itself', async () => {
+        const { component, toast } = setup()
+        component.gameSubmissionForm.patchValue({ title: 'Azul' })
+        await component.onSubmit()
+        expect(toast.success).toHaveBeenCalledOnce()
+
+        TestBed.resetTestingModule()
+        const quiet = setup()
+        quiet.fixture.componentRef.setInput('confirmWithToast', false)
+        quiet.component.gameSubmissionForm.patchValue({ title: 'Azul' })
+        await quiet.component.onSubmit()
+        expect(quiet.toast.success).not.toHaveBeenCalled()
     })
 })
