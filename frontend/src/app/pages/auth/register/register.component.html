@@ -18,7 +18,7 @@
                 <p class="mt-8 text-sm text-bv-text-muted" i18n="Note at the bottom of the sign-up page while new accounts are paused">Already have an account? Sign in with it as usual.</p>
             </div>
         } @else if (clerkIsAvailable() || !clerkIsLoaded()) {
-            <h1 class="text-center text-2xl font-bold tracking-tight sm:text-3xl text-bv-text" i18n="Heading of the sign-up page">Create your Board Vault account</h1>
+            <h1 class="text-center text-4xl font-bold tracking-tight text-bv-text" i18n="Heading of the sign-up page">Create your Board Vault account</h1>
             <!-- Clerk's form, on the page (#324), with its own "Sign in" link. -->
             <app-clerk-form class="mt-6 block" kind="sign-up" />
             <p class="mt-6 text-center text-sm text-bv-text-muted" i18n="Line at the bottom of the sign-up pages with a link to the privacy page">See what Board Vault keeps about you in the <a routerLink="/privacy" class="underline">privacy notice</a>.</p>
