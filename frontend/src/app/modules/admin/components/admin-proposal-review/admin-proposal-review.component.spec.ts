@@ -13,6 +13,7 @@ describe('AdminProposalReviewComponent', () => {
         id: 12,
         submittedBy: 7,
         submitterId: 7,
+        submitterName: 'Ana',
         status: 'pending',
         title: 'Azul',
         titleLanguage: 'en',
@@ -70,6 +71,7 @@ describe('AdminProposalReviewComponent', () => {
             approveGameProposal: vi.fn().mockReturnValue(of({ success: true, createdGameId: 41 })),
             rejectGameProposal: vi.fn().mockReturnValue(of({ success: true })),
             markGameProposalAsDuplicate: vi.fn().mockReturnValue(of({ success: true })),
+            deleteGameProposal: vi.fn().mockReturnValue(of({ success: true })),
         }
         TestBed.configureTestingModule({
             imports: [AdminProposalReviewComponent],
@@ -94,20 +96,77 @@ describe('AdminProposalReviewComponent', () => {
     const pressed = (element: HTMLElement) =>
         [...element.querySelectorAll<HTMLButtonElement>('button.app-chip[aria-pressed="true"]')].map((chip) => chip.textContent?.trim())
 
-    it('pre-selects the proposed tags that exist and lists possible duplicates', async () => {
+    // #327: step 1 asks whether the game is already in the catalogue, before any catalogue field.
+    it('starts on the duplicate check: the proposal, who sent it, and the catalogue games it may be', async () => {
         const fixture = await render()
         const element = fixture.nativeElement as HTMLElement
 
-        expect(pressed(element)).toEqual(['Family', 'Abstract'])
-        expect(element.textContent).toContain('Proposed: abstract, Family')
+        expect(fixture.componentInstance.step()).toBe('check')
+        expect(element.textContent).toContain('Step 1 of 2')
+        expect(element.textContent).toContain('Ana')
+        expect(element.textContent).toContain('Owns it: goes on their shelf')
+        expect(element.textContent).toContain('Tile drafting')
         expect(element.textContent).toContain("It's this one")
+        expect(element.textContent).not.toContain('Approve and add')
         expect(api['getAdminGames']).toHaveBeenCalledWith({ search: 'Azul' }, 1, 5)
+    })
+
+    it('shows what an older proposal also carried as a hint', async () => {
+        const element = (await render()).nativeElement as HTMLElement
+
+        expect(element.textContent).toContain('Title in')
+        expect(element.textContent).toContain('abstract, Family')
+    })
+
+    it('searches the catalogue in place, and an emptied search shows the title matches again', async () => {
+        const fixture = await render()
+        const component = fixture.componentInstance
+        const other = { ...azulInCatalogue, id: 41, title: 'Azul: Summer Pavilion' }
+        // The first change detection runs ngOnInit again; let its duplicate lookup finish first.
+        await new Promise((resolve) => setTimeout(resolve))
+        api['getAdminGames']?.mockReturnValueOnce(
+            of({ games: [other], pagination: { currentPage: 1, totalPages: 1, totalItems: 1, itemsPerPage: 8 } }),
+        )
+
+        component.catalogueSearch.setValue('Summer Pavilion')
+        await component.searchCatalogue()
+        expect(component.candidates().map((game) => game.id)).toEqual([41])
+
+        component.catalogueSearch.setValue('')
+        await component.searchCatalogue()
+        expect(component.candidates().map((game) => game.id)).toEqual([40])
+    })
+
+    it('chooses no tags and folds them away on the catalogue entry', async () => {
+        const fixture = await render()
+        fixture.componentInstance.goToCatalogueEntry()
+        fixture.detectChanges()
+        const element = fixture.nativeElement as HTMLElement
+
+        expect(element.textContent).toContain('Step 2 of 2')
+        expect(pressed(element)).toEqual([])
+        const tags = element.querySelector('details') as HTMLDetailsElement
+        expect(tags.textContent).toContain('Tags')
+        expect(tags.open).toBe(false)
+    })
+
+    it('deletes the proposal from the review page, after confirming', async () => {
+        const fixture = await render()
+        const component = fixture.componentInstance
+        component.isDeleting.set(true)
+
+        await component.confirmDelete()
+
+        expect(api['deleteGameProposal']).toHaveBeenCalledWith(12)
+        expect(TestBed.inject(Router).navigate).toHaveBeenCalledWith(['/admin/proposals'])
     })
 
     it('cannot approve until players and length are set, and then sends exactly the reviewed values', async () => {
         const fixture = await render()
         const component = fixture.componentInstance
         const approve = () => (fixture.nativeElement as HTMLElement).querySelector('button[type="submit"]') as HTMLButtonElement
+        component.goToCatalogueEntry()
+        fixture.detectChanges()
 
         expect(approve().disabled).toBe(true)
 
@@ -145,7 +204,6 @@ describe('AdminProposalReviewComponent', () => {
             { languageCode: 'de', title: 'Die Siedler von Catan', isPrimary: true },
             { languageCode: 'en', title: 'Catan', isPrimary: false },
         ])
-        expect((fixture.nativeElement as HTMLElement).textContent).toContain('Title in')
     })
 
     it('refuses more minimum than maximum players', async () => {

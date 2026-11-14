@@ -11,14 +11,93 @@
         <app-admin-page-header
             [title]="proposal.title"
             [description]="isPending()
-                ? 'Check what was proposed, correct the catalogue fields, then approve, reject with a reason, or point to the game it duplicates.'
+                ? (step() === 'check' ? 'Step 1 of 2: is it already in the catalogue?' : 'Step 2 of 2: the catalogue entry.')
                 : statusText() + (proposal.reviewedAt ? ' on ' + formatDate(proposal.reviewedAt) : '') + '.'"
         />
 
-        <div class="grid gap-6 lg:grid-cols-[minmax(0,1fr)_20rem]">
-            <!-- Catalogue fields: what the game will be -->
+        <!-- What was proposed: always first, short. -->
+        <section class="space-y-3 rounded-lg border border-bv-border bg-bv-surface p-4 shadow-sm" aria-labelledby="as-proposed">
+            <h3 id="as-proposed" class="sr-only">As proposed</h3>
+            <!-- The heading above is the title; this line says its language and who sent it. -->
+            <p class="text-sm text-bv-text-muted">
+                Title in {{ languageName(proposal.titleLanguage) }} ·
+                @if (proposal.submitterName) {
+                    <span class="font-medium text-bv-text">{{ proposal.submitterName }}</span> ·
+                }
+                {{ formatDate(proposal.submittedAt) }} · {{ addToText(proposal.addTo) }}
+            </p>
+            @if (proposal.notes) {
+                <p class="whitespace-pre-line break-words rounded-md bg-bv-bg p-3 text-sm">{{ proposal.notes }}</p>
+            } @else {
+                <p class="text-sm text-bv-text-muted">No notes.</p>
+            }
+            @if (legacyDetails().length > 0) {
+                <!-- Proposals sent before #325 also carried catalogue fields; they are a hint, not the entry. -->
+                <dl class="grid grid-cols-[auto_minmax(0,1fr)] gap-x-3 gap-y-1 border-t border-bv-border pt-3 text-sm">
+                    @for (detail of legacyDetails(); track detail.label) {
+                        <dt class="text-bv-text-muted">{{ detail.label }}</dt>
+                        <dd class="break-words">{{ detail.value }}</dd>
+                    }
+                </dl>
+            }
+            @if (proposal.reviewNotes) {
+                <p class="border-t border-bv-border pt-3 text-sm"><span class="text-bv-text-muted">Review note:</span> <span class="whitespace-pre-line break-words">{{ proposal.reviewNotes }}</span></p>
+            }
+            @if (proposal.createdGameId) {
+                <a class="inline-flex min-h-11 items-center text-sm font-medium text-bv-primary underline" [routerLink]="['/games', proposal.createdGameId]">Open the game</a>
+            }
+        </section>
+
+        @if (isPending() && step() === 'check') {
+            <!-- Step 1: is it already in the catalogue? -->
+            <section class="space-y-4 rounded-lg border border-bv-border bg-bv-surface p-4 shadow-sm" aria-labelledby="duplicates-heading">
+                <h3 id="duplicates-heading" class="text-lg font-semibold">Already in the catalogue?</h3>
+
+                <form class="flex gap-2" (submit)="$event.preventDefault(); searchCatalogue()">
+                    <label for="catalogueSearch" class="sr-only">Search the catalogue</label>
+                    <input id="catalogueSearch" type="search" class="app-input" [formControl]="catalogueSearch" placeholder="Search the catalogue, in any language" />
+                    <button appButton variant="secondary" type="submit" icon="search" [loading]="isSearchingCatalogue()" aria-label="Search"></button>
+                </form>
+
+                <ul class="space-y-2" aria-live="polite">
+                    @for (game of candidates(); track game.id) {
+                        <li class="flex items-center gap-3 rounded-lg border border-bv-border p-2">
+                            @if (game.imageUrl) {
+                                <image-background class="block h-12 w-12 shrink-0 rounded-md" [src]="game.imageUrl" [alt]="''" />
+                            } @else {
+                                <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-md bg-bv-surface-2"><app-icon name="image" [size]="16" className="text-bv-text-muted" /></div>
+                            }
+                            <a class="min-w-0 flex-1 break-words text-sm font-medium hover:underline" [routerLink]="['/games', game.id]" target="_blank">{{ gameTitle(game) }}</a>
+                            <button appButton variant="secondary" size="small" type="button" class="shrink-0" (click)="openDuplicate(game)" [attr.aria-label]="'It is ' + gameTitle(game)">It's this one</button>
+                        </li>
+                    } @empty {
+                        <li class="text-sm text-bv-text-muted">
+                            @if (searchedTerm()) {
+                                Nothing in the catalogue matches "{{ searchedTerm() }}".
+                            } @else {
+                                No catalogue game has a similar title.
+                            }
+                        </li>
+                    }
+                </ul>
+
+                <div class="flex flex-col gap-3 border-t border-bv-border pt-4 sm:flex-row sm:flex-wrap sm:items-center">
+                    <button appButton type="button" icon="arrow-right" class="w-full sm:w-auto" (click)="goToCatalogueEntry()">None of these, add it</button>
+                    <button appButton variant="danger" type="button" class="w-full sm:w-auto" (click)="openReject()">Reject</button>
+                    <button type="button" class="min-h-11 text-sm font-medium text-bv-danger underline sm:ml-auto" (click)="isDeleting.set(true)">Delete proposal</button>
+                </div>
+            </section>
+        } @else {
+            <!-- Step 2 (or a reviewed proposal, read-only): the catalogue entry. -->
             <form class="space-y-6 rounded-lg border border-bv-border bg-bv-surface p-4 shadow-sm sm:p-6" [formGroup]="form" (ngSubmit)="approve()" novalidate>
-                <h3 class="text-lg font-semibold">Catalogue entry</h3>
+                <div class="flex flex-wrap items-center justify-between gap-2">
+                    <h3 class="text-lg font-semibold">Catalogue entry</h3>
+                    @if (isPending()) {
+                        <button type="button" class="inline-flex min-h-11 items-center gap-1 text-sm font-medium text-bv-text-muted hover:text-bv-text" (click)="backToCheck()">
+                            <app-icon name="arrow-left" [size]="16" /> Back to the duplicate check
+                        </button>
+                    }
+                </div>
 
                 <app-admin-game-fields
                     [form]="form"
@@ -26,6 +105,7 @@
                     [(selectedTagIds)]="selectedTagIds"
                     [readonly]="!isPending()"
                     [proposedTags]="proposedTags()"
+                    [collapseTags]="isPending()"
                     requiredHint="Players and length are required. They drive Browse filters and suggestions, so nothing is guessed."
                 />
 
@@ -35,74 +115,15 @@
                         <textarea id="reviewNotes" rows="2" class="app-input" [formControl]="reviewNotes"></textarea>
                     </div>
 
-                    <div class="flex flex-col-reverse gap-3 border-t border-bv-border pt-4 sm:flex-row sm:flex-wrap sm:justify-end [&>button]:whitespace-nowrap">
-                        <button appButton variant="secondary" type="button" (click)="openDuplicate()">Duplicate of…</button>
-                        <button appButton variant="danger" type="button" (click)="openReject()">Reject</button>
-                        <button appButton variant="success" type="submit" icon="check" [loading]="isSubmitting()" [disabled]="form.invalid || playersOutOfOrder">
+                    <div class="flex flex-col gap-3 border-t border-bv-border pt-4 sm:flex-row-reverse sm:flex-wrap sm:items-center">
+                        <button appButton variant="success" type="submit" icon="check" class="w-full sm:w-auto" [loading]="isSubmitting()" [disabled]="form.invalid || playersOutOfOrder">
                             Approve and add
                         </button>
+                        <button appButton variant="danger" type="button" class="w-full sm:w-auto" (click)="openReject()">Reject</button>
                     </div>
                 }
             </form>
-
-            <!-- What was submitted -->
-            <aside class="order-first space-y-6 lg:order-none">
-                <section class="space-y-3 rounded-lg border border-bv-border bg-bv-surface p-4 shadow-sm">
-                    <h3 class="text-lg font-semibold">As proposed</h3>
-                    <dl class="space-y-2 text-sm">
-                        <div><dt class="text-bv-text-muted">Title</dt><dd class="font-medium break-words">{{ proposal.title }} <span class="font-normal text-bv-text-muted">({{ languageName(proposal.titleLanguage) }})</span></dd></div>
-                        @for (other of proposal.otherTitles; track other.languageCode) {
-                            <div><dt class="text-bv-text-muted">Title in {{ languageName(other.languageCode) }}</dt><dd class="break-words">{{ other.title }}</dd></div>
-                        }
-                        <div>
-                            <dt class="text-bv-text-muted">Players</dt>
-                            <dd>@if (proposal.minPlayers || proposal.maxPlayers) { {{ proposal.minPlayers ?? '?' }}–{{ proposal.maxPlayers ?? '?' }} } @else { <span class="text-bv-text-muted">Not given</span> }</dd>
-                        </div>
-                        <div>
-                            <dt class="text-bv-text-muted">Length</dt>
-                            <dd>@if (proposal.gameAvgDuration) { {{ proposal.gameAvgDuration }} min } @else { <span class="text-bv-text-muted">Not given</span> }</dd>
-                        </div>
-                        <div>
-                            <dt class="text-bv-text-muted">Tags</dt>
-                            <dd>@if (proposedTags().length > 0) { {{ proposedTags().join(', ') }} } @else { <span class="text-bv-text-muted">None</span> }</dd>
-                        </div>
-                        @if (proposal.imageUrl) {
-                            <div><dt class="text-bv-text-muted">Artwork</dt><dd class="break-all">{{ proposal.imageUrl }}</dd></div>
-                        }
-                        @if (proposal.notes) {
-                            <div><dt class="text-bv-text-muted">Notes</dt><dd class="whitespace-pre-line break-words">{{ proposal.notes }}</dd></div>
-                        }
-                        <div><dt class="text-bv-text-muted">For the proposer</dt><dd>{{ addToText(proposal.addTo) }}</dd></div>
-                        <div><dt class="text-bv-text-muted">Submitted</dt><dd>{{ formatDate(proposal.submittedAt) }}</dd></div>
-                        @if (proposal.reviewNotes) {
-                            <div><dt class="text-bv-text-muted">Review note</dt><dd class="whitespace-pre-line break-words">{{ proposal.reviewNotes }}</dd></div>
-                        }
-                        @if (proposal.createdGameId) {
-                            <div><dt class="text-bv-text-muted">Game</dt><dd><a class="font-medium text-bv-primary underline" [routerLink]="['/games', proposal.createdGameId]">Open the game</a></dd></div>
-                        }
-                    </dl>
-                </section>
-
-                @if (isPending()) {
-                    <section class="space-y-3 rounded-lg border border-bv-border bg-bv-surface p-4 shadow-sm" aria-labelledby="possible-duplicates">
-                        <h3 id="possible-duplicates" class="text-lg font-semibold">Possible duplicates</h3>
-                        @for (game of possibleDuplicates(); track game.id) {
-                            <div class="flex items-center gap-3">
-                                @if (game.imageUrl) {
-                                    <image-background class="block h-10 w-10 shrink-0 rounded-md" [src]="game.imageUrl" [alt]="''" />
-                                } @else {
-                                    <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-md bg-bv-surface-2"><app-icon name="image" [size]="16" className="text-bv-text-muted" /></div>
-                                }
-                                <a class="min-w-0 flex-1 truncate text-sm font-medium hover:underline" [routerLink]="['/games', game.id]" target="_blank">{{ gameTitle(game) }}</a>
-                                <button appButton variant="secondary" size="small" type="button" (click)="openDuplicate(game)" [attr.aria-label]="'It is ' + gameTitle(game)">It's this one</button>
-                            </div>
-                        } @empty {
-                            <p class="text-sm text-bv-text-muted">No catalogue game has a similar title.</p>
-                        }
-                    </section>
-                }
-            </aside>
-        </div>
+        }
     }
 </div>
 
@@ -132,40 +153,29 @@
     </div>
 }
 
-@if (isMarkingDuplicate()) {
-    <div class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4" (click)="isMarkingDuplicate.set(false)">
-        <section appDialog (dialogClosed)="isMarkingDuplicate.set(false)" class="w-full max-w-lg rounded-xl border border-bv-border bg-bv-surface p-6 shadow-2xl" aria-labelledby="duplicate-title" (click)="$event.stopPropagation()">
-            <h2 id="duplicate-title" class="text-xl font-bold">Which game does it duplicate?</h2>
+@if (duplicateOf(); as game) {
+    <div class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4" (click)="duplicateOf.set(null)">
+        <section appDialog (dialogClosed)="duplicateOf.set(null)" class="w-full max-w-lg rounded-xl border border-bv-border bg-bv-surface p-6 shadow-2xl" aria-labelledby="duplicate-title" (click)="$event.stopPropagation()">
+            <h2 id="duplicate-title" class="text-xl font-bold">Mark as a duplicate of {{ gameTitle(game) }}?</h2>
             <p class="mt-2 text-sm text-bv-text-muted">The proposer is told the game is already in Board Vault, with a link to it.</p>
-
-            @if (duplicateOf(); as game) {
-                <div class="mt-4 flex items-center gap-3 rounded-lg border border-bv-primary bg-bv-surface-2 p-3">
-                    <span class="min-w-0 flex-1 truncate font-medium">{{ gameTitle(game) }}</span>
-                    <button appButton variant="secondary" size="small" type="button" (click)="duplicateOf.set(null)">Change</button>
-                </div>
-            } @else {
-                <form class="mt-4 flex gap-2" (submit)="$event.preventDefault(); searchDuplicates()">
-                    <label for="duplicateSearch" class="sr-only">Search the catalogue</label>
-                    <input id="duplicateSearch" type="search" class="app-input" [formControl]="duplicateSearch" placeholder="Search the catalogue" />
-                    <button appButton variant="secondary" type="submit" icon="search" [loading]="isSearchingDuplicates()" aria-label="Search"></button>
-                </form>
-                <ul class="mt-3 max-h-64 space-y-1 overflow-y-auto">
-                    @for (game of duplicateResults(); track game.id) {
-                        <li>
-                            <button type="button" class="app-menu-item w-full" (click)="duplicateOf.set(game)">{{ gameTitle(game) }}</button>
-                        </li>
-                    } @empty {
-                        <li class="px-3 py-2 text-sm text-bv-text-muted">No match yet. Search the catalogue by title, in any language.</li>
-                    }
-                </ul>
-            }
-
             <label for="duplicateNotes" class="mb-1 mt-4 block text-sm font-medium">Note for the proposer <span class="font-normal text-bv-text-muted">(optional)</span></label>
             <input id="duplicateNotes" class="app-input" [formControl]="duplicateNotes" placeholder="For example: listed under its German title." />
-
             <div class="mt-6 flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
-                <button appButton variant="secondary" type="button" (click)="isMarkingDuplicate.set(false)">Cancel</button>
-                <button appButton type="button" [loading]="isSubmitting()" [disabled]="!duplicateOf()" (click)="confirmDuplicate()">Mark as duplicate</button>
+                <button appButton variant="secondary" type="button" (click)="duplicateOf.set(null)">Cancel</button>
+                <button appButton type="button" [loading]="isSubmitting()" (click)="confirmDuplicate()">Mark as duplicate</button>
+            </div>
+        </section>
+    </div>
+}
+
+@if (isDeleting()) {
+    <div class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4" (click)="isDeleting.set(false)">
+        <section appDialog (dialogClosed)="isDeleting.set(false)" class="w-full max-w-md rounded-xl border border-bv-border bg-bv-surface p-6 shadow-2xl" aria-labelledby="delete-title" (click)="$event.stopPropagation()">
+            <h2 id="delete-title" class="text-xl font-bold">Delete this proposal?</h2>
+            <p class="mt-2 text-sm text-bv-text-muted">It is removed from the queue and the proposer isn't told. This cannot be undone. To tell them why, reject it instead.</p>
+            <div class="mt-6 flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
+                <button appButton variant="secondary" type="button" (click)="isDeleting.set(false)">Keep proposal</button>
+                <button appButton variant="danger" type="button" [loading]="isSubmitting()" (click)="confirmDelete()">Delete proposal</button>
             </div>
         </section>
     </div>

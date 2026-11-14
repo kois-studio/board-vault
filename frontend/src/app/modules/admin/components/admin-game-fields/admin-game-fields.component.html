@@ -62,8 +62,15 @@
         }
     </div>
 
-    <fieldset class="min-w-0 space-y-3">
-        <legend class="text-sm font-medium">Tags</legend>
+    @if (collapseTags()) {
+        <details class="group/tags rounded-lg border border-bv-border">
+            <summary class="flex min-h-11 cursor-pointer items-center justify-between gap-3 px-3 text-sm font-medium">
+                <span>Tags <span class="font-normal text-bv-text-muted">(optional{{ selectedTags().length > 0 ? ' · ' + selectedTags().length + ' chosen' : '' }})</span></span>
+                <app-icon name="chevron-down" [size]="16" className="text-bv-text-muted transition group-open/tags:rotate-180" />
+            </summary>
+            <fieldset class="min-w-0 space-y-3 px-3 pb-3">
+                <legend class="sr-only">Tags</legend>
+                <p class="text-sm text-bv-text-muted">Usually left empty here: untagged games are tagged together after approval.</p>
         @if (proposedTags().length > 0) {
             <p class="text-sm text-bv-text-muted">Proposed: {{ proposedTags().join(', ') }}. Matching tags are already chosen.</p>
         }
@@ -99,5 +106,46 @@
         } @empty {
             <p class="text-sm text-bv-text-muted">There are no tags yet. Add them under Tags.</p>
         }
-    </fieldset>
+            </fieldset>
+        </details>
+    } @else {
+        <fieldset class="min-w-0 space-y-3">
+            <legend class="text-sm font-medium">Tags</legend>
+        @if (proposedTags().length > 0) {
+            <p class="text-sm text-bv-text-muted">Proposed: {{ proposedTags().join(', ') }}. Matching tags are already chosen.</p>
+        }
+        <p class="text-sm" aria-live="polite">
+            @if (selectedTags().length > 0) {
+                <span class="text-bv-text-muted">Chosen:</span> {{ selectedTags().length }} ·
+                @for (tag of selectedTags(); track tag.id; let last = $last) {
+                    <span class="font-medium">{{ tag.name }}</span>{{ last ? '' : ', ' }}
+                }
+            } @else {
+                <span class="text-bv-text-muted">No tags chosen.</span>
+            }
+        </p>
+        @for (group of tagGroups(); track group.id) {
+            <details class="group rounded-lg border border-bv-border" [open]="initiallyOpenGroups().has(group.id)">
+                <summary class="flex min-h-11 cursor-pointer items-center justify-between gap-3 px-3 text-sm font-medium">
+                    <span>{{ group.name }}</span>
+                    <span class="flex items-center gap-2 text-bv-text-muted">
+                        @if (selectedInGroup(group); as count) {
+                            <span class="rounded-full bg-bv-primary px-2 text-xs text-bv-on-primary">{{ count }}</span>
+                        }
+                        <app-icon name="chevron-down" [size]="16" className="transition group-open:rotate-180" />
+                    </span>
+                </summary>
+                <div class="flex flex-wrap gap-2 px-3 pb-3">
+                    @for (tag of group.tags; track tag.id) {
+                        <button type="button" class="app-chip" [attr.aria-pressed]="isTagSelected(tag.id)" [disabled]="readonly()" (click)="toggleTag(tag.id)">
+                            {{ tag.name }}
+                        </button>
+                    }
+                </div>
+            </details>
+        } @empty {
+            <p class="text-sm text-bv-text-muted">There are no tags yet. Add them under Tags.</p>
+        }
+        </fieldset>
+    }
 </div>

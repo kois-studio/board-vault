@@ -476,6 +476,8 @@ export const gameProposalSchema: z.ZodMiniType<GameProposalType> = gameProposalS
 
 export const adminGameProposalSchema = z.extend(gameProposalShape, {
     submitterId: z.number(),
+    // Optional while an older API is still deployed next to a newer app.
+    submitterName: z.optional(z.string()),
     reviewerId: z.optional(z.number()),
 })
 

@@ -66,6 +66,11 @@ export class AdminGameFieldsComponent {
     readonly readonly = input(false)
     /** What the proposer typed, shown above the picker. */
     readonly proposedTags = input<Array<string>>([])
+    /**
+     * Folds the tag picker behind a closed "Tags (optional)" toggle. Proposal review uses it: games are
+     * approved without tags and tagged afterwards in one pass (docs/how-to/tag-untagged-games.md, #327).
+     */
+    readonly collapseTags = input(false)
     /** Explains why players and length are required, while they are missing. */
     readonly requiredHint = input('Players and length are required. They drive Browse filters and suggestions.')
 

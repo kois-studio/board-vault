@@ -10058,6 +10058,11 @@
             "example": 1,
             "description": "ID of the user who submitted the proposal"
           },
+          "submitterName": {
+            "type": "string",
+            "example": "Ana",
+            "description": "The proposer's display name, else their username, as admins see it in the review queue."
+          },
           "reviewerId": {
             "type": "number",
             "example": 2,
@@ -10085,6 +10090,7 @@
           "submittedAt",
           "addTo",
           "submitterId",
+          "submitterName",
           "reviewerId"
         ]
       },

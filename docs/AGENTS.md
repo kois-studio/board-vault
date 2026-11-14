@@ -22,6 +22,7 @@ and Upstash.
 | Sign in locally or run Clerk browser tests | [how-to/run-with-clerk.md](how-to/run-with-clerk.md) |
 | Add or read an environment variable | [environments.md](environments.md) |
 | Production is down or misbehaving | [how-to/recover-production.md](how-to/recover-production.md) |
+| Tag catalogue games that have no tags (after approving proposals) | [how-to/tag-untagged-games.md](how-to/tag-untagged-games.md) (existing tags only, owner OKs the list, clear the cache) |
 | Run with local Redis | [how-to/run-with-redis.md](how-to/run-with-redis.md) |
 | Update Playwright screenshots | [how-to/update-screenshots.md](how-to/update-screenshots.md) |
 | Make a durable decision | [adr/README.md](adr/README.md) |

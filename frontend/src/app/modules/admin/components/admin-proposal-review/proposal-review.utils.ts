@@ -1,5 +1,3 @@
-import type { TagType } from '../../../../api/api.types'
-
 /**
  * The tags a proposer typed. The form sends "strategy, family"; older clients and the API docs use a JSON array.
  */
@@ -24,17 +22,6 @@ export function parseProposedTags(raw: string | null): Array<string> {
             seen.add(key)
             return true
         })
-}
-
-/** The catalogue tags whose name matches a proposed one, ignoring case and spacing. */
-export function matchProposedTags(proposed: Array<string>, tags: Array<TagType>): Array<number> {
-    const normalize = (name: string) =>
-        name
-            .toLowerCase()
-            .replace(/[\s_-]+/g, ' ')
-            .trim()
-    const wanted = new Set(proposed.map(normalize))
-    return tags.filter((tag) => wanted.has(normalize(tag.name))).map((tag) => tag.id)
 }
 
 /**

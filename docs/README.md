@@ -30,6 +30,7 @@ operating procedures are not kept here.
 - [Run with local Redis](how-to/run-with-redis.md)
 - [Update Playwright screenshots](how-to/update-screenshots.md)
 - [Audit rendered pages](how-to/audit-rendered-pages.md)
+- [Tag untagged games](how-to/tag-untagged-games.md)
 
 ## Decisions and governance
 
