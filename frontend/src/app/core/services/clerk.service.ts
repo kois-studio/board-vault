@@ -126,6 +126,38 @@ export class ClerkService {
         this.clerk?.openSignUp({ appearance: this.themeAppearance() })
     }
 
+    /**
+     * Puts Clerk's sign-in form inside `element`, on the sign-in page itself (#324), instead of a page with a
+     * button that opens it. Its "Sign up" link goes to the sign-up page under the page's language prefix.
+     */
+    public mountSignIn(element: HTMLDivElement): void {
+        this.clerk?.mountSignIn(element, {
+            routing: 'hash',
+            appearance: this.inlineAppearance(),
+            fallbackRedirectUrl: this.appUrl('dashboard'),
+            signUpUrl: this.appUrl('register'),
+        })
+    }
+
+    /** Clerk's sign-up form inside `element`, on the sign-up page (#324). */
+    public mountSignUp(element: HTMLDivElement): void {
+        if (!this.isSelfRegistrationEnabled()) return
+        this.clerk?.mountSignUp(element, {
+            routing: 'hash',
+            appearance: this.inlineAppearance(),
+            fallbackRedirectUrl: this.appUrl('dashboard'),
+            signInUrl: this.appUrl('login'),
+        })
+    }
+
+    public unmountSignIn(element: HTMLDivElement): void {
+        this.clerk?.unmountSignIn(element)
+    }
+
+    public unmountSignUp(element: HTMLDivElement): void {
+        this.clerk?.unmountSignUp(element)
+    }
+
     public openUserProfile(): void {
         this.clerk?.openUserProfile({ appearance: this.themeAppearance() })
     }
@@ -137,6 +169,28 @@ export class ClerkService {
      */
     private themeAppearance() {
         return { variables: { colorPrimary: THEME_COLORS[this.theme.palette()].primary } }
+    }
+
+    /**
+     * The theme, and a form that fills its column without Clerk's own title. Clerk's footer stays: it holds
+     * "Use another method", and "Sign up" / "Sign in" go to the app's pages (signUpUrl, signInUrl).
+     */
+    private inlineAppearance() {
+        return {
+            ...this.themeAppearance(),
+            elements: {
+                rootBox: { width: '100%' },
+                cardBox: { width: '100%', maxWidth: '100%', boxShadow: 'none' },
+                // The page has the heading; Clerk's header keeps the email being signed in, with a way to change it.
+                headerTitle: { display: 'none' },
+                headerSubtitle: { display: 'none' },
+            },
+        }
+    }
+
+    /** An address in the app under the page's language prefix (`<base href="/es/">` gives `/es/dashboard`). */
+    private appUrl(path: string): string {
+        return new URL(path, document.baseURI).href
     }
 
     public async signOut(): Promise<void> {

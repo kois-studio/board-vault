@@ -834,15 +834,6 @@
         <source>In this group, without an account</source>
       </segment>
     </unit>
-    <unit id="1422491155254079742">
-      <notes>
-        <note category="location">src/app/pages/auth/login/login.component.html</note>
-        <note category="description">Title of the box on the sign-in page that opens the sign-in window</note>
-      </notes>
-      <segment>
-        <source>Use secure sign-in</source>
-      </segment>
-    </unit>
     <unit id="1424105709982529287">
       <notes>
         <note category="location">src/app/components/forms/form-update-display-name/form-update-display-name.component.html</note>
@@ -2218,15 +2209,6 @@
       </notes>
       <segment>
         <source>That Board Vault page could not be found.</source>
-      </segment>
-    </unit>
-    <unit id="2154348577741476081">
-      <notes>
-        <note category="location">src/app/pages/auth/register/register.component.html</note>
-        <note category="description">Small heading of the sign-up page</note>
-      </notes>
-      <segment>
-        <source>Create your shelf</source>
       </segment>
     </unit>
     <unit id="21560863844407888">
@@ -3959,15 +3941,6 @@
         <source>Once the night starts, mark here the games the group actually plays.</source>
       </segment>
     </unit>
-    <unit id="2992514546647310147">
-      <notes>
-        <note category="location">src/app/pages/auth/login/login.component.html</note>
-        <note category="description">Hint on the sign-in page; Forgot password? is the link in the sign-in window, which is translated separately</note>
-      </notes>
-      <segment>
-        <source>Forgot your password? Choose “Forgot password?” in the sign-in window.</source>
-      </segment>
-    </unit>
     <unit id="3005430230641731316">
       <notes>
         <note category="location">src/app/pages/collection-page/my-games-page/my-games-page.component.html</note>
@@ -4493,15 +4466,6 @@
       </notes>
       <segment>
         <source>Remove <ph id="0" equiv="name" disp="name"/> from session attendees</source>
-      </segment>
-    </unit>
-    <unit id="3271632370618157002">
-      <notes>
-        <note category="location">src/app/pages/auth/login/login.component.html</note>
-        <note category="description">Line at the bottom of the sign-in page with a link to the sign-up page</note>
-      </notes>
-      <segment>
-        <source> New here? <pc id="0" equivStart="START_LINK" equivEnd="CLOSE_LINK" type="link" dispStart="&lt;a routerLink=&quot;/register&quot; class=&quot;font-medium text-bv-primary underline&quot;&gt;" dispEnd="&lt;/a&gt;">Create an account</pc></source>
       </segment>
     </unit>
     <unit id="3279828561938242897">
@@ -5383,15 +5347,6 @@
         <source>These members’ collections and play history shape this group’s recommendations.</source>
       </segment>
     </unit>
-    <unit id="3693351739760545097">
-      <notes>
-        <note category="location">src/app/pages/auth/login/login.component.html</note>
-        <note category="description">Text in the box on the sign-in page</note>
-      </notes>
-      <segment>
-        <source>Sign in with your email and password, or with a one-time email code.</source>
-      </segment>
-    </unit>
     <unit id="3695816730555625996">
       <notes>
         <note category="location">src/app/components/forms/form-game-submission/form-game-submission.component.html</note>
@@ -5994,15 +5949,6 @@
       </notes>
       <segment>
         <source>Attendance not recorded</source>
-      </segment>
-    </unit>
-    <unit id="3944411679288375240">
-      <notes>
-        <note category="location">src/app/pages/auth/login/login.component.html</note>
-        <note category="description">Button on the sign-in page that opens the sign-in window</note>
-      </notes>
-      <segment>
-        <source>Continue with secure sign-in</source>
       </segment>
     </unit>
     <unit id="3944772236493455759">
@@ -6633,15 +6579,6 @@
       </notes>
       <segment>
         <source>Create your Board Vault account</source>
-      </segment>
-    </unit>
-    <unit id="4200317694838753109">
-      <notes>
-        <note category="location">src/app/pages/auth/login/login.component.html</note>
-        <note category="description">Small heading of the sign-in page</note>
-      </notes>
-      <segment>
-        <source>Welcome back</source>
       </segment>
     </unit>
     <unit id="4201632374022727298">
@@ -8332,15 +8269,6 @@
       </notes>
       <segment>
         <source>Settings — Board Vault</source>
-      </segment>
-    </unit>
-    <unit id="5084001775448984862">
-      <notes>
-        <note category="location">src/app/pages/auth/register/register.component.html</note>
-        <note category="description">Button on the sign-up page that opens the sign-up window</note>
-      </notes>
-      <segment>
-        <source>Open secure sign-up</source>
       </segment>
     </unit>
     <unit id="509269551649874958">
@@ -10495,15 +10423,6 @@
         <source>Owned by <ph id="0" equiv="owners" disp="owners"/> of <ph id="1" equiv="people" disp="attendees"/> selected attendees</source>
       </segment>
     </unit>
-    <unit id="6205660505479571083">
-      <notes>
-        <note category="location">src/app/pages/auth/login/login.component.html</note>
-        <note category="description">Shown on the sign-in page while the sign-in service loads</note>
-      </notes>
-      <segment>
-        <source>Loading secure sign-in…</source>
-      </segment>
-    </unit>
     <unit id="6205739162974185948">
       <notes>
         <note category="location">src/app/pages/privacy/privacy-page.component.html</note>
@@ -10565,15 +10484,6 @@
       </notes>
       <segment>
         <source>Go back home</source>
-      </segment>
-    </unit>
-    <unit id="6272066987885914576">
-      <notes>
-        <note category="location">src/app/pages/auth/register/register.component.html</note>
-        <note category="description">Text on the sign-up page; Clerk is the sign-in service</note>
-      </notes>
-      <segment>
-        <source>Set up your identity securely with Clerk.</source>
       </segment>
     </unit>
     <unit id="627299534093480631">
@@ -11214,15 +11124,6 @@
       </notes>
       <segment>
         <source>This person couldn’t be linked to you. Someone may have taken them over already, or you are one of the group’s people already.</source>
-      </segment>
-    </unit>
-    <unit id="6582558331846075943">
-      <notes>
-        <note category="location">src/app/pages/auth/login/login.component.html</note>
-        <note category="description">Text under the heading of the sign-in page</note>
-      </notes>
-      <segment>
-        <source>Return to the groups, games, and sessions you are building with your friends.</source>
       </segment>
     </unit>
     <unit id="6595983049209354749">
@@ -12090,15 +11991,6 @@
       </notes>
       <segment>
         <source>Newest in the catalogue</source>
-      </segment>
-    </unit>
-    <unit id="7007703201160377234">
-      <notes>
-        <note category="location">src/app/pages/auth/register/register.component.html</note>
-        <note category="description">Line at the bottom of the sign-up page with a link to the sign-in page</note>
-      </notes>
-      <segment>
-        <source>Already have an account? <pc id="0" equivStart="START_LINK" equivEnd="CLOSE_LINK" type="link" dispStart="&lt;a routerLink=&quot;/login&quot; class=&quot;underline&quot;&gt;" dispEnd="&lt;/a&gt;">Sign in</pc></source>
       </segment>
     </unit>
     <unit id="7017107942157732351">

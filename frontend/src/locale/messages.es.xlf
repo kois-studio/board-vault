@@ -817,15 +817,6 @@
         <target>En este grupo, sin cuenta</target>
       </segment>
     </unit>
-    <unit id="1422491155254079742">
-      <notes>
-        <note category="description">Title of the box on the sign-in page that opens the sign-in window</note>
-      </notes>
-      <segment state="translated">
-        <source>Use secure sign-in</source>
-        <target>Usa el inicio de sesión seguro</target>
-      </segment>
-    </unit>
     <unit id="1424105709982529287">
       <notes>
         <note category="description">Error under the display name field when the new name could not be saved</note>
@@ -2176,15 +2167,6 @@
       <segment state="translated">
         <source>That Board Vault page could not be found.</source>
         <target>No se ha encontrado esa página de Board Vault.</target>
-      </segment>
-    </unit>
-    <unit id="2154348577741476081">
-      <notes>
-        <note category="description">Small heading of the sign-up page</note>
-      </notes>
-      <segment state="translated">
-        <source>Create your shelf</source>
-        <target>Crea tu estantería</target>
       </segment>
     </unit>
     <unit id="21560863844407888">
@@ -3880,15 +3862,6 @@
         <target>Cuando empiece la noche, marca aquí los juegos a los que juegue el grupo.</target>
       </segment>
     </unit>
-    <unit id="2992514546647310147">
-      <notes>
-        <note category="description">Hint on the sign-in page; Forgot password? is the link in the sign-in window, which is translated separately</note>
-      </notes>
-      <segment state="translated">
-        <source>Forgot your password? Choose “Forgot password?” in the sign-in window.</source>
-        <target>¿Has olvidado tu contraseña? Elige «¿Has olvidado tu contraseña?» en la ventana de inicio de sesión.</target>
-      </segment>
-    </unit>
     <unit id="3005430230641731316">
       <notes>
         <note category="description">Subtitle of the My Games page</note>
@@ -4408,15 +4381,6 @@
       <segment state="translated">
         <source>Remove <ph id="0" equiv="name" disp="name"/> from session attendees</source>
         <target>Quitar a <ph id="0" equiv="name" disp="name"/> de la noche</target>
-      </segment>
-    </unit>
-    <unit id="3271632370618157002">
-      <notes>
-        <note category="description">Line at the bottom of the sign-in page with a link to the sign-up page</note>
-      </notes>
-      <segment state="translated">
-        <source> New here? <pc id="0" equivStart="START_LINK" equivEnd="CLOSE_LINK" type="link" dispStart="&lt;a routerLink=&quot;/register&quot; class=&quot;font-medium text-bv-primary underline&quot;&gt;" dispEnd="&lt;/a&gt;">Create an account</pc></source>
-        <target> ¿Primera vez aquí? <pc id="0" equivStart="START_LINK" equivEnd="CLOSE_LINK" type="link" dispStart="&lt;a routerLink=&quot;/register&quot; class=&quot;font-medium text-bv-primary underline&quot;&gt;" dispEnd="&lt;/a&gt;">Crea una cuenta</pc> </target>
       </segment>
     </unit>
     <unit id="3279828561938242897">
@@ -5286,15 +5250,6 @@
         <target>Las colecciones y el historial de juego de estos miembros dan forma a las recomendaciones del grupo.</target>
       </segment>
     </unit>
-    <unit id="3693351739760545097">
-      <notes>
-        <note category="description">Text in the box on the sign-in page</note>
-      </notes>
-      <segment state="translated">
-        <source>Sign in with your email and password, or with a one-time email code.</source>
-        <target>Inicia sesión con tu email y contraseña, o con un código de un solo uso enviado por email.</target>
-      </segment>
-    </unit>
     <unit id="3695816730555625996">
       <notes>
         <note category="description">Label of the language selector under the game title in the propose-a-game form</note>
@@ -5889,15 +5844,6 @@
       <segment state="translated">
         <source>Attendance not recorded</source>
         <target>Asistencia sin registrar</target>
-      </segment>
-    </unit>
-    <unit id="3944411679288375240">
-      <notes>
-        <note category="description">Button on the sign-in page that opens the sign-in window</note>
-      </notes>
-      <segment state="translated">
-        <source>Continue with secure sign-in</source>
-        <target>Continuar con el inicio de sesión seguro</target>
       </segment>
     </unit>
     <unit id="3944772236493455759">
@@ -6514,15 +6460,6 @@
       <segment state="translated">
         <source>Create your Board Vault account</source>
         <target>Crea tu cuenta de Board Vault</target>
-      </segment>
-    </unit>
-    <unit id="4200317694838753109">
-      <notes>
-        <note category="description">Small heading of the sign-in page</note>
-      </notes>
-      <segment state="translated">
-        <source>Welcome back</source>
-        <target>Hola de nuevo</target>
       </segment>
     </unit>
     <unit id="4201632374022727298">
@@ -8199,15 +8136,6 @@
       <segment state="translated">
         <source>Settings — Board Vault</source>
         <target>Ajustes — Board Vault</target>
-      </segment>
-    </unit>
-    <unit id="5084001775448984862">
-      <notes>
-        <note category="description">Button on the sign-up page that opens the sign-up window</note>
-      </notes>
-      <segment state="translated">
-        <source>Open secure sign-up</source>
-        <target>Abrir el registro seguro</target>
       </segment>
     </unit>
     <unit id="509269551649874958">
@@ -10330,15 +10258,6 @@
         <target>Lo tienen <ph id="0" equiv="owners" disp="owners"/> de las <ph id="1" equiv="people" disp="attendees"/> personas que vienen</target>
       </segment>
     </unit>
-    <unit id="6205660505479571083">
-      <notes>
-        <note category="description">Shown on the sign-in page while the sign-in service loads</note>
-      </notes>
-      <segment state="translated">
-        <source>Loading secure sign-in…</source>
-        <target>Cargando el inicio de sesión seguro…</target>
-      </segment>
-    </unit>
     <unit id="6205739162974185948">
       <notes>
         <note category="description">Introduction at the top of the privacy page</note>
@@ -10400,15 +10319,6 @@
       <segment state="translated">
         <source>Go back home</source>
         <target>Volver al inicio</target>
-      </segment>
-    </unit>
-    <unit id="6272066987885914576">
-      <notes>
-        <note category="description">Text on the sign-up page; Clerk is the sign-in service</note>
-      </notes>
-      <segment state="translated">
-        <source>Set up your identity securely with Clerk.</source>
-        <target>Crea tu identidad de forma segura con Clerk.</target>
       </segment>
     </unit>
     <unit id="627299534093480631">
@@ -11034,15 +10944,6 @@
       <segment state="translated">
         <source>This person couldn’t be linked to you. Someone may have taken them over already, or you are one of the group’s people already.</source>
         <target>No se pudo vincular a esta persona contigo. Puede que otra persona ya la haya vinculado, o que ya seas una de las personas del grupo.</target>
-      </segment>
-    </unit>
-    <unit id="6582558331846075943">
-      <notes>
-        <note category="description">Text under the heading of the sign-in page</note>
-      </notes>
-      <segment state="translated">
-        <source>Return to the groups, games, and sessions you are building with your friends.</source>
-        <target>Vuelve a los grupos, juegos y noches de juegos que estás construyendo con tus amistades.</target>
       </segment>
     </unit>
     <unit id="6595983049209354749">
@@ -11891,15 +11792,6 @@
       <segment state="translated">
         <source>Newest in the catalogue</source>
         <target>Los últimos añadidos al catálogo</target>
-      </segment>
-    </unit>
-    <unit id="7007703201160377234">
-      <notes>
-        <note category="description">Line at the bottom of the sign-up page with a link to the sign-in page</note>
-      </notes>
-      <segment state="translated">
-        <source>Already have an account? <pc id="0" equivStart="START_LINK" equivEnd="CLOSE_LINK" type="link" dispStart="&lt;a routerLink=&quot;/login&quot; class=&quot;underline&quot;&gt;" dispEnd="&lt;/a&gt;">Sign in</pc></source>
-        <target>¿Ya tienes una cuenta? <pc id="0" equivStart="START_LINK" equivEnd="CLOSE_LINK" type="link" dispStart="&lt;a routerLink=&quot;/login&quot; class=&quot;underline&quot;&gt;" dispEnd="&lt;/a&gt;">Iniciar sesión</pc></target>
       </segment>
     </unit>
     <unit id="7017107942157732351">

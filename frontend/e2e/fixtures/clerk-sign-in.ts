@@ -9,7 +9,7 @@ import type { Page } from '@playwright/test'
 export async function signInWithEmailCode(page: Page, email: string, loginPath = '/login'): Promise<void> {
     await setupClerkTestingToken({ page })
     await page.goto(loginPath)
-    await page.getByRole('button', { name: 'Continue with secure sign-in' }).click()
+    // The form is on the page (#324); the email field appears once Clerk has loaded.
     await page.getByLabel(/email/i).first().fill(email)
     await page.getByRole('button', { name: 'Continue', exact: true }).click()
 
