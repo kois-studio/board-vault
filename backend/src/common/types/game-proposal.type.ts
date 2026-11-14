@@ -308,6 +308,12 @@ export class GameProposalCompleteDto extends GameProposalDto {
     submitterId: number
 
     @ApiProperty({
+        example: 'Ana',
+        description: "The proposer's display name, else their username, as admins see it in the review queue.",
+    })
+    submitterName: string
+
+    @ApiProperty({
         example: 2,
         nullable: true,
         description: 'ID of the admin who reviewed the proposal',

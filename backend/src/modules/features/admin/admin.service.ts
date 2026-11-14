@@ -30,12 +30,14 @@ import { ActivityNotifier } from '../../../modules/core/notifications/activity-n
 import { NotificationTypeEnum } from '../../../modules/core/notifications/notifications-enum.type.js'
 import { TagCategoryService } from '../../../modules/core/tag-category/tag-category.service.js'
 import { TagsService } from '../../../modules/core/tags/tags.service.js'
+import { UsersService } from '../../../modules/core/users/users.service.js'
 import { cacheKeys } from '../../common/cache/cache-keys.js'
 import { CacheService } from '../../common/cache/cache.service.js'
 import { DatabaseService } from '../../common/database/database.service.js'
 
 import type { TagCategoryWithTagsDto } from '../../../common/types/tag-category.type.js'
 import type { NameTranslations } from '../../../common/types/tag.type.js'
+import type { UserPublicDto } from '../../../common/types/user.type.js'
 
 const ADMIN_OVERVIEW_CACHE_KEY = 'admin:overview'
 
@@ -58,6 +60,7 @@ export class AdminService {
         private readonly cacheService: CacheService,
         private readonly artworkService: ArtworkService,
         private readonly activityNotifier: ActivityNotifier,
+        private readonly usersService: UsersService,
     ) {}
 
     // #region Tag Categories
@@ -430,10 +433,12 @@ export class AdminService {
         const endIndex = startIndex + limit
         const paginatedProposals = proposals.slice(startIndex, endIndex)
 
-        // Transform to include submitter and reviewer IDs
+        // Who proposed each one, read in one query for the page (#327).
+        const submitters = await this.usersService.getPublicUsersByIds(paginatedProposals.map(proposal => proposal.submittedBy))
         const proposalsWithIds: Array<GameProposalCompleteDto> = paginatedProposals.map(proposal => ({
             ...proposal,
             submitterId: proposal.submittedBy,
+            submitterName: submitterName(submitters.get(proposal.submittedBy)),
             reviewerId: proposal.reviewedBy || undefined,
         }))
 
@@ -452,10 +457,12 @@ export class AdminService {
     @LogFeature(new Logger('AdminService'))
     async getAdminGameProposalById(id: number): Promise<GameProposalCompleteDto> {
         const proposal = await this.gameProposalService.getGameProposalById(id)
+        const submitters = await this.usersService.getPublicUsersByIds([proposal.submittedBy])
 
         return {
             ...proposal,
             submitterId: proposal.submittedBy,
+            submitterName: submitterName(submitters.get(proposal.submittedBy)),
             reviewerId: proposal.reviewedBy || undefined,
         }
     }
@@ -619,4 +626,9 @@ export class AdminService {
     }
 
     // #endregion
+}
+
+/** How admins see a proposer: their display name, else their username. */
+function submitterName(user: UserPublicDto | undefined): string {
+    return user?.displayName?.trim() || user?.username || 'Unknown account'
 }

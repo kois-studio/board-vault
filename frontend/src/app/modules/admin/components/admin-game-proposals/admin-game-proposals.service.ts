@@ -99,11 +99,12 @@ export class AdminGameProposalsService {
         }
     }
 
-    public async deleteProposal(proposalId: number): Promise<boolean> {
+    /** `reload: false` from the review page, which leaves for the list right after. */
+    public async deleteProposal(proposalId: number, { reload = true }: { reload?: boolean } = {}): Promise<boolean> {
         try {
             await firstValueFrom(this.api.deleteGameProposal(proposalId))
             this.toastService.success('Game proposal deleted')
-            await this.reload()
+            if (reload) await this.reload()
             return true
         } catch (error) {
             this.logger.error('Error deleting game proposal:', error)

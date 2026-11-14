@@ -10,6 +10,7 @@ import { GamesModule } from '../../core/games/games.module.js'
 import { NotificationsModule } from '../../core/notifications/notifications.module.js'
 import { TagCategoryModule } from '../../core/tag-category/tag-category.module.js'
 import { TagsModule } from '../../core/tags/tags.module.js'
+import { UsersModule } from '../../core/users/users.module.js'
 
 import { AdminController } from './admin.controller.js'
 import { AdminService } from './admin.service.js'
@@ -26,6 +27,7 @@ import { AdminService } from './admin.service.js'
         GameTitlesModule,
         GameProposalModule,
         NotificationsModule,
+        UsersModule,
     ],
     providers: [AdminService],
     exports: [AdminService],

@@ -167,4 +167,53 @@ describe('AdminService', () => {
             expect(notifier.shelfChanged).not.toHaveBeenCalled()
         })
     })
+
+    // #327: the review queue says who proposed each game, read in one query per page.
+    describe('getAdminGameProposals', () => {
+        const proposal = (id: number, submittedBy: number, status = 'pending') => ({ id, submittedBy, status, reviewedBy: null })
+
+        function serviceWith(proposals: Array<ReturnType<typeof proposal>>, users: Map<number, unknown>) {
+            const gameProposalService = {
+                getGameProposals: vi.fn().mockResolvedValue(proposals),
+                getGameProposalById: vi.fn().mockImplementation(async (id: number) => proposals.find(item => item.id === id)),
+            }
+            const usersService = { getPublicUsersByIds: vi.fn().mockResolvedValue(users) }
+            const service = new AdminService(
+                {} as never,
+                {} as never,
+                {} as never,
+                {} as never,
+                {} as never,
+                gameProposalService as never,
+                fakeDatabase({}),
+                {} as never,
+                {} as never,
+                fakeActivityNotifier() as never,
+                usersService as never,
+            )
+
+            return { service, usersService }
+        }
+
+        it('names each proposer by display name, else username, in one lookup for the page', async () => {
+            const users = new Map([
+                [7, { id: 7, username: 'ana', displayName: 'Ana' }],
+                [8, { id: 8, username: 'bruno', displayName: '  ' }],
+            ])
+            const { service, usersService } = serviceWith([proposal(1, 7), proposal(2, 8), proposal(3, 7)], users)
+
+            const result = await service.getAdminGameProposals('pending')
+
+            expect(usersService.getPublicUsersByIds).toHaveBeenCalledOnce()
+            expect(result.proposals.map(item => item.submitterName)).toEqual(['Ana', 'bruno', 'Ana'])
+        })
+
+        it('still lists a proposal whose account is gone', async () => {
+            const { service } = serviceWith([proposal(1, 9)], new Map())
+
+            const result = await service.getAdminGameProposalById(1)
+
+            expect(result.submitterName).toBe('Unknown account')
+        })
+    })
 })
