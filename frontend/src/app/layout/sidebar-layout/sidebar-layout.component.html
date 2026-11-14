@@ -1,6 +1,6 @@
 <div class="container mx-auto max-w-6xl px-4 py-6 md:py-10">
     <div class="mb-6">
-        @if (hasSection()) {
+        @if (hasSection() && !isDetailPage()) {
         <a
             [routerLink]="basePath()"
             class="mb-1 inline-flex min-h-11 items-center gap-2 rounded-lg pr-3 text-sm font-semibold text-bv-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-bv-primary md:hidden"
@@ -67,7 +67,7 @@
         </div>
 
         <div class="min-w-0" [class.hidden]="!hasSection()" [class.md:block]="!hasSection()">
-            <router-outlet (activate)="hasSection.set(true)" (deactivate)="hasSection.set(false)" />
+            <router-outlet (activate)="onSectionActivate()" (deactivate)="onSectionDeactivate()" />
         </div>
     </div>
 </div>

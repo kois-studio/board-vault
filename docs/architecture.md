@@ -105,7 +105,7 @@ List `AuthGuard` first; the others read `request.user`.
 | `app.routes.ts` | All routes and their guards. |
 | `app.config.ts` | Providers; starts Clerk once the first page has painted (`afterFirstPagePaint`). `AuthOnlyGuard`, `AdminGuard` and API tokens start it sooner if they need it (`ClerkService.whenLoaded`); public pages, `GuestOnlyGuard` included, never wait for it. |
 | `api/` | `Api` (every HTTP call), zod response schemas, shared types. The schemas turn stored artwork paths (`/artwork/…`) into full addresses on the API. |
-| `core/services/clerk.service.ts` | Clerk lifecycle, sign-in and sign-up forms (mounted on `/login` and `/register`, or as pop-ups), session token. |
+| `core/services/clerk.service.ts` | Clerk lifecycle, sign-in and sign-up forms mounted on `/login` and `/register`, the account panel, session token. |
 | `core/services/login.service.ts` | Board Vault session state: verifies Clerk sessions with `/auth/clerk/status` and loads the current user. |
 | `core/services/data.service.ts` | Shared signals for the current user and loaded data. |
 | `core/services/connectivity.service.ts` | Whether Board Vault can be reached; drives the "can't reach Board Vault" banner ([Slow and failed requests](#slow-and-failed-requests)). |

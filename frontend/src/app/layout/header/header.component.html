@@ -45,16 +45,9 @@
                 <a routerLink="/" [fragment]="item.fragment" class="font-medium text-bv-text-muted hover:text-bv-text">{{ item.label }}</a>
                 }
             </nav>
-            @if (clerkIsAvailable() && selfRegistrationEnabled()) {
-            <button type="button" class="cursor-pointer font-medium" (click)="openClerkSignIn()" i18n="Button in the signed-out header that opens sign-in">Log in</button>
-            <button appButton type="button" (click)="openClerkSignUp()" i18n="Call to action in the signed-out header that creates an account">Start free</button>
-            } @else if (clerkIsAvailable()) {
-            <button type="button" class="cursor-pointer font-medium" (click)="openClerkSignIn()" i18n="Button in the signed-out header that opens sign-in">Log in</button>
-            <a appButton routerLink="/register" i18n="Call to action in the signed-out header that creates an account">Start free</a>
-            } @else {
+            <!-- The sign-in and sign-up pages hold Clerk's form, as on phones (#324); no pop-up. -->
             <a routerLink="/login" class="font-medium" i18n="Button in the signed-out header that opens sign-in">Log in</a>
             <a appButton routerLink="/register" i18n="Call to action in the signed-out header that creates an account">Start free</a>
-            }
         </div>
         @if (languages.length) {
         <app-language-menu class="ml-auto lg:ml-0" [locales]="languages" />

@@ -37,30 +37,53 @@ describe('ClerkService loading', () => {
 describe('ClerkService appearance', () => {
     const setup = () => {
         const service = TestBed.inject(ClerkService)
-        const clerk = { openSignIn: vi.fn(), openSignUp: vi.fn(), openUserProfile: vi.fn() }
+        const clerk = { mountSignIn: vi.fn(), mountSignUp: vi.fn(), openUserProfile: vi.fn() }
         ;(service as unknown as { clerk: typeof clerk }).clerk = clerk
         service.isSelfRegistrationEnabled.set(true)
         return { service, clerk, theme: TestBed.inject(ThemeService) }
     }
     const primaryOf = (mock: ReturnType<typeof vi.fn>) => mock.mock.lastCall?.[0]?.appearance?.variables?.colorPrimary
+    const mountedAppearance = (mock: ReturnType<typeof vi.fn>) => mock.mock.lastCall?.[1]?.appearance
 
-    it('opens every Clerk panel in the theme chosen now, not the one Clerk loaded with', () => {
+    it('shows every Clerk panel and form in the theme chosen now, not the one Clerk loaded with', () => {
         const { service, clerk, theme } = setup()
+        const element = document.createElement('div')
 
         theme.palette.set('felt')
         service.openUserProfile()
-        service.openSignIn()
-        service.openSignUp()
+        service.mountSignIn(element)
+        service.mountSignUp(element)
 
         expect(primaryOf(clerk.openUserProfile)).toBe(THEME_COLORS.felt.primary)
-        expect(primaryOf(clerk.openSignIn)).toBe(THEME_COLORS.felt.primary)
-        expect(primaryOf(clerk.openSignUp)).toBe(THEME_COLORS.felt.primary)
-        expect(clerk.openSignIn.mock.lastCall?.[0]?.withSignUp).toBe(true)
+        expect(mountedAppearance(clerk.mountSignIn)?.variables?.colorPrimary).toBe(THEME_COLORS.felt.primary)
+        expect(mountedAppearance(clerk.mountSignUp)?.variables?.colorPrimary).toBe(THEME_COLORS.felt.primary)
 
         theme.palette.set('harbor')
         service.openUserProfile()
 
         expect(primaryOf(clerk.openUserProfile)).toBe(THEME_COLORS.harbor.primary)
+    })
+
+    // Retest polish after #324: white text on the primary button in dark mode too, and no card inside the page's card.
+    it('mounts the forms with white text on the primary, and without a card of their own', () => {
+        const { service, clerk } = setup()
+
+        service.mountSignIn(document.createElement('div'))
+
+        const appearance = mountedAppearance(clerk.mountSignIn)
+        expect(appearance?.variables?.colorPrimaryForeground).toBe('#ffffff')
+        expect(appearance?.elements?.card).toEqual(expect.objectContaining({ padding: '0 0 1.5rem', background: 'transparent' }))
+        expect(appearance?.elements?.headerTitle).toEqual({ display: 'none' })
+    })
+
+    it('sends sign-in and sign-up links, and the redirect after signing in, to the app under its language prefix', () => {
+        const { service, clerk } = setup()
+
+        service.mountSignIn(document.createElement('div'))
+
+        const options = clerk.mountSignIn.mock.lastCall?.[1]
+        expect(options?.signUpUrl).toBe(new URL('register', document.baseURI).href)
+        expect(options?.fallbackRedirectUrl).toBe(new URL('dashboard', document.baseURI).href)
     })
 })
 
@@ -117,7 +140,7 @@ describe('afterFirstPagePaint', () => {
 describe('ClerkService.forgetSession', () => {
     it('clears the signed-in user Board Vault reads, but keeps Clerk loaded for the next sign-in', () => {
         const service = TestBed.inject(ClerkService)
-        const clerk = { openSignIn: vi.fn() }
+        const clerk = { mountSignIn: vi.fn() }
         ;(service as unknown as { clerk: typeof clerk }).clerk = clerk
         service.isSignedIn.set(true)
         service.userId.set('user_7')
@@ -127,8 +150,8 @@ describe('ClerkService.forgetSession', () => {
         service.forgetSession()
 
         expect([service.isSignedIn(), service.userId(), service.username(), service.primaryEmail()]).toEqual([false, null, null, null])
-        service.openSignIn()
-        expect(clerk.openSignIn).toHaveBeenCalled()
+        service.mountSignIn(document.createElement('div'))
+        expect(clerk.mountSignIn).toHaveBeenCalled()
     })
 })
 

@@ -112,20 +112,6 @@ export class ClerkService {
         return (await session.getToken()) ?? null
     }
 
-    public openSignIn(): void {
-        this.clerk?.openSignIn({
-            withSignUp: this.isSelfRegistrationEnabled(),
-            appearance: this.themeAppearance(),
-        })
-    }
-
-    public openSignUp(): void {
-        if (!this.isSelfRegistrationEnabled()) {
-            return
-        }
-        this.clerk?.openSignUp({ appearance: this.themeAppearance() })
-    }
-
     /**
      * Puts Clerk's sign-in form inside `element`, on the sign-in page itself (#324), instead of a page with a
      * button that opens it. Its "Sign up" link goes to the sign-up page under the page's language prefix.
@@ -168,7 +154,15 @@ export class ClerkService {
      * change in Appearance without a reload. Clerk merges it with the global appearance.
      */
     private themeAppearance() {
-        return { variables: { colorPrimary: THEME_COLORS[this.theme.palette()].primary } }
+        return {
+            variables: {
+                colorPrimary: THEME_COLORS[this.theme.palette()].primary,
+                // White on the primary in light and dark mode; Clerk darkened it in dark mode. Both names: the
+                // current one and the older one, as the UI bundle Clerk serves may read either.
+                colorPrimaryForeground: '#ffffff',
+                colorTextOnPrimaryBackground: '#ffffff',
+            },
+        }
     }
 
     /**
@@ -180,7 +174,9 @@ export class ClerkService {
             ...this.themeAppearance(),
             elements: {
                 rootBox: { width: '100%' },
-                cardBox: { width: '100%', maxWidth: '100%', boxShadow: 'none' },
+                // The page's card is the card: Clerk's own has no padding, border, shadow or background of its own.
+                cardBox: { width: '100%', maxWidth: '100%', boxShadow: 'none', border: 'none', background: 'transparent' },
+                card: { padding: '0 0 1.5rem', gap: '1.5rem', boxShadow: 'none', border: 'none', background: 'transparent' },
                 // The page has the heading; Clerk's header keeps the email being signed in, with a way to change it.
                 headerTitle: { display: 'none' },
                 headerSubtitle: { display: 'none' },

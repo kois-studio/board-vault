@@ -33,7 +33,10 @@ describe('SidebarLayoutComponent', () => {
                     {
                         path: 'settings',
                         component: SettingsStubComponent,
-                        children: [{ path: 'profile', component: ProfileStubComponent }],
+                        children: [
+                            { path: 'profile', component: ProfileStubComponent },
+                            { path: 'profile/:id', component: ProfileStubComponent },
+                        ],
                     },
                     { path: 'admin/proposals', component: ProfileStubComponent },
                     { path: 'dashboard', component: ProfileStubComponent },
@@ -74,5 +77,23 @@ describe('SidebarLayoutComponent', () => {
         expect(current?.textContent).toContain('Profile')
         expect(element.querySelector('a[href="/settings"]')?.textContent).toContain('Settings')
         expect(element.querySelector('h1')?.classList).toContain('sr-only')
+    })
+
+    // On a page inside a section the page has its own back link, so the area's link would be a second one.
+    it('links back to the area from a section on phones, but not from a page inside one', async () => {
+        const harness = await RouterTestingHarness.create('/settings/profile')
+        const areaLink = () =>
+            [...(harness.fixture.nativeElement as HTMLElement).querySelectorAll('a')].find(
+                (link) => link.getAttribute('href') === '/settings',
+            )
+        expect(areaLink()).toBeDefined()
+
+        await harness.navigateByUrl('/settings/profile/7')
+        harness.fixture.detectChanges()
+        expect(areaLink()).toBeUndefined()
+
+        await harness.navigateByUrl('/settings/profile')
+        harness.fixture.detectChanges()
+        expect(areaLink()).toBeDefined()
     })
 })
