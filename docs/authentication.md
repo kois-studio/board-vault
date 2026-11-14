@@ -87,8 +87,10 @@ reports that sign-in is not configured.
 the page's heading, not a button that opens a pop-up (#324). Clerk's title is
 hidden; its footer stays for "Use another method" and the link between the
 two pages, which point at the app's own addresses under the page's language
-prefix, as does the redirect after signing in. The header's Sign in and Sign
-up buttons still open Clerk's pop-up.
+prefix, as does the redirect after signing in. The header's Log in and Start
+free go to those pages too; only Clerk's account panel (Settings) is a pop-up.
+Clerk's card is transparent and unpadded, so the page's card is the only one,
+and the primary button's text is white in light and dark mode.
 
 Tests do not need Clerk: backend e2e tests replace `ClerkTokenVerifier` with a
 fake, and frontend unit tests stub `ClerkService`. Browser journeys that sign
@@ -160,7 +162,7 @@ webhook log.
 | Requires a resolved account | [`backend/src/common/guards/auth.guard.ts`](../backend/src/common/guards/auth.guard.ts) |
 | Self-registration policy | [`backend/src/common/registration-policy.ts`](../backend/src/common/registration-policy.ts) |
 | `GET /auth/clerk/status` | [`backend/src/modules/common/auth/auth.controller.ts`](../backend/src/modules/common/auth/auth.controller.ts) |
-| Clerk JS lifecycle, sign-in and sign-up forms (on the page and in pop-ups) | [`frontend/src/app/core/services/clerk.service.ts`](../frontend/src/app/core/services/clerk.service.ts) |
+| Clerk JS lifecycle, sign-in and sign-up forms on the page, the account panel | [`frontend/src/app/core/services/clerk.service.ts`](../frontend/src/app/core/services/clerk.service.ts) |
 | Session handoff and sign-out | [`frontend/src/app/core/services/login.service.ts`](../frontend/src/app/core/services/login.service.ts) |
 | Bearer token and 401 handling | [`frontend/src/app/core/interceptors/auth.interceptor.ts`](../frontend/src/app/core/interceptors/auth.interceptor.ts) |
 | Sign-in and sign-up pages | [`frontend/src/app/pages/auth/`](../frontend/src/app/pages/auth/) |

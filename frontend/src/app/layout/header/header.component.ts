@@ -32,8 +32,6 @@ export class LayoutHeaderComponent {
     /** Signed in, or the account is still being confirmed: the app's section links, not the landing page's. */
     public readonly showsAppFrame = inject(AccountPendingService).showsAppFrame
     public readonly isCurrentUserAdmin = this.loginService.isCurrentUserAdmin
-    public readonly clerkIsAvailable = this.clerkService.isAvailable
-    public readonly selfRegistrationEnabled = this.clerkService.isSelfRegistrationEnabled
     public readonly clerkIsSignedIn = this.clerkService.isSignedIn
     public readonly isMobileNavigationOpen = signal(false)
     /** Empty when there is nothing to choose, so the bar is exactly as before. */
@@ -74,14 +72,6 @@ export class LayoutHeaderComponent {
 
     public readonly openNavigationLabel = $localize`:Button on phones in the signed-out header that opens the links menu:Open navigation`
     public readonly closeNavigationLabel = $localize`:Button on phones in the signed-out header that closes the links menu:Close navigation`
-
-    public openClerkSignIn(): void {
-        this.clerkService.openSignIn()
-    }
-
-    public openClerkSignUp(): void {
-        this.clerkService.openSignUp()
-    }
 
     public toggleMobileNavigation(): void {
         this.isMobileNavigationOpen.update((isOpen) => !isOpen)

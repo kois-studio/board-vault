@@ -52,6 +52,21 @@ export class SidebarLayoutComponent implements OnInit {
 
     /** True while a section is open in the outlet. */
     public readonly hasSection = signal(false)
+    /**
+     * True on a page inside a section, such as one proposal (`proposals/:id`): the page has its own back link
+     * to the section, so the area's link above it would be a second one on phones.
+     */
+    public readonly isDetailPage = signal(false)
+
+    public onSectionActivate(): void {
+        this.hasSection.set(true)
+        this.isDetailPage.set(this.route.firstChild?.routeConfig?.path?.includes('/') ?? false)
+    }
+
+    public onSectionDeactivate(): void {
+        this.hasSection.set(false)
+        this.isDetailPage.set(false)
+    }
 
     ngOnInit(): void {
         this.openFirstSectionOnDesktop()
