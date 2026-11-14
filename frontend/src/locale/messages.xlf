@@ -770,6 +770,15 @@
         <source>We could not create the group. Check your connection and try again; your group name is still here.</source>
       </segment>
     </unit>
+    <unit id="1380995781532274378">
+      <notes>
+        <note category="location">src/app/pages/collection-page/propose-game-page/propose-game-page.component.html</note>
+        <note category="description">Subtitle of the Propose a game page</note>
+      </notes>
+      <segment>
+        <source>Tell us which game is missing and we’ll add it to Board Vault.</source>
+      </segment>
+    </unit>
     <unit id="1387844711141897571">
       <notes>
         <note category="location">src/app/pages/collection-page/browse-page/browse-page.component.html</note>
@@ -1353,15 +1362,6 @@
         <source><ph id="0" equiv="actor" disp="actor"/> undid your takeover of <ph id="1" equiv="person" disp="person"/> in <ph id="2" equiv="group" disp="group"/>. You’re in the group as yourself.</source>
       </segment>
     </unit>
-    <unit id="1722160113515323109">
-      <notes>
-        <note category="location">src/app/components/forms/form-game-submission/form-game-submission.component.html</note>
-        <note category="description">Label of the duration field of the game proposal form</note>
-      </notes>
-      <segment>
-        <source>Average Duration (minutes)</source>
-      </segment>
-    </unit>
     <unit id="1722403458135931707">
       <notes>
         <note category="location">src/app/pages/collection-page/my-games-page/my-games-page.component.html</note>
@@ -1407,15 +1407,6 @@
         <source>Your game nights could not be loaded.</source>
       </segment>
     </unit>
-    <unit id="1764428149005377596">
-      <notes>
-        <note category="location">src/app/components/forms/form-game-submission/form-game-submission.component.html</note>
-        <note category="description">Error under the most players field of the game proposal form</note>
-      </notes>
-      <segment>
-        <source>Maximum players must be at least 1</source>
-      </segment>
-    </unit>
     <unit id="176989928276125552">
       <notes>
         <note category="location">src/app/core/utils/groupActivity.ts</note>
@@ -1443,15 +1434,6 @@
         <source>Could not add this person to the group.</source>
       </segment>
     </unit>
-    <unit id="1790637555628658675">
-      <notes>
-        <note category="location">src/app/components/forms/form-game-submission/form-game-submission.component.ts</note>
-        <note category="description">Name of the field where a language code is typed</note>
-      </notes>
-      <segment>
-        <source>Language code</source>
-      </segment>
-    </unit>
     <unit id="1790722701366905577">
       <notes>
         <note category="location">src/app/pages/meet-view/meet-view.component.html</note>
@@ -1468,15 +1450,6 @@
       </notes>
       <segment>
         <source>{VAR_PLURAL, plural, one {<ph id="0" equiv="INTERPOLATION"/> passed} other {<ph id="1" equiv="INTERPOLATION"/> passed}}</source>
-      </segment>
-    </unit>
-    <unit id="180215682275041064">
-      <notes>
-        <note category="location">src/app/components/forms/form-game-submission/form-game-submission.component.ts</note>
-        <note category="description">Label of the button that removes a row of other titles; the language name follows</note>
-      </notes>
-      <segment>
-        <source>Remove the title in <ph id="0" equiv="language" disp="row.languageCode ? languageName(row.languageCode) : &apos;…&apos;"/></source>
       </segment>
     </unit>
     <unit id="1804244816298799090">
@@ -1597,15 +1570,6 @@
         <source>Plan to acquire</source>
       </segment>
     </unit>
-    <unit id="1858823786037936346">
-      <notes>
-        <note category="location">src/app/components/forms/form-game-submission/form-game-submission.component.html</note>
-        <note category="description">Error under the most players field of the game proposal form</note>
-      </notes>
-      <segment>
-        <source>Maximum players must be greater than or equal to minimum players</source>
-      </segment>
-    </unit>
     <unit id="186236568870281953">
       <notes>
         <note category="location">src/app/components/card-group/card-group.component.html</note>
@@ -1638,15 +1602,6 @@
       </notes>
       <segment>
         <source>Plan game night</source>
-      </segment>
-    </unit>
-    <unit id="1873557814712918690">
-      <notes>
-        <note category="location">src/app/components/forms/form-game-submission/form-game-submission.component.html</note>
-        <note category="description">Error under the duration field of the game proposal form</note>
-      </notes>
-      <segment>
-        <source>Duration must be at least 1 minute</source>
       </segment>
     </unit>
     <unit id="188054490846714924">
@@ -3133,15 +3088,6 @@
         <source>Already recorded</source>
       </segment>
     </unit>
-    <unit id="2586664428600798319">
-      <notes>
-        <note category="location">src/app/components/forms/form-game-submission/form-game-submission.component.html</note>
-        <note category="description">Error under the fewest players field of the game proposal form</note>
-      </notes>
-      <segment>
-        <source>Minimum players must be less than 20</source>
-      </segment>
-    </unit>
     <unit id="2588359477760622631">
       <notes>
         <note category="location">src/app/layout/usage-notice/usage-notice.component.ts</note>
@@ -3521,15 +3467,6 @@
       </notes>
       <segment>
         <source>Too many verifications are pending on this account. Remove an unverified email address, phone number, or wallet you no longer need, or wait a few minutes for an incomplete passkey setup to expire, then try again.</source>
-      </segment>
-    </unit>
-    <unit id="2808459010951137562">
-      <notes>
-        <note category="location">src/app/components/forms/form-game-submission/form-game-submission.component.html</note>
-        <note category="description">Button that adds a row for a title in another language</note>
-      </notes>
-      <segment>
-        <source>Add a title</source>
       </segment>
     </unit>
     <unit id="281153916191694572">
@@ -4194,15 +4131,6 @@
       </notes>
       <segment>
         <source>How long it is kept</source>
-      </segment>
-    </unit>
-    <unit id="3139028466842840430">
-      <notes>
-        <note category="location">src/app/components/forms/form-game-submission/form-game-submission.component.html</note>
-        <note category="description">Label of the fewest players field of the game proposal form</note>
-      </notes>
-      <segment>
-        <source>Minimum Players</source>
       </segment>
     </unit>
     <unit id="3146136720193552750">
@@ -5167,15 +5095,6 @@
         <source>{VAR_PLURAL, plural, one {<ph id="0" equiv="INTERPOLATION"/> separate play} other {<ph id="1" equiv="INTERPOLATION"/> separate plays}}</source>
       </segment>
     </unit>
-    <unit id="3589490479554274745">
-      <notes>
-        <note category="location">src/app/components/forms/form-game-submission/form-game-submission.component.html</note>
-        <note category="description">Label of the tags field of the game proposal form</note>
-      </notes>
-      <segment>
-        <source>Proposed Tags</source>
-      </segment>
-    </unit>
     <unit id="3592226001673531572">
       <notes>
         <note category="location">src/app/pages/meet-view/meet-view.component.html</note>
@@ -5329,6 +5248,15 @@
         <source>Check your connection and try again.</source>
       </segment>
     </unit>
+    <unit id="3662446197393052618">
+      <notes>
+        <note category="location">src/app/pages/collection-page/propose-game-page/propose-game-page.component.html</note>
+        <note category="description">After sending a game proposal for a game you want</note>
+      </notes>
+      <segment>
+        <source>We’ll add it to Board Vault and let you know when it’s ready. It will be on your wishlist.</source>
+      </segment>
+    </unit>
     <unit id="3665532287194445682">
       <notes>
         <note category="location">src/app/components/card-group/card-group.component.html</note>
@@ -5390,15 +5318,6 @@
       </notes>
       <segment>
         <source>Sign in with your email and password, or with a one-time email code.</source>
-      </segment>
-    </unit>
-    <unit id="3695816730555625996">
-      <notes>
-        <note category="location">src/app/components/forms/form-game-submission/form-game-submission.component.html</note>
-        <note category="description">Label of the language selector under the game title in the propose-a-game form</note>
-      </notes>
-      <segment>
-        <source>Language of the title</source>
       </segment>
     </unit>
     <unit id="3711889941704624217">
@@ -5950,15 +5869,6 @@
         <source>Thank You!</source>
       </segment>
     </unit>
-    <unit id="3928870920739021265">
-      <notes>
-        <note category="location">src/app/components/forms/form-game-submission/form-game-submission.component.html</note>
-        <note category="description">Error under the most players field of the game proposal form</note>
-      </notes>
-      <segment>
-        <source>Maximum players must be less than 20</source>
-      </segment>
-    </unit>
     <unit id="3933514315493510143">
       <notes>
         <note category="location">src/app/pages/group-person-choose/group-person-choose.component.ts</note>
@@ -6267,16 +6177,6 @@
       </notes>
       <segment>
         <source>Filter by tags</source>
-      </segment>
-    </unit>
-    <unit id="4057862988487622358">
-      <notes>
-        <note category="location">src/app/components/forms/form-game-submission/form-game-submission.component.ts</note>
-        <note category="description">Last option of a language list, to type any other language code</note>
-        <note category="meaning">language option</note>
-      </notes>
-      <segment>
-        <source>Other…</source>
       </segment>
     </unit>
     <unit id="4057932224780575479">
@@ -6830,7 +6730,7 @@
         <note category="description">Counter under the notes field of the game proposal form: characters typed out of 500</note>
       </notes>
       <segment>
-        <source><ph id="0" equiv="INTERPOLATION" disp="{{ notes?.value?.length || 0 }}"/>/500 characters</source>
+        <source><ph id="0" equiv="INTERPOLATION" disp="{{ notes.value?.length || 0 }}"/>/500 characters</source>
       </segment>
     </unit>
     <unit id="4272090254447432395">
@@ -7776,15 +7676,6 @@
         <source>I won’t bring it</source>
       </segment>
     </unit>
-    <unit id="4785969012495884701">
-      <notes>
-        <note category="location">src/app/components/forms/form-game-submission/form-game-submission.component.html</note>
-        <note category="description">Error under the other titles when a language code is not valid</note>
-      </notes>
-      <segment>
-        <source>Use a language code such as de or pt-BR.</source>
-      </segment>
-    </unit>
     <unit id="4792123205739798415">
       <notes>
         <note category="location">src/app/components/log-session-wizard/log-session-wizard.component.html</note>
@@ -8271,13 +8162,13 @@
         <source>Finish game night</source>
       </segment>
     </unit>
-    <unit id="5049662595508874652">
+    <unit id="5052380041984281058">
       <notes>
         <note category="location">src/app/components/forms/form-game-submission/form-game-submission.component.html</note>
-        <note category="description">Error under the picture address field of the game proposal form</note>
+        <note category="description">Hint under the title label of the game proposal form</note>
       </notes>
       <segment>
-        <source>Please enter a valid URL</source>
+        <source>Write the full title as it appears on the box, so we can find the exact game.</source>
       </segment>
     </unit>
     <unit id="5052860246555110058">
@@ -8528,15 +8419,6 @@
       </notes>
       <segment>
         <source>Your password must contain</source>
-      </segment>
-    </unit>
-    <unit id="5176081896524459356">
-      <notes>
-        <note category="location">src/app/components/forms/form-game-submission/form-game-submission.component.html</note>
-        <note category="description">Label of the most players field of the game proposal form</note>
-      </notes>
-      <segment>
-        <source>Maximum Players</source>
       </segment>
     </unit>
     <unit id="5180719574309864322">
@@ -9361,15 +9243,6 @@
         <source>The night joins the group’s history. Played games, players and attendance can no longer change, but anyone can still record who won.</source>
       </segment>
     </unit>
-    <unit id="5642836248241530789">
-      <notes>
-        <note category="location">src/app/components/forms/form-game-submission/form-game-submission.component.ts</note>
-        <note category="description">Toast when sending a game proposal without a title</note>
-      </notes>
-      <segment>
-        <source>Title is required</source>
-      </segment>
-    </unit>
     <unit id="5643561794785412000">
       <notes>
         <note category="location">src/app/pages/collection-page/collection-page.component.ts</note>
@@ -10042,15 +9915,6 @@
         <source>No proposals yet</source>
       </segment>
     </unit>
-    <unit id="6005496837258976067">
-      <notes>
-        <note category="location">src/app/components/forms/form-game-submission/form-game-submission.component.html</note>
-        <note category="description">Screen reader name of a language selector in the list of other titles</note>
-      </notes>
-      <segment>
-        <source>Language of this title</source>
-      </segment>
-    </unit>
     <unit id="6008489739592125163">
       <notes>
         <note category="location">src/app/components/forms/form-update-display-name/form-update-display-name.component.html</note>
@@ -10213,15 +10077,6 @@
         <source>Games you’d like to own. When you get one, mark it as bought and it moves to My Games.</source>
       </segment>
     </unit>
-    <unit id="6089732731840432109">
-      <notes>
-        <note category="location">src/app/components/forms/form-game-submission/form-game-submission.component.html</note>
-        <note category="description">Placeholder of the tags field of the game proposal form: example tags</note>
-      </notes>
-      <segment>
-        <source>strategy, family, card-game (comma separated)</source>
-      </segment>
-    </unit>
     <unit id="6098761561703728764">
       <notes>
         <note category="location">src/app/app.component.ts</note>
@@ -10256,15 +10111,6 @@
       </notes>
       <segment>
         <source>Use their Board Vault username, not their email. Ask them for it if you don&apos;t know it.</source>
-      </segment>
-    </unit>
-    <unit id="6106536749017609878">
-      <notes>
-        <note category="location">src/app/components/forms/form-game-submission/form-game-submission.component.html</note>
-        <note category="description">Placeholder of the notes field of the game proposal form</note>
-      </notes>
-      <segment>
-        <source>Tell us more about this game, why you think it should be added to our collection…</source>
       </segment>
     </unit>
     <unit id="6111173421803673213">
@@ -10540,15 +10386,6 @@
         <source><ph id="0" equiv="actor" disp="actor"/> said nobody is bringing <ph id="1" equiv="game" disp="game"/> to a game night yet</source>
       </segment>
     </unit>
-    <unit id="6263215221938267161">
-      <notes>
-        <note category="location">src/app/components/forms/form-game-submission/form-game-submission.component.html</note>
-        <note category="description">Hint under the tags field of the game proposal form</note>
-      </notes>
-      <segment>
-        <source>Suggest tags that describe this game (comma separated)</source>
-      </segment>
-    </unit>
     <unit id="626627381906676559">
       <notes>
         <note category="location">src/app/pages/collection-page/my-games-page/my-games-page.component.html</note>
@@ -10610,6 +10447,15 @@
       </notes>
       <segment>
         <source>Notification not found</source>
+      </segment>
+    </unit>
+    <unit id="6293520963150882277">
+      <notes>
+        <note category="location">src/app/components/forms/form-game-submission/form-game-submission.component.html</note>
+        <note category="description">Placeholder of the notes field of the game proposal form; the examples help admins find the exact game</note>
+      </notes>
+      <segment>
+        <source>Anything that helps us find the exact game: publisher, year, edition, expansion, a link…</source>
       </segment>
     </unit>
     <unit id="6295691601911869403">
@@ -11047,6 +10893,15 @@
       </notes>
       <segment>
         <source>What Board Vault keeps about you, why, who helps run it, and how to ask about it.</source>
+      </segment>
+    </unit>
+    <unit id="6446188738856919841">
+      <notes>
+        <note category="location">src/app/pages/collection-page/propose-game-page/propose-game-page.component.html</note>
+        <note category="description">After sending a game proposal for a game you own</note>
+      </notes>
+      <segment>
+        <source>We’ll add it to Board Vault and let you know when it’s ready. It will be on your shelf.</source>
       </segment>
     </unit>
     <unit id="6448641551368612870">
@@ -12999,15 +12854,6 @@
         <source>Shortlist saved.</source>
       </segment>
     </unit>
-    <unit id="7467956127761639367">
-      <notes>
-        <note category="location">src/app/pages/collection-page/propose-game-page/propose-game-page.component.html</note>
-        <note category="description">After sending a game proposal</note>
-      </notes>
-      <segment>
-        <source>Thanks for your proposal! We will review it as soon as possible and let you know the outcome.</source>
-      </segment>
-    </unit>
     <unit id="7481083906507561539">
       <notes>
         <note category="location">src/app/pages/dashboard-page/dashboard-page.component.html</note>
@@ -13697,15 +13543,6 @@
         <source>Game nights</source>
       </segment>
     </unit>
-    <unit id="7808756054397155068">
-      <notes>
-        <note category="location">src/app/components/forms/form-game-submission/form-game-submission.component.html</note>
-        <note category="description">Button that empties the game proposal form</note>
-      </notes>
-      <segment>
-        <source>Reset</source>
-      </segment>
-    </unit>
     <unit id="7816917301394178354">
       <notes>
         <note category="location">src/app/pages/settings/profile/settings-profile.component.html</note>
@@ -14270,15 +14107,6 @@
         <source>Secure sign-in</source>
       </segment>
     </unit>
-    <unit id="8027999063674702321">
-      <notes>
-        <note category="location">src/app/components/forms/form-game-submission/form-game-submission.component.html</note>
-        <note category="description">Error under the other titles when two titles share a language</note>
-      </notes>
-      <segment>
-        <source>Each language can have only one title.</source>
-      </segment>
-    </unit>
     <unit id="8049452186746342791">
       <notes>
         <note category="location">src/app/layout/profile-menu/profile-menu.component.html</note>
@@ -14452,15 +14280,6 @@
         <source>User or Group not found</source>
       </segment>
     </unit>
-    <unit id="8113665790726732827">
-      <notes>
-        <note category="location">src/app/components/forms/form-game-submission/form-game-submission.component.html</note>
-        <note category="description">Heading of the optional list of the game&apos;s titles in other languages in the propose-a-game form</note>
-      </notes>
-      <segment>
-        <source>Other known titles</source>
-      </segment>
-    </unit>
     <unit id="8116175184239166510">
       <notes>
         <note category="location">src/app/components/card-invitation/card-invitation.component.html</note>
@@ -14549,15 +14368,6 @@
       </notes>
       <segment>
         <source>Purchase details updated</source>
-      </segment>
-    </unit>
-    <unit id="8158713888154048491">
-      <notes>
-        <note category="location">src/app/components/forms/form-game-submission/form-game-submission.component.html</note>
-        <note category="description">Error under the duration field of the game proposal form</note>
-      </notes>
-      <segment>
-        <source>Duration must be less than 1440 minutes (24 hours)</source>
       </segment>
     </unit>
     <unit id="8164280567513642286">
@@ -15042,15 +14852,6 @@
         <source> Which edition do you own? </source>
       </segment>
     </unit>
-    <unit id="8420640184883196687">
-      <notes>
-        <note category="location">src/app/components/forms/form-game-submission/form-game-submission.component.html</note>
-        <note category="description">Hint under the heading of the optional list of titles in other languages</note>
-      </notes>
-      <segment>
-        <source>Optional. The same game under its name in other languages, if you know them.</source>
-      </segment>
-    </unit>
     <unit id="8421971980013015956">
       <notes>
         <note category="location">src/app/pages/dashboard-page/submissions-page/submissions-page.component.html</note>
@@ -15135,15 +14936,6 @@
       </notes>
       <segment>
         <source>Check your connection or access and try again.</source>
-      </segment>
-    </unit>
-    <unit id="8460407039056617859">
-      <notes>
-        <note category="location">src/app/components/forms/form-game-submission/form-game-submission.component.html</note>
-        <note category="description">Error under the notes field of the game proposal form</note>
-      </notes>
-      <segment>
-        <source>Notes must be less than 500 characters</source>
       </segment>
     </unit>
     <unit id="8464136353884896070">
@@ -15592,15 +15384,6 @@
         <source>That change wasn’t saved. Try again.</source>
       </segment>
     </unit>
-    <unit id="8675176265050343606">
-      <notes>
-        <note category="location">src/app/components/forms/form-game-submission/form-game-submission.component.html</note>
-        <note category="description">Label of the picture address field of the game proposal form</note>
-      </notes>
-      <segment>
-        <source>Image URL</source>
-      </segment>
-    </unit>
     <unit id="8675454208120599804">
       <notes>
         <note category="location">src/app/components/log-session-wizard/log-session-wizard.component.html</note>
@@ -15756,15 +15539,6 @@
       </notes>
       <segment>
         <source>Every game night your groups have recorded</source>
-      </segment>
-    </unit>
-    <unit id="8721411222547745166">
-      <notes>
-        <note category="location">src/app/pages/collection-page/propose-game-page/propose-game-page.component.html</note>
-        <note category="description">Subtitle of the Propose a game page</note>
-      </notes>
-      <segment>
-        <source>Submit a game proposal to be added to our collection</source>
       </segment>
     </unit>
     <unit id="8725224299321680590">
@@ -16515,15 +16289,6 @@
         <source>No invitations waiting.</source>
       </segment>
     </unit>
-    <unit id="9110191921904867816">
-      <notes>
-        <note category="location">src/app/components/forms/form-game-submission/form-game-submission.component.html</note>
-        <note category="description">Error under the fewest players field of the game proposal form</note>
-      </notes>
-      <segment>
-        <source>Minimum players must be at least 1</source>
-      </segment>
-    </unit>
     <unit id="9115734320932546730">
       <notes>
         <note category="location">src/app/pages/meet-view/meet-view.component.html</note>
@@ -16644,15 +16409,6 @@
       </notes>
       <segment>
         <source>Ask the group owner to invite the rest of your table.</source>
-      </segment>
-    </unit>
-    <unit id="9195472737674660999">
-      <notes>
-        <note category="location">src/app/components/forms/form-game-submission/form-game-submission.component.html</note>
-        <note category="description">Screen reader name of a title field in the list of other titles</note>
-      </notes>
-      <segment>
-        <source>Title in this language</source>
       </segment>
     </unit>
     <unit id="9202989475789662593">
@@ -16892,6 +16648,15 @@
       </notes>
       <segment>
         <source>Loading the group’s people…</source>
+      </segment>
+    </unit>
+    <unit id="982059176211776308">
+      <notes>
+        <note category="location">src/app/pages/collection-page/propose-game-page/propose-game-page.component.html</note>
+        <note category="description">After sending a game proposal for a game you neither own nor want</note>
+      </notes>
+      <segment>
+        <source>We’ll add it to Board Vault and let you know when it’s ready.</source>
       </segment>
     </unit>
     <unit id="983700320592848340">

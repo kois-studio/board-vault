@@ -185,6 +185,15 @@ visible and editable by the group's members, never another account's private
 collection. Session ownership follow-up is optional and independent of the
 already-saved play history.
 
+A game missing from the catalogue is proposed from Browse's empty search
+("Propose this game", the search as the title). The form asks only what the
+proposer knows: the title as on the box, optional notes that help find the
+exact game, and whether it goes to their shelf, their wishlist, or neither
+once approved. The title's language is the page's. Editions, artwork,
+players, length, and tags are the admin's at review (#325). The page then
+says what happens next instead of a toast, and My submissions counts the new
+proposal at once (#326).
+
 ## Browser coverage
 
 Browser coverage should use disposable local databases and synthetic provider

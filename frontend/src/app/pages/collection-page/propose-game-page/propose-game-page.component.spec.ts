@@ -2,6 +2,7 @@ import { Component, input, output } from '@angular/core'
 import { TestBed } from '@angular/core/testing'
 import { ActivatedRoute, provideRouter, RouterLink } from '@angular/router'
 import { of } from 'rxjs'
+import type { ProposalAddTo } from '../../../components/forms/form-game-submission/form-game-submission.component'
 import { BackLinkComponent } from '../../../components/ui/back-link/back-link.component'
 import { ButtonComponent } from '../../../components/ui/button/button.component'
 import { ContainerWrapperComponent } from '../../../components/ui/container-wrapper/container-wrapper.component'
@@ -13,7 +14,8 @@ import { ProposeGamePageComponent } from './propose-game-page.component'
 @Component({ selector: 'form-game-submission', template: '' })
 class FormStubComponent {
     readonly initialTitle = input<string>()
-    readonly proposalSubmitted = output<void>()
+    readonly confirmWithToast = input(true)
+    readonly proposalSubmitted = output<ProposalAddTo>()
 }
 
 describe('ProposeGamePageComponent', () => {
@@ -61,12 +63,46 @@ describe('ProposeGamePageComponent', () => {
     it('offers Collection as a link once the proposal is sent', async () => {
         const fixture = await setup()
 
-        fixture.componentInstance.onProposalSubmitted()
+        fixture.componentInstance.onProposalSubmitted('shelf')
         fixture.detectChanges()
 
         const done = fixture.nativeElement.querySelector('a[appButton]') as HTMLAnchorElement
         expect(done.getAttribute('href')).toBe('/collection')
         expect(done.textContent?.trim()).toBe('Back to Collection')
         expect(fixture.nativeElement.querySelector('button')).toBeNull()
+    })
+
+    // #325: the page says what happens next, for where the game goes, and the form sends no toast over it.
+    it.each([
+        ['shelf', 'It will be on your shelf.'],
+        ['wishlist', 'It will be on your wishlist.'],
+    ] as const)('says the approved game goes to your %s', async (addTo, sentence) => {
+        const fixture = await setup()
+
+        fixture.componentInstance.onProposalSubmitted(addTo)
+        fixture.detectChanges()
+
+        const text = fixture.nativeElement.textContent as string
+        expect(text).toContain('let you know when it’s ready')
+        expect(text).toContain(sentence)
+    })
+
+    it('mentions no shelf or wishlist when the game goes to neither', async () => {
+        const fixture = await setup()
+
+        fixture.componentInstance.onProposalSubmitted('none')
+        fixture.detectChanges()
+
+        const text = fixture.nativeElement.textContent as string
+        expect(text).toContain('let you know when it’s ready')
+        expect(text).not.toContain('shelf')
+        expect(text).not.toContain('wishlist')
+    })
+
+    it('asks the form not to toast, since the page says thank you', async () => {
+        const fixture = await setup()
+        const form = fixture.debugElement.query((node) => node.componentInstance instanceof FormStubComponent)
+
+        expect((form.componentInstance as FormStubComponent).confirmWithToast()).toBe(false)
     })
 })

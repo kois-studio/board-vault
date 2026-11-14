@@ -1,19 +1,23 @@
-import { Component, computed, inject, input, OnChanges, OnInit, output, SimpleChanges, signal } from '@angular/core'
+import { Component, inject, input, OnChanges, OnInit, output, SimpleChanges, signal } from '@angular/core'
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms'
 import { firstValueFrom } from 'rxjs'
 import { Api } from '../../../api/api'
 import type { CreateGameProposalType } from '../../../api/api.types'
 import { pageLocale } from '../../../core/i18n/format'
-import { canonicalLanguageCode, languageName } from '../../../core/i18n/language-names'
+import { canonicalLanguageCode } from '../../../core/i18n/language-names'
 import { DataService } from '../../../core/services/data.service'
 import { ToastService } from '../../toast/toast.service'
 import { ButtonComponent } from '../../ui/button/button.component'
-import { IconComponent } from '../../ui/icon/icon.component'
-import { LanguageFieldComponent } from '../../ui/language-field/language-field.component'
-import { addOtherTitle, MAX_OTHER_TITLES, type OtherTitleRow, otherTitlesBody, titleProblem } from './proposal-titles'
 
+/** Where a proposed game goes for its proposer once an admin approves it. */
+export type ProposalAddTo = 'shelf' | 'wishlist' | 'none'
+
+/**
+ * Proposes a game: its title, notes that help find the exact game, and where it goes once approved.
+ * Everything else (editions, artwork, players, length, tags) is the admin's job at review (#325).
+ */
 @Component({
-    imports: [ButtonComponent, IconComponent, LanguageFieldComponent, ReactiveFormsModule],
+    imports: [ButtonComponent, ReactiveFormsModule],
     selector: 'form-game-submission',
     templateUrl: 'form-game-submission.component.html',
 })
@@ -22,37 +26,21 @@ export class FormGameSubmissionComponent implements OnInit, OnChanges {
     private readonly dataService = inject(DataService)
     private readonly toastService = inject(ToastService)
 
-    // --------------------------------------------------------------------------
-    //        Services signals
-    // --------------------------------------------------------------------------
     public readonly currentUser$ = this.dataService.currentUser
 
-    // --------------------------------------------------------------------------
-    //        Component props
-    // --------------------------------------------------------------------------
     readonly initialTitle = input<string>()
-    readonly proposalSubmitted = output<void>()
+    /** Whether a toast confirms the send. Off where the page itself says thank you. */
+    readonly confirmWithToast = input(true)
+    /** Emits where the approved game goes, so the page can say so. */
+    readonly proposalSubmitted = output<ProposalAddTo>()
 
     public readonly isSubmitting = signal(false)
-
-    // The title's language (the page's language until changed) and the same game's titles in other languages.
-    public readonly titleLanguage = signal<string>(pageLocale())
-    public readonly otherTitles = signal<ReadonlyArray<OtherTitleRow>>([])
-    public readonly maxOtherTitles = MAX_OTHER_TITLES
-    public readonly titleProblem = computed(() => titleProblem(this.titleLanguage(), this.otherTitles()))
-    public readonly otherLanguageLabel = $localize`:language option|Last option of a language list, to type any other language code:Other…`
-    public readonly codeLabel = $localize`:Name of the field where a language code is typed:Language code`
+    public readonly notesMaxLength = 500
 
     public gameSubmissionForm = new FormGroup({
         title: new FormControl('', [Validators.required, Validators.minLength(2), Validators.maxLength(100)]),
-        imageUrl: new FormControl('', [Validators.pattern('https?://.+')]),
-        gameAvgDuration: new FormControl<number | null>(null, [Validators.min(1), Validators.max(1440)]),
-        minPlayers: new FormControl<number | null>(null, [Validators.min(1), Validators.max(20)]),
-        maxPlayers: new FormControl<number | null>(null, [Validators.min(1), Validators.max(20)]),
-        proposedTags: new FormControl(''),
-        notes: new FormControl('', [Validators.maxLength(500)]),
-        // Where the game goes for you once an admin approves it.
-        addTo: new FormControl<'shelf' | 'wishlist' | 'none'>('shelf', { nonNullable: true }),
+        notes: new FormControl('', [Validators.maxLength(this.notesMaxLength)]),
+        addTo: new FormControl<ProposalAddTo>('shelf', { nonNullable: true }),
     })
 
     public readonly addToOptions = [
@@ -73,68 +61,20 @@ export class FormGameSubmissionComponent implements OnInit, OnChanges {
         },
     ] as const
 
-    // Form controls getters
     get title() {
-        return this.gameSubmissionForm.get('title')
-    }
-
-    get imageUrl() {
-        return this.gameSubmissionForm.get('imageUrl')
-    }
-
-    get gameAvgDuration() {
-        return this.gameSubmissionForm.get('gameAvgDuration')
-    }
-
-    get minPlayers() {
-        return this.gameSubmissionForm.get('minPlayers')
-    }
-
-    get maxPlayers() {
-        return this.gameSubmissionForm.get('maxPlayers')
-    }
-
-    get proposedTags() {
-        return this.gameSubmissionForm.get('proposedTags')
+        return this.gameSubmissionForm.controls.title
     }
 
     get notes() {
-        return this.gameSubmissionForm.get('notes')
-    }
-
-    // Input classes
-    get titleClass() {
-        if (!this.title?.dirty && !this.title?.touched) return ''
-        return this.title?.valid ? 'border-bv-success' : 'border-bv-danger'
-    }
-
-    get imageUrlClass() {
-        if (!this.imageUrl?.dirty && !this.imageUrl?.touched) return ''
-        return this.imageUrl?.valid ? 'border-bv-success' : 'border-bv-danger'
-    }
-
-    get gameAvgDurationClass() {
-        if (!this.gameAvgDuration?.dirty && !this.gameAvgDuration?.touched) return ''
-        return this.gameAvgDuration?.valid ? 'border-bv-success' : 'border-bv-danger'
-    }
-
-    get minPlayersClass() {
-        if (!this.minPlayers?.dirty && !this.minPlayers?.touched) return ''
-        return this.minPlayers?.valid ? 'border-bv-success' : 'border-bv-danger'
-    }
-
-    get maxPlayersClass() {
-        if (!this.maxPlayers?.dirty && !this.maxPlayers?.touched) return ''
-        return this.maxPlayers?.valid ? 'border-bv-success' : 'border-bv-danger'
-    }
-
-    get notesClass() {
-        if (!this.notes?.dirty && !this.notes?.touched) return ''
-        return this.notes?.valid ? 'border-bv-success' : 'border-bv-danger'
+        return this.gameSubmissionForm.controls.notes
     }
 
     public async onSubmit() {
-        if (this.gameSubmissionForm.invalid || this.titleProblem() || this.isSubmitting()) return
+        if (this.isSubmitting()) return
+        if (this.gameSubmissionForm.invalid) {
+            this.gameSubmissionForm.markAllAsTouched()
+            return
+        }
 
         const currentUser = this.currentUser$()
         if (!currentUser) {
@@ -147,24 +87,16 @@ export class FormGameSubmissionComponent implements OnInit, OnChanges {
         this.isSubmitting.set(true)
 
         try {
-            const formData = this.gameSubmissionForm.value
-            if (!formData.title) {
-                this.toastService.error($localize`:Toast when sending a game proposal without a title:Title is required`)
-                return
-            }
-
-            const otherTitles = otherTitlesBody(this.otherTitles())
+            const { title, notes, addTo } = this.gameSubmissionForm.getRawValue()
+            const trimmedNotes = notes?.trim()
+            // Almost everyone proposes a game under its name in their own language; the admin corrects
+            // the editions at review when it isn't.
+            const titleLanguage = canonicalLanguageCode(pageLocale())
             const proposalData: CreateGameProposalType = {
-                title: formData.title,
-                titleLanguage: canonicalLanguageCode(this.titleLanguage()) ?? undefined,
-                ...(otherTitles.length > 0 ? { otherTitles } : {}),
-                imageUrl: formData.imageUrl || undefined,
-                gameAvgDuration: formData.gameAvgDuration || undefined,
-                minPlayers: formData.minPlayers || undefined,
-                maxPlayers: formData.maxPlayers || undefined,
-                proposedTags: formData.proposedTags || undefined,
-                notes: formData.notes || undefined,
-                ...(formData.addTo && formData.addTo !== 'none' ? { addTo: formData.addTo } : {}),
+                title: (title ?? '').trim(),
+                ...(titleLanguage ? { titleLanguage } : {}),
+                ...(trimmedNotes ? { notes: trimmedNotes } : {}),
+                ...(addTo !== 'none' ? { addTo } : {}),
             }
 
             await firstValueFrom(this.api.createGameProposal(currentUser.id, proposalData))
@@ -173,9 +105,11 @@ export class FormGameSubmissionComponent implements OnInit, OnChanges {
             this.dataService.refreshUserProposals()
             this.dataService.refreshUserProposalStats()
 
-            this.toastService.success($localize`:Toast after sending a game proposal:Game proposal submitted successfully!`)
-            this.proposalSubmitted.emit()
-            this.resetForm()
+            if (this.confirmWithToast()) {
+                this.toastService.success($localize`:Toast after sending a game proposal:Game proposal submitted successfully!`)
+            }
+            this.proposalSubmitted.emit(addTo)
+            this.gameSubmissionForm.reset()
         } catch (error) {
             console.error('Error submitting game proposal:', error)
             this.toastService.error($localize`:Toast when sending a game proposal failed:Failed to submit game proposal. Please try again.`)
@@ -184,59 +118,16 @@ export class FormGameSubmissionComponent implements OnInit, OnChanges {
         }
     }
 
-    public addTitle(): void {
-        this.otherTitles.update((rows) => addOtherTitle(rows, this.titleLanguage()))
-    }
-
-    public removeTitle(key: number): void {
-        this.otherTitles.update((rows) => rows.filter((row) => row.key !== key))
-    }
-
-    public setTitleLanguage(key: number, languageCode: string): void {
-        this.otherTitles.update((rows) => rows.map((row) => (row.key === key ? { ...row, languageCode } : row)))
-    }
-
-    public setTitleText(key: number, title: string): void {
-        this.otherTitles.update((rows) => rows.map((row) => (row.key === key ? { ...row, title } : row)))
-    }
-
-    public removeLabel(row: OtherTitleRow): string {
-        return $localize`:Label of the button that removes a row of other titles; the language name follows:Remove the title in ${row.languageCode ? languageName(row.languageCode) : '…'}:language:`
-    }
-
-    public resetForm() {
-        this.titleLanguage.set(pageLocale())
-        this.otherTitles.set([])
-        this.gameSubmissionForm.reset()
-        this.gameSubmissionForm.markAsUntouched()
-        this.gameSubmissionForm.markAsPristine()
-    }
-
-    public validatePlayerCount() {
-        const min = this.minPlayers?.value
-        const max = this.maxPlayers?.value
-        const errors = this.maxPlayers?.errors ?? {}
-
-        if (min && max && min > max) {
-            this.maxPlayers?.setErrors({ ...errors, invalidRange: true })
-        } else if (errors['invalidRange']) {
-            const { invalidRange: _invalidRange, ...remainingErrors } = errors
-            this.maxPlayers?.setErrors(Object.keys(remainingErrors).length > 0 ? remainingErrors : null)
-        }
-    }
-
     ngOnInit() {
-        // Set initial title if provided
-        const initialTitle = this.initialTitle()
-        if (initialTitle && !this.title?.value) {
-            this.title?.setValue(initialTitle)
-        }
+        this.applyInitialTitle()
     }
 
     ngOnChanges(changes: SimpleChanges) {
+        if (changes['initialTitle']) this.applyInitialTitle()
+    }
+
+    private applyInitialTitle(): void {
         const initialTitle = this.initialTitle()
-        if (changes['initialTitle'] && initialTitle && !this.title?.value) {
-            this.title?.setValue(initialTitle)
-        }
+        if (initialTitle && !this.title.value) this.title.setValue(initialTitle)
     }
 }

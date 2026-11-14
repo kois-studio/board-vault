@@ -2,23 +2,36 @@
     <app-page-header i18n-titleText="Title of the Propose a game page" titleText="Propose a Game">
         <!-- Browse opens this page with its search as the title; going back finds that search again. -->
         <a appBackLink routerLink="/collection/browse" [queryParams]="{ q: initialTitle() ?? null }" i18n="Link above the form that proposes a game, back to the Browse page">Back to Browse</a>
-        <ng-container i18n="Subtitle of the Propose a game page">Submit a game proposal to be added to our collection</ng-container>
+        <ng-container i18n="Subtitle of the Propose a game page">Tell us which game is missing and we’ll add it to Board Vault.</ng-container>
     </app-page-header>
     <container-wrapper>
         <form-game-submission 
             [initialTitle]="initialTitle()"
-            (proposalSubmitted)="onProposalSubmitted()"
+            [confirmWithToast]="false"
+            (proposalSubmitted)="onProposalSubmitted($event)"
         />
     </container-wrapper>
 } @else {
     <container-wrapper>
-        <div class="flex flex-col items-center justify-center min-h-[60vh] text-center space-y-6">
-            <div class="space-y-4">
-                <div class="text-6xl text-bv-success mb-4">
-                    <app-icon name="circle-check" [size]="20" />
-                </div>
+        <div class="flex min-h-[60vh] flex-col items-center justify-center gap-6 text-center">
+            <div class="flex h-16 w-16 items-center justify-center rounded-2xl bg-bv-success/10 text-bv-success" aria-hidden="true">
+                <app-icon name="circle-check" [size]="32" />
+            </div>
+            <div class="space-y-3">
                 <h2 class="text-2xl font-bold text-bv-text" i18n="Heading after sending a game proposal">Thank You!</h2>
-                <p class="text-lg text-bv-text-muted max-w-md" i18n="After sending a game proposal">Thanks for your proposal! We will review it as soon as possible and let you know the outcome.</p>
+                <p class="max-w-md text-lg text-bv-text-muted" role="status">
+                    @switch (addTo()) {
+                        @case ('shelf') {
+                            <ng-container i18n="After sending a game proposal for a game you own">We’ll add it to Board Vault and let you know when it’s ready. It will be on your shelf.</ng-container>
+                        }
+                        @case ('wishlist') {
+                            <ng-container i18n="After sending a game proposal for a game you want">We’ll add it to Board Vault and let you know when it’s ready. It will be on your wishlist.</ng-container>
+                        }
+                        @default {
+                            <ng-container i18n="After sending a game proposal for a game you neither own nor want">We’ll add it to Board Vault and let you know when it’s ready.</ng-container>
+                        }
+                    }
+                </p>
             </div>
             <a appButton routerLink="/collection" i18n="Button after sending a game proposal that opens the Collection page">Back to Collection</a>
         </div>
