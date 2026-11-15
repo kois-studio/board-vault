@@ -131,7 +131,7 @@ export class DataService {
      * Each group's shelf, asked for the first time a page needs it (#262): your groups list only counts, so it
      * stays small however many games anyone owns. Forgotten when your groups load again (adding or removing a game
      * reloads them, for their counts) or you rate a game, and `groupShelvesRevision` goes up so pages showing one
-     * read it again.
+     * read it again. A group you leave or delete takes only its own shelf with it (#316).
      */
     private readonly shelves = new Map<number, Promise<GroupShelfType>>()
     /** The open pages showing `userGroupsWithShelves`: it follows your groups only while there is one. */
@@ -383,7 +383,7 @@ export class DataService {
 
     /**
      * Your groups, and the pending invitations of those you own. `withInvitations: false` is for a change that only
-     * moves the game counts (your collection), so it costs one request, not one per group you own (#262). A load
+     * moves the counts (your collection, a group's people), so it costs one request, not one per group you own (#262). A load
      * replaces one still on its way, so the invitations stay wanted until a load that reads them has answered.
      */
     private _getUserGroups(accountId: number, { withInvitations = true } = {}) {
@@ -690,7 +690,7 @@ export class DataService {
         return this.api.leaveGroup(currentUser.id, groupId).pipe(
             tap(() => {
                 // 2.
-                this.userGroups.update((groups) => groups.filter((group) => group.id !== groupId))
+                this.dropGroup(groupId)
 
                 // 3.
                 this.toastService.success($localize`:Toast after leaving a group:You have left the group`)
@@ -721,7 +721,7 @@ export class DataService {
         return this.api.deleteGroup(currentUser.id, groupId).pipe(
             tap(() => {
                 // 2.
-                this.userGroups.update((groups) => groups.filter((group) => group.id !== groupId))
+                this.dropGroup(groupId)
 
                 // 3.
                 this.toastService.success($localize`:Toast after deleting a group:You have deleted the group`)
@@ -924,6 +924,18 @@ export class DataService {
     }
 
     /**
+     * Adds you to one of your groups' people as someone new, rather than taking over a person prepared for you. Your
+     * groups are read again, for that group's people and counts (#316). Rejects when it fails; the page explains why.
+     */
+    public async joinGroupAsNewPerson(groupId: number): Promise<void> {
+        const currentUser = this.currentUser()
+        if (!currentUser) throw new Error('No authenticated user')
+
+        await firstValueFrom(this.api.joinGroupAsNewPerson(groupId))
+        this._getUserGroups(currentUser.id, { withInvitations: false })
+    }
+
+    /**
      * One of your groups' games once each, who owns them, and the members' ratings (#262), read once and kept
      * until your groups or games load again; `fresh` reads it again. A failed read is not kept.
      */
@@ -983,6 +995,11 @@ export class DataService {
         this.groupsWithShelvesRevision = this.groupShelvesRevision()
         const all = Promise.all(groups.map(async (group) => withShelf(group, await this.groupShelf(group.id))))
         this.groupsWithShelves.load(from(all).pipe(takeUntil(this.userChanged)), {
+            // A group you left while its shelf was on the way stays out (#316).
+            apply: (read) => {
+                const listed = new Set(this.userGroups().map((group) => group.id))
+                this.groupsWithShelves.value.set(read.filter((group) => listed.has(group.id)))
+            },
             failed: () => {
                 this.groupsWithShelvesRevision = -1
                 this.loadFailed(
@@ -992,6 +1009,16 @@ export class DataService {
                 )
             },
         })
+    }
+
+    /**
+     * A group you left or deleted: off your groups, its shelf forgotten and off every group's games (#316). Nothing is
+     * read again: the other groups did not change.
+     */
+    private dropGroup(groupId: number): void {
+        this.userGroups.update((groups) => groups.filter((group) => group.id !== groupId))
+        this.shelves.delete(groupId)
+        this.groupsWithShelves.value.update((groups) => groups.filter((group) => group.id !== groupId))
     }
 
     /** Your groups or ratings have changed: shelves are read again, and the pages showing them follow. */
