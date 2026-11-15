@@ -83,7 +83,9 @@ describe('RateLimitGuard', () => {
 
             await guard.canActivate(createContext(request))
 
-            return cacheService.increment.mock.calls[0][0] as string
+            // One count per request: its key is the first argument.
+            expect(cacheService.increment).toHaveBeenCalledTimes(1)
+            return cacheService.increment.mock.calls[0]?.[0] as string
         }
 
         it('stores a key that the endpoint, caller and window alone do not give away', async () => {
