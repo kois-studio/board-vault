@@ -16,6 +16,10 @@ import { DataService } from '../../../core/services/data.service'
 export class SubmissionsPageComponent {
     private readonly dataService = inject(DataService)
 
+    constructor() {
+        this.dataService.use(['proposals', 'proposalStats'])
+    }
+
     // --------------------------------------------------------------------------
     //        signals
     // --------------------------------------------------------------------------

@@ -53,7 +53,10 @@ describe('GroupPersonChooseComponent', () => {
                 provideRouter([]),
                 { provide: ActivatedRoute, useValue: { snapshot: { paramMap: convertToParamMap({ groupId: '10' }) } } },
                 { provide: Api, useValue: api },
-                { provide: DataService, useValue: { userGroups: () => [{ id: 10, name: 'Thursdays' }], refreshUserGroups: vi.fn() } },
+                {
+                    provide: DataService,
+                    useValue: { userGroups: () => [{ id: 10, name: 'Thursdays' }], refreshUserGroups: vi.fn(), use: vi.fn() },
+                },
                 { provide: ToastService, useValue: { success: vi.fn(), error: vi.fn() } },
             ],
         })

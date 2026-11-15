@@ -59,6 +59,18 @@ export class ResourceSignal<T> {
     private subscription: Subscription | null = null
     /** The load running now: answers from any other are ignored. */
     private current: object | null = null
+    /** When the last answer arrived (`Date.now()`), or null before the first: what freshness counts from (#263). */
+    private answered: number | null = null
+
+    /** When the last answer arrived, or null before the first. */
+    get answeredAt(): number | null {
+        return this.answered
+    }
+
+    /** A load or a quiet refresh is on its way. */
+    get busy(): boolean {
+        return this.current !== null
+    }
 
     constructor(private readonly initial: T) {
         this.value = signal(initial)
@@ -95,6 +107,7 @@ export class ResourceSignal<T> {
                 if (handlers.apply) handlers.apply(value)
                 else this.value.set(value)
                 this.loaded.set(true)
+                this.answered = Date.now()
             },
             error: (error: unknown) => {
                 if (this.current !== load) return
@@ -117,11 +130,49 @@ export class ResourceSignal<T> {
         if (this.current === load) this.subscription = subscription
     }
 
+    /**
+     * Reads it again without a loading state (#263): what is shown stays as it is, `ready`, while the newer copy is on
+     * its way, and a failure keeps it without a word. An answer equal to what is shown changes nothing, so pages
+     * that follow it are not disturbed. Does nothing while another load is on its way; a `load` started meanwhile
+     * cancels it, and a change made in place meanwhile (leaving a group, answering a night) drops its answer, so an
+     * answer older than a change made since never lands.
+     */
+    revalidate(source: Observable<T>, apply?: (value: T) => void): void {
+        if (this.current) return
+        const load = {}
+        this.current = load
+        const shown = this.value()
+        const settle = () => {
+            if (this.current !== load) return
+            this.current = null
+            this.subscription = null
+        }
+        const subscription = source.subscribe({
+            next: (value) => {
+                if (this.current !== load) return
+                // Changed in place since it was asked: the answer may predate that change, so it is not kept.
+                if (this.value() !== shown) return
+                const unchanged = this.loaded() && JSON.stringify(value) === JSON.stringify(this.value())
+                if (!unchanged) {
+                    if (apply) apply(value)
+                    else this.value.set(value)
+                }
+                this.loaded.set(true)
+                this.failure.set(null)
+                this.answered = Date.now()
+            },
+            error: settle,
+            complete: settle,
+        })
+        if (this.current === load) this.subscription = subscription
+    }
+
     /** Stores a value read some other way (a quiet refresh): it is loaded, and an earlier failure is over. */
     set(value: T): void {
         this.value.set(value)
         this.loaded.set(true)
         this.failure.set(null)
+        this.answered = Date.now()
     }
 
     /** Stops a load on its way, keeping what is shown. */
@@ -138,6 +189,7 @@ export class ResourceSignal<T> {
         this.value.set(this.initial)
         this.loaded.set(false)
         this.failure.set(null)
+        this.answered = null
     }
 }
 

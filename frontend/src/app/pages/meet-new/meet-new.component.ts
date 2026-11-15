@@ -256,6 +256,7 @@ export class MeetNewComponent {
     public readonly groupUnavailable = computed(() => !this.isLoadingGroups() && !this.groupsError() && this.groupData() === null)
 
     constructor() {
+        this.dataService.use(['groups'])
         effect(() => {
             const group = this.groupData()
             untracked(() => {

@@ -69,7 +69,7 @@ describe('GroupPersonPageComponent', () => {
                 { provide: Api, useValue: api },
                 {
                     provide: DataService,
-                    useValue: { userGroups: () => groups, currentUser: () => ({ id: 99 }), refreshUserGroups: vi.fn() },
+                    useValue: { userGroups: () => groups, currentUser: () => ({ id: 99 }), refreshUserGroups: vi.fn(), use: vi.fn() },
                 },
                 { provide: ToastService, useValue: { success: vi.fn(), error: vi.fn() } },
             ],

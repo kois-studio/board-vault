@@ -162,6 +162,7 @@ export class BrowsePageComponent {
         private readonly route: ActivatedRoute,
         private readonly toastService: ToastService,
     ) {
+        this.dataService.use(['games', 'groups', 'wishlist'])
         const requestedGroupId = Number(this.route.snapshot.queryParamMap.get('groupId'))
         if (Number.isInteger(requestedGroupId) && requestedGroupId > 0) {
             this.acquisitionGroupId.set(requestedGroupId)

@@ -35,6 +35,7 @@ describe('GroupEditComponent (Manage group)', () => {
             userGroups,
             userGroupsState: stateOf(userGroups, groupsStatus),
             refreshUserGroups: vi.fn(),
+            use: vi.fn(),
             invitationsGroupIndex: signal({ 7: [{ id: 30, toAccountId: 3, toAccount: { id: 3, username: 'invited' } }] }),
             addInvitedToGroup: vi.fn(() => of({})),
             removeMemberFromGroup: vi.fn(() => of({})),

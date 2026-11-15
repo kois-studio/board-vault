@@ -126,6 +126,7 @@ export class HistoryPageComponent {
     private summaryRequest: Subscription | null = null
 
     constructor() {
+        this.dataService.use(['groups'])
         // The first page and the totals of the filter: again for another user, another group, or a changed history.
         effect(() => {
             const userId = this.userId()

@@ -125,9 +125,40 @@ Root services that hold one account's data. Each owner clears itself when
 for the previous account are cancelled, so the next account starts empty
 (`core/services/sign-out-state.spec.ts`).
 
+`DataService` keeps the signed-in person's lists in a small keyed cache
+(`core/async/resource-cache.ts`, [ADR-0029](adr/0029-lists-loaded-when-shown.md),
+#263). Nothing loads at sign-in that no open page shows:
+
+- **A page names what it shows.** It calls `dataService.use([...keys])` from
+  its constructor, and counts as using those lists until it is destroyed. The
+  keys are `games`, `groups`, `groupInvitations`, `notifications`,
+  `invitations`, `reviews`, `meets`, `history`, `historySummary`,
+  `wishlist`, `collectionActivity`, `proposals`, `proposalStats` and
+  `stats`.
+  - The header's inbox uses `notifications` and `invitations`.
+  - The avatar menu uses `proposalStats` from its first open.
+  - Home names everything Home shows.
+  - A page that reads a list without naming it shows it as loading on a cold
+    load.
+- **First use, then fresh, then stale.** The first use loads the list:
+  `loading`, a failure toast, and *Try again*. Another use within
+  `FRESH_FOR_MS` (30 s) of the last answer asks nothing. A later one shows
+  what is kept at once and reads it again quietly
+  (`ResourceSignal.revalidate`): the state stays `ready`, a failure keeps what
+  is shown without a word, and an answer equal to what is shown changes
+  nothing.
+- **Shared reads.** A read already on its way is shared.
+- **Writes invalidate.** The `refreshX` methods run after a write and on
+  *Try again*. A list an open page uses reloads at once (`refreshing`, as
+  before). Any other list is marked stale, so the next page that shows it
+  reloads it (`refreshing` too), and an answer still on its way for it is
+  dropped.
+- **The same person read again** (a new username, a saved profile) reloads
+  what the open pages show and marks the rest stale.
+
 | Owner | Holds |
 | --- | --- |
-| `DataService` | The current user and everything loaded for them: games, groups, invitations, notifications, reviews, sessions, history (the latest page, with totals the server counts; screens that page further read their own), wishlist, activity, proposals, stats. Each list is a `ResourceSignal`: `userX` is its value and `userXState` its `ResourceState` (loading, refreshing, error, ready), so a page tells "not loaded yet" and "failed" from "empty" (#256). A reload never empties a list first: it stays on screen, `refreshing`, until the answer replaces it, and a failed reload keeps it. Signing out puts every list back to `loading`. `refreshInbox()` quietly reloads notifications and invitations when the inbox opens and every minute while the page is in view; an answer still on its way is dropped when a newer look or a read or delete starts. `refreshSharedActivity()` also reloads game nights (at most once a minute) when the tab comes back into view. Your groups are overviews: people and counts, no games (#262). A page about a group's games reads its shelf (`groupShelf(groupId)`: its games once, who brings which, the members' ratings), kept until your groups load again (adding or removing a game reloads them, for their counts) or you rate a game; `groupWithShelf(groupId)` gives one group with each person's games, and `userGroupsWithShelves` every group's, read and kept up to date only while a page showing it is open (`loadUserGroupsWithShelves(destroyRef)`: the game page and Reviews). |
+| `DataService` | The current user and the lists loaded for them, each loaded when a page shows it (above): games, groups, invitations, notifications, reviews, sessions, history (the latest page, with totals the server counts; screens that page further read their own), wishlist, activity, proposals, proposal stats, stats. Each list is a `ResourceSignal`: `userX` is its value and `userXState` its `ResourceState` (loading, refreshing, error, ready), so a page tells "not loaded yet" and "failed" from "empty" (#256). A reload never empties a list first: it stays on screen, `refreshing`, until the answer replaces it, and a failed reload keeps it. Signing out puts every list back to `loading`. `refreshInbox()` quietly reloads notifications and invitations when the inbox opens and every minute while the page is in view; an answer still on its way is dropped when a newer look or a read or delete starts. `refreshSharedActivity()` also reloads game nights (at most once a minute) when the tab comes back into view, if a page shows them; otherwise it marks them stale. Your groups are overviews: people and counts, no games (#262). The pending invitations of the groups you own (`invitationsGroupIndex`, one request per group, key `groupInvitations`) come with your groups, only while a page shows them (Home, a group's page, editing a group). A page about a group's games reads its shelf (`groupShelf(groupId)`: its games once, who brings which, the members' ratings), kept until your groups load again with a change (adding or removing a game reloads them, for their counts) or you rate a game; `groupWithShelf(groupId)` gives one group with each person's games, and `userGroupsWithShelves` every group's, read and kept up to date only while a page showing it is open (`loadUserGroupsWithShelves(destroyRef)`, which also uses your groups: the game page and Reviews). |
 | `LoginService` | Whether the session is ready, the current user id, and whether they are an admin. |
 | `PendingProposalsService` | The pending proposal count behind the admin badges. |
 | `GroupViewService` | The open group and its library filter (number of players). |
@@ -191,8 +222,8 @@ toast per failed list (#241):
 - Its Try again, the next answer, and the browser coming back online make
   `ConnectivityService.refreshes` emit, once per recovery. `DataService`
   then reloads the lists that failed and quietly refreshes the inbox and
-  game nights. A page that loads its own data and shows an error can listen
-  too, as the game page does.
+  game nights, if a page shows them. A page that loads its own data and shows
+  an error can listen too, as the game page does.
 - While degraded, `DataService` and the game page leave out their
   load-failure toasts. The lists still set their error signals, so pages
   keep saying in place what is missing. A failed save still says so.

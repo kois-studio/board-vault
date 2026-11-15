@@ -37,6 +37,7 @@ async function setup(query: Record<string, string> = {}) {
                 provide: DataService,
                 useValue: {
                     currentUser: signal({ id: 7 }),
+                    use: vi.fn(),
                     userGroups: signal([]),
                     userGames: signal([]),
                     userWishlist: signal([]),

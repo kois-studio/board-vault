@@ -26,6 +26,10 @@ import { gameTitle } from '../../../core/utils/gameTitle'
 })
 export class MyGamesPageComponent {
     private readonly dataService = inject(DataService)
+
+    constructor() {
+        this.dataService.use(['games'])
+    }
     // --------------------------------------------------------------------------
     //        Services signals
     // --------------------------------------------------------------------------

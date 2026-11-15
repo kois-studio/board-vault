@@ -48,6 +48,7 @@ export class InboxComponent {
     public readonly unreadCount = computed(() => this.notifications().filter((notification) => !notification.isRead).length)
     public readonly count = computed(() => this.invitations().length + this.unreadCount())
     constructor() {
+        this.dataService.use(['notifications', 'invitations'])
         // Notifications come from other people's actions, so look again when the app comes back into view.
         const document = inject(DOCUMENT)
         const onVisible = () => {

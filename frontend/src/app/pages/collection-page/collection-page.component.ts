@@ -26,6 +26,10 @@ import { DataService } from '../../core/services/data.service'
 export class CollectionPageComponent {
     private readonly dataService = inject(DataService)
 
+    constructor() {
+        this.dataService.use(['games', 'reviews', 'wishlist'])
+    }
+
     // --------------------------------------------------------------------------
     //        signals
     // --------------------------------------------------------------------------

@@ -1,12 +1,53 @@
 import { HttpContext, HttpErrorResponse } from '@angular/common/http'
+import type { DestroyRef } from '@angular/core'
 import { TestBed } from '@angular/core/testing'
-import { firstValueFrom, of, Subject, throwError } from 'rxjs'
+import { firstValueFrom, type Observable, of, Subject, throwError } from 'rxjs'
 import { Api } from '../../api/api'
 import type { UserType } from '../../api/api.types'
 import { ToastService } from '../../components/toast/toast.service'
+import { FRESH_FOR_MS } from '../async/resource-cache'
 import { RETRY_READ } from '../interceptors/resilience.interceptor'
 import { ConnectivityService } from './connectivity.service'
-import { DataService } from './data.service'
+import { DataService, type UserDataKey } from './data.service'
+
+const EVERY_LIST: ReadonlyArray<UserDataKey> = [
+    'games',
+    'groups',
+    'groupInvitations',
+    'notifications',
+    'invitations',
+    'reviews',
+    'meets',
+    'history',
+    'historySummary',
+    'wishlist',
+    'collectionActivity',
+    'proposals',
+    'proposalStats',
+    'stats',
+]
+
+/** A page, or a component, that can be closed: `destroy` runs what it asked to run on destroy. */
+function fakePage() {
+    const callbacks: Array<() => void> = []
+    const ref = {
+        onDestroy: (callback: () => void) => {
+            callbacks.push(callback)
+            return () => undefined
+        },
+    } as unknown as DestroyRef
+    return {
+        ref,
+        destroy: () => {
+            for (const callback of callbacks.splice(0)) callback()
+        },
+    }
+}
+
+/** A page that shows every list stays open: they all load at sign-in, as before lists loaded when shown (#263). */
+function showEverything(service: DataService): void {
+    service.use(EVERY_LIST, fakePage().ref)
+}
 
 describe('DataService account refresh', () => {
     const user: UserType = {
@@ -147,6 +188,7 @@ describe('DataService inbox', () => {
             ],
         })
         const service = TestBed.inject(DataService)
+        showEverything(service)
         return { service, toast }
     }
 
@@ -309,6 +351,7 @@ describe('DataService while Board Vault cannot be reached (#241)', () => {
             ],
         })
         const service = TestBed.inject(DataService)
+        showEverything(service)
         const connectivity = TestBed.inject(ConnectivityService)
         const signIn = (id = 1) => {
             service.currentUser.set({ id } as never)
@@ -633,6 +676,7 @@ describe('DataService lists while they reload (#256)', () => {
             ],
         })
         const service = TestBed.inject(DataService)
+        showEverything(service)
         service.currentUser.set({ id: 1 } as never)
         TestBed.tick()
         return { service, later }
@@ -670,6 +714,7 @@ describe('DataService lists while they reload (#256)', () => {
             ],
         })
         const service = TestBed.inject(DataService)
+        showEverything(service)
         service.currentUser.set({ id: 1 } as never)
         TestBed.tick()
 
@@ -800,6 +845,7 @@ describe('DataService group shelves (#262)', () => {
             ],
         })
         const service = TestBed.inject(DataService)
+        showEverything(service)
         service.currentUser.set(user)
         TestBed.tick()
         const settle = () => new Promise((resolve) => setTimeout(resolve))
@@ -893,5 +939,304 @@ describe('DataService group shelves (#262)', () => {
         await settle()
 
         expect(calls['getGroupInvitations']).toBe(2)
+    })
+})
+
+describe('DataService lists loaded when shown (#263)', () => {
+    let now = 1_000_000
+
+    beforeEach(() => {
+        now = 1_000_000
+        vi.spyOn(Date, 'now').mockImplementation(() => now)
+    })
+
+    afterEach(() => vi.restoreAllMocks())
+
+    /** Every read answers empty unless `answers` names it; `calls` counts the reads by name. */
+    const setup = (answers: Record<string, (...args: Array<unknown>) => unknown> = {}) => {
+        const calls: Record<string, number> = {}
+        const toast = { success: vi.fn(), error: vi.fn() }
+        const api = new Proxy(
+            {},
+            {
+                get:
+                    (_target, name) =>
+                    (...args: Array<unknown>) => {
+                        const key = name as string
+                        calls[key] = (calls[key] ?? 0) + 1
+                        const answer = answers[key]
+                        return answer ? answer(...args) : of([])
+                    },
+            },
+        )
+        TestBed.configureTestingModule({
+            providers: [
+                { provide: Api, useValue: api },
+                { provide: ToastService, useValue: toast },
+            ],
+        })
+        const service = TestBed.inject(DataService)
+        const signIn = (user: Partial<UserType> = { id: 1, username: 'organizer' }) => {
+            service.currentUser.set(user as UserType)
+            TestBed.tick()
+        }
+        const open = (keys: ReadonlyArray<UserDataKey>) => {
+            const page = fakePage()
+            service.use(keys, page.ref)
+            return page
+        }
+        const reads = () => Object.fromEntries(Object.entries(calls).filter(([name]) => name.startsWith('get')))
+        return { service, calls, toast, signIn, open, reads }
+    }
+
+    it('reads nothing at sign-in that no open page shows', () => {
+        const { signIn, reads } = setup()
+
+        signIn()
+
+        expect(reads()).toEqual({})
+    })
+
+    it('reads only what the open pages show: on a settings page, the inbox in the header', () => {
+        const { signIn, open, reads } = setup()
+        open(['notifications', 'invitations'])
+
+        signIn()
+
+        expect(reads()).toEqual({ getUserNotifications: 1, getUserInvitations: 1 })
+    })
+
+    it('shows a list opened again at once, asks nothing while it is fresh, and reads it again quietly after', () => {
+        let answer: Observable<unknown> = of([{ id: 1 }])
+        const { service, signIn, open, calls } = setup({ getUserGames: () => answer })
+        signIn()
+        open(['games']).destroy()
+        expect(calls['getUserGames']).toBe(1)
+
+        now += FRESH_FOR_MS - 1
+        open(['games']).destroy()
+        expect(calls['getUserGames']).toBe(1)
+
+        now += 1
+        const later = new Subject<Array<{ id: number }>>()
+        answer = later
+        open(['games'])
+        expect(calls['getUserGames']).toBe(2)
+        // Shown as it is while the newer copy is on its way: no skeleton, no "refreshing".
+        expect(service.userGamesState()).toEqual({ status: 'ready', value: [{ id: 1 }] })
+
+        later.next([{ id: 1 }, { id: 2 }])
+        later.complete()
+        expect(service.userGamesState()).toEqual({ status: 'ready', value: [{ id: 1 }, { id: 2 }] })
+    })
+
+    it('changes nothing when the quiet read brings what is shown', () => {
+        const { service, signIn, open } = setup({ getUserGames: () => of([{ id: 1 }]) })
+        signIn()
+        open(['games']).destroy()
+        const shown = service.userGames()
+
+        now += FRESH_FOR_MS
+        open(['games'])
+
+        expect(service.userGames()).toBe(shown)
+    })
+
+    it('keeps what is shown, without a toast, when the quiet read fails', () => {
+        let answer: () => Observable<unknown> = () => of([{ id: 1 }])
+        const { service, toast, signIn, open, calls } = setup({ getUserGames: () => answer() })
+        signIn()
+        open(['games']).destroy()
+
+        now += FRESH_FOR_MS
+        answer = () => throwError(() => new HttpErrorResponse({ status: 500 }))
+        open(['games'])
+
+        expect(calls['getUserGames']).toBe(2)
+        expect(service.userGamesState()).toEqual({ status: 'ready', value: [{ id: 1 }] })
+        expect(toast.error).not.toHaveBeenCalled()
+    })
+
+    it('shares a read on its way between pages that open together', () => {
+        const { signIn, open, calls } = setup({ getUserGames: () => new Subject() })
+        signIn()
+
+        open(['games'])
+        open(['games'])
+
+        expect(calls['getUserGames']).toBe(1)
+    })
+
+    it('reloads after a write a list a page shows, and leaves the rest to the next page that shows them', () => {
+        const { service, signIn, open, calls } = setup({ getUserGames: () => of([{ id: 1 }]), getUserWishlist: () => of([{ id: 2 }]) })
+        signIn()
+        open(['games'])
+        open(['wishlist']).destroy()
+
+        service.refreshUserGames()
+        service.refreshUserWishlist()
+
+        expect(calls['getUserGames']).toBe(2)
+        // Nobody shows the activity, your groups or the wishlist now.
+        expect([calls['getUserCollectionActivity'], calls['getGroupOverviews'], calls['getUserWishlist']]).toEqual([
+            undefined,
+            undefined,
+            1,
+        ])
+
+        // Fresh by age, but changed since: the next page that shows it reads it again.
+        open(['wishlist'])
+        expect(calls['getUserWishlist']).toBe(2)
+    })
+
+    it('drops an answer on its way for a list nobody shows once a write changes it', () => {
+        const pending = new Subject<Array<{ id: number }>>()
+        let answer: Observable<unknown> = pending
+        const { service, signIn, open } = setup({ getUserWishlist: () => answer })
+        signIn()
+        open(['wishlist']).destroy()
+
+        service.refreshUserWishlist()
+        pending.next([{ id: 2 }])
+        expect(service.userWishlist()).toEqual([])
+
+        answer = of([{ id: 3 }])
+        open(['wishlist'])
+        expect(service.userWishlist()).toEqual([{ id: 3 }])
+    })
+
+    it('refreshes game nights with the inbox only while a page shows them', () => {
+        const { service, signIn, open, calls } = setup()
+        signIn()
+
+        service.refreshSharedActivity(true)
+        expect([calls['getUserNotifications'], calls['getUserMeets']]).toEqual([1, undefined])
+
+        open(['meets'])
+        expect(calls['getUserMeets']).toBe(1)
+        service.refreshSharedActivity(true)
+        expect(calls['getUserMeets']).toBe(2)
+    })
+
+    it('reads the invitations of the groups you own only for a page that shows them, and once', async () => {
+        const groups = [
+            { id: 7, createdBy: 1, name: 'Mine', members: [] },
+            { id: 8, createdBy: 2, name: 'Theirs', members: [] },
+        ]
+        const { service, signIn, open, calls } = setup({
+            getGroupOverviews: () => of(groups),
+            getGroupInvitations: () => of([{ id: 30 }]),
+            createGroup: () => of({}),
+        })
+        signIn()
+
+        open(['groups'])
+        expect([calls['getGroupOverviews'], calls['getGroupInvitations']]).toEqual([1, undefined])
+
+        open(['groupInvitations'])
+        expect([calls['getGroupOverviews'], calls['getGroupInvitations']]).toEqual([1, 1])
+        expect(service.invitationsGroupIndex()).toEqual({ 7: [{ id: 30 }], 8: [] })
+
+        open(['groupInvitations'])
+        expect(calls['getGroupInvitations']).toBe(1)
+
+        // A group of yours more: your groups and their invitations are read again.
+        await firstValueFrom(service.createGroup('Sundays'))
+        expect([calls['getGroupOverviews'], calls['getGroupInvitations']]).toEqual([2, 2])
+    })
+
+    it('reads the invitations with your groups when a page asks for both before they load', () => {
+        const { signIn, open, calls } = setup({
+            getGroupOverviews: () => of([{ id: 7, createdBy: 1, name: 'Mine', members: [] }]),
+            getGroupInvitations: () => of([]),
+        })
+        open(['groupInvitations'])
+
+        signIn()
+
+        expect([calls['getGroupOverviews'], calls['getGroupInvitations']]).toEqual([1, 1])
+    })
+
+    it('reloads what is shown when the same person is read again, and the rest when next shown', () => {
+        const { signIn, open, calls } = setup()
+        signIn({ id: 1, username: 'organizer' })
+        open(['games'])
+        open(['wishlist']).destroy()
+
+        signIn({ id: 1, username: 'organizer2' })
+
+        expect([calls['getUserGames'], calls['getUserWishlist']]).toEqual([2, 1])
+        open(['wishlist'])
+        expect(calls['getUserWishlist']).toBe(2)
+    })
+
+    it('reads your groups for a page that shows every group’s games', async () => {
+        const { service, signIn, calls } = setup({
+            getGroupOverviews: () => of([{ id: 7, createdBy: 2, name: 'Fridays', members: [], placeholders: [] }]),
+            getGroupShelf: () => of({ games: [], owners: [], reviews: [] }),
+        })
+        signIn()
+
+        service.loadUserGroupsWithShelves(fakePage().ref)
+
+        expect(calls['getGroupOverviews']).toBe(1)
+        await vi.waitFor(() => expect(service.userGroupsWithShelvesState().status).toBe('ready'))
+        expect(calls['getGroupShelf']).toBe(1)
+    })
+
+    it('reloads, refreshing, a list changed while no page showed it, so the old copy never passes for current', () => {
+        let answer: Observable<unknown> = of([{ id: 6 }])
+        const { service, signIn, open } = setup({ getUserProposals: () => answer })
+        signIn()
+        open(['proposals']).destroy()
+
+        // A proposal sent from the avatar menu while My submissions is closed (#326).
+        service.refreshUserProposals()
+        const later = new Subject<Array<{ id: number }>>()
+        answer = later
+        open(['proposals'])
+
+        expect(service.userProposalsState()).toEqual({ status: 'refreshing', value: [{ id: 6 }] })
+        later.next([{ id: 6 }, { id: 7 }])
+        later.complete()
+        expect(service.userProposalsState()).toEqual({ status: 'ready', value: [{ id: 6 }, { id: 7 }] })
+    })
+
+    it('keeps a group you left while a quiet read of your groups was on its way', async () => {
+        const groups = [
+            { id: 7, createdBy: 2, name: 'Fridays', members: [], placeholders: [] },
+            { id: 8, createdBy: 2, name: 'Sundays', members: [], placeholders: [] },
+        ]
+        let answer: Observable<unknown> = of(groups)
+        const { service, signIn, open } = setup({ getGroupOverviews: () => answer, leaveGroup: () => of({}) })
+        signIn()
+        open(['groups']).destroy()
+
+        now += FRESH_FOR_MS
+        const older = new Subject<typeof groups>()
+        answer = older
+        open(['groups'])
+        await firstValueFrom(service.leaveGroup(8))
+        older.next(groups)
+
+        expect(service.userGroups().map((group) => group.id)).toEqual([7])
+    })
+
+    it('drops a quiet read still on its way at sign-out', () => {
+        let answer: Observable<unknown> = of([{ id: 1 }])
+        const { service, signIn, open } = setup({ getUserGames: () => answer })
+        signIn()
+        open(['games']).destroy()
+
+        now += FRESH_FOR_MS
+        const late = new Subject<Array<{ id: number }>>()
+        answer = late
+        open(['games'])
+        service.currentUser.set(null)
+        TestBed.tick()
+        late.next([{ id: 1 }, { id: 2 }])
+
+        expect(service.userGames()).toEqual([])
+        expect(service.userGamesState().status).toBe('loading')
     })
 })

@@ -254,7 +254,8 @@ from screen readers unless it has a `label`.
   its one state, `ResourceState<T>` (`core/async/resource-state.ts`):
   `loading` (nothing loaded yet), `refreshing` (a newer copy is on its way,
   the old one stays), `error` (with what loaded before, if anything) or
-  `ready`. `DataService` gives one per list (`userGroupsState`, …), and
+  `ready`. `DataService` gives one per list (`userGroupsState`, …), loaded
+  once the page names it with `dataService.use([...])` (#263), and
   `ResourceSignal` or `toResourceState(observable$)` makes one elsewhere.
   Show it with `<app-async [state]="state()" loadingLabel="Loading your
   groups" errorMessage="Your groups could not be loaded." (retry)="…">` and

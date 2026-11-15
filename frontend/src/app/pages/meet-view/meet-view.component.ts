@@ -174,6 +174,7 @@ export class MeetViewComponent {
         private readonly shelfEditions: ShelfEditionService,
         private readonly toastService: ToastService,
     ) {
+        this.dataService.use(['reviews'])
         // Show the confirmation once: a reload or a shared link must not say it was just saved.
         this.justSaved = this.route.snapshot.queryParamMap?.get('saved') === '1'
         if (this.justSaved)

@@ -36,7 +36,7 @@ describe('WishlistToggleComponent', () => {
         await TestBed.configureTestingModule({
             imports: [HostComponent],
             providers: [
-                { provide: DataService, useValue: { userWishlist, toggleWishlist } },
+                { provide: DataService, useValue: { userWishlist, toggleWishlist, use: vi.fn() } },
                 { provide: ToastService, useValue: { success, error: vi.fn() } },
             ],
         }).compileComponents()

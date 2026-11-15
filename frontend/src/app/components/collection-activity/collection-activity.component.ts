@@ -16,6 +16,10 @@ import { InfoPopoverComponent } from '../ui/info-popover/info-popover.component'
 export class CollectionActivityComponent {
     private readonly dataService = inject(DataService)
 
+    constructor() {
+        this.dataService.use(['collectionActivity', 'games', 'wishlist'])
+    }
+
     // --------------------------------------------------------------------------
     //        signals
     // --------------------------------------------------------------------------

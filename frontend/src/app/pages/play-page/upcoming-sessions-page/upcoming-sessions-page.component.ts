@@ -114,6 +114,7 @@ export class UpcomingSessionsPageComponent {
     public readonly dateParts = sessionDateParts
 
     constructor() {
+        this.dataService.use(['groups', 'meets'])
         // "Plan a session" elsewhere links here with ?plan=1: open the group choice, or go
         // straight to the only group.
         effect(() => {

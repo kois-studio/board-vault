@@ -104,6 +104,7 @@ export class DashboardPageComponent {
     })
 
     constructor() {
+        this.dataService.use(['games', 'groups', 'groupInvitations', 'history', 'historySummary', 'invitations', 'meets'])
         effect(() => {
             const groupId = this.nextNight()?.groupId
             // Your groups or games loaded again: read it again.
