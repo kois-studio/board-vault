@@ -4,6 +4,7 @@ import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagg
 import { AuthGuard } from '../../../common/guards/auth.guard.js'
 import { RateLimit, RateLimitGuard } from '../../../common/guards/rate-limit.guard.js'
 import { ClerkSyncResultDto, SessionStatusDto } from '../../../common/types/auth.type.js'
+import { UsersService } from '../../core/users/users.service.js'
 
 import { AccountDeletionService } from './account-deletion.service.js'
 import { ClerkAccountSyncService } from './clerk-account-sync.service.js'
@@ -18,6 +19,7 @@ export class AuthController {
         private readonly accountDeletionService: AccountDeletionService,
         private readonly clerkIdentityService: ClerkIdentityService,
         private readonly clerkAccountSyncService: ClerkAccountSyncService,
+        private readonly usersService: UsersService,
     ) {}
 
     @Get('/clerk/status')
@@ -27,12 +29,13 @@ export class AuthController {
     @ApiResponse({ status: 200, type: SessionStatusDto, description: 'The session is valid' })
     @ApiResponse({ status: 401, description: 'The Clerk session is missing, invalid, or expired' })
     @ApiResponse({ status: 409, description: 'The email already belongs to another Board Vault account' })
-    getSessionStatus(@Req() request: { user: AuthenticatedUser }): SessionStatusDto {
+    async getSessionStatus(@Req() request: { user: AuthenticatedUser }): Promise<SessionStatusDto> {
         return {
             isValid: true,
             userId: request.user.userId,
             isAdmin: request.user.isAdmin,
             clerkUserId: request.user.clerkUserId,
+            user: await this.usersService.getSelfById(request.user.userId),
         }
     }
 

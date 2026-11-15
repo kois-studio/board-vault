@@ -13,8 +13,9 @@ import { ProfileService } from './profile.service.js'
 
 describe('ProfileService invitation acceptance', () => {
     it('returns only self-profile fields instead of account-state fields', async () => {
+        // The real mapping (UsersService.getSelfById, shared with the session status since #343) over a stubbed read.
         const service = new ProfileService(
-            {
+            Object.assign(Object.create(UsersService.prototype) as UsersService, {
                 getUserById: vi.fn().mockResolvedValue({
                     id: 8,
                     email: 'member@example.com',
@@ -26,7 +27,7 @@ describe('ProfileService invitation acceptance', () => {
                     isAdmin: true,
                     email_verified: true,
                 }),
-            } as unknown as UsersService,
+            }),
             {} as NotificationsService,
             {} as GroupsService,
             {} as InvitationsService,

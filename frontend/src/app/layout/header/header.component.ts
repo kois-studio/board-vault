@@ -8,6 +8,7 @@ import { AccountPendingService } from '../../core/services/account-pending.servi
 import { ClerkService } from '../../core/services/clerk.service'
 import { LoginService } from '../../core/services/login.service'
 import { PendingProposalsService } from '../../core/services/pending-proposals.service'
+import { AuthDialogLinkDirective } from '../../pages/auth/clerk-dialog/auth-dialog-link.directive'
 import { APP_SECTIONS, activeSectionFor, shownUrl } from '../app-sections'
 import { InboxComponent } from '../inbox/inbox.component'
 import { LanguageMenuComponent, languageMenuLocales } from '../language-menu/language-menu.component'
@@ -20,7 +21,16 @@ import { ProfileMenuComponent } from '../profile-menu/profile-menu.component'
 @Component({
     selector: 'app-layout-header',
     templateUrl: './header.component.html',
-    imports: [LogoComponent, RouterLink, ProfileMenuComponent, InboxComponent, LanguageMenuComponent, ButtonComponent, IconComponent],
+    imports: [
+        AuthDialogLinkDirective,
+        LogoComponent,
+        RouterLink,
+        ProfileMenuComponent,
+        InboxComponent,
+        LanguageMenuComponent,
+        ButtonComponent,
+        IconComponent,
+    ],
 })
 export class LayoutHeaderComponent {
     private readonly loginService = inject(LoginService)
@@ -61,12 +71,18 @@ export class LayoutHeaderComponent {
     ]
 
     public readonly mobilePublicNavigation = [
-        ...this.publicAnchors.map(({ fragment, label, icon }) => ({ path: `/#${fragment}`, label, icon })),
-        { path: '/login', label: $localize`:Button in the signed-out header that opens sign-in:Log in`, icon: 'user-circle' },
+        ...this.publicAnchors.map(({ fragment, label, icon }) => ({ path: `/#${fragment}`, label, icon, dialog: null })),
+        {
+            path: '/login',
+            label: $localize`:Button in the signed-out header that opens sign-in:Log in`,
+            icon: 'user-circle',
+            dialog: 'sign-in' as const,
+        },
         {
             path: '/register',
             label: $localize`:Call to action in the signed-out header that creates an account:Start free`,
             icon: 'arrow-right',
+            dialog: 'sign-up' as const,
         },
     ]
 

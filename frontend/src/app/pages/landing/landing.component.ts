@@ -1,5 +1,4 @@
 import { Component, computed, signal } from '@angular/core'
-import { RouterLink } from '@angular/router'
 import { ImageProfileComponent } from '../../components/image-profile/image-profile.component'
 import { RecommendationCardComponent } from '../../components/recommendation-card/recommendation-card.component'
 import { ButtonComponent } from '../../components/ui/button/button.component'
@@ -8,6 +7,7 @@ import { InPageLinkDirective } from '../../components/ui/in-page-link/in-page-li
 import { ReviewDisplayComponent } from '../../components/ui/review-display/review-display.component'
 import { intlLocale } from '../../core/i18n/format'
 import { PlayersPipe } from '../../core/pipes/count.pipe'
+import { AuthDialogLinkDirective } from '../auth/clerk-dialog/auth-dialog-link.directive'
 import {
     EXAMPLE_COVERS,
     EXAMPLE_GROUP,
@@ -26,8 +26,8 @@ const COVER_TILT = [-4, 2, 3, 2, -3, 1, -1, -2, -3, 4, -2, 2]
 
 @Component({
     imports: [
+        AuthDialogLinkDirective,
         PlayersPipe,
-        RouterLink,
         ButtonComponent,
         IconComponent,
         ImageProfileComponent,
@@ -35,6 +35,7 @@ const COVER_TILT = [-4, 2, 3, 2, -3, 1, -1, -2, -3, 4, -2, 2]
         RecommendationCardComponent,
         ReviewDisplayComponent,
     ],
+    selector: 'app-landing',
     templateUrl: 'landing.component.html',
 })
 export class LandingComponent {

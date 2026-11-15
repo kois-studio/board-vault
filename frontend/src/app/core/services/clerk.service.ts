@@ -30,6 +30,7 @@ const CLERK_HIDDEN_SECTIONS = {
 @Injectable({ providedIn: 'root' })
 export class ClerkService {
     private readonly theme = inject(ThemeService)
+    private readonly router = inject(Router)
     private clerk: Clerk | null = null
     private unsubscribe: (() => void) | null = null
 
@@ -90,6 +91,13 @@ export class ClerkService {
                 ui: { ClerkUI: clerkUiCtor },
                 appearance: { ...this.themeAppearance(), elements: CLERK_HIDDEN_SECTIONS },
                 localization,
+                // After signing in or up, Home, under the page's language prefix (#343).
+                signInFallbackRedirectUrl: this.appUrl('dashboard'),
+                signUpFallbackRedirectUrl: this.appUrl('dashboard'),
+                // Clerk's navigations go through the app's router, so signing in never reloads the page and starts
+                // over: Clerk's script, its session and the account again (#343).
+                routerPush: (to: string) => this.navigateInApp(to, false),
+                routerReplace: (to: string) => this.navigateInApp(to, true),
             })
 
             this.clerk = clerk
@@ -112,36 +120,16 @@ export class ClerkService {
         return (await session.getToken()) ?? null
     }
 
-    /**
-     * Puts Clerk's sign-in form inside `element`, on the sign-in page itself (#324), instead of a page with a
-     * button that opens it. Its "Sign up" link goes to the sign-up page under the page's language prefix.
-     */
-    public mountSignIn(element: HTMLDivElement): void {
-        this.clerk?.mountSignIn(element, {
-            routing: 'hash',
-            appearance: this.inlineAppearance(),
-            fallbackRedirectUrl: this.appUrl('dashboard'),
-            signUpUrl: this.appUrl('register'),
+    public openSignIn(): void {
+        this.clerk?.openSignIn({
+            withSignUp: this.isSelfRegistrationEnabled(),
+            appearance: this.themeAppearance(),
         })
     }
 
-    /** Clerk's sign-up form inside `element`, on the sign-up page (#324). */
-    public mountSignUp(element: HTMLDivElement): void {
+    public openSignUp(): void {
         if (!this.isSelfRegistrationEnabled()) return
-        this.clerk?.mountSignUp(element, {
-            routing: 'hash',
-            appearance: this.inlineAppearance(),
-            fallbackRedirectUrl: this.appUrl('dashboard'),
-            signInUrl: this.appUrl('login'),
-        })
-    }
-
-    public unmountSignIn(element: HTMLDivElement): void {
-        this.clerk?.unmountSignIn(element)
-    }
-
-    public unmountSignUp(element: HTMLDivElement): void {
-        this.clerk?.unmountSignUp(element)
+        this.clerk?.openSignUp({ appearance: this.themeAppearance() })
     }
 
     public openUserProfile(): void {
@@ -157,29 +145,10 @@ export class ClerkService {
         return {
             variables: {
                 colorPrimary: THEME_COLORS[this.theme.palette()].primary,
-                // White on the primary in light and dark mode; Clerk darkened it in dark mode. Both names: the
-                // current one and the older one, as the UI bundle Clerk serves may read either.
+                // White on the primary in light and dark mode. Both names: the current one and the older one, as the
+                // UI bundle Clerk serves may read either.
                 colorPrimaryForeground: '#ffffff',
                 colorTextOnPrimaryBackground: '#ffffff',
-            },
-        }
-    }
-
-    /**
-     * The theme, and a form that fills its column without Clerk's own title. Clerk's footer stays: it holds
-     * "Use another method", and "Sign up" / "Sign in" go to the app's pages (signUpUrl, signInUrl).
-     */
-    private inlineAppearance() {
-        return {
-            ...this.themeAppearance(),
-            elements: {
-                rootBox: { width: '100%' },
-                // The page's card is the card: Clerk's own has no padding, border, shadow or background of its own.
-                cardBox: { width: '100%', maxWidth: '100%', boxShadow: 'none', border: 'none', background: 'transparent' },
-                card: { padding: '0 0 1.5rem', gap: '1.5rem', boxShadow: 'none', border: 'none', background: 'transparent' },
-                // The page has the heading; Clerk's header keeps the email being signed in, with a way to change it.
-                headerTitle: { display: 'none' },
-                headerSubtitle: { display: 'none' },
             },
         }
     }
@@ -187,6 +156,22 @@ export class ClerkService {
     /** An address in the app under the page's language prefix (`<base href="/es/">` gives `/es/dashboard`). */
     private appUrl(path: string): string {
         return new URL(path, document.baseURI).href
+    }
+
+    /**
+     * Opens `to` with the app's router when it is a page of this app under its language prefix, and as a page load
+     * otherwise (another site, another language's app).
+     */
+    private navigateInApp(to: string, replace: boolean): Promise<unknown> {
+        const base = new URL(document.baseURI)
+        const url = new URL(to, base)
+        if (url.origin !== base.origin || !url.pathname.startsWith(base.pathname)) {
+            if (replace) location.replace(url.href)
+            else location.assign(url.href)
+            return Promise.resolve()
+        }
+        const path = `/${url.pathname.slice(base.pathname.length)}${url.search}${url.hash}`
+        return this.router.navigateByUrl(path, { replaceUrl: replace })
     }
 
     public async signOut(): Promise<void> {

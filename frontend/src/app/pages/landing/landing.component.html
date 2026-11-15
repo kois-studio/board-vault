@@ -12,7 +12,7 @@
             </p>
             <div class="flex flex-col gap-3">
                 <div class="flex flex-wrap gap-3">
-                    <a appButton size="large" routerLink="/register" class="min-h-14">
+                    <a appButton size="large" appAuthDialog="sign-up" class="min-h-14">
                         <ng-container i18n="Main button of the landing page, opens sign-up">Create your free account</ng-container>
                         <app-icon name="arrow-right" [size]="18" />
                     </a>
@@ -281,7 +281,7 @@
                 <h2 class="max-w-[14em] text-[clamp(1.875rem,4vw,3rem)] font-extrabold leading-[1.05] tracking-[-0.03em] text-balance" i18n="Heading of the closing call to action on the landing page">Put your collection in order tonight.</h2>
                 <p class="mt-3 text-lg text-bv-on-primary/80" i18n="Line under the closing heading on the landing page">Free account. Your first game is a search away.</p>
             </div>
-            <a appButton variant="accent" size="large" routerLink="/register" class="min-h-[3.375rem]" i18n="Main button of the landing page, opens sign-up">Create your free account</a>
+            <a appButton variant="accent" size="large" appAuthDialog="sign-up" class="min-h-[3.375rem]" i18n="Main button of the landing page, opens sign-up">Create your free account</a>
         </div>
     </section>
 </div>

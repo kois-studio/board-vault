@@ -3,7 +3,7 @@ import { Injectable, Logger, NotFoundException } from '@nestjs/common'
 
 import { isSupportedLocale } from '../../../common/i18n/locale.js'
 import { usersSchema } from '../../../common/schemas/index.js'
-import { AvatarDto, UpdateUserBody, UserGetDto, UserPublicDto } from '../../../common/types/user.type.js'
+import { AvatarDto, UpdateUserBody, UserGetDto, UserPublicDto, UserSelfDto } from '../../../common/types/user.type.js'
 import { DatabaseService } from '../../common/database/database.service.js'
 import { ActivityNotifier } from '../notifications/activity-notifier.service.js'
 
@@ -77,6 +77,21 @@ export class UsersService {
         return new Map(
             users.map(user => [user.id, { id: user.id, username: user.username, displayName: user.displayName, avatar: user.avatar }]),
         )
+    }
+
+    /** What the signed-in person reads about themselves: `GET /profile/users/:id`, and the session status (#343). */
+    async getSelfById(id: number): Promise<UserSelfDto> {
+        const user = await this.getUserById(id)
+
+        return {
+            id: user.id,
+            email: user.email,
+            username: user.username,
+            displayName: user.displayName,
+            avatar: user.avatar,
+            createdAt: user.createdAt,
+            locale: user.locale,
+        }
     }
 
     async getPublicUserById(id: number): Promise<UserPublicDto> {

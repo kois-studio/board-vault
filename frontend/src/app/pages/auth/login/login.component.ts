@@ -1,16 +1,14 @@
-import { Component, inject } from '@angular/core'
-import { ClerkService } from '../../../core/services/clerk.service'
-import { ClerkFormComponent } from '../clerk-form/clerk-form.component'
+import { Component } from '@angular/core'
+import { LandingComponent } from '../../landing/landing.component'
+import { openClerkDialogWhenReady } from '../clerk-dialog/open-clerk-dialog'
 
-/** The sign-in page: a heading and Clerk's form on the page itself (#324). */
+/** `/login`: the landing page with Clerk's sign-in dialog open over it (#343). */
 @Component({
-    templateUrl: 'login.component.html',
-    imports: [ClerkFormComponent],
+    imports: [LandingComponent],
+    template: '<app-landing />',
 })
 export class LoginComponent {
-    private readonly clerkService = inject(ClerkService)
-
-    public readonly clerkIsConfigured = this.clerkService.isConfigured
-    public readonly clerkIsLoaded = this.clerkService.isLoaded
-    public readonly clerkIsAvailable = this.clerkService.isAvailable
+    constructor() {
+        openClerkDialogWhenReady('sign-in')
+    }
 }

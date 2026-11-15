@@ -85,6 +85,51 @@ describe('LoginService account readiness', () => {
     })
 })
 
+// #343: the status brings the account, so finishing sign-in is one request, not two.
+describe('LoginService account in the session status', () => {
+    const setup = (status: Record<string, unknown>) => {
+        const api = {
+            clerkAuthStatus: vi.fn().mockReturnValue(of({ isValid: true, userId: 7, isAdmin: false, clerkUserId: 'clerk_7', ...status })),
+            getUserById: vi.fn().mockReturnValue(of({ id: 7, username: 'fetched' })),
+        }
+        const dataService = { currentUser: signal<null | { id: number; username?: string }>(null) }
+        TestBed.configureTestingModule({
+            providers: [
+                LoginService,
+                { provide: Api, useValue: api },
+                { provide: Router, useValue: { navigate: vi.fn().mockResolvedValue(true), url: '/dashboard' } },
+                { provide: LogService, useValue: { log: vi.fn(), error: vi.fn() } },
+                { provide: ToastService, useValue: { error: vi.fn(), success: vi.fn() } },
+                { provide: LocalStorageService, useValue: { getItem: vi.fn(), setItem: vi.fn(), removeItem: vi.fn() } },
+                { provide: ClerkService, useValue: { isSignedIn: signal(true), userId: signal<string | null>(null), signOut: vi.fn() } },
+                { provide: DataService, useValue: dataService },
+            ],
+        })
+        return { service: TestBed.inject(LoginService), api, dataService }
+    }
+
+    it('takes the account from the status and asks for nothing more', () => {
+        const { service, api, dataService } = setup({ user: { id: 7, username: 'from-status' } })
+        const results: Array<boolean> = []
+
+        service.verifyClerkSession().subscribe((ready) => results.push(ready))
+
+        expect(results).toEqual([true])
+        expect(api.getUserById).not.toHaveBeenCalled()
+        expect(dataService.currentUser()).toEqual({ id: 7, username: 'from-status' })
+        expect(service.isAuthenticated()).toBe(true)
+    })
+
+    it('reads the account on its own from an older API whose status has none', () => {
+        const { service, api, dataService } = setup({})
+
+        service.verifyClerkSession().subscribe()
+
+        expect(api.getUserById).toHaveBeenCalledWith(7, expect.anything())
+        expect(dataService.currentUser()).toEqual({ id: 7, username: 'fetched' })
+    })
+})
+
 describe('LoginService after the account is deleted', () => {
     const setup = (signOut: () => Promise<void>) => {
         const clerk = {

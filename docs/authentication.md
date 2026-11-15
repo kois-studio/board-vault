@@ -21,8 +21,9 @@ The main state transitions are:
      with `409 ACCOUNT_EMAIL_CONFLICT` and is never linked automatically;
 5. `AuthGuard` admits requests with a resolved account, and later guards apply
    ownership, membership, and admin rules;
-6. the frontend confirms the handoff through `GET /auth/clerk/status` before
-   loading protected data;
+6. the frontend confirms the handoff through `GET /auth/clerk/status`, which
+   also returns the account itself (`user`, as `GET /profile/users/:id`
+   answers it), before loading protected data: one request, not two (#343);
 7. sign-out clears the Clerk session and returns to the public shell.
 
 Every request verifies its own token. With `CLERK_JWT_KEY` set, that check
@@ -73,8 +74,14 @@ What a signed-in link shows before the page (#259):
 - **While Board Vault confirms the account**, both layouts show the same
   frame and skeleton (`AccountPendingService`, `<app-account-pending>`).
   The account's own controls (inbox, avatar menu, language) wait for it.
-- **"Connecting you…"** appears only once that takes longer than 2 s. The
-  "can't reach Board Vault" and linking-error screens appear at once.
+- **On the way to Home**, that skeleton is Home's own (`<app-skeleton-home>`,
+  greeting and buttons included), which Home keeps while its lists load, so
+  there is one loading screen from the first paint to the content. The
+  pending screen also names Home's lists (`HOME_LISTS`), so they load as soon
+  as the account is known (#343).
+- **"Connecting you…"** appears only once that takes longer than 6 s (a cold
+  start of the API is a few seconds, #343). The "can't reach Board Vault"
+  and linking-error screens appear at once.
 
 `CLERK_SECRET_KEY` is required in every environment, and
 `CLERK_AUTHORIZED_PARTIES` in production ([environments.md](environments.md)).
@@ -82,15 +89,15 @@ The browser receives only the publishable key through generated runtime
 configuration. Without it, the sign-in page
 reports that sign-in is not configured.
 
-`/login` and `/register` show Clerk's sign-in and sign-up forms on the page
-(`mountSignIn` / `mountSignUp`, hash routing for Clerk's own steps), under
-the page's heading, not a button that opens a pop-up (#324). Clerk's title is
-hidden; its footer stays for "Use another method" and the link between the
-two pages, which point at the app's own addresses under the page's language
-prefix, as does the redirect after signing in. The header's Log in and Start
-free go to those pages too; only Clerk's account panel (Settings) is a pop-up.
-Clerk's card is transparent and unpadded, so the page's card is the only one,
-and the primary button's text is white in light and dark mode.
+Signing in and up use Clerk's own dialogs (#343). "Log in" and "Start free"
+(header, phone menu, footer, landing page) open them on the spot once Clerk
+has loaded (`appAuthDialog`), and otherwise go to `/login` or `/register`:
+the landing page with the dialog opened over it, so links, guards and "your
+session expired" land somewhere that asks. While sign-up is paused,
+`/register` shows its notice instead. Clerk's navigations (the redirect to
+Home after signing in or up) go through the app's router (`routerPush`,
+`routerReplace`), so signing in never reloads the page and starts over. The
+primary button's text is white in light and dark mode.
 
 Tests do not need Clerk: backend e2e tests replace `ClerkTokenVerifier` with a
 fake, and frontend unit tests stub `ClerkService`. Browser journeys that sign
@@ -162,7 +169,7 @@ webhook log.
 | Requires a resolved account | [`backend/src/common/guards/auth.guard.ts`](../backend/src/common/guards/auth.guard.ts) |
 | Self-registration policy | [`backend/src/common/registration-policy.ts`](../backend/src/common/registration-policy.ts) |
 | `GET /auth/clerk/status` | [`backend/src/modules/common/auth/auth.controller.ts`](../backend/src/modules/common/auth/auth.controller.ts) |
-| Clerk JS lifecycle, sign-in and sign-up forms on the page, the account panel | [`frontend/src/app/core/services/clerk.service.ts`](../frontend/src/app/core/services/clerk.service.ts) |
+| Clerk JS lifecycle, sign-in and sign-up dialogs, the account panel | [`frontend/src/app/core/services/clerk.service.ts`](../frontend/src/app/core/services/clerk.service.ts) |
 | Session handoff and sign-out | [`frontend/src/app/core/services/login.service.ts`](../frontend/src/app/core/services/login.service.ts) |
 | Bearer token and 401 handling | [`frontend/src/app/core/interceptors/auth.interceptor.ts`](../frontend/src/app/core/interceptors/auth.interceptor.ts) |
 | Sign-in and sign-up pages | [`frontend/src/app/pages/auth/`](../frontend/src/app/pages/auth/) |
