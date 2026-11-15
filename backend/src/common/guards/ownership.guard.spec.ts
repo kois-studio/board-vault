@@ -35,7 +35,7 @@ describe('UserOwnershipGuard', () => {
 
     it('is attached to user-scoped read routes', () => {
         expect(hasOwnershipGuard(UsersController.prototype, 'getUserById')).toBe(true)
-        expect(hasOwnershipGuard(DashboardController.prototype, 'getGroupsOfUser')).toBe(true)
+        expect(hasOwnershipGuard(DashboardController.prototype, 'getGroupOverviewsOfUser')).toBe(true)
         expect(hasOwnershipGuard(CollectionController.prototype, 'getGamesOwnedByUser')).toBe(true)
         expect(hasOwnershipGuard(CollectionController.prototype, 'browseCatalogue')).toBe(true)
         expect(hasOwnershipGuard(CollectionController.prototype, 'getReviewsOfUser')).toBe(true)
