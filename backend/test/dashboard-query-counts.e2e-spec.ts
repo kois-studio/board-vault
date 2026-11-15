@@ -118,8 +118,6 @@ describe('dashboard reads in a fixed number of queries (e2e, #289)', () => {
         ['your groups, as overviews', '/dashboard/users/5/group-overviews', '/dashboard/users/1/group-overviews'],
         ['one group, as an overview', '/dashboard/users/5/group-overviews/20', '/dashboard/users/1/group-overviews/10'],
         ["a group's shelf", '/dashboard/users/5/groups/20/shelf', '/dashboard/users/1/groups/10/shelf'],
-        ['your groups with every game (deprecated)', '/dashboard/users/5/groups', '/dashboard/users/1/groups'],
-        ['one group with every game (deprecated)', '/dashboard/users/5/groups/20', '/dashboard/users/1/groups/10'],
     ])('reads %s in as many queries for three large groups as for one small one', async (_name, small, large) => {
         const few = await queriesFor(small, 'user_eve')
         const lots = await queriesFor(large, 'user_ada')
@@ -168,33 +166,11 @@ describe('dashboard reads in a fixed number of queries (e2e, #289)', () => {
         ])
     })
 
-    it('still answers the previous shape: each member with their own games and ratings', async () => {
-        const { body } = await queriesFor('/dashboard/users/1/groups', 'user_ada')
-        const member = (groupIndex: number, id: number) => body[groupIndex].members.find((m: { id: number }) => m.id === id)
-        const gameIds = (games: Array<{ id: number }>) => games.map(game => game.id)
-        const ratings = (reviews: Array<{ gameId: number }>) => reviews.map(review => review.gameId)
-
-        expect(body.map((group: { id: number }) => group.id)).toEqual([10, 11, 12])
-        expect(gameIds(member(0, 3).games)).toEqual([4, 5, 6])
-        expect(ratings(member(0, 3).reviews)).toEqual([4])
-        // Cai is the same person in Weekend, with the same games and ratings.
-        expect(member(1, 3)).toEqual({ ...member(0, 3), joinedAt: '2026-02-03 10:00:00' })
-        expect(ratings(member(0, 2).reviews)).toEqual([2])
-        expect(ratings(member(0, 6).reviews)).toEqual([])
-        expect(body[2].placeholders).toEqual([expect.objectContaining({ id: 40, displayName: 'Lucía', gameIds: [3] })])
-        expect(gameIds(body[2].placeholders[0].games)).toEqual([3])
-        expect(JSON.stringify(body)).not.toContain('@example.test')
-    })
-
     it('still refuses a group the caller is not in, and another user’s address', async () => {
-        for (const path of [
-            '/dashboard/users/5/group-overviews/10',
-            '/dashboard/users/5/groups/10/shelf',
-            '/dashboard/users/5/groups/10',
-        ]) {
+        for (const path of ['/dashboard/users/5/group-overviews/10', '/dashboard/users/5/groups/10/shelf']) {
             await request(app.getHttpServer()).get(path).set(as('user_eve')).expect(403)
         }
-        for (const path of ['/dashboard/users/1/groups', '/dashboard/users/1/group-overviews', '/dashboard/users/1/stats']) {
+        for (const path of ['/dashboard/users/1/group-overviews', '/dashboard/users/1/groups/10/shelf', '/dashboard/users/1/stats']) {
             await request(app.getHttpServer()).get(path).set(as('user_eve')).expect(403)
         }
     })
