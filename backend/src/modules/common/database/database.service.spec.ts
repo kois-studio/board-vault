@@ -1068,13 +1068,8 @@ describe('DatabaseService logging', () => {
         expect(sql).toContain('m.groupId = ?')
         expect(sql).toContain("fg.gameId = ? AND fg.gameStatus = 'played'")
         expect(sql).toContain('datetime(m.meetDate) < (SELECT datetime(c.meetDate) FROM Meet c WHERE c.id = ?)')
-
-        // Without a limit, only for the deprecated route that still answers every night at once.
-        await service.sessions.getHistoryMeetIdsPage(7, {}, null, null)
-        const unbounded = execute.mock.calls[1]![0] as { sql: string; args: Array<number> }
-
-        expect(unbounded.sql).not.toContain('LIMIT')
-        expect(unbounded.args).toEqual([7, 7, 7, 7, 7, 7])
+        // Always bounded: the read that answered every night at once is gone (#298).
+        expect(sql).toContain('ORDER BY datetime(m.meetDate) DESC, m.id DESC LIMIT ?')
     })
 
     it('reads one group’s nights from the day before a date to the day after, only for a member (#252)', async () => {

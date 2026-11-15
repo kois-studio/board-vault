@@ -9,7 +9,6 @@ import { AccountMeetDto } from '../../../common/types/meet.type.js'
 import { PlayService } from './play.service.js'
 import {
     HistoryPageDto,
-    HistoryRecordDto,
     HistoryQuery,
     HistorySummaryDto,
     HistorySummaryQuery,
@@ -82,19 +81,6 @@ export class PlayController {
     @ApiResponse({ status: 403, description: 'The current user does not belong to the group.' })
     getRecommendationSignals(@Req() request: { user: { userId: number } }, @Query('groupId', ParseIntPipe) groupId: number) {
         return this.playService.getRecommendationSignals(request.user.userId, groupId)
-    }
-
-    // Kept as it was for the previous frontend release while both deploy (docs/api.md, Compatibility); remove it in a
-    // later release, once no client reads it.
-    @UseGuards(UserOwnershipGuard)
-    @Get('/users/:userId/history')
-    @ApiOperation({
-        summary: 'Every completed game night of the user. Deprecated: use GET /play/users/:userId/history/page (#252)',
-        deprecated: true,
-    })
-    @ApiResponse({ status: 200, type: [HistoryRecordDto], description: 'Every completed game night of the user, newest first' })
-    async getUserGamesHistory(@Param('userId', ParseIntPipe) userId: number, @RequestLocale() locale: Locale) {
-        return this.playService.getUserGamesHistoryAll(userId, locale)
     }
 
     @UseGuards(UserOwnershipGuard)

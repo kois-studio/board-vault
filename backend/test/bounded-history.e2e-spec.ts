@@ -152,11 +152,9 @@ describe('bounded history (e2e)', () => {
         expect((await get('/play/users/1/history/page?groupId=14').expect(200)).body).toEqual({ entries: [], hasMore: false })
     })
 
-    it('still answers the previous release with every night at once, newest first', async () => {
-        const all: Array<{ meetData: { id: number } }> = (await get('/play/users/1/history').expect(200)).body
-
-        expect(all.map(entry => entry.meetData.id)).toEqual(ids(124, 100))
-        await get('/play/users/1/history', 'user_bea').expect(403)
+    it('no longer answers every night at once: the route the previous release read is gone (#298)', async () => {
+        await get('/play/users/1/history').expect(404)
+        await get('/play/users/1/history', 'user_bea').expect(404)
     })
 
     it('refuses pages it cannot serve, and other people’s history', async () => {

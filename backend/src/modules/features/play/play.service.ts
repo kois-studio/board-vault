@@ -530,14 +530,6 @@ export class PlayService {
         return { meets, records: await this.historyRecordsFor(completed, userId, locale) }
     }
 
-    /** Every night at once, for the previous frontend release only (`GET /history`, deprecated by #252). */
-    @LogFeature(new Logger('PlayService'))
-    async getUserGamesHistoryAll(userId: number, locale: Locale): Promise<Array<HistoryRecordDto>> {
-        const ids = await this.databaseService.sessions.getHistoryMeetIdsPage(userId, {}, null, null)
-
-        return this.historyRecordsFor(ids, userId, locale)
-    }
-
     /** The history records of these nights, in this order. */
     private async historyRecordsFor(meetIds: Array<number>, userId: number, locale: Locale): Promise<Array<HistoryRecordDto>> {
         if (meetIds.length === 0) return []
