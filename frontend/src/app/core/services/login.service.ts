@@ -4,6 +4,7 @@ import { Router } from '@angular/router'
 import { from, Observable, of, throwError } from 'rxjs'
 import { catchError, finalize, map, shareReplay, switchMap, tap } from 'rxjs/operators'
 import { Api } from '../../api/api'
+import type { UserType } from '../../api/api.types'
 import { ToastService } from '../../components/toast/toast.service'
 import { AccountLanguageService } from '../i18n/account-language.service'
 import { withoutReadRetry } from '../interceptors/resilience.interceptor'
@@ -119,7 +120,9 @@ export class LoginService {
                 this.logger.log('LoginService: Clerk session is valid.', response)
                 this.currentUserId.set(response.userId)
                 this.isCurrentUserAdmin.set(response.isAdmin)
-                return this._fetchInitialUserData(response.userId).pipe(
+                // The status brings the account with it (#343); an older API doesn't, and then it is one more request.
+                const userData$ = response.user ? of(this.applyUserData(response.user)) : this._fetchInitialUserData(response.userId)
+                return userData$.pipe(
                     tap((isReady) => {
                         if (isReady) this.reconnectAttempt = 0
                         this.isAuthenticated.set(isReady)
@@ -177,16 +180,19 @@ export class LoginService {
     /**
      * Initiates the loading of essential user data after authentication.
      */
+    /** The account is known: Board Vault shows it, in its language. */
+    private applyUserData(userData: UserType): true {
+        this.logger.log('LoginService: USER_DATA ready.')
+        this.dataService.currentUser.set(userData)
+        this.accountLanguage.followAccountLanguage(userData)
+        return true
+    }
+
     private _fetchInitialUserData(userId: number): Observable<boolean> {
         this.logger.log(`LoginService: Triggering USER_DATA load for user ID: ${userId}`)
 
         return this.api.getUserById(userId, withoutReadRetry()).pipe(
-            tap((userData) => {
-                this.logger.log('LoginService: USER_DATA fetched successfully.')
-                this.dataService.currentUser.set(userData)
-                this.accountLanguage.followAccountLanguage(userData)
-            }),
-            map(() => true),
+            map((userData) => this.applyUserData(userData)),
             catchError((err: unknown) => {
                 // Board Vault could not be reached: the sign-in is fine, so verifyClerkSession keeps it and tries again.
                 if (isServerUnreachable(err)) return throwError(() => err)

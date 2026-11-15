@@ -40,20 +40,7 @@
         @if (isLoadingHome()) {
             <div role="status" aria-busy="true" data-testid="home-skeleton">
                 <span class="sr-only" i18n="Name of the placeholder shown on Home while your groups load">Loading your groups</span>
-                <div class="grid grid-cols-1 gap-8 lg:grid-cols-[minmax(0,1fr)_22rem] lg:items-start" aria-hidden="true">
-                    <div class="min-w-0">
-                        <div class="mb-3 flex h-7 items-center"><div class="h-4 w-28 rounded bg-bv-border motion-safe:animate-pulse"></div></div>
-                        <div class="space-y-4">
-                            @for (item of [1, 2]; track item) {
-                                <app-skeleton-card-group />
-                            }
-                        </div>
-                    </div>
-                    <div class="min-w-0 motion-safe:animate-pulse">
-                        <div class="mb-3 flex h-7 items-center"><div class="h-4 w-32 rounded bg-bv-border"></div></div>
-                        <ng-container *ngTemplateOutlet="historyRows" />
-                    </div>
-                </div>
+                <app-skeleton-home />
             </div>
         } @else if (userInvitationsError()) {
             <section class="rounded-2xl border border-bv-warning/30 bg-bv-warning/10 p-6" aria-labelledby="invitations-error-heading">

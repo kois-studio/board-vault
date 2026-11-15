@@ -37,53 +37,82 @@ describe('ClerkService loading', () => {
 describe('ClerkService appearance', () => {
     const setup = () => {
         const service = TestBed.inject(ClerkService)
-        const clerk = { mountSignIn: vi.fn(), mountSignUp: vi.fn(), openUserProfile: vi.fn() }
+        const clerk = { openSignIn: vi.fn(), openSignUp: vi.fn(), openUserProfile: vi.fn() }
         ;(service as unknown as { clerk: typeof clerk }).clerk = clerk
         service.isSelfRegistrationEnabled.set(true)
         return { service, clerk, theme: TestBed.inject(ThemeService) }
     }
-    const primaryOf = (mock: ReturnType<typeof vi.fn>) => mock.mock.lastCall?.[0]?.appearance?.variables?.colorPrimary
-    const mountedAppearance = (mock: ReturnType<typeof vi.fn>) => mock.mock.lastCall?.[1]?.appearance
+    const appearanceOf = (mock: ReturnType<typeof vi.fn>) => mock.mock.lastCall?.[0]?.appearance
 
-    it('shows every Clerk panel and form in the theme chosen now, not the one Clerk loaded with', () => {
+    it('opens every Clerk dialog in the theme chosen now, not the one Clerk loaded with', () => {
         const { service, clerk, theme } = setup()
-        const element = document.createElement('div')
 
         theme.palette.set('felt')
         service.openUserProfile()
-        service.mountSignIn(element)
-        service.mountSignUp(element)
+        service.openSignIn()
+        service.openSignUp()
 
-        expect(primaryOf(clerk.openUserProfile)).toBe(THEME_COLORS.felt.primary)
-        expect(mountedAppearance(clerk.mountSignIn)?.variables?.colorPrimary).toBe(THEME_COLORS.felt.primary)
-        expect(mountedAppearance(clerk.mountSignUp)?.variables?.colorPrimary).toBe(THEME_COLORS.felt.primary)
+        expect(appearanceOf(clerk.openUserProfile)?.variables?.colorPrimary).toBe(THEME_COLORS.felt.primary)
+        expect(appearanceOf(clerk.openSignIn)?.variables?.colorPrimary).toBe(THEME_COLORS.felt.primary)
+        expect(appearanceOf(clerk.openSignUp)?.variables?.colorPrimary).toBe(THEME_COLORS.felt.primary)
+        expect(clerk.openSignIn.mock.lastCall?.[0]?.withSignUp).toBe(true)
 
         theme.palette.set('harbor')
         service.openUserProfile()
 
-        expect(primaryOf(clerk.openUserProfile)).toBe(THEME_COLORS.harbor.primary)
+        expect(appearanceOf(clerk.openUserProfile)?.variables?.colorPrimary).toBe(THEME_COLORS.harbor.primary)
     })
 
-    // Retest polish after #324: white text on the primary button in dark mode too, and no card inside the page's card.
-    it('mounts the forms with white text on the primary, and without a card of their own', () => {
+    it('writes white on the primary button, in light and dark mode', () => {
         const { service, clerk } = setup()
 
-        service.mountSignIn(document.createElement('div'))
+        service.openSignIn()
 
-        const appearance = mountedAppearance(clerk.mountSignIn)
-        expect(appearance?.variables?.colorPrimaryForeground).toBe('#ffffff')
-        expect(appearance?.elements?.card).toEqual(expect.objectContaining({ padding: '0 0 1.5rem', background: 'transparent' }))
-        expect(appearance?.elements?.headerTitle).toEqual({ display: 'none' })
+        expect(appearanceOf(clerk.openSignIn)?.variables?.colorPrimaryForeground).toBe('#ffffff')
     })
 
-    it('sends sign-in and sign-up links, and the redirect after signing in, to the app under its language prefix', () => {
+    it('opens no sign-up dialog while sign-up is paused', () => {
         const { service, clerk } = setup()
+        service.isSelfRegistrationEnabled.set(false)
 
-        service.mountSignIn(document.createElement('div'))
+        service.openSignUp()
 
-        const options = clerk.mountSignIn.mock.lastCall?.[1]
-        expect(options?.signUpUrl).toBe(new URL('register', document.baseURI).href)
-        expect(options?.fallbackRedirectUrl).toBe(new URL('dashboard', document.baseURI).href)
+        expect(clerk.openSignUp).not.toHaveBeenCalled()
+    })
+})
+
+// #343: Clerk's redirect after signing in is a navigation in the app, never a page load that starts over.
+describe('ClerkService navigation for Clerk', () => {
+    const navigate = (to: string, replace = false) =>
+        (TestBed.inject(ClerkService) as unknown as { navigateInApp(to: string, replace: boolean): Promise<unknown> }).navigateInApp(
+            to,
+            replace,
+        )
+
+    it('opens a page of the app with the router, without the language prefix, keeping query and fragment', async () => {
+        const router = TestBed.inject(Router)
+        const navigateByUrl = vi.spyOn(router, 'navigateByUrl').mockResolvedValue(true)
+
+        await navigate(new URL('dashboard?x=1#top', document.baseURI).href)
+        await navigate(new URL('groups/7', document.baseURI).href, true)
+
+        expect(navigateByUrl).toHaveBeenNthCalledWith(1, '/dashboard?x=1#top', { replaceUrl: false })
+        expect(navigateByUrl).toHaveBeenNthCalledWith(2, '/groups/7', { replaceUrl: true })
+    })
+
+    it('loads another site as a page', async () => {
+        const navigateByUrl = vi.spyOn(TestBed.inject(Router), 'navigateByUrl')
+        const assign = vi.fn()
+        vi.stubGlobal('location', { ...location, assign, replace: vi.fn() })
+
+        try {
+            await navigate('https://accounts.example.com/sign-in')
+        } finally {
+            vi.unstubAllGlobals()
+        }
+
+        expect(assign).toHaveBeenCalledWith('https://accounts.example.com/sign-in')
+        expect(navigateByUrl).not.toHaveBeenCalled()
     })
 })
 
@@ -140,7 +169,7 @@ describe('afterFirstPagePaint', () => {
 describe('ClerkService.forgetSession', () => {
     it('clears the signed-in user Board Vault reads, but keeps Clerk loaded for the next sign-in', () => {
         const service = TestBed.inject(ClerkService)
-        const clerk = { mountSignIn: vi.fn() }
+        const clerk = { openSignIn: vi.fn() }
         ;(service as unknown as { clerk: typeof clerk }).clerk = clerk
         service.isSignedIn.set(true)
         service.userId.set('user_7')
@@ -150,8 +179,8 @@ describe('ClerkService.forgetSession', () => {
         service.forgetSession()
 
         expect([service.isSignedIn(), service.userId(), service.username(), service.primaryEmail()]).toEqual([false, null, null, null])
-        service.mountSignIn(document.createElement('div'))
-        expect(clerk.mountSignIn).toHaveBeenCalled()
+        service.openSignIn()
+        expect(clerk.openSignIn).toHaveBeenCalled()
     })
 })
 

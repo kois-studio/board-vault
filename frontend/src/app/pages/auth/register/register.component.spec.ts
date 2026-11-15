@@ -1,8 +1,13 @@
-import { signal } from '@angular/core'
+import { Component, signal } from '@angular/core'
 import { TestBed } from '@angular/core/testing'
 import { provideRouter } from '@angular/router'
+import { ToastService } from '../../../components/toast/toast.service'
 import { ClerkService } from '../../../core/services/clerk.service'
+import { LandingComponent } from '../../landing/landing.component'
 import { RegisterComponent } from './register.component'
+
+@Component({ selector: 'app-landing', template: '<h1>Landing</h1>' })
+class LandingStubComponent {}
 
 describe('RegisterComponent', () => {
     function render(selfRegistrationEnabled: boolean) {
@@ -11,39 +16,37 @@ describe('RegisterComponent', () => {
             isAvailable: signal(true),
             isLoaded: signal(true),
             isSelfRegistrationEnabled: signal(selfRegistrationEnabled),
-            mountSignUp: vi.fn().mockName('mountSignUp'),
-            unmountSignUp: vi.fn().mockName('unmountSignUp'),
+            openSignUp: vi.fn().mockName('openSignUp'),
         }
 
         TestBed.configureTestingModule({
             imports: [RegisterComponent],
-            providers: [provideRouter([]), { provide: ClerkService, useValue: clerkService }],
-        })
+            providers: [
+                provideRouter([]),
+                { provide: ClerkService, useValue: clerkService },
+                { provide: ToastService, useValue: { warning: vi.fn() } },
+            ],
+        }).overrideComponent(RegisterComponent, { remove: { imports: [LandingComponent] }, add: { imports: [LandingStubComponent] } })
         const fixture = TestBed.createComponent(RegisterComponent)
         fixture.detectChanges()
 
         return { fixture, clerkService, text: (fixture.nativeElement as HTMLElement).textContent ?? '' }
     }
 
-    // #324: the form is on the page, not behind a button that opens it.
-    it('puts Clerk sign-up on the page while self-registration is open, and takes it away on leaving', () => {
-        const { fixture, clerkService, text } = render(true)
+    // #343: /register is the landing page with Clerk's own sign-up dialog open over it.
+    it('shows the landing page with the sign-up dialog while sign-up is open', () => {
+        const { clerkService, text } = render(true)
 
-        expect(text).toContain('Create your Board Vault account')
-        expect(text).not.toMatch(/secure|Clerk/)
-        expect((fixture.nativeElement as HTMLElement).querySelector('button')).toBeNull()
-        const host = (fixture.nativeElement as HTMLElement).querySelector('[data-testid="clerk-form"]')
-        expect(clerkService.mountSignUp).toHaveBeenCalledWith(host)
-
-        fixture.destroy()
-        expect(clerkService.unmountSignUp).toHaveBeenCalledWith(host)
+        expect(text).toContain('Landing')
+        expect(clerkService.openSignUp).toHaveBeenCalledOnce()
     })
 
     it('says new accounts are paused while self-registration is off, without beta or invitation wording (#157)', () => {
-        const { text } = render(false)
+        const { text, clerkService } = render(false)
 
         expect(text).toContain('New accounts are paused for now')
         expect(text).not.toMatch(/invite-only|private beta|invitation/i)
+        expect(clerkService.openSignUp).not.toHaveBeenCalled()
     })
 
     it('ignores a Clerk invitation ticket in the address', () => {

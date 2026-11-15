@@ -2128,15 +2128,6 @@
         <source>Unpin <ph id="0" equiv="group" disp="group.name"/></source>
       </segment>
     </unit>
-    <unit id="2134897893235836867">
-      <notes>
-        <note category="location">src/app/pages/auth/register/register.component.html</note>
-        <note category="description">Heading of the sign-up page when the sign-up service is down</note>
-      </notes>
-      <segment>
-        <source>We are reconnecting the sign-up service</source>
-      </segment>
-    </unit>
     <unit id="2138846703401280109">
       <notes>
         <note category="location">src/app/pages/groups/group-edit/group-edit.component.html</note>
@@ -2234,15 +2225,6 @@
         <source>Session marked as completed.</source>
       </segment>
     </unit>
-    <unit id="2179376959569917010">
-      <notes>
-        <note category="location">src/app/pages/auth/login/login.component.html</note>
-        <note category="description">Error on the sign-in page, seen only by developers</note>
-      </notes>
-      <segment>
-        <source> Sign-in is not configured for this environment. Set <pc id="0" equivStart="START_TAG_CODE" equivEnd="CLOSE_TAG_CODE" type="other" dispStart="&lt;code&gt;" dispEnd="&lt;/code&gt;">CLERK_PUBLISHABLE_KEY</pc> and restart the app. </source>
-      </segment>
-    </unit>
     <unit id="2184031811701168127">
       <notes>
         <note category="location">src/app/pages/meet-view/meet-view.component.ts</note>
@@ -2259,15 +2241,6 @@
       </notes>
       <segment>
         <source>The games from your groups could not be loaded, so the ones waiting for your rating are missing.</source>
-      </segment>
-    </unit>
-    <unit id="2190081233855588477">
-      <notes>
-        <note category="location">src/app/pages/auth/login/login.component.html</note>
-        <note category="description">Error on the sign-in page when the sign-in service does not load</note>
-      </notes>
-      <segment>
-        <source> The secure sign-in service could not be reached. Refresh this page to try again. </source>
       </segment>
     </unit>
     <unit id="2191804087027655913">
@@ -5149,15 +5122,6 @@
         <source>Loading your groups</source>
       </segment>
     </unit>
-    <unit id="3643787078575728662">
-      <notes>
-        <note category="location">src/app/pages/auth/register/register.component.html</note>
-        <note category="description">Line at the bottom of the sign-up pages with a link to the privacy page</note>
-      </notes>
-      <segment>
-        <source>See what Board Vault keeps about you in the <pc id="0" equivStart="START_LINK" equivEnd="CLOSE_LINK" type="link" dispStart="&lt;a routerLink=&quot;/privacy&quot; class=&quot;underline&quot;&gt;" dispEnd="&lt;/a&gt;">privacy notice</pc>.</source>
-      </segment>
-    </unit>
     <unit id="3646645416321057827">
       <notes>
         <note category="location">src/app/app.component.ts</note>
@@ -6472,15 +6436,6 @@
         <source>Current members</source>
       </segment>
     </unit>
-    <unit id="4194367887536857130">
-      <notes>
-        <note category="location">src/app/pages/auth/register/register.component.html</note>
-        <note category="description">Heading of the sign-up page</note>
-      </notes>
-      <segment>
-        <source>Create your Board Vault account</source>
-      </segment>
-    </unit>
     <unit id="4201632374022727298">
       <notes>
         <note category="location">src/app/pages/play-page/play-page.component.html</note>
@@ -7174,15 +7129,6 @@
       </notes>
       <segment>
         <source>Text size</source>
-      </segment>
-    </unit>
-    <unit id="4548285248495178004">
-      <notes>
-        <note category="location">src/app/pages/auth/register/register.component.html</note>
-        <note category="description">Text on the sign-up page when the sign-up service is down</note>
-      </notes>
-      <segment>
-        <source>Your account has not been created. Please try again shortly.</source>
       </segment>
     </unit>
     <unit id="4580988005648117665">
@@ -8244,6 +8190,15 @@
       </notes>
       <segment>
         <source><ph id="0" equiv="actor" disp="actor"/> cleared who won <ph id="1" equiv="game" disp="game"/></source>
+      </segment>
+    </unit>
+    <unit id="5138317006367730644">
+      <notes>
+        <note category="location">src/app/pages/auth/clerk-dialog/open-clerk-dialog.ts</note>
+        <note category="description">Toast on the sign-in and sign-up pages when the sign-in service does not load</note>
+      </notes>
+      <segment>
+        <source>Sign-in isn’t available right now. Refresh the page to try again.</source>
       </segment>
     </unit>
     <unit id="5140281471826288799">
@@ -13387,15 +13342,6 @@
         <source>Who changed what in this group, newest first. Nothing here can be edited: a mistake is fixed by changing it back, and both changes stay.</source>
       </segment>
     </unit>
-    <unit id="7794280213228432643">
-      <notes>
-        <note category="location">src/app/pages/auth/register/register.component.html</note>
-        <note category="description">Button on the sign-up page when the sign-up service is down</note>
-      </notes>
-      <segment>
-        <source>Try secure sign-up again</source>
-      </segment>
-    </unit>
     <unit id="7796921563219723714">
       <notes>
         <note category="location">src/app/pages/privacy/privacy-page.component.html</note>
@@ -14379,15 +14325,6 @@
       </notes>
       <segment>
         <source>{VAR_PLURAL, plural, one {<ph id="0" equiv="INTERPOLATION"/> played} other {<ph id="1" equiv="INTERPOLATION"/> played}}</source>
-      </segment>
-    </unit>
-    <unit id="8218180595897396108">
-      <notes>
-        <note category="location">src/app/pages/auth/login/login.component.html</note>
-        <note category="description">Heading of the sign-in page</note>
-      </notes>
-      <segment>
-        <source>Sign in to Board Vault</source>
       </segment>
     </unit>
     <unit id="8219187828509275217">
@@ -15713,15 +15650,6 @@
       </notes>
       <segment>
         <source>Tick the games you played. Everyone who came is marked as a player; untick anyone who sat a game out.</source>
-      </segment>
-    </unit>
-    <unit id="8865777077981814555">
-      <notes>
-        <note category="location">src/app/pages/auth/register/register.component.html</note>
-        <note category="description">Small heading of the sign-up page when the sign-up service is down</note>
-      </notes>
-      <segment>
-        <source>Secure sign-up unavailable</source>
       </segment>
     </unit>
     <unit id="8867105318039392701">

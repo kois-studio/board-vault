@@ -6301,6 +6301,93 @@
       }
     },
     "schemas": {
+      "AvatarDto": {
+        "type": "object",
+        "properties": {
+          "backgroundColor": {
+            "type": "string",
+            "example": "#3B82F6"
+          },
+          "iconName": {
+            "type": "object",
+            "example": "person-fill"
+          },
+          "emoji": {
+            "type": "object",
+            "example": null
+          },
+          "type": {
+            "type": "string",
+            "example": "icon"
+          },
+          "initials": {
+            "type": "string",
+            "example": "AB"
+          }
+        },
+        "required": [
+          "backgroundColor",
+          "iconName",
+          "emoji",
+          "type",
+          "initials"
+        ]
+      },
+      "UserSelfDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number",
+            "example": 1
+          },
+          "email": {
+            "type": "string",
+            "example": "user@example.test"
+          },
+          "createdAt": {
+            "type": "string",
+            "example": "2024-09-28 10:02:39"
+          },
+          "username": {
+            "type": "string",
+            "example": "sample-user"
+          },
+          "displayName": {
+            "type": "string",
+            "example": "Sample User"
+          },
+          "avatar": {
+            "description": "The avatar of the user.",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/AvatarDto"
+              }
+            ]
+          },
+          "locale": {
+            "type": "string",
+            "enum": [
+              "en",
+              "es",
+              "fr",
+              "de",
+              "it"
+            ],
+            "nullable": true,
+            "example": "es",
+            "description": "The interface language the person chose (ADR-0024); null until they choose one."
+          }
+        },
+        "required": [
+          "id",
+          "email",
+          "createdAt",
+          "username",
+          "displayName",
+          "avatar",
+          "locale"
+        ]
+      },
       "SessionStatusDto": {
         "type": "object",
         "properties": {
@@ -6319,13 +6406,22 @@
           "clerkUserId": {
             "type": "string",
             "example": "user_2abc"
+          },
+          "user": {
+            "description": "The account itself, as `GET /profile/users/:userId` answers it, so finishing sign-in takes one request (#343).",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/UserSelfDto"
+              }
+            ]
           }
         },
         "required": [
           "isValid",
           "userId",
           "isAdmin",
-          "clerkUserId"
+          "clerkUserId",
+          "user"
         ]
       },
       "ClerkSyncResultDto": {
@@ -6357,38 +6453,6 @@
         "required": [
           "username",
           "email"
-        ]
-      },
-      "AvatarDto": {
-        "type": "object",
-        "properties": {
-          "backgroundColor": {
-            "type": "string",
-            "example": "#3B82F6"
-          },
-          "iconName": {
-            "type": "object",
-            "example": "person-fill"
-          },
-          "emoji": {
-            "type": "object",
-            "example": null
-          },
-          "type": {
-            "type": "string",
-            "example": "icon"
-          },
-          "initials": {
-            "type": "string",
-            "example": "AB"
-          }
-        },
-        "required": [
-          "backgroundColor",
-          "iconName",
-          "emoji",
-          "type",
-          "initials"
         ]
       },
       "UserGetDto": {
@@ -11709,61 +11773,6 @@
         "required": [
           "meets",
           "records"
-        ]
-      },
-      "UserSelfDto": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "number",
-            "example": 1
-          },
-          "email": {
-            "type": "string",
-            "example": "user@example.test"
-          },
-          "createdAt": {
-            "type": "string",
-            "example": "2024-09-28 10:02:39"
-          },
-          "username": {
-            "type": "string",
-            "example": "sample-user"
-          },
-          "displayName": {
-            "type": "string",
-            "example": "Sample User"
-          },
-          "avatar": {
-            "description": "The avatar of the user.",
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/AvatarDto"
-              }
-            ]
-          },
-          "locale": {
-            "type": "string",
-            "enum": [
-              "en",
-              "es",
-              "fr",
-              "de",
-              "it"
-            ],
-            "nullable": true,
-            "example": "es",
-            "description": "The interface language the person chose (ADR-0024); null until they choose one."
-          }
-        },
-        "required": [
-          "id",
-          "email",
-          "createdAt",
-          "username",
-          "displayName",
-          "avatar",
-          "locale"
         ]
       },
       "InvitationWithExtraData": {

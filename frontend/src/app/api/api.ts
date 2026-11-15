@@ -182,12 +182,7 @@ export class Api {
     /** Not tried again on failure: the sign-in handoff tries again on its own schedule (#238, #240). */
     clerkAuthStatus() {
         return this.http
-            .get<{
-                isValid: true
-                userId: number
-                isAdmin: boolean
-                clerkUserId: string
-            }>(`${this.url}/auth/clerk/status`, { context: withoutReadRetry() })
+            .get<unknown>(`${this.url}/auth/clerk/status`, { context: withoutReadRetry() })
             .pipe(map((response) => clerkAuthStatusSchema.parse(response)))
     }
 

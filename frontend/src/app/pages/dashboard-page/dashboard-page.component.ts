@@ -8,7 +8,7 @@ import { ImageProfileComponent } from '../../components/image-profile/image-prof
 import { NextNightCardComponent } from '../../components/next-night-card/next-night-card.component'
 import { RatingFollowUpComponent } from '../../components/rating-follow-up/rating-follow-up.component'
 import { SessionAnswerComponent } from '../../components/session-answer/session-answer.component'
-import { SkeletonCardGroupComponent } from '../../components/skeletons/skeleton-card-group/skeleton-card-group.component'
+import { SkeletonHomeComponent } from '../../components/skeletons/skeleton-home/skeleton-home.component'
 import { ASYNC } from '../../components/ui/async/async.component'
 import { ButtonComponent } from '../../components/ui/button/button.component'
 import { ContainerWrapperComponent } from '../../components/ui/container-wrapper/container-wrapper.component'
@@ -19,6 +19,7 @@ import { HomePreferencesService } from '../../core/services/home-preferences.ser
 import { gameTitle } from '../../core/utils/gameTitle'
 import { mergeHistoryParticipants } from '../../core/utils/historyParticipants'
 import { daysUntil, relativeDay, sessionDate, upcomingState } from '../../core/utils/sessionTiming'
+import { HOME_LISTS } from './home-lists'
 
 /**
  * Home: the signed-in starting point. It follows where the person is: a new account is pointed at its
@@ -39,7 +40,7 @@ import { daysUntil, relativeDay, sessionDate, upcomingState } from '../../core/u
         NgTemplateOutlet,
         RouterLink,
         SessionAnswerComponent,
-        SkeletonCardGroupComponent,
+        SkeletonHomeComponent,
     ],
     templateUrl: 'dashboard-page.component.html',
 })
@@ -104,7 +105,7 @@ export class DashboardPageComponent {
     })
 
     constructor() {
-        this.dataService.use(['games', 'groups', 'groupInvitations', 'history', 'historySummary', 'invitations', 'meets'])
+        this.dataService.use(HOME_LISTS)
         effect(() => {
             const groupId = this.nextNight()?.groupId
             // Your groups or games loaded again: read it again.

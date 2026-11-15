@@ -4,6 +4,7 @@ import request from 'supertest'
 
 import { AuthGuard } from '../../../common/guards/auth.guard.js'
 import { RateLimitGuard } from '../../../common/guards/rate-limit.guard.js'
+import { UsersService } from '../../core/users/users.service.js'
 
 import { AccountDeletionService } from './account-deletion.service.js'
 import { AuthController } from './auth.controller.js'
@@ -16,17 +17,21 @@ describe('AuthController', () => {
     const profile = { clerkUserId: 'user_clerk_7', username: 'ana_plays', primaryEmail: 'person@example.test', primaryEmailVerified: true }
     const clerkIdentity = { getClerkProfile: vi.fn() }
     const accountSync = { apply: vi.fn() }
+    const self = { id: 7, email: 'person@example.test', username: 'ana_plays', displayName: 'Ana', createdAt: '2026-01-01' }
+    const users = { getSelfById: vi.fn() }
 
     beforeEach(async () => {
         accountDeletion.deleteOwnAccount.mockClear()
         clerkIdentity.getClerkProfile.mockReset().mockResolvedValue(profile)
         accountSync.apply.mockReset().mockResolvedValue({ username: 'updated', email: 'unchanged' })
+        users.getSelfById.mockReset().mockResolvedValue(self)
         const module = await Test.createTestingModule({
             controllers: [AuthController],
             providers: [
                 { provide: AccountDeletionService, useValue: accountDeletion },
                 { provide: ClerkIdentityService, useValue: clerkIdentity },
                 { provide: ClerkAccountSyncService, useValue: accountSync },
+                { provide: UsersService, useValue: users },
             ],
         })
             .overrideGuard(RateLimitGuard)
@@ -53,10 +58,12 @@ describe('AuthController', () => {
         await app.close()
     })
 
-    it('returns the Board Vault account behind the Clerk session', async () => {
+    it('returns the Board Vault account behind the Clerk session, with the account itself (#343)', async () => {
         const response = await request(app.getHttpServer()).get('/auth/clerk/status').expect(200)
 
-        expect(response.body).toEqual({ isValid: true, userId: 7, isAdmin: false, clerkUserId: 'user_clerk_7' })
+        expect(response.body).toEqual({ isValid: true, userId: 7, isAdmin: false, clerkUserId: 'user_clerk_7', user: self })
+        // The account behind the session, never one named by the client.
+        expect(users.getSelfById).toHaveBeenCalledWith(7)
     })
 
     it('deletes the signed-in account, never one named by the client', async () => {

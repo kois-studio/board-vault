@@ -106,8 +106,8 @@ List `AuthGuard` first; the others read `request.user`.
 | `app.routes.ts` | All routes and their guards. |
 | `app.config.ts` | Providers; starts Clerk once the first page has painted (`afterFirstPagePaint`). `AuthOnlyGuard`, `AdminGuard` and API tokens start it sooner if they need it (`ClerkService.whenLoaded`); public pages, `GuestOnlyGuard` included, never wait for it. |
 | `api/` | `Api` (every HTTP call), zod response schemas, shared types. The schemas turn stored artwork paths (`/artwork/…`) into full addresses on the API. |
-| `core/services/clerk.service.ts` | Clerk lifecycle, sign-in and sign-up forms mounted on `/login` and `/register`, the account panel, session token. |
-| `core/services/login.service.ts` | Board Vault session state: verifies Clerk sessions with `/auth/clerk/status` and loads the current user. |
+| `core/services/clerk.service.ts` | Clerk lifecycle, sign-in and sign-up dialogs, the account panel, Clerk's navigations through the router, session token. |
+| `core/services/login.service.ts` | Board Vault session state: verifies Clerk sessions with `/auth/clerk/status`, which brings the current user (#343). |
 | `core/services/data.service.ts` | Shared signals for the current user and loaded data. |
 | `core/services/connectivity.service.ts` | Whether Board Vault can be reached; drives the "can't reach Board Vault" banner ([Slow and failed requests](#slow-and-failed-requests)). |
 | `core/guards/` | `AuthOnlyGuard`, `GuestOnlyGuard`, `AdminGuard`. |
@@ -352,7 +352,7 @@ those pages starts with a back link (`appBackLink`) instead. The
 not-found page (`**`) sits in `LayoutCompleteComponent` too, in a parent of
 its own after both, so the wildcard only matches once no page in either
 layout did. Both layouts are marked `SHOWS_AUTH_HANDOFF` and show a page
-skeleton in the app's frame instead of the page while a signed-in account is
+skeleton (Home's own on the way to Home, #343) in the app's frame instead of the page while a signed-in account is
 still being resolved (the handoff screen once that is slow or fails; see
 [authentication.md](authentication.md)), so `AuthOnlyGuard` lets the first navigation through instead of
 holding it on a blank page; `auth.guard.spec.ts` fails if a guarded page sits

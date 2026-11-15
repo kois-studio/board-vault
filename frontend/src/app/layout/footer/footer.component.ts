@@ -5,10 +5,11 @@ import { LogoComponent } from '../../components/ui/logo/logo.component'
 import { ThemeSwitchComponent } from '../../components/ui/theme-switch/theme-switch.component'
 import { CONTACT_EMAIL, contactMailto } from '../../core/contact'
 import { AccountPendingService } from '../../core/services/account-pending.service'
+import { AuthDialogLinkDirective } from '../../pages/auth/clerk-dialog/auth-dialog-link.directive'
 
 @Component({
     selector: 'app-layout-footer',
-    imports: [GithubMarkComponent, LogoComponent, RouterLink, ThemeSwitchComponent],
+    imports: [AuthDialogLinkDirective, GithubMarkComponent, LogoComponent, RouterLink, ThemeSwitchComponent],
     templateUrl: './footer.component.html',
 })
 export class LayoutFooterComponent {

@@ -15,8 +15,11 @@ import { LoginService } from './login.service'
 /** Route data flag for the focused-pages layout, which has no header: its boot frame is the page skeleton alone. */
 export const FOCUSED_LAYOUT = 'focusedLayout'
 
-/** "Connecting you…" only shows when finishing sign-in takes longer than this; until then the page skeleton does. */
-export const HANDOFF_CARD_AFTER_MS = 2_000
+/**
+ * "Connecting you…" only shows when finishing sign-in takes longer than this; until then the page skeleton does.
+ * A cold start of the API is a few seconds and needs no card of its own (#343); a failure shows it at once.
+ */
+export const HANDOFF_CARD_AFTER_MS = 6_000
 
 /** A first navigation cancelled for one of these has another one on its way, which ends the frame instead. */
 const REPLACED = new Set<NavigationCancellationCode | undefined>([

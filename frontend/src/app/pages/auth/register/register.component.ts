@@ -3,22 +3,20 @@ import { RouterLink } from '@angular/router'
 import { ButtonComponent } from '../../../components/ui/button/button.component'
 import { IconComponent } from '../../../components/ui/icon/icon.component'
 import { ClerkService } from '../../../core/services/clerk.service'
-import { ClerkFormComponent } from '../clerk-form/clerk-form.component'
+import { LandingComponent } from '../../landing/landing.component'
+import { openClerkDialogWhenReady } from '../clerk-dialog/open-clerk-dialog'
 
+/** `/register`: the landing page with Clerk's sign-up dialog over it (#343), or a notice while sign-up is paused. */
 @Component({
     templateUrl: 'register.component.html',
-    imports: [ButtonComponent, ClerkFormComponent, RouterLink, IconComponent],
+    imports: [ButtonComponent, IconComponent, LandingComponent, RouterLink],
 })
 export class RegisterComponent {
     private readonly clerkService = inject(ClerkService)
 
-    public readonly clerkIsConfigured = this.clerkService.isConfigured
-    public readonly clerkIsAvailable = this.clerkService.isAvailable
-    public readonly clerkIsLoaded = this.clerkService.isLoaded
     public readonly selfRegistrationEnabled = this.clerkService.isSelfRegistrationEnabled
 
-    /** Clerk didn't load: loading the page again is the way to try again. */
-    public retry(): void {
-        location.reload()
+    constructor() {
+        if (this.selfRegistrationEnabled()) openClerkDialogWhenReady('sign-up')
     }
 }

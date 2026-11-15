@@ -89,16 +89,17 @@ test.describe('public navigation', () => {
     })
 
     test('keeps the keyboard skip link on the current page', async ({ page }) => {
-        await page.goto('/login')
+        // /login is the landing page under its sign-in dialog (#343); /privacy is a page of its own.
+        await page.goto('/privacy')
         const skipLink = page.getByRole('link', { name: 'Skip to main content' })
 
         // A bare "#main-content" resolved against <base href="/"> and loaded the landing page instead.
-        await expect(skipLink).toHaveAttribute('href', '/login#main-content')
+        await expect(skipLink).toHaveAttribute('href', '/privacy#main-content')
         await page.keyboard.press('Tab')
         await expect(skipLink).toBeFocused()
         await page.keyboard.press('Enter')
 
-        await expect(page).toHaveURL(/\/login#main-content$/)
+        await expect(page).toHaveURL(/\/privacy#main-content$/)
         await expect(page.locator('#main-content')).toBeFocused()
         await expect(page.getByRole('heading', { name: /Every game you own/i })).toHaveCount(0)
     })

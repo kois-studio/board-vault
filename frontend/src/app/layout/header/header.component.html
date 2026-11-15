@@ -46,8 +46,8 @@
                 }
             </nav>
             <!-- The sign-in and sign-up pages hold Clerk's form, as on phones (#324); no pop-up. -->
-            <a routerLink="/login" class="font-medium" i18n="Button in the signed-out header that opens sign-in">Log in</a>
-            <a appButton routerLink="/register" i18n="Call to action in the signed-out header that creates an account">Start free</a>
+            <a appAuthDialog="sign-in" class="cursor-pointer font-medium" i18n="Button in the signed-out header that opens sign-in">Log in</a>
+            <a appButton appAuthDialog="sign-up" i18n="Call to action in the signed-out header that creates an account">Start free</a>
         </div>
         @if (languages.length) {
         <app-language-menu class="ml-auto lg:ml-0" [locales]="languages" />
@@ -71,6 +71,16 @@
     <nav id="mobile-navigation" class="border-t border-bv-border px-4 py-3 lg:hidden" aria-label="Mobile navigation" i18n-aria-label="Name of the links menu that opens on phones in the signed-out header">
         <div class="grid grid-cols-2 gap-2 sm:grid-cols-5">
             @for (item of mobilePublicNavigation; track item.path) {
+            @if (item.dialog) {
+            <a
+                [appAuthDialog]="item.dialog"
+                class="flex min-h-11 cursor-pointer items-center gap-2 rounded-lg px-3 py-3 text-sm font-medium text-bv-text-muted hover:bg-bv-surface-2"
+                (click)="closeMobileNavigation()"
+            >
+                <app-icon [name]="item.icon" [size]="18" />
+                <span>{{ item.label }}</span>
+            </a>
+            } @else {
             <a
                 [routerLink]="item.path"
                 class="flex min-h-11 items-center gap-2 rounded-lg px-3 py-3 text-sm font-medium text-bv-text-muted hover:bg-bv-surface-2"
@@ -79,6 +89,7 @@
                 <app-icon [name]="item.icon" [size]="18" />
                 <span>{{ item.label }}</span>
             </a>
+            }
             }
         </div>
     </nav>

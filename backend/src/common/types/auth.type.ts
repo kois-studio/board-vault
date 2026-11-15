@@ -1,6 +1,8 @@
 import { ApiProperty } from '@nestjs/swagger'
 import { IsBoolean, IsNumber, IsString } from 'class-validator'
 
+import { UserSelfDto } from './user.type.js'
+
 export class SuccessDto {
     @ApiProperty({ example: true, description: 'The success status of the operation.' })
     @IsBoolean()
@@ -33,6 +35,12 @@ export class SessionStatusDto {
     @ApiProperty({ example: 'user_2abc' })
     @IsString()
     clerkUserId: string
+
+    @ApiProperty({
+        type: UserSelfDto,
+        description: 'The account itself, as `GET /profile/users/:userId` answers it, so finishing sign-in takes one request (#343).',
+    })
+    user: UserSelfDto
 }
 
 /**

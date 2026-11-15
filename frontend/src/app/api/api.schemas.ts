@@ -82,13 +82,6 @@ const artworkUrlSchema = z.pipe(
     z.transform((imageUrl) => resolveArtworkUrl(imageUrl)),
 )
 
-export const clerkAuthStatusSchema = z.object({
-    isValid: z.literal(true),
-    userId: z.number(),
-    isAdmin: z.boolean(),
-    clerkUserId: z.string(),
-})
-
 const gameCompleteObject = z.object({
     id: z.number(),
     title: z.optional(z.string()),
@@ -280,6 +273,15 @@ export const userSchema: z.ZodMiniType<UserType> = z.object({
     email: z.email(),
     createdAt: z.string(),
     locale: z.optional(z.nullable(z.enum(SUPPORTED_LOCALES))),
+})
+
+export const clerkAuthStatusSchema = z.object({
+    isValid: z.literal(true),
+    userId: z.number(),
+    isAdmin: z.boolean(),
+    clerkUserId: z.string(),
+    // The account itself, so finishing sign-in takes one request (#343). Optional while an older API is still live.
+    user: z.optional(userSchema),
 })
 
 const groupSchema: z.ZodMiniType<GroupType> = z.object({

@@ -30,17 +30,7 @@ export class ProfileService {
 
     @LogFeature(new Logger('ProfileService'))
     async getUserById(id: number): Promise<UserSelfDto> {
-        const user = await this.usersService.getUserById(id)
-
-        return {
-            id: user.id,
-            email: user.email,
-            username: user.username,
-            displayName: user.displayName,
-            avatar: user.avatar,
-            createdAt: user.createdAt,
-            locale: user.locale,
-        }
+        return this.usersService.getSelfById(id)
     }
 
     @LogFeature(new Logger('ProfileService'))
