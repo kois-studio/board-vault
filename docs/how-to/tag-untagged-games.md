@@ -47,17 +47,14 @@ COMMIT;
 
 Then rerun the first query from step 1: the games you tagged are gone from it.
 
-## 4. Clear the cache
+## 4. Nothing to clear
 
-The API caches each game and its tags in Redis (`cacheKeys` in
-`backend/src/modules/common/cache/cache-keys.ts`). Delete both keys for every
-game you tagged, in production's Upstash database, as an admin edit does:
-
-```text
-DEL games:byId:41 game-tags:byGameId:41 games:byId:42 game-tags:byGameId:42
-```
-
-Otherwise Browse and the game page show no tags until the cache expires.
+Tags are never cached in Redis. The game page, Browse and Administration read
+them from the database on every request (#300), so new tags show at once. The
+one exception is the tag list in Browse's filters, which a browser may keep for
+up to five minutes and then show once more while it refreshes it in the
+background (`RarelyChangingInterceptor`, #254). A tag used for the first time
+can take that long to appear there.
 
 ## 5. Check
 

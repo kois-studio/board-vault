@@ -494,21 +494,6 @@ export class GameQueries {
         })
     }
 
-    getGameTags(gameId: number) {
-        return this.database.execute({
-            sql: `
-            SELECT
-                gt.gameId,
-                gt.tagId
-            FROM
-                GameTag gt
-            WHERE
-                gt.gameId = ?;
-            `,
-            args: [gameId],
-        })
-    }
-
     /** Categories with their tag ids (as a JSON array) and how many distinct games use any of their tags. */
     getTagCategoriesWithTags(categoryId: number | null = null) {
         return this.database.execute({
@@ -538,20 +523,6 @@ export class GameQueries {
         return this.database.execute({
             sql: `SELECT COUNT(*) FROM GameTag WHERE tagId = ?`,
             args: [tagId],
-        })
-    }
-
-    addGameTag(gameId: number, tagId: number) {
-        return this.database.execute({
-            sql: 'INSERT INTO GameTag (gameId, tagId) VALUES (?, ?)',
-            args: [gameId, tagId],
-        })
-    }
-
-    removeGameTag(gameId: number, tagId: number) {
-        return this.database.execute({
-            sql: 'DELETE FROM GameTag WHERE gameId = ? AND tagId = ?',
-            args: [gameId, tagId],
         })
     }
 
