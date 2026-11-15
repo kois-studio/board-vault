@@ -67,8 +67,9 @@ export class UsageInterceptor implements NestInterceptor {
 
         if (!action) return next.handle()
 
-        // Waited for, not fired and forgotten: on Vercel, work left after the response can be frozen and lost.
-        // `record` never throws, so a failure to count never fails the request.
+        // Never fire and forget `record`: on Vercel, work left running after the response can be frozen and lost.
+        // `record` hands its insert to Vercel's waitUntil instead, so the response does not wait for it, and awaits
+        // it anywhere else (afterResponse, #299). It never throws, so a failure to count never fails the request.
         return next.handle().pipe(
             mergeMap(async response => {
                 const accountId = request.user?.userId

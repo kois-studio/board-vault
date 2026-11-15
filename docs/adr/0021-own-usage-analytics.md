@@ -129,7 +129,8 @@ disclosed and with an opt-out. This is our reading, not legal advice.
   interceptor's map. A route that isn't listed is never recorded.
 - A failure to record is logged and never fails the request.
 - Each recorded action is one extra insert, after the response has been
-  computed.
+  computed. On Vercel it runs after the response is sent (best effort, through
+  `waitUntil`), so counting never delays the request (#299).
 - Production needs `USAGE_PSEUDONYM_SECRET` and `CRON_SECRET`. Changing the
   pseudonym secret starts every pseudonym afresh; funnels across the change
   break, and nothing else does.

@@ -7,15 +7,20 @@ export const RAW_EVENT_DAYS = 30
 export class UsageQueries {
     constructor(private readonly database: DatabaseService) {}
 
-    /** Records one event, unless the account turned usage statistics off. */
+    /**
+     * Records one event, unless the account turned usage statistics off or was deleted. On Vercel this runs after the
+     * response (#299), so it may land after the same account's next request: both checks are in this one statement,
+     * so an event can never outlive an opt-out or a deletion, whichever comes first (ADR-0018, ADR-0021).
+     */
     record(accountId: number, event: { name: string; pseudonym: string; view: string | null; fromView: string | null }) {
         return this.database.execute({
             sql: `
                 INSERT INTO UsageEvent (name, pseudonym, view, fromView)
                 SELECT ?, ?, ?, ?
                 WHERE NOT EXISTS (SELECT 1 FROM UsageOptOut WHERE accountId = ?)
+                  AND NOT EXISTS (SELECT 1 FROM Account WHERE id = ? AND isDeleted = 1)
             `,
-            args: [event.name, event.pseudonym, event.view, event.fromView, accountId],
+            args: [event.name, event.pseudonym, event.view, event.fromView, accountId, accountId],
         })
     }
 

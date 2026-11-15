@@ -3,6 +3,7 @@ import { createHmac } from 'node:crypto'
 import { Injectable, Logger } from '@nestjs/common'
 
 import { safeErrorName, structuredLog } from '../../../common/logging/structured-log.js'
+import { afterResponse } from '../../../common/utils/after-response.js'
 import { DatabaseService } from '../../common/database/database.service.js'
 
 import { buildUsageReport } from './usage-report.js'
@@ -31,15 +32,23 @@ export class UsageService {
         return secret ? createHmac('sha256', secret).update(`account:${accountId}`).digest('hex').slice(0, 32) : null
     }
 
+    /**
+     * Records one event. On Vercel the insert runs after the response (`afterResponse`, #299), so counting never
+     * delays the request; anywhere else it is awaited. Call it from the request's own code path. It catches and logs
+     * its own failure: after the response there is nobody left to report it to.
+     */
     async record(accountId: number, name: UsageEventName, view: string | null = null, fromView: string | null = null): Promise<void> {
         const pseudonym = this.pseudonym(accountId)
 
         if (!pseudonym) return
-        try {
-            await this.databaseService.usage.record(accountId, { name, pseudonym, view, fromView })
-        } catch (error) {
-            this.LOGGER.warn(structuredLog('usage.record_failed', { event: name, error: safeErrorName(error) }))
-        }
+        await afterResponse(async () => {
+            try {
+                await this.databaseService.usage.record(accountId, { name, pseudonym, view, fromView })
+            } catch (error) {
+                // `usageEvent`, not `event`: structuredLog's own `event` would be overwritten.
+                this.LOGGER.warn(structuredLog('usage.record_failed', { usageEvent: name, error: safeErrorName(error) }))
+            }
+        })
     }
 
     /** Whether usage statistics are on for the account, and whether it has answered the notice (#158). */
