@@ -71,6 +71,8 @@ describe('notifications after the response (e2e)', () => {
         process.env.TURSO_DATABASE_URL = `file:${testDatabasePath}`
         process.env.TURSO_AUTH_TOKEN = ''
         process.env.UPSTASH_REDIS_REST_DISABLE = 'true'
+        // Usage counting also runs after the response (#299); off here, so `kept` holds the notifications only.
+        delete process.env.USAGE_PSEUDONYM_SECRET
 
         const moduleFixture: TestingModule = await Test.createTestingModule({ imports: [AppModule] })
             .overrideProvider(ClerkTokenVerifier)
