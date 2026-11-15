@@ -59,16 +59,13 @@ describe('GroupPersonClaimComponent', () => {
                 .fn()
                 .mockName('claimGroupPerson')
                 .mockReturnValue(of({ success: true, alreadyClaimed: false })),
-            joinGroupAsNewPerson: vi
-                .fn()
-                .mockName('joinGroupAsNewPerson')
-                .mockReturnValue(of({ id: 22 })),
         }
         const router = { events: of(), navigate: vi.fn().mockName('navigate').mockResolvedValue(true) }
         const toastService = { success: vi.fn().mockName('success') }
         const dataService = {
             refreshUserGroups: vi.fn().mockName('refreshUserGroups'),
             refreshUserGames: vi.fn().mockName('refreshUserGames'),
+            joinGroupAsNewPerson: vi.fn().mockName('joinGroupAsNewPerson').mockResolvedValue(undefined),
         }
 
         await TestBed.configureTestingModule({
@@ -184,6 +181,16 @@ describe('GroupPersonClaimComponent', () => {
                 expect(text()).toContain('Join as a new person')
             })
         }
+
+        it('joins as a new person and goes to the group; DataService reads your groups again (#316)', async () => {
+            const { component, dataService, router } = await createComponent(answered(404))
+
+            await component.joinAsNewPerson()
+
+            expect(dataService.joinGroupAsNewPerson).toHaveBeenCalledWith(12)
+            expect(dataService.refreshUserGroups).not.toHaveBeenCalled()
+            expect(router.navigate).toHaveBeenCalledWith(['/groups', 12])
+        })
 
         it('keeps the message, busy, while Retry loads, and ignores a second press', async () => {
             const { fixture, api, byTestId } = await createComponent(unreachable())
