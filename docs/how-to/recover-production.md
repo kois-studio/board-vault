@@ -19,7 +19,7 @@ Check the provider's status page before changing anything.
 | --- | --- | --- |
 | `/health/ready` reports `database: down` | Turso outage, or an invalid `TURSO_AUTH_TOKEN` | Check Turso's status. If the token is invalid, create one (`turso db tokens create board-vault`), set it in Vercel, and [force a build](../environments.md#environments). |
 | `/health/ready` reports `schema: down` | The code expects a different migration than production has | Apply the missing migration ([add-migration.md](add-migration.md#production-rollout-david-only)) or roll back the deploy. Between a migration and its deploy this is expected. |
-| `cache: down`, but the site works | Upstash outage, or its token | The API keeps serving from Turso and rate limits fail open. Fix the token or wait. |
+| `cache: down`, but the site works | Upstash outage, or its token | The API keeps serving from Turso and rate limits fail open. `cache.request.failed` lines in the logs give the error (`TimeoutError`: Redis took longer than 250 ms). Fix the token or wait. |
 | Nobody can sign in; the public site loads | Clerk outage, or a wrong Clerk key in Vercel | Check Clerk's status, then compare the Vercel keys with the production instance. |
 | A deploy broke the app | A bad release | Vercel **Instant Rollback** to the previous production deployment, then fix forward on `main`. |
 | Data damaged by a migration or an operator mistake | — | Restore the dump taken before the change (`~/Documents/board-vault-backups/`). |
