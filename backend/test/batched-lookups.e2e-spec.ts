@@ -45,13 +45,14 @@ describe('batched lookups (e2e)', () => {
                 (1, 'ada@example.test', 'adaplays', ${avatar}, 'Ada', 'user_ada', 0, 0),
                 (2, 'bea@example.test', 'beaplays', ${avatar}, 'Bea', 'user_bea', 0, 0),
                 (3, 'cai@example.test', 'caiplays', ${avatar}, 'Cai', 'user_cai', 0, 0),
+                (4, 'dee@example.test', 'deeplays', ${avatar}, 'Dee', 'user_dee', 0, 0),
                 ${rows(senders, id => `(${id}, 's${id}@example.test', 'sender${id}', ${avatar}, 'Sender ${id}', 'user_s${id}', 0, 0)`)};
             INSERT INTO Game (id, imageUrl, gameAvgDuration, minPlayers, maxPlayers) VALUES
                 ${rows(games, id => `(${id}, 'https://example.test/${id}.jpg', 45, 2, 4)`)};
             INSERT INTO GameEdition (gameId, languageCode, title, normalizedTitle, isPrimary) VALUES
                 ${rows(games, id => `(${id}, 'en', 'Game ${id}', 'game-${id}', 1)`)};
 
-            INSERT INTO OwnedGame (accountId, gameId) VALUES (2, 2), ${rows(many, id => `(3, ${id})`)};
+            INSERT INTO OwnedGame (accountId, gameId) VALUES (2, 2), ${rows(many, id => `(3, ${id})`)}, (4, 9), (4, 10);
             INSERT INTO WishlistedGame (accountId, gameId) VALUES (2, 9), ${rows(many, id => `(3, ${id + 7})`)};
             INSERT INTO GameReview (accountId, gameId, review) VALUES (2, 2, 7), ${rows(many, id => `(3, ${id}, 8)`)};
             INSERT INTO CollectionActivity (accountId, gameId, actionType) VALUES (2, 2, 'added'), ${rows(many, id => `(3, ${id}, 'added')`)};
@@ -66,16 +67,18 @@ describe('batched lookups (e2e)', () => {
             INSERT INTO GroupMembership (accountId, groupId) VALUES (1, 10), (1, 11), (2, 10), (3, 11), ${rows(senders, id => `(${id}, ${id + 10})`)};
             INSERT INTO GroupPerson (id, groupId, kind, displayName, createdByAccountId) VALUES
                 (100, 10, 'placeholder', 'Ana', 1), ${rows(many, id => `(${id + 100}, 11, 'placeholder', 'Guest ${id}', 1)`)};
-            -- Bea and Cai are linked people whose shelves count as what they own; 121 is archived.
+            -- Bea and Cai are linked people whose shelves count as what they own. 121 is archived, and so is Dee (122),
+            -- a linked person whose shelf would count too if archived people were shown (#290).
             INSERT INTO GroupPerson (id, groupId, accountId, kind, status, displayName, createdByAccountId) VALUES
                 (130, 10, 2, 'linked', 'active', 'Bea', 2), (120, 11, 3, 'linked', 'active', 'Cai', 3),
-                (121, 11, NULL, 'placeholder', 'archived', 'Gone', 1);
+                (121, 11, NULL, 'placeholder', 'archived', 'Gone', 1), (122, 11, 4, 'linked', 'archived', 'Dee', 4);
             UPDATE OwnedGame SET editionId = (SELECT id FROM GameEdition WHERE gameId = 3) WHERE accountId = 3 AND gameId = 3;
             INSERT INTO GroupPersonGameOwnership (groupPersonId, gameId, status, enteredByAccountId) VALUES
                 (100, 1, 'asserted', 1), ${rows(many, id => `(${id + 100}, ${id}, 'asserted', 1)`)},
-                (120, 2, 'rejected', 1), (121, 1, 'asserted', 1);
+                (120, 2, 'rejected', 1), (121, 1, 'asserted', 1), (122, 11, 'asserted', 1);
             INSERT INTO GroupPersonGamePreference (groupPersonId, gameId, preference, enteredByAccountId) VALUES
-                (100, 1, 'like', 1), ${rows(many, id => `(${id + 100}, ${id}, 'favorite', 1)`)};
+                (100, 1, 'like', 1), ${rows(many, id => `(${id + 100}, ${id}, 'favorite', 1)`)},
+                (121, 1, 'avoid', 1), (122, 9, 'like', 4);
 
             INSERT INTO Invitation (groupId, fromAccountId, toAccountId, expiresAt) VALUES
                 (30, 20, 2, datetime('now', '+7 days')), ${rows(senders, id => `(${id + 10}, ${id}, 3, datetime('now', '+7 days'))`)};
@@ -175,12 +178,55 @@ describe('batched lookups (e2e)', () => {
             [7, 'asserted', 'account_collection', null],
         ])
         expect(personIn(few.body.people)(130).ownership.map(row => [row.gameId, row.source])).toEqual([[2, 'account_collection']])
+    })
+
+    it('reads no archived person’s ownership or preferences unless archived people are shown (#290)', async () => {
+        const archived = [121, 122]
+        const active = await queriesFor('/groups/11/people', 'user_ada')
+
+        expect(active.body.people.map((entry: WorkspaceEntry) => entry.person.id).filter((id: number) => archived.includes(id))).toEqual([])
+        // Not read and then dropped: neither branch of the ownership query, nor the preferences query, returns their rows.
+        const activeOwnership = await peopleReadBy(OWNERSHIP_QUERY)
+        const activePreferences = await peopleReadBy(PREFERENCES_QUERY)
+
+        expect(activeOwnership).toEqual(expect.arrayContaining([...many.map(id => id + 100), 120]))
+        expect(activeOwnership.filter(id => archived.includes(id))).toEqual([])
+        expect(activePreferences).toEqual(expect.arrayContaining(many.map(id => id + 100)))
+        expect(activePreferences.filter(id => archived.includes(id))).toEqual([])
 
         const withArchived = await queriesFor('/groups/11/people?includeArchived=true', 'user_ada')
+        const everyone = personIn(withArchived.body.people)
 
-        expect(personIn(withArchived.body.people)(121).ownership.map(row => row.gameId)).toEqual([1])
+        // Shown when asked for, as before: what the group recorded, and a linked person's shelf.
+        expect(withArchived.queries).toBe(active.queries)
+        expect(everyone(121).ownership.map(row => row.gameId)).toEqual([1])
+        expect(everyone(121).preferences).toEqual([expect.objectContaining({ gameId: 1, preference: 'avoid' })])
+        expect(everyone(122).ownership.map(row => [row.gameId, row.source])).toEqual([
+            [9, 'account_collection'],
+            [10, 'account_collection'],
+            [11, 'placeholder_setup'],
+        ])
+        expect(everyone(122).preferences).toEqual([expect.objectContaining({ gameId: 9, preference: 'like' })])
+        // The people shown either way read the same rows.
+        for (const id of [...many.map(guest => guest + 100), 120]) {
+            expect(everyone(id)).toEqual(personIn(active.body.people)(id))
+        }
     })
+
+    /** The group people whose rows the last request's query matching `pattern` returned, in order. */
+    async function peopleReadBy(pattern: RegExp): Promise<Array<number>> {
+        const index = execute.mock.calls.findIndex(([statement]) => pattern.test(String(statement?.sql ?? statement)))
+
+        if (index < 0) throw new Error(`no query matched ${pattern}`)
+        const result = (await execute.mock.results[index]?.value) as { rows: Array<Array<unknown>> }
+
+        return result.rows.map(row => Number(row[0]))
+    }
 })
+
+/** The workspace's ownership read (`getGroupPeopleOwnership`) and preferences read (`getGroupPeoplePreferences`). */
+const OWNERSHIP_QUERY = /FROM GroupPersonGameOwnership o\s+INNER JOIN GroupPerson gp[\s\S]*UNION ALL/
+const PREFERENCES_QUERY = /FROM GroupPersonGamePreference p\s+INNER JOIN GroupPerson gp[\s\S]*ORDER BY p\.groupPersonId/
 
 type WorkspaceEntry = {
     person: { id: number }

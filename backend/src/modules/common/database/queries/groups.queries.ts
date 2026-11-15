@@ -671,21 +671,27 @@ export class GroupQueries {
         })
     }
 
-    /** What every person of a group owns, in one query: `getGroupPersonOwnership` for all of them, the person's id first. */
-    getGroupPeopleOwnership(groupId: number) {
+    /**
+     * What every person of a group owns, in one query: `getGroupPersonOwnership` for all of them, the person's id first.
+     * Only the people `getGroupPeople` reads with the same `includeArchived`: an archived person's rows, recorded or
+     * from a linked account's shelf, are not read unless archived people are shown (#290).
+     */
+    getGroupPeopleOwnership(groupId: number, includeArchived = false) {
+        const people = includeArchived ? '' : "AND gp.status = 'active'"
+
         return this.database.execute({
             sql: `
                 SELECT o.groupPersonId, o.gameId, o.status, o.source, o.enteredByAccountId,
                        o.confirmedByAccountId, o.createdAt, o.updatedAt, NULL, NULL
                 FROM GroupPersonGameOwnership o
-                INNER JOIN GroupPerson gp ON gp.id = o.groupPersonId AND gp.groupId = ?
+                INNER JOIN GroupPerson gp ON gp.id = o.groupPersonId AND gp.groupId = ? ${people}
                 UNION ALL
                 SELECT gp.id, og.gameId, 'asserted', 'account_collection', gp.accountId,
                        NULL, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, oe.title, oe.languageCode
                 FROM GroupPerson gp
                 INNER JOIN OwnedGame og ON og.accountId = gp.accountId
                 LEFT JOIN GameEdition oe ON oe.id = og.editionId AND oe.gameId = og.gameId
-                WHERE gp.groupId = ? AND gp.kind = 'linked'
+                WHERE gp.groupId = ? AND gp.kind = 'linked' ${people}
                   AND NOT EXISTS (
                       SELECT 1
                       FROM GroupPersonGameOwnership existing
@@ -735,13 +741,13 @@ export class GroupQueries {
         })
     }
 
-    /** Every person's game preferences in a group, in one query, the person's id first. */
-    getGroupPeoplePreferences(groupId: number) {
+    /** Every person's game preferences in a group, in one query, the person's id first; archived people as in `getGroupPeopleOwnership`. */
+    getGroupPeoplePreferences(groupId: number, includeArchived = false) {
         return this.database.execute({
             sql: `
                 SELECT p.groupPersonId, p.gameId, p.preference, p.source, p.enteredByAccountId, p.createdAt, p.updatedAt
                 FROM GroupPersonGamePreference p
-                INNER JOIN GroupPerson gp ON gp.id = p.groupPersonId AND gp.groupId = ?
+                INNER JOIN GroupPerson gp ON gp.id = p.groupPersonId AND gp.groupId = ? ${includeArchived ? '' : "AND gp.status = 'active'"}
                 ORDER BY p.groupPersonId ASC, p.gameId ASC
             `,
             args: [groupId],
