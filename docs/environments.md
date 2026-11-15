@@ -38,6 +38,33 @@ Production runs in Europe, close together: the API in Vercel `dub1`
 A request makes several database queries in a row, so the API must stay next
 to Turso; move them together.
 
+**Moving Redis to another region (David only).** Only production has Redis
+(shared development and previews run with it off), and everything in it is
+disposable: cached views are rebuilt from Turso and rate-limit counters start
+again, so nothing is copied. About 15 minutes (#255):
+
+1. Measure before, once the timing lines have been in production for a full
+   day. In the Vercel logs of `board-vault-back`, search
+   `cache.request.completed` and note the typical `durationMs` of `get`,
+   `set`, and `ping` (one round trip each), for warm requests
+   (`firstOnInstance: false`) and for each instance's first one. Leave out
+   `increment`, logged only when slow or first, and the operations that make
+   several calls. Count `cache.request.failed` lines with
+   `errorName: TimeoutError` ([Monitoring](#monitoring)).
+2. In Upstash, create a Redis database with its primary region in the new
+   region (AWS `eu-west-1`, next to the API and Turso) and no read regions.
+3. In Vercel, replace `UPSTASH_REDIS_REST_URL` and `UPSTASH_REDIS_REST_TOKEN`
+   for Production with the new database's REST values, then force a
+   production build (above). Keep the old database until the next step passes.
+   To roll back, empty the old database from the Upstash console (its cached
+   views missed the changes made meanwhile), put its values back, and force a
+   build.
+4. Check that `/health/ready` reports `cache: up`, then compare the same log
+   search with step 1. The new database starts empty, so expect more cache
+   misses and Turso reads for a while: compare durations, not hit rates.
+5. Delete the old database, and update the region here and on `/privacy`
+   (the Upstash entry and its date, in all five languages, ADR-0026).
+
 Every install uses npm 11.19.1, the npm that ships with the Node in `.nvmrc`
 (`packageManager` records it; both `vercel.json` files run
 `npx npm@11.19.1 ci`). CI and Vercel install with `--ignore-scripts`: neither
@@ -132,7 +159,14 @@ Only public values may go there. The API base URL is fixed per build in
   inside a request has its `requestId` (also returned as `X-Request-Id` and in
   error bodies); `http.request.completed` adds the route template, status,
   duration, and account id; `provider.timeout` marks a slow provider and
-  `database.retry` a read retried after a database timeout. Search
+  `database.retry` a read retried after a database timeout. Each Redis request
+  writes `cache.request.completed` with its `operation` (`get`, `set`,
+  `increment` for rate limits, `ping` for `/health/ready`, …), `durationMs`, and
+  `firstOnInstance`, true for an instance's first request, which also opens
+  the connection; `cache.request.failed` adds `errorName` (`TimeoutError` past
+  the 250 ms limit) and turns the cache and rate limits off on that instance
+  for 30 seconds. `increment` runs on almost every request, so it writes a
+  completed line only when it takes 100 ms or more, or is the first. Search
   Vercel logs by any of these values. No bodies, emails, or tokens are logged.
   The Vercel logs keep `log`, `warn`, `error`, and `fatal` lines only: the SQL
   template of every query and `@LogFeature`'s method entry and exit are
