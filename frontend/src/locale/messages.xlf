@@ -5104,15 +5104,6 @@
         <source>Getting set up</source>
       </segment>
     </unit>
-    <unit id="3609832365456512966">
-      <notes>
-        <note category="location">src/app/pages/privacy/privacy-page.component.html</note>
-        <note category="description">Company that processes data for Board Vault, on the privacy page; the EU-US Data Privacy Framework is the legal name of a transfer mechanism</note>
-      </notes>
-      <segment>
-        <source><pc id="0" equivStart="START_TAG_STRONG" equivEnd="CLOSE_TAG_STRONG" type="other" dispStart="&lt;strong&gt;" dispEnd="&lt;/strong&gt;">Upstash</pc> (Upstash, Inc., United States): short-lived copies of data that make pages load faster, stored in Frankfurt, Germany, and deleted within a day. It follows the EU-US Data Privacy Framework. </source>
-      </segment>
-    </unit>
     <unit id="3614057461352661644">
       <notes>
         <note category="location">src/app/components/card-group/card-group.component.ts</note>
@@ -9895,6 +9886,15 @@
       </notes>
       <segment>
         <source>Add a note if you like, check the details, and save.</source>
+      </segment>
+    </unit>
+    <unit id="6024944676865901605">
+      <notes>
+        <note category="location">src/app/pages/privacy/privacy-page.component.html</note>
+        <note category="description">Company that processes data for Board Vault, on the privacy page; the EU-US Data Privacy Framework is the legal name of a transfer mechanism</note>
+      </notes>
+      <segment>
+        <source><pc id="0" equivStart="START_TAG_STRONG" equivEnd="CLOSE_TAG_STRONG" type="other" dispStart="&lt;strong&gt;" dispEnd="&lt;/strong&gt;">Upstash</pc> (Upstash, Inc., United States): short-lived copies of data that make pages load faster, stored in Ireland, and deleted within a day. It follows the EU-US Data Privacy Framework. </source>
       </segment>
     </unit>
     <unit id="6033490387027844807">

@@ -33,8 +33,8 @@ Deployment URLs are behind Vercel authentication, so check health through the
 public domains.
 
 Production runs in Europe, close together: the API in Vercel `dub1`
-(Dublin, set in `backend/vercel.json`), both Turso databases in AWS
-`eu-west-1` (Ireland), and Upstash Redis in AWS `eu-central-1` (Frankfurt).
+(Dublin, set in `backend/vercel.json`), and both Turso databases and Upstash
+Redis in AWS `eu-west-1` (Ireland).
 A request makes several database queries in a row, so the API must stay next
 to Turso; move them together.
 
