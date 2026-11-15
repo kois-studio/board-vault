@@ -4839,46 +4839,6 @@
         ]
       }
     },
-    "/play/users/{userId}/history": {
-      "get": {
-        "deprecated": true,
-        "operationId": "PlayController_getUserGamesHistory",
-        "parameters": [
-          {
-            "name": "userId",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "number"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Every completed game night of the user, newest first",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/HistoryRecordDto"
-                  }
-                }
-              }
-            }
-          }
-        },
-        "security": [
-          {
-            "bearer": []
-          }
-        ],
-        "summary": "Every completed game night of the user. Deprecated: use GET /play/users/:userId/history/page (#252)",
-        "tags": [
-          "play"
-        ]
-      }
-    },
     "/play/users/{userId}/history/page": {
       "get": {
         "operationId": "PlayController_getUserGamesHistoryPage",

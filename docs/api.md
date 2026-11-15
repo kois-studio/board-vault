@@ -152,9 +152,9 @@ A person's history grows with every night, so no response carries all of it
   zone. The session wizard asks for it when you record a night older than the
   session list holds, to warn about one already recorded that day. A group the
   account is not in answers none; an invalid day answers `400`.
-- `GET /play/users/:userId/history` still answers every night at once, for the
-  previous frontend release while both deploy. It is deprecated and is removed
-  in a later release.
+
+`GET /play/users/:userId/history`, which answered every night at once, was kept
+for the frontend released before #252 and removed in #298.
 
 ## Groups
 

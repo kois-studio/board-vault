@@ -155,8 +155,8 @@ describe('session dates, last played, and artwork addresses (e2e)', () => {
         })
 
         it('dates history in ISO too, so the app orders it by instant whatever shape each date was stored in', async () => {
-            const history = (await request(app.getHttpServer()).get('/play/users/1/history').set(as('user_ana')).expect(200))
-                .body as Array<{
+            const history = (await request(app.getHttpServer()).get('/play/users/1/history/page').set(as('user_ana')).expect(200)).body
+                .entries as Array<{
                 meetData: { id: number; meetDate: string }
             }>
             const newestFirst = [...history].sort((a, b) => Date.parse(b.meetData.meetDate) - Date.parse(a.meetData.meetDate))
