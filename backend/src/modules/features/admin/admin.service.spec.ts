@@ -45,6 +45,8 @@ describe('AdminService', () => {
                 cacheService as never,
                 artworkService as never,
                 notifier as never,
+                // Approving names nobody: the users lookup is for the proposal lists.
+                {} as never,
             )
         }
 
