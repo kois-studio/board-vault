@@ -146,14 +146,6 @@ export class UserWithGames extends UserGetDto {
     games: Array<GameCompleteDto>
 }
 
-/**
- * Public identity plus games used for group member responses.
- */
-export class UserPublicWithGames extends UserPublicDto {
-    @ApiProperty({ type: [GameCompleteDto], description: 'The games the user has.' })
-    games: Array<GameCompleteDto>
-}
-
 export class UserUpdateGamesBody {
     @ApiProperty({ type: [Number], description: 'The games to add to user' })
     @IsArray()

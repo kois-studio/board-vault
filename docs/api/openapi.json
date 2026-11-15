@@ -4214,46 +4214,6 @@
         ]
       }
     },
-    "/dashboard/users/{userId}/groups": {
-      "get": {
-        "deprecated": true,
-        "operationId": "DashboardController_getGroupsOfUser",
-        "parameters": [
-          {
-            "name": "userId",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "number"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "List of all groups of the user",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/GroupWithMembersAndGames"
-                  }
-                }
-              }
-            }
-          }
-        },
-        "security": [
-          {
-            "bearer": []
-          }
-        ],
-        "summary": "Get all groups of a user with every member's games and reviews. Deprecated: use GET /dashboard/users/:userId/group-overviews and GET /dashboard/users/:userId/groups/:groupId/shelf (#262)",
-        "tags": [
-          "dashboard"
-        ]
-      }
-    },
     "/dashboard/users/{userId}/groups/create/{groupName}": {
       "post": {
         "deprecated": false,
@@ -4437,52 +4397,6 @@
       }
     },
     "/dashboard/users/{userId}/groups/{groupId}": {
-      "get": {
-        "deprecated": true,
-        "operationId": "DashboardController_getGroupOfUser",
-        "parameters": [
-          {
-            "name": "userId",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "number"
-            }
-          },
-          {
-            "name": "groupId",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "number"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "The group, with its members, their games and reviews",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/GroupWithMembersAndGames"
-                }
-              }
-            }
-          },
-          "403": {
-            "description": "Not this user, or not a member of the group."
-          }
-        },
-        "security": [
-          {
-            "bearer": []
-          }
-        ],
-        "summary": "Get one group of a user with members and games, as in the list of all groups. Deprecated: use GET /dashboard/users/:userId/group-overviews/:groupId and GET /dashboard/users/:userId/groups/:groupId/shelf (#262)",
-        "tags": [
-          "dashboard"
-        ]
-      },
       "delete": {
         "deprecated": false,
         "operationId": "DashboardController_deleteGroup",
@@ -4834,46 +4748,6 @@
           }
         ],
         "summary": "View the latest group-level recommendation signals",
-        "tags": [
-          "play"
-        ]
-      }
-    },
-    "/play/users/{userId}/history": {
-      "get": {
-        "deprecated": true,
-        "operationId": "PlayController_getUserGamesHistory",
-        "parameters": [
-          {
-            "name": "userId",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "number"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Every completed game night of the user, newest first",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/HistoryRecordDto"
-                  }
-                }
-              }
-            }
-          }
-        },
-        "security": [
-          {
-            "bearer": []
-          }
-        ],
-        "summary": "Every completed game night of the user. Deprecated: use GET /play/users/:userId/history/page (#252)",
         "tags": [
           "play"
         ]
@@ -10774,172 +10648,6 @@
           "totalGamesValue"
         ]
       },
-      "GameReviewDto": {
-        "type": "object",
-        "properties": {
-          "accountId": {
-            "type": "number",
-            "example": 12345
-          },
-          "gameId": {
-            "type": "number",
-            "example": 12345
-          },
-          "review": {
-            "type": "number",
-            "example": 8
-          },
-          "reviewDate": {
-            "type": "string",
-            "example": "2022-03-07T16:00:00.000Z"
-          }
-        },
-        "required": [
-          "accountId",
-          "gameId",
-          "review",
-          "reviewDate"
-        ]
-      },
-      "GroupMemberWithGames": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "number",
-            "example": 1
-          },
-          "username": {
-            "type": "string",
-            "example": "sample-user"
-          },
-          "displayName": {
-            "type": "string",
-            "example": "Sample User"
-          },
-          "avatar": {
-            "description": "The avatar of the user.",
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/AvatarDto"
-              }
-            ]
-          },
-          "games": {
-            "description": "The games the user has.",
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/GameCompleteDto"
-            }
-          },
-          "joinedAt": {
-            "type": "string",
-            "example": "2024-09-28 10:02:39",
-            "description": "The date and time the user joined the group."
-          },
-          "reviews": {
-            "description": "Reviews of this account",
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/GameReviewDto"
-            }
-          }
-        },
-        "required": [
-          "id",
-          "username",
-          "displayName",
-          "avatar",
-          "games",
-          "joinedAt",
-          "reviews"
-        ]
-      },
-      "GroupPlaceholderSummary": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "number",
-            "example": 12
-          },
-          "displayName": {
-            "type": "string",
-            "example": "Lucía"
-          },
-          "avatar": {
-            "nullable": true,
-            "type": "object",
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/AvatarDto"
-              }
-            ]
-          },
-          "gameIds": {
-            "description": "Games recorded as owned by this person in the group.",
-            "type": "array",
-            "items": {
-              "type": "number"
-            }
-          },
-          "games": {
-            "description": "The same games, with their details, for the group library.",
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/GameCompleteDto"
-            }
-          }
-        },
-        "required": [
-          "id",
-          "displayName",
-          "avatar",
-          "gameIds",
-          "games"
-        ]
-      },
-      "GroupWithMembersAndGames": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "number",
-            "example": 12345
-          },
-          "name": {
-            "type": "string",
-            "example": "Example Group"
-          },
-          "createdBy": {
-            "type": "number",
-            "example": 12345
-          },
-          "createdAt": {
-            "type": "string",
-            "example": "2024-09-28 10:02:39"
-          },
-          "members": {
-            "description": "The members of the group.",
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/GroupMemberWithGames"
-            }
-          },
-          "placeholders": {
-            "description": "Active group people without an account.",
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/GroupPlaceholderSummary"
-            }
-          }
-        },
-        "required": [
-          "id",
-          "name",
-          "createdBy",
-          "createdAt",
-          "members",
-          "placeholders"
-        ]
-      },
       "CreatedGroupDto": {
         "type": "object",
         "properties": {
@@ -11111,6 +10819,33 @@
           "accountId",
           "groupPersonId",
           "gameIds"
+        ]
+      },
+      "GameReviewDto": {
+        "type": "object",
+        "properties": {
+          "accountId": {
+            "type": "number",
+            "example": 12345
+          },
+          "gameId": {
+            "type": "number",
+            "example": 12345
+          },
+          "review": {
+            "type": "number",
+            "example": 8
+          },
+          "reviewDate": {
+            "type": "string",
+            "example": "2022-03-07T16:00:00.000Z"
+          }
+        },
+        "required": [
+          "accountId",
+          "gameId",
+          "review",
+          "reviewDate"
         ]
       },
       "GroupShelfDto": {

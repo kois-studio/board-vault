@@ -175,7 +175,10 @@ export class AdminService {
         return this.tagService.deleteTag(id)
     }
 
-    /** Moves every game from one tag to another, then deletes the first; one transaction. */
+    /**
+     * Moves every game from one tag to another, then deletes the first; one transaction. No cache to
+     * clear: a game's tags are always read from the database, never from Redis (#300).
+     */
     async mergeTag(tagId: number, intoTagId: number): Promise<MergeTagResultDto> {
         if (tagId === intoTagId) throw new BadRequestException('A tag cannot be merged into itself.')
         // Both must exist: getTagById answers 404 for a tag that does not.
@@ -265,10 +268,8 @@ export class AdminService {
             tagIds,
         })
 
-        await Promise.all([
-            this.cacheService.deleteOne(cacheKeys.gameById(gameId)),
-            this.cacheService.deleteOne(cacheKeys.gameTags(gameId)),
-        ])
+        // Tags are never cached (#300); only the game row is.
+        await this.cacheService.deleteOne(cacheKeys.gameById(gameId))
 
         // Field names only: no titles or URLs in logs.
         const fields = [

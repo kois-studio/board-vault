@@ -72,10 +72,20 @@ describe('GroupPeopleService participant boundaries', () => {
         ])
         expect(databaseService.getClaimableGroupPersonIds).toHaveBeenCalledWith(12, 7)
         // One read per kind for the whole group, never one per person (#251).
-        expect(databaseService.getGroupPeopleOwnership).toHaveBeenCalledWith(12)
-        expect(databaseService.getGroupPeoplePreferences).toHaveBeenCalledWith(12)
+        expect(databaseService.getGroupPeopleOwnership).toHaveBeenCalledWith(12, false)
+        expect(databaseService.getGroupPeoplePreferences).toHaveBeenCalledWith(12, false)
         expect(databaseService.getGroupPersonOwnership).not.toHaveBeenCalled()
         expect(databaseService.getGroupPersonPreferences).not.toHaveBeenCalled()
+    })
+
+    it('reads ownership and preferences for the same people it lists, archived ones only when asked (#290)', async () => {
+        const { service, databaseService } = createService()
+
+        await service.getWorkspace(7, 12, true)
+
+        expect(databaseService.getGroupPeople).toHaveBeenCalledWith(12, true)
+        expect(databaseService.getGroupPeopleOwnership).toHaveBeenCalledWith(12, true)
+        expect(databaseService.getGroupPeoplePreferences).toHaveBeenCalledWith(12, true)
     })
 
     it('returns a group-scoped catalog with every edition, so the app can filter it on any title', async () => {

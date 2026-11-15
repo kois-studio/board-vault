@@ -940,6 +940,104 @@ describe('DataService group shelves (#262)', () => {
 
         expect(calls['getGroupInvitations']).toBe(2)
     })
+
+    describe('a group you leave or delete (#316)', () => {
+        for (const [what, remove] of [
+            ['leave', (service: DataService, groupId: number) => firstValueFrom(service.leaveGroup(groupId))],
+            ['delete', (service: DataService, groupId: number) => firstValueFrom(service.deleteGroup(groupId))],
+        ] as const) {
+            it(`forgets the shelf of a group you ${what}, and takes it off every group’s games, reading nothing again`, async () => {
+                const { service, calls, settle, openPage } = setup({ leaveGroup: () => of({}), deleteGroup: () => of({}) })
+                openPage()
+                await settle()
+                expect(service.userGroupsWithShelves().map((group) => group.id)).toEqual([7, 8])
+                const revision = service.groupShelvesRevision()
+
+                await remove(service, 7)
+
+                expect(service.userGroups().map((group) => group.id)).toEqual([8])
+                expect(service.userGroupsWithShelves().map((group) => group.id)).toEqual([8])
+                expect(calls['getGroupOverviews']).toBe(1)
+                expect(calls['getGroupShelf']).toBe(2)
+                // The other groups did not change: their pages keep what they show.
+                expect(service.groupShelvesRevision()).toBe(revision)
+                await service.groupShelf(8)
+                expect(calls['getGroupShelf']).toBe(2)
+                // That group's shelf is no longer kept.
+                await service.groupShelf(7)
+                expect(calls['getGroupShelf']).toBe(3)
+            })
+        }
+
+        it('keeps a group you left out of every group’s games, even when its shelf answers afterwards', async () => {
+            const held = new Subject<typeof shelf>()
+            const { service, settle, openPage } = setup({
+                getGroupShelf: (...args: Array<unknown>) => (args[1] === 7 ? held : of(shelf)),
+                leaveGroup: () => of({}),
+            })
+            openPage()
+            await settle()
+
+            await firstValueFrom(service.leaveGroup(7))
+            held.next(shelf)
+            await settle()
+
+            expect(service.userGroupsWithShelvesState().status).toBe('ready')
+            expect(service.userGroupsWithShelves().map((group) => group.id)).toEqual([8])
+        })
+
+        it('keeps the group, and its shelf, when leaving fails', async () => {
+            const { service, calls } = setup({ leaveGroup: () => throwError(() => new HttpErrorResponse({ status: 500 })) })
+            await service.groupShelf(7)
+
+            await expect(firstValueFrom(service.leaveGroup(7))).rejects.toBeInstanceOf(HttpErrorResponse)
+
+            expect(service.userGroups().map((group) => group.id)).toEqual([7, 8])
+            await service.groupShelf(7)
+            expect(calls['getGroupShelf']).toBe(1)
+        })
+    })
+
+    describe('joining a group as a new person (#316)', () => {
+        it('reads your groups again, for that group’s people and counts, without the invitations', async () => {
+            let joined = false
+            const { service, calls, settle } = setup({
+                joinGroupAsNewPerson: () => {
+                    joined = true
+                    return of({ id: 22 })
+                },
+                getGroupOverviews: () => of([{ ...overview(7), placeholders: joined ? [{ id: 22 }] : [] }, overview(8)]),
+            })
+            await settle()
+            await service.groupShelf(7)
+            expect(service.userGroups()[0]?.placeholders).toEqual([])
+            const revision = service.groupShelvesRevision()
+
+            await service.joinGroupAsNewPerson(7)
+            await settle()
+
+            expect(calls['joinGroupAsNewPerson']).toBe(1)
+            expect(calls['getGroupOverviews']).toBe(2)
+            expect(calls['getGroupInvitations']).toBe(2)
+            expect(service.userGroups()[0]?.placeholders).toEqual([{ id: 22 }])
+            // Its shelf is read again too, with the new person.
+            expect(service.groupShelvesRevision()).toBe(revision + 1)
+            await service.groupShelf(7)
+            expect(calls['getGroupShelf']).toBe(2)
+        })
+
+        it('reads nothing again when joining fails, and lets the page explain', async () => {
+            const { service, calls, settle } = setup({
+                joinGroupAsNewPerson: () => throwError(() => new HttpErrorResponse({ status: 409 })),
+            })
+            await settle()
+
+            await expect(service.joinGroupAsNewPerson(7)).rejects.toBeInstanceOf(HttpErrorResponse)
+            await settle()
+
+            expect(calls['getGroupOverviews']).toBe(1)
+        })
+    })
 })
 
 describe('DataService lists loaded when shown (#263)', () => {

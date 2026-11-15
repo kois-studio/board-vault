@@ -36,6 +36,7 @@ describe('GroupViewComponent switching groups', () => {
         const dataService = {
             currentUser: signal({ id: 6 }),
             refreshUserGroups: vi.fn(),
+            joinGroupAsNewPerson: vi.fn(async () => undefined),
             userGroups: signal([group(1, 'DuckDevs'), group(4, 'Private group')]),
             userMeets: signal([]),
             invitationsGroupIndex: signal({}),
@@ -111,6 +112,16 @@ describe('GroupViewComponent switching groups', () => {
 
         expect(api.updateGroupPersonOwnership).toHaveBeenCalledWith(1, 9, 42, 'asserted')
         expect(dataService.refreshUserGroups).toHaveBeenCalled()
+    })
+
+    it('adds you as a new person through DataService, which reads your groups again for the counts (#316)', async () => {
+        const { component, api, dataService } = await setup()
+        api.getGroupPeople.mockClear()
+
+        await component.joinAsNewGroupPerson()
+
+        expect(dataService.joinGroupAsNewPerson).toHaveBeenCalledWith(1)
+        expect(api.getGroupPeople).toHaveBeenCalledTimes(1)
     })
 
     it('shows the group the switcher moved to, without a reload', async () => {

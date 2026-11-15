@@ -29,7 +29,8 @@ persists. Frontend guards and hidden buttons are UX only.
    (for example `databaseService.groups.getGroupById`). Queries are
    parameterized. Services map rows to DTOs. Notifications for other people
    (`ActivityNotifier`) are sent once the change is saved. On Vercel they are
-   sent after the response, so the request does not wait for them (#253).
+   sent after the response, so the request does not wait for them (#253), and
+   so is a successful action's usage event (`UsageService.record`, #299).
 6. Errors go through [`ApiErrorFilter`](../backend/src/common/http/api-error.filter.ts),
    which returns `{ statusCode, code, message, requestId }` and never leaks SQL
    or provider payloads. An exception it did not expect (a 500) is also kept

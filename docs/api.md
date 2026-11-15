@@ -152,9 +152,9 @@ A person's history grows with every night, so no response carries all of it
   zone. The session wizard asks for it when you record a night older than the
   session list holds, to warn about one already recorded that day. A group the
   account is not in answers none; an invalid day answers `400`.
-- `GET /play/users/:userId/history` still answers every night at once, for the
-  previous frontend release while both deploy. It is deprecated and is removed
-  in a later release.
+
+`GET /play/users/:userId/history`, which answered every night at once, was kept
+for the frontend released before #252 and removed in #298.
 
 ## Groups
 
@@ -178,10 +178,9 @@ the same few queries however many groups, people and games there are.
   `groupPersonId`, each with the `gameIds` they bring) and `reviews` (the
   members' ratings).
 - `GET /dashboard/users/:userId/groups` and
-  `GET /dashboard/users/:userId/groups/:groupId` still answer every member's
-  games and ratings, for the previous frontend release while both deploy.
-  The frontend no longer reads them. They are deprecated and are removed in a
-  later release.
+  `GET /dashboard/users/:userId/groups/:groupId`, which answered every
+  member's games and ratings, were kept for the frontend released before #262
+  and removed in #315.
 
 ## Problem reports
 

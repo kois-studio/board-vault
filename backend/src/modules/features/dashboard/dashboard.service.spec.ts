@@ -170,60 +170,6 @@ const createGroupsService = () => {
     return { service, groups, memberships, games, reviews, translations, database, lookups, perItem }
 }
 
-describe('DashboardService groups with every game (deprecated, #262)', () => {
-    it('loads groups, members, games, reviews, and titles once, however many groups and games there are', async () => {
-        const { service, games, reviews, translations, database, lookups, perItem } = createGroupsService()
-
-        const groups = await service.getGroupsOfUser(1, 'es')
-
-        expect(groups).toHaveLength(2)
-        expect(groups[0]?.members[1]?.games.map(game => game.title)).toEqual(['Game 21', 'Game 22', 'Game 23'])
-        expect(groups[0]?.members[1]?.reviews).toEqual([{ accountId: 2, gameId: 77, review: 8, reviewDate: '2026-02-01' }])
-        expect(groups[0]?.placeholders).toEqual([])
-        expect(groups[1]?.placeholders).toEqual([
-            {
-                id: 9,
-                displayName: 'Lucía',
-                avatar: null,
-                gameIds: [77],
-                games: [{ id: 77, imageUrl: '', title: 'Game 77', titleLanguage: 'es', titleTranslations: { es: 'Game 77' } }],
-            },
-        ])
-        for (const lookup of [...lookups, games.getGamesByIds, reviews.getGameReviewsByAccountIds, translations.withTitles]) {
-            expect(lookup).toHaveBeenCalledTimes(1)
-        }
-        for (const lookup of perItem) expect(lookup).not.toHaveBeenCalled()
-        expect(database.getActivePlaceholdersByGroupIds).toHaveBeenCalledWith([1, 2])
-    })
-
-    it('answers one group as in the list of all groups, and reads only that group (#258)', async () => {
-        const { service, memberships, database } = createGroupsService()
-
-        const group = await service.getGroupOfUser(2, 'es')
-
-        expect(group.id).toBe(2)
-        expect(group.name).toBe('Group 2')
-        expect(group.members.map(member => member.id)).toEqual([1, 2])
-        expect(group.members[0]?.games.map(game => game.title)).toEqual(['Game 11', 'Game 12', 'Game 13'])
-        expect(group.members[0]?.reviews.map(review => review.gameId)).toEqual([11])
-        expect(group.placeholders.map(person => person.displayName)).toEqual(['Lucía'])
-        // Only that group is read, never the caller's other groups.
-        expect(memberships.getGroupMembershipsByAccountId).not.toHaveBeenCalled()
-        expect(memberships.getGroupMembershipsByGroupIds).toHaveBeenCalledWith([2])
-        expect(database.getActivePlaceholdersByGroupIds).toHaveBeenCalledWith([2])
-    })
-
-    it('says a group that no longer exists is not found, in every shape', async () => {
-        const { service, groups } = createGroupsService()
-
-        groups.getGroupsByIds.mockResolvedValue(new Map())
-
-        await expect(service.getGroupOfUser(2, 'es')).rejects.toThrow(NotFoundException)
-        await expect(service.getGroupOverviewOfUser(2)).rejects.toThrow(NotFoundException)
-        await expect(service.getGroupShelf(2, 'es')).rejects.toThrow(NotFoundException)
-    })
-})
-
 describe('DashboardService group overviews (#262)', () => {
     it('counts games instead of sending them, in a fixed number of lookups', async () => {
         const { service, games, reviews, translations, lookups, perItem } = createGroupsService()
@@ -271,11 +217,35 @@ describe('DashboardService group overviews (#262)', () => {
         expect(group.gameCount).toBe(6)
         expect(group.placeholders[0]?.gameCount).toBe(1)
     })
+
+    it('answers one group as in the list, and reads only that group (#258)', async () => {
+        const { service, memberships, database } = createGroupsService()
+
+        const group = await service.getGroupOverviewOfUser(2)
+
+        expect(group.id).toBe(2)
+        expect(group.name).toBe('Group 2')
+        expect(group.members.map(member => member.id)).toEqual([1, 2])
+        expect(group.placeholders.map(person => person.displayName)).toEqual(['Lucía'])
+        // Only that group is read, never the caller's other groups.
+        expect(memberships.getGroupMembershipsByAccountId).not.toHaveBeenCalled()
+        expect(memberships.getGroupMembershipsByGroupIds).toHaveBeenCalledWith([2])
+        expect(database.getActivePlaceholdersByGroupIds).toHaveBeenCalledWith([2])
+    })
+
+    it('says a group that no longer exists is not found, as an overview and as a shelf', async () => {
+        const { service, groups } = createGroupsService()
+
+        groups.getGroupsByIds.mockResolvedValue(new Map())
+
+        await expect(service.getGroupOverviewOfUser(2)).rejects.toThrow(NotFoundException)
+        await expect(service.getGroupShelf(2, 'es')).rejects.toThrow(NotFoundException)
+    })
 })
 
 describe('DashboardService group shelf (#262)', () => {
     it("answers the group's games once each, by title, who owns them, and the members' ratings", async () => {
-        const { service, games, reviews, translations, lookups, perItem, memberships } = createGroupsService()
+        const { service, games, reviews, translations, lookups, perItem, memberships, database } = createGroupsService()
 
         const shelf = await service.getGroupShelf(2, 'es')
 
@@ -290,7 +260,10 @@ describe('DashboardService group shelf (#262)', () => {
             [1, 11],
         ])
         expect(reviews.getGameReviewsByAccountIds).toHaveBeenCalledWith([1, 2])
+        // Only that group is read, never the caller's other groups (#258).
+        expect(memberships.getGroupMembershipsByAccountId).not.toHaveBeenCalled()
         expect(memberships.getGroupMembershipsByGroupIds).toHaveBeenCalledWith([2])
+        expect(database.getActivePlaceholdersByGroupIds).toHaveBeenCalledWith([2])
         for (const lookup of [...lookups, games.getGamesByIds, translations.withTitles]) expect(lookup).toHaveBeenCalledTimes(1)
         for (const lookup of perItem) expect(lookup).not.toHaveBeenCalled()
     })

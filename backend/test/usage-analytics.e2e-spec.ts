@@ -10,10 +10,17 @@ import request from 'supertest'
 import { AppModule } from './../src/app.module.js'
 import { ClerkIdentityService } from './../src/modules/common/auth/clerk-identity.service.js'
 import { ClerkTokenVerifier } from './../src/modules/common/auth/clerk-token-verifier.js'
+import { DatabaseService } from './../src/modules/common/database/database.service.js'
+import { UsageService } from './../src/modules/core/usage/usage.service.js'
 import { FakeClerkTokenVerifier, sessionFor } from './fake-clerk-token-verifier.js'
 import { removeTestDatabase } from './remove-test-database.js'
 
+import type { MockInstance } from 'vitest'
+
 const repositoryRoot = resolve(__dirname, '../..')
+/** Where the Vercel runtime puts the request's `waitUntil`; set here as the runtime sets it. */
+const VERCEL_REQUEST_CONTEXT = Symbol.for('@vercel/request-context')
+const contexts = globalThis as Record<symbol, unknown>
 const testDatabasePath = resolve(__dirname, 'usage-analytics.e2e.sqlite')
 const avatar = `'{"backgroundColor":"#2563EB","iconName":null,"emoji":"😎","type":"emoji","initials":""}'`
 const secret = 'test-pseudonym-secret'
@@ -195,5 +202,93 @@ describe('usage analytics (e2e)', () => {
         expect(sql(`SELECT COUNT(*) FROM UsageEvent WHERE pseudonym = '${pseudonym(2)}';`)).toBe('0')
         expect(sql('SELECT COUNT(*) FROM UsageNotice WHERE accountId = 2;')).toBe('0')
         expect(sql('SELECT SUM(events) FROM UsageDaily;')).toBe('3')
+    })
+
+    it('never records an event for a deleted account, even one that lands after the deletion (#299)', async () => {
+        const usage = app.get(UsageService)
+        const deesEvents = () => sql(`SELECT COUNT(*) FROM UsageEvent WHERE pseudonym = '${pseudonym(4)}';`)
+
+        sql(`INSERT INTO Account (id, email, username, avatar, displayName, clerkUserId, isAdmin, isDeleted)
+             VALUES (4, 'dee@example.test', 'deeplays', ${avatar}, 'Dee', 'user_dee', 0, 0);`)
+        await usage.record(4, 'game_added')
+        expect(deesEvents()).toBe('1')
+
+        // Account deletion marks the account deleted, then forgets its events (account-deletion.service.ts). On
+        // Vercel the insert runs after the response, so one can reach the database after both.
+        sql('UPDATE Account SET isDeleted = 1 WHERE id = 4;')
+        await usage.forgetAccount(4)
+        await usage.record(4, 'review_saved')
+
+        expect(deesEvents()).toBe('0')
+    })
+
+    describe('after the response (#299)', () => {
+        let held: { opened: Promise<void>; open: () => void }
+        let kept: Array<Promise<unknown>>
+        let insert: MockInstance
+
+        /** Cai's events with that name. */
+        const caiCounted = (name: string) =>
+            Number(sql(`SELECT COUNT(*) FROM UsageEvent WHERE pseudonym = '${pseudonym(3)}' AND name = '${name}';`))
+
+        beforeEach(() => {
+            let open!: () => void
+            const opened = new Promise<void>(resolve => (open = resolve))
+
+            held = { opened, open }
+            kept = []
+            // Every usage insert waits until the test lets it go.
+            const usage = app.get(DatabaseService).usage
+            const original = usage.record.bind(usage)
+
+            insert = vi.spyOn(usage, 'record').mockImplementation(async (...args) => {
+                await held.opened
+                return original(...args)
+            })
+        })
+
+        afterEach(async () => {
+            held.open()
+            await Promise.all(kept)
+            insert.mockRestore()
+            delete contexts[VERCEL_REQUEST_CONTEXT]
+        })
+
+        it('answers a counted request on Vercel without waiting for its event, which still arrives', async () => {
+            contexts[VERCEL_REQUEST_CONTEXT] = { get: () => ({ waitUntil: (promise: Promise<unknown>) => kept.push(promise) }) }
+            const before = caiCounted('game_added')
+
+            // The insert is held, so a response that waited for it could not arrive.
+            await http().post('/collection/users/3/games/1').set(as('user_cai')).expect(201)
+            expect(insert).toHaveBeenCalledOnce()
+            expect(caiCounted('game_added')).toBe(before)
+
+            held.open()
+            await Promise.all(kept)
+            expect(caiCounted('game_added')).toBe(before + 1)
+        })
+
+        it('waits for the event outside Vercel, as locally and in tests', async () => {
+            const before = caiCounted('page_viewed')
+            let answered = false
+            const viewing = http()
+                .post('/navigation')
+                .set(as('user_cai'))
+                .send({ page: '/play' })
+                .then(response => {
+                    answered = true
+                    return response
+                })
+
+            // The insert is held; a response that did not wait for it would arrive now.
+            await vi.waitFor(() => expect(insert).toHaveBeenCalledOnce())
+            await new Promise(resolve => setTimeout(resolve, 200))
+            expect(answered).toBe(false)
+
+            held.open()
+            expect((await viewing).status).toBe(204)
+            expect(kept).toEqual([])
+            expect(caiCounted('page_viewed')).toBe(before + 1)
+        })
     })
 })

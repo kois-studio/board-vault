@@ -173,14 +173,10 @@ describe('group overviews and shelves (e2e)', () => {
         expect(lots.queries).toBe(few.queries)
     })
 
-    it('still answers the previous shape for the previous frontend release, with the same groups', async () => {
-        const full = (await request(app.getHttpServer()).get('/dashboard/users/1/groups').set(as('user_ada')).expect(200)).body
-        const cai = full[1].members.find((member: { id: number }) => member.id === 3)
-
-        expect(full.map((group: { id: number }) => group.id)).toEqual([10, 11])
-        expect(cai.games).toHaveLength(6)
-        expect(cai.reviews.map((review: { gameId: number }) => review.gameId)).toEqual([2])
-        expect(full[1].placeholders[0]).toEqual(expect.objectContaining({ id: 40, gameIds: [3] }))
+    it('answers 404 for the removed list and one-group routes that sent every game (#315)', async () => {
+        for (const path of ['/dashboard/users/1/groups', '/dashboard/users/1/groups/11']) {
+            await request(app.getHttpServer()).get(path).set(as('user_ada')).expect(404)
+        }
     })
 
     it('refuses a group the caller is not in, another user’s address, and no session', async () => {

@@ -5,13 +5,7 @@ import { RequestLocale } from '../../../common/decorators/request-locale.decorat
 import { AuthGuard } from '../../../common/guards/auth.guard.js'
 import { UserOwnershipGuard } from '../../../common/guards/ownership.guard.js'
 import { UserInGroupGuard } from '../../../common/guards/user-in-group.guard.js'
-import {
-    CreatedGroupDto,
-    GroupOverviewDto,
-    GroupShelfDto,
-    GroupWithMembersAndGames,
-    LegacyCreateGroupParams,
-} from '../../../common/types/group.type.js'
+import { CreatedGroupDto, GroupOverviewDto, GroupShelfDto, LegacyCreateGroupParams } from '../../../common/types/group.type.js'
 import { UserStatsDto } from '../../../common/types/stats.type.js'
 import { HistoryRecordDto } from '../play/play.types.js'
 
@@ -32,20 +26,6 @@ export class DashboardController {
     @ApiResponse({ status: 200, type: UserStatsDto, description: 'Stats retrieved successfully' })
     async getStatsOfUser(@Param('userId', ParseIntPipe) userId: number) {
         return this.dashboardService.getStatsOfUser(userId)
-    }
-
-    // Kept as it was for the previous frontend release while both deploy (docs/api.md, Compatibility); remove it in a
-    // later release, once no client reads it (#262).
-    @UseGuards(UserOwnershipGuard)
-    @Get('/users/:userId/groups')
-    @ApiOperation({
-        summary:
-            "Get all groups of a user with every member's games and reviews. Deprecated: use GET /dashboard/users/:userId/group-overviews and GET /dashboard/users/:userId/groups/:groupId/shelf (#262)",
-        deprecated: true,
-    })
-    @ApiResponse({ status: 200, type: [GroupWithMembersAndGames], description: 'List of all groups of the user' })
-    async getGroupsOfUser(@Param('userId', ParseIntPipe) userId: number, @RequestLocale() locale: Locale) {
-        return this.dashboardService.getGroupsOfUser(userId, locale)
     }
 
     @UseGuards(UserOwnershipGuard)
@@ -84,24 +64,6 @@ export class DashboardController {
         @RequestLocale() locale: Locale,
     ) {
         return this.dashboardService.getGroupShelf(groupId, locale)
-    }
-
-    // Deprecated with GET /users/:userId/groups (#262); remove it in a later release, once no client reads it.
-    @UseGuards(UserOwnershipGuard, UserInGroupGuard)
-    @Get('/users/:userId/groups/:groupId')
-    @ApiOperation({
-        summary:
-            'Get one group of a user with members and games, as in the list of all groups. Deprecated: use GET /dashboard/users/:userId/group-overviews/:groupId and GET /dashboard/users/:userId/groups/:groupId/shelf (#262)',
-        deprecated: true,
-    })
-    @ApiResponse({ status: 200, type: GroupWithMembersAndGames, description: 'The group, with its members, their games and reviews' })
-    @ApiResponse({ status: 403, description: 'Not this user, or not a member of the group.' })
-    async getGroupOfUser(
-        @Param('userId', ParseIntPipe) _userId: number,
-        @Param('groupId', ParseIntPipe) groupId: number,
-        @RequestLocale() locale: Locale,
-    ) {
-        return this.dashboardService.getGroupOfUser(groupId, locale)
     }
 
     @UseGuards(UserOwnershipGuard, UserInGroupGuard)

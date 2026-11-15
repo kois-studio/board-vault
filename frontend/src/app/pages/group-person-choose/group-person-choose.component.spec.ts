@@ -45,7 +45,6 @@ describe('GroupPersonChooseComponent', () => {
     const render = async (response: Observable<Array<GroupPersonChoiceType>> = of(choices)) => {
         const api = {
             getGroupPersonChoices: vi.fn().mockReturnValue(response),
-            joinGroupAsNewPerson: vi.fn().mockReturnValue(of({})),
         }
         TestBed.configureTestingModule({
             imports: [GroupPersonChooseComponent],
@@ -55,7 +54,12 @@ describe('GroupPersonChooseComponent', () => {
                 { provide: Api, useValue: api },
                 {
                     provide: DataService,
-                    useValue: { userGroups: () => [{ id: 10, name: 'Thursdays' }], refreshUserGroups: vi.fn(), use: vi.fn() },
+                    useValue: {
+                        userGroups: () => [{ id: 10, name: 'Thursdays' }],
+                        joinGroupAsNewPerson: vi.fn().mockResolvedValue(undefined),
+                        refreshUserGroups: vi.fn(),
+                        use: vi.fn(),
+                    },
                 },
                 { provide: ToastService, useValue: { success: vi.fn(), error: vi.fn() } },
             ],
@@ -85,14 +89,14 @@ describe('GroupPersonChooseComponent', () => {
     })
 
     it('joins as someone new and goes to the group', async () => {
-        const { element, api, fixture } = await render()
+        const { element, fixture } = await render()
         const navigate = vi.spyOn(TestBed.inject(Router), 'navigate').mockResolvedValue(true)
 
         element.querySelector<HTMLButtonElement>('[data-testid="choose-new"]')?.click()
         await fixture.whenStable()
 
-        expect(api.joinGroupAsNewPerson).toHaveBeenCalledWith(10)
-        expect(TestBed.inject(DataService).refreshUserGroups).toHaveBeenCalledTimes(1)
+        // DataService reads your groups again once you have joined (#316).
+        expect(TestBed.inject(DataService).joinGroupAsNewPerson).toHaveBeenCalledWith(10)
         expect(navigate).toHaveBeenCalledWith(['/groups', 10])
     })
 

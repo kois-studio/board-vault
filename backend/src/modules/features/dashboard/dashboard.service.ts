@@ -18,19 +18,12 @@ import { buildHistoryRecords, parseAvatar } from '../play/history-records.js'
 import type { Locale } from '../../../common/i18n/locale.js'
 import type { SuccessDto } from '../../../common/types/auth.type.js'
 import type { GameCompleteDto } from '../../../common/types/game.type.js'
-import type {
-    CreatedGroupDto,
-    GroupDto,
-    GroupMemberWithGames,
-    GroupOverviewDto,
-    GroupShelfDto,
-    GroupWithMembersAndGames,
-} from '../../../common/types/group.type.js'
+import type { CreatedGroupDto, GroupDto, GroupOverviewDto, GroupShelfDto } from '../../../common/types/group.type.js'
 import type { UserStatsDto } from '../../../common/types/stats.type.js'
-import type { UserPublicDto, UserPublicWithGames } from '../../../common/types/user.type.js'
+import type { UserPublicDto } from '../../../common/types/user.type.js'
 import type { HistoryRecordDto } from '../play/play.types.js'
 
-/** A group as loaded once for the overview, the shelf and the deprecated full shape: games as ids only. */
+/** A group as loaded once for the overview and the shelf: games as ids only. */
 type LoadedGroup = {
     group: GroupDto
     members: Array<{ accountId: number; user: UserPublicDto; joinedAt: string; gameIds: Array<number> }>
@@ -61,30 +54,6 @@ export class DashboardService {
         return {
             totalGamesValue,
         }
-    }
-
-    /**
-     * Every group of the user with every member's games and reviews. Deprecated (#262): it grows with everyone's
-     * collection. Kept for the previous frontend release while both deploy (docs/api.md, Compatibility); use
-     * `getGroupOverviewsOfUser` and `getGroupShelf`.
-     */
-    @LogFeature(new Logger('DashboardService'))
-    async getGroupsOfUser(userId: number, locale: Locale): Promise<Array<GroupWithMembersAndGames>> {
-        return this.groupsWithMembersAndGames(await this.groupIdsOfUser(userId), locale)
-    }
-
-    /**
-     * One of the user's groups, shaped like an entry of `getGroupsOfUser`, for a page about that group: a session
-     * page needs its own group, not every group with every member's games and reviews (#258). The route's guards
-     * check that the caller is the user and a member. Deprecated with `getGroupsOfUser` (#262).
-     */
-    @LogFeature(new Logger('DashboardService'))
-    async getGroupOfUser(groupId: number, locale: Locale): Promise<GroupWithMembersAndGames> {
-        const [group] = await this.groupsWithMembersAndGames([groupId], locale)
-
-        if (!group) throw new NotFoundException(`Group with id ${groupId} not found`)
-
-        return group
     }
 
     /** The user's groups with their people and counts, the same size however many games anyone owns (#262). */
@@ -204,32 +173,6 @@ export class DashboardService {
             gameCount: new Set([...members, ...placeholders].flatMap(owner => owner.gameIds)).size,
             members: members.map(member => ({ ...member.user, joinedAt: member.joinedAt, gameCount: member.gameIds.length })),
             placeholders: placeholders.map(({ gameIds, ...person }) => ({ ...person, gameCount: gameIds.length })),
-        }))
-    }
-
-    private async groupsWithMembersAndGames(groupIds: Array<number>, locale: Locale): Promise<Array<GroupWithMembersAndGames>> {
-        const loaded = await this.loadGroups(groupIds)
-        const memberIds = [...new Set(loaded.flatMap(entry => entry.members.map(member => member.accountId)))]
-        const gameIds = [...new Set(loaded.flatMap(entry => [...entry.members, ...entry.placeholders].flatMap(owner => owner.gameIds)))]
-        const [games, reviews] = await Promise.all([
-            this.completeGamesByIds(gameIds, locale),
-            this.reviewsService.getGameReviewsByAccountIds(memberIds),
-        ])
-        const completeGames = (ids: Array<number>) => ids.map(id => games.get(id)).filter(game => game !== undefined)
-        const reviewsByAccount = groupBy(reviews, review => review.accountId)
-
-        return loaded.map(({ group, members, placeholders }) => ({
-            ...group,
-            placeholders: placeholders.map(person => ({ ...person, games: completeGames(person.gameIds) })),
-            members: members.map(member => {
-                const userWithGames: UserPublicWithGames = { ...member.user, games: completeGames(member.gameIds) }
-
-                return {
-                    ...userWithGames,
-                    joinedAt: member.joinedAt,
-                    reviews: reviewsByAccount.get(member.accountId) ?? [],
-                } satisfies GroupMemberWithGames
-            }),
         }))
     }
 

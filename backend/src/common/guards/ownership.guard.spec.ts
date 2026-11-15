@@ -35,12 +35,13 @@ describe('UserOwnershipGuard', () => {
 
     it('is attached to user-scoped read routes', () => {
         expect(hasOwnershipGuard(UsersController.prototype, 'getUserById')).toBe(true)
-        expect(hasOwnershipGuard(DashboardController.prototype, 'getGroupsOfUser')).toBe(true)
+        expect(hasOwnershipGuard(DashboardController.prototype, 'getGroupOverviewsOfUser')).toBe(true)
         expect(hasOwnershipGuard(CollectionController.prototype, 'getGamesOwnedByUser')).toBe(true)
         expect(hasOwnershipGuard(CollectionController.prototype, 'browseCatalogue')).toBe(true)
         expect(hasOwnershipGuard(CollectionController.prototype, 'getReviewsOfUser')).toBe(true)
         expect(hasOwnershipGuard(CollectionController.prototype, 'getUserWishlist')).toBe(true)
-        expect(hasOwnershipGuard(PlayController.prototype, 'getUserGamesHistory')).toBe(true)
+        expect(hasOwnershipGuard(PlayController.prototype, 'getUserGamesHistoryPage')).toBe(true)
+        expect(hasOwnershipGuard(PlayController.prototype, 'getUserHistorySummary')).toBe(true)
         expect(hasOwnershipGuard(ProfileController.prototype, 'getUserById')).toBe(true)
         expect(hasOwnershipGuard(ProfileController.prototype, 'getNotificationsByAccountId')).toBe(true)
         expect(hasOwnershipGuard(ProfileController.prototype, 'getUserInvitations')).toBe(true)

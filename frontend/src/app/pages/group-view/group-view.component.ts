@@ -807,7 +807,8 @@ export class GroupViewComponent {
 
         this.groupPersonMutationId.set(-1)
         try {
-            await firstValueFrom(this.api.joinGroupAsNewPerson(groupId))
+            // Also reads your groups again, for this group's people and counts (#316).
+            await this.dataService.joinGroupAsNewPerson(groupId)
             this.toastService.success($localize`:Toast after adding yourself to a group's people:You joined this group as a new person.`)
             this.loadGroupPeople(groupId)
         } catch {

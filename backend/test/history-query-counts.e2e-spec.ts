@@ -131,12 +131,9 @@ describe('history in a fixed number of queries (e2e)', () => {
     const people = (records: Array<HistoryRecord>) =>
         Object.fromEntries(records.map(record => [record.meetData.id, record.attendedByPeople.map(person => person.displayName).sort()]))
 
-    it.each([
-        ['a page of history', '/play/users/5/history/page', '/play/users/1/history/page'],
-        ['the whole history (deprecated)', '/play/users/5/history', '/play/users/1/history'],
-    ])('reads %s of nights in three groups in as many queries as of one night in one group', async (_name, small, large) => {
-        const few = await queriesFor(small, 'user_eve')
-        const lots = await queriesFor(large, 'user_ana')
+    it('reads a page of history of nights in three groups in as many queries as of one night in one group', async () => {
+        const few = await queriesFor('/play/users/5/history/page', 'user_eve')
+        const lots = await queriesFor('/play/users/1/history/page', 'user_ana')
 
         // Every group's people in one read.
         expect(peopleReads).toHaveBeenCalledTimes(1)
@@ -154,8 +151,8 @@ describe('history in a fixed number of queries (e2e)', () => {
     })
 
     it("shows a linked person with their account's avatar", async () => {
-        const { body } = await queriesFor('/play/users/1/history', 'user_ana')
-        const bea = body
+        const { body } = await queriesFor('/play/users/1/history/page', 'user_ana')
+        const bea = body.entries
             .find((record: HistoryRecord) => record.meetData.id === 100)
             .attendedByPeople.find((person: { id: number }) => person.id === 501)
 

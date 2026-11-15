@@ -1121,14 +1121,9 @@ export class SessionQueries {
     /**
      * One page of the caller's completed nights, newest first (#252): at most `limit` ids, older than
      * the night `before` when given. Ask for one more than you show to know whether more remain.
-     * `limit` null reads them all, for the deprecated `/history` route only.
+     * Always bounded: no read answers every night at once (#298).
      */
-    async getHistoryMeetIdsPage(
-        accountId: number,
-        filters: HistoryFilters,
-        before: number | null,
-        limit: number | null,
-    ): Promise<Array<number>> {
+    async getHistoryMeetIdsPage(accountId: number, filters: HistoryFilters, before: number | null, limit: number): Promise<Array<number>> {
         const nights = historyNights(accountId, filters)
         const cursor =
             before === null
@@ -1138,8 +1133,8 @@ export class SessionQueries {
                       OR (datetime(m.meetDate) = (SELECT datetime(c.meetDate) FROM Meet c WHERE c.id = ?) AND m.id < ?)
                   )`
         const resultSet = await this.database.execute({
-            sql: `${nights.sql} ${cursor} ORDER BY datetime(m.meetDate) DESC, m.id DESC${limit === null ? '' : ' LIMIT ?'}`,
-            args: [...nights.args, ...(before === null ? [] : [before, before, before]), ...(limit === null ? [] : [limit])],
+            sql: `${nights.sql} ${cursor} ORDER BY datetime(m.meetDate) DESC, m.id DESC LIMIT ?`,
+            args: [...nights.args, ...(before === null ? [] : [before, before, before]), limit],
         })
 
         return resultSet.rows.map(row => Number(row[0]))
