@@ -165,3 +165,103 @@ describe('reading a state', () => {
         expect(isPending(readyState([1]))).toBe(false)
     })
 })
+
+describe('ResourceSignal quiet refresh (#263)', () => {
+    afterEach(() => vi.restoreAllMocks())
+
+    it('keeps what is shown ready while it reads again, then shows the newer copy', () => {
+        const resource = new ResourceSignal<Array<number>>([])
+        resource.load(of([1]))
+        const later = new Subject<Array<number>>()
+
+        resource.revalidate(later)
+        expect(resource.state()).toEqual(readyState([1]))
+        expect(resource.busy).toBe(true)
+
+        later.next([1, 2])
+        later.complete()
+        expect(resource.state()).toEqual(readyState([1, 2]))
+        expect(resource.busy).toBe(false)
+    })
+
+    it('changes nothing when the answer equals what is shown', () => {
+        const resource = new ResourceSignal<Array<{ id: number }>>([])
+        resource.load(of([{ id: 1 }]))
+        const shown = resource.value()
+        const apply = vi.fn()
+
+        resource.revalidate(of([{ id: 1 }]), apply)
+
+        expect(resource.value()).toBe(shown)
+        expect(apply).not.toHaveBeenCalled()
+    })
+
+    it('keeps what is shown, without failing, when the read fails', () => {
+        const resource = new ResourceSignal<Array<number>>([])
+        resource.load(of([1]))
+
+        resource.revalidate(throwError(() => new Error('offline')))
+
+        expect(resource.state()).toEqual(readyState([1]))
+        expect(resource.busy).toBe(false)
+    })
+
+    it('ends an earlier failure when it answers', () => {
+        const resource = new ResourceSignal<Array<number>>([])
+        resource.load(of([1]))
+        resource.load(throwError(() => new Error('offline')))
+
+        resource.revalidate(of([1]))
+
+        expect(resource.state()).toEqual(readyState([1]))
+    })
+
+    it('does nothing while a load is on its way, and a load started meanwhile wins', () => {
+        const resource = new ResourceSignal<Array<number>>([])
+        const first = new Subject<Array<number>>()
+        resource.load(first)
+        const ignored = new Subject<Array<number>>()
+        resource.revalidate(ignored)
+        expect(ignored.observed).toBe(false)
+        first.next([1])
+        first.complete()
+
+        const older = new Subject<Array<number>>()
+        resource.revalidate(older)
+        resource.load(of([2]))
+        older.next([1])
+
+        expect(older.observed).toBe(false)
+        expect(resource.state()).toEqual(readyState([2]))
+    })
+
+    it('drops its answer when the value changed in place meanwhile, and stays due for a newer read', () => {
+        vi.spyOn(Date, 'now').mockReturnValue(1000)
+        const resource = new ResourceSignal<Array<number>>([])
+        resource.load(of([1, 2]))
+        const older = new Subject<Array<number>>()
+        resource.revalidate(older)
+
+        // Left a group while the quiet read was on its way: its answer still has it.
+        resource.value.update((items) => items.filter((item) => item !== 2))
+        vi.spyOn(Date, 'now').mockReturnValue(2000)
+        older.next([1, 2])
+        older.complete()
+
+        expect(resource.value()).toEqual([1])
+        expect(resource.answeredAt).toBe(1000)
+        expect(resource.busy).toBe(false)
+    })
+
+    it('knows when it last answered, and forgets it on reset', () => {
+        vi.spyOn(Date, 'now').mockReturnValue(5000)
+        const resource = new ResourceSignal<Array<number>>([])
+        expect(resource.answeredAt).toBeNull()
+
+        resource.load(of([1]))
+        expect(resource.answeredAt).toBe(5000)
+
+        resource.reset()
+        expect(resource.answeredAt).toBeNull()
+    })
+})

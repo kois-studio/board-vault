@@ -1,4 +1,4 @@
-import { type DestroyRef, effect, Injectable, inject, signal, untracked } from '@angular/core'
+import { DestroyRef, effect, Injectable, inject, signal, untracked } from '@angular/core'
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
 import { catchError, concatMap, firstValueFrom, forkJoin, from, map, type Observable, of, Subject, takeUntil, tap, throwError } from 'rxjs'
 import { Api } from '../../api/api'
@@ -22,13 +22,52 @@ import type {
     UserType,
 } from '../../api/api.types'
 import { ToastService } from '../../components/toast/toast.service'
-import { ResourceSignal, settledValue } from '../async/resource-state'
+import { type CachedRead, FRESH_FOR_MS, ResourceCache } from '../async/resource-cache'
+import { isPending, ResourceSignal, settledValue } from '../async/resource-state'
 import { intlLocale } from '../i18n/format'
 import { withoutReadRetry } from '../interceptors/resilience.interceptor'
 import { withShelf } from '../utils/groupShelf'
 import { rsvpToast } from '../utils/rsvp'
 import { ConnectivityService } from './connectivity.service'
 import { LogService } from './log.service'
+
+/** The lists of the signed-in user that `DataService` keeps, each loaded when a page first shows it (#263). */
+export type UserListKey =
+    | 'games'
+    | 'groups'
+    | 'notifications'
+    | 'invitations'
+    | 'reviews'
+    | 'meets'
+    | 'history'
+    | 'historySummary'
+    | 'wishlist'
+    | 'collectionActivity'
+    | 'proposals'
+    | 'proposalStats'
+    | 'stats'
+
+const USER_LIST_KEYS: ReadonlyArray<UserListKey> = [
+    'games',
+    'groups',
+    'notifications',
+    'invitations',
+    'reviews',
+    'meets',
+    'history',
+    'historySummary',
+    'wishlist',
+    'collectionActivity',
+    'proposals',
+    'proposalStats',
+    'stats',
+]
+
+/**
+ * What a page or component names in `DataService.use`: the lists it shows, and `groupInvitations` for the pending
+ * invitations of the groups you own (`invitationsGroupIndex`), which come with your groups.
+ */
+export type UserDataKey = UserListKey | 'groupInvitations'
 
 @Injectable({ providedIn: 'root' })
 export class DataService {
@@ -88,6 +127,139 @@ export class DataService {
         this.groupsWithShelves,
     ]
 
+    /**
+     * Your lists, each loaded the first time an open page names it with `use` instead of all at sign-in, kept
+     * while you move around, and read again quietly when a page shows one older than `FRESH_FOR_MS` (#263, ADR-0029).
+     */
+    private readonly cache = new ResourceCache<UserListKey>(
+        {
+            games: this.kept(
+                this.games,
+                (id) => this.api.getUserGames(id),
+                (id) => this._getUserGames(id),
+                (games, id) => this.applyGames(games, id),
+            ),
+            groups: this.kept(
+                this.groups,
+                (id) => this.api.getGroupOverviews(id),
+                (id) => this._getUserGroups(id),
+                (groups, id) => {
+                    // Your groups changed elsewhere: a group you own may be new, so its invitations are read too.
+                    this.groupInvitationsStale = true
+                    this.applyGroups(groups, id)
+                },
+            ),
+            notifications: this.kept(
+                this.notifications,
+                (id) => this.api.getUserNotifications(id),
+                (id) => this._getUserNotifications(id),
+            ),
+            invitations: this.kept(
+                this.invitations,
+                (id) => this.api.getUserInvitations(id),
+                (id) => this._getUserInvitations(id),
+            ),
+            reviews: this.kept(
+                this.reviews,
+                (id) => this.api.getUserReviews(id),
+                (id) => this._getUserReviews(id),
+            ),
+            meets: this.kept(
+                this.meets,
+                (id) => this.api.getUserMeets(id),
+                (id) => this._getUserMeets(id),
+            ),
+            history: this.kept(
+                this.history,
+                (id) => this.firstHistoryPage(id),
+                (id) => this._getUserHistory(id),
+            ),
+            historySummary: this.kept(
+                this.historySummary,
+                (id) => this.api.getUserHistorySummary(id),
+                (id) => this._getUserHistorySummary(id),
+            ),
+            wishlist: this.kept(
+                this.wishlist,
+                (id) => this.api.getUserWishlist(id),
+                (id) => this._getUserWishlist(id),
+            ),
+            collectionActivity: this.kept(
+                this.collectionActivity,
+                (id) => this.api.getUserCollectionActivity(id),
+                (id) => this._getUserCollectionActivity(id),
+            ),
+            proposals: this.kept(
+                this.proposals,
+                (id) => this.api.getUserProposals(id),
+                (id) => this._getUserProposals(id),
+            ),
+            proposalStats: this.kept(
+                this.proposalStats,
+                (id) => this.api.getUserProposalStats(id),
+                (id) => this._getUserProposalStats(id),
+            ),
+            stats: this.kept(
+                this.stats,
+                (id) => this.api.getUserStats(id),
+                (id) => this._getUserStats(id),
+            ),
+        },
+        FRESH_FOR_MS,
+    )
+
+    /**
+     * A page or component shows these until it is destroyed (#263): each list loads the first time something
+     * names it, and is read again quietly when it is older than `FRESH_FOR_MS`. Call it from a constructor or a
+     * field (it takes the caller's `DestroyRef`), or pass `destroyRef` when calling it later.
+     *
+     * `groupInvitations` (the pending invitations of the groups you own, `invitationsGroupIndex`) brings your
+     * groups with it.
+     */
+    public use(keys: ReadonlyArray<UserDataKey>, destroyRef: DestroyRef = inject(DestroyRef)): void {
+        const lists = keys.filter((key): key is UserListKey => key !== 'groupInvitations')
+        const withInvitations = keys.includes('groupInvitations')
+        if (withInvitations) {
+            // Counted first, so groups that answer at once already read the invitations.
+            this.groupInvitationsUsers++
+            destroyRef.onDestroy(() => {
+                this.groupInvitationsUsers = Math.max(0, this.groupInvitationsUsers - 1)
+            })
+            if (!lists.includes('groups')) lists.push('groups')
+        }
+        this.cache.use(lists, destroyRef)
+        if (withInvitations) this.ensureGroupInvitations()
+    }
+
+    /**
+     * Something already using these lists shows them again (the avatar menu opening once more): each is read
+     * again quietly if it is no longer fresh, as `use` would.
+     */
+    public ensure(keys: ReadonlyArray<UserListKey>): void {
+        for (const key of keys) this.cache.ensure(key)
+    }
+
+    /** A list kept by the cache: `load` shows its loading state and failure toast, `revalidate` reads it quietly. */
+    private kept<T>(
+        resource: ResourceSignal<T>,
+        read: (userId: number) => Observable<T>,
+        load: (userId: number) => void,
+        apply?: (value: T, userId: number) => void,
+    ): CachedRead {
+        return {
+            resource,
+            load: () => {
+                const user = untracked(this.currentUser)
+                if (user) load(user.id)
+            },
+            revalidate: () => {
+                const user = untracked(this.currentUser)
+                if (!user) return
+                resource.revalidate(read(user.id).pipe(takeUntil(this.userChanged)), apply && ((value) => apply(value, user.id)))
+            },
+        }
+    }
+
     public readonly userGames = this.games.value
     public readonly userGamesState = this.games.state
     public readonly userGroups = this.groups.value
@@ -139,8 +311,13 @@ export class DataService {
     /** The shelves revision `userGroupsWithShelves` was read at, so a page opened later reads it only when stale. */
     private groupsWithShelvesRevision = -1
     public readonly groupShelvesRevision = signal(0)
-    /** The next answer for your groups also reads the invitations of the groups you own. */
-    private groupInvitationsWanted = false
+    /** The open pages showing `invitationsGroupIndex` (`use(['groupInvitations'])`). */
+    private groupInvitationsUsers = 0
+    /**
+     * The invitations of the groups you own are not read for your groups as listed: set when a read of your groups
+     * that should bring them starts, so a load replaced by one that only moves the game counts still reads them.
+     */
+    private groupInvitationsStale = true
 
     private get groupsWithShelvesWanted(): boolean {
         return this.groupsWithShelvesUsers > 0
@@ -174,15 +351,20 @@ export class DataService {
                 this.userChanged.next()
                 this.failedLoads.clear()
                 // Another person: nothing of the last one may show, even as "refreshing" (#256). The same person
-                // read again (a new username) keeps what is shown while it reloads.
-                if (user?.id !== this.loadedUserId) this._clearAllDerivedUserData()
+                // read again (a new username) keeps what is shown while what the open pages show reloads.
+                const samePerson = user !== null && user.id === this.loadedUserId
+                if (!samePerson) this._clearAllDerivedUserData()
                 this.loadedUserId = user?.id ?? null
-                if (user?.id) {
-                    this.logger.log(`DataService: currentUser updated (ID: ${user.id}). Fetching derived data.`)
-                    this._fetchAllDerivedUserData(user.id)
-                } else {
+                if (!user) {
                     this.logger.log('DataService: currentUser is null (logout or initial state). Clearing derived data.')
-                    this._clearAllDerivedUserData()
+                    this.cache.stop()
+                } else if (samePerson) {
+                    this.logger.log(`DataService: currentUser read again (ID: ${user.id}). Reloading what is shown.`)
+                    this.invalidateAll()
+                } else {
+                    // Only what the open pages show loads now; every other list waits for a page that shows it (#263).
+                    this.logger.log(`DataService: currentUser updated (ID: ${user.id}). Loading what the open pages show.`)
+                    this.cache.start()
                 }
             })
         })
@@ -217,28 +399,18 @@ export class DataService {
         for (const reload of reloads) reload()
         this.refreshSharedActivity(true)
     }
-    private _fetchAllDerivedUserData(userId: number): void {
-        this._getUserGames(userId)
-        this._getUserGroups(userId)
-        this._getUserNotifications(userId)
-        this._getUserInvitations(userId)
-        this._getUserReviews(userId)
-        this._getUserMeets(userId)
-        this._getUserHistory(userId)
-        this._getUserHistorySummary(userId)
-        this._getUserWishlist(userId)
-        this._getUserCollectionActivity(userId)
-        this._getUserProposals(userId)
-        this._getUserProposalStats(userId)
-        this._getUserStats(userId)
-        // Add any other derived data fetches here
+    /** The same person read again: what the open pages show reloads, and every other list is read when next shown. */
+    private invalidateAll(): void {
+        this.groupInvitationsStale = true
+        for (const key of USER_LIST_KEYS) this.cache.invalidate(key)
+        this.ensureGroupInvitations()
     }
 
     private _clearAllDerivedUserData(): void {
         for (const resource of this.resources) resource.reset()
         this.shelves.clear()
         this.groupsWithShelvesRevision = -1
-        this.groupInvitationsWanted = false
+        this.groupInvitationsStale = true
         this.groupHistoryByGroupId.set({})
         this.invitationsGroupIndex.set({})
     }
@@ -246,15 +418,7 @@ export class DataService {
     private _getUserGames(userId: number) {
         this.failedLoads.delete('games')
         this.games.load(this.api.getUserGames(userId).pipe(takeUntil(this.userChanged)), {
-            apply: (games) => {
-                this.userGames.set(games)
-                this.userGroups.update((groups) =>
-                    groups.map((group) => ({
-                        ...group,
-                        members: group.members.map((member) => (member.id === userId ? { ...member, gameCount: games.length } : member)),
-                    })),
-                )
-            },
+            apply: (games) => this.applyGames(games, userId),
             failed: () =>
                 this.loadFailed(
                     'games',
@@ -262,6 +426,17 @@ export class DataService {
                     $localize`:Toast when My Games could not be loaded:Error retrieving user games`,
                 ),
         })
+    }
+
+    /** Your games, and your count among each group's members. */
+    private applyGames(games: Array<GameCompleteType>, userId: number): void {
+        this.userGames.set(games)
+        this.userGroups.update((groups) =>
+            groups.map((group) => ({
+                ...group,
+                members: group.members.map((member) => (member.id === userId ? { ...member, gameCount: games.length } : member)),
+            })),
+        )
     }
 
     private _getUserInvitations(userId: number) {
@@ -311,7 +486,10 @@ export class DataService {
         if (!currentUser || (!force && now - this.lastQuietRefresh < 60_000)) return
         this.lastQuietRefresh = now
         this.refreshInbox()
-        this.quietly(this.api.getUserMeets(currentUser.id, withoutReadRetry()), (meets) => this.meets.set(meets))
+        // Game nights only while a page shows them; otherwise the next page that does reads them (#263).
+        if (this.cache.isUsed('meets'))
+            this.quietly(this.api.getUserMeets(currentUser.id, withoutReadRetry()), (meets) => this.meets.set(meets))
+        else this.cache.invalidate('meets')
     }
 
     /**
@@ -382,29 +560,16 @@ export class DataService {
     }
 
     /**
-     * Your groups, and the pending invitations of those you own. `withInvitations: false` is for a change that only
-     * moves the counts (your collection, a group's people), so it costs one request, not one per group you own (#262). A load
-     * replaces one still on its way, so the invitations stay wanted until a load that reads them has answered.
+     * Your groups, and the pending invitations of those you own while a page shows them. `withInvitations: false`
+     * is for a change that only moves the counts (your collection, a group's people), so it costs one request, not one
+     * per group you own (#262). A load replaces one still on its way, so the invitations stay stale until a load that
+     * reads them has answered.
      */
     private _getUserGroups(accountId: number, { withInvitations = true } = {}) {
         this.failedLoads.delete('groups')
-        this.groupInvitationsWanted ||= withInvitations
+        if (withInvitations) this.groupInvitationsStale = true
         this.groups.load(this.api.getGroupOverviews(accountId).pipe(takeUntil(this.userChanged)), {
-            apply: (groups) => {
-                this.userGroups.set(groups)
-                this.forgetGroupShelves(groups)
-                if (!this.groupInvitationsWanted) return
-                this.groupInvitationsWanted = false
-
-                for (const group of groups) {
-                    if (group.createdBy !== accountId) {
-                        this.invitationsGroupIndex.update((index) => ({ ...index, [group.id]: [] }))
-                        continue
-                    }
-
-                    this._getGroupInvitations(group)
-                }
-            },
+            apply: (groups) => this.applyGroups(groups, accountId),
             failed: (error) => {
                 // Groups still listed keep their games on screen; only groups never read take the failure.
                 if (this.groupsWithShelvesWanted && settledValue(this.groups.state()) === undefined) {
@@ -417,6 +582,36 @@ export class DataService {
                 )
             },
         })
+    }
+
+    /** Your groups as read: their shelves are read again, and so are the invitations if stale and shown. */
+    private applyGroups(groups: Array<GroupOverviewType>, accountId: number): void {
+        this.userGroups.set(groups)
+        this.forgetGroupShelves(groups)
+        if (this.groupInvitationsStale && this.groupInvitationsUsers > 0) this._readGroupInvitations(groups, accountId)
+    }
+
+    /** A page shows the invitations of your groups: read them now if your groups are listed and they are stale. */
+    private ensureGroupInvitations(): void {
+        const user = untracked(this.currentUser)
+        if (!user || !this.groupInvitationsStale || this.groupInvitationsUsers === 0) return
+        const state = untracked(this.groups.state)
+        // A load on its way reads them when it answers.
+        if (isPending(state)) return
+        const groups = settledValue(state)
+        if (groups !== undefined) this._readGroupInvitations(groups, user.id)
+    }
+
+    /** The pending invitations of each group you own; groups owned by others have none to show. */
+    private _readGroupInvitations(groups: Array<GroupOverviewType>, accountId: number): void {
+        this.groupInvitationsStale = false
+        for (const group of groups) {
+            if (group.createdBy !== accountId) {
+                this.invitationsGroupIndex.update((index) => ({ ...index, [group.id]: [] }))
+                continue
+            }
+            this._getGroupInvitations(group)
+        }
     }
 
     /** The pending invitations of a group the user owns. */
@@ -456,8 +651,7 @@ export class DataService {
 
     private _getUserHistory(userId: number) {
         this.failedLoads.delete('history')
-        const firstPage = this.api.getUserGamesHistory(userId).pipe(map((page) => page.entries))
-        this.history.load(firstPage.pipe(takeUntil(this.userChanged)), {
+        this.history.load(this.firstHistoryPage(userId).pipe(takeUntil(this.userChanged)), {
             failed: () =>
                 this.loadFailed(
                     'history',
@@ -465,6 +659,11 @@ export class DataService {
                     $localize`:Toast when your game night history could not load:Error retrieving user’s history`,
                 ),
         })
+    }
+
+    /** Your latest nights: the first page of your history (#252). */
+    private firstHistoryPage(userId: number): Observable<Array<HistoryRecordType>> {
+        return this.api.getUserGamesHistory(userId).pipe(map((page) => page.entries))
     }
 
     private _getUserHistorySummary(userId: number) {
@@ -672,7 +871,7 @@ export class DataService {
 
         return this.api.createGroup(currentUser.id, groupName).pipe(
             tap(() => {
-                this._getUserGroups(currentUser.id)
+                this.invalidateGroups()
                 this.toastService.success(
                     $localize`:Toast after creating a group; the placeholder is its name:You have created the group ${groupName}:group:`,
                 )
@@ -746,7 +945,7 @@ export class DataService {
         return this.api.acceptInvitation(currentUser.id, invitationId).pipe(
             tap(() => {
                 this.userInvitations.update((invitations) => invitations.filter((invitation) => invitation.id !== invitationId))
-                this._getUserGroups(currentUser.id)
+                this.invalidateGroups()
                 this.toastService.success($localize`:Toast after accepting a group invitation:You have joined the group!`)
             }),
             catchError((error) => {
@@ -855,8 +1054,8 @@ export class DataService {
         this.api.saveGameReview(accountId, gameId, review).subscribe({
             next: () => {
                 // Reload without clearing first, so the reviews list doesn't flash empty.
-                this._getUserReviews(accountId)
-                this._getUserCollectionActivity(accountId)
+                this.cache.invalidate('reviews')
+                this.cache.invalidate('collectionActivity')
                 // The shelves hold the members' ratings (#262).
                 this.forgetGroupShelves()
 
@@ -868,18 +1067,15 @@ export class DataService {
         })
     }
 
-    public refreshGameReviews() {
-        const currentUser = this.currentUser()
-        if (!currentUser) return
+    // The refreshes below follow a write or a Retry: a list an open page shows reloads now, as before (#256),
+    // and any other is read again by the next page that shows it (#263).
 
-        this._getUserReviews(currentUser.id)
+    public refreshGameReviews() {
+        this.cache.invalidate('reviews')
     }
 
     public refreshUserWishlist() {
-        const currentUser = this.currentUser()
-        if (!currentUser) return
-
-        this._getUserWishlist(currentUser.id)
+        this.cache.invalidate('wishlist')
     }
 
     /**
@@ -896,31 +1092,35 @@ export class DataService {
             const others = wishlist.filter((item) => item.id !== game.id)
             return isWishlisted ? [...others, game] : others
         })
-        this._getUserCollectionActivity(currentUser.id)
+        this.cache.invalidate('collectionActivity')
         return isWishlisted
     }
 
     /** Reloads My Games and, since every collection change is logged, the activity list. */
     public refreshUserGames() {
-        const currentUser = this.currentUser()
-        if (!currentUser) return
-
-        this._getUserGames(currentUser.id)
-        this._getUserCollectionActivity(currentUser.id)
+        this.cache.invalidate('games')
+        this.cache.invalidate('collectionActivity')
         // The groups count your games once each among everyone's, which only the server knows (#262).
-        this._getUserGroups(currentUser.id, { withInvitations: false })
+        this.invalidateGroups({ withInvitations: false })
     }
 
     public refreshUserCollectionActivity(): void {
-        const currentUser = this.currentUser()
-        if (currentUser) this._getUserCollectionActivity(currentUser.id)
+        this.cache.invalidate('collectionActivity')
     }
 
     public refreshUserGroups() {
-        const currentUser = this.currentUser()
-        if (!currentUser) return
+        this.invalidateGroups()
+    }
 
-        this._getUserGroups(currentUser.id)
+    /**
+     * Your groups changed. `withInvitations: false` is for a change that only moves the game counts: the
+     * invitations of the groups you own are not read again for it (#262).
+     */
+    private invalidateGroups({ withInvitations = true } = {}): void {
+        const currentUser = untracked(this.currentUser)
+        if (!currentUser) return
+        if (withInvitations) this.groupInvitationsStale = true
+        this.cache.invalidate('groups', () => this._getUserGroups(currentUser.id, { withInvitations }))
     }
 
     /**
@@ -932,7 +1132,8 @@ export class DataService {
         if (!currentUser) throw new Error('No authenticated user')
 
         await firstValueFrom(this.api.joinGroupAsNewPerson(groupId))
-        this._getUserGroups(currentUser.id, { withInvitations: false })
+        // Reloaded now where a page shows your groups, else on the next one that does (#263).
+        this.invalidateGroups({ withInvitations: false })
     }
 
     /**
@@ -978,11 +1179,15 @@ export class DataService {
         destroyRef.onDestroy(() => {
             this.groupsWithShelvesUsers = Math.max(0, this.groupsWithShelvesUsers - 1)
         })
-        const groups = this.groups.state()
+        // They are built from your groups: a page showing them shows those too (#263). Groups that load now read
+        // the shelves when they answer.
+        this.use(['groups'], destroyRef)
+        const groups = untracked(this.groups.state)
         const listed = settledValue(groups)
         if (listed !== undefined) {
             const current =
-                this.groupsWithShelvesRevision === this.groupShelvesRevision() && this.groupsWithShelves.state().status === 'ready'
+                this.groupsWithShelvesRevision === untracked(this.groupShelvesRevision) &&
+                (this.groupsWithShelves.busy || untracked(this.groupsWithShelves.state).status === 'ready')
             if (!current) this._getGroupsWithShelves()
         } else if (groups.status === 'error') {
             this.groupsWithShelves.load(throwError(() => groups.error))
@@ -1029,28 +1234,21 @@ export class DataService {
     }
 
     public refreshUserStats() {
-        const currentUser = this.currentUser()
-        if (!currentUser) return
-
-        this._getUserStats(currentUser.id)
+        this.cache.invalidate('stats')
     }
 
     // #region Meetings
 
     public refreshUserMeets() {
-        const currentUser = this.currentUser()
-        if (!currentUser) return
-
-        this._getUserMeets(currentUser.id)
+        this.cache.invalidate('meets')
     }
 
     public refreshUserHistory() {
-        const currentUser = this.currentUser()
-        if (!currentUser) return
+        if (!this.currentUser()) return
 
         this.userHistoryRevision.update((revision) => revision + 1)
-        this._getUserHistory(currentUser.id)
-        this._getUserHistorySummary(currentUser.id)
+        this.cache.invalidate('history')
+        this.cache.invalidate('historySummary')
     }
 
     public updateSessionAttendees(meetId: number, attendeeIds: Array<number>) {
@@ -1091,12 +1289,10 @@ export class DataService {
     }
 
     public refreshUserProposals(): void {
-        const currentUser = this.currentUser()
-        if (currentUser) this._getUserProposals(currentUser.id)
+        this.cache.invalidate('proposals')
     }
 
     public refreshUserProposalStats(): void {
-        const currentUser = this.currentUser()
-        if (currentUser) this._getUserProposalStats(currentUser.id)
+        this.cache.invalidate('proposalStats')
     }
 }

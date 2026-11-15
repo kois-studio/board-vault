@@ -22,6 +22,8 @@ describe('ProfileMenuComponent', () => {
             createdAt: '2026-09-01T10:00:00.000Z',
         }),
         userProposalStats: signal({ totalProposals: 0 }),
+        use: vi.fn(),
+        ensure: vi.fn(),
     }
 
     const element = () => fixture.nativeElement as HTMLElement
@@ -35,6 +37,8 @@ describe('ProfileMenuComponent', () => {
     beforeEach(async () => {
         isAdmin.set(false)
         pending.set(null)
+        dataService.use.mockClear()
+        dataService.ensure.mockClear()
         await TestBed.configureTestingModule({
             imports: [ProfileMenuComponent],
             providers: [
@@ -47,6 +51,21 @@ describe('ProfileMenuComponent', () => {
 
         fixture = TestBed.createComponent(ProfileMenuComponent)
         fixture.detectChanges()
+    })
+
+    it('reads your submissions count from the first open, not with every page, and checks it again on each open (#263)', () => {
+        expect(dataService.use).not.toHaveBeenCalled()
+
+        open()
+        expect(dataService.use).toHaveBeenCalledTimes(1)
+        expect(dataService.use).toHaveBeenCalledWith(['proposalStats'], expect.anything())
+
+        // Closed, then open again: kept, and read again only if it is no longer fresh.
+        open()
+        open()
+        expect(dataService.use).toHaveBeenCalledTimes(1)
+        expect(dataService.ensure).toHaveBeenCalledTimes(1)
+        expect(dataService.ensure).toHaveBeenCalledWith(['proposalStats'])
     })
 
     it('is a disclosure: a button with aria-expanded and a plain list, not an ARIA menu', () => {

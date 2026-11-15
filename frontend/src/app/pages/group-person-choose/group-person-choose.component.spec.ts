@@ -57,6 +57,8 @@ describe('GroupPersonChooseComponent', () => {
                     useValue: {
                         userGroups: () => [{ id: 10, name: 'Thursdays' }],
                         joinGroupAsNewPerson: vi.fn().mockResolvedValue(undefined),
+                        refreshUserGroups: vi.fn(),
+                        use: vi.fn(),
                     },
                 },
                 { provide: ToastService, useValue: { success: vi.fn(), error: vi.fn() } },

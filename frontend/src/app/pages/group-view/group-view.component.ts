@@ -437,6 +437,7 @@ export class GroupViewComponent {
     })
 
     constructor() {
+        this.dataService.use(['groups', 'groupInvitations', 'meets'])
         // Scroll to the section once what sits above it has loaded, so it does not move away again.
         effect(() => {
             const fragment = this.routeFragment()

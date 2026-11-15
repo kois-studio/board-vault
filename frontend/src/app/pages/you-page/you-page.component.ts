@@ -93,6 +93,7 @@ export class YouPageComponent {
     public readonly anyFailed = computed(() => this.totalsUnknown() || this.gamesFailed() || this.historyFailed() || this.reviewsFailed())
 
     constructor() {
+        this.dataService.use(['games', 'groups', 'historySummary', 'reviews', 'stats'])
         // Groups can arrive after the page opens, as on a link opened directly.
         effect(() => {
             const groups = this.dataService.userGroups()

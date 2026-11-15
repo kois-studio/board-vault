@@ -194,6 +194,7 @@ export class RecommendationsPageComponent {
     private requestId = 0
 
     constructor() {
+        this.dataService.use(['groups', 'meets'])
         effect(() => {
             const groups = this.userGroups()
             if (groups.length > 0 && this.selectedGroupId() === null) {

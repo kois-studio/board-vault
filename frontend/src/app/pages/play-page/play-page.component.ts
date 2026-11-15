@@ -18,6 +18,10 @@ import { relativeDay, upcomingState } from '../../core/utils/sessionTiming'
 export class PlayPageComponent {
     private readonly dataService = inject(DataService)
 
+    constructor() {
+        this.dataService.use(['groups', 'history', 'historySummary', 'meets'])
+    }
+
     // --------------------------------------------------------------------------
     //        signals
     // --------------------------------------------------------------------------

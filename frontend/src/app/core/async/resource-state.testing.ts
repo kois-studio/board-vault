@@ -27,7 +27,8 @@ export function stateOf<T>(value: Signal<T>, status: ResourceStatus | Signal<Res
 
 /**
  * For a fake DataService in a spec: adds `userXState` for every `userX` signal that has none,
- * `ready` unless `statuses` names it (`{ userGroups: 'error' }`, or a signal of the status).
+ * `ready` unless `statuses` names it (`{ userGroups: 'error' }`, or a signal of the status), and a `use` that does
+ * nothing unless the spec gives its own.
  */
 export function withStates<F extends object>(
     fake: F,
@@ -35,6 +36,8 @@ export function withStates<F extends object>(
 ): F & Record<`${string}State`, Signal<ResourceState<unknown>>> {
     const result = fake as Record<string, unknown>
     withGroupShelves(result)
+    // Pages name the lists they show (#263); a fake has them all already.
+    if (!('use' in result)) result['use'] = () => undefined
     for (const [key, value] of Object.entries(fake)) {
         if (!/^user[A-Z]/.test(key) || key.endsWith('State') || typeof value !== 'function' || `${key}State` in fake) continue
         if (!isSignal(value)) continue

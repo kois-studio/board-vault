@@ -308,6 +308,7 @@ export class LogSessionWizardComponent {
     }
 
     constructor() {
+        this.dataService.use(['groups', 'history', 'meets'])
         this.sessionDate.valueChanges.pipe(takeUntilDestroyed()).subscribe((value) => this.dateChoice.set(value ?? ''))
         if (this.editingId) void this.loadRecording()
 

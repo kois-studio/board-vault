@@ -20,6 +20,10 @@ export class WishlistToggleComponent {
     private readonly dataService = inject(DataService)
     private readonly toastService = inject(ToastService)
 
+    constructor() {
+        this.dataService.use(['wishlist'])
+    }
+
     readonly game = input.required<GameCompleteType>()
     /** Emits the new state after the server confirms it. */
     readonly changed = output<boolean>()

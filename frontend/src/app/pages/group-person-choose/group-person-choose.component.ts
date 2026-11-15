@@ -48,6 +48,7 @@ export class GroupPersonChooseComponent {
     public readonly initialsAvatar = initialsAvatar
 
     constructor() {
+        this.dataService.use(['groups'])
         void this.load()
     }
 

@@ -63,8 +63,28 @@ function setup(api: ReturnType<typeof fakeApi>) {
             { provide: ToastService, useValue: { error: vi.fn(), success: vi.fn() } },
         ],
     })
+    const data = TestBed.inject(DataService)
+    // A page showing every list stays open, so each piece of state fills before sign-out (#263).
+    TestBed.runInInjectionContext(() =>
+        data.use([
+            'games',
+            'groups',
+            'groupInvitations',
+            'notifications',
+            'invitations',
+            'reviews',
+            'meets',
+            'history',
+            'historySummary',
+            'wishlist',
+            'collectionActivity',
+            'proposals',
+            'proposalStats',
+            'stats',
+        ]),
+    )
     return {
-        data: TestBed.inject(DataService),
+        data,
         browse: TestBed.inject(BrowsePageService),
         groupView: TestBed.inject(GroupViewService),
         adminGames: TestBed.inject(AdminGamesManageService),
@@ -144,5 +164,27 @@ describe('signing out', () => {
         lateGames.next([game])
 
         expect(data.userGames()).toEqual([])
+    })
+
+    it('reads nothing while nobody is signed in, and loads what is shown for the next person (#263)', () => {
+        const api = fakeApi()
+        const { data } = setup(api)
+
+        data.currentUser.set(user)
+        TestBed.tick()
+        data.currentUser.set(null)
+        TestBed.tick()
+        for (const read of Object.values(api)) read.mockClear()
+        data.refreshUserGames()
+        data.refreshUserMeets()
+        data.refreshSharedActivity(true)
+
+        expect(Object.values(api).every((read) => read.mock.calls.length === 0)).toBe(true)
+
+        data.currentUser.set({ id: 2 } as UserType)
+        TestBed.tick()
+
+        expect(api['getUserGames']).toHaveBeenCalledWith(2)
+        expect(data.userGames()).toEqual([game])
     })
 })

@@ -39,6 +39,7 @@ export class ReviewsPageComponent {
     public readonly sortBy = signal<ReviewSort>('title')
 
     constructor() {
+        this.dataService.use(['reviews'])
         this.dataService.loadUserGroupsWithShelves(inject(DestroyRef))
     }
 

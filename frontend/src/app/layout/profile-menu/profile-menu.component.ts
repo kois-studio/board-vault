@@ -1,4 +1,4 @@
-import { Component, computed, ElementRef, inject, viewChild } from '@angular/core'
+import { Component, computed, DestroyRef, ElementRef, effect, inject, untracked, viewChild } from '@angular/core'
 import { RouterLink } from '@angular/router'
 import { ImageProfileComponent } from '../../components/image-profile/image-profile.component'
 import { GithubMarkComponent } from '../../components/ui/github-mark/github-mark.component'
@@ -40,6 +40,21 @@ export class ProfileMenuComponent {
             ? $localize`:account menu, one|Name of the avatar button in the header for an admin, with game proposals waiting for review, one:Account menu, ${count}:count: game proposal waiting`
             : $localize`:account menu, other|Name of the avatar button in the header for an admin, with game proposals waiting for review, more than one:Account menu, ${count}:count: game proposals waiting`
     })
+
+    constructor() {
+        // Your submissions count shows only in the open menu: read on the first open, not with every page, and read
+        // again quietly on a later open once it is no longer fresh (#263).
+        const destroyRef = inject(DestroyRef)
+        let counted = false
+        effect(() => {
+            if (!this.disclosure.isOpen()) return
+            untracked(() => {
+                if (counted) return this.dataService.ensure(['proposalStats'])
+                counted = true
+                this.dataService.use(['proposalStats'], destroyRef)
+            })
+        })
+    }
 
     public async onClickSignOut(): Promise<void> {
         this.disclosure.close()

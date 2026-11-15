@@ -128,6 +128,7 @@ export class GroupPersonPageComponent {
     }
 
     constructor() {
+        this.dataService.use(['groups'])
         void this.load()
     }
 

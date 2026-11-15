@@ -33,6 +33,10 @@ export class WishlistPageComponent {
     private readonly shelfEditions = inject(ShelfEditionService)
     private readonly toastService = inject(ToastService)
 
+    constructor() {
+        this.dataService.use(['wishlist'])
+    }
+
     // --------------------------------------------------------------------------
     //        Services signals
     // --------------------------------------------------------------------------

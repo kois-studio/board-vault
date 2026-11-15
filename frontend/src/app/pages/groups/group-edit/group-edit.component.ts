@@ -88,6 +88,7 @@ export class GroupEditComponent {
         private readonly route: ActivatedRoute,
         private readonly dataService: DataService,
     ) {
+        this.dataService.use(['groups', 'groupInvitations'])
         effect(() => {
             this.userData = this.dataService.currentUser()
             this.userGroups = this.dataService.userGroups()

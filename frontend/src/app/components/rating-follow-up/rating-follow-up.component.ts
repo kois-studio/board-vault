@@ -47,6 +47,10 @@ export class RatingFollowUpComponent {
     private readonly api = inject(Api)
     private readonly toast = inject(ToastService)
 
+    constructor() {
+        this.data.use(['reviews'])
+    }
+
     readonly record = input.required<HistoryRecordType>()
     readonly saving = signal<number[]>([])
     readonly rated = signal<number[]>([])

@@ -35,6 +35,7 @@ describe('CollectionPageComponent', () => {
                         userCollectionActivity: activity,
                         userCollectionActivityState: stateOf(activity, status.activity),
                         refreshUserCollectionActivity: vi.fn(),
+                        use: vi.fn(),
                     },
                 },
                 provideRouter([]),
