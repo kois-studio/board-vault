@@ -50,12 +50,12 @@ export class GroupPeopleService {
 
     async getWorkspace(actorAccountId: number, groupId: number, includeArchived = false): Promise<Array<GroupPersonWorkspaceDto>> {
         await this.assertGroupMember(actorAccountId, groupId)
-        // Four queries for the whole group, however many people it has (#251).
+        // Four queries for the whole group, however many people it has (#251), each reading only the people shown (#290).
         const [claimable, people, ownership, preferences] = await Promise.all([
             this.databaseService.groups.getClaimableGroupPersonIds(groupId, actorAccountId),
             this.databaseService.groups.getGroupPeople(groupId, includeArchived),
-            this.databaseService.groups.getGroupPeopleOwnership(groupId),
-            this.databaseService.groups.getGroupPeoplePreferences(groupId),
+            this.databaseService.groups.getGroupPeopleOwnership(groupId, includeArchived),
+            this.databaseService.groups.getGroupPeoplePreferences(groupId, includeArchived),
         ])
         const claimableIds = new Set(claimable.rows.map(row => Number(row[0])))
         const suggestedIds = new Set(claimable.rows.filter(row => Number(row[1]) === 1).map(row => Number(row[0])))
