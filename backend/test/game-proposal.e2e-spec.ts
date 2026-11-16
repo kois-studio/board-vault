@@ -8,6 +8,7 @@ import { Test, TestingModule } from '@nestjs/testing'
 import request from 'supertest'
 
 import { AppModule } from './../src/app.module.js'
+import { ApiErrorFilter } from './../src/common/http/api-error.filter.js'
 import { ClerkTokenVerifier } from './../src/modules/common/auth/clerk-token-verifier.js'
 import { ArtworkDownloader } from './../src/modules/core/artwork/artwork-downloader.js'
 import { FakeArtworkDownloader } from './fake-artwork-downloader.js'
@@ -58,6 +59,8 @@ describe('proposing a game (e2e)', () => {
             .compile()
 
         app = moduleFixture.createNestApplication()
+        // As in production (main.ts), so the error bodies here are the ones the app reads.
+        app.useGlobalFilters(new ApiErrorFilter())
         await app.init()
         database = createClient({ url: `file:${testDatabasePath}` })
     })
@@ -444,5 +447,35 @@ describe('proposing a game (e2e)', () => {
             )
             expect(submitted).toEqual([...submitted].sort((a, b) => String(a[0]).localeCompare(String(b[0])) || a[1] - b[1]))
         })
+    })
+
+    // #345: a game the catalogue has, under any edition's title, is offered instead of proposed again.
+    it('refuses a proposal for a game the catalogue has, under any of its titles, and names the game', async () => {
+        const azul = Number((await database.execute("SELECT gameId FROM GameEdition WHERE normalizedTitle = 'azul'")).rows[0]?.[0])
+
+        await database.execute({
+            sql: "INSERT INTO GameEdition (gameId, languageCode, title, normalizedTitle, isPrimary) VALUES (?, 'es', 'Azul: Edición española', ?, 0)",
+            args: [azul, 'azul-edicion-espanola'],
+        })
+        const send = (title: string) =>
+            request(app.getHttpServer()).post('/profile/users/2/proposals').set(asProposer).send({ title, addTo: 'shelf' })
+
+        for (const title of ['azul', '  AZUL ', 'Azul: edicion espanola']) {
+            const refused = await send(title).expect(409)
+
+            expect(refused.body).toEqual(
+                expect.objectContaining({
+                    statusCode: 409,
+                    code: 'GAME_ALREADY_IN_CATALOGUE',
+                    context: { gameId: azul, gameTitle: 'Azul' },
+                }),
+            )
+        }
+
+        const before = Number((await database.execute('SELECT COUNT(*) FROM GameProposal WHERE submittedBy = 2')).rows[0]?.[0])
+
+        // A title that only contains a catalogue title is a different game.
+        await send('Azul: Summer Pavilion').expect(201)
+        expect(Number((await database.execute('SELECT COUNT(*) FROM GameProposal WHERE submittedBy = 2')).rows[0]?.[0])).toBe(before + 1)
     })
 })

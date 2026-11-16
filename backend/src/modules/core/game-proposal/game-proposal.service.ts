@@ -1,11 +1,12 @@
 import { ResultSet } from '@libsql/client'
-import { Injectable, Logger, NotFoundException } from '@nestjs/common'
+import { ConflictException, Injectable, Logger, NotFoundException } from '@nestjs/common'
 
 import { requireEditionLanguage, validateOtherTitles } from '../../../common/i18n/edition-language.js'
 import { gameProposalsSchema } from '../../../common/schemas/db-game-proposal.schema.js'
 import { cacheKeys } from '../../common/cache/cache-keys.js'
 import { CacheService } from '../../common/cache/cache.service.js'
 import { DatabaseService } from '../../common/database/database.service.js'
+import { normalizeTitle } from '../game-titles/normalize-title.js'
 import { NotificationTypeEnum } from '../notifications/notifications-enum.type.js'
 
 import type { Locale } from '../../../common/i18n/locale.js'
@@ -129,6 +130,8 @@ export class GameProposalService {
         const titleLanguage = proposalData.titleLanguage === undefined ? locale : requireEditionLanguage(proposalData.titleLanguage)
         const otherTitles = validateOtherTitles(titleLanguage, proposalData.otherTitles ?? [])
 
+        await this.refuseGameAlreadyInCatalogue(proposalData.title)
+
         // Admins are told in the same transaction; the proposer is not notified of their own proposal.
         const { proposalId } = await this.databaseService.games.createGameProposal({
             submittedBy,
@@ -153,6 +156,26 @@ export class GameProposalService {
         await this.cacheService.deleteOne(cacheKeys.proposalStats(submittedBy))
 
         return this.getGameProposalById(proposalId)
+    }
+
+    /**
+     * A proposal for a game the catalogue has, under any of its editions' titles, is refused with the game, so the app
+     * can offer it instead (#345). Only exact titles, normalized as editions are: "catan", "Catan " and "CATAN" match
+     * Catan, "Catan: Seafarers" does not.
+     */
+    private async refuseGameAlreadyInCatalogue(title: string): Promise<void> {
+        const normalized = normalizeTitle(title)
+
+        if (!normalized) return
+        const row = (await this.databaseService.games.findGameByNormalizedTitle(normalized)).rows[0]
+
+        if (!row) return
+        throw new ConflictException({
+            statusCode: 409,
+            code: 'GAME_ALREADY_IN_CATALOGUE',
+            message: `"${String(row[1])}" is already in Board Vault.`,
+            context: { gameId: Number(row[0]), gameTitle: String(row[1]) },
+        })
     }
 
     async updateGameProposal(id: number, updateData: UpdateGameProposalBody, reviewedBy?: number): Promise<GameProposalDto> {

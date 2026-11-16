@@ -15,6 +15,7 @@ import { ProposeGamePageComponent } from './propose-game-page.component'
 class FormStubComponent {
     readonly initialTitle = input<string>()
     readonly confirmWithToast = input(true)
+    readonly cancelLink = input<unknown>(null)
     readonly proposalSubmitted = output<ProposalAddTo>()
 }
 
@@ -104,5 +105,26 @@ describe('ProposeGamePageComponent', () => {
         const form = fixture.debugElement.query((node) => node.componentInstance instanceof FormStubComponent)
 
         expect((form.componentInstance as FormStubComponent).confirmWithToast()).toBe(false)
+    })
+
+    // #345: My submissions opens this page too; its back link and Cancel return there.
+    it('leads back to My submissions when opened from there, from the back link and Cancel', async () => {
+        const fixture = await setup({ from: 'submissions' })
+
+        const back = backLink(fixture.nativeElement)
+        expect(back.getAttribute('href')).toBe('/submissions')
+        expect(back.textContent?.trim()).toBe('Back to My submissions')
+        const form = fixture.debugElement.query((node) => node.componentInstance instanceof FormStubComponent)
+        expect((form.componentInstance as FormStubComponent).cancelLink()).toEqual({ path: '/submissions' })
+    })
+
+    it('gives Cancel the same way back to Browse, with its search', async () => {
+        const fixture = await setup({ title: 'Cascadia' })
+        const form = fixture.debugElement.query((node) => node.componentInstance instanceof FormStubComponent)
+
+        expect((form.componentInstance as FormStubComponent).cancelLink()).toEqual({
+            path: '/collection/browse',
+            queryParams: { q: 'Cascadia' },
+        })
     })
 })

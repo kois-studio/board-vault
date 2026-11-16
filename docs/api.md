@@ -6,7 +6,8 @@ is generated from the decorated source, and the reviewed snapshot is
 
 The Angular client uses a typed API adapter and validates responses at the
 application boundary. HTTP failures use a safe envelope containing a status,
-stable code, human-readable message, optional details, and a request ID.
+stable code, human-readable message, optional details, and a request ID. A
+4xx may add `context`, flat values the client can act on (never on a 5xx).
 Unexpected provider and exception details are not returned to clients.
 
 The committed snapshot is a review artifact, not a second source of truth. CI
@@ -81,7 +82,11 @@ matches any edition's title.
 A proposal (`POST /profile/users/:userId/proposals`) says which language its
 `title` is in with `titleLanguage` (default: `request.locale`) and may list
 `otherTitles`, up to ten `{ languageCode, title }` in other languages, none in
-the title's language and one per language. Proposals read back `titleLanguage`
+the title's language and one per language. A title that is already some
+game's edition title, compared as the catalogue normalizes titles (case,
+accents and spacing ignored), is refused with `409 GAME_ALREADY_IN_CATALOGUE`
+and `context: { gameId, gameTitle }`, the game's primary title (#345).
+Proposals read back `titleLanguage`
 (`en` for proposals made before it was recorded) and `otherTitles` (`[]`).
 Approving a proposal takes the same `editions` as a game update; left out, the
 game gets the proposal's title in its language as the primary edition, plus

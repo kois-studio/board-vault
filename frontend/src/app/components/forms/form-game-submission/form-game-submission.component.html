@@ -13,6 +13,36 @@
       [attr.aria-invalid]="title.invalid && title.touched"
       i18n-placeholder="Placeholder of the title field of the game proposal form" placeholder="Enter the game title"
     />
+    @if (alreadyInCatalogue(); as game) {
+      <!-- The API refused it: the catalogue has this exact title (#345). -->
+      <p class="mt-2 rounded-lg border border-bv-warning/30 bg-bv-warning/10 p-3 text-sm" role="alert">
+        <ng-container i18n="Under the title of the game proposal form when the catalogue already has a game with this exact title; the placeholder is its title">{{ game.gameTitle }} is already in Board Vault.</ng-container>
+        <a class="ml-1 font-medium text-bv-primary underline" [routerLink]="['/games', game.gameId]" i18n="Link under the title of the game proposal form to the catalogue game with the same title">Open it to add it to your games</a>
+      </p>
+    }
+    @if (matches().length > 0 && !alreadyInCatalogue()) {
+      <!-- A hint while typing (#345): the game may already be here, under this or another title. -->
+      <section class="mt-3 rounded-lg border border-bv-border bg-bv-bg p-3" aria-labelledby="proposal-matches-heading" aria-live="polite">
+        <h3 id="proposal-matches-heading" class="text-sm font-semibold" i18n="Heading of the catalogue games that match the title being typed in the game proposal form">Already in Board Vault?</h3>
+        <ul class="mt-2 space-y-2">
+          @for (game of matches(); track game.id) {
+            <li>
+              <a class="flex items-center gap-3 rounded-lg p-1 hover:bg-bv-surface-2" [routerLink]="['/games', game.id]">
+                <image-background class="block h-10 w-10 shrink-0 rounded-md" [src]="game.imageUrl" [alt]="''" />
+                <span class="min-w-0 flex-1 truncate text-sm font-medium">{{ game | gameTitle }}</span>
+                @if (isOwned(game.id)) {
+                  <span class="shrink-0 text-xs font-medium text-bv-success" i18n="Next to a catalogue game in the game proposal form when it is already in your games">In your games</span>
+                } @else {
+                  <span class="shrink-0 text-xs font-medium text-bv-primary" i18n="Next to a catalogue game in the game proposal form, opens its page to add it">Open</span>
+                }
+                <app-icon name="chevron-right" [size]="16" className="shrink-0 text-bv-text-muted" />
+              </a>
+            </li>
+          }
+        </ul>
+        <p class="mt-2 text-xs text-bv-text-muted" i18n="Under the catalogue games that match the title being typed in the game proposal form">If none of these is your game, carry on.</p>
+      </section>
+    }
     @if (title.invalid && (title.dirty || title.touched)) {
       <div class="mt-1 text-sm text-bv-danger" role="alert">
         @if (title.errors?.['required']) {
@@ -58,8 +88,12 @@
     </div>
   </fieldset>
 
-  <div class="flex justify-end">
-    <button appButton type="submit" class="w-full sm:w-auto" [loading]="isSubmitting()">
+  <!-- Cancel and Submit side by side, on phones too (#345). -->
+  <div class="grid grid-cols-2 gap-3 sm:flex sm:justify-end">
+    @if (cancelLink(); as cancel) {
+      <a appButton variant="secondary" class="justify-center" [routerLink]="cancel.path" [queryParams]="cancel.queryParams ?? null" i18n="Button next to Submit in the game proposal form, back to the page it was opened from">Cancel</a>
+    }
+    <button appButton type="submit" class="justify-center" [class.col-span-2]="!cancelLink()" [loading]="isSubmitting()">
       @if (!isSubmitting()) {
         <span i18n="Button that sends the game proposal form">Submit Proposal</span>
       } @else {

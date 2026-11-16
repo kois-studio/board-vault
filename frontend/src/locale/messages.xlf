@@ -882,8 +882,9 @@
     </unit>
     <unit id="148655102375112369">
       <notes>
+        <note category="location">src/app/pages/collection-page/propose-game-page/propose-game-page.component.html</note>
         <note category="location">src/app/pages/groups/group-create/group-create.component.html</note>
-        <note category="description">Label of the steps on the page that creates a group</note>
+        <note category="description">Heading beside the game proposal form</note>
       </notes>
       <segment>
         <source>What happens next</source>
@@ -1236,6 +1237,15 @@
         <source>Attended</source>
       </segment>
     </unit>
+    <unit id="1669279593123198178">
+      <notes>
+        <note category="location">src/app/pages/collection-page/propose-game-page/propose-game-page.component.html</note>
+        <note category="description">Second step beside the game proposal form</note>
+      </notes>
+      <segment>
+        <source>You get a notification when it’s ready.</source>
+      </segment>
+    </unit>
     <unit id="167090221720253484">
       <notes>
         <note category="location">src/app/core/i18n/notification-text.ts</note>
@@ -1315,15 +1325,6 @@
       </notes>
       <segment>
         <source>Verification isn&apos;t supported in this environment. Please continue in a standard browser or contact support.</source>
-      </segment>
-    </unit>
-    <unit id="1703203867793276344">
-      <notes>
-        <note category="location">src/app/components/modals/modal-game-submission/modal-game-submission.component.html</note>
-        <note category="description">Under the title of the game proposal dialog</note>
-      </notes>
-      <segment>
-        <source>Help us expand our game collection! Submit a proposal for a game you’d like to see added to Board Vault.</source>
       </segment>
     </unit>
     <unit id="1703497912367663985">
@@ -2169,6 +2170,7 @@
     <unit id="2159130950882492111">
       <notes>
         <note category="location">src/app/components/edition-choice-dialog/edition-choice-dialog.component.html</note>
+        <note category="location">src/app/components/forms/form-game-submission/form-game-submission.component.html</note>
         <note category="location">src/app/components/forms/form-update-display-name/form-update-display-name.component.html</note>
         <note category="location">src/app/components/modals/modal-avatar-editor/modal-avatar-editor.component.html</note>
         <note category="location">src/app/pages/group-person/group-person-page.component.html</note>
@@ -3562,6 +3564,15 @@
         <source>Keep this ownership</source>
       </segment>
     </unit>
+    <unit id="2854819459348670622">
+      <notes>
+        <note category="location">src/app/pages/collection-page/propose-game-page/propose-game-page.component.html</note>
+        <note category="description">Third step beside the game proposal form</note>
+      </notes>
+      <segment>
+        <source>It goes on your shelf or wishlist, as you chose in the form.</source>
+      </segment>
+    </unit>
     <unit id="2859556292535744186">
       <notes>
         <note category="location">src/app/pages/meet-new/meet-new.component.html</note>
@@ -3642,6 +3653,15 @@
       </notes>
       <segment>
         <source>Your new avatar wasn’t saved. Try again.</source>
+      </segment>
+    </unit>
+    <unit id="2902201015230002563">
+      <notes>
+        <note category="location">src/app/pages/collection-page/propose-game-page/propose-game-page.component.html</note>
+        <note category="description">Link above the form that proposes a game, back to the page that lists your proposals</note>
+      </notes>
+      <segment>
+        <source>Back to My submissions</source>
       </segment>
     </unit>
     <unit id="290594620278715699">
@@ -7195,6 +7215,15 @@
         <source>Find a game to add</source>
       </segment>
     </unit>
+    <unit id="460676229593304254">
+      <notes>
+        <note category="location">src/app/components/forms/form-game-submission/form-game-submission.component.html</note>
+        <note category="description">Under the title of the game proposal form when the catalogue already has a game with this exact title; the placeholder is its title</note>
+      </notes>
+      <segment>
+        <source><ph id="0" equiv="INTERPOLATION" disp="{{ game.gameTitle }}"/> is already in Board Vault.</source>
+      </segment>
+    </unit>
     <unit id="4611134680900779619">
       <notes>
         <note category="location">src/app/pages/collection-page/propose-game-page/propose-game-page.component.html</note>
@@ -7494,6 +7523,15 @@
       </notes>
       <segment>
         <source>Who played</source>
+      </segment>
+    </unit>
+    <unit id="4755372391778025124">
+      <notes>
+        <note category="location">src/app/pages/collection-page/propose-game-page/propose-game-page.component.html</note>
+        <note category="description">First step beside the game proposal form</note>
+      </notes>
+      <segment>
+        <source>We find the exact game and add it to the catalogue.</source>
       </segment>
     </unit>
     <unit id="4757507927002475818">
@@ -10597,6 +10635,15 @@
         <source>Capitalize some, but not all letters.</source>
       </segment>
     </unit>
+    <unit id="6379258275781519818">
+      <notes>
+        <note category="location">src/app/components/forms/form-game-submission/form-game-submission.component.html</note>
+        <note category="description">Heading of the catalogue games that match the title being typed in the game proposal form</note>
+      </notes>
+      <segment>
+        <source>Already in Board Vault?</source>
+      </segment>
+    </unit>
     <unit id="6379945985125420358">
       <notes>
         <note category="location">src/app/pages/play-page/recommendations-page/recommendations-page.component.ts</note>
@@ -11805,9 +11852,10 @@
     </unit>
     <unit id="7017107942157732351">
       <notes>
+        <note category="location">src/app/components/forms/form-game-submission/form-game-submission.component.html</note>
         <note category="location">src/app/pages/collection-page/browse-page/browse-page.component.html</note>
         <note category="location">src/app/pages/games/game-view/game-view.component.html</note>
-        <note category="description">Mark on a game cover on Browse: the game is on My Games</note>
+        <note category="description">Next to a catalogue game in the game proposal form when it is already in your games</note>
       </notes>
       <segment>
         <source>In your games</source>
@@ -12879,10 +12927,11 @@
     </unit>
     <unit id="7593555694782789615">
       <notes>
+        <note category="location">src/app/components/forms/form-game-submission/form-game-submission.component.html</note>
         <note category="location">src/app/components/group-activity-feed/group-activity-feed.component.html</note>
         <note category="location">src/app/components/history-entry/history-entry.component.html</note>
         <note category="location">src/app/pages/play-page/recommendations-page/recommendations-page.component.ts</note>
-        <note category="description">Link after a line in the group&apos;s history of changes that opens the game night</note>
+        <note category="description">Next to a catalogue game in the game proposal form, opens its page to add it</note>
       </notes>
       <segment>
         <source>Open</source>
@@ -13411,9 +13460,8 @@
     </unit>
     <unit id="7819314041543176992">
       <notes>
-        <note category="location">src/app/components/modals/modal-game-submission/modal-game-submission.component.html</note>
         <note category="location">src/app/pages/meet-view/meet-view.component.html</note>
-        <note category="description">Button that closes a dialog</note>
+        <note category="description">Button that closes the shortlist editor of a game night</note>
       </notes>
       <segment>
         <source>Close</source>
@@ -15333,6 +15381,15 @@
         <source>Select at least one player for every game.</source>
       </segment>
     </unit>
+    <unit id="8703809560295976102">
+      <notes>
+        <note category="location">src/app/components/forms/form-game-submission/form-game-submission.component.html</note>
+        <note category="description">Under the catalogue games that match the title being typed in the game proposal form</note>
+      </notes>
+      <segment>
+        <source>If none of these is your game, carry on.</source>
+      </segment>
+    </unit>
     <unit id="8711759548676227784">
       <notes>
         <note category="location">src/app/components/session-summary/session-summary.component.ts</note>
@@ -15716,15 +15773,6 @@
         <source>Back</source>
       </segment>
     </unit>
-    <unit id="8891667033965826221">
-      <notes>
-        <note category="location">src/app/components/modals/modal-game-submission/modal-game-submission.component.html</note>
-        <note category="description">Title of the game proposal dialog</note>
-      </notes>
-      <segment>
-        <source>Submit Game Proposal</source>
-      </segment>
-    </unit>
     <unit id="8894032101147847060">
       <notes>
         <note category="location">src/app/pages/landing/landing.component.html</note>
@@ -15741,6 +15789,15 @@
       </notes>
       <segment>
         <source>Accept</source>
+      </segment>
+    </unit>
+    <unit id="8930803689407939988">
+      <notes>
+        <note category="location">src/app/components/forms/form-game-submission/form-game-submission.component.html</note>
+        <note category="description">Link under the title of the game proposal form to the catalogue game with the same title</note>
+      </notes>
+      <segment>
+        <source>Open it to add it to your games</source>
       </segment>
     </unit>
     <unit id="8935018312321259027">

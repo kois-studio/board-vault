@@ -1,16 +1,10 @@
-import { Component, output, signal } from '@angular/core'
+import { signal } from '@angular/core'
 import { TestBed } from '@angular/core/testing'
 import { provideRouter } from '@angular/router'
-import { ModalGameSubmissionComponent } from '../../../components/modals/modal-game-submission/modal-game-submission.component'
 import type { ResourceStatus } from '../../../core/async/resource-state'
 import { withStates } from '../../../core/async/resource-state.testing'
 import { DataService } from '../../../core/services/data.service'
 import { SubmissionsPageComponent } from './submissions-page.component'
-
-@Component({ selector: 'app-modal-game-submission', template: '' })
-class ModalStubComponent {
-    readonly proposalSubmitted = output<void>()
-}
 
 const stats = { totalProposals: 4, pendingProposals: 1, approvedProposals: 2, rejectedProposals: 1, reputationScore: 9 }
 
@@ -32,12 +26,7 @@ async function render(statuses: Record<string, ResourceStatus> = {}) {
                 ),
             },
         ],
-    })
-        .overrideComponent(SubmissionsPageComponent, {
-            remove: { imports: [ModalGameSubmissionComponent] },
-            add: { imports: [ModalStubComponent] },
-        })
-        .compileComponents()
+    }).compileComponents()
     const fixture = TestBed.createComponent(SubmissionsPageComponent)
     fixture.detectChanges()
     return fixture.nativeElement as HTMLElement
@@ -77,5 +66,13 @@ describe('SubmissionsPageComponent while it loads', () => {
 
         expect(element.textContent).toContain('Submission data could not be loaded.')
         expect(element.textContent).not.toContain('No proposals yet')
+    })
+
+    // #345: one way to propose, the page, which leads back here.
+    it('opens the proposal page, which comes back here', async () => {
+        const element = await render()
+        const link = element.querySelector('a[href^="/collection/propose-game"]') as HTMLAnchorElement
+
+        expect(link.getAttribute('href')).toBe('/collection/propose-game?from=submissions')
     })
 })

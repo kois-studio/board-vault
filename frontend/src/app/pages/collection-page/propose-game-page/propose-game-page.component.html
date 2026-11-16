@@ -1,15 +1,40 @@
 @if (!isSubmitted()) {
     <app-page-header i18n-titleText="Title of the Propose a game page" titleText="Propose a Game">
-        <!-- Browse opens this page with its search as the title; going back finds that search again. -->
-        <a appBackLink routerLink="/collection/browse" [queryParams]="{ q: initialTitle() ?? null }" i18n="Link above the form that proposes a game, back to the Browse page">Back to Browse</a>
+        <!-- Back where it was opened from (#345): Browse with its search, or My submissions. -->
+        @if (from() === 'submissions') {
+            <a appBackLink [routerLink]="backLink().path" i18n="Link above the form that proposes a game, back to the page that lists your proposals">Back to My submissions</a>
+        } @else {
+            <a appBackLink [routerLink]="backLink().path" [queryParams]="backLink().queryParams ?? null" i18n="Link above the form that proposes a game, back to the Browse page">Back to Browse</a>
+        }
         <ng-container i18n="Subtitle of the Propose a game page">Tell us which game is missing and we’ll add it to Board Vault.</ng-container>
     </app-page-header>
     <container-wrapper>
-        <form-game-submission 
-            [initialTitle]="initialTitle()"
-            [confirmWithToast]="false"
-            (proposalSubmitted)="onProposalSubmitted($event)"
-        />
+        <!-- A readable form on desktop, with what happens next beside it; one column on phones (#345). -->
+        <div class="grid gap-8 pb-12 lg:grid-cols-[minmax(0,36rem)_18rem] lg:justify-center lg:gap-12">
+            <form-game-submission
+                [initialTitle]="initialTitle()"
+                [confirmWithToast]="false"
+                [cancelLink]="backLink()"
+                (proposalSubmitted)="onProposalSubmitted($event)"
+            />
+            <aside class="rounded-2xl border border-bv-border bg-bv-surface p-5 lg:self-start" aria-labelledby="next-steps-heading">
+                <h2 id="next-steps-heading" class="text-base font-semibold" i18n="Heading beside the game proposal form">What happens next</h2>
+                <ol class="mt-4 space-y-4">
+                    <li class="flex gap-3">
+                        <span class="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-bv-primary-soft text-sm font-semibold text-bv-on-primary-soft" aria-hidden="true">1</span>
+                        <span class="text-sm text-bv-text-muted" i18n="First step beside the game proposal form">We find the exact game and add it to the catalogue.</span>
+                    </li>
+                    <li class="flex gap-3">
+                        <span class="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-bv-primary-soft text-sm font-semibold text-bv-on-primary-soft" aria-hidden="true">2</span>
+                        <span class="text-sm text-bv-text-muted" i18n="Second step beside the game proposal form">You get a notification when it’s ready.</span>
+                    </li>
+                    <li class="flex gap-3">
+                        <span class="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-bv-primary-soft text-sm font-semibold text-bv-on-primary-soft" aria-hidden="true">3</span>
+                        <span class="text-sm text-bv-text-muted" i18n="Third step beside the game proposal form">It goes on your shelf or wishlist, as you chose in the form.</span>
+                    </li>
+                </ol>
+            </aside>
+        </div>
     </container-wrapper>
 } @else {
     <container-wrapper>
@@ -33,7 +58,11 @@
                     }
                 </p>
             </div>
-            <a appButton routerLink="/collection" i18n="Button after sending a game proposal that opens the Collection page">Back to Collection</a>
+            @if (from() === 'submissions') {
+                <a appButton routerLink="/submissions" i18n="Button after sending a game proposal from My submissions, back to that page">Back to My submissions</a>
+            } @else {
+                <a appButton routerLink="/collection" i18n="Button after sending a game proposal that opens the Collection page">Back to Collection</a>
+            }
         </div>
     </container-wrapper>
 }
