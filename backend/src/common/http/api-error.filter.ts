@@ -20,6 +20,8 @@ export type ApiErrorResponse = {
     code: string
     message: string
     details?: Array<string>
+    /** What the client needs to act on a 4xx `code`, such as the game a refused proposal names (#345). */
+    context?: Record<string, string | number | boolean>
     requestId: string
 }
 
@@ -93,6 +95,7 @@ export class ApiErrorFilter implements ExceptionFilter {
             code: normalized.code,
             message: normalized.message,
             ...(normalized.details ? { details: normalized.details } : {}),
+            ...(normalized.context ? { context: normalized.context } : {}),
             requestId,
         } satisfies ApiErrorResponse)
     }
@@ -104,6 +107,7 @@ export class ApiErrorFilter implements ExceptionFilter {
         code: string
         message: string
         details?: Array<string>
+        context?: Record<string, string | number | boolean>
     } {
         const defaultCode = HttpStatus[statusCode] ?? 'HTTP_ERROR'
 
@@ -147,6 +151,22 @@ export class ApiErrorFilter implements ExceptionFilter {
                 ? candidate.error.replace(/[^a-zA-Z0-9]+/g, '_').toUpperCase()
                 : defaultCode)
 
-        return { code, message, ...(details && details.length > 0 ? { details } : {}) }
+        const context = this.plainContext((candidate as { context?: unknown }).context)
+
+        return { code, message, ...(details && details.length > 0 ? { details } : {}), ...(context ? { context } : {}) }
+    }
+
+    /**
+     * A 4xx answer's `context`, only flat strings, numbers and booleans (never nested objects, which could carry
+     * whatever an exception held), so the client can act on its `code` (#345).
+     */
+    private plainContext(value: unknown): Record<string, string | number | boolean> | undefined {
+        if (!value || typeof value !== 'object' || Array.isArray(value)) return undefined
+        const entries = Object.entries(value).filter(
+            (entry): entry is [string, string | number | boolean] =>
+                typeof entry[1] === 'string' || typeof entry[1] === 'number' || typeof entry[1] === 'boolean',
+        )
+
+        return entries.length > 0 ? Object.fromEntries(entries) : undefined
     }
 }

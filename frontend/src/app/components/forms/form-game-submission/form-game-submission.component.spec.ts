@@ -1,5 +1,7 @@
+import { HttpErrorResponse } from '@angular/common/http'
 import { signal } from '@angular/core'
 import { TestBed } from '@angular/core/testing'
+import { provideRouter } from '@angular/router'
 import { of, throwError } from 'rxjs'
 import { Api } from '../../../api/api'
 import { DataService } from '../../../core/services/data.service'
@@ -9,20 +11,31 @@ import { FormGameSubmissionComponent } from './form-game-submission.component'
 describe('FormGameSubmissionComponent', () => {
     const setup = () => {
         const createGameProposal = vi.fn().mockReturnValue(of({}))
+        const browseGamesNotOwnedByUser = vi.fn().mockReturnValue(of({ games: [], pagination: {} }))
         const refreshUserProposals = vi.fn()
         const toast = { success: vi.fn(), error: vi.fn() }
         const refreshUserProposalStats = vi.fn()
         TestBed.configureTestingModule({
             imports: [FormGameSubmissionComponent],
             providers: [
-                { provide: Api, useValue: { createGameProposal } },
-                { provide: DataService, useValue: { currentUser: signal({ id: 2 }), refreshUserProposals, refreshUserProposalStats } },
+                { provide: Api, useValue: { createGameProposal, browseGamesNotOwnedByUser } },
+                provideRouter([]),
+                {
+                    provide: DataService,
+                    useValue: {
+                        currentUser: signal({ id: 2 }),
+                        userGames: signal([]),
+                        use: vi.fn(),
+                        refreshUserProposals,
+                        refreshUserProposalStats,
+                    },
+                },
                 { provide: ToastService, useValue: toast },
             ],
         })
         const fixture = TestBed.createComponent(FormGameSubmissionComponent)
         const component = fixture.componentInstance
-        return { fixture, component, toast, createGameProposal, refreshUserProposals, refreshUserProposalStats }
+        return { fixture, component, toast, createGameProposal, browseGamesNotOwnedByUser, refreshUserProposals, refreshUserProposalStats }
     }
 
     // #326: the propose page and the My submissions dialog both send through this form, so it reloads
@@ -128,5 +141,68 @@ describe('FormGameSubmissionComponent', () => {
         quiet.component.gameSubmissionForm.patchValue({ title: 'Azul' })
         await quiet.component.onSubmit()
         expect(quiet.toast.success).not.toHaveBeenCalled()
+    })
+
+    // #345: the game may already be in Board Vault; the form says so while typing, and when the API refuses it.
+    describe('already in Board Vault', () => {
+        const catan = { id: 9, title: 'Catan', imageUrl: '', gameAvgDuration: 60, minPlayers: 3, maxPlayers: 4 }
+
+        it('shows the catalogue games matching the title as it is typed, not before two letters', async () => {
+            vi.useFakeTimers()
+            try {
+                const { fixture, component, browseGamesNotOwnedByUser } = setup()
+                browseGamesNotOwnedByUser.mockReturnValue(of({ games: [catan], pagination: {} }))
+                fixture.detectChanges()
+
+                component.title.setValue('C')
+                await vi.advanceTimersByTimeAsync(400)
+                expect(browseGamesNotOwnedByUser).not.toHaveBeenCalled()
+
+                component.title.setValue('Catan')
+                await vi.advanceTimersByTimeAsync(400)
+                fixture.detectChanges()
+
+                expect(browseGamesNotOwnedByUser).toHaveBeenCalledWith(2, 'Catan', 1, 3, expect.objectContaining({ hideOwned: false }))
+                const element = fixture.nativeElement as HTMLElement
+                expect(element.textContent).toContain('Already in Board Vault?')
+                expect(element.querySelector('a[href="/games/9"]')).not.toBeNull()
+            } finally {
+                vi.useRealTimers()
+            }
+        })
+
+        it('says the game is already in Board Vault, with a link to it, when the API refuses the title', async () => {
+            const { fixture, component, createGameProposal, toast } = setup()
+            createGameProposal.mockReturnValue(
+                throwError(
+                    () =>
+                        new HttpErrorResponse({
+                            status: 409,
+                            error: { code: 'GAME_ALREADY_IN_CATALOGUE', message: 'already', context: { gameId: 9, gameTitle: 'Catan' } },
+                        }),
+                ),
+            )
+            component.gameSubmissionForm.patchValue({ title: 'catan' })
+
+            await component.onSubmit()
+            fixture.detectChanges()
+
+            expect(component.alreadyInCatalogue()).toEqual({ gameId: 9, gameTitle: 'Catan' })
+            expect(toast.error).not.toHaveBeenCalled()
+            const element = fixture.nativeElement as HTMLElement
+            expect(element.textContent).toContain('Catan is already in Board Vault.')
+            expect(element.querySelector('a[href="/games/9"]')).not.toBeNull()
+        })
+    })
+
+    it('puts Cancel next to Submit, back where the form was opened from', () => {
+        const { fixture } = setup()
+        fixture.componentRef.setInput('cancelLink', { path: '/submissions' })
+        fixture.detectChanges()
+
+        const cancel = [...(fixture.nativeElement as HTMLElement).querySelectorAll('a')].find(
+            (link) => link.textContent?.trim() === 'Cancel',
+        )
+        expect(cancel?.getAttribute('href')).toBe('/submissions')
     })
 })

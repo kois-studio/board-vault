@@ -185,8 +185,13 @@ visible and editable by the group's members, never another account's private
 collection. Session ownership follow-up is optional and independent of the
 already-saved play history.
 
-A game missing from the catalogue is proposed from Browse's empty search
-("Propose this game", the search as the title). The form asks only what the
+A game missing from the catalogue is proposed on one page, opened from
+Browse's empty search ("Propose this game", the search as the title) or from
+My submissions; its back link and Cancel return to where it came from (#345).
+While the title is typed, up to three catalogue games that match it show
+under it as "Already in Board Vault?", each linking to its page; Submit stays
+available. A title the catalogue already has exactly is refused next to the
+field, with a link to that game. The form asks only what the
 proposer knows: the title as on the box, optional notes that help find the
 exact game, and whether it goes to their shelf, their wishlist, or neither
 once approved. The title's language is the page's. Editions, artwork,

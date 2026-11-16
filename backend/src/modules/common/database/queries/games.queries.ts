@@ -530,6 +530,21 @@ export class GameQueries {
         return this.database.execute('SELECT * FROM GameProposal ORDER BY submittedAt DESC, id DESC')
     }
 
+    /** A catalogue game one of whose editions has this normalized title, with its primary title (#345). */
+    findGameByNormalizedTitle(normalizedTitle: string) {
+        return this.database.execute({
+            sql: `
+                SELECT e.gameId, p.title
+                FROM GameEdition e
+                INNER JOIN GameEdition p ON p.gameId = e.gameId AND p.isPrimary = 1
+                WHERE e.normalizedTitle = ?
+                ORDER BY e.gameId ASC
+                LIMIT 1
+            `,
+            args: [normalizedTitle],
+        })
+    }
+
     getGameProposalById(id: number) {
         return this.database.execute({
             sql: 'SELECT * FROM GameProposal WHERE id = ?',

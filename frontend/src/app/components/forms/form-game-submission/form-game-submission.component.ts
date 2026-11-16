@@ -1,13 +1,28 @@
-import { Component, inject, input, OnChanges, OnInit, output, SimpleChanges, signal } from '@angular/core'
+import { HttpErrorResponse } from '@angular/common/http'
+import { Component, computed, inject, input, OnChanges, OnInit, output, SimpleChanges, signal } from '@angular/core'
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms'
-import { firstValueFrom } from 'rxjs'
+import { RouterLink } from '@angular/router'
+import { catchError, debounceTime, distinctUntilChanged, firstValueFrom, map, of, startWith, switchMap } from 'rxjs'
 import { Api } from '../../../api/api'
-import type { CreateGameProposalType } from '../../../api/api.types'
+import type { CreateGameProposalType, GameCompleteType } from '../../../api/api.types'
 import { pageLocale } from '../../../core/i18n/format'
 import { canonicalLanguageCode } from '../../../core/i18n/language-names'
+import { GameTitlePipe } from '../../../core/pipes/game-title.pipe'
 import { DataService } from '../../../core/services/data.service'
 import { ToastService } from '../../toast/toast.service'
 import { ButtonComponent } from '../../ui/button/button.component'
+import { IconComponent } from '../../ui/icon/icon.component'
+import { ImageBackgroundComponent } from '../../ui/image-background/image-background.component'
+
+/** Where Cancel goes: back to the page the form was opened from (#345). */
+export type ProposalCancelLink = { path: string; queryParams?: Record<string, string | null> }
+
+/** The catalogue game a refused proposal names (`409 GAME_ALREADY_IN_CATALOGUE`, #345). */
+type CatalogueGame = { gameId: number; gameTitle: string }
+
+/** How many catalogue games the "Already in Board Vault?" hint shows. */
+const MATCHES_SHOWN = 3
 
 /** Where a proposed game goes for its proposer once an admin approves it. */
 export type ProposalAddTo = 'shelf' | 'wishlist' | 'none'
@@ -17,7 +32,7 @@ export type ProposalAddTo = 'shelf' | 'wishlist' | 'none'
  * Everything else (editions, artwork, players, length, tags) is the admin's job at review (#325).
  */
 @Component({
-    imports: [ButtonComponent, ReactiveFormsModule],
+    imports: [ButtonComponent, GameTitlePipe, IconComponent, ImageBackgroundComponent, ReactiveFormsModule, RouterLink],
     selector: 'form-game-submission',
     templateUrl: 'form-game-submission.component.html',
 })
@@ -33,6 +48,15 @@ export class FormGameSubmissionComponent implements OnInit, OnChanges {
     readonly confirmWithToast = input(true)
     /** Emits where the approved game goes, so the page can say so. */
     readonly proposalSubmitted = output<ProposalAddTo>()
+    /** Cancel, next to Submit (#345). */
+    readonly cancelLink = input<ProposalCancelLink | null>(null)
+
+    /** Catalogue games whose title matches what is typed, so nobody proposes a game Board Vault has (#345). */
+    public readonly matches = signal<Array<GameCompleteType>>([])
+    /** Your games, to mark a match that is already on your shelf. */
+    private readonly ownedGameIds = computed(() => new Set(this.dataService.userGames().map((game) => game.id)))
+    /** The catalogue game the API named when it refused the proposal as already there. */
+    public readonly alreadyInCatalogue = signal<CatalogueGame | null>(null)
 
     public readonly isSubmitting = signal(false)
     public readonly notesMaxLength = 500
@@ -60,6 +84,38 @@ export class FormGameSubmissionComponent implements OnInit, OnChanges {
             hint: $localize`:Hint of the Neither option; once approved, the game is only added to the catalogue:Just add it to the catalogue`,
         },
     ] as const
+
+    constructor() {
+        this.dataService.use(['games'])
+        // A hint, not a block: the matches show while typing, and Submit stays available (the API refuses an exact title).
+        this.gameSubmissionForm.controls.title.valueChanges
+            .pipe(
+                startWith(this.gameSubmissionForm.controls.title.value),
+                map((title) => (title ?? '').trim()),
+                debounceTime(300),
+                distinctUntilChanged(),
+                switchMap((term) => {
+                    this.alreadyInCatalogue.set(null)
+                    const userId = this.currentUser$()?.id
+                    if (term.length < 2 || !userId) return of([])
+                    return this.api
+                        .browseGamesNotOwnedByUser(userId, term, 1, MATCHES_SHOWN, {
+                            players: null,
+                            length: null,
+                            tags: [],
+                            hideOwned: false,
+                            sort: 'title',
+                        })
+                        .pipe(
+                            map((result) => result.games.slice(0, MATCHES_SHOWN)),
+                            // A failed hint is no reason to stop someone proposing.
+                            catchError(() => of([])),
+                        )
+                }),
+                takeUntilDestroyed(),
+            )
+            .subscribe((games) => this.matches.set(games))
+    }
 
     get title() {
         return this.gameSubmissionForm.controls.title
@@ -111,6 +167,12 @@ export class FormGameSubmissionComponent implements OnInit, OnChanges {
             this.proposalSubmitted.emit(addTo)
             this.gameSubmissionForm.reset()
         } catch (error) {
+            const refused = this.catalogueGameIn(error)
+            if (refused) {
+                // Said next to the title, with a link to the game, instead of a toast.
+                this.alreadyInCatalogue.set(refused)
+                return
+            }
             console.error('Error submitting game proposal:', error)
             this.toastService.error($localize`:Toast when sending a game proposal failed:Failed to submit game proposal. Please try again.`)
         } finally {
@@ -129,5 +191,18 @@ export class FormGameSubmissionComponent implements OnInit, OnChanges {
     private applyInitialTitle(): void {
         const initialTitle = this.initialTitle()
         if (initialTitle && !this.title.value) this.title.setValue(initialTitle)
+    }
+
+    public isOwned(gameId: number): boolean {
+        return this.ownedGameIds().has(gameId)
+    }
+
+    private catalogueGameIn(error: unknown): CatalogueGame | null {
+        if (!(error instanceof HttpErrorResponse) || error.status !== 409) return null
+        // The API's error body: `{ code, message, context }` (ApiErrorFilter).
+        const body = error.error as { code?: unknown; context?: { gameId?: unknown; gameTitle?: unknown } } | null
+        const game = body?.context
+        if (body?.code !== 'GAME_ALREADY_IN_CATALOGUE' || typeof game?.gameId !== 'number') return null
+        return { gameId: game.gameId, gameTitle: String(game.gameTitle ?? '') }
     }
 }

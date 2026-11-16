@@ -1,6 +1,6 @@
 <app-page-header i18n-titleText="Title of the page that lists your game proposals" titleText="My Submissions" [showActionButton]="true">
     <ng-container i18n="Subtitle of the page that lists your game proposals">Track your game proposals and their review status</ng-container>
-    <button appButton class="action-button" icon="plus-lg" (click)="showSubmissionModal()" i18n="Button that opens the game proposal form">Submit New Game</button>
+    <a appButton class="action-button" icon="plus-lg" routerLink="/collection/propose-game" [queryParams]="{ from: 'submissions' }" i18n="Button that opens the game proposal form">Submit New Game</a>
 </app-page-header>
 
 <container-wrapper>
@@ -81,7 +81,7 @@
                 </div>
                 <h3 class="text-lg font-medium text-bv-text mb-2" i18n="Heading of the empty list of your game proposals">No proposals yet</h3>
                 <p class="text-bv-text-muted mb-4" i18n="Empty list of your game proposals">Start contributing to our game collection by submitting your first proposal!</p>
-                <button appButton icon="plus-lg" (click)="showSubmissionModal()" i18n="Button in the empty list of your game proposals that opens the form">Submit Your First Game</button>
+                <a appButton icon="plus-lg" routerLink="/collection/propose-game" [queryParams]="{ from: 'submissions' }" i18n="Button in the empty list of your game proposals that opens the form">Submit Your First Game</a>
             </div>
         }
 
@@ -161,6 +161,3 @@
         }
     </div>
 </container-wrapper>
-
-<!-- Game Submission Modal -->
-<app-modal-game-submission></app-modal-game-submission> 

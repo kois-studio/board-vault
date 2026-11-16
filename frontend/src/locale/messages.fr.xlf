@@ -864,7 +864,7 @@
     </unit>
     <unit id="148655102375112369">
       <notes>
-        <note category="description">Label of the steps on the page that creates a group</note>
+        <note category="description">Heading beside the game proposal form</note>
       </notes>
       <segment state="translated">
         <source>What happens next</source>
@@ -1214,6 +1214,15 @@
         <target>Présences</target>
       </segment>
     </unit>
+    <unit id="1669279593123198178">
+      <notes>
+        <note category="description">Second step beside the game proposal form</note>
+      </notes>
+      <segment state="translated">
+        <source>You get a notification when it’s ready.</source>
+        <target>Tu reçois une notification quand c’est prêt.</target>
+      </segment>
+    </unit>
     <unit id="167090221720253484">
       <segment state="translated">
         <source><ph id="0" equiv="person" disp="actor"/> changed how much <ph id="1" equiv="groupPerson" disp="person"/> likes <ph id="2" equiv="game" disp="game"/>, in <ph id="3" equiv="group" disp="group"/>.</source>
@@ -1290,15 +1299,6 @@
       <segment state="translated">
         <source>Verification isn&apos;t supported in this environment. Please continue in a standard browser or contact support.</source>
         <target>La vérification n’est pas prise en charge dans cet environnement. Continuez dans un navigateur standard ou contactez l’assistance.</target>
-      </segment>
-    </unit>
-    <unit id="1703203867793276344">
-      <notes>
-        <note category="description">Under the title of the game proposal dialog</note>
-      </notes>
-      <segment state="translated">
-        <source>Help us expand our game collection! Submit a proposal for a game you’d like to see added to Board Vault.</source>
-        <target>Aide-nous à enrichir notre collection de jeux ! Envoie une proposition pour un jeu que tu aimerais voir dans Board Vault.</target>
       </segment>
     </unit>
     <unit id="1703497912367663985">
@@ -3491,6 +3491,15 @@
         <target>Garder ce jeu</target>
       </segment>
     </unit>
+    <unit id="2854819459348670622">
+      <notes>
+        <note category="description">Third step beside the game proposal form</note>
+      </notes>
+      <segment state="translated">
+        <source>It goes on your shelf or wishlist, as you chose in the form.</source>
+        <target>Il va sur ton étagère ou dans ta liste d’envies, comme tu l’as choisi dans le formulaire.</target>
+      </segment>
+    </unit>
     <unit id="2859556292535744186">
       <notes>
         <note category="description">Plan form&apos;s shortlist when no game matches the search; the placeholder is the search</note>
@@ -3570,6 +3579,15 @@
       <segment state="translated">
         <source>Your new avatar wasn’t saved. Try again.</source>
         <target>Ton nouvel avatar n’a pas été enregistré. Réessaie.</target>
+      </segment>
+    </unit>
+    <unit id="2902201015230002563">
+      <notes>
+        <note category="description">Link above the form that proposes a game, back to the page that lists your proposals</note>
+      </notes>
+      <segment state="translated">
+        <source>Back to My submissions</source>
+        <target>Retour à Mes propositions</target>
       </segment>
     </unit>
     <unit id="290594620278715699">
@@ -7073,6 +7091,15 @@
         <target>Trouver un jeu à ajouter</target>
       </segment>
     </unit>
+    <unit id="460676229593304254">
+      <notes>
+        <note category="description">Under the title of the game proposal form when the catalogue already has a game with this exact title; the placeholder is its title</note>
+      </notes>
+      <segment state="translated">
+        <source><ph id="0" equiv="INTERPOLATION" disp="{{ game.gameTitle }}"/> is already in Board Vault.</source>
+        <target><ph id="0" equiv="INTERPOLATION" disp="{{ game.gameTitle }}"/> est déjà dans Board Vault.</target>
+      </segment>
+    </unit>
     <unit id="4611134680900779619">
       <notes>
         <note category="description">Title of the Propose a game page</note>
@@ -7370,6 +7397,15 @@
       <segment state="translated">
         <source>Who played</source>
         <target>Qui a joué</target>
+      </segment>
+    </unit>
+    <unit id="4755372391778025124">
+      <notes>
+        <note category="description">First step beside the game proposal form</note>
+      </notes>
+      <segment state="translated">
+        <source>We find the exact game and add it to the catalogue.</source>
+        <target>Nous trouvons le jeu exact et l’ajoutons au catalogue.</target>
       </segment>
     </unit>
     <unit id="4757507927002475818">
@@ -10426,6 +10462,15 @@
         <target>Mettez quelques lettres en majuscules, mais pas toutes.</target>
       </segment>
     </unit>
+    <unit id="6379258275781519818">
+      <notes>
+        <note category="description">Heading of the catalogue games that match the title being typed in the game proposal form</note>
+      </notes>
+      <segment state="translated">
+        <source>Already in Board Vault?</source>
+        <target>Déjà dans Board Vault ?</target>
+      </segment>
+    </unit>
     <unit id="6379945985125420358">
       <notes>
         <note category="description">Title of What to play for a group; the placeholder is the group name</note>
@@ -11606,7 +11651,7 @@
     </unit>
     <unit id="7017107942157732351">
       <notes>
-        <note category="description">Mark on a game cover on Browse: the game is on My Games</note>
+        <note category="description">Next to a catalogue game in the game proposal form when it is already in your games</note>
       </notes>
       <segment state="translated">
         <source>In your games</source>
@@ -12664,7 +12709,7 @@
     </unit>
     <unit id="7593555694782789615">
       <notes>
-        <note category="description">Link after a line in the group&apos;s history of changes that opens the game night</note>
+        <note category="description">Next to a catalogue game in the game proposal form, opens its page to add it</note>
       </notes>
       <segment state="translated">
         <source>Open</source>
@@ -13180,7 +13225,7 @@
     </unit>
     <unit id="7819314041543176992">
       <notes>
-        <note category="description">Button that closes a dialog</note>
+        <note category="description">Button that closes the shortlist editor of a game night</note>
       </notes>
       <segment state="translated">
         <source>Close</source>
@@ -15058,6 +15103,15 @@
         <target>Choisis au moins une personne pour chaque jeu.</target>
       </segment>
     </unit>
+    <unit id="8703809560295976102">
+      <notes>
+        <note category="description">Under the catalogue games that match the title being typed in the game proposal form</note>
+      </notes>
+      <segment state="translated">
+        <source>If none of these is your game, carry on.</source>
+        <target>Si aucun n’est ton jeu, continue.</target>
+      </segment>
+    </unit>
     <unit id="8711759548676227784">
       <notes>
         <note category="description">Tag on a game night going on now, on Upcoming</note>
@@ -15435,15 +15489,6 @@
         <target>Retour</target>
       </segment>
     </unit>
-    <unit id="8891667033965826221">
-      <notes>
-        <note category="description">Title of the game proposal dialog</note>
-      </notes>
-      <segment state="translated">
-        <source>Submit Game Proposal</source>
-        <target>Envoyer une proposition de jeu</target>
-      </segment>
-    </unit>
     <unit id="8894032101147847060">
       <notes>
         <note category="description">Main heading of the landing page</note>
@@ -15460,6 +15505,15 @@
       <segment state="translated">
         <source>Accept</source>
         <target>Accepter</target>
+      </segment>
+    </unit>
+    <unit id="8930803689407939988">
+      <notes>
+        <note category="description">Link under the title of the game proposal form to the catalogue game with the same title</note>
+      </notes>
+      <segment state="translated">
+        <source>Open it to add it to your games</source>
+        <target>Ouvre-le pour l’ajouter à tes jeux</target>
       </segment>
     </unit>
     <unit id="8935018312321259027">

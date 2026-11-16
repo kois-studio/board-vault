@@ -5226,6 +5226,9 @@
           },
           "400": {
             "description": "Invalid proposal data"
+          },
+          "409": {
+            "description": "The catalogue already has a game with this title (any edition, normalized): `code` GAME_ALREADY_IN_CATALOGUE, with `context.gameId` and `context.gameTitle` (#345)"
           }
         },
         "security": [

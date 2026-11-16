@@ -1,6 +1,6 @@
-import { Component, computed, inject, ViewChild } from '@angular/core'
+import { Component, computed, inject } from '@angular/core'
+import { RouterLink } from '@angular/router'
 import type { GameProposalType } from '../../../api/api.types'
-import { ModalGameSubmissionComponent } from '../../../components/modals/modal-game-submission/modal-game-submission.component'
 import { ButtonComponent } from '../../../components/ui/button/button.component'
 import { ContainerWrapperComponent } from '../../../components/ui/container-wrapper/container-wrapper.component'
 import { IconComponent } from '../../../components/ui/icon/icon.component'
@@ -10,7 +10,7 @@ import { formatDateTime } from '../../../core/i18n/format'
 import { DataService } from '../../../core/services/data.service'
 
 @Component({
-    imports: [PageHeaderComponent, ButtonComponent, ContainerWrapperComponent, ModalGameSubmissionComponent, IconComponent],
+    imports: [PageHeaderComponent, ButtonComponent, ContainerWrapperComponent, IconComponent, RouterLink],
     templateUrl: 'submissions-page.component.html',
 })
 export class SubmissionsPageComponent {
@@ -34,15 +34,10 @@ export class SubmissionsPageComponent {
     // --------------------------------------------------------------------------
     //        Component props
     // --------------------------------------------------------------------------
-    @ViewChild(ModalGameSubmissionComponent) modalGameSubmission!: ModalGameSubmissionComponent
 
     // --------------------------------------------------------------------------
     //        Methods
     // --------------------------------------------------------------------------
-    public showSubmissionModal(): void {
-        this.modalGameSubmission.showDialog()
-    }
-
     public retryProposals(): void {
         this.dataService.refreshUserProposals()
         this.dataService.refreshUserProposalStats()

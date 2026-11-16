@@ -1,9 +1,10 @@
-import { Component, DestroyRef, inject, OnInit, signal } from '@angular/core'
+import { Component, computed, DestroyRef, inject, OnInit, signal } from '@angular/core'
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
 import { ActivatedRoute, RouterLink } from '@angular/router'
 import {
     FormGameSubmissionComponent,
     type ProposalAddTo,
+    type ProposalCancelLink,
 } from '../../../components/forms/form-game-submission/form-game-submission.component'
 import { BackLinkComponent } from '../../../components/ui/back-link/back-link.component'
 import { ButtonComponent } from '../../../components/ui/button/button.component'
@@ -28,6 +29,13 @@ export class ProposeGamePageComponent implements OnInit {
     private readonly destroyRef = inject(DestroyRef)
 
     public readonly initialTitle = signal<string | undefined>(undefined)
+    /** Where the page was opened from (`?from=submissions`, or Browse), for the back link and Cancel (#345). */
+    public readonly from = signal<'browse' | 'submissions'>('browse')
+    public readonly backLink = computed<ProposalCancelLink>(() =>
+        this.from() === 'submissions'
+            ? { path: '/submissions' }
+            : { path: '/collection/browse', queryParams: { q: this.initialTitle() ?? null } },
+    )
     public isSubmitted = signal(false)
     /** Where the approved game goes, so the thank-you says so. */
     public readonly addTo = signal<ProposalAddTo>('shelf')
@@ -36,6 +44,7 @@ export class ProposeGamePageComponent implements OnInit {
         // Get title from query params
         this.route.queryParams.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((params) => {
             this.initialTitle.set(params['title'] || undefined)
+            this.from.set(params['from'] === 'submissions' ? 'submissions' : 'browse')
         })
     }
 

@@ -1,4 +1,4 @@
-import { BadRequestException, HttpStatus } from '@nestjs/common'
+import { BadRequestException, ConflictException, HttpStatus, InternalServerErrorException } from '@nestjs/common'
 
 import { ApiErrorFilter } from './api-error.filter.js'
 import { API_ERROR_CODES, BoardVaultHttpException } from './api-error.js'
@@ -96,6 +96,34 @@ describe('ApiErrorFilter', () => {
             message: 'Registration is closed',
             requestId: expect.any(String),
         })
+    })
+
+    // #345: a 4xx code the client acts on can name what it is about, in flat values only.
+    it('passes on a 4xx answer’s flat context, and never nested objects or a 5xx’s', () => {
+        const filter = new ApiErrorFilter()
+        const conflict = new ConflictException({
+            code: 'GAME_ALREADY_IN_CATALOGUE',
+            message: 'Already there',
+            context: { gameId: 9, gameTitle: 'Catan', nested: { secret: 'x' } },
+        })
+        const { host, response } = createHost(conflict)
+
+        filter.catch(conflict, host as never)
+
+        expect(response.json).toHaveBeenCalledWith({
+            statusCode: 409,
+            code: 'GAME_ALREADY_IN_CATALOGUE',
+            message: 'Already there',
+            context: { gameId: 9, gameTitle: 'Catan' },
+            requestId: expect.any(String),
+        })
+
+        const failure = new InternalServerErrorException({ code: 'SOMETHING', message: 'Down', context: { gameId: 9 } })
+        const failed = createHost(failure)
+
+        filter.catch(failure, failed.host as never)
+
+        expect(failed.response.json).toHaveBeenCalledWith(expect.not.objectContaining({ context: expect.anything() }))
     })
 
     it('keeps provider failures safe and diagnosable', () => {

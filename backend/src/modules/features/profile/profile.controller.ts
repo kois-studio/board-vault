@@ -82,6 +82,11 @@ export class ProfileController {
     @ApiOperation({ summary: 'Create a new game proposal', deprecated: false })
     @ApiResponse({ status: 201, type: GameProposalDto, description: 'Game proposal created' })
     @ApiResponse({ status: 400, description: 'Invalid proposal data' })
+    @ApiResponse({
+        status: 409,
+        description:
+            'The catalogue already has a game with this title (any edition, normalized): `code` GAME_ALREADY_IN_CATALOGUE, with `context.gameId` and `context.gameTitle` (#345)',
+    })
     async createGameProposal(
         @Param('userId', ParseIntPipe) userId: number,
         @Body() proposalData: CreateGameProposalBody,
