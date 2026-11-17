@@ -116,7 +116,16 @@ Settings → Account shows the username and email and opens Clerk's panel to
 change them; Settings → Profile edits the display name and avatar and shows
 the username read-only. Display names, of accounts and of group people alike,
 have at most 20 characters; the API rejects longer ones, and names saved
-before the limit are shown cut to 20 with "…" on every page.
+before the limit are shown cut to 20 with "…" on every page. Group names have
+at most 40.
+
+Names, of people and of groups, may only have letters of any script, numbers,
+emoji, spaces and ordinary punctuation (#350): the limit counts characters,
+not width, so the API refuses long dashes, box-drawing and block characters,
+invisible and formatting characters, and letters with stacked combining marks
+(`IsPlainName`, mirrored by `plainName.ts` in the forms). Names saved before
+the rule are kept, and the app shows them with those characters left out
+(`readableName`, applied where the API schemas cut names).
 
 Clerk's first and last name are turned off in every instance, and the panel's
 profile row (photo, name) and delete section are hidden with

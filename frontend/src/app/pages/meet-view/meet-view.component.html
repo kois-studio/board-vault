@@ -341,7 +341,7 @@
                                                                         <p class="mb-2 text-xs font-medium text-bv-text-muted" i18n="Above the people buttons of a played game, to mark who played it">Who played</p>
                                                                         <div class="flex flex-wrap gap-2">
                                                                             @for (person of invitedPeople; track person.key) {
-                                                                                <button type="button" class="app-chip max-w-full" [attr.aria-pressed]="isPlayer(game.id, person)" [disabled]="isPersistingChanges" (click)="togglePlayer(game.id, person)">
+                                                                                <button type="button" class="app-chip" [attr.aria-pressed]="isPlayer(game.id, person)" [disabled]="isPersistingChanges" (click)="togglePlayer(game.id, person)">
                                                                                     <span class="truncate">{{ person.displayName }}</span>
                                                                                 </button>
                                                                             }
@@ -438,7 +438,7 @@
                                     <div class="mt-2 flex flex-wrap gap-2">
                                         @for (game of totalGames; track game.id) {
                                             @if (game.active) {
-                                                <button type="button" class="app-chip max-w-full" [attr.aria-pressed]="isPlannedGame(game.id)" [disabled]="isUpdatingShortlist" (click)="togglePlannedGame(game.id)">
+                                                <button type="button" class="app-chip" [attr.aria-pressed]="isPlannedGame(game.id)" [disabled]="isUpdatingShortlist" (click)="togglePlannedGame(game.id)">
                                                     <span class="truncate">{{ gameTitle(game) }}</span>
                                                 </button>
                                             }
@@ -514,7 +514,7 @@
                                                     }
                                                     @if (!bringer) {
                                                         @for (person of placeholderOwners(game.id); track person.key) {
-                                                            <button type="button" class="app-chip max-w-full py-1 text-xs" [disabled]="bringingGameId() !== null" (click)="setBringer(game.id, { groupPersonId: person.personId ?? undefined })"><span class="truncate" i18n="Under a shortlisted game: who brings it; the placeholder is a name">{{ person.displayName }} brings it</span></button>
+                                                            <button type="button" class="app-chip py-1 text-xs" [disabled]="bringingGameId() !== null" (click)="setBringer(game.id, { groupPersonId: person.personId ?? undefined })"><span class="truncate" i18n="Under a shortlisted game: who brings it; the placeholder is a name">{{ person.displayName }} brings it</span></button>
                                                         }
                                                     }
                                                 </div>
@@ -611,7 +611,7 @@
                                 <p class="mb-3 mt-1 text-sm text-bv-text-muted" i18n="Under Shortlisted but not played">Worth another look next time.</p>
                                 <ul class="flex flex-wrap gap-2">
                                     @for (game of skippedGames; track game.id) {
-                                        <li class="max-w-full"><a [routerLink]="['/games', game.id]" class="app-chip max-w-full"><span class="truncate">{{ gameTitle(game) }}</span></a></li>
+                                        <li class="max-w-full"><a [routerLink]="['/games', game.id]" class="app-chip"><span class="truncate">{{ gameTitle(game) }}</span></a></li>
                                     }
                                 </ul>
                             </section>
@@ -647,7 +647,7 @@
                                     @for (person of invitablePeople; track person.key) {
                                         <button
                                             type="button"
-                                            class="app-chip max-w-full"
+                                            class="app-chip"
                                             [attr.aria-pressed]="isInvited(person)"
                                             [attr.aria-label]="inviteToggleLabel(person)"
                                             [attr.aria-busy]="invitePendingKey() === person.key ? 'true' : null"

@@ -5,6 +5,7 @@ import { firstValueFrom } from 'rxjs'
 import { BackLinkComponent } from '../../../components/ui/back-link/back-link.component'
 import { ButtonComponent } from '../../../components/ui/button/button.component'
 import { DataService } from '../../../core/services/data.service'
+import { plainNameValidator } from '../../../core/utils/plainName'
 
 @Component({
     imports: [ReactiveFormsModule, BackLinkComponent, ButtonComponent, RouterLink],
@@ -17,7 +18,7 @@ export class GroupCreateComponent {
     // --------------------------------------------------------------------------
     //        DATA for this component
     // --------------------------------------------------------------------------
-    public groupNameForm = new FormControl('', [Validators.required, Validators.minLength(2), Validators.maxLength(40)])
+    public groupNameForm = new FormControl('', [Validators.required, Validators.minLength(2), Validators.maxLength(40), plainNameValidator])
     public readonly isLoading = signal(false)
     public readonly createError = signal<string | null>(null)
     public readonly currentUser$ = this.dataService.currentUser

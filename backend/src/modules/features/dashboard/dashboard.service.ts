@@ -1,6 +1,7 @@
 import { BadRequestException, ForbiddenException, Injectable, Logger, NotFoundException } from '@nestjs/common'
 
 import { LogFeature } from '../../../common/decorators/logger.decorator.js'
+import { PURCHASE_PRICE_MAX } from '../../../common/types/game-owned.type.js'
 import { groupBy } from '../../../common/utils/group-by.js'
 import { DatabaseService } from '../../common/database/database.service.js'
 import { GameTitlesService } from '../../core/game-titles/game-titles.service.js'
@@ -49,7 +50,11 @@ export class DashboardService {
     @LogFeature(new Logger('DashboardService'))
     async getStatsOfUser(userId: number): Promise<UserStatsDto> {
         const gamesOwned = await this.gamesOwnedService.getGamesOwnedByAccountId(userId)
-        const totalGamesValue = gamesOwned.reduce((acc, game) => acc + (game.purchasePrice ?? 0), 0)
+        // A price above the cap was saved before it existed (#350): a typo, left out rather than shown as "€3E+188".
+        const totalGamesValue = gamesOwned.reduce(
+            (acc, game) => acc + (game.purchasePrice !== null && game.purchasePrice <= PURCHASE_PRICE_MAX ? game.purchasePrice : 0),
+            0,
+        )
 
         return {
             totalGamesValue,

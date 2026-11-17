@@ -33,6 +33,9 @@ import { playerRange } from '../../../core/utils/plural'
 const PLAYS_SHOWN = 6
 const PLAYS_MORE = 20
 
+/** The most a copy can have cost, in euros; the API refuses more. */
+const PURCHASE_PRICE_MAX = 10_000
+
 @Component({
     imports: [
         ASYNC,
@@ -73,6 +76,10 @@ export class GameViewPageComponent {
         const numValue = Number(value)
         if (Number.isNaN(numValue) || numValue < 0) {
             return { positiveNumber: true }
+        }
+        // The API takes at most this much (#350): a typo of extra zeros, not a price.
+        if (numValue > PURCHASE_PRICE_MAX) {
+            return { tooExpensive: true }
         }
 
         return null

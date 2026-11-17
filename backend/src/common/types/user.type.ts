@@ -17,6 +17,7 @@ import {
 
 import { SUPPORTED_LOCALES } from '../i18n/locale.js'
 import { DISPLAY_NAME_MAX_LENGTH } from '../utils/display-name.js'
+import { IsPlainName } from '../validators/is-plain-name.js'
 
 import { GameCompleteDto } from './game.type.js'
 
@@ -124,6 +125,7 @@ export class UpdateUserBody {
     @IsString()
     @IsNotEmpty()
     @MaxLength(DISPLAY_NAME_MAX_LENGTH)
+    @IsPlainName()
     displayName?: string
 
     @ApiProperty({ type: AvatarDto, required: false })

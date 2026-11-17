@@ -10491,7 +10491,8 @@
           "purchasePrice": {
             "type": "object",
             "example": 12345,
-            "description": "The price of the game when purchased."
+            "description": "The price of the game when purchased, in euros, at most 10,000.",
+            "maximum": 10000
           },
           "purchaseDate": {
             "type": "object",
@@ -10521,7 +10522,8 @@
           "purchasePrice": {
             "type": "object",
             "example": 12345,
-            "description": "The price of the game when purchased."
+            "description": "The price of the game when purchased, in euros, at most 10,000.",
+            "maximum": 10000
           },
           "purchaseDate": {
             "type": "object",

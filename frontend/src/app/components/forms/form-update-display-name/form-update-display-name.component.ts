@@ -2,6 +2,7 @@ import { afterNextRender, Component, DestroyRef, ElementRef, effect, Injector, i
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms'
 import { DataService } from '../../../core/services/data.service'
 import { isSaveOutcomeUnknown } from '../../../core/utils/apiUnavailable'
+import { plainNameValidator } from '../../../core/utils/plainName'
 import { DISPLAY_NAME_MAX_LENGTH } from '../../../core/utils/shortName'
 import { ButtonComponent } from '../../ui/button/button.component'
 import { IconComponent } from '../../ui/icon/icon.component'
@@ -38,6 +39,7 @@ export class FormUpdateDisplayNameComponent {
         displayName: new FormControl(this.currentUser$()?.displayName ?? '', [
             Validators.required,
             Validators.maxLength(DISPLAY_NAME_MAX_LENGTH),
+            plainNameValidator,
         ]),
     })
 

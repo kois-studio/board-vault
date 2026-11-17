@@ -3,6 +3,7 @@ import { Type } from 'class-transformer'
 import { ArrayMaxSize, IsArray, IsIn, IsInt, IsNotEmpty, IsOptional, IsString, MaxLength, Min, ValidateNested } from 'class-validator'
 
 import { DISPLAY_NAME_MAX_LENGTH } from '../utils/display-name.js'
+import { IsPlainName } from '../validators/is-plain-name.js'
 
 import { AvatarDto } from './user.type.js'
 
@@ -58,6 +59,7 @@ export class CreateGroupPersonBody {
     @IsString()
     @IsNotEmpty()
     @MaxLength(DISPLAY_NAME_MAX_LENGTH)
+    @IsPlainName()
     displayName: string
 
     @ApiPropertyOptional({ type: AvatarDto, nullable: true })
@@ -73,6 +75,7 @@ export class UpdateGroupPersonBody {
     @IsString()
     @IsNotEmpty()
     @MaxLength(DISPLAY_NAME_MAX_LENGTH)
+    @IsPlainName()
     displayName?: string
 
     @ApiPropertyOptional({ type: AvatarDto, nullable: true })

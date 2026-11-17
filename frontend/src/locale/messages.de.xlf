@@ -9241,6 +9241,15 @@
         <target>Diesen Spieleabend beenden?</target>
       </segment>
     </unit>
+    <unit id="5761187541983334541">
+      <notes>
+        <note category="description">Error under the price of your copy of a game when it is more than 10,000 euros</note>
+      </notes>
+      <segment state="translated">
+        <source>Enter at most €10,000.</source>
+        <target>Gib höchstens 10.000 € ein.</target>
+      </segment>
+    </unit>
     <unit id="5766449302106608624">
       <notes>
         <note category="description">Under the name on the page of a person of a group, for someone with an account, before the group name loads</note>
@@ -14533,6 +14542,15 @@
       <segment state="translated">
         <source>Check your connection or access and try again.</source>
         <target>Prüf deine Verbindung oder deinen Zugriff und versuch es noch einmal.</target>
+      </segment>
+    </unit>
+    <unit id="8461663003240827216">
+      <notes>
+        <note category="description">Error under a name field with characters a name can&apos;t have, such as long lines or invisible characters</note>
+      </notes>
+      <segment state="translated">
+        <source>Use letters, numbers, emoji and ordinary punctuation; lines and invisible characters aren’t allowed.</source>
+        <target>Verwende Buchstaben, Zahlen, Emojis und normale Satzzeichen; Linien und unsichtbare Zeichen sind nicht erlaubt.</target>
       </segment>
     </unit>
     <unit id="8464136353884896070">

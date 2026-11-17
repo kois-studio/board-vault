@@ -44,6 +44,7 @@ import { groupGameCount, groupPeopleCount } from '../../core/utils/groupCounts'
 import { withShelf } from '../../core/utils/groupShelf'
 import { formatWinners, historyWinnerNames, mergeHistoryParticipants } from '../../core/utils/historyParticipants'
 import { initialsAvatar } from '../../core/utils/initialsAvatar'
+import { isPlainName } from '../../core/utils/plainName'
 import { upcomingState } from '../../core/utils/sessionTiming'
 import { DISPLAY_NAME_MAX_LENGTH } from '../../core/utils/shortName'
 import { GroupViewService } from './group-view.service'
@@ -596,6 +597,12 @@ export class GroupViewComponent {
         const groupId = this.groupData$()?.id
         const displayName = this.newGroupPersonName().trim()
         if (!groupId || !this.isGroupOwnerComputed() || !displayName || this.groupPersonMutationId()) return
+        if (!isPlainName(displayName)) {
+            this.toastService.error(
+                $localize`:Error under a name field with characters a name can't have, such as long lines or invisible characters:Use letters, numbers, emoji and ordinary punctuation; lines and invisible characters aren’t allowed.`,
+            )
+            return
+        }
 
         this.groupPersonMutationId.set(-1)
         try {
