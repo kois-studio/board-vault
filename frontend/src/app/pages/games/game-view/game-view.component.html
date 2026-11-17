@@ -223,9 +223,12 @@
             </label>
             <label class="block text-sm font-medium">
               <ng-container i18n="Label of the price you paid for your copy of a game">Price paid <span class="text-xs text-secondary">(optional)</span></ng-container>
-              <input type="number" formControlName="purchasePrice" min="0" step="0.01" placeholder="0.00" class="mt-1 w-full rounded-lg border border-bv-border px-3 py-2 bg-bv-surface" />
+              <input type="number" formControlName="purchasePrice" min="0" max="10000" step="0.01" placeholder="0.00" class="mt-1 w-full rounded-lg border border-bv-border px-3 py-2 bg-bv-surface" />
               @if (ownershipFormGroup.get('purchasePrice')?.errors?.['positiveNumber']) {
                 <span class="mt-1 block text-sm text-bv-danger" i18n="Error under the price of your copy of a game">Enter a positive number.</span>
+              }
+              @if (ownershipFormGroup.get('purchasePrice')?.errors?.['tooExpensive']) {
+                <span class="mt-1 block text-sm text-bv-danger" i18n="Error under the price of your copy of a game when it is more than 10,000 euros">Enter at most €10,000.</span>
               }
             </label>
             <label class="block text-sm font-medium sm:col-span-2">

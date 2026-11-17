@@ -2,7 +2,7 @@ import * as z from 'zod/mini'
 import { SUPPORTED_LOCALES } from '../core/i18n/locales'
 import { noResultText, reasonsText } from '../core/i18n/recommendation-text'
 import { resolveArtworkUrl } from '../core/utils/artworkUrl'
-import { shortName } from '../core/utils/shortName'
+import { shortGroupName, shortName } from '../core/utils/shortName'
 import type {
     AccountMeetType,
     AdminGameProposalsType,
@@ -74,6 +74,12 @@ const displayNameSchema = z.pipe(
     z.transform((name) =>
         name === DELETED_ACCOUNT_NAME ? $localize`:A person whose account was deleted:Deleted account` : shortName(name),
     ),
+)
+
+/** Group names are made readable and cut once, here, like people's names (#350). */
+const groupNameSchema = z.pipe(
+    z.string(),
+    z.transform((name) => shortGroupName(name)),
 )
 
 /** A game's artwork: stored artwork arrives as a path on the API and leaves here as a full address. */
@@ -286,7 +292,7 @@ export const clerkAuthStatusSchema = z.object({
 
 const groupSchema: z.ZodMiniType<GroupType> = z.object({
     id: z.number(),
-    name: z.string(),
+    name: groupNameSchema,
     createdBy: z.number(),
     createdAt: z.string(),
 })
@@ -374,7 +380,7 @@ export const problemReportSchema: z.ZodMiniType<ProblemReportType> = z.object({
 
 const groupActivityNameSchema = z.object({
     id: z.number(),
-    name: z.string(),
+    name: displayNameSchema,
     standing: z.enum(['member', 'left', 'deleted']),
 })
 // The account behind a group person, so a line about someone's own games reads "Ana said they have Catan".
@@ -479,7 +485,7 @@ export const gameProposalSchema: z.ZodMiniType<GameProposalType> = gameProposalS
 export const adminGameProposalSchema = z.extend(gameProposalShape, {
     submitterId: z.number(),
     // Optional while an older API is still deployed next to a newer app.
-    submitterName: z.optional(z.string()),
+    submitterName: z.optional(displayNameSchema),
     reviewerId: z.optional(z.number()),
 })
 
@@ -507,7 +513,7 @@ export const adminSuccessResponseSchema = z.object({ success: z.boolean() })
 
 export const groupOverviewSchema: z.ZodMiniType<GroupOverviewType, unknown> = z.object({
     id: z.number(),
-    name: z.string(),
+    name: groupNameSchema,
     createdBy: z.number(),
     createdAt: z.string(),
     gameCount: z.number(),
@@ -590,7 +596,7 @@ export const groupPersonTakeoversSchema = z.object({
         z.object({
             groupPersonId: z.number(),
             accountId: z.number(),
-            previousName: z.string(),
+            previousName: displayNameSchema,
             takenAt: z.string(),
             undoableUntil: z.string(),
         }),
@@ -798,10 +804,10 @@ export const userNotificationsSchema: z.ZodMiniType<Array<NotificationType>> = z
         data: z.optional(z.record(z.string(), z.unknown())),
         context: z.optional(
             z.object({
-                accounts: z.array(z.object({ id: z.number(), name: z.nullable(z.string()), deleted: z.boolean() })),
-                groups: z.array(z.object({ id: z.number(), name: z.string() })),
+                accounts: z.array(z.object({ id: z.number(), name: z.nullable(displayNameSchema), deleted: z.boolean() })),
+                groups: z.array(z.object({ id: z.number(), name: groupNameSchema })),
                 sessions: z.array(z.object({ id: z.number(), date: z.string(), timezone: z.string() })),
-                people: z.array(z.object({ id: z.number(), name: z.string(), accountId: z.optional(z.nullable(z.number())) })),
+                people: z.array(z.object({ id: z.number(), name: displayNameSchema, accountId: z.optional(z.nullable(z.number())) })),
                 games: z.array(z.object({ id: z.number(), title: z.string(), titleLanguage: z.string() })),
             }),
         ),

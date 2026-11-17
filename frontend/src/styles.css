@@ -246,8 +246,9 @@ html[data-text-size="larger"] {
      * A toggle chip (filters, people, durations). Mark the chosen one with
      * aria-pressed="true": it takes the primary fill, as a selected chip should.
      */
+    /* A chip is at most 16rem wide: a long name is cut ("…") in its own <span class="truncate">. */
     .app-chip {
-        @apply inline-flex min-h-9 items-center gap-2 rounded-full border border-bv-border bg-bv-surface px-3 py-1.5 text-sm font-medium text-bv-text transition hover:border-bv-primary/50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-bv-primary disabled:cursor-not-allowed disabled:opacity-60 aria-pressed:border-bv-primary aria-pressed:bg-bv-primary aria-pressed:text-bv-on-primary;
+        @apply inline-flex min-h-9 max-w-[min(100%,16rem)] items-center gap-2 rounded-full border border-bv-border bg-bv-surface px-3 py-1.5 text-sm font-medium text-bv-text transition hover:border-bv-primary/50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-bv-primary disabled:cursor-not-allowed disabled:opacity-60 aria-pressed:border-bv-primary aria-pressed:bg-bv-primary aria-pressed:text-bv-on-primary;
     }
 
     /* A row in a header popover (the avatar menu): a link or button with an icon. */

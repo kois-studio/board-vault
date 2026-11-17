@@ -37,6 +37,9 @@
             @if (groupName.invalid && groupName.touched && groupName.hasError('maxlength')) {
               <p class="mt-2 text-sm text-bv-danger" role="alert" i18n="Error under a group name field with a name that is too long">Keep the group name to 40 characters or fewer.</p>
             }
+            @if (groupName.invalid && groupName.touched && groupName.hasError('plainName')) {
+              <p class="mt-2 text-sm text-bv-danger" role="alert" i18n="Error under a name field with characters a name can't have, such as long lines or invisible characters">Use letters, numbers, emoji and ordinary punctuation; lines and invisible characters aren’t allowed.</p>
+            }
           </div>
           <button appButton class="mt-6" type="submit" [disabled]="disableCreateButton" [loading]="isLoading()" variant="primary" [wide]="true" i18n="Button on the page that creates a group">Create group</button>
           @if (createError()) {

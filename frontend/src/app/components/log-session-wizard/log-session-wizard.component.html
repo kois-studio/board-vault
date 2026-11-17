@@ -227,7 +227,7 @@
                                             </p>
                                             <div class="flex flex-wrap gap-2">
                                                 @for (attendee of getSelectedAttendees(); track attendee.user.id) {
-                                                    <button type="button" class="app-chip max-w-full py-1 pl-1" [attr.aria-pressed]="isMatrixCellSelected(attendee.user.id, gameId)" (click)="toggleMatrixCell(attendee.user.id, gameId)">
+                                                    <button type="button" class="app-chip py-1 pl-1" [attr.aria-pressed]="isMatrixCellSelected(attendee.user.id, gameId)" (click)="toggleMatrixCell(attendee.user.id, gameId)">
                                                         <app-image-profile size="small" [avatar]="attendee.user.avatar" aria-hidden="true" />
                                                         <span class="min-w-0 truncate">{{ attendee.user.displayName || attendee.user.username }}</span>
                                                     </button>
@@ -241,7 +241,7 @@
                                                     </div>
                                                     <div class="flex flex-wrap gap-2">
                                                         @for (attendee of getSelectedAttendees(); track attendee.user.id) {
-                                                            <button type="button" class="app-chip max-w-full py-1 pl-1" [attr.aria-pressed]="play.participantIds.includes(attendee.user.id)" (click)="togglePlayPerson(play.key, attendee.user.id)">
+                                                            <button type="button" class="app-chip py-1 pl-1" [attr.aria-pressed]="play.participantIds.includes(attendee.user.id)" (click)="togglePlayPerson(play.key, attendee.user.id)">
                                                                 <app-image-profile size="small" [avatar]="attendee.user.avatar" aria-hidden="true" />
                                                                 <span class="min-w-0 truncate">{{ attendee.user.displayName || attendee.user.username }}</span>
                                                             </button>

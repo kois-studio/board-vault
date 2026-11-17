@@ -366,7 +366,7 @@
                                         <p class="mt-1 text-sm text-secondary" i18n="Under On the shelf, never played on the group page">{insights.neverPlayedCount, plural, one {{{ insights.neverPlayedCount }} game someone in the group owns that has not hit the table yet.} other {{{ insights.neverPlayedCount }} games someone in the group owns that have not hit the table yet.}}</p>
                                         <ul class="mt-4 flex flex-wrap gap-2">
                                             @for (game of insights.neverPlayed; track game.id) {
-                                                <li class="max-w-full"><a class="app-chip max-w-full" [routerLink]="['/games', game.id]"><span class="truncate">{{ game | gameTitle }}</span></a></li>
+                                                <li class="max-w-full"><a class="app-chip" [routerLink]="['/games', game.id]"><span class="truncate">{{ game | gameTitle }}</span></a></li>
                                             }
                                             @if (insights.neverPlayedCount > insights.neverPlayed.length) {
                                                 <li class="self-center text-sm text-secondary" i18n="After the never played games on the group page, how many more there are">{insights.neverPlayedCount - insights.neverPlayed.length, plural, one {and {{ insights.neverPlayedCount - insights.neverPlayed.length }} more} other {and {{ insights.neverPlayedCount - insights.neverPlayed.length }} more}}</li>

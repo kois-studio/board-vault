@@ -1,5 +1,8 @@
 import { ApiProperty, ApiPropertyOptional, OmitType, PartialType } from '@nestjs/swagger'
-import { IsDateString, IsInt, IsNumber, IsOptional, IsString, MaxLength, Min, ValidateIf } from 'class-validator'
+import { IsDateString, IsInt, IsNumber, IsOptional, IsString, Max, MaxLength, Min, ValidateIf } from 'class-validator'
+
+/** The most a copy can have cost, in euros: enough for any game, and keeps totals readable (#350). */
+export const PURCHASE_PRICE_MAX = 10_000
 
 // base GameOwned as it comes from db
 export class GameOwnedDto {
@@ -13,10 +16,11 @@ export class GameOwnedDto {
     @Min(1)
     gameId: number
 
-    @ApiProperty({ example: 12345, description: 'The price of the game when purchased.' })
+    @ApiProperty({ example: 12345, description: 'The price of the game when purchased, in euros, at most 10,000.', maximum: 10000 })
     @IsOptional()
     @IsNumber()
     @Min(0)
+    @Max(PURCHASE_PRICE_MAX)
     purchasePrice: number | null
 
     @ApiProperty({ example: '2021-01-01', description: 'The date the game was purchased.' })

@@ -4,7 +4,7 @@
             <section class="flex flex-wrap items-center gap-4" aria-labelledby="you-name">
                 <app-image-profile size="large" class="shrink-0" [avatar]="user.avatar" />
                 <div class="min-w-0 flex-1">
-                    <h1 id="you-name" class="text-3xl font-bold tracking-tight wrap-anywhere">{{ user.displayName }}</h1>
+                    <h1 id="you-name" class="line-clamp-2 text-3xl font-bold tracking-tight wrap-anywhere" [title]="user.displayName">{{ user.displayName }}</h1>
                     <p class="mt-1 text-secondary" i18n="Under your name on your own page; the placeholder is your username">{{ user.username }} · Only you see this page</p>
                 </div>
                 <a routerLink="/settings/profile" class="inline-flex min-h-11 items-center gap-2 text-sm font-semibold text-bv-primary hover:underline" i18n="Link on your own page to the Profile settings">Edit profile</a>
@@ -61,7 +61,7 @@
                                         }
                                     </span>
                                 </span>
-                                <span class="hidden text-sm font-semibold text-bv-primary sm:inline" i18n="Link text on your own page to your page in one group; the placeholder is the group's name">Your page in {{ group.name }}</span>
+                                <span class="hidden min-w-0 max-w-[50%] truncate text-sm font-semibold text-bv-primary sm:inline" i18n="Link text on your own page to your page in one group; the placeholder is the group's name">Your page in {{ group.name }}</span>
                                 <app-icon name="chevron-right" [size]="18" className="shrink-0 text-bv-text-muted" aria-hidden="true" />
                             </a>
                         </li>

@@ -3,7 +3,7 @@
         <!-- Greeting; recording and planning are the everyday actions, so they sit here once there is a group. -->
         <header class="flex flex-wrap items-center justify-between gap-4">
             <div class="min-w-0 max-w-full">
-                <h1 class="text-2xl font-extrabold tracking-tight wrap-anywhere lg:text-3xl">
+                <h1 class="line-clamp-2 text-2xl font-extrabold tracking-tight wrap-anywhere lg:text-3xl">
                     @if (isNew()) {
                         @if (greetingName()) {
                             <ng-container i18n="Greeting on Home for a new account; the placeholder is your name">Welcome, {{ greetingName() }}</ng-container>

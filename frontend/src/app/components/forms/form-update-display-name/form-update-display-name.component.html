@@ -26,6 +26,11 @@
                 <app-icon name="circle-alert" [size]="16" />&ngsp;<ng-container i18n="Error under the display name field when it is too long; the placeholder is the most characters allowed">Use at most {{ maxLength }} characters.</ng-container>
               </div>
             }
+            @if (displayName?.hasError('plainName')) {
+              <div class="text-sm text-bv-danger py-1">
+                <app-icon name="circle-alert" [size]="16" />&ngsp;<ng-container i18n="Error under a name field with characters a name can't have, such as long lines or invisible characters">Use letters, numbers, emoji and ordinary punctuation; lines and invisible characters aren’t allowed.</ng-container>
+              </div>
+            }
           </div>
         }
         @if (saveError(); as reason) {

@@ -2,9 +2,14 @@ import { ApiProperty, OmitType, PartialType, PickType } from '@nestjs/swagger'
 import { Type } from 'class-transformer'
 import { IsInt, IsNotEmpty, IsString, MaxLength, Min } from 'class-validator'
 
+import { IsPlainName } from '../validators/is-plain-name.js'
+
 import { GameReviewDto } from './game-review.type.js'
 import { GameCompleteDto } from './game.type.js'
 import { AvatarDto, UserPublicDto } from './user.type.js'
+
+/** The most characters a group name may have; the create form uses the same limit (#350). Older, longer names stay. */
+export const GROUP_NAME_MAX_LENGTH = 40
 
 export class CreatedGroupDto {
     @ApiProperty({ example: true, description: 'Whether the group was created successfully.' })
@@ -28,7 +33,8 @@ export class LegacyCreateGroupParams {
     @ApiProperty({ example: "Friday game's group", description: 'The name of the new group.' })
     @IsString()
     @IsNotEmpty()
-    @MaxLength(100)
+    @MaxLength(GROUP_NAME_MAX_LENGTH)
+    @IsPlainName()
     groupName: string
 }
 
@@ -42,7 +48,8 @@ export class GroupDto {
     @ApiProperty({ example: 'Example Group' })
     @IsString()
     @IsNotEmpty()
-    @MaxLength(100)
+    @MaxLength(GROUP_NAME_MAX_LENGTH)
+    @IsPlainName()
     name: string
 
     @ApiProperty({ example: 12345 })
