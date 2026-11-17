@@ -412,10 +412,10 @@ compliance:
       priority: high
       next_action: None.
     - id: DATA-007
-      status: partial
-      evidence: 'A verified .dump before every production schema change (docs/how-to/add-migration.md); restore rehearsal in CI. Turso point-in-time restore retention on the current plan is not confirmed.'
+      status: compliant
+      evidence: 'A verified .dump before every production schema change (docs/how-to/add-migration.md); restore rehearsal in CI. Turso point-in-time restore covers the last 24 hours on the Starter plan, tested on 2026-11-17 and documented with its steps in docs/how-to/recover-production.md (#138).'
       priority: high
-      next_action: Confirm the Turso restore retention and record it in recover-production.md (#138).
+      next_action: None.
     - id: WEB-001
       status: compliant
       evidence: Lighthouse CI on the production build covers performance, accessibility, best practices and SEO (frontend/lighthouserc.json, docs/how-to/audit-rendered-pages.md).
