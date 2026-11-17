@@ -349,7 +349,7 @@
                                                                                 <app-image-profile size="small" class="rounded-full ring-2 ring-bv-surface" [class.opacity-50]="person.standing === 'left'" [avatar]="person.avatar" [title]="person.displayName" />
                                                                             }
                                                                         </div>
-                                                                        <p class="min-w-0 text-sm text-bv-text-muted wrap-anywhere">{{ playedByLabel(namesOf(players)) }}</p>
+                                                                        <p class="min-w-0 line-clamp-2 text-sm text-bv-text-muted wrap-anywhere" [title]="playedByLabel(namesOf(players))">{{ playedByLabel(namesOf(players)) }}</p>
                                                                     </div>
                                                                 }
 
@@ -412,7 +412,8 @@
                             </section>
                         }
 
-                        <!-- Shortlist -->
+                        <!-- Shortlist: games picked before the night to vote on. A night recorded afterwards had none, so it hides. -->
+                        @if (meet.status !== 'completed' || plannedGames.length > 0) {
                         <section aria-labelledby="shortlist-heading">
                             <div class="mb-3 flex items-baseline justify-between gap-3">
                                 <h2 id="shortlist-heading" class="text-lg font-semibold" i18n="Heading of a game night's list of games to consider">Shortlist</h2>
@@ -524,6 +525,7 @@
                                 <p class="mt-3 text-sm text-bv-text-muted" i18n="Hint under a planned game night's shortlist">Once the night starts, mark here the games the group actually plays.</p>
                             }
                         </section>
+                        }
 
                         <!-- Suggestions: what fits the people coming -->
                         @if (meet.status === 'scheduled') {
@@ -593,7 +595,7 @@
                         @if (justSaved && meet.status === 'completed' && playedGameDetails.length > 0) {
                             <details><summary class="cursor-pointer text-sm font-medium text-bv-primary" i18n="Opens the form to record who owns a game played on a game night">New purchase? Record who owns it (optional)</summary><p class="mt-2 text-sm text-bv-text-muted" i18n="Form to record who owns a game played on a game night">Your session is already saved. Add a game to your own collection, or record it for someone without an account in this group.</p>
                                 <ul class="mt-3 space-y-3">@for (game of playedGameDetails; track game.id) {
-                                    <li class="flex flex-wrap items-center gap-3"><span class="min-w-0 flex-1 text-sm">{{ gameTitle(game) }}</span><label><span class="sr-only" i18n="Label of the owner list of a game played on a game night; the placeholder is the game title">Owner of {{ gameTitle(game) }}</span><select class="app-input max-w-full" [value]="ownershipTarget[game.id] ?? ''" (change)="ownershipTarget[game.id] = $any($event.target).value; ownershipSaved[game.id] = false"><option value="" i18n="First choice of the owner list for a game played on a game night">Choose an owner</option><option value="me" i18n="Choice of the owner list for a game played on a game night: you, and your collection">Me · My Games</option>@for (person of ownershipPeople; track person.person.id) { <option [value]="person.person.id">{{ person.person.displayName }} · {{ groupData?.name }}</option> }</select></label><button appButton variant="secondary" size="small" [disabled]="!ownershipTarget[game.id] || !!ownershipSaved[game.id]" [loading]="ownershipSaving[game.id] ?? false" (click)="recordOwnership(game.id)">@if (ownershipSaved[game.id]) {<ng-container i18n="Button after recording who owns a game">Recorded</ng-container>} @else if (ownershipTarget[game.id]) {<ng-container i18n="Button that records who owns a game; the placeholder is a name or My Games">Add to {{ ownershipTargetName(game.id) }}</ng-container>} @else {<ng-container i18n="Button that records who owns a game, before an owner is chosen">Record ownership</ng-container>}</button></li>
+                                    <li class="grid gap-2 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-center"><span class="min-w-0 truncate text-sm font-medium">{{ gameTitle(game) }}</span><div class="flex min-w-0 items-center gap-2"><label class="min-w-0 flex-1"><span class="sr-only" i18n="Label of the owner list of a game played on a game night; the placeholder is the game title">Owner of {{ gameTitle(game) }}</span><select class="app-input" [value]="ownershipTarget[game.id] ?? ''" (change)="ownershipTarget[game.id] = $any($event.target).value; ownershipSaved[game.id] = false"><option value="" i18n="First choice of the owner list for a game played on a game night">Choose an owner</option><option value="me" i18n="Choice of the owner list for a game played on a game night: you, and your collection">Me · My Games</option>@for (person of ownershipPeople; track person.person.id) { <option [value]="person.person.id">{{ person.person.displayName }} · {{ groupData?.name }}</option> }</select></label><button appButton variant="secondary" size="small" [disabled]="!ownershipTarget[game.id] || !!ownershipSaved[game.id]" [loading]="ownershipSaving[game.id] ?? false" (click)="recordOwnership(game.id)">@if (ownershipSaved[game.id]) {<ng-container i18n="Button after recording who owns a game">Recorded</ng-container>} @else if (ownershipTarget[game.id]) {<ng-container i18n="Button that records who owns a game; the placeholder is a name or My Games">Add to {{ ownershipTargetName(game.id) }}</ng-container>} @else {<ng-container i18n="Button that records who owns a game, before an owner is chosen">Record ownership</ng-container>}</button></div></li>
                                 }</ul>
                             </details>
                         }

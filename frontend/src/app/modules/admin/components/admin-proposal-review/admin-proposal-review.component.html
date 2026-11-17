@@ -82,9 +82,9 @@
                 </ul>
 
                 <div class="flex flex-col gap-3 border-t border-bv-border pt-4 sm:flex-row sm:flex-wrap sm:items-center">
-                    <button appButton type="button" icon="arrow-right" class="w-full sm:w-auto" (click)="goToCatalogueEntry()">None of these, add it</button>
+                    <button appButton type="button" icon="arrow-right" class="w-full sm:w-auto" (click)="goToCatalogueEntry()">@if (candidates().length > 0) {None of these, add it} @else {Add it to the catalogue}</button>
                     <button appButton variant="danger" type="button" class="w-full sm:w-auto" (click)="openReject()">Reject</button>
-                    <button type="button" class="min-h-11 text-sm font-medium text-bv-danger underline sm:ml-auto" (click)="isDeleting.set(true)">Delete proposal</button>
+                    <button type="button" class="min-h-11 text-sm font-medium text-bv-danger underline sm:ml-auto" (click)="isDeleting.set(true)">Delete without telling them</button>
                 </div>
             </section>
         } @else {

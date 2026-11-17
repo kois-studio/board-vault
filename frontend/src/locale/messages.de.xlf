@@ -11098,15 +11098,6 @@
         <target>Gruppe verwalten</target>
       </segment>
     </unit>
-    <unit id="6720072689148113180">
-      <notes>
-        <note category="description">A game night&apos;s note, in quotation marks</note>
-      </notes>
-      <segment state="translated">
-        <source>“<ph id="0" equiv="INTERPOLATION" disp="{{ item.notes }}"/>”</source>
-        <target>„<ph id="0" equiv="INTERPOLATION" disp="{{ item.notes }}"/>“</target>
-      </segment>
-    </unit>
     <unit id="6722197117273372334">
       <notes>
         <note category="description">The group owner&apos;s button on a game the group might buy that undoes the decision about it</note>

@@ -533,7 +533,10 @@ export class MeetViewComponent {
                       value: this.goingCount,
                   }
                 : { label: $localize`:Count at the top of a game night's page, people who came:Attended`, value: this.attendedCount },
-            { label: $localize`:Count on a game night's page, games on the shortlist:Shortlisted`, value: this.plannedGames.length },
+            // A night recorded afterwards had no shortlist; a 0 there only raises the question of what it is.
+            ...(upcoming || this.plannedGames.length > 0
+                ? [{ label: $localize`:Count on a game night's page, games on the shortlist:Shortlisted`, value: this.plannedGames.length }]
+                : []),
             { label: $localize`:Count on a game night's page, games played:Played`, value: this.playedGamesCount },
             ...(this.skippedGamesCount > 0
                 ? [{ label: $localize`:Count on a game night's page, shortlisted games not played:Skipped`, value: this.skippedGamesCount }]

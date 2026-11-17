@@ -11289,17 +11289,6 @@
         <source>Manage group</source>
       </segment>
     </unit>
-    <unit id="6720072689148113180">
-      <notes>
-        <note category="location">src/app/components/history-entry/history-entry.component.html</note>
-        <note category="location">src/app/components/session-summary/session-summary.component.html</note>
-        <note category="location">src/app/pages/play-page/upcoming-sessions-page/upcoming-sessions-page.component.html</note>
-        <note category="description">A game night&apos;s note, in quotation marks</note>
-      </notes>
-      <segment>
-        <source>“<ph id="0" equiv="INTERPOLATION" disp="{{ item.notes }}"/>”</source>
-      </segment>
-    </unit>
     <unit id="6722197117273372334">
       <notes>
         <note category="location">src/app/pages/group-view/group-view.component.html</note>

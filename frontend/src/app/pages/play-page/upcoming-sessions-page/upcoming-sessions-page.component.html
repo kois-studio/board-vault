@@ -119,7 +119,7 @@
                                         <span class="block font-semibold wrap-anywhere">{{ getGroupName(session.groupId) }}</span>
                                         <span class="block text-sm text-bv-text-muted">{{ when.weekday }} · {{ when.time }} · {{ relativeDay(session.meetDate) }}</span>
                                         @if (session.notes) {
-                                            <span class="mt-1 block truncate text-sm italic text-bv-text-muted" i18n="A game night's note on Upcoming, in quotation marks">“{{ session.notes }}”</span>
+                                            <span class="mt-1 block truncate text-sm italic text-bv-text-muted">{{ session.notes }}</span>
                                         }
                                     </span>
                                     <span class="hidden shrink-0 rounded-full px-3 py-1 text-xs font-semibold sm:inline" [class]="STATE_STYLES[section.state].pill">{{ STATE_STYLES[section.state].action }}</span>
