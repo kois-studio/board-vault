@@ -1,0 +1,11 @@
+{
+    "$comment": "Advisories npm audit may report without failing CI. Only for advisories with no fixed version that do not reach production (check with npm audit --omit=dev). Remove an entry once a fix ships; CI fails after reviewBy so it is looked at again. See docs/how-to/allow-an-audit-advisory.md.",
+    "advisories": [
+        {
+            "id": "GHSA-fc5q-39xc-vjpf",
+            "package": "picomatch",
+            "reason": "ReDoS in picomatch <= 4.0.7, no fixed version yet. Only in build and test tooling (Angular CLI, Nest CLI, Vite, Vitest), matching our own glob patterns; npm audit --omit=dev is clean in backend and frontend.",
+            "reviewBy": "2026-12-17"
+        }
+    ]
+}

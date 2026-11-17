@@ -31,6 +31,7 @@ operating procedures are not kept here.
 - [Update Playwright screenshots](how-to/update-screenshots.md)
 - [Audit rendered pages](how-to/audit-rendered-pages.md)
 - [Tag untagged games](how-to/tag-untagged-games.md)
+- [Allow an audit advisory](how-to/allow-an-audit-advisory.md)
 
 ## Decisions and governance
 
