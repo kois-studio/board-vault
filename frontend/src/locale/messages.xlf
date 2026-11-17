@@ -8529,7 +8529,7 @@
     <unit id="5270883622503105591">
       <notes>
         <note category="location">src/app/pages/meet-view/meet-view.component.html</note>
-        <note category="description">Button that opens the form for who won a game</note>
+        <note category="description">Link after recording a game night, to the played games where you mark who won</note>
       </notes>
       <segment>
         <source>Record who won</source>
@@ -11287,17 +11287,6 @@
       </notes>
       <segment>
         <source>Manage group</source>
-      </segment>
-    </unit>
-    <unit id="6720072689148113180">
-      <notes>
-        <note category="location">src/app/components/history-entry/history-entry.component.html</note>
-        <note category="location">src/app/components/session-summary/session-summary.component.html</note>
-        <note category="location">src/app/pages/play-page/upcoming-sessions-page/upcoming-sessions-page.component.html</note>
-        <note category="description">A game night&apos;s note, in quotation marks</note>
-      </notes>
-      <segment>
-        <source>“<ph id="0" equiv="INTERPOLATION" disp="{{ item.notes }}"/>”</source>
       </segment>
     </unit>
     <unit id="6722197117273372334">

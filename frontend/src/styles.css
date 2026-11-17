@@ -229,6 +229,20 @@ html[data-text-size="larger"] {
     }
 
     /*
+     * iOS Safari sizes date and time fields to their native control and
+     * ignores w-full, so they spilled out of narrow cards. Without the native
+     * look they take the width they are given; the min height keeps an empty
+     * one from collapsing.
+     */
+    .app-input:is([type="date"], [type="time"], [type="datetime-local"]) {
+        @apply min-h-11 min-w-0 appearance-none text-start;
+    }
+
+    .app-input::-webkit-date-and-time-value {
+        text-align: start;
+    }
+
+    /*
      * A toggle chip (filters, people, durations). Mark the chosen one with
      * aria-pressed="true": it takes the primary fill, as a selected chip should.
      */

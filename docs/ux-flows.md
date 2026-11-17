@@ -69,6 +69,12 @@ it. A game nobody coming owns is flagged, and one with owners but no bringer
 says so. Declining a night clears what you were bringing. Home shows "You're
 bringing: …" on each night.
 
+A completed night that had no shortlist (one recorded afterwards) shows no
+Shortlist section and no Shortlisted count, and counts who attended rather
+than who was invited. Right after recording a night, "Saved to the group's
+history" opens the page, with links to record who won and to rate what you
+played.
+
 The group owner invites from one field on Manage group, by username only
 (#277): the invitation reaches the person's inbox in the app. An email
 address is refused with a note to use their username; Board Vault never

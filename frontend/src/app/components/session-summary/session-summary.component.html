@@ -34,7 +34,8 @@
     </div>
 
     @if (notes(); as notes) {
-    <p class="mt-5 rounded-lg bg-bv-surface-2 px-4 py-3 text-sm italic wrap-anywhere" i18n="A game night's note, in quotation marks">“{{ notes }}”</p>
+    <!-- No quotation marks around notes, here or in lists: they often quote a game themselves. -->
+    <p class="mt-5 whitespace-pre-line rounded-lg border-l-4 border-bv-border bg-bv-surface-2 px-4 py-3 text-sm italic wrap-anywhere">{{ notes }}</p>
     }
 
     @if (stats().length) {
