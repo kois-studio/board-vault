@@ -427,6 +427,11 @@ export class MeetViewComponent {
     get myPlayedGames() {
         return this.playedGameDetails.filter((game) => this.playersOf(game.id).some((person) => person.accountId === this.userData?.id))
     }
+    /** Played games with no winner or score yet, for the link in the "Saved" message. */
+    get gamesWithoutResults(): number {
+        return this.playedGameDetails.filter((game) => this.winnersOf(game.id).length === 0 && this.scoresOf(game.id).length === 0).length
+    }
+
     get myUnratedGames() {
         return this.myPlayedGames.filter((game) => this.getMyRating(game.id) === null)
     }
@@ -526,7 +531,10 @@ export class MeetViewComponent {
     get sessionStats(): Array<SessionStat> {
         const upcoming = this.meetData?.status === 'scheduled' || this.meetData?.status === 'active'
         return [
-            { label: $localize`:Count at the top of a game night's page, people invited:Invited`, value: this.attendeeCount },
+            // Once a night is over, who came is what counts; "Invited" beside it mostly repeated the number.
+            ...(upcoming
+                ? [{ label: $localize`:Count at the top of a game night's page, people invited:Invited`, value: this.attendeeCount }]
+                : []),
             upcoming
                 ? {
                       label: $localize`:going count|Count at the top of a game night's page, people who said they are going:Going`,

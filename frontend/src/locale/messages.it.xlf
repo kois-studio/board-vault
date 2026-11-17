@@ -8382,7 +8382,7 @@
     </unit>
     <unit id="5270883622503105591">
       <notes>
-        <note category="description">Button that opens the form for who won a game</note>
+        <note category="description">Link after recording a game night, to the played games where you mark who won</note>
       </notes>
       <segment state="translated">
         <source>Record who won</source>

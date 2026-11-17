@@ -25,6 +25,20 @@
             <div class="mb-5 flex h-5 items-center" aria-hidden="true"><div class="h-3.5 w-32 rounded bg-bv-border motion-safe:animate-pulse"></div></div>
         }
 
+        <!-- Right after saving, first on the page: it says it worked and what is left to do. -->
+        @if (justSaved) {
+            <div class="mb-5 flex flex-wrap items-center gap-x-4 gap-y-1 rounded-lg border border-bv-success/30 bg-bv-success/10 p-4" role="status">
+                <app-icon name="circle-check" [size]="20" className="shrink-0 text-bv-success" aria-hidden="true" />
+                <p class="font-semibold" i18n="After recording a game night">Saved to the group’s history.</p>
+                @if (canRecordResults && gamesWithoutResults > 0) {
+                    <a appInPageLink="played-heading" class="text-sm font-medium text-bv-primary hover:underline" i18n="Link after recording a game night, to the played games where you mark who won">Record who won</a>
+                }
+                @if (myUnratedGames.length > 0) {
+                    <a appInPageLink="feedback-heading" class="text-sm font-medium text-bv-primary hover:underline" i18n="Link to rate the games you played; the placeholder is how many are not rated yet">Rate what you played ({{ myUnratedGames.length }})</a>
+                }
+            </div>
+        }
+
         <!-- Hero -->
         <app-session-summary
             [status]="meet.status"
@@ -129,15 +143,6 @@
                 <app-skeleton-session-body [played]="meet.status !== 'scheduled' || meet.playedGames.length > 0 ? meet.playedGames.length : null" [shortlisted]="meet.plannedGames.length" [scheduled]="meet.status === 'scheduled'" [people]="attendeeCount" />
             </ng-template>
             <ng-template appAsyncReady>
-                @if (justSaved) {
-                    <div class="mt-5 flex flex-wrap items-center gap-x-4 gap-y-1 rounded-lg border border-bv-success/30 bg-bv-success/10 p-4" role="status">
-                        <app-icon name="circle-check" [size]="20" className="shrink-0 text-bv-success" aria-hidden="true" />
-                        <p class="font-semibold" i18n="After recording a game night">Saved to the group’s history.</p>
-                        @if (myUnratedGames.length > 0) {
-                            <a appInPageLink="feedback-heading" class="text-sm font-medium text-bv-primary hover:underline" i18n="Link to rate the games you played; the placeholder is how many are not rated yet">Rate what you played ({{ myUnratedGames.length }})</a>
-                        }
-                    </div>
-                }
                 @if (pendingStatus(); as requestedStatus) {
                     <div class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4" (click)="cancelStatusUpdate()">
                         <section

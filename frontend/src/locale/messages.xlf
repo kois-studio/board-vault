@@ -8529,7 +8529,7 @@
     <unit id="5270883622503105591">
       <notes>
         <note category="location">src/app/pages/meet-view/meet-view.component.html</note>
-        <note category="description">Button that opens the form for who won a game</note>
+        <note category="description">Link after recording a game night, to the played games where you mark who won</note>
       </notes>
       <segment>
         <source>Record who won</source>
