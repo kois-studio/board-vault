@@ -58,6 +58,15 @@ describe('ProblemReportService (#247, ADR-0028)', () => {
         expect(sent()[0].kind).toBe('chunk')
     })
 
+    it("tells Safari's wording for a page whose code failed to load apart (#354)", () => {
+        const problems = setup()
+
+        problems.reportError(new TypeError("'text/html' is not a valid JavaScript MIME type."))
+        problems.reportError(new TypeError('Importing a module script failed.'))
+
+        expect(sent().map((problem) => problem.kind)).toEqual(['chunk', 'chunk'])
+    })
+
     it('names a rejected object by its fields, never their values', () => {
         const problems = setup()
 
