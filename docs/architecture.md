@@ -183,6 +183,13 @@ component through `takeUntilDestroyed` or `toSignal`.
   [api.md](api.md#creating-safely-twice)).
 - The time limit includes fetching the Clerk token. With progress events it
   is the longest silence between two of them.
+- A timeout while the device slept is not Board Vault's (#355): the page was
+  hidden at some point, the timer fired more than 2 s late (the page was
+  frozen), or the request started less than 5 s after the page woke
+  (`PageWakeService`: back into view, restored from the back-forward cache,
+  or back online). Its `ApiUnavailableError` has `asleep` set: it is not
+  reported as a problem, does not show the outage banner, and a read waits
+  until the page can be seen before its retry.
 
 Pages read failures like this:
 

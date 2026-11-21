@@ -21,10 +21,16 @@ export class ApiUnavailableError extends HttpErrorResponse {
      * timed out (503 `DATABASE_TIMEOUT`, #246) after it may have reached the API. It may have been saved, so the page says so instead of "it failed". Never set for reads.
      */
     readonly outcomeUnknown: boolean
+    /**
+     * A timeout that ran out while the page was hidden or frozen, or just after it woke (#355): the device slept,
+     * which says nothing about Board Vault. It is not reported as a problem and does not show the outage banner.
+     */
+    readonly asleep: boolean
 
     constructor(init: {
         kind: ApiUnavailableKind
         outcomeUnknown: boolean
+        asleep?: boolean
         url: string
         status?: number
         statusText?: string
@@ -40,6 +46,7 @@ export class ApiUnavailableError extends HttpErrorResponse {
         })
         this.kind = init.kind
         this.outcomeUnknown = init.outcomeUnknown
+        this.asleep = init.asleep ?? false
     }
 }
 

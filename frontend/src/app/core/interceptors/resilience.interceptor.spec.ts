@@ -9,8 +9,10 @@ import {
 } from '@angular/common/http'
 import { HttpTestingController, provideHttpClientTesting, TestRequest } from '@angular/common/http/testing'
 import { TestBed } from '@angular/core/testing'
-import { Observable, switchMap, throwError, timer } from 'rxjs'
+import { Observable, Subject, switchMap, throwError, timer } from 'rxjs'
 import { ConnectivityService } from '../services/connectivity.service'
+import { PageWakeService } from '../services/page-wake.service'
+import { ProblemReportService } from '../services/problem-report.service'
 import { ApiUnavailableError, isSaveOutcomeUnknown } from '../utils/apiUnavailable'
 import { isServerUnreachable } from '../utils/serverUnreachable'
 import {
@@ -491,6 +493,117 @@ describe('resilienceInterceptor (#240)', () => {
             vi.advanceTimersByTime(60_000)
 
             expect(connectivity().isDegraded()).toBe(false)
+        })
+    })
+    describe('a device that slept (#355)', () => {
+        let hidden: boolean
+        let justWoke: boolean
+        let hides: Subject<void>
+        let shown: Subject<void>
+        let reported: ReturnType<typeof vi.fn>
+
+        const connectivity = () => TestBed.inject(ConnectivityService)
+        const sleepySetup = () => {
+            hidden = false
+            justWoke = false
+            hides = new Subject()
+            shown = new Subject()
+            const wake: Partial<PageWakeService> = {
+                isHidden: () => hidden,
+                justWoke: () => justWoke,
+                hides: () => hides.asObservable(),
+                visible: () => (hidden ? shown.asObservable() : new Observable<void>((s) => (s.next(), s.complete()))),
+            }
+            TestBed.configureTestingModule({ providers: [{ provide: PageWakeService, useValue: wake }] })
+            setup()
+            reported = vi.spyOn(TestBed.inject(ProblemReportService), 'reportRequest').mockImplementation(() => undefined)
+        }
+        const hang = (url: string, limit: number) => {
+            backend.expectOne(url)
+            vi.advanceTimersByTime(limit)
+        }
+
+        it('still reports a timeout of a page that stayed awake, and shows the outage', () => {
+            sleepySetup()
+            const result = send(http.get('/api/groups', { context: withoutReadRetry() }))
+
+            hang('/api/groups', READ_TIMEOUT_MS)
+
+            expect((result.error as ApiUnavailableError).asleep).toBe(false)
+            expect(reported).toHaveBeenCalledOnce()
+            expect(connectivity().isDegraded()).toBe(true)
+        })
+
+        it('does not report a timeout that ran out while the page was hidden, nor show an outage', () => {
+            sleepySetup()
+            const result = send(http.get('/api/inbox', { context: withoutReadRetry() }))
+            backend.expectOne('/api/inbox')
+
+            hidden = true
+            hides.next()
+            vi.advanceTimersByTime(READ_TIMEOUT_MS)
+
+            expect(result.error).toBeInstanceOf(ApiUnavailableError)
+            expect((result.error as ApiUnavailableError).asleep).toBe(true)
+            expect(reported).not.toHaveBeenCalled()
+            expect(connectivity().isDegraded()).toBe(false)
+        })
+
+        it('waits until the page can be seen before trying a read again', () => {
+            sleepySetup()
+            const result = send<Array<number>>(http.get('/api/groups'))
+            backend.expectOne('/api/groups')
+            hidden = true
+            hides.next()
+            vi.advanceTimersByTime(READ_TIMEOUT_MS + 60_000)
+            backend.expectNone('/api/groups')
+
+            hidden = false
+            shown.next()
+            vi.advanceTimersByTime(READ_RETRY_DELAY_MS)
+            backend.expectOne('/api/groups').flush([1])
+
+            expect(result.value).toEqual([1])
+            expect(reported).not.toHaveBeenCalled()
+            expect(connectivity().isDegraded()).toBe(false)
+        })
+
+        it('treats a time limit that fired late as the page being frozen', () => {
+            sleepySetup()
+            const result = send(http.get('/api/inbox', { context: withoutReadRetry() }))
+            backend.expectOne('/api/inbox')
+
+            // The device slept: the clock moved on while no timer could run.
+            vi.setSystemTime(Date.now() + 10 * 60_000)
+            vi.advanceTimersByTime(READ_TIMEOUT_MS)
+
+            expect((result.error as ApiUnavailableError).asleep).toBe(true)
+            expect(reported).not.toHaveBeenCalled()
+        })
+
+        it('treats a request sent just after the page woke as asleep', () => {
+            sleepySetup()
+            justWoke = true
+            const result = send(http.get('/api/inbox', { context: withoutReadRetry() }))
+
+            hang('/api/inbox', READ_TIMEOUT_MS)
+
+            expect((result.error as ApiUnavailableError).asleep).toBe(true)
+            expect(reported).not.toHaveBeenCalled()
+            expect(connectivity().isDegraded()).toBe(false)
+        })
+
+        it('keeps a write that timed out asleep unknown in outcome, without reporting it', () => {
+            sleepySetup()
+            justWoke = true
+            const result = send(http.post('/api/navigation', {}))
+            backend.expectOne('/api/navigation').event({ type: HttpEventType.Sent })
+
+            vi.advanceTimersByTime(WRITE_TIMEOUT_MS)
+
+            expect(isSaveOutcomeUnknown(result.error)).toBe(true)
+            expect((result.error as ApiUnavailableError).asleep).toBe(true)
+            expect(reported).not.toHaveBeenCalled()
         })
     })
 })
