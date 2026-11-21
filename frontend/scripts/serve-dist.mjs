@@ -56,7 +56,8 @@ createServer((request, response) => {
     }
     const candidate = join(root, path)
     const locale = localeOfPath(path)
-    const fallback = locale ? join(root, locale, 'index.html') : null
+    // Only app routes fall back to the app: a missing file (a page chunk a deploy removed) is a 404, as on Vercel (#354).
+    const fallback = locale && !/\.[A-Za-z0-9]+$/.test(path) ? join(root, locale, 'index.html') : null
     // Inside the build only: a decoded `%5C` is a separator on Windows, and `root` is also a prefix of `browser-x`.
     const inside = candidate.startsWith(root + sep)
     const file = inside && existsSync(candidate) && statSync(candidate).isFile() ? candidate : fallback

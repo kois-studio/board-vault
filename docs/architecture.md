@@ -401,8 +401,14 @@ are written without the prefix; the base address adds it.
   path and query under that language (`/register?next=…` →
   `/en/register?next=…`), and
   [`frontend/vercel.json`](../frontend/vercel.json) sends each prefix's app
-  routes to its own `index.html`. `scripts/serve-dist.mjs` does the same
-  locally.
+  routes to its own `index.html`. An address ending in a file extension is
+  never an app route: a missing file is a `404`, not the app's page (#354).
+  `scripts/serve-dist.mjs` does the same locally.
+- A tab left open across a deploy can ask for a page chunk the deploy
+  removed. The router's error handler
+  ([`core/routing/chunk-recovery.ts`](../frontend/src/app/core/routing/chunk-recovery.ts))
+  then loads the destination in full, which brings the new build; at most
+  once every 30 seconds, so a chunk that is really broken cannot loop.
 - Messages live in `frontend/src/locale/` (XLIFF 2.0): `messages.xlf` is
   extracted from the source (`npm run i18n:extract`, which keeps existing
   translations), and `messages.<locale>.xlf` holds each translation.
