@@ -15,9 +15,16 @@ export const PROBLEM_REPORTS_ENABLED = new InjectionToken<boolean>('PROBLEM_REPO
 /** At most this many reports leave one visit, however much goes wrong in it. */
 export const PROBLEMS_PER_VISIT = 10
 
-/** A page whose code could not be fetched, usually a deploy that replaced it while the tab stayed open. */
-const CHUNK_FAILURE =
-    /Loading chunk|dynamically imported module|Importing a module script failed|error loading dynamically imported module/i
+/**
+ * A page whose code could not be fetched, usually a deploy that replaced it while the tab stayed open. Chrome says
+ * "Failed to fetch dynamically imported module", Firefox "error loading dynamically imported module", Safari
+ * "Importing a module script failed", or, when the address answered with a page instead of code, "'text/html' is
+ * not a valid JavaScript MIME type" (#354).
+ */
+const CHUNK_FAILURE = /Loading chunk|dynamically imported module|Importing a module script failed|is not a valid JavaScript MIME type/i
+
+/** Whether `message` says a page's code could not be loaded; see `CHUNK_FAILURE`. */
+export const isChunkFailure = (message: string): boolean => CHUNK_FAILURE.test(message)
 
 /** The request a problem is about, for `kind: 'request'`. */
 export type ProblemRequest = { method: string; url: string; status: number; requestId: string | null }
@@ -49,7 +56,7 @@ export class ProblemReportService {
         // An API failure that nobody handled was already reported by the interceptor as a request.
         if (error instanceof HttpErrorResponse) return
         const { name, message, stack } = describeThrown(error)
-        this.send({ kind: CHUNK_FAILURE.test(message) ? 'chunk' : kind, name, message, stack })
+        this.send({ kind: isChunkFailure(message) ? 'chunk' : kind, name, message, stack })
     }
 
     /** An API call that got no answer in time or a 5xx, after its retry. */

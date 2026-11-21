@@ -1,10 +1,11 @@
 import { provideHttpClient, withInterceptors, withXhr } from '@angular/common/http'
 import { ApplicationConfig, ErrorHandler, inject, provideAppInitializer, provideZoneChangeDetection } from '@angular/core'
-import { provideRouter, RouteReuseStrategy, Router, withPreloading } from '@angular/router'
+import { provideRouter, RouteReuseStrategy, Router, withNavigationErrorHandler, withPreloading } from '@angular/router'
 import { routes } from './app.routes'
 import { listenForProblems, ProblemErrorHandler } from './core/errors/problem-error-handler'
 import { authInterceptor } from './core/interceptors/auth.interceptor'
 import { resilienceInterceptor } from './core/interceptors/resilience.interceptor'
+import { reloadOnChunkFailure } from './core/routing/chunk-recovery'
 import { RemountOnParamChangeStrategy } from './core/routing/remount-on-param-change'
 import { SectionPreloadingStrategy } from './core/routing/section-preloading'
 import { afterFirstPagePaint, ClerkService } from './core/services/clerk.service'
@@ -14,8 +15,9 @@ import { usageViewInterceptor } from './core/services/usage.service'
 export const appConfig: ApplicationConfig = {
     providers: [
         provideZoneChangeDetection({ eventCoalescing: true }),
-        // The sections' pages load ahead once you are signed in and the browser is idle (#264).
-        provideRouter(routes, withPreloading(SectionPreloadingStrategy)),
+        // The sections' pages load ahead once you are signed in and the browser is idle (#264). A page whose code a
+        // deploy removed loads in full, bringing the new build (#354).
+        provideRouter(routes, withPreloading(SectionPreloadingStrategy), withNavigationErrorHandler(reloadOnChunkFailure)),
         { provide: RouteReuseStrategy, useClass: RemountOnParamChangeStrategy },
         // resilienceInterceptor first: its time limit covers fetching the token, and its one retry goes through the others again.
         provideHttpClient(withXhr(), withInterceptors([resilienceInterceptor, authInterceptor, usageViewInterceptor])),
