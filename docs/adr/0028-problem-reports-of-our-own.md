@@ -31,8 +31,8 @@ list of what broke, how often, where and since when is enough.
 - **From the app** (`POST /problems`): an error thrown that nobody caught
   (Angular's `ErrorHandler` and the window's `error` event), a promise
   rejection nobody handled, a page whose code could not be loaded, and an API
-  call that, after its retry, timed out or got a 5xx. Not a 4xx (an answer),
-  and not "no answer at all" (offline: the network, not Board Vault, and the
+  call that, after its retry, timed out or got a 5xx. Not a timeout while the
+  device slept (#355), not a 4xx (an answer), and not "no answer at all" (offline: the network, not Board Vault, and the
   report could not get through either).
 - **From the API:** every exception the error filter did not expect (a 500),
   recorded after the response.

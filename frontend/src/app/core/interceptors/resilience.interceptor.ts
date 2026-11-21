@@ -8,8 +8,9 @@ import {
     HttpRequest,
 } from '@angular/common/http'
 import { inject } from '@angular/core'
-import { catchError, Observable, retry, tap, throwError, timer } from 'rxjs'
+import { catchError, Observable, retry, switchMap, tap, throwError, timer } from 'rxjs'
 import { ConnectivityService } from '../services/connectivity.service'
+import { LATE_TIMER_MS, PageWakeService } from '../services/page-wake.service'
 import { ProblemReportService } from '../services/problem-report.service'
 import { ApiUnavailableError } from '../utils/apiUnavailable'
 
@@ -56,15 +57,20 @@ const RETRYABLE_STATUSES = new Set([0, 502, 503, 504])
  * the other interceptors again (a fresh token).
  *
  * The final outcome, after the retry, tells `ConnectivityService` whether Board Vault can be reached (#241).
+ *
+ * A timeout while the page was hidden or frozen, or just after it woke, is the device sleeping, not Board Vault
+ * (#355): it is marked `asleep`, a read waits until the page can be seen before its retry, and it is neither
+ * reported as a problem nor shown as an outage.
  */
 export const resilienceInterceptor: HttpInterceptorFn = (req, next) => {
     const connectivity = inject(ConnectivityService)
     const problems = inject(ProblemReportService)
+    const wake = inject(PageWakeService)
     const isRead = READ_METHODS.has(req.method) || req.context.get(READ_ONLY)
     const limit = req.context.get(REQUEST_TIMEOUT_MS) ?? (isRead ? READ_TIMEOUT_MS : WRITE_TIMEOUT_MS)
 
     const attempt: Observable<HttpEvent<unknown>> = next(req).pipe(
-        giveUpWhenSilent(limit, (sent) => unavailable(req, isRead, { kind: 'timeout', sent })),
+        giveUpWhenSilent(limit, wake, (sent, asleep) => unavailable(req, isRead, { kind: 'timeout', sent, asleep })),
         catchError((error: unknown) => throwError(() => asUnavailable(error, req, isRead))),
     )
 
@@ -74,7 +80,12 @@ export const resilienceInterceptor: HttpInterceptorFn = (req, next) => {
             : attempt.pipe(
                   retry({
                       count: 1,
-                      delay: (error: unknown) => (isRetryable(error) ? timer(READ_RETRY_DELAY_MS) : throwError(() => error)),
+                      delay: (error: unknown) => {
+                          if (!isRetryable(error)) return throwError(() => error)
+                          // Retrying while the page is still hidden would only freeze again.
+                          if (isAsleep(error)) return wake.visible().pipe(switchMap(() => timer(READ_RETRY_DELAY_MS)))
+                          return timer(READ_RETRY_DELAY_MS)
+                      },
                   }),
               )
 
@@ -96,7 +107,7 @@ export const resilienceInterceptor: HttpInterceptorFn = (req, next) => {
  * all (offline, refused) is not: the report could not get through either, and it is the network, not Board Vault.
  */
 function reportProblem(problems: ProblemReportService, req: HttpRequest<unknown>, error: unknown): void {
-    if (!(error instanceof ApiUnavailableError) || error.kind === 'network') return
+    if (!(error instanceof ApiUnavailableError) || error.kind === 'network' || error.asleep) return
     const body: unknown = error.error
     const requestId =
         typeof body === 'object' && body !== null && typeof (body as { requestId?: unknown }).requestId === 'string'
@@ -112,10 +123,11 @@ function reportProblem(problems: ProblemReportService, req: HttpRequest<unknown>
  * retry could fix means Board Vault cannot be reached; a 4xx is an answer. A 500 is neither: Board Vault answered,
  * but with a bug in one place, which is no reason to say it cannot be reached nor that it is back. Errors that are
  * not HTTP answers (Clerk failing to give a token) say nothing about Board Vault. Either way, a Try again in
- * progress is over.
+ * progress is over. A timeout while the device slept says nothing either (#355).
  */
 function reportFailure(connectivity: ConnectivityService, error: unknown): void {
-    if (isRetryable(error)) connectivity.reportUnreachable()
+    if (isAsleep(error)) connectivity.reportInconclusive()
+    else if (isRetryable(error)) connectivity.reportUnreachable()
     else if (error instanceof HttpErrorResponse && error.status > 0 && error.status < 500) connectivity.reportAnswered()
     else connectivity.reportInconclusive()
 }
@@ -123,16 +135,23 @@ function reportFailure(connectivity: ConnectivityService, error: unknown): void 
 /**
  * Errors with `error()` when nothing but the request being sent happened for `limit` ms. RxJS `timeout` would
  * restart its clock at the `Sent` event, letting a slow token plus a slow answer take twice the limit.
- * Unsubscribing on error cancels the request in the browser. `error` learns whether the request had left the browser.
+ * Unsubscribing on error cancels the request in the browser. `error` learns whether the request had left the browser,
+ * and whether the page slept meanwhile: it was hidden at some point, the timer fired late (the page was frozen), or
+ * the request started just after the page woke (#355).
  */
-function giveUpWhenSilent(limit: number, error: (sent: boolean) => unknown) {
+function giveUpWhenSilent(limit: number, wake: PageWakeService, error: (sent: boolean, asleep: boolean) => unknown) {
     return (source: Observable<HttpEvent<unknown>>) =>
         new Observable<HttpEvent<unknown>>((subscriber) => {
             let timer: ReturnType<typeof setTimeout> | undefined
             let sent = false
+            let slept = wake.justWoke() || wake.isHidden()
+            const hidden = wake.hides().subscribe(() => {
+                slept = true
+            })
             const arm = () => {
                 clearTimeout(timer)
-                timer = setTimeout(() => subscriber.error(error(sent)), limit)
+                const due = Date.now() + limit
+                timer = setTimeout(() => subscriber.error(error(sent, slept || Date.now() - due > LATE_TIMER_MS)), limit)
             }
             arm()
             const subscription = source.subscribe({
@@ -146,9 +165,14 @@ function giveUpWhenSilent(limit: number, error: (sent: boolean) => unknown) {
             })
             return () => {
                 clearTimeout(timer)
+                hidden.unsubscribe()
                 subscription.unsubscribe()
             }
         })
+}
+
+function isAsleep(error: unknown): boolean {
+    return error instanceof ApiUnavailableError && error.asleep
 }
 
 function isRetryable(error: unknown): boolean {
@@ -171,7 +195,7 @@ function isDatabaseTimeout(response: HttpErrorResponse | null): boolean {
 function unavailable(
     req: HttpRequest<unknown>,
     isRead: boolean,
-    cause: { kind: 'timeout'; sent: boolean } | { kind: 'network' | 'server'; from: HttpErrorResponse },
+    cause: { kind: 'timeout'; sent: boolean; asleep: boolean } | { kind: 'network' | 'server'; from: HttpErrorResponse },
 ): ApiUnavailableError {
     const from = 'from' in cause ? cause.from : null
     // A write that may have reached the API before the answer was lost. Not one that timed out before it left the
@@ -183,6 +207,7 @@ function unavailable(
     return new ApiUnavailableError({
         kind: cause.kind,
         outcomeUnknown,
+        asleep: cause.kind === 'timeout' && cause.asleep,
         url: from?.url ?? req.urlWithParams,
         status: from?.status ?? 0,
         statusText: from?.statusText,
