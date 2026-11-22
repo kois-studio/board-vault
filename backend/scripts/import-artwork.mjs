@@ -10,7 +10,11 @@
 //
 //   { "24": { "source": "https://publisher.example/box.jpg" },        download from here instead
 //     "2":  { "source": "https://…/2.png", "file": "/tmp/2.jpg" },    use these bytes, record this source
-//     "25": { "source": null } }                                      no artwork for now
+//     "25": { "source": null },                                       no artwork for now
+//     "Q17271": { "source": "https://…/catan.jpg" } }                 a game by its Wikidata ID (ADR-0030)
+//
+// A Wikidata ID names the same game in every database, so one manifest serves dev and production. Such an
+// entry only fills a game that has no artwork yet; one that has artwork is left alone.
 //
 // Production is an owner step: back up first (docs/how-to/add-migration.md, Production rollout).
 import { readFile } from 'node:fs/promises'
@@ -32,20 +36,25 @@ if (!url) {
 }
 
 const client = createClient({ url, ...(url.startsWith('file:') ? {} : { authToken: process.env.TURSO_AUTH_TOKEN }) })
-const games = await client.execute(`
-    SELECT g.id, g.imageUrl, COALESCE(en.title, '') AS title
-    FROM Game g
-    LEFT JOIN GameEdition en ON en.gameId = g.id AND en.isPrimary = 1
-    WHERE g.imageUrl <> '' AND g.imageUrl NOT LIKE '/artwork/%'
-    ORDER BY g.id
-`)
+const wikidataIds = Object.keys(manifest).filter(key => /^Q[1-9]\d*$/.test(key))
+const games = await client.execute({
+    sql: `
+        SELECT g.id, g.imageUrl, g.wikidataId, COALESCE(en.title, '') AS title
+        FROM Game g
+        LEFT JOIN GameEdition en ON en.gameId = g.id AND en.isPrimary = 1
+        WHERE (g.imageUrl <> '' AND g.imageUrl NOT LIKE '/artwork/%')
+           OR (g.imageUrl = '' AND g.wikidataId IN (${wikidataIds.map(() => '?').join(', ') || 'NULL'}))
+        ORDER BY g.id
+    `,
+    args: wikidataIds,
+})
 
 const report = { copied: [], removed: [], failed: [] }
 
 for (const game of games.rows) {
     const gameId = Number(game.id)
     const label = `${gameId} ${game.title || '(no title)'}`
-    const entry = manifest[String(gameId)]
+    const entry = manifest[String(gameId)] ?? (game.wikidataId ? manifest[String(game.wikidataId)] : undefined)
     const source = entry && 'source' in entry ? entry.source : String(game.imageUrl)
 
     try {
