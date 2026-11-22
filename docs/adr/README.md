@@ -32,6 +32,7 @@ deployment-specific evidence, live data, credentials, and personal details.
 - [0027 — "This is me", and undoing a takeover](0027-this-is-me-and-undoing-a-takeover.md)
 - [0028 — Problem reports of our own](0028-problem-reports-of-our-own.md)
 - [0029 — Lists loaded when a page shows them, from a small cache of our own](0029-lists-loaded-when-shown.md)
+- [0030 — Seed the catalogue from Wikidata](0030-seed-the-catalogue-from-wikidata.md)
 
 Accepted ADRs are durable constraints unless a later ADR explicitly supersedes
 them. Create an ADR when a decision changes architecture, persistence,

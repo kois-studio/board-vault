@@ -134,8 +134,8 @@ async function seedLocalScenario() {
     try {
         await client.execute('PRAGMA foreign_keys = ON')
         const migration = await client.execute('SELECT MAX(version) AS version FROM SchemaMigrations')
-        if (String(migration.rows[0]?.version ?? '') !== '0036') {
-            throw new Error('Local fixtures can only be added after migrations reach 0036.')
+        if (String(migration.rows[0]?.version ?? '') !== '0037') {
+            throw new Error('Local fixtures can only be added after migrations reach 0037.')
         }
 
         const clerkUserIds = await resolveFixtureClerkUsers()
