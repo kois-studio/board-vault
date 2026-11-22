@@ -101,6 +101,18 @@ describe('AdminGameEditComponent', () => {
         expect(toast.success).toHaveBeenCalledWith('Saved.')
     })
 
+    it('saves an imported game whose length is unknown without asking for one', async () => {
+        const fixture = await render({ ...catan, gameAvgDuration: 0, issues: ['no-artwork', 'no-length'] })
+        const component = fixture.componentInstance
+
+        expect(component.form.getRawValue().gameAvgDuration).toBeNull()
+        expect(component.form.valid).toBe(true)
+        component.selectedTagIds.set(new Set([4, 5]))
+        await component.save()
+
+        expect(api['updateAdminGame']).toHaveBeenCalledWith(2, expect.objectContaining({ gameAvgDuration: undefined, tagIds: [4, 5] }))
+    })
+
     it('says why Save is off when a price or a number is out of range', async () => {
         const fixture = await render()
         const component = fixture.componentInstance

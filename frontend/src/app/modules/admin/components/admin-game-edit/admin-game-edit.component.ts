@@ -1,6 +1,6 @@
 import { HttpErrorResponse } from '@angular/common/http'
 import { Component, inject, OnInit, signal } from '@angular/core'
-import { ReactiveFormsModule } from '@angular/forms'
+import { ReactiveFormsModule, Validators } from '@angular/forms'
 import { ActivatedRoute, RouterLink } from '@angular/router'
 import { firstValueFrom } from 'rxjs'
 import { Api } from '../../../../api/api'
@@ -55,6 +55,11 @@ export class AdminGameEditComponent implements OnInit {
     public readonly tagGroups = signal<Array<TagGroup>>([])
     public readonly selectedTagIds = signal<ReadonlySet<number>>(new Set())
     public readonly form = createGameFieldsForm()
+
+    constructor() {
+        // An imported game may have no length yet (ADR-0030); its other fields can still be saved without one.
+        this.form.controls.gameAvgDuration.removeValidators(Validators.required)
+    }
 
     public async ngOnInit(): Promise<void> {
         const gameId = Number.parseInt(this.route.snapshot.paramMap.get('id') || '', 10)
@@ -158,7 +163,8 @@ export class AdminGameEditComponent implements OnInit {
             imageUrl: game.imageUrl,
             minPlayers: game.minPlayers,
             maxPlayers: game.maxPlayers,
-            gameAvgDuration: game.gameAvgDuration,
+            // 0 is an unknown length: an empty field, which saving leaves as it is.
+            gameAvgDuration: game.gameAvgDuration || null,
             retailPrice: game.retailPrice,
         })
     }
