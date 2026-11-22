@@ -92,7 +92,9 @@ export function gameEditionUpsert(
 
 const CATALOGUE_ORDER: Record<BrowseSort, string> = {
     title: 'COALESCE(reader.title, t.title) COLLATE NOCASE ASC, g.id ASC',
-    shortest: 'g.gameAvgDuration IS NULL, g.gameAvgDuration ASC, COALESCE(reader.title, t.title) COLLATE NOCASE ASC, g.id ASC',
+    // An unknown length (0 or NULL, ADR-0030) goes last, not first.
+    shortest:
+        'COALESCE(g.gameAvgDuration, 0) <= 0, NULLIF(g.gameAvgDuration, 0) ASC, COALESCE(reader.title, t.title) COLLATE NOCASE ASC, g.id ASC',
     newest: 'g.id DESC',
 }
 
