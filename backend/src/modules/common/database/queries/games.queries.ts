@@ -30,13 +30,16 @@ const LOCALIZED_TAG_NAMES = `
     LEFT JOIN TagCategoryTranslation categoryName ON categoryName.categoryId = category.id AND categoryName.locale = :locale
 `
 
-/** Average length in minutes. The ranges meet without overlapping. */
+/** Average length in minutes. The ranges meet without overlapping; an unknown length (0 or NULL) is in none. */
 const CATALOGUE_LENGTH: Record<GameLength, string> = {
-    short: 'g.gameAvgDuration < 30',
+    short: 'g.gameAvgDuration > 0 AND g.gameAvgDuration < 30',
     medium: 'g.gameAvgDuration BETWEEN 30 AND 60',
     long: 'g.gameAvgDuration > 60 AND g.gameAvgDuration <= 120',
     epic: 'g.gameAvgDuration > 120',
 }
+
+/** How many shelves hold `Game g`, not counting deleted accounts. */
+const OWNERS = '(SELECT COUNT(*) FROM OwnedGame o JOIN Account a ON a.id = o.accountId AND a.isDeleted = 0 WHERE o.gameId = g.id)'
 
 /** Catalogue data problems, as SQL over `Game g`. */
 export const CATALOGUE_QUALITY: Record<CatalogueQualityIssue, string> = {
@@ -44,6 +47,8 @@ export const CATALOGUE_QUALITY: Record<CatalogueQualityIssue, string> = {
     'no-artwork': "g.imageUrl = ''",
     'no-primary': `EXISTS (SELECT 1 FROM GameEdition e WHERE e.gameId = g.id)
         AND NOT EXISTS (SELECT 1 FROM GameEdition p WHERE p.gameId = g.id AND p.isPrimary = 1)`,
+    // Imported games (ADR-0030) often have no playing time; 0 and NULL both mean unknown.
+    'no-length': 'COALESCE(g.gameAvgDuration, 0) <= 0',
     'no-tags': 'NOT EXISTS (SELECT 1 FROM GameTag gt WHERE gt.gameId = g.id)',
     'no-price': 'g.retailPriceCents IS NULL',
 }
@@ -711,7 +716,10 @@ export class GameQueries {
 
     // #region Admin catalogue
 
-    /** One page of the catalogue for admins: Browse's filters plus one data-quality issue, by primary edition title. */
+    /**
+     * One page of the catalogue for admins: Browse's filters plus one data-quality issue. By primary edition title;
+     * with an issue, the games on the most shelves come first, since fixing those helps the most people.
+     */
     browseAdminCatalogue(filters: CatalogueFilters & { issue?: CatalogueQualityIssue; gameId?: number; skip: number; take: number }) {
         const { where, args } = this.adminCatalogueWhere(filters)
 
@@ -726,7 +734,7 @@ export class GameQueries {
                 LEFT JOIN GameEdition pr ON pr.gameId = g.id AND pr.isPrimary = 1
                 LEFT JOIN GameArtwork art ON art.gameId = g.id
                 ${where}
-                ORDER BY COALESCE(pr.title, '') COLLATE NOCASE ASC, g.id ASC
+                ORDER BY ${filters.issue ? `${OWNERS} DESC,` : ''} COALESCE(pr.title, '') COLLATE NOCASE ASC, g.id ASC
                 LIMIT ? OFFSET ?
             `,
             args: [...args, filters.take, filters.skip],

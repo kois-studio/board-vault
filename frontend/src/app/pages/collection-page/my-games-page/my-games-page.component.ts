@@ -59,7 +59,8 @@ export class MyGamesPageComponent {
         )
         const byTitle = (a: (typeof games)[number], b: (typeof games)[number]) => gameTitle(a).localeCompare(gameTitle(b), intlLocale())
         return [...games].sort((a, b) => {
-            if (toolbar && this.sortBy() === 'duration') return (a.gameAvgDuration ?? 0) - (b.gameAvgDuration ?? 0) || byTitle(a, b)
+            if (toolbar && this.sortBy() === 'duration')
+                return (a.gameAvgDuration || Infinity) - (b.gameAvgDuration || Infinity) || byTitle(a, b)
             return byTitle(a, b)
         })
     })

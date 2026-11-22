@@ -12,7 +12,10 @@
             decoding="async"
             (error)="handleImageError()"
         />
-    } @else {
+    } @else if (src()) {
         <span class="px-2 text-center text-xs text-bv-text-muted" i18n="Shown in place of a game's picture that does not load">Artwork unavailable</span>
+    } @else {
+        <!-- No artwork yet, as for most imported games (ADR-0030): a quiet mark, so a grid of them reads as deliberate. -->
+        <span class="block aspect-square w-2/5 max-w-16 text-bv-text-muted opacity-50"><app-icon class="block h-full w-full" name="dices" size="100%" [strokeWidth]="1.25" /></span>
     }
 </div>

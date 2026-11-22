@@ -649,7 +649,7 @@ export type BrowseGamesResultType = {
 }
 
 /** A catalogue data problem, as the admin Games filter names it. */
-export type CatalogueIssue = 'no-title' | 'no-artwork' | 'no-primary' | 'no-tags' | 'no-price'
+export type CatalogueIssue = 'no-title' | 'no-artwork' | 'no-primary' | 'no-length' | 'no-tags' | 'no-price'
 
 /** One edition of a game as Administration lists it (ADR-0025). */
 export type AdminGameEditionType = {

@@ -394,8 +394,10 @@
                                                                                 <ng-container i18n="Under a game that none of the people coming to a game night own">Nobody coming owns it</ng-container>
                                                                             } @else if (meet.plannedGames.includes(game.id)) {
                                                                                 <ng-container i18n="Under a game on a game night's shortlist; the placeholder is how many can play, such as 2–4 players">Shortlisted · {{ game | players }}</ng-container>
-                                                                            } @else {
+                                                                            } @else if (game.gameAvgDuration > 0) {
                                                                                 <ng-container i18n="Under a game on a game night's page: how long it lasts in minutes, then how many can play">{{ game.gameAvgDuration }} min · {{ game | players }}</ng-container>
+                                                                            } @else {
+                                                                                {{ game | players }}
                                                                             }
                                                                         </span>
                                                                     </span>
@@ -473,7 +475,7 @@
                                                 <image-background [src]="game.imageUrl" [alt]="gameTitle(game) | coverAlt" class="h-12 w-12 shrink-0" />
                                                 <span class="min-w-0">
                                                     <span class="block truncate font-medium">{{ gameTitle(game) }}</span>
-                                                    <span class="block text-xs text-bv-text-muted" i18n="Under a game on a game night's page: how long it lasts in minutes, then how many can play">{{ game.gameAvgDuration }} min · {{ game | players }}</span>
+                                                    <span class="block text-xs text-bv-text-muted">@if (game.gameAvgDuration > 0) {<ng-container i18n="Under a game on a game night's page: how long it lasts in minutes, then how many can play">{{ game.gameAvgDuration }} min · {{ game | players }}</ng-container>} @else {{{ game | players }}}</span>
                                                     @if (voteCount > 0) {
                                                         <span class="block truncate text-xs text-bv-success" [title]="voterNames(game.id)" i18n="Under a shortlisted game: who voted for it; the placeholder is a list of names">Wanted by {{ voterNames(game.id) }}</span>
                                                     }

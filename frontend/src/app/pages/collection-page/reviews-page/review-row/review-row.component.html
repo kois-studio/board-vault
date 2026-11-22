@@ -9,10 +9,12 @@
             <div class="grow min-w-0">
                 <h3 class="text-lg font-semibold mb-1 truncate">{{ game() | gameTitle }}</h3>
                 <div class="flex items-center gap-3 text-secondary text-xs">
-                    <span class="flex items-center gap-1">
-                        <app-icon name="clock" [size]="14" />
-                        <ng-container i18n="How long a game lasts, in minutes">{{ game().gameAvgDuration }} min</ng-container>
-                    </span>
+                    @if (game().gameAvgDuration > 0) {
+                        <span class="flex items-center gap-1">
+                            <app-icon name="clock" [size]="14" />
+                            <ng-container i18n="How long a game lasts, in minutes">{{ game().gameAvgDuration }} min</ng-container>
+                        </span>
+                    }
                     <span class="flex items-center gap-1">
                         <app-icon name="users" [size]="14" />
                         {{ game() | players }}

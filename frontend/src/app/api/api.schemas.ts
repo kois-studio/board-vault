@@ -175,7 +175,7 @@ export const adminGameSchema: z.ZodMiniType<AdminGameType> = z.object({
     maxPlayers: z.number(),
     editions: z.array(z.object({ id: z.number(), languageCode: z.string(), title: z.string(), isPrimary: z.boolean() })),
     tags: z.array(z.object({ id: z.number(), name: z.string(), categoryName: z.string() })),
-    issues: z.array(z.enum(['no-title', 'no-artwork', 'no-primary', 'no-tags', 'no-price'])),
+    issues: z.array(z.enum(['no-title', 'no-artwork', 'no-primary', 'no-length', 'no-tags', 'no-price'])),
     artworkSource: z.nullable(z.string()),
     retailPrice: z.nullable(z.number()),
 })
@@ -193,6 +193,7 @@ export const adminOverviewSchema: z.ZodMiniType<AdminOverviewType> = z.object({
         'no-title': z.number(),
         'no-artwork': z.number(),
         'no-primary': z.number(),
+        'no-length': z.number(),
         'no-tags': z.number(),
         'no-price': z.number(),
     }),

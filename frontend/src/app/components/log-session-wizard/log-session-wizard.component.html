@@ -207,7 +207,7 @@
                                         <image-background class="block h-12 w-12 shrink-0" [src]="selection.game.imageUrl" [alt]="''" />
                                         <span class="min-w-0 flex-1">
                                             <span class="block font-semibold wrap-anywhere">{{ getGameTitle(selection.game) }}</span>
-                                            <span class="block text-xs text-bv-text-muted" i18n="Under a game on a game night's page: how long it lasts in minutes, then how many can play">{{ selection.game.gameAvgDuration }} min · {{ selection.game | players }}</span>
+                                            <span class="block text-xs text-bv-text-muted">@if (selection.game.gameAvgDuration > 0) {<ng-container i18n="Under a game on a game night's page: how long it lasts in minutes, then how many can play">{{ selection.game.gameAvgDuration }} min · {{ selection.game | players }}</ng-container>} @else {{{ selection.game | players }}}</span>
                                         </span>
                                         <span class="mr-2 flex h-5 w-5 shrink-0 items-center justify-center rounded border" [class]="selection.selected ? 'border-bv-primary bg-bv-primary text-bv-on-primary' : 'border-bv-border'" aria-hidden="true">
                                             @if (selection.selected) {
@@ -286,7 +286,7 @@
                                                 <image-background class="block h-12 w-12 shrink-0" [src]="game.imageUrl" [alt]="''" />
                                                 <span class="min-w-0 flex-1">
                                                     <span class="block font-semibold wrap-anywhere">{{ getGameTitle(game) }}</span>
-                                                    <span class="block text-xs text-bv-text-muted" i18n="Under a game on a game night's page: how long it lasts in minutes, then how many can play">{{ game.gameAvgDuration }} min · {{ game | players }}</span>
+                                                    <span class="block text-xs text-bv-text-muted">@if (game.gameAvgDuration > 0) {<ng-container i18n="Under a game on a game night's page: how long it lasts in minutes, then how many can play">{{ game.gameAvgDuration }} min · {{ game | players }}</ng-container>} @else {{{ game | players }}}</span>
                                                 </span>
                                                 <app-icon name="plus" [size]="18" className="mr-2 shrink-0 text-bv-primary" aria-hidden="true" />
                                                 <span class="sr-only" i18n="Hidden name of the button that adds a catalogue game to the games step; the placeholder is the game title">Add {{ getGameTitle(game) }}</span>
