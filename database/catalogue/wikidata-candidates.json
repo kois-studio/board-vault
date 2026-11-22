@@ -1,0 +1,5263 @@
+{
+  "source": "Wikidata (https://www.wikidata.org), CC0 1.0. Picked by database/scripts/wikidata-candidates.mjs, ADR-0030.",
+  "rule": "Items with a BoardGameGeek ID, a publication year from 1900, and player counts; no expansions or variants. Score: Wikipedia languages plus 10 per award (not counting wargame awards), at least 4 (10 before 1980); highest first.",
+  "count": 331,
+  "excluded": 7,
+  "candidates": [
+    {
+      "wikidataId": "Q17276",
+      "title": "7 Wonders",
+      "titleLanguage": "en",
+      "otherTitles": [],
+      "minPlayers": 2,
+      "maxPlayers": 7,
+      "durationMinutes": 30,
+      "year": 2010,
+      "awards": 8,
+      "sitelinks": 20
+    },
+    {
+      "wikidataId": "Q396644",
+      "title": "Agricola",
+      "titleLanguage": "en",
+      "otherTitles": [
+        {
+          "languageCode": "es",
+          "title": "Agrícola"
+        }
+      ],
+      "minPlayers": 1,
+      "maxPlayers": 5,
+      "durationMinutes": null,
+      "year": 2007,
+      "awards": 8,
+      "sitelinks": 18
+    },
+    {
+      "wikidataId": "Q1238110",
+      "title": "Dominion",
+      "titleLanguage": "en",
+      "otherTitles": [],
+      "minPlayers": 2,
+      "maxPlayers": 4,
+      "durationMinutes": null,
+      "year": 2008,
+      "awards": 7,
+      "sitelinks": 20
+    },
+    {
+      "wikidataId": "Q17243",
+      "title": "Monopoly",
+      "titleLanguage": "en",
+      "otherTitles": [],
+      "minPlayers": 2,
+      "maxPlayers": 8,
+      "durationMinutes": null,
+      "year": 1937,
+      "awards": 0,
+      "sitelinks": 81
+    },
+    {
+      "wikidataId": "Q228308",
+      "title": "Ticket to Ride",
+      "titleLanguage": "en",
+      "otherTitles": [
+        {
+          "languageCode": "es",
+          "title": "Aventureros al tren"
+        },
+        {
+          "languageCode": "fr",
+          "title": "Les Aventuriers du Rail"
+        },
+        {
+          "languageCode": "de",
+          "title": "Zug um Zug"
+        }
+      ],
+      "minPlayers": 2,
+      "maxPlayers": 5,
+      "durationMinutes": 60,
+      "year": 2004,
+      "awards": 5,
+      "sitelinks": 27
+    },
+    {
+      "wikidataId": "Q932940",
+      "title": "Caylus",
+      "titleLanguage": "en",
+      "otherTitles": [],
+      "minPlayers": 2,
+      "maxPlayers": 5,
+      "durationMinutes": null,
+      "year": 2005,
+      "awards": 6,
+      "sitelinks": 15
+    },
+    {
+      "wikidataId": "Q17262",
+      "title": "Carcassonne",
+      "titleLanguage": "en",
+      "otherTitles": [],
+      "minPlayers": 2,
+      "maxPlayers": 6,
+      "durationMinutes": null,
+      "year": 2000,
+      "awards": 4,
+      "sitelinks": 32
+    },
+    {
+      "wikidataId": "Q17271",
+      "title": "Catan",
+      "titleLanguage": "en",
+      "otherTitles": [
+        {
+          "languageCode": "es",
+          "title": "Los Colonos de Catán"
+        },
+        {
+          "languageCode": "fr",
+          "title": "Les Colons de Catane"
+        },
+        {
+          "languageCode": "de",
+          "title": "Die Siedler von Catan"
+        },
+        {
+          "languageCode": "it",
+          "title": "I coloni di Catan"
+        }
+      ],
+      "minPlayers": 3,
+      "maxPlayers": 4,
+      "durationMinutes": 75,
+      "year": 1995,
+      "awards": 3,
+      "sitelinks": 42
+    },
+    {
+      "wikidataId": "Q44367843",
+      "title": "Azul",
+      "titleLanguage": "en",
+      "otherTitles": [],
+      "minPlayers": 2,
+      "maxPlayers": 4,
+      "durationMinutes": null,
+      "year": 2017,
+      "awards": 6,
+      "sitelinks": 11
+    },
+    {
+      "wikidataId": "Q17147000",
+      "title": "Terra Mystica",
+      "titleLanguage": "en",
+      "otherTitles": [],
+      "minPlayers": 2,
+      "maxPlayers": 5,
+      "durationMinutes": 150,
+      "year": 2012,
+      "awards": 6,
+      "sitelinks": 10
+    },
+    {
+      "wikidataId": "Q170436",
+      "title": "Scrabble",
+      "titleLanguage": "en",
+      "otherTitles": [],
+      "minPlayers": 2,
+      "maxPlayers": 4,
+      "durationMinutes": null,
+      "year": 1938,
+      "awards": 0,
+      "sitelinks": 69
+    },
+    {
+      "wikidataId": "Q77852578",
+      "title": "The Crew: The Quest for Planet Nine",
+      "titleLanguage": "en",
+      "otherTitles": [
+        {
+          "languageCode": "es",
+          "title": "La Tripulación: En Busca del Noveno Planeta"
+        },
+        {
+          "languageCode": "fr",
+          "title": "The Crew : en quête de la neuvième planète"
+        },
+        {
+          "languageCode": "de",
+          "title": "Die Crew: Reist gemeinsam zum 9. Planeten"
+        }
+      ],
+      "minPlayers": 2,
+      "maxPlayers": 5,
+      "durationMinutes": 20,
+      "year": 2019,
+      "awards": 6,
+      "sitelinks": 5,
+      "matchTitles": [
+        "The Crew"
+      ]
+    },
+    {
+      "wikidataId": "Q1457040",
+      "title": "Puerto Rico",
+      "titleLanguage": "en",
+      "otherTitles": [],
+      "minPlayers": 3,
+      "maxPlayers": 5,
+      "durationMinutes": 150,
+      "year": 2002,
+      "awards": 4,
+      "sitelinks": 23
+    },
+    {
+      "wikidataId": "Q531592",
+      "title": "Pandemic",
+      "titleLanguage": "en",
+      "otherTitles": [
+        {
+          "languageCode": "fr",
+          "title": "Pandémie"
+        },
+        {
+          "languageCode": "de",
+          "title": "Pandemie"
+        },
+        {
+          "languageCode": "it",
+          "title": "Pandemia"
+        }
+      ],
+      "minPlayers": 2,
+      "maxPlayers": 4,
+      "durationMinutes": null,
+      "year": 2008,
+      "awards": 4,
+      "sitelinks": 22
+    },
+    {
+      "wikidataId": "Q21554876",
+      "title": "Colt Express",
+      "titleLanguage": "en",
+      "otherTitles": [],
+      "minPlayers": 2,
+      "maxPlayers": 6,
+      "durationMinutes": 40,
+      "year": 2014,
+      "awards": 5,
+      "sitelinks": 8
+    },
+    {
+      "wikidataId": "Q17267",
+      "title": "Uno",
+      "titleLanguage": "en",
+      "otherTitles": [],
+      "minPlayers": 2,
+      "maxPlayers": 10,
+      "durationMinutes": null,
+      "year": 1971,
+      "awards": 0,
+      "sitelinks": 49
+    },
+    {
+      "wikidataId": "Q25203543",
+      "title": "Codenames",
+      "titleLanguage": "en",
+      "otherTitles": [
+        {
+          "languageCode": "es",
+          "title": "Código secreto"
+        },
+        {
+          "languageCode": "it",
+          "title": "Nome in codice"
+        }
+      ],
+      "minPlayers": 4,
+      "maxPlayers": 8,
+      "durationMinutes": 15,
+      "year": 2015,
+      "awards": 3,
+      "sitelinks": 19
+    },
+    {
+      "wikidataId": "Q1474394",
+      "title": "Power Grid",
+      "titleLanguage": "en",
+      "otherTitles": [
+        {
+          "languageCode": "fr",
+          "title": "Haute Tension"
+        },
+        {
+          "languageCode": "de",
+          "title": "Funkenschlag"
+        },
+        {
+          "languageCode": "it",
+          "title": "Alta tensione"
+        }
+      ],
+      "minPlayers": 2,
+      "maxPlayers": 6,
+      "durationMinutes": 120,
+      "year": 2004,
+      "awards": 3,
+      "sitelinks": 18
+    },
+    {
+      "wikidataId": "Q15264238",
+      "title": "King of Tokyo",
+      "titleLanguage": "en",
+      "otherTitles": [],
+      "minPlayers": 2,
+      "maxPlayers": 6,
+      "durationMinutes": null,
+      "year": 2011,
+      "awards": 4,
+      "sitelinks": 8
+    },
+    {
+      "wikidataId": "Q981029",
+      "title": "Citadels",
+      "titleLanguage": "en",
+      "otherTitles": [
+        {
+          "languageCode": "es",
+          "title": "Ciudadelas"
+        },
+        {
+          "languageCode": "fr",
+          "title": "Citadelles"
+        },
+        {
+          "languageCode": "de",
+          "title": "Ohne Furcht und Adel"
+        }
+      ],
+      "minPlayers": 2,
+      "maxPlayers": 8,
+      "durationMinutes": null,
+      "year": 2000,
+      "awards": 3,
+      "sitelinks": 16
+    },
+    {
+      "wikidataId": "Q906623",
+      "title": "Dixit",
+      "titleLanguage": "en",
+      "otherTitles": [],
+      "minPlayers": 3,
+      "maxPlayers": 8,
+      "durationMinutes": null,
+      "year": 2008,
+      "awards": 2,
+      "sitelinks": 25
+    },
+    {
+      "wikidataId": "Q2526032",
+      "title": "Village",
+      "titleLanguage": "en",
+      "otherTitles": [
+        {
+          "languageCode": "fr",
+          "title": "Descendance"
+        }
+      ],
+      "minPlayers": 2,
+      "maxPlayers": 4,
+      "durationMinutes": 90,
+      "year": 2011,
+      "awards": 4,
+      "sitelinks": 5
+    },
+    {
+      "wikidataId": "Q13738509",
+      "title": "Hanabi",
+      "titleLanguage": "en",
+      "otherTitles": [],
+      "minPlayers": 2,
+      "maxPlayers": 5,
+      "durationMinutes": null,
+      "year": 2010,
+      "awards": 3,
+      "sitelinks": 15
+    },
+    {
+      "wikidataId": "Q65784798",
+      "title": "Wingspan",
+      "titleLanguage": "en",
+      "otherTitles": [
+        {
+          "languageCode": "de",
+          "title": "Flügelschlag"
+        }
+      ],
+      "minPlayers": 1,
+      "maxPlayers": 5,
+      "durationMinutes": 70,
+      "year": 2019,
+      "awards": 3,
+      "sitelinks": 15
+    },
+    {
+      "wikidataId": "Q36719002",
+      "title": "Scythe",
+      "titleLanguage": "en",
+      "otherTitles": [],
+      "minPlayers": 1,
+      "maxPlayers": 5,
+      "durationMinutes": 115,
+      "year": 2016,
+      "awards": 3,
+      "sitelinks": 12
+    },
+    {
+      "wikidataId": "Q44659892",
+      "title": "Burg Appenzell",
+      "titleLanguage": "de",
+      "otherTitles": [
+        {
+          "languageCode": "fr",
+          "title": "Château Roquefort"
+        }
+      ],
+      "minPlayers": 2,
+      "maxPlayers": 4,
+      "durationMinutes": null,
+      "year": 2007,
+      "awards": 4,
+      "sitelinks": 2
+    },
+    {
+      "wikidataId": "Q17245",
+      "title": "Cluedo",
+      "titleLanguage": "en",
+      "otherTitles": [],
+      "minPlayers": 2,
+      "maxPlayers": 6,
+      "durationMinutes": null,
+      "year": 1949,
+      "awards": 0,
+      "sitelinks": 41,
+      "matchTitles": [
+        "Clue"
+      ]
+    },
+    {
+      "wikidataId": "Q220282",
+      "title": "Zooloretto",
+      "titleLanguage": "en",
+      "otherTitles": [],
+      "minPlayers": 2,
+      "maxPlayers": 5,
+      "durationMinutes": 45,
+      "year": 2007,
+      "awards": 3,
+      "sitelinks": 11
+    },
+    {
+      "wikidataId": "Q17247",
+      "title": "Abalone",
+      "titleLanguage": "en",
+      "otherTitles": [],
+      "minPlayers": 2,
+      "maxPlayers": 2,
+      "durationMinutes": null,
+      "year": 1990,
+      "awards": 2,
+      "sitelinks": 19
+    },
+    {
+      "wikidataId": "Q358609",
+      "title": "Top Secret Spies",
+      "titleLanguage": "en",
+      "otherTitles": [
+        {
+          "languageCode": "de",
+          "title": "Heimlich & Co."
+        }
+      ],
+      "minPlayers": 2,
+      "maxPlayers": 7,
+      "durationMinutes": null,
+      "year": 1984,
+      "awards": 3,
+      "sitelinks": 9
+    },
+    {
+      "wikidataId": "Q12541",
+      "title": "Risk",
+      "titleLanguage": "en",
+      "otherTitles": [
+        {
+          "languageCode": "de",
+          "title": "Risiko"
+        }
+      ],
+      "minPlayers": 2,
+      "maxPlayers": 6,
+      "durationMinutes": 120,
+      "year": 1957,
+      "awards": 0,
+      "sitelinks": 38
+    },
+    {
+      "wikidataId": "Q540081",
+      "title": "Blokus",
+      "titleLanguage": "en",
+      "otherTitles": [],
+      "minPlayers": 2,
+      "maxPlayers": 4,
+      "durationMinutes": 30,
+      "year": 2000,
+      "awards": 2,
+      "sitelinks": 18
+    },
+    {
+      "wikidataId": "Q198426",
+      "title": "Chicken Cha Cha Cha",
+      "titleLanguage": "en",
+      "otherTitles": [
+        {
+          "languageCode": "fr",
+          "title": "Pique Plume"
+        },
+        {
+          "languageCode": "de",
+          "title": "Zicke Zacke Hühnerkacke"
+        },
+        {
+          "languageCode": "it",
+          "title": "Zicke Zacke Spenna il pollo"
+        }
+      ],
+      "minPlayers": 2,
+      "maxPlayers": 4,
+      "durationMinutes": null,
+      "year": 1998,
+      "awards": 3,
+      "sitelinks": 7
+    },
+    {
+      "wikidataId": "Q20037103",
+      "title": "Splendor",
+      "titleLanguage": "en",
+      "otherTitles": [],
+      "minPlayers": 2,
+      "maxPlayers": 4,
+      "durationMinutes": 30,
+      "year": 2014,
+      "awards": 2,
+      "sitelinks": 17
+    },
+    {
+      "wikidataId": "Q783451",
+      "title": "Sherlock Holmes Consulting Detective",
+      "titleLanguage": "en",
+      "otherTitles": [
+        {
+          "languageCode": "fr",
+          "title": "Sherlock Holmes Détective Conseil"
+        },
+        {
+          "languageCode": "de",
+          "title": "Sherlock Holmes Criminal-Cabinet"
+        },
+        {
+          "languageCode": "it",
+          "title": "Sherlock Holmes consulente investigativo"
+        }
+      ],
+      "minPlayers": 1,
+      "maxPlayers": 8,
+      "durationMinutes": null,
+      "year": 1981,
+      "awards": 3,
+      "sitelinks": 6
+    },
+    {
+      "wikidataId": "Q258972",
+      "title": "Take 5",
+      "titleLanguage": "en",
+      "otherTitles": [
+        {
+          "languageCode": "fr",
+          "title": "6 qui prend !"
+        },
+        {
+          "languageCode": "de",
+          "title": "6 nimmt!"
+        },
+        {
+          "languageCode": "it",
+          "title": "6... prendi e perdi!"
+        }
+      ],
+      "minPlayers": 2,
+      "maxPlayers": 10,
+      "durationMinutes": null,
+      "year": 1994,
+      "awards": 2,
+      "sitelinks": 15
+    },
+    {
+      "wikidataId": "Q14943693",
+      "title": "The Legends of Andor",
+      "titleLanguage": "en",
+      "otherTitles": [
+        {
+          "languageCode": "fr",
+          "title": "Andor"
+        },
+        {
+          "languageCode": "de",
+          "title": "Die Legenden von Andor"
+        },
+        {
+          "languageCode": "it",
+          "title": "Le leggende di Andor"
+        }
+      ],
+      "minPlayers": 2,
+      "maxPlayers": 4,
+      "durationMinutes": null,
+      "year": 2012,
+      "awards": 3,
+      "sitelinks": 5
+    },
+    {
+      "wikidataId": "Q29387782",
+      "title": "The Voyages of Marco Polo",
+      "titleLanguage": "en",
+      "otherTitles": [
+        {
+          "languageCode": "de",
+          "title": "Auf den Spuren von Marco Polo"
+        },
+        {
+          "languageCode": "it",
+          "title": "Sulle Tracce di Marco Polo"
+        }
+      ],
+      "minPlayers": 2,
+      "maxPlayers": 4,
+      "durationMinutes": null,
+      "year": 2015,
+      "awards": 3,
+      "sitelinks": 5
+    },
+    {
+      "wikidataId": "Q126101407",
+      "title": "Forest Shuffle",
+      "titleLanguage": "en",
+      "otherTitles": [
+        {
+          "languageCode": "fr",
+          "title": "Forêt mixte"
+        },
+        {
+          "languageCode": "de",
+          "title": "Mischwald"
+        }
+      ],
+      "minPlayers": 2,
+      "maxPlayers": 5,
+      "durationMinutes": null,
+      "year": 2023,
+      "awards": 3,
+      "sitelinks": 5
+    },
+    {
+      "wikidataId": "Q36992159",
+      "title": "Mombasa",
+      "titleLanguage": "en",
+      "otherTitles": [],
+      "minPlayers": 2,
+      "maxPlayers": 4,
+      "durationMinutes": null,
+      "year": 2015,
+      "awards": 3,
+      "sitelinks": 4
+    },
+    {
+      "wikidataId": "Q1324206",
+      "title": "El Grande",
+      "titleLanguage": "en",
+      "otherTitles": [],
+      "minPlayers": 2,
+      "maxPlayers": 5,
+      "durationMinutes": null,
+      "year": 1995,
+      "awards": 2,
+      "sitelinks": 13
+    },
+    {
+      "wikidataId": "Q1852249",
+      "title": "Thurn and Taxis",
+      "titleLanguage": "en",
+      "otherTitles": [
+        {
+          "languageCode": "fr",
+          "title": "L'Aventure postale"
+        },
+        {
+          "languageCode": "de",
+          "title": "Thurn und Taxis"
+        },
+        {
+          "languageCode": "it",
+          "title": "Thurn und Taxis"
+        }
+      ],
+      "minPlayers": 2,
+      "maxPlayers": 4,
+      "durationMinutes": null,
+      "year": 2006,
+      "awards": 2,
+      "sitelinks": 13
+    },
+    {
+      "wikidataId": "Q1934596",
+      "title": "Alhambra",
+      "titleLanguage": "en",
+      "otherTitles": [],
+      "minPlayers": 2,
+      "maxPlayers": 6,
+      "durationMinutes": null,
+      "year": 2003,
+      "awards": 2,
+      "sitelinks": 13
+    },
+    {
+      "wikidataId": "Q5650933",
+      "title": "Hansa Teutonica",
+      "titleLanguage": "en",
+      "otherTitles": [],
+      "minPlayers": 2,
+      "maxPlayers": 5,
+      "durationMinutes": null,
+      "year": 2009,
+      "awards": 3,
+      "sitelinks": 3
+    },
+    {
+      "wikidataId": "Q44504124",
+      "title": "Orléans",
+      "titleLanguage": "en",
+      "otherTitles": [],
+      "minPlayers": 2,
+      "maxPlayers": 5,
+      "durationMinutes": 90,
+      "year": 2014,
+      "awards": 3,
+      "sitelinks": 3
+    },
+    {
+      "wikidataId": "Q1742108",
+      "title": "Kingdom Builder",
+      "titleLanguage": "en",
+      "otherTitles": [],
+      "minPlayers": 2,
+      "maxPlayers": 4,
+      "durationMinutes": null,
+      "year": 2011,
+      "awards": 2,
+      "sitelinks": 11
+    },
+    {
+      "wikidataId": "Q131417277",
+      "title": "Botanicus",
+      "titleLanguage": "en",
+      "otherTitles": [],
+      "minPlayers": 2,
+      "maxPlayers": 4,
+      "durationMinutes": null,
+      "year": 2024,
+      "awards": 3,
+      "sitelinks": 1
+    },
+    {
+      "wikidataId": "Q1770670",
+      "title": "Tikal",
+      "titleLanguage": "en",
+      "otherTitles": [],
+      "minPlayers": 2,
+      "maxPlayers": 4,
+      "durationMinutes": 90,
+      "year": 1999,
+      "awards": 2,
+      "sitelinks": 10
+    },
+    {
+      "wikidataId": "Q15850035",
+      "title": "Takenoko",
+      "titleLanguage": "en",
+      "otherTitles": [],
+      "minPlayers": 2,
+      "maxPlayers": 4,
+      "durationMinutes": null,
+      "year": 2011,
+      "awards": 2,
+      "sitelinks": 10
+    },
+    {
+      "wikidataId": "Q279606",
+      "title": "Qwirkle",
+      "titleLanguage": "en",
+      "otherTitles": [],
+      "minPlayers": 2,
+      "maxPlayers": 4,
+      "durationMinutes": null,
+      "year": 2006,
+      "awards": 2,
+      "sitelinks": 9
+    },
+    {
+      "wikidataId": "Q29936771",
+      "title": "Kingdomino",
+      "titleLanguage": "en",
+      "otherTitles": [],
+      "minPlayers": 2,
+      "maxPlayers": 4,
+      "durationMinutes": null,
+      "year": 2016,
+      "awards": 2,
+      "sitelinks": 9
+    },
+    {
+      "wikidataId": "Q527125",
+      "title": "Quarto",
+      "titleLanguage": "en",
+      "otherTitles": [
+        {
+          "languageCode": "de",
+          "title": "Quarto!"
+        }
+      ],
+      "minPlayers": 2,
+      "maxPlayers": 2,
+      "durationMinutes": null,
+      "year": 1991,
+      "awards": 1,
+      "sitelinks": 18
+    },
+    {
+      "wikidataId": "Q545129",
+      "title": "Mensch ärgere dich nicht",
+      "titleLanguage": "en",
+      "otherTitles": [
+        {
+          "languageCode": "es",
+          "title": "Mensch-ärgere-dich-nicht"
+        },
+        {
+          "languageCode": "fr",
+          "title": "T'en fais pas"
+        },
+        {
+          "languageCode": "de",
+          "title": "Mensch ärgere Dich nicht"
+        },
+        {
+          "languageCode": "it",
+          "title": "Non t'arrabbiare"
+        }
+      ],
+      "minPlayers": 2,
+      "maxPlayers": 4,
+      "durationMinutes": null,
+      "year": 1907,
+      "awards": 0,
+      "sitelinks": 28
+    },
+    {
+      "wikidataId": "Q18352396",
+      "title": "Istanbul",
+      "titleLanguage": "en",
+      "otherTitles": [],
+      "minPlayers": 2,
+      "maxPlayers": 5,
+      "durationMinutes": null,
+      "year": 2014,
+      "awards": 2,
+      "sitelinks": 8
+    },
+    {
+      "wikidataId": "Q220469",
+      "title": "Race for the Galaxy",
+      "titleLanguage": "en",
+      "otherTitles": [],
+      "minPlayers": 2,
+      "maxPlayers": 4,
+      "durationMinutes": 40,
+      "year": 2007,
+      "awards": 2,
+      "sitelinks": 7
+    },
+    {
+      "wikidataId": "Q353757",
+      "title": "Hoity Toity",
+      "titleLanguage": "en",
+      "otherTitles": [
+        {
+          "languageCode": "de",
+          "title": "Adel verpflichtet"
+        }
+      ],
+      "minPlayers": 3,
+      "maxPlayers": 5,
+      "durationMinutes": null,
+      "year": 1990,
+      "awards": 2,
+      "sitelinks": 7
+    },
+    {
+      "wikidataId": "Q372134",
+      "title": "The Princes of Florence",
+      "titleLanguage": "en",
+      "otherTitles": [
+        {
+          "languageCode": "fr",
+          "title": "Les Princes de Florence"
+        },
+        {
+          "languageCode": "de",
+          "title": "Die Fürsten von Florenz"
+        },
+        {
+          "languageCode": "it",
+          "title": "I Principi di Firenze"
+        }
+      ],
+      "minPlayers": 1,
+      "maxPlayers": 5,
+      "durationMinutes": null,
+      "year": 2000,
+      "awards": 2,
+      "sitelinks": 7
+    },
+    {
+      "wikidataId": "Q17286",
+      "title": "Mastermind",
+      "titleLanguage": "en",
+      "otherTitles": [],
+      "minPlayers": 2,
+      "maxPlayers": 2,
+      "durationMinutes": null,
+      "year": 1970,
+      "awards": 0,
+      "sitelinks": 26
+    },
+    {
+      "wikidataId": "Q925541",
+      "title": "BattleLore",
+      "titleLanguage": "en",
+      "otherTitles": [],
+      "minPlayers": 2,
+      "maxPlayers": 2,
+      "durationMinutes": null,
+      "year": 2006,
+      "awards": 2,
+      "sitelinks": 6
+    },
+    {
+      "wikidataId": "Q1045757",
+      "title": "Cartagena",
+      "titleLanguage": "en",
+      "otherTitles": [],
+      "minPlayers": 2,
+      "maxPlayers": 5,
+      "durationMinutes": null,
+      "year": 2000,
+      "awards": 2,
+      "sitelinks": 6
+    },
+    {
+      "wikidataId": "Q2279754",
+      "title": "Shogun",
+      "titleLanguage": "en",
+      "otherTitles": [],
+      "minPlayers": 3,
+      "maxPlayers": 5,
+      "durationMinutes": null,
+      "year": 2006,
+      "awards": 2,
+      "sitelinks": 6
+    },
+    {
+      "wikidataId": "Q17112854",
+      "title": "Eclipse",
+      "titleLanguage": "en",
+      "otherTitles": [],
+      "minPlayers": 2,
+      "maxPlayers": 6,
+      "durationMinutes": 120,
+      "year": 2011,
+      "awards": 2,
+      "sitelinks": 6
+    },
+    {
+      "wikidataId": "Q107835072",
+      "title": "Lost Ruins of Arnak",
+      "titleLanguage": "en",
+      "otherTitles": [
+        {
+          "languageCode": "es",
+          "title": "Las Ruinas Perdidas de Arnak"
+        },
+        {
+          "languageCode": "fr",
+          "title": "Les Ruines Perdues de Narak"
+        },
+        {
+          "languageCode": "de",
+          "title": "Die verlorenen Ruinen von Arnak"
+        },
+        {
+          "languageCode": "it",
+          "title": "Le Rovine Perdute di Arnak"
+        }
+      ],
+      "minPlayers": 1,
+      "maxPlayers": 4,
+      "durationMinutes": 120,
+      "year": 2020,
+      "awards": 2,
+      "sitelinks": 6
+    },
+    {
+      "wikidataId": "Q111340775",
+      "title": "Cascadia",
+      "titleLanguage": "en",
+      "otherTitles": [],
+      "minPlayers": 1,
+      "maxPlayers": 4,
+      "durationMinutes": null,
+      "year": 2022,
+      "awards": 2,
+      "sitelinks": 6
+    },
+    {
+      "wikidataId": "Q123424021",
+      "title": "Sky Team",
+      "titleLanguage": "en",
+      "otherTitles": [],
+      "minPlayers": 2,
+      "maxPlayers": 2,
+      "durationMinutes": 20,
+      "year": 2023,
+      "awards": 2,
+      "sitelinks": 6
+    },
+    {
+      "wikidataId": "Q135208431",
+      "title": "Bomb Busters",
+      "titleLanguage": "en",
+      "otherTitles": [
+        {
+          "languageCode": "es",
+          "title": "Caza Bombas"
+        }
+      ],
+      "minPlayers": 2,
+      "maxPlayers": 5,
+      "durationMinutes": 30,
+      "year": 2024,
+      "awards": 2,
+      "sitelinks": 6
+    },
+    {
+      "wikidataId": "Q1871",
+      "title": "Diplomacy",
+      "titleLanguage": "en",
+      "otherTitles": [
+        {
+          "languageCode": "fr",
+          "title": "Diplomatie"
+        }
+      ],
+      "minPlayers": 2,
+      "maxPlayers": 7,
+      "durationMinutes": null,
+      "year": 1959,
+      "awards": 0,
+      "sitelinks": 25
+    },
+    {
+      "wikidataId": "Q646550",
+      "title": "Barbarossa",
+      "titleLanguage": "en",
+      "otherTitles": [
+        {
+          "languageCode": "de",
+          "title": "Barbarossa und die Rätselmeister"
+        }
+      ],
+      "minPlayers": 3,
+      "maxPlayers": 6,
+      "durationMinutes": null,
+      "year": 1988,
+      "awards": 2,
+      "sitelinks": 5
+    },
+    {
+      "wikidataId": "Q52991302",
+      "title": "The Quacks of Quedlinburg",
+      "titleLanguage": "en",
+      "otherTitles": [
+        {
+          "languageCode": "fr",
+          "title": "Les Charlatans de Belcastel"
+        },
+        {
+          "languageCode": "de",
+          "title": "Die Quacksalber von Quedlinburg"
+        }
+      ],
+      "minPlayers": 2,
+      "maxPlayers": 4,
+      "durationMinutes": 30,
+      "year": 2018,
+      "awards": 2,
+      "sitelinks": 5
+    },
+    {
+      "wikidataId": "Q106955476",
+      "title": "MicroMacro: Crime City",
+      "titleLanguage": "en",
+      "otherTitles": [
+        {
+          "languageCode": "fr",
+          "title": "MicroMacro : Crime City"
+        }
+      ],
+      "minPlayers": 1,
+      "maxPlayers": 4,
+      "durationMinutes": null,
+      "year": 2020,
+      "awards": 2,
+      "sitelinks": 5
+    },
+    {
+      "wikidataId": "Q17250",
+      "title": "Trivial Pursuit",
+      "titleLanguage": "en",
+      "otherTitles": [],
+      "minPlayers": 2,
+      "maxPlayers": 6,
+      "durationMinutes": null,
+      "year": 1981,
+      "awards": 0,
+      "sitelinks": 24
+    },
+    {
+      "wikidataId": "Q670945",
+      "title": "Scotland Yard",
+      "titleLanguage": "en",
+      "otherTitles": [],
+      "minPlayers": 2,
+      "maxPlayers": 6,
+      "durationMinutes": 45,
+      "year": 1983,
+      "awards": 1,
+      "sitelinks": 14
+    },
+    {
+      "wikidataId": "Q890839",
+      "title": "Bohnanza",
+      "titleLanguage": "en",
+      "otherTitles": [
+        {
+          "languageCode": "it",
+          "title": "Semenza"
+        }
+      ],
+      "minPlayers": 2,
+      "maxPlayers": 7,
+      "durationMinutes": 45,
+      "year": 1997,
+      "awards": 1,
+      "sitelinks": 14
+    },
+    {
+      "wikidataId": "Q111493740",
+      "title": "Ark Nova",
+      "titleLanguage": "en",
+      "otherTitles": [
+        {
+          "languageCode": "de",
+          "title": "Arche Nova"
+        }
+      ],
+      "minPlayers": 1,
+      "maxPlayers": 4,
+      "durationMinutes": null,
+      "year": 2021,
+      "awards": 2,
+      "sitelinks": 4
+    },
+    {
+      "wikidataId": "Q607738",
+      "title": "Set",
+      "titleLanguage": "en",
+      "otherTitles": [
+        {
+          "languageCode": "fr",
+          "title": "Set!"
+        }
+      ],
+      "minPlayers": 1,
+      "maxPlayers": 8,
+      "durationMinutes": null,
+      "year": 1988,
+      "awards": 1,
+      "sitelinks": 13
+    },
+    {
+      "wikidataId": "Q25386738",
+      "title": "Russian Railroads",
+      "titleLanguage": "en",
+      "otherTitles": [],
+      "minPlayers": 2,
+      "maxPlayers": 4,
+      "durationMinutes": 120,
+      "year": 2013,
+      "awards": 2,
+      "sitelinks": 3
+    },
+    {
+      "wikidataId": "Q107236390",
+      "title": "Dragomino",
+      "titleLanguage": "en",
+      "otherTitles": [],
+      "minPlayers": 2,
+      "maxPlayers": 4,
+      "durationMinutes": null,
+      "year": 2020,
+      "awards": 2,
+      "sitelinks": 3
+    },
+    {
+      "wikidataId": "Q116450967",
+      "title": "Challengers!",
+      "titleLanguage": "en",
+      "otherTitles": [
+        {
+          "languageCode": "fr",
+          "title": "Challengers !"
+        }
+      ],
+      "minPlayers": 1,
+      "maxPlayers": 8,
+      "durationMinutes": 45,
+      "year": 2022,
+      "awards": 2,
+      "sitelinks": 3
+    },
+    {
+      "wikidataId": "Q134540987",
+      "title": "Heat: Pedal to the Metal",
+      "titleLanguage": "en",
+      "otherTitles": [],
+      "minPlayers": 1,
+      "maxPlayers": 6,
+      "durationMinutes": 30,
+      "year": 2022,
+      "awards": 2,
+      "sitelinks": 3
+    },
+    {
+      "wikidataId": "Q1571026",
+      "title": "Small World",
+      "titleLanguage": "en",
+      "otherTitles": [],
+      "minPlayers": 2,
+      "maxPlayers": 5,
+      "durationMinutes": null,
+      "year": 2009,
+      "awards": 1,
+      "sitelinks": 12
+    },
+    {
+      "wikidataId": "Q15720587",
+      "title": "The Werewolves of Miller's Hollow",
+      "titleLanguage": "en",
+      "otherTitles": [
+        {
+          "languageCode": "es",
+          "title": "Los Hombres Lobo de Castronegro"
+        },
+        {
+          "languageCode": "fr",
+          "title": "Les Loups-garous de Thiercelieux"
+        },
+        {
+          "languageCode": "de",
+          "title": "Die Werwölfe von Düsterwald"
+        }
+      ],
+      "minPlayers": 8,
+      "maxPlayers": 18,
+      "durationMinutes": null,
+      "year": 2001,
+      "awards": 1,
+      "sitelinks": 12
+    },
+    {
+      "wikidataId": "Q44504585",
+      "title": "Raiders of the North Sea",
+      "titleLanguage": "en",
+      "otherTitles": [
+        {
+          "languageCode": "fr",
+          "title": "Pillards de la mer du Nord"
+        },
+        {
+          "languageCode": "de",
+          "title": "Räuber der Nordsee"
+        }
+      ],
+      "minPlayers": 2,
+      "maxPlayers": 4,
+      "durationMinutes": 70,
+      "year": 2015,
+      "awards": 2,
+      "sitelinks": 2
+    },
+    {
+      "wikidataId": "Q44660337",
+      "title": "Kraken-Alarm",
+      "titleLanguage": "de",
+      "otherTitles": [
+        {
+          "languageCode": "fr",
+          "title": "S.O.S. Octopus"
+        }
+      ],
+      "minPlayers": 2,
+      "maxPlayers": 4,
+      "durationMinutes": 20,
+      "year": 2010,
+      "awards": 2,
+      "sitelinks": 2
+    },
+    {
+      "wikidataId": "Q117462632",
+      "title": "Wandering Towers",
+      "titleLanguage": "en",
+      "otherTitles": [
+        {
+          "languageCode": "de",
+          "title": "Die wandelnden Türme"
+        }
+      ],
+      "minPlayers": 2,
+      "maxPlayers": 6,
+      "durationMinutes": null,
+      "year": 2022,
+      "awards": 2,
+      "sitelinks": 2
+    },
+    {
+      "wikidataId": "Q124823334",
+      "title": "Sea Salt & Paper",
+      "titleLanguage": "en",
+      "otherTitles": [],
+      "minPlayers": 2,
+      "maxPlayers": 4,
+      "durationMinutes": null,
+      "year": 2022,
+      "awards": 2,
+      "sitelinks": 2
+    },
+    {
+      "wikidataId": "Q137917104",
+      "title": "Mooki Island",
+      "titleLanguage": "en",
+      "otherTitles": [
+        {
+          "languageCode": "fr",
+          "title": "L'île des Mookies"
+        },
+        {
+          "languageCode": "de",
+          "title": "Die Insel der Mookies"
+        }
+      ],
+      "minPlayers": 2,
+      "maxPlayers": 2,
+      "durationMinutes": 10,
+      "year": 2025,
+      "awards": 2,
+      "sitelinks": 2
+    },
+    {
+      "wikidataId": "Q36899015",
+      "title": "Dominant Species",
+      "titleLanguage": "en",
+      "otherTitles": [
+        {
+          "languageCode": "it",
+          "title": "Specie Dominanti"
+        }
+      ],
+      "minPlayers": 2,
+      "maxPlayers": 6,
+      "durationMinutes": 240,
+      "year": 2010,
+      "awards": 2,
+      "sitelinks": 1
+    },
+    {
+      "wikidataId": "Q124373154",
+      "title": "Hannibal: Rome vs. Carthage",
+      "titleLanguage": "en",
+      "otherTitles": [
+        {
+          "languageCode": "fr",
+          "title": "Hannibal : Rome contre Carthage"
+        }
+      ],
+      "minPlayers": 2,
+      "maxPlayers": 2,
+      "durationMinutes": null,
+      "year": 1996,
+      "awards": 2,
+      "sitelinks": 1
+    },
+    {
+      "wikidataId": "Q132609439",
+      "title": "Sleeping Gods",
+      "titleLanguage": "en",
+      "otherTitles": [],
+      "minPlayers": 1,
+      "maxPlayers": 4,
+      "durationMinutes": null,
+      "year": 2021,
+      "awards": 2,
+      "sitelinks": 1
+    },
+    {
+      "wikidataId": "Q570292",
+      "title": "Niagara",
+      "titleLanguage": "en",
+      "otherTitles": [],
+      "minPlayers": 3,
+      "maxPlayers": 5,
+      "durationMinutes": null,
+      "year": 2004,
+      "awards": 1,
+      "sitelinks": 10
+    },
+    {
+      "wikidataId": "Q17622491",
+      "title": "Camel Up",
+      "titleLanguage": "en",
+      "otherTitles": [],
+      "minPlayers": 2,
+      "maxPlayers": 8,
+      "durationMinutes": 30,
+      "year": 2014,
+      "awards": 1,
+      "sitelinks": 10
+    },
+    {
+      "wikidataId": "Q46751078",
+      "title": "Ora et Labora",
+      "titleLanguage": "en",
+      "otherTitles": [],
+      "minPlayers": 1,
+      "maxPlayers": 4,
+      "durationMinutes": null,
+      "year": 2011,
+      "awards": 2,
+      "sitelinks": 0
+    },
+    {
+      "wikidataId": "Q114822332",
+      "title": "Architects of the West Kingdom",
+      "titleLanguage": "en",
+      "otherTitles": [
+        {
+          "languageCode": "de",
+          "title": "Architekten des Westfrankenreichs"
+        }
+      ],
+      "minPlayers": 1,
+      "maxPlayers": 5,
+      "durationMinutes": null,
+      "year": 2018,
+      "awards": 2,
+      "sitelinks": 0
+    },
+    {
+      "wikidataId": "Q729935",
+      "title": "Munchkin",
+      "titleLanguage": "en",
+      "otherTitles": [],
+      "minPlayers": 2,
+      "maxPlayers": 6,
+      "durationMinutes": null,
+      "year": 2000,
+      "awards": 0,
+      "sitelinks": 19
+    },
+    {
+      "wikidataId": "Q1328502",
+      "title": "Elfenland",
+      "titleLanguage": "en",
+      "otherTitles": [],
+      "minPlayers": 2,
+      "maxPlayers": 6,
+      "durationMinutes": null,
+      "year": 1998,
+      "awards": 1,
+      "sitelinks": 9
+    },
+    {
+      "wikidataId": "Q1374184",
+      "title": "Tigris and Euphrates",
+      "titleLanguage": "en",
+      "otherTitles": [
+        {
+          "languageCode": "es",
+          "title": "Tigris y Éufrates"
+        },
+        {
+          "languageCode": "fr",
+          "title": "Tigre & Euphrate"
+        },
+        {
+          "languageCode": "de",
+          "title": "Euphrat & Tigris"
+        },
+        {
+          "languageCode": "it",
+          "title": "Tigris & Euphrates"
+        }
+      ],
+      "minPlayers": 2,
+      "maxPlayers": 4,
+      "durationMinutes": null,
+      "year": 1997,
+      "awards": 1,
+      "sitelinks": 9
+    },
+    {
+      "wikidataId": "Q1464861",
+      "title": "Manhattan",
+      "titleLanguage": "en",
+      "otherTitles": [],
+      "minPlayers": 2,
+      "maxPlayers": 4,
+      "durationMinutes": null,
+      "year": 1994,
+      "awards": 1,
+      "sitelinks": 9
+    },
+    {
+      "wikidataId": "Q21190028",
+      "title": "Machi Koro",
+      "titleLanguage": "en",
+      "otherTitles": [
+        {
+          "languageCode": "fr",
+          "title": "Minivilles"
+        }
+      ],
+      "minPlayers": 2,
+      "maxPlayers": 4,
+      "durationMinutes": null,
+      "year": 2012,
+      "awards": 1,
+      "sitelinks": 9
+    },
+    {
+      "wikidataId": "Q17277",
+      "title": "Bang!",
+      "titleLanguage": "en",
+      "otherTitles": [
+        {
+          "languageCode": "fr",
+          "title": "Wanted!"
+        }
+      ],
+      "minPlayers": 4,
+      "maxPlayers": 7,
+      "durationMinutes": 40,
+      "year": 2002,
+      "awards": 0,
+      "sitelinks": 17
+    },
+    {
+      "wikidataId": "Q464484",
+      "title": "Halli Galli",
+      "titleLanguage": "en",
+      "otherTitles": [],
+      "minPlayers": 2,
+      "maxPlayers": 6,
+      "durationMinutes": null,
+      "year": 1990,
+      "awards": 1,
+      "sitelinks": 7
+    },
+    {
+      "wikidataId": "Q481568",
+      "title": "Amun-Re",
+      "titleLanguage": "en",
+      "otherTitles": [],
+      "minPlayers": 3,
+      "maxPlayers": 5,
+      "durationMinutes": null,
+      "year": 2003,
+      "awards": 1,
+      "sitelinks": 7
+    },
+    {
+      "wikidataId": "Q597760",
+      "title": "Arkham Horror",
+      "titleLanguage": "en",
+      "otherTitles": [
+        {
+          "languageCode": "fr",
+          "title": "Horreur à Arkham"
+        }
+      ],
+      "minPlayers": 1,
+      "maxPlayers": 8,
+      "durationMinutes": 60,
+      "year": 1987,
+      "awards": 0,
+      "sitelinks": 17
+    },
+    {
+      "wikidataId": "Q614897",
+      "title": "Taj Mahal",
+      "titleLanguage": "en",
+      "otherTitles": [
+        {
+          "languageCode": "de",
+          "title": "Tadsch Mahal"
+        }
+      ],
+      "minPlayers": 2,
+      "maxPlayers": 5,
+      "durationMinutes": null,
+      "year": 2000,
+      "awards": 1,
+      "sitelinks": 7
+    },
+    {
+      "wikidataId": "Q890566",
+      "title": "Boggle",
+      "titleLanguage": "en",
+      "otherTitles": [
+        {
+          "languageCode": "it",
+          "title": "Il paroliere"
+        }
+      ],
+      "minPlayers": 2,
+      "maxPlayers": 8,
+      "durationMinutes": null,
+      "year": 1972,
+      "awards": 0,
+      "sitelinks": 17
+    },
+    {
+      "wikidataId": "Q1073027",
+      "title": "Tantrix",
+      "titleLanguage": "en",
+      "otherTitles": [],
+      "minPlayers": 1,
+      "maxPlayers": 6,
+      "durationMinutes": 30,
+      "year": 1991,
+      "awards": 0,
+      "sitelinks": 17
+    },
+    {
+      "wikidataId": "Q1111617",
+      "title": "Coloretto",
+      "titleLanguage": "en",
+      "otherTitles": [],
+      "minPlayers": 2,
+      "maxPlayers": 5,
+      "durationMinutes": 30,
+      "year": 2003,
+      "awards": 1,
+      "sitelinks": 7
+    },
+    {
+      "wikidataId": "Q1506762",
+      "title": "The Pillars of the Earth",
+      "titleLanguage": "en",
+      "otherTitles": [
+        {
+          "languageCode": "fr",
+          "title": "Les Piliers de la Terre"
+        },
+        {
+          "languageCode": "de",
+          "title": "Die Säulen der Erde"
+        },
+        {
+          "languageCode": "it",
+          "title": "I pilastri della Terra"
+        }
+      ],
+      "minPlayers": 2,
+      "maxPlayers": 4,
+      "durationMinutes": null,
+      "year": 2006,
+      "awards": 1,
+      "sitelinks": 7
+    },
+    {
+      "wikidataId": "Q1869731",
+      "title": "Looping Louie",
+      "titleLanguage": "en",
+      "otherTitles": [
+        {
+          "languageCode": "it",
+          "title": "Picchiatello"
+        }
+      ],
+      "minPlayers": 2,
+      "maxPlayers": 4,
+      "durationMinutes": null,
+      "year": 1992,
+      "awards": 1,
+      "sitelinks": 7
+    },
+    {
+      "wikidataId": "Q5038791",
+      "title": "Cards Against Humanity",
+      "titleLanguage": "en",
+      "otherTitles": [
+        {
+          "languageCode": "es",
+          "title": "Tarjetas contra la humanidad"
+        }
+      ],
+      "minPlayers": 4,
+      "maxPlayers": 20,
+      "durationMinutes": null,
+      "year": 2009,
+      "awards": 0,
+      "sitelinks": 17
+    },
+    {
+      "wikidataId": "Q18956795",
+      "title": "Exploding Kittens",
+      "titleLanguage": "en",
+      "otherTitles": [],
+      "minPlayers": 2,
+      "maxPlayers": 5,
+      "durationMinutes": null,
+      "year": 2015,
+      "awards": 0,
+      "sitelinks": 17
+    },
+    {
+      "wikidataId": "Q53726996",
+      "title": "The Mind",
+      "titleLanguage": "en",
+      "otherTitles": [],
+      "minPlayers": 2,
+      "maxPlayers": 4,
+      "durationMinutes": 15,
+      "year": 2018,
+      "awards": 1,
+      "sitelinks": 7
+    },
+    {
+      "wikidataId": "Q60773519",
+      "title": "Everdell",
+      "titleLanguage": "en",
+      "otherTitles": [],
+      "minPlayers": 1,
+      "maxPlayers": 4,
+      "durationMinutes": null,
+      "year": 2018,
+      "awards": 1,
+      "sitelinks": 7
+    },
+    {
+      "wikidataId": "Q63973259",
+      "title": "Just One",
+      "titleLanguage": "en",
+      "otherTitles": [],
+      "minPlayers": 3,
+      "maxPlayers": 7,
+      "durationMinutes": 30,
+      "year": 2018,
+      "awards": 1,
+      "sitelinks": 7
+    },
+    {
+      "wikidataId": "Q107083119",
+      "title": "Dune: Imperium",
+      "titleLanguage": "en",
+      "otherTitles": [
+        {
+          "languageCode": "fr",
+          "title": "Dune : Imperium"
+        }
+      ],
+      "minPlayers": 1,
+      "maxPlayers": 4,
+      "durationMinutes": 120,
+      "year": 2020,
+      "awards": 1,
+      "sitelinks": 7
+    },
+    {
+      "wikidataId": "Q143045",
+      "title": "Torres",
+      "titleLanguage": "en",
+      "otherTitles": [],
+      "minPlayers": 2,
+      "maxPlayers": 4,
+      "durationMinutes": null,
+      "year": 1999,
+      "awards": 1,
+      "sitelinks": 6
+    },
+    {
+      "wikidataId": "Q389078",
+      "title": "Dune",
+      "titleLanguage": "en",
+      "otherTitles": [],
+      "minPlayers": 2,
+      "maxPlayers": 6,
+      "durationMinutes": null,
+      "year": 1979,
+      "awards": 1,
+      "sitelinks": 6
+    },
+    {
+      "wikidataId": "Q792553",
+      "title": "Axis & Allies",
+      "titleLanguage": "en",
+      "otherTitles": [
+        {
+          "languageCode": "es",
+          "title": "Axis and Allies"
+        },
+        {
+          "languageCode": "fr",
+          "title": "Axis and Allies"
+        }
+      ],
+      "minPlayers": 2,
+      "maxPlayers": 5,
+      "durationMinutes": null,
+      "year": 1981,
+      "awards": 0,
+      "sitelinks": 16
+    },
+    {
+      "wikidataId": "Q1755280",
+      "title": "A Game of Thrones: The Board Game",
+      "titleLanguage": "en",
+      "otherTitles": [
+        {
+          "languageCode": "es",
+          "title": "Juego de Tronos"
+        },
+        {
+          "languageCode": "fr",
+          "title": "Le Trône de fer"
+        },
+        {
+          "languageCode": "de",
+          "title": "Der Eiserne Thron"
+        },
+        {
+          "languageCode": "it",
+          "title": "Il trono di spade"
+        }
+      ],
+      "minPlayers": 3,
+      "maxPlayers": 6,
+      "durationMinutes": 150,
+      "year": 2003,
+      "awards": 0,
+      "sitelinks": 16
+    },
+    {
+      "wikidataId": "Q4957850",
+      "title": "Brass: Lancashire",
+      "titleLanguage": "en",
+      "otherTitles": [
+        {
+          "languageCode": "es",
+          "title": "Brass Lancashire"
+        },
+        {
+          "languageCode": "fr",
+          "title": "Brass : Lancashire"
+        }
+      ],
+      "minPlayers": 2,
+      "maxPlayers": 4,
+      "durationMinutes": 120,
+      "year": 2007,
+      "awards": 1,
+      "sitelinks": 6
+    },
+    {
+      "wikidataId": "Q30306116",
+      "title": "Great Western Trail",
+      "titleLanguage": "en",
+      "otherTitles": [],
+      "minPlayers": 2,
+      "maxPlayers": 4,
+      "durationMinutes": 120,
+      "year": 2016,
+      "awards": 1,
+      "sitelinks": 6
+    },
+    {
+      "wikidataId": "Q680491",
+      "title": "Fresco",
+      "titleLanguage": "en",
+      "otherTitles": [
+        {
+          "languageCode": "de",
+          "title": "Fresko"
+        }
+      ],
+      "minPlayers": 2,
+      "maxPlayers": 4,
+      "durationMinutes": null,
+      "year": 2010,
+      "awards": 1,
+      "sitelinks": 5
+    },
+    {
+      "wikidataId": "Q972726",
+      "title": "Mississippi Queen",
+      "titleLanguage": "en",
+      "otherTitles": [],
+      "minPlayers": 2,
+      "maxPlayers": 5,
+      "durationMinutes": null,
+      "year": 1997,
+      "awards": 1,
+      "sitelinks": 5
+    },
+    {
+      "wikidataId": "Q1194258",
+      "title": "Lord of the Rings",
+      "titleLanguage": "en",
+      "otherTitles": [
+        {
+          "languageCode": "fr",
+          "title": "Le Seigneur des anneaux"
+        },
+        {
+          "languageCode": "de",
+          "title": "Der Herr der Ringe"
+        }
+      ],
+      "minPlayers": 2,
+      "maxPlayers": 5,
+      "durationMinutes": 60,
+      "year": 2000,
+      "awards": 1,
+      "sitelinks": 5
+    },
+    {
+      "wikidataId": "Q1219713",
+      "title": "Forbidden Island",
+      "titleLanguage": "en",
+      "otherTitles": [
+        {
+          "languageCode": "fr",
+          "title": "L'Île Interdite"
+        },
+        {
+          "languageCode": "de",
+          "title": "Die verbotene Insel"
+        }
+      ],
+      "minPlayers": 2,
+      "maxPlayers": 4,
+      "durationMinutes": 30,
+      "year": 2010,
+      "awards": 1,
+      "sitelinks": 5
+    },
+    {
+      "wikidataId": "Q1678774",
+      "title": "Jaipur",
+      "titleLanguage": "en",
+      "otherTitles": [],
+      "minPlayers": 2,
+      "maxPlayers": 2,
+      "durationMinutes": 30,
+      "year": 2009,
+      "awards": 1,
+      "sitelinks": 5
+    },
+    {
+      "wikidataId": "Q17176549",
+      "title": "Concept",
+      "titleLanguage": "en",
+      "otherTitles": [],
+      "minPlayers": 4,
+      "maxPlayers": 12,
+      "durationMinutes": 40,
+      "year": 2013,
+      "awards": 1,
+      "sitelinks": 5
+    },
+    {
+      "wikidataId": "Q28451575",
+      "title": "Mysterium",
+      "titleLanguage": "en",
+      "otherTitles": [],
+      "minPlayers": 2,
+      "maxPlayers": 7,
+      "durationMinutes": null,
+      "year": 2015,
+      "awards": 1,
+      "sitelinks": 5
+    },
+    {
+      "wikidataId": "Q28452893",
+      "title": "Blood Rage",
+      "titleLanguage": "en",
+      "otherTitles": [],
+      "minPlayers": 2,
+      "maxPlayers": 4,
+      "durationMinutes": null,
+      "year": 2015,
+      "awards": 1,
+      "sitelinks": 5
+    },
+    {
+      "wikidataId": "Q36899226",
+      "title": "Five Tribes: The Djinns of Naqala",
+      "titleLanguage": "en",
+      "otherTitles": [
+        {
+          "languageCode": "es",
+          "title": "Five Tribes: Los genios de Naqala"
+        },
+        {
+          "languageCode": "fr",
+          "title": "Five Tribes: Les Djinns de Naqala"
+        },
+        {
+          "languageCode": "de",
+          "title": "Five Tribes: Die Dschinn von Naqala"
+        },
+        {
+          "languageCode": "it",
+          "title": "Five Tribes: I Geni di Naqala"
+        }
+      ],
+      "minPlayers": 2,
+      "maxPlayers": 4,
+      "durationMinutes": 80,
+      "year": 2014,
+      "awards": 1,
+      "sitelinks": 5
+    },
+    {
+      "wikidataId": "Q118186288",
+      "title": "Dorfromantik: The Board Game",
+      "titleLanguage": "en",
+      "otherTitles": [
+        {
+          "languageCode": "es",
+          "title": "Dorfromantik: El Juego de Mesa"
+        },
+        {
+          "languageCode": "fr",
+          "title": "Dorfromantik: Le Jeu de Société"
+        },
+        {
+          "languageCode": "de",
+          "title": "Dorfromantik: Das Brettspiel"
+        },
+        {
+          "languageCode": "it",
+          "title": "Dorfromantik: Il Gioco da Tavolo"
+        }
+      ],
+      "minPlayers": 1,
+      "maxPlayers": 6,
+      "durationMinutes": 60,
+      "year": 2022,
+      "awards": 1,
+      "sitelinks": 5
+    },
+    {
+      "wikidataId": "Q3707076",
+      "title": "Die Macher",
+      "titleLanguage": "en",
+      "otherTitles": [],
+      "minPlayers": 3,
+      "maxPlayers": 5,
+      "durationMinutes": null,
+      "year": 1986,
+      "awards": 1,
+      "sitelinks": 4
+    },
+    {
+      "wikidataId": "Q16213033",
+      "title": "Mansions of Madness",
+      "titleLanguage": "en",
+      "otherTitles": [
+        {
+          "languageCode": "es",
+          "title": "Las mansiones de la locura"
+        },
+        {
+          "languageCode": "fr",
+          "title": "Les Demeures de l'Épouvante"
+        }
+      ],
+      "minPlayers": 2,
+      "maxPlayers": 5,
+      "durationMinutes": 150,
+      "year": 2011,
+      "awards": 1,
+      "sitelinks": 4
+    },
+    {
+      "wikidataId": "Q25392321",
+      "title": "Concordia",
+      "titleLanguage": "en",
+      "otherTitles": [],
+      "minPlayers": 2,
+      "maxPlayers": 5,
+      "durationMinutes": null,
+      "year": 2013,
+      "awards": 1,
+      "sitelinks": 4
+    },
+    {
+      "wikidataId": "Q86085103",
+      "title": "Decrypto",
+      "titleLanguage": "en",
+      "otherTitles": [],
+      "minPlayers": 3,
+      "maxPlayers": 8,
+      "durationMinutes": null,
+      "year": 2018,
+      "awards": 1,
+      "sitelinks": 4
+    },
+    {
+      "wikidataId": "Q106513387",
+      "title": "Daybreak",
+      "titleLanguage": "en",
+      "otherTitles": [
+        {
+          "languageCode": "de",
+          "title": "E-Mission"
+        }
+      ],
+      "minPlayers": 1,
+      "maxPlayers": 4,
+      "durationMinutes": null,
+      "year": 2023,
+      "awards": 1,
+      "sitelinks": 4
+    },
+    {
+      "wikidataId": "Q116451039",
+      "title": "Akropolis",
+      "titleLanguage": "en",
+      "otherTitles": [],
+      "minPlayers": 1,
+      "maxPlayers": 4,
+      "durationMinutes": 30,
+      "year": 2022,
+      "awards": 1,
+      "sitelinks": 4
+    },
+    {
+      "wikidataId": "Q131940371",
+      "title": "Harmonies",
+      "titleLanguage": "en",
+      "otherTitles": [],
+      "minPlayers": 1,
+      "maxPlayers": 4,
+      "durationMinutes": 45,
+      "year": 2024,
+      "awards": 1,
+      "sitelinks": 4
+    },
+    {
+      "wikidataId": "Q135208703",
+      "title": "Endeavor: Deep Sea",
+      "titleLanguage": "en",
+      "otherTitles": [
+        {
+          "languageCode": "fr",
+          "title": "Endeavor: Eaux profondes"
+        },
+        {
+          "languageCode": "de",
+          "title": "Endeavor: Die Tiefsee"
+        },
+        {
+          "languageCode": "it",
+          "title": "Endeavor: Abissi Marini"
+        }
+      ],
+      "minPlayers": 1,
+      "maxPlayers": 4,
+      "durationMinutes": 120,
+      "year": 2024,
+      "awards": 1,
+      "sitelinks": 4
+    },
+    {
+      "wikidataId": "Q1156448",
+      "title": "Mato Mato",
+      "titleLanguage": "en",
+      "otherTitles": [
+        {
+          "languageCode": "fr",
+          "title": "Le Rallye des Vers de Terre"
+        },
+        {
+          "languageCode": "de",
+          "title": "Da ist der Wurm drin"
+        },
+        {
+          "languageCode": "it",
+          "title": "La corsa dei lombrichi"
+        }
+      ],
+      "minPlayers": 2,
+      "maxPlayers": 4,
+      "durationMinutes": null,
+      "year": 2011,
+      "awards": 1,
+      "sitelinks": 3
+    },
+    {
+      "wikidataId": "Q1518661",
+      "title": "Stone Age",
+      "titleLanguage": "en",
+      "otherTitles": [
+        {
+          "languageCode": "fr",
+          "title": "L'Âge de Pierre"
+        }
+      ],
+      "minPlayers": 2,
+      "maxPlayers": 4,
+      "durationMinutes": 60,
+      "year": 2008,
+      "awards": 0,
+      "sitelinks": 13
+    },
+    {
+      "wikidataId": "Q1679858",
+      "title": "Jambo",
+      "titleLanguage": "en",
+      "otherTitles": [],
+      "minPlayers": 2,
+      "maxPlayers": 2,
+      "durationMinutes": null,
+      "year": 2004,
+      "awards": 1,
+      "sitelinks": 3
+    },
+    {
+      "wikidataId": "Q1721235",
+      "title": "Kahuna",
+      "titleLanguage": "en",
+      "otherTitles": [],
+      "minPlayers": 2,
+      "maxPlayers": 2,
+      "durationMinutes": null,
+      "year": 1998,
+      "awards": 1,
+      "sitelinks": 3
+    },
+    {
+      "wikidataId": "Q2453755",
+      "title": "Tribulation",
+      "titleLanguage": "en",
+      "otherTitles": [],
+      "minPlayers": 1,
+      "maxPlayers": 6,
+      "durationMinutes": null,
+      "year": 1974,
+      "awards": 1,
+      "sitelinks": 3
+    },
+    {
+      "wikidataId": "Q2610927",
+      "title": "Guess Who?",
+      "titleLanguage": "en",
+      "otherTitles": [
+        {
+          "languageCode": "es",
+          "title": "¿Quién es quién?"
+        },
+        {
+          "languageCode": "fr",
+          "title": "Qui est-ce ?"
+        },
+        {
+          "languageCode": "de",
+          "title": "Wer ist es?"
+        },
+        {
+          "languageCode": "it",
+          "title": "Indovina Chi?"
+        }
+      ],
+      "minPlayers": 2,
+      "maxPlayers": 2,
+      "durationMinutes": null,
+      "year": 1979,
+      "awards": 0,
+      "sitelinks": 13
+    },
+    {
+      "wikidataId": "Q26849185",
+      "title": "Qwixx",
+      "titleLanguage": "en",
+      "otherTitles": [],
+      "minPlayers": 2,
+      "maxPlayers": 5,
+      "durationMinutes": null,
+      "year": 2012,
+      "awards": 1,
+      "sitelinks": 3
+    },
+    {
+      "wikidataId": "Q28473436",
+      "title": "Broom Service",
+      "titleLanguage": "en",
+      "otherTitles": [],
+      "minPlayers": 2,
+      "maxPlayers": 5,
+      "durationMinutes": null,
+      "year": 2015,
+      "awards": 1,
+      "sitelinks": 3
+    },
+    {
+      "wikidataId": "Q28473469",
+      "title": "Isle of Skye: From Chieftain to King",
+      "titleLanguage": "en",
+      "otherTitles": [
+        {
+          "languageCode": "es",
+          "title": "Isla de Skye: De Líder a Rey"
+        },
+        {
+          "languageCode": "fr",
+          "title": "Isle of Skye: De Laird à Roi"
+        },
+        {
+          "languageCode": "de",
+          "title": "Isle of Skye: Vom Häuptling zum König"
+        },
+        {
+          "languageCode": "it",
+          "title": "Isle of Skye: Agli Albori del Regno"
+        }
+      ],
+      "minPlayers": 2,
+      "maxPlayers": 5,
+      "durationMinutes": 30,
+      "year": 2015,
+      "awards": 1,
+      "sitelinks": 3
+    },
+    {
+      "wikidataId": "Q40205868",
+      "title": "Century: Spice Road",
+      "titleLanguage": "en",
+      "otherTitles": [
+        {
+          "languageCode": "de",
+          "title": "Century: Die Gewürzstraße"
+        }
+      ],
+      "minPlayers": 2,
+      "maxPlayers": 5,
+      "durationMinutes": null,
+      "year": 2017,
+      "awards": 1,
+      "sitelinks": 3
+    },
+    {
+      "wikidataId": "Q45555205",
+      "title": "Cuba",
+      "titleLanguage": "en",
+      "otherTitles": [],
+      "minPlayers": 2,
+      "maxPlayers": 5,
+      "durationMinutes": null,
+      "year": 2007,
+      "awards": 1,
+      "sitelinks": 3
+    },
+    {
+      "wikidataId": "Q55738016",
+      "title": "For Sale",
+      "titleLanguage": "en",
+      "otherTitles": [],
+      "minPlayers": 3,
+      "maxPlayers": 6,
+      "durationMinutes": 20,
+      "year": 1997,
+      "awards": 1,
+      "sitelinks": 3
+    },
+    {
+      "wikidataId": "Q56457416",
+      "title": "Onitama",
+      "titleLanguage": "en",
+      "otherTitles": [],
+      "minPlayers": 2,
+      "maxPlayers": 2,
+      "durationMinutes": null,
+      "year": 2014,
+      "awards": 1,
+      "sitelinks": 3
+    },
+    {
+      "wikidataId": "Q107838115",
+      "title": "Paleo",
+      "titleLanguage": "en",
+      "otherTitles": [],
+      "minPlayers": 1,
+      "maxPlayers": 4,
+      "durationMinutes": null,
+      "year": 2020,
+      "awards": 1,
+      "sitelinks": 3
+    },
+    {
+      "wikidataId": "Q113260368",
+      "title": "Cubirds",
+      "titleLanguage": "en",
+      "otherTitles": [],
+      "minPlayers": 2,
+      "maxPlayers": 5,
+      "durationMinutes": null,
+      "year": 2018,
+      "awards": 1,
+      "sitelinks": 3
+    },
+    {
+      "wikidataId": "Q124386233",
+      "title": "Faraway",
+      "titleLanguage": "en",
+      "otherTitles": [],
+      "minPlayers": 2,
+      "maxPlayers": 6,
+      "durationMinutes": null,
+      "year": 2023,
+      "awards": 1,
+      "sitelinks": 3
+    },
+    {
+      "wikidataId": "Q124386362",
+      "title": "Trio",
+      "titleLanguage": "en",
+      "otherTitles": [],
+      "minPlayers": 3,
+      "maxPlayers": 6,
+      "durationMinutes": null,
+      "year": 2021,
+      "awards": 1,
+      "sitelinks": 3
+    },
+    {
+      "wikidataId": "Q131940685",
+      "title": "Odin",
+      "titleLanguage": "en",
+      "otherTitles": [],
+      "minPlayers": 2,
+      "maxPlayers": 6,
+      "durationMinutes": 15,
+      "year": 2024,
+      "awards": 1,
+      "sitelinks": 3
+    },
+    {
+      "wikidataId": "Q134710881",
+      "title": "Flip 7",
+      "titleLanguage": "en",
+      "otherTitles": [],
+      "minPlayers": 3,
+      "maxPlayers": 18,
+      "durationMinutes": 30,
+      "year": 2024,
+      "awards": 1,
+      "sitelinks": 3
+    },
+    {
+      "wikidataId": "Q17263",
+      "title": "Mille Bornes",
+      "titleLanguage": "en",
+      "otherTitles": [
+        {
+          "languageCode": "de",
+          "title": "1000 Kilometer"
+        },
+        {
+          "languageCode": "it",
+          "title": "1000 bornes"
+        }
+      ],
+      "minPlayers": 2,
+      "maxPlayers": 6,
+      "durationMinutes": null,
+      "year": 1954,
+      "awards": 0,
+      "sitelinks": 12
+    },
+    {
+      "wikidataId": "Q1531943",
+      "title": "Lines of Action",
+      "titleLanguage": "en",
+      "otherTitles": [],
+      "minPlayers": 2,
+      "maxPlayers": 2,
+      "durationMinutes": null,
+      "year": 1969,
+      "awards": 0,
+      "sitelinks": 12
+    },
+    {
+      "wikidataId": "Q1615469",
+      "title": "Thebes",
+      "titleLanguage": "en",
+      "otherTitles": [
+        {
+          "languageCode": "de",
+          "title": "Jenseits von Theben"
+        }
+      ],
+      "minPlayers": 2,
+      "maxPlayers": 4,
+      "durationMinutes": null,
+      "year": 2007,
+      "awards": 1,
+      "sitelinks": 2
+    },
+    {
+      "wikidataId": "Q1714791",
+      "title": "Blink",
+      "titleLanguage": "en",
+      "otherTitles": [],
+      "minPlayers": 2,
+      "maxPlayers": 3,
+      "durationMinutes": null,
+      "year": 1995,
+      "awards": 1,
+      "sitelinks": 2
+    },
+    {
+      "wikidataId": "Q1914113",
+      "title": "Life Style",
+      "titleLanguage": "en",
+      "otherTitles": [
+        {
+          "languageCode": "de",
+          "title": "Lifestyle"
+        }
+      ],
+      "minPlayers": 3,
+      "maxPlayers": 6,
+      "durationMinutes": null,
+      "year": 1989,
+      "awards": 1,
+      "sitelinks": 2
+    },
+    {
+      "wikidataId": "Q2140139",
+      "title": "Talisman",
+      "titleLanguage": "en",
+      "otherTitles": [],
+      "minPlayers": 2,
+      "maxPlayers": 6,
+      "durationMinutes": 60,
+      "year": 1983,
+      "awards": 0,
+      "sitelinks": 12
+    },
+    {
+      "wikidataId": "Q2456008",
+      "title": "Troyes",
+      "titleLanguage": "en",
+      "otherTitles": [],
+      "minPlayers": 2,
+      "maxPlayers": 4,
+      "durationMinutes": 90,
+      "year": 2010,
+      "awards": 1,
+      "sitelinks": 2
+    },
+    {
+      "wikidataId": "Q2943406",
+      "title": "Caylus Magna Carta",
+      "titleLanguage": "en",
+      "otherTitles": [],
+      "minPlayers": 2,
+      "maxPlayers": 4,
+      "durationMinutes": null,
+      "year": 2007,
+      "awards": 1,
+      "sitelinks": 2
+    },
+    {
+      "wikidataId": "Q18456969",
+      "title": "Love Letter",
+      "titleLanguage": "en",
+      "otherTitles": [],
+      "minPlayers": 2,
+      "maxPlayers": 4,
+      "durationMinutes": null,
+      "year": 2012,
+      "awards": 0,
+      "sitelinks": 12
+    },
+    {
+      "wikidataId": "Q27975526",
+      "title": "Spooky Stairs",
+      "titleLanguage": "en",
+      "otherTitles": [
+        {
+          "languageCode": "fr",
+          "title": "L'Escalier Hanté"
+        },
+        {
+          "languageCode": "de",
+          "title": "Geistertreppe"
+        }
+      ],
+      "minPlayers": 2,
+      "maxPlayers": 4,
+      "durationMinutes": null,
+      "year": 2003,
+      "awards": 1,
+      "sitelinks": 2
+    },
+    {
+      "wikidataId": "Q29169338",
+      "title": "Speed Cups",
+      "titleLanguage": "en",
+      "otherTitles": [],
+      "minPlayers": 2,
+      "maxPlayers": 4,
+      "durationMinutes": null,
+      "year": 2013,
+      "awards": 1,
+      "sitelinks": 2
+    },
+    {
+      "wikidataId": "Q38218776",
+      "title": "Keyflower",
+      "titleLanguage": "en",
+      "otherTitles": [],
+      "minPlayers": 2,
+      "maxPlayers": 6,
+      "durationMinutes": null,
+      "year": 2012,
+      "awards": 1,
+      "sitelinks": 2
+    },
+    {
+      "wikidataId": "Q38218820",
+      "title": "Tzolk'in: The Mayan Calendar",
+      "titleLanguage": "en",
+      "otherTitles": [
+        {
+          "languageCode": "de",
+          "title": "Tzolk'in: Der Maya-Kalender"
+        }
+      ],
+      "minPlayers": 1,
+      "maxPlayers": 4,
+      "durationMinutes": null,
+      "year": 2013,
+      "awards": 1,
+      "sitelinks": 2
+    },
+    {
+      "wikidataId": "Q43303629",
+      "title": "Gaia Project",
+      "titleLanguage": "en",
+      "otherTitles": [
+        {
+          "languageCode": "fr",
+          "title": "Projet Gaia"
+        }
+      ],
+      "minPlayers": 1,
+      "maxPlayers": 4,
+      "durationMinutes": null,
+      "year": 2017,
+      "awards": 1,
+      "sitelinks": 2
+    },
+    {
+      "wikidataId": "Q45586353",
+      "title": "Dream Home",
+      "titleLanguage": "en",
+      "otherTitles": [
+        {
+          "languageCode": "de",
+          "title": "Mein Traumhaus"
+        }
+      ],
+      "minPlayers": 2,
+      "maxPlayers": 4,
+      "durationMinutes": null,
+      "year": 2016,
+      "awards": 1,
+      "sitelinks": 2
+    },
+    {
+      "wikidataId": "Q47091386",
+      "title": "Memoarrr!",
+      "titleLanguage": "en",
+      "otherTitles": [],
+      "minPlayers": 2,
+      "maxPlayers": 4,
+      "durationMinutes": 20,
+      "year": 2017,
+      "awards": 1,
+      "sitelinks": 2
+    },
+    {
+      "wikidataId": "Q56493292",
+      "title": "Photosynthesis",
+      "titleLanguage": "en",
+      "otherTitles": [
+        {
+          "languageCode": "de",
+          "title": "Photosynthese"
+        }
+      ],
+      "minPlayers": 2,
+      "maxPlayers": 4,
+      "durationMinutes": 60,
+      "year": 2017,
+      "awards": 1,
+      "sitelinks": 2
+    },
+    {
+      "wikidataId": "Q65788099",
+      "title": "Valley of the Vikings",
+      "titleLanguage": "en",
+      "otherTitles": [
+        {
+          "languageCode": "fr",
+          "title": "La vallée des vikings"
+        },
+        {
+          "languageCode": "de",
+          "title": "Tal der Wikinger"
+        }
+      ],
+      "minPlayers": 2,
+      "maxPlayers": 4,
+      "durationMinutes": 30,
+      "year": 2019,
+      "awards": 1,
+      "sitelinks": 2
+    },
+    {
+      "wikidataId": "Q97384632",
+      "title": "Hedgehog Roll",
+      "titleLanguage": "en",
+      "otherTitles": [
+        {
+          "languageCode": "fr",
+          "title": "Roulapik"
+        },
+        {
+          "languageCode": "de",
+          "title": "Speedy Roll"
+        }
+      ],
+      "minPlayers": 1,
+      "maxPlayers": 4,
+      "durationMinutes": null,
+      "year": 2019,
+      "awards": 1,
+      "sitelinks": 2
+    },
+    {
+      "wikidataId": "Q100804025",
+      "title": "Andor: The Family Fantasy Game",
+      "titleLanguage": "en",
+      "otherTitles": [
+        {
+          "languageCode": "fr",
+          "title": "Andor Junior"
+        },
+        {
+          "languageCode": "de",
+          "title": "Andor Junior"
+        }
+      ],
+      "minPlayers": 2,
+      "maxPlayers": 4,
+      "durationMinutes": null,
+      "year": 2020,
+      "awards": 1,
+      "sitelinks": 2
+    },
+    {
+      "wikidataId": "Q105589494",
+      "title": "Point Salad",
+      "titleLanguage": "en",
+      "otherTitles": [
+        {
+          "languageCode": "de",
+          "title": "Punktesalat"
+        }
+      ],
+      "minPlayers": 2,
+      "maxPlayers": 6,
+      "durationMinutes": null,
+      "year": 2019,
+      "awards": 1,
+      "sitelinks": 2
+    },
+    {
+      "wikidataId": "Q106946550",
+      "title": "Calico",
+      "titleLanguage": "en",
+      "otherTitles": [],
+      "minPlayers": 1,
+      "maxPlayers": 4,
+      "durationMinutes": null,
+      "year": 2020,
+      "awards": 1,
+      "sitelinks": 2
+    },
+    {
+      "wikidataId": "Q109040618",
+      "title": "It's a Wonderful World",
+      "titleLanguage": "en",
+      "otherTitles": [
+        {
+          "languageCode": "de",
+          "title": "Eine wundervolle Welt"
+        }
+      ],
+      "minPlayers": 1,
+      "maxPlayers": 5,
+      "durationMinutes": null,
+      "year": 2019,
+      "awards": 1,
+      "sitelinks": 2
+    },
+    {
+      "wikidataId": "Q112659447",
+      "title": "Magic Mountain",
+      "titleLanguage": "en",
+      "otherTitles": [
+        {
+          "languageCode": "fr",
+          "title": "La Colline aux Feux Follets"
+        },
+        {
+          "languageCode": "de",
+          "title": "Zauberberg"
+        }
+      ],
+      "minPlayers": 1,
+      "maxPlayers": 6,
+      "durationMinutes": null,
+      "year": 2021,
+      "awards": 1,
+      "sitelinks": 2
+    },
+    {
+      "wikidataId": "Q113130566",
+      "title": "7 Wonders: Architects",
+      "titleLanguage": "en",
+      "otherTitles": [],
+      "minPlayers": 2,
+      "maxPlayers": 7,
+      "durationMinutes": 25,
+      "year": 2021,
+      "awards": 1,
+      "sitelinks": 2
+    },
+    {
+      "wikidataId": "Q113130960",
+      "title": "Oriflamme",
+      "titleLanguage": "en",
+      "otherTitles": [],
+      "minPlayers": 3,
+      "maxPlayers": 5,
+      "durationMinutes": null,
+      "year": 2019,
+      "awards": 1,
+      "sitelinks": 2
+    },
+    {
+      "wikidataId": "Q133289559",
+      "title": "SETI: Search for Extraterrestrial Intelligence",
+      "titleLanguage": "en",
+      "otherTitles": [
+        {
+          "languageCode": "es",
+          "title": "SETI: En busca de vida extraterrestre"
+        },
+        {
+          "languageCode": "fr",
+          "title": "SETI: Recherche d'intelligence extraterrestre"
+        },
+        {
+          "languageCode": "de",
+          "title": "SETI: Auf der Suche nach außerirdischem Leben"
+        },
+        {
+          "languageCode": "it",
+          "title": "SETI: Ricerca di Intelligenza Extraterrestre"
+        }
+      ],
+      "minPlayers": 1,
+      "maxPlayers": 4,
+      "durationMinutes": null,
+      "year": 2024,
+      "awards": 1,
+      "sitelinks": 2
+    },
+    {
+      "wikidataId": "Q134862198",
+      "title": "Topp die Torte",
+      "titleLanguage": "de",
+      "otherTitles": [],
+      "minPlayers": 2,
+      "maxPlayers": 4,
+      "durationMinutes": null,
+      "year": 2024,
+      "awards": 1,
+      "sitelinks": 2
+    },
+    {
+      "wikidataId": "Q137917134",
+      "title": "Rebirth",
+      "titleLanguage": "en",
+      "otherTitles": [
+        {
+          "languageCode": "de",
+          "title": "Rebirth: Aufbruch in eine neue Zeit"
+        }
+      ],
+      "minPlayers": 2,
+      "maxPlayers": 4,
+      "durationMinutes": null,
+      "year": 2024,
+      "awards": 1,
+      "sitelinks": 2
+    },
+    {
+      "wikidataId": "Q137917139",
+      "title": "Toy Battle",
+      "titleLanguage": "en",
+      "otherTitles": [],
+      "minPlayers": 2,
+      "maxPlayers": 2,
+      "durationMinutes": null,
+      "year": 2025,
+      "awards": 1,
+      "sitelinks": 2
+    },
+    {
+      "wikidataId": "Q140194127",
+      "title": "JinxO",
+      "titleLanguage": "en",
+      "otherTitles": [
+        {
+          "languageCode": "de",
+          "title": "Dito!"
+        }
+      ],
+      "minPlayers": 3,
+      "maxPlayers": 7,
+      "durationMinutes": null,
+      "year": 2024,
+      "awards": 1,
+      "sitelinks": 2
+    },
+    {
+      "wikidataId": "Q587364",
+      "title": "Through the Ages: A Story of Civilization",
+      "titleLanguage": "en",
+      "otherTitles": [
+        {
+          "languageCode": "es",
+          "title": "Through the Ages: Historia de las Civilizaciones"
+        },
+        {
+          "languageCode": "fr",
+          "title": "Through the Ages: L'Histoire vous appartient"
+        },
+        {
+          "languageCode": "de",
+          "title": "Im Wandel der Zeiten: Eine Geschichte der Zivilisation"
+        },
+        {
+          "languageCode": "it",
+          "title": "Through the Ages: La Storia delle Civiltà"
+        }
+      ],
+      "minPlayers": 2,
+      "maxPlayers": 4,
+      "durationMinutes": 120,
+      "year": 2006,
+      "awards": 0,
+      "sitelinks": 11
+    },
+    {
+      "wikidataId": "Q1399188",
+      "title": "Hive",
+      "titleLanguage": "en",
+      "otherTitles": [],
+      "minPlayers": 2,
+      "maxPlayers": 2,
+      "durationMinutes": null,
+      "year": 2001,
+      "awards": 0,
+      "sitelinks": 11
+    },
+    {
+      "wikidataId": "Q2268423",
+      "title": "GIPF",
+      "titleLanguage": "en",
+      "otherTitles": [],
+      "minPlayers": 2,
+      "maxPlayers": 2,
+      "durationMinutes": 45,
+      "year": 1996,
+      "awards": 0,
+      "sitelinks": 11
+    },
+    {
+      "wikidataId": "Q2626490",
+      "title": "YINSH",
+      "titleLanguage": "en",
+      "otherTitles": [
+        {
+          "languageCode": "fr",
+          "title": "Yinsh"
+        }
+      ],
+      "minPlayers": 2,
+      "maxPlayers": 2,
+      "durationMinutes": null,
+      "year": 2003,
+      "awards": 0,
+      "sitelinks": 11
+    },
+    {
+      "wikidataId": "Q3033270",
+      "title": "Dobble",
+      "titleLanguage": "en",
+      "otherTitles": [],
+      "minPlayers": 2,
+      "maxPlayers": 8,
+      "durationMinutes": null,
+      "year": 2009,
+      "awards": 0,
+      "sitelinks": 11
+    },
+    {
+      "wikidataId": "Q3209686",
+      "title": "Wooly Wars",
+      "titleLanguage": "en",
+      "otherTitles": [
+        {
+          "languageCode": "fr",
+          "title": "La Guerre des moutons"
+        },
+        {
+          "languageCode": "de",
+          "title": "Meine Schafe Deine Schafe"
+        }
+      ],
+      "minPlayers": 2,
+      "maxPlayers": 4,
+      "durationMinutes": 30,
+      "year": 2002,
+      "awards": 1,
+      "sitelinks": 1
+    },
+    {
+      "wikidataId": "Q3232178",
+      "title": "River Dragons",
+      "titleLanguage": "en",
+      "otherTitles": [
+        {
+          "languageCode": "fr",
+          "title": "Les Dragons du Mékong"
+        },
+        {
+          "languageCode": "de",
+          "title": "Drachendelta"
+        }
+      ],
+      "minPlayers": 2,
+      "maxPlayers": 6,
+      "durationMinutes": null,
+      "year": 2000,
+      "awards": 1,
+      "sitelinks": 1
+    },
+    {
+      "wikidataId": "Q3494408",
+      "title": "Squad Seven",
+      "titleLanguage": "en",
+      "otherTitles": [
+        {
+          "languageCode": "fr",
+          "title": "Squad seven"
+        }
+      ],
+      "minPlayers": 2,
+      "maxPlayers": 4,
+      "durationMinutes": 20,
+      "year": 2002,
+      "awards": 1,
+      "sitelinks": 1
+    },
+    {
+      "wikidataId": "Q3694576",
+      "title": "Merchants & Marauders",
+      "titleLanguage": "en",
+      "otherTitles": [
+        {
+          "languageCode": "fr",
+          "title": "Fortunes de Mer"
+        },
+        {
+          "languageCode": "it",
+          "title": "Corsari dei Caraibi"
+        }
+      ],
+      "minPlayers": 2,
+      "maxPlayers": 4,
+      "durationMinutes": null,
+      "year": 2010,
+      "awards": 1,
+      "sitelinks": 1
+    },
+    {
+      "wikidataId": "Q5207321",
+      "title": "Da Vinci's Challenge",
+      "titleLanguage": "en",
+      "otherTitles": [],
+      "minPlayers": 2,
+      "maxPlayers": 4,
+      "durationMinutes": null,
+      "year": 2004,
+      "awards": 1,
+      "sitelinks": 1
+    },
+    {
+      "wikidataId": "Q28059705",
+      "title": "Alchemists",
+      "titleLanguage": "en",
+      "otherTitles": [
+        {
+          "languageCode": "fr",
+          "title": "Alchimistes"
+        },
+        {
+          "languageCode": "de",
+          "title": "Die Alchemisten"
+        }
+      ],
+      "minPlayers": 2,
+      "maxPlayers": 4,
+      "durationMinutes": null,
+      "year": 2015,
+      "awards": 1,
+      "sitelinks": 1
+    },
+    {
+      "wikidataId": "Q28530230",
+      "title": "Union Pacific",
+      "titleLanguage": "en",
+      "otherTitles": [],
+      "minPlayers": 2,
+      "maxPlayers": 6,
+      "durationMinutes": null,
+      "year": 1999,
+      "awards": 1,
+      "sitelinks": 1
+    },
+    {
+      "wikidataId": "Q29110344",
+      "title": "Tempel des Schreckens",
+      "titleLanguage": "de",
+      "otherTitles": [],
+      "minPlayers": 3,
+      "maxPlayers": 10,
+      "durationMinutes": null,
+      "year": 2016,
+      "awards": 1,
+      "sitelinks": 1
+    },
+    {
+      "wikidataId": "Q29933056",
+      "title": "Fabled Fruit",
+      "titleLanguage": "en",
+      "otherTitles": [
+        {
+          "languageCode": "es",
+          "title": "Frutas Fabulosas"
+        },
+        {
+          "languageCode": "fr",
+          "title": "Fabulosa Fructus"
+        },
+        {
+          "languageCode": "de",
+          "title": "Fabelsaft"
+        },
+        {
+          "languageCode": "it",
+          "title": "Frutta Fatata"
+        }
+      ],
+      "minPlayers": 2,
+      "maxPlayers": 5,
+      "durationMinutes": null,
+      "year": 2016,
+      "awards": 1,
+      "sitelinks": 1
+    },
+    {
+      "wikidataId": "Q44539589",
+      "title": "Leinen los!",
+      "titleLanguage": "de",
+      "otherTitles": [],
+      "minPlayers": 2,
+      "maxPlayers": 4,
+      "durationMinutes": 15,
+      "year": 1997,
+      "awards": 1,
+      "sitelinks": 1
+    },
+    {
+      "wikidataId": "Q44572428",
+      "title": "Husarengolf",
+      "titleLanguage": "de",
+      "otherTitles": [],
+      "minPlayers": 2,
+      "maxPlayers": 4,
+      "durationMinutes": null,
+      "year": 1997,
+      "awards": 1,
+      "sitelinks": 1
+    },
+    {
+      "wikidataId": "Q44603370",
+      "title": "Die Ritter von der Haselnuss",
+      "titleLanguage": "de",
+      "otherTitles": [],
+      "minPlayers": 2,
+      "maxPlayers": 4,
+      "durationMinutes": 30,
+      "year": 1996,
+      "awards": 1,
+      "sitelinks": 1
+    },
+    {
+      "wikidataId": "Q44660156",
+      "title": "Burg der 1000 Spiegel",
+      "titleLanguage": "de",
+      "otherTitles": [],
+      "minPlayers": 2,
+      "maxPlayers": 4,
+      "durationMinutes": null,
+      "year": 2009,
+      "awards": 1,
+      "sitelinks": 1
+    },
+    {
+      "wikidataId": "Q44660479",
+      "title": "Monster Trap",
+      "titleLanguage": "en",
+      "otherTitles": [
+        {
+          "languageCode": "fr",
+          "title": "Pousse-Monstre"
+        },
+        {
+          "languageCode": "de",
+          "title": "Monsterfalle"
+        }
+      ],
+      "minPlayers": 2,
+      "maxPlayers": 4,
+      "durationMinutes": null,
+      "year": 2011,
+      "awards": 1,
+      "sitelinks": 1
+    },
+    {
+      "wikidataId": "Q44660983",
+      "title": "Fire Dragon",
+      "titleLanguage": "en",
+      "otherTitles": [
+        {
+          "languageCode": "es",
+          "title": "Dragones de fuego"
+        },
+        {
+          "languageCode": "fr",
+          "title": "Le volcan aux rubis"
+        },
+        {
+          "languageCode": "de",
+          "title": "Feuerdrachen"
+        },
+        {
+          "languageCode": "it",
+          "title": "Draghi lingua di fuoco"
+        }
+      ],
+      "minPlayers": 2,
+      "maxPlayers": 4,
+      "durationMinutes": null,
+      "year": 2013,
+      "awards": 1,
+      "sitelinks": 1
+    },
+    {
+      "wikidataId": "Q45583663",
+      "title": "Adventure Land",
+      "titleLanguage": "en",
+      "otherTitles": [
+        {
+          "languageCode": "de",
+          "title": "Abenteuerland"
+        }
+      ],
+      "minPlayers": 2,
+      "maxPlayers": 4,
+      "durationMinutes": null,
+      "year": 2015,
+      "awards": 1,
+      "sitelinks": 1
+    },
+    {
+      "wikidataId": "Q56810343",
+      "title": "Dino World",
+      "titleLanguage": "en",
+      "otherTitles": [],
+      "minPlayers": 2,
+      "maxPlayers": 4,
+      "durationMinutes": null,
+      "year": 2017,
+      "awards": 1,
+      "sitelinks": 1
+    },
+    {
+      "wikidataId": "Q103842924",
+      "title": "Chameleon",
+      "titleLanguage": "en",
+      "otherTitles": [
+        {
+          "languageCode": "de",
+          "title": "Chamäleon"
+        }
+      ],
+      "minPlayers": 2,
+      "maxPlayers": 4,
+      "durationMinutes": null,
+      "year": 1990,
+      "awards": 1,
+      "sitelinks": 1
+    },
+    {
+      "wikidataId": "Q108858079",
+      "title": "Loot",
+      "titleLanguage": "en",
+      "otherTitles": [
+        {
+          "languageCode": "de",
+          "title": "Pirat"
+        }
+      ],
+      "minPlayers": 2,
+      "maxPlayers": 8,
+      "durationMinutes": null,
+      "year": 1992,
+      "awards": 1,
+      "sitelinks": 1
+    },
+    {
+      "wikidataId": "Q124386275",
+      "title": "The White Castle",
+      "titleLanguage": "en",
+      "otherTitles": [
+        {
+          "languageCode": "fr",
+          "title": "Le Château Blanc"
+        },
+        {
+          "languageCode": "de",
+          "title": "Die weiße Burg"
+        }
+      ],
+      "minPlayers": 1,
+      "maxPlayers": 4,
+      "durationMinutes": null,
+      "year": 2023,
+      "awards": 1,
+      "sitelinks": 1
+    },
+    {
+      "wikidataId": "Q125985075",
+      "title": "Abenteuer Tierwelt",
+      "titleLanguage": "de",
+      "otherTitles": [],
+      "minPlayers": 2,
+      "maxPlayers": 6,
+      "durationMinutes": null,
+      "year": 1985,
+      "awards": 1,
+      "sitelinks": 1
+    },
+    {
+      "wikidataId": "Q135472914",
+      "title": "Libertalia: Winds of Galecrest",
+      "titleLanguage": "en",
+      "otherTitles": [
+        {
+          "languageCode": "fr",
+          "title": "Libertalia: Les Vents de Galecrest"
+        },
+        {
+          "languageCode": "de",
+          "title": "Libertalia: Auf den Winden von Galecrest"
+        }
+      ],
+      "minPlayers": 1,
+      "maxPlayers": 6,
+      "durationMinutes": null,
+      "year": 2022,
+      "awards": 1,
+      "sitelinks": 1
+    },
+    {
+      "wikidataId": "Q135473272",
+      "title": "Sabika",
+      "titleLanguage": "en",
+      "otherTitles": [],
+      "minPlayers": 1,
+      "maxPlayers": 4,
+      "durationMinutes": null,
+      "year": 2022,
+      "awards": 1,
+      "sitelinks": 1
+    },
+    {
+      "wikidataId": "Q136914069",
+      "title": "Mycelia",
+      "titleLanguage": "en",
+      "otherTitles": [],
+      "minPlayers": 1,
+      "maxPlayers": 4,
+      "durationMinutes": 45,
+      "year": 2023,
+      "awards": 1,
+      "sitelinks": 1
+    },
+    {
+      "wikidataId": "Q137917145",
+      "title": "Take Time",
+      "titleLanguage": "en",
+      "otherTitles": [],
+      "minPlayers": 2,
+      "maxPlayers": 4,
+      "durationMinutes": null,
+      "year": 2025,
+      "awards": 1,
+      "sitelinks": 1
+    },
+    {
+      "wikidataId": "Q141959716",
+      "title": "Toriki: The Castaway Island",
+      "titleLanguage": "en",
+      "otherTitles": [
+        {
+          "languageCode": "de",
+          "title": "Toriki: Eine Insel voller Abenteuer"
+        }
+      ],
+      "minPlayers": 1,
+      "maxPlayers": 4,
+      "durationMinutes": null,
+      "year": 2024,
+      "awards": 1,
+      "sitelinks": 1
+    },
+    {
+      "wikidataId": "Q284357",
+      "title": "Afrikan tähti",
+      "titleLanguage": "fi",
+      "otherTitles": [
+        {
+          "languageCode": "de",
+          "title": "Der Stern von Afrika"
+        }
+      ],
+      "minPlayers": 2,
+      "maxPlayers": 6,
+      "durationMinutes": null,
+      "year": 1951,
+      "awards": 0,
+      "sitelinks": 10
+    },
+    {
+      "wikidataId": "Q851937",
+      "title": "Tichu",
+      "titleLanguage": "en",
+      "otherTitles": [],
+      "minPlayers": 4,
+      "maxPlayers": 4,
+      "durationMinutes": null,
+      "year": 1991,
+      "awards": 0,
+      "sitelinks": 10
+    },
+    {
+      "wikidataId": "Q1200534",
+      "title": "Descent: Journeys in the Dark",
+      "titleLanguage": "en",
+      "otherTitles": [
+        {
+          "languageCode": "es",
+          "title": "Descent: Viaje a las tinieblas"
+        },
+        {
+          "languageCode": "fr",
+          "title": "Descent : Voyage dans les ténèbres"
+        },
+        {
+          "languageCode": "de",
+          "title": "Descent: Die Reise ins Dunkel"
+        },
+        {
+          "languageCode": "it",
+          "title": "Descent viaggi nelle tenebre"
+        }
+      ],
+      "minPlayers": 2,
+      "maxPlayers": 5,
+      "durationMinutes": null,
+      "year": 2005,
+      "awards": 0,
+      "sitelinks": 10
+    },
+    {
+      "wikidataId": "Q2007571",
+      "title": "DVONN",
+      "titleLanguage": "en",
+      "otherTitles": [],
+      "minPlayers": 2,
+      "maxPlayers": 2,
+      "durationMinutes": null,
+      "year": 2001,
+      "awards": 0,
+      "sitelinks": 10
+    },
+    {
+      "wikidataId": "Q2141869",
+      "title": "Fluxx",
+      "titleLanguage": "en",
+      "otherTitles": [],
+      "minPlayers": 2,
+      "maxPlayers": 6,
+      "durationMinutes": null,
+      "year": 1996,
+      "awards": 0,
+      "sitelinks": 10
+    },
+    {
+      "wikidataId": "Q36816018",
+      "title": "Pandemic Legacy: Season 1",
+      "titleLanguage": "en",
+      "otherTitles": [
+        {
+          "languageCode": "fr",
+          "title": "Pandemic Legacy : Saison 1"
+        }
+      ],
+      "minPlayers": 2,
+      "maxPlayers": 4,
+      "durationMinutes": 60,
+      "year": 2015,
+      "awards": 1,
+      "sitelinks": 0
+    },
+    {
+      "wikidataId": "Q36816341",
+      "title": "Gloomhaven",
+      "titleLanguage": "en",
+      "otherTitles": [
+        {
+          "languageCode": "fr",
+          "title": "Gloomhaven, aventures à Havrenuit"
+        }
+      ],
+      "minPlayers": 1,
+      "maxPlayers": 4,
+      "durationMinutes": 120,
+      "year": 2017,
+      "awards": 0,
+      "sitelinks": 10
+    },
+    {
+      "wikidataId": "Q44502257",
+      "title": "Lancaster",
+      "titleLanguage": "en",
+      "otherTitles": [],
+      "minPlayers": 2,
+      "maxPlayers": 5,
+      "durationMinutes": null,
+      "year": 2011,
+      "awards": 1,
+      "sitelinks": 0
+    },
+    {
+      "wikidataId": "Q44602603",
+      "title": "Husch, husch, kleine Hexe",
+      "titleLanguage": "de",
+      "otherTitles": [],
+      "minPlayers": 2,
+      "maxPlayers": 6,
+      "durationMinutes": null,
+      "year": 1994,
+      "awards": 1,
+      "sitelinks": 0
+    },
+    {
+      "wikidataId": "Q45534813",
+      "title": "Maharaja: The Game of Palace Building in India",
+      "titleLanguage": "en",
+      "otherTitles": [
+        {
+          "languageCode": "fr",
+          "title": "Maharaja: Le Jeu des Bâtisseurs de Palais"
+        },
+        {
+          "languageCode": "de",
+          "title": "Raja: Palastbau in Indien"
+        },
+        {
+          "languageCode": "it",
+          "title": "Raja: Costruire Palazzi in India"
+        }
+      ],
+      "minPlayers": 3,
+      "maxPlayers": 5,
+      "durationMinutes": null,
+      "year": 2004,
+      "awards": 1,
+      "sitelinks": 0
+    },
+    {
+      "wikidataId": "Q45536456",
+      "title": "De Ontembare Stad",
+      "titleLanguage": "nl",
+      "otherTitles": [
+        {
+          "languageCode": "de",
+          "title": "Die Unbezwingbare Stadt"
+        }
+      ],
+      "minPlayers": 2,
+      "maxPlayers": 5,
+      "durationMinutes": null,
+      "year": 2004,
+      "awards": 1,
+      "sitelinks": 0
+    },
+    {
+      "wikidataId": "Q96053095",
+      "title": "Pandemic Legacy: Season 2",
+      "titleLanguage": "en",
+      "otherTitles": [
+        {
+          "languageCode": "fr",
+          "title": "Pandemic Legacy : Saison 2"
+        },
+        {
+          "languageCode": "de",
+          "title": "Pandemic Legacy – Season 2"
+        }
+      ],
+      "minPlayers": 2,
+      "maxPlayers": 4,
+      "durationMinutes": 60,
+      "year": 2017,
+      "awards": 1,
+      "sitelinks": 0
+    },
+    {
+      "wikidataId": "Q100797618",
+      "title": "Detective: A Modern Crime Board Game",
+      "titleLanguage": "en",
+      "otherTitles": [],
+      "minPlayers": 1,
+      "maxPlayers": 5,
+      "durationMinutes": null,
+      "year": 2018,
+      "awards": 1,
+      "sitelinks": 0
+    },
+    {
+      "wikidataId": "Q100803857",
+      "title": "Concept Kids: Animals",
+      "titleLanguage": "en",
+      "otherTitles": [
+        {
+          "languageCode": "de",
+          "title": "Concept Kids Tiere"
+        }
+      ],
+      "minPlayers": 2,
+      "maxPlayers": 12,
+      "durationMinutes": null,
+      "year": 2018,
+      "awards": 1,
+      "sitelinks": 0
+    },
+    {
+      "wikidataId": "Q113136347",
+      "title": "Outfoxed!",
+      "titleLanguage": "en",
+      "otherTitles": [
+        {
+          "languageCode": "fr",
+          "title": "Nom d'un renard"
+        }
+      ],
+      "minPlayers": 2,
+      "maxPlayers": 4,
+      "durationMinutes": null,
+      "year": 2014,
+      "awards": 1,
+      "sitelinks": 0
+    },
+    {
+      "wikidataId": "Q113354192",
+      "title": "Deus",
+      "titleLanguage": "en",
+      "otherTitles": [],
+      "minPlayers": 2,
+      "maxPlayers": 4,
+      "durationMinutes": 60,
+      "year": 2014,
+      "awards": 1,
+      "sitelinks": 0
+    },
+    {
+      "wikidataId": "Q113469526",
+      "title": "Tobago",
+      "titleLanguage": "en",
+      "otherTitles": [],
+      "minPlayers": 2,
+      "maxPlayers": 4,
+      "durationMinutes": null,
+      "year": 2009,
+      "awards": 1,
+      "sitelinks": 0
+    },
+    {
+      "wikidataId": "Q113585723",
+      "title": "Jericho",
+      "titleLanguage": "en",
+      "otherTitles": [],
+      "minPlayers": 2,
+      "maxPlayers": 2,
+      "durationMinutes": null,
+      "year": 2001,
+      "awards": 1,
+      "sitelinks": 0
+    },
+    {
+      "wikidataId": "Q114728767",
+      "title": "Hawaii",
+      "titleLanguage": "en",
+      "otherTitles": [],
+      "minPlayers": 2,
+      "maxPlayers": 5,
+      "durationMinutes": null,
+      "year": 2011,
+      "awards": 1,
+      "sitelinks": 0
+    },
+    {
+      "wikidataId": "Q114729151",
+      "title": "Amerigo",
+      "titleLanguage": "en",
+      "otherTitles": [],
+      "minPlayers": 2,
+      "maxPlayers": 4,
+      "durationMinutes": null,
+      "year": 2013,
+      "awards": 1,
+      "sitelinks": 0
+    },
+    {
+      "wikidataId": "Q114811545",
+      "title": "Guildhall",
+      "titleLanguage": "en",
+      "otherTitles": [],
+      "minPlayers": 2,
+      "maxPlayers": 4,
+      "durationMinutes": null,
+      "year": 2012,
+      "awards": 1,
+      "sitelinks": 0
+    },
+    {
+      "wikidataId": "Q114817513",
+      "title": "Fields of Arle",
+      "titleLanguage": "en",
+      "otherTitles": [
+        {
+          "languageCode": "de",
+          "title": "Arler Erde"
+        }
+      ],
+      "minPlayers": 1,
+      "maxPlayers": 2,
+      "durationMinutes": null,
+      "year": 2014,
+      "awards": 1,
+      "sitelinks": 0
+    },
+    {
+      "wikidataId": "Q116450997",
+      "title": "Carnegie",
+      "titleLanguage": "en",
+      "otherTitles": [],
+      "minPlayers": 1,
+      "maxPlayers": 4,
+      "durationMinutes": null,
+      "year": 2022,
+      "awards": 1,
+      "sitelinks": 0
+    },
+    {
+      "wikidataId": "Q121316024",
+      "title": "Yin Yang",
+      "titleLanguage": "en",
+      "otherTitles": [],
+      "minPlayers": 2,
+      "maxPlayers": 6,
+      "durationMinutes": null,
+      "year": 1998,
+      "awards": 1,
+      "sitelinks": 0
+    },
+    {
+      "wikidataId": "Q122199909",
+      "title": "Category Game",
+      "titleLanguage": "en",
+      "otherTitles": [],
+      "minPlayers": 2,
+      "maxPlayers": 8,
+      "durationMinutes": null,
+      "year": 1994,
+      "awards": 1,
+      "sitelinks": 0
+    },
+    {
+      "wikidataId": "Q122655940",
+      "title": "Risk Legacy",
+      "titleLanguage": "en",
+      "otherTitles": [],
+      "minPlayers": 3,
+      "maxPlayers": 5,
+      "durationMinutes": null,
+      "year": 2011,
+      "awards": 1,
+      "sitelinks": 0
+    },
+    {
+      "wikidataId": "Q124519630",
+      "title": "Zombie in My Pocket",
+      "titleLanguage": "en",
+      "otherTitles": [],
+      "minPlayers": 1,
+      "maxPlayers": 1,
+      "durationMinutes": null,
+      "year": 2007,
+      "awards": 1,
+      "sitelinks": 0
+    },
+    {
+      "wikidataId": "Q124519687",
+      "title": "Dune Express",
+      "titleLanguage": "en",
+      "otherTitles": [],
+      "minPlayers": 2,
+      "maxPlayers": 5,
+      "durationMinutes": 15,
+      "year": 2009,
+      "awards": 1,
+      "sitelinks": 0
+    },
+    {
+      "wikidataId": "Q130308016",
+      "title": "Agricola: All Creatures Big and Small",
+      "titleLanguage": "en",
+      "otherTitles": [
+        {
+          "languageCode": "fr",
+          "title": "Agricola : Terres d'Élevage"
+        },
+        {
+          "languageCode": "de",
+          "title": "Agricola: Die Bauern und das liebe Vieh"
+        }
+      ],
+      "minPlayers": 2,
+      "maxPlayers": 2,
+      "durationMinutes": null,
+      "year": 2012,
+      "awards": 1,
+      "sitelinks": 0
+    },
+    {
+      "wikidataId": "Q135472525",
+      "title": "Welcome to Your Perfect Home",
+      "titleLanguage": "en",
+      "otherTitles": [],
+      "minPlayers": 1,
+      "maxPlayers": 100,
+      "durationMinutes": null,
+      "year": 2018,
+      "awards": 1,
+      "sitelinks": 0
+    },
+    {
+      "wikidataId": "Q135511215",
+      "title": "Wreck Raiders",
+      "titleLanguage": "en",
+      "otherTitles": [],
+      "minPlayers": 1,
+      "maxPlayers": 5,
+      "durationMinutes": null,
+      "year": 2019,
+      "awards": 1,
+      "sitelinks": 0
+    },
+    {
+      "wikidataId": "Q135512404",
+      "title": "Pixie Queen",
+      "titleLanguage": "en",
+      "otherTitles": [],
+      "minPlayers": 2,
+      "maxPlayers": 5,
+      "durationMinutes": null,
+      "year": 2017,
+      "awards": 1,
+      "sitelinks": 0
+    },
+    {
+      "wikidataId": "Q135512457",
+      "title": "Woodcraft",
+      "titleLanguage": "en",
+      "otherTitles": [],
+      "minPlayers": 1,
+      "maxPlayers": 4,
+      "durationMinutes": null,
+      "year": 2022,
+      "awards": 1,
+      "sitelinks": 0
+    },
+    {
+      "wikidataId": "Q135519771",
+      "title": "Under Falling Skies",
+      "titleLanguage": "en",
+      "otherTitles": [
+        {
+          "languageCode": "es",
+          "title": "Cielos de metal"
+        }
+      ],
+      "minPlayers": 1,
+      "maxPlayers": 1,
+      "durationMinutes": null,
+      "year": 2020,
+      "awards": 1,
+      "sitelinks": 0
+    },
+    {
+      "wikidataId": "Q136092729",
+      "title": "Zenith",
+      "titleLanguage": "en",
+      "otherTitles": [],
+      "minPlayers": 2,
+      "maxPlayers": 4,
+      "durationMinutes": 35,
+      "year": 2025,
+      "awards": 1,
+      "sitelinks": 0
+    },
+    {
+      "wikidataId": "Q141696743",
+      "title": "River of Gold",
+      "titleLanguage": "en",
+      "otherTitles": [
+        {
+          "languageCode": "de",
+          "title": "Am Goldenen Fluss"
+        }
+      ],
+      "minPlayers": 2,
+      "maxPlayers": 4,
+      "durationMinutes": null,
+      "year": 2024,
+      "awards": 1,
+      "sitelinks": 0
+    },
+    {
+      "wikidataId": "Q17270",
+      "title": "Jungle Speed",
+      "titleLanguage": "en",
+      "otherTitles": [],
+      "minPlayers": 2,
+      "maxPlayers": 10,
+      "durationMinutes": null,
+      "year": 1997,
+      "awards": 0,
+      "sitelinks": 9
+    },
+    {
+      "wikidataId": "Q565449",
+      "title": "Pictionary",
+      "titleLanguage": "en",
+      "otherTitles": [],
+      "minPlayers": 3,
+      "maxPlayers": 16,
+      "durationMinutes": null,
+      "year": 1985,
+      "awards": 0,
+      "sitelinks": 9
+    },
+    {
+      "wikidataId": "Q1094512",
+      "title": "Civilization",
+      "titleLanguage": "en",
+      "otherTitles": [],
+      "minPlayers": 2,
+      "maxPlayers": 7,
+      "durationMinutes": null,
+      "year": 1980,
+      "awards": 0,
+      "sitelinks": 9
+    },
+    {
+      "wikidataId": "Q1194027",
+      "title": "The Great Dalmuti",
+      "titleLanguage": "en",
+      "otherTitles": [
+        {
+          "languageCode": "es",
+          "title": "El Gran Dalmuti"
+        },
+        {
+          "languageCode": "fr",
+          "title": "Le Grand Dalmuti"
+        },
+        {
+          "languageCode": "de",
+          "title": "Der Große Dalmuti"
+        }
+      ],
+      "minPlayers": 4,
+      "maxPlayers": 8,
+      "durationMinutes": null,
+      "year": 1995,
+      "awards": 0,
+      "sitelinks": 9
+    },
+    {
+      "wikidataId": "Q1473805",
+      "title": "Phase 10",
+      "titleLanguage": "en",
+      "otherTitles": [],
+      "minPlayers": 2,
+      "maxPlayers": 6,
+      "durationMinutes": null,
+      "year": 1982,
+      "awards": 0,
+      "sitelinks": 9
+    },
+    {
+      "wikidataId": "Q2187101",
+      "title": "PÜNCT",
+      "titleLanguage": "en",
+      "otherTitles": [],
+      "minPlayers": 2,
+      "maxPlayers": 2,
+      "durationMinutes": null,
+      "year": 2005,
+      "awards": 0,
+      "sitelinks": 9
+    },
+    {
+      "wikidataId": "Q2626507",
+      "title": "Tzaar",
+      "titleLanguage": "en",
+      "otherTitles": [
+        {
+          "languageCode": "es",
+          "title": "TZAAR"
+        },
+        {
+          "languageCode": "it",
+          "title": "TZAAR"
+        }
+      ],
+      "minPlayers": 2,
+      "maxPlayers": 2,
+      "durationMinutes": null,
+      "year": 2007,
+      "awards": 0,
+      "sitelinks": 9
+    },
+    {
+      "wikidataId": "Q3460677",
+      "title": "Saboteur",
+      "titleLanguage": "en",
+      "otherTitles": [],
+      "minPlayers": 3,
+      "maxPlayers": 10,
+      "durationMinutes": null,
+      "year": 2004,
+      "awards": 0,
+      "sitelinks": 9
+    },
+    {
+      "wikidataId": "Q25339944",
+      "title": "Secret Hitler",
+      "titleLanguage": "en",
+      "otherTitles": [],
+      "minPlayers": 5,
+      "maxPlayers": 10,
+      "durationMinutes": null,
+      "year": 2016,
+      "awards": 0,
+      "sitelinks": 9
+    },
+    {
+      "wikidataId": "Q456463",
+      "title": "Game of the Amazons",
+      "titleLanguage": "en",
+      "otherTitles": [
+        {
+          "languageCode": "es",
+          "title": "Amazonas"
+        },
+        {
+          "languageCode": "fr",
+          "title": "Jeu des Amazones"
+        },
+        {
+          "languageCode": "de",
+          "title": "Amazonen"
+        }
+      ],
+      "minPlayers": 2,
+      "maxPlayers": 2,
+      "durationMinutes": null,
+      "year": 1988,
+      "awards": 0,
+      "sitelinks": 8
+    },
+    {
+      "wikidataId": "Q840299",
+      "title": "Trax",
+      "titleLanguage": "en",
+      "otherTitles": [],
+      "minPlayers": 2,
+      "maxPlayers": 2,
+      "durationMinutes": null,
+      "year": 1981,
+      "awards": 0,
+      "sitelinks": 8
+    },
+    {
+      "wikidataId": "Q1506969",
+      "title": "Lost Cities",
+      "titleLanguage": "en",
+      "otherTitles": [
+        {
+          "languageCode": "es",
+          "title": "Exploradores"
+        },
+        {
+          "languageCode": "fr",
+          "title": "Lost Cities: Le Duel"
+        },
+        {
+          "languageCode": "it",
+          "title": "Le Città Perdute"
+        }
+      ],
+      "minPlayers": 2,
+      "maxPlayers": 2,
+      "durationMinutes": 30,
+      "year": 1999,
+      "awards": 0,
+      "sitelinks": 8
+    },
+    {
+      "wikidataId": "Q1591462",
+      "title": "Havannah",
+      "titleLanguage": "en",
+      "otherTitles": [],
+      "minPlayers": 2,
+      "maxPlayers": 2,
+      "durationMinutes": 30,
+      "year": 1980,
+      "awards": 0,
+      "sitelinks": 8
+    },
+    {
+      "wikidataId": "Q1897687",
+      "title": "Alias",
+      "titleLanguage": "en",
+      "otherTitles": [],
+      "minPlayers": 4,
+      "maxPlayers": 12,
+      "durationMinutes": null,
+      "year": 1989,
+      "awards": 0,
+      "sitelinks": 8
+    },
+    {
+      "wikidataId": "Q2626471",
+      "title": "TAMSK",
+      "titleLanguage": "en",
+      "otherTitles": [],
+      "minPlayers": 2,
+      "maxPlayers": 2,
+      "durationMinutes": 15,
+      "year": 1998,
+      "awards": 0,
+      "sitelinks": 8
+    },
+    {
+      "wikidataId": "Q18393382",
+      "title": "The Castles of Burgundy",
+      "titleLanguage": "en",
+      "otherTitles": [
+        {
+          "languageCode": "es",
+          "title": "Los castillos de Borgoña"
+        },
+        {
+          "languageCode": "fr",
+          "title": "Les Châteaux de Bourgogne"
+        },
+        {
+          "languageCode": "it",
+          "title": "I Castelli della Borgogna"
+        }
+      ],
+      "minPlayers": 2,
+      "maxPlayers": 4,
+      "durationMinutes": 90,
+      "year": 2011,
+      "awards": 0,
+      "sitelinks": 8
+    },
+    {
+      "wikidataId": "Q903935",
+      "title": "Breakthrough",
+      "titleLanguage": "en",
+      "otherTitles": [],
+      "minPlayers": 2,
+      "maxPlayers": 2,
+      "durationMinutes": null,
+      "year": 2001,
+      "awards": 0,
+      "sitelinks": 7
+    },
+    {
+      "wikidataId": "Q1433046",
+      "title": "TransAmerica",
+      "titleLanguage": "en",
+      "otherTitles": [
+        {
+          "languageCode": "de",
+          "title": "Trans America"
+        }
+      ],
+      "minPlayers": 2,
+      "maxPlayers": 6,
+      "durationMinutes": null,
+      "year": 2001,
+      "awards": 0,
+      "sitelinks": 7
+    },
+    {
+      "wikidataId": "Q1684168",
+      "title": "Java",
+      "titleLanguage": "en",
+      "otherTitles": [],
+      "minPlayers": 2,
+      "maxPlayers": 4,
+      "durationMinutes": null,
+      "year": 2000,
+      "awards": 0,
+      "sitelinks": 7
+    },
+    {
+      "wikidataId": "Q2269267",
+      "title": "Scattergories",
+      "titleLanguage": "en",
+      "otherTitles": [
+        {
+          "languageCode": "de",
+          "title": "Kategorum"
+        },
+        {
+          "languageCode": "it",
+          "title": "Saltinmente"
+        }
+      ],
+      "minPlayers": 2,
+      "maxPlayers": 6,
+      "durationMinutes": null,
+      "year": 1988,
+      "awards": 0,
+      "sitelinks": 7
+    },
+    {
+      "wikidataId": "Q25345980",
+      "title": "Tak",
+      "titleLanguage": "en",
+      "otherTitles": [],
+      "minPlayers": 2,
+      "maxPlayers": 2,
+      "durationMinutes": 60,
+      "year": 2017,
+      "awards": 0,
+      "sitelinks": 7
+    },
+    {
+      "wikidataId": "Q201274",
+      "title": "1830: The Game of Railroads and Robber Barons",
+      "titleLanguage": "en",
+      "otherTitles": [
+        {
+          "languageCode": "de",
+          "title": "1830"
+        }
+      ],
+      "minPlayers": 2,
+      "maxPlayers": 6,
+      "durationMinutes": null,
+      "year": 1986,
+      "awards": 0,
+      "sitelinks": 6
+    },
+    {
+      "wikidataId": "Q626402",
+      "title": "Ubongo",
+      "titleLanguage": "en",
+      "otherTitles": [],
+      "minPlayers": 1,
+      "maxPlayers": 4,
+      "durationMinutes": null,
+      "year": 2003,
+      "awards": 0,
+      "sitelinks": 6
+    },
+    {
+      "wikidataId": "Q839962",
+      "title": "Catan Card Game",
+      "titleLanguage": "en",
+      "otherTitles": [
+        {
+          "languageCode": "fr",
+          "title": "Les Colons de Catane : Le Jeu de Cartes"
+        },
+        {
+          "languageCode": "de",
+          "title": "Die Siedler von Catan – Das Kartenspiel"
+        },
+        {
+          "languageCode": "it",
+          "title": "I coloni di Catan — gioco di carte"
+        }
+      ],
+      "minPlayers": 2,
+      "maxPlayers": 2,
+      "durationMinutes": null,
+      "year": 1996,
+      "awards": 0,
+      "sitelinks": 6
+    },
+    {
+      "wikidataId": "Q913720",
+      "title": "War of the Ring",
+      "titleLanguage": "en",
+      "otherTitles": [
+        {
+          "languageCode": "fr",
+          "title": "La Guerre de l'Anneau"
+        },
+        {
+          "languageCode": "de",
+          "title": "Der Herr der Ringe – Der Ringkrieg"
+        },
+        {
+          "languageCode": "it",
+          "title": "La Guerra dell'Anello"
+        }
+      ],
+      "minPlayers": 2,
+      "maxPlayers": 4,
+      "durationMinutes": 120,
+      "year": 2004,
+      "awards": 0,
+      "sitelinks": 6
+    },
+    {
+      "wikidataId": "Q1086739",
+      "title": "Khet",
+      "titleLanguage": "en",
+      "otherTitles": [],
+      "minPlayers": 2,
+      "maxPlayers": 2,
+      "durationMinutes": null,
+      "year": 2005,
+      "awards": 0,
+      "sitelinks": 6
+    },
+    {
+      "wikidataId": "Q1377685",
+      "title": "Europa Universalis",
+      "titleLanguage": "en",
+      "otherTitles": [],
+      "minPlayers": 1,
+      "maxPlayers": 6,
+      "durationMinutes": null,
+      "year": 1993,
+      "awards": 0,
+      "sitelinks": 6
+    },
+    {
+      "wikidataId": "Q1410849",
+      "title": "Battle Masters",
+      "titleLanguage": "en",
+      "otherTitles": [
+        {
+          "languageCode": "fr",
+          "title": "Seigneurs de Guerre"
+        },
+        {
+          "languageCode": "de",
+          "title": "Die Claymore-Saga"
+        }
+      ],
+      "minPlayers": 2,
+      "maxPlayers": 2,
+      "durationMinutes": 45,
+      "year": 1992,
+      "awards": 0,
+      "sitelinks": 6
+    },
+    {
+      "wikidataId": "Q1414153",
+      "title": "Gobblet",
+      "titleLanguage": "en",
+      "otherTitles": [],
+      "minPlayers": 2,
+      "maxPlayers": 2,
+      "durationMinutes": null,
+      "year": 2000,
+      "awards": 0,
+      "sitelinks": 6
+    },
+    {
+      "wikidataId": "Q1888673",
+      "title": "Mexica",
+      "titleLanguage": "en",
+      "otherTitles": [],
+      "minPlayers": 2,
+      "maxPlayers": 4,
+      "durationMinutes": null,
+      "year": 2002,
+      "awards": 0,
+      "sitelinks": 6
+    },
+    {
+      "wikidataId": "Q2587022",
+      "title": "Wizard",
+      "titleLanguage": "en",
+      "otherTitles": [],
+      "minPlayers": 3,
+      "maxPlayers": 6,
+      "durationMinutes": null,
+      "year": 1986,
+      "awards": 0,
+      "sitelinks": 6
+    },
+    {
+      "wikidataId": "Q18573786",
+      "title": "Zombicide",
+      "titleLanguage": "en",
+      "otherTitles": [],
+      "minPlayers": 1,
+      "maxPlayers": 6,
+      "durationMinutes": 60,
+      "year": 2012,
+      "awards": 0,
+      "sitelinks": 6
+    },
+    {
+      "wikidataId": "Q22662557",
+      "title": "Eldritch Horror",
+      "titleLanguage": "en",
+      "otherTitles": [
+        {
+          "languageCode": "fr",
+          "title": "Les Contrées de l'horreur"
+        }
+      ],
+      "minPlayers": 1,
+      "maxPlayers": 8,
+      "durationMinutes": 180,
+      "year": 2013,
+      "awards": 0,
+      "sitelinks": 6
+    },
+    {
+      "wikidataId": "Q101242941",
+      "title": "Root",
+      "titleLanguage": "en",
+      "otherTitles": [],
+      "minPlayers": 2,
+      "maxPlayers": 4,
+      "durationMinutes": null,
+      "year": 2018,
+      "awards": 0,
+      "sitelinks": 6
+    },
+    {
+      "wikidataId": "Q122227092",
+      "title": "Blood on the Clocktower",
+      "titleLanguage": "en",
+      "otherTitles": [],
+      "minPlayers": 5,
+      "maxPlayers": 20,
+      "durationMinutes": null,
+      "year": 2022,
+      "awards": 0,
+      "sitelinks": 6
+    },
+    {
+      "wikidataId": "Q17258",
+      "title": "13 Dead End Drive",
+      "titleLanguage": "en",
+      "otherTitles": [
+        {
+          "languageCode": "es",
+          "title": "La herencia de la tía Agata"
+        },
+        {
+          "languageCode": "fr",
+          "title": "La Course à l'héritage"
+        },
+        {
+          "languageCode": "de",
+          "title": "Agathas letzter Wille"
+        },
+        {
+          "languageCode": "it",
+          "title": "L'erede misterioso"
+        }
+      ],
+      "minPlayers": 2,
+      "maxPlayers": 4,
+      "durationMinutes": null,
+      "year": 1993,
+      "awards": 0,
+      "sitelinks": 5
+    },
+    {
+      "wikidataId": "Q364742",
+      "title": "Clans",
+      "titleLanguage": "en",
+      "otherTitles": [],
+      "minPlayers": 2,
+      "maxPlayers": 4,
+      "durationMinutes": null,
+      "year": 2002,
+      "awards": 0,
+      "sitelinks": 5
+    },
+    {
+      "wikidataId": "Q831656",
+      "title": "Betrayal at House on the Hill",
+      "titleLanguage": "en",
+      "otherTitles": [],
+      "minPlayers": 3,
+      "maxPlayers": 6,
+      "durationMinutes": null,
+      "year": 2004,
+      "awards": 0,
+      "sitelinks": 5
+    },
+    {
+      "wikidataId": "Q1544528",
+      "title": "Around the World in 80 Days",
+      "titleLanguage": "en",
+      "otherTitles": [
+        {
+          "languageCode": "fr",
+          "title": "Le Tour du Monde en 80 Jours"
+        },
+        {
+          "languageCode": "de",
+          "title": "In 80 Tagen um die Welt"
+        }
+      ],
+      "minPlayers": 3,
+      "maxPlayers": 6,
+      "durationMinutes": null,
+      "year": 2004,
+      "awards": 0,
+      "sitelinks": 5
+    },
+    {
+      "wikidataId": "Q3278277",
+      "title": "Ra",
+      "titleLanguage": "en",
+      "otherTitles": [],
+      "minPlayers": 2,
+      "maxPlayers": 5,
+      "durationMinutes": null,
+      "year": 1999,
+      "awards": 0,
+      "sitelinks": 5
+    },
+    {
+      "wikidataId": "Q3471556",
+      "title": "San Marco",
+      "titleLanguage": "en",
+      "otherTitles": [],
+      "minPlayers": 3,
+      "maxPlayers": 4,
+      "durationMinutes": null,
+      "year": 2001,
+      "awards": 0,
+      "sitelinks": 5
+    },
+    {
+      "wikidataId": "Q11262299",
+      "title": "Ghost Blitz",
+      "titleLanguage": "en",
+      "otherTitles": [
+        {
+          "languageCode": "es",
+          "title": "Fantasma Blitz"
+        },
+        {
+          "languageCode": "fr",
+          "title": "Bazar Bizarre"
+        },
+        {
+          "languageCode": "de",
+          "title": "Geistesblitz"
+        },
+        {
+          "languageCode": "it",
+          "title": "Fantascatti"
+        }
+      ],
+      "minPlayers": 2,
+      "maxPlayers": 8,
+      "durationMinutes": null,
+      "year": 2010,
+      "awards": 0,
+      "sitelinks": 5
+    },
+    {
+      "wikidataId": "Q16596777",
+      "title": "Robinson Crusoe: Adventures on the Cursed Island",
+      "titleLanguage": "en",
+      "otherTitles": [
+        {
+          "languageCode": "es",
+          "title": "Robinson Crusoe: Aventuras en la isla maldita"
+        },
+        {
+          "languageCode": "fr",
+          "title": "Robinson Crusoë"
+        },
+        {
+          "languageCode": "de",
+          "title": "Robinson Crusoe"
+        }
+      ],
+      "minPlayers": 1,
+      "maxPlayers": 4,
+      "durationMinutes": null,
+      "year": 2012,
+      "awards": 0,
+      "sitelinks": 5
+    },
+    {
+      "wikidataId": "Q21190054",
+      "title": "Sushi Go!",
+      "titleLanguage": "en",
+      "otherTitles": [],
+      "minPlayers": 2,
+      "maxPlayers": 5,
+      "durationMinutes": 15,
+      "year": 2013,
+      "awards": 0,
+      "sitelinks": 5
+    },
+    {
+      "wikidataId": "Q64507",
+      "title": "Pueblo",
+      "titleLanguage": "en",
+      "otherTitles": [],
+      "minPlayers": 2,
+      "maxPlayers": 4,
+      "durationMinutes": null,
+      "year": 2002,
+      "awards": 0,
+      "sitelinks": 4
+    },
+    {
+      "wikidataId": "Q267042",
+      "title": "Survive: Escape from Atlantis!",
+      "titleLanguage": "en",
+      "otherTitles": [
+        {
+          "languageCode": "fr",
+          "title": "The Island"
+        },
+        {
+          "languageCode": "de",
+          "title": "Atlantis"
+        }
+      ],
+      "minPlayers": 2,
+      "maxPlayers": 4,
+      "durationMinutes": null,
+      "year": 1982,
+      "awards": 0,
+      "sitelinks": 4
+    },
+    {
+      "wikidataId": "Q655454",
+      "title": "Pirate's Cove",
+      "titleLanguage": "en",
+      "otherTitles": [
+        {
+          "languageCode": "fr",
+          "title": "La Crique des pirates"
+        },
+        {
+          "languageCode": "de",
+          "title": "Piratenbucht"
+        }
+      ],
+      "minPlayers": 3,
+      "maxPlayers": 5,
+      "durationMinutes": 60,
+      "year": 2002,
+      "awards": 0,
+      "sitelinks": 4
+    },
+    {
+      "wikidataId": "Q781244",
+      "title": "Australia",
+      "titleLanguage": "en",
+      "otherTitles": [],
+      "minPlayers": 2,
+      "maxPlayers": 5,
+      "durationMinutes": null,
+      "year": 2005,
+      "awards": 0,
+      "sitelinks": 4
+    },
+    {
+      "wikidataId": "Q787302",
+      "title": "Mr. Jack",
+      "titleLanguage": "en",
+      "otherTitles": [],
+      "minPlayers": 2,
+      "maxPlayers": 2,
+      "durationMinutes": 30,
+      "year": 2006,
+      "awards": 0,
+      "sitelinks": 4
+    },
+    {
+      "wikidataId": "Q1266886",
+      "title": "Through the Desert",
+      "titleLanguage": "en",
+      "otherTitles": [
+        {
+          "languageCode": "fr",
+          "title": "La Traversée du désert"
+        },
+        {
+          "languageCode": "de",
+          "title": "Durch die Wüste"
+        }
+      ],
+      "minPlayers": 2,
+      "maxPlayers": 5,
+      "durationMinutes": null,
+      "year": 1998,
+      "awards": 0,
+      "sitelinks": 4
+    },
+    {
+      "wikidataId": "Q1625825",
+      "title": "Beat the Buzzard",
+      "titleLanguage": "en",
+      "otherTitles": [
+        {
+          "languageCode": "fr",
+          "title": "Stupide vautour"
+        },
+        {
+          "languageCode": "de",
+          "title": "Hol’s der Geier"
+        }
+      ],
+      "minPlayers": 2,
+      "maxPlayers": 5,
+      "durationMinutes": 20,
+      "year": 1988,
+      "awards": 0,
+      "sitelinks": 4
+    },
+    {
+      "wikidataId": "Q1777758",
+      "title": "Hey, That's My Fish!",
+      "titleLanguage": "en",
+      "otherTitles": [
+        {
+          "languageCode": "fr",
+          "title": "Pingouins"
+        },
+        {
+          "languageCode": "de",
+          "title": "Packeis am Pol"
+        }
+      ],
+      "minPlayers": 2,
+      "maxPlayers": 4,
+      "durationMinutes": 20,
+      "year": 2003,
+      "awards": 0,
+      "sitelinks": 4
+    },
+    {
+      "wikidataId": "Q2101088",
+      "title": "Polarity",
+      "titleLanguage": "en",
+      "otherTitles": [],
+      "minPlayers": 2,
+      "maxPlayers": 4,
+      "durationMinutes": null,
+      "year": 1986,
+      "awards": 0,
+      "sitelinks": 4
+    },
+    {
+      "wikidataId": "Q2429925",
+      "title": "Thunderstone",
+      "titleLanguage": "en",
+      "otherTitles": [],
+      "minPlayers": 1,
+      "maxPlayers": 5,
+      "durationMinutes": null,
+      "year": 2009,
+      "awards": 0,
+      "sitelinks": 4
+    },
+    {
+      "wikidataId": "Q2601508",
+      "title": "Yspahan",
+      "titleLanguage": "en",
+      "otherTitles": [],
+      "minPlayers": 2,
+      "maxPlayers": 4,
+      "durationMinutes": null,
+      "year": 2006,
+      "awards": 0,
+      "sitelinks": 4
+    },
+    {
+      "wikidataId": "Q2941350",
+      "title": "Castle",
+      "titleLanguage": "en",
+      "otherTitles": [
+        {
+          "languageCode": "fr",
+          "title": "Castel"
+        },
+        {
+          "languageCode": "de",
+          "title": "Castel"
+        }
+      ],
+      "minPlayers": 2,
+      "maxPlayers": 5,
+      "durationMinutes": null,
+      "year": 2000,
+      "awards": 0,
+      "sitelinks": 4
+    },
+    {
+      "wikidataId": "Q3432672",
+      "title": "Railways of the World",
+      "titleLanguage": "en",
+      "otherTitles": [],
+      "minPlayers": 2,
+      "maxPlayers": 6,
+      "durationMinutes": 120,
+      "year": 2005,
+      "awards": 0,
+      "sitelinks": 4
+    },
+    {
+      "wikidataId": "Q4006223",
+      "title": "Up Front",
+      "titleLanguage": "en",
+      "otherTitles": [],
+      "minPlayers": 2,
+      "maxPlayers": 2,
+      "durationMinutes": null,
+      "year": 1983,
+      "awards": 0,
+      "sitelinks": 4
+    },
+    {
+      "wikidataId": "Q4691914",
+      "title": "Age of Steam",
+      "titleLanguage": "en",
+      "otherTitles": [],
+      "minPlayers": 1,
+      "maxPlayers": 6,
+      "durationMinutes": 120,
+      "year": 2002,
+      "awards": 0,
+      "sitelinks": 4
+    },
+    {
+      "wikidataId": "Q5038135",
+      "title": "Carcassonne: Hunters and Gatherers",
+      "titleLanguage": "en",
+      "otherTitles": [
+        {
+          "languageCode": "de",
+          "title": "Die Jäger und Sammler"
+        }
+      ],
+      "minPlayers": 2,
+      "maxPlayers": 5,
+      "durationMinutes": null,
+      "year": 2002,
+      "awards": 0,
+      "sitelinks": 4
+    },
+    {
+      "wikidataId": "Q5124752",
+      "title": "Sid Meier's Civilization: The Board Game",
+      "titleLanguage": "en",
+      "otherTitles": [],
+      "minPlayers": 2,
+      "maxPlayers": 4,
+      "durationMinutes": null,
+      "year": 2010,
+      "awards": 0,
+      "sitelinks": 4
+    },
+    {
+      "wikidataId": "Q6146391",
+      "title": "Shadow Hunters",
+      "titleLanguage": "en",
+      "otherTitles": [],
+      "minPlayers": 4,
+      "maxPlayers": 8,
+      "durationMinutes": 60,
+      "year": 2005,
+      "awards": 0,
+      "sitelinks": 4
+    },
+    {
+      "wikidataId": "Q7539882",
+      "title": "Sleeping Queens",
+      "titleLanguage": "en",
+      "otherTitles": [
+        {
+          "languageCode": "es",
+          "title": "Reinas Durmientes"
+        },
+        {
+          "languageCode": "fr",
+          "title": "Perlin Pinpin"
+        },
+        {
+          "languageCode": "it",
+          "title": "Pirilin Pin Pin"
+        }
+      ],
+      "minPlayers": 2,
+      "maxPlayers": 5,
+      "durationMinutes": 10,
+      "year": 2005,
+      "awards": 0,
+      "sitelinks": 4
+    },
+    {
+      "wikidataId": "Q7602411",
+      "title": "Starship Catan",
+      "titleLanguage": "en",
+      "otherTitles": [
+        {
+          "languageCode": "de",
+          "title": "Sternenschiff Catan"
+        }
+      ],
+      "minPlayers": 2,
+      "maxPlayers": 2,
+      "durationMinutes": null,
+      "year": 2001,
+      "awards": 0,
+      "sitelinks": 4
+    },
+    {
+      "wikidataId": "Q7760289",
+      "title": "The Resistance",
+      "titleLanguage": "en",
+      "otherTitles": [
+        {
+          "languageCode": "de",
+          "title": "Der Widerstand"
+        }
+      ],
+      "minPlayers": 5,
+      "maxPlayers": 10,
+      "durationMinutes": null,
+      "year": 2009,
+      "awards": 0,
+      "sitelinks": 4
+    },
+    {
+      "wikidataId": "Q14950586",
+      "title": "K2",
+      "titleLanguage": "en",
+      "otherTitles": [],
+      "minPlayers": 1,
+      "maxPlayers": 5,
+      "durationMinutes": null,
+      "year": 2010,
+      "awards": 0,
+      "sitelinks": 4
+    },
+    {
+      "wikidataId": "Q16950477",
+      "title": "Manila",
+      "titleLanguage": "en",
+      "otherTitles": [],
+      "minPlayers": 3,
+      "maxPlayers": 5,
+      "durationMinutes": null,
+      "year": 2005,
+      "awards": 0,
+      "sitelinks": 4
+    },
+    {
+      "wikidataId": "Q20782113",
+      "title": "Caverna: The Cave Farmers",
+      "titleLanguage": "en",
+      "otherTitles": [
+        {
+          "languageCode": "fr",
+          "title": "Caverna"
+        },
+        {
+          "languageCode": "de",
+          "title": "Caverna: Die Höhlenbauern"
+        }
+      ],
+      "minPlayers": 1,
+      "maxPlayers": 7,
+      "durationMinutes": null,
+      "year": 2013,
+      "awards": 0,
+      "sitelinks": 4
+    },
+    {
+      "wikidataId": "Q27970574",
+      "title": "Arkham Horror: The Card Game",
+      "titleLanguage": "en",
+      "otherTitles": [
+        {
+          "languageCode": "es",
+          "title": "Arkham Horror: El Juego de Cartas"
+        },
+        {
+          "languageCode": "fr",
+          "title": "Horreur à Arkham: Le Jeu de Cartes"
+        },
+        {
+          "languageCode": "de",
+          "title": "Arkham Horror: Das Kartenspiel"
+        },
+        {
+          "languageCode": "it",
+          "title": "Arkham Horror: Il Gioco di Carte"
+        }
+      ],
+      "minPlayers": 1,
+      "maxPlayers": 2,
+      "durationMinutes": 120,
+      "year": 2016,
+      "awards": 0,
+      "sitelinks": 4
+    },
+    {
+      "wikidataId": "Q28547200",
+      "title": "Imhotep: Builder of Egypt",
+      "titleLanguage": "en",
+      "otherTitles": [
+        {
+          "languageCode": "fr",
+          "title": "Imhotep"
+        },
+        {
+          "languageCode": "de",
+          "title": "Imhotep: Baumeister Ägyptens"
+        }
+      ],
+      "minPlayers": 2,
+      "maxPlayers": 4,
+      "durationMinutes": null,
+      "year": 2016,
+      "awards": 0,
+      "sitelinks": 4
+    },
+    {
+      "wikidataId": "Q29471714",
+      "title": "Patchwork",
+      "titleLanguage": "en",
+      "otherTitles": [],
+      "minPlayers": 2,
+      "maxPlayers": 2,
+      "durationMinutes": null,
+      "year": 2014,
+      "awards": 0,
+      "sitelinks": 4
+    },
+    {
+      "wikidataId": "Q32033550",
+      "title": "Magic Maze",
+      "titleLanguage": "en",
+      "otherTitles": [],
+      "minPlayers": 1,
+      "maxPlayers": 8,
+      "durationMinutes": 15,
+      "year": 2017,
+      "awards": 0,
+      "sitelinks": 4
+    },
+    {
+      "wikidataId": "Q55233716",
+      "title": "The Binding of Isaac: Four Souls",
+      "titleLanguage": "en",
+      "otherTitles": [],
+      "minPlayers": 2,
+      "maxPlayers": 4,
+      "durationMinutes": null,
+      "year": 2018,
+      "awards": 0,
+      "sitelinks": 4
+    },
+    {
+      "wikidataId": "Q60977412",
+      "title": "Mice and Mystics",
+      "titleLanguage": "en",
+      "otherTitles": [
+        {
+          "languageCode": "de",
+          "title": "Maus und Mystik"
+        }
+      ],
+      "minPlayers": 1,
+      "maxPlayers": 4,
+      "durationMinutes": null,
+      "year": 2012,
+      "awards": 0,
+      "sitelinks": 4
+    },
+    {
+      "wikidataId": "Q104862696",
+      "title": "Uno Flip!",
+      "titleLanguage": "en",
+      "otherTitles": [
+        {
+          "languageCode": "es",
+          "title": "Uno Flip"
+        },
+        {
+          "languageCode": "fr",
+          "title": "Uno Flip"
+        }
+      ],
+      "minPlayers": 2,
+      "maxPlayers": 10,
+      "durationMinutes": null,
+      "year": 2019,
+      "awards": 0,
+      "sitelinks": 4
+    },
+    {
+      "wikidataId": "Q111181282",
+      "title": "Unmatched: Battle of Legends, Volume One",
+      "titleLanguage": "en",
+      "otherTitles": [],
+      "minPlayers": 2,
+      "maxPlayers": 4,
+      "durationMinutes": null,
+      "year": 2019,
+      "awards": 0,
+      "sitelinks": 4
+    }
+  ]
+}
