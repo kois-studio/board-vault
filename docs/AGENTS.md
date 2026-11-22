@@ -23,6 +23,7 @@ and Upstash.
 | Add or read an environment variable | [environments.md](environments.md) |
 | Production is down or misbehaving | [how-to/recover-production.md](how-to/recover-production.md) |
 | Tag catalogue games that have no tags (after approving proposals) | [how-to/tag-untagged-games.md](how-to/tag-untagged-games.md) (existing tags only, owner OKs the list, nothing to clear) |
+| Seed or re-run the Wikidata catalogue import | [how-to/import-wikidata-catalogue.md](how-to/import-wikidata-catalogue.md) (dry run first, backup, owner runs it on shared databases) |
 | Run with local Redis | [how-to/run-with-redis.md](how-to/run-with-redis.md) |
 | Update Playwright screenshots | [how-to/update-screenshots.md](how-to/update-screenshots.md) |
 | Make a durable decision | [adr/README.md](adr/README.md) |
