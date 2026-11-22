@@ -239,7 +239,10 @@ async function main() {
         const batch = picked.slice(index, index + 200).map(item => item.id)
         for (const row of await sparql(labelsQuery(batch))) {
             const id = entityId(row.g.value)
-            labels.set(id, { ...labels.get(id), [row.lang.value]: row.label.value.trim() })
+            // "Mombasa (gioco)": Wikipedia's disambiguation, not part of the title.
+            // A lowercase label ("phase 10") is Wikidata's style for concepts; a box title starts with a capital.
+            const label = row.label.value.replace(/\s*\([^)]*\)\s*$/, '').trim()
+            labels.set(id, { ...labels.get(id), [row.lang.value]: label.charAt(0).toUpperCase() + label.slice(1) })
         }
         await new Promise(resolveWait => setTimeout(resolveWait, 1000))
     }

@@ -21,6 +21,9 @@ and gives the same file for the same Wikidata data.
 
 ## Review
 
+The script drops a trailing Wikipedia disambiguation from every title
+("Mombasa (gioco)" → "Mombasa") and starts each with a capital letter.
+
 Each candidate has the primary `title` in `titleLanguage`, `otherTitles`
 only where a language's title differs, player counts, `durationMinutes`
 (NULL when Wikidata has none), `year`, the number of `awards` and of

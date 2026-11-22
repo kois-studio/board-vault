@@ -1,8 +1,8 @@
 {
   "source": "Wikidata (https://www.wikidata.org), CC0 1.0. Picked by database/scripts/wikidata-candidates.mjs, ADR-0030.",
   "rule": "Items with a BoardGameGeek ID, a publication year from 1900, and player counts; no expansions or variants. Score: Wikipedia languages plus 10 per award (not counting wargame awards), at least 4 (10 before 1980); highest first.",
-  "count": 337,
-  "excluded": 1,
+  "count": 331,
+  "excluded": 7,
   "candidates": [
     {
       "wikidataId": "Q17276",
@@ -194,18 +194,16 @@
       "durationMinutes": 20,
       "year": 2019,
       "awards": 6,
-      "sitelinks": 5
+      "sitelinks": 5,
+      "matchTitles": [
+        "The Crew"
+      ]
     },
     {
       "wikidataId": "Q1457040",
       "title": "Puerto Rico",
       "titleLanguage": "en",
-      "otherTitles": [
-        {
-          "languageCode": "es",
-          "title": "Puerto Rico (juego)"
-        }
-      ],
+      "otherTitles": [],
       "minPlayers": 3,
       "maxPlayers": 5,
       "durationMinutes": 150,
@@ -397,7 +395,7 @@
         }
       ],
       "minPlayers": 1,
-      "maxPlayers": 7,
+      "maxPlayers": 5,
       "durationMinutes": 70,
       "year": 2019,
       "awards": 3,
@@ -418,7 +416,7 @@
     {
       "wikidataId": "Q44659892",
       "title": "Burg Appenzell",
-      "titleLanguage": "en",
+      "titleLanguage": "de",
       "otherTitles": [
         {
           "languageCode": "fr",
@@ -477,15 +475,7 @@
       "titleLanguage": "en",
       "otherTitles": [
         {
-          "languageCode": "fr",
-          "title": "Heimlich & Co."
-        },
-        {
           "languageCode": "de",
-          "title": "Heimlich & Co."
-        },
-        {
-          "languageCode": "it",
           "title": "Heimlich & Co."
         }
       ],
@@ -593,10 +583,6 @@
       "titleLanguage": "en",
       "otherTitles": [
         {
-          "languageCode": "es",
-          "title": "6 nimmt!"
-        },
-        {
           "languageCode": "fr",
           "title": "6 qui prend !"
         },
@@ -687,12 +673,7 @@
       "wikidataId": "Q36992159",
       "title": "Mombasa",
       "titleLanguage": "en",
-      "otherTitles": [
-        {
-          "languageCode": "it",
-          "title": "Mombasa (gioco)"
-        }
-      ],
+      "otherTitles": [],
       "minPlayers": 2,
       "maxPlayers": 4,
       "durationMinutes": null,
@@ -885,7 +866,7 @@
         }
       ],
       "minPlayers": 2,
-      "maxPlayers": 8,
+      "maxPlayers": 4,
       "durationMinutes": null,
       "year": 1907,
       "awards": 0,
@@ -921,15 +902,7 @@
       "titleLanguage": "en",
       "otherTitles": [
         {
-          "languageCode": "fr",
-          "title": "Adel verpflichtet"
-        },
-        {
           "languageCode": "de",
-          "title": "Adel verpflichtet"
-        },
-        {
-          "languageCode": "it",
           "title": "Adel verpflichtet"
         }
       ],
@@ -1197,10 +1170,6 @@
       "titleLanguage": "en",
       "otherTitles": [
         {
-          "languageCode": "es",
-          "title": "Bohnanza (Juego de Cartas)"
-        },
-        {
           "languageCode": "it",
           "title": "Semenza"
         }
@@ -1360,7 +1329,7 @@
     {
       "wikidataId": "Q44660337",
       "title": "Kraken-Alarm",
-      "titleLanguage": "en",
+      "titleLanguage": "de",
       "otherTitles": [
         {
           "languageCode": "fr",
@@ -1652,20 +1621,8 @@
       "titleLanguage": "en",
       "otherTitles": [
         {
-          "languageCode": "es",
-          "title": "Arkham Horror"
-        },
-        {
           "languageCode": "fr",
           "title": "Horreur à Arkham"
-        },
-        {
-          "languageCode": "de",
-          "title": "Arkham Horror"
-        },
-        {
-          "languageCode": "it",
-          "title": "Arkham Horror"
         }
       ],
       "minPlayers": 1,
@@ -1725,16 +1682,7 @@
       "wikidataId": "Q1111617",
       "title": "Coloretto",
       "titleLanguage": "en",
-      "otherTitles": [
-        {
-          "languageCode": "fr",
-          "title": "Coloretto: 10 Ans Déjà"
-        },
-        {
-          "languageCode": "it",
-          "title": "Coloretto edizione anniversario 10 anni"
-        }
-      ],
+      "otherTitles": [],
       "minPlayers": 2,
       "maxPlayers": 5,
       "durationMinutes": 30,
@@ -1841,12 +1789,7 @@
       "wikidataId": "Q63973259",
       "title": "Just One",
       "titleLanguage": "en",
-      "otherTitles": [
-        {
-          "languageCode": "it",
-          "title": "Just One (gioco da tavolo)"
-        }
-      ],
+      "otherTitles": [],
       "minPlayers": 3,
       "maxPlayers": 7,
       "durationMinutes": 30,
@@ -2077,12 +2020,7 @@
       "wikidataId": "Q28451575",
       "title": "Mysterium",
       "titleLanguage": "en",
-      "otherTitles": [
-        {
-          "languageCode": "it",
-          "title": "Mysterium (gioco da tavolo)"
-        }
-      ],
+      "otherTitles": [],
       "minPlayers": 2,
       "maxPlayers": 7,
       "durationMinutes": null,
@@ -2174,7 +2112,7 @@
     },
     {
       "wikidataId": "Q16213033",
-      "title": "Mansions of Madness: First Edition",
+      "title": "Mansions of Madness",
       "titleLanguage": "en",
       "otherTitles": [
         {
@@ -2224,7 +2162,7 @@
       "otherTitles": [
         {
           "languageCode": "de",
-          "title": "e-Mission"
+          "title": "E-Mission"
         }
       ],
       "minPlayers": 1,
@@ -2353,16 +2291,7 @@
       "wikidataId": "Q2453755",
       "title": "Tribulation",
       "titleLanguage": "en",
-      "otherTitles": [
-        {
-          "languageCode": "fr",
-          "title": "Trio"
-        },
-        {
-          "languageCode": "de",
-          "title": "Trio"
-        }
-      ],
+      "otherTitles": [],
       "minPlayers": 1,
       "maxPlayers": 6,
       "durationMinutes": null,
@@ -2602,12 +2531,7 @@
       "wikidataId": "Q1531943",
       "title": "Lines of Action",
       "titleLanguage": "en",
-      "otherTitles": [
-        {
-          "languageCode": "es",
-          "title": "LOA"
-        }
-      ],
+      "otherTitles": [],
       "minPlayers": 2,
       "maxPlayers": 2,
       "durationMinutes": null,
@@ -2633,31 +2557,10 @@
       "sitelinks": 2
     },
     {
-      "wikidataId": "Q1634851",
-      "title": "Luzhanqi",
-      "titleLanguage": "en",
-      "otherTitles": [],
-      "minPlayers": 2,
-      "maxPlayers": 4,
-      "durationMinutes": 20,
-      "year": 1927,
-      "awards": 0,
-      "sitelinks": 12
-    },
-    {
       "wikidataId": "Q1714791",
       "title": "Blink",
       "titleLanguage": "en",
-      "otherTitles": [
-        {
-          "languageCode": "fr",
-          "title": "Speed"
-        },
-        {
-          "languageCode": "de",
-          "title": "Speed"
-        }
-      ],
+      "otherTitles": [],
       "minPlayers": 2,
       "maxPlayers": 3,
       "durationMinutes": null,
@@ -2732,7 +2635,7 @@
     },
     {
       "wikidataId": "Q27975526",
-      "title": "Spooky stairs",
+      "title": "Spooky Stairs",
       "titleLanguage": "en",
       "otherTitles": [
         {
@@ -3129,12 +3032,7 @@
       "wikidataId": "Q1399188",
       "title": "Hive",
       "titleLanguage": "en",
-      "otherTitles": [
-        {
-          "languageCode": "es",
-          "title": "Hive (juego de mesa)"
-        }
-      ],
+      "otherTitles": [],
       "minPlayers": 2,
       "maxPlayers": 2,
       "durationMinutes": null,
@@ -3300,12 +3198,7 @@
       "wikidataId": "Q28530230",
       "title": "Union Pacific",
       "titleLanguage": "en",
-      "otherTitles": [
-        {
-          "languageCode": "de",
-          "title": "Union Pacific (Airlines)"
-        }
-      ],
+      "otherTitles": [],
       "minPlayers": 2,
       "maxPlayers": 6,
       "durationMinutes": null,
@@ -3316,7 +3209,7 @@
     {
       "wikidataId": "Q29110344",
       "title": "Tempel des Schreckens",
-      "titleLanguage": "en",
+      "titleLanguage": "de",
       "otherTitles": [],
       "minPlayers": 3,
       "maxPlayers": 10,
@@ -3357,7 +3250,7 @@
     {
       "wikidataId": "Q44539589",
       "title": "Leinen los!",
-      "titleLanguage": "en",
+      "titleLanguage": "de",
       "otherTitles": [],
       "minPlayers": 2,
       "maxPlayers": 4,
@@ -3381,13 +3274,8 @@
     {
       "wikidataId": "Q44603370",
       "title": "Die Ritter von der Haselnuss",
-      "titleLanguage": "en",
-      "otherTitles": [
-        {
-          "languageCode": "de",
-          "title": "Die Ritter von der Haselnuß"
-        }
-      ],
+      "titleLanguage": "de",
+      "otherTitles": [],
       "minPlayers": 2,
       "maxPlayers": 4,
       "durationMinutes": 30,
@@ -3398,7 +3286,7 @@
     {
       "wikidataId": "Q44660156",
       "title": "Burg der 1000 Spiegel",
-      "titleLanguage": "en",
+      "titleLanguage": "de",
       "otherTitles": [],
       "minPlayers": 2,
       "maxPlayers": 4,
@@ -3630,7 +3518,7 @@
     {
       "wikidataId": "Q284357",
       "title": "Afrikan tähti",
-      "titleLanguage": "en",
+      "titleLanguage": "fi",
       "otherTitles": [
         {
           "languageCode": "de",
@@ -3757,14 +3645,9 @@
     },
     {
       "wikidataId": "Q44602603",
-      "title": "Husch Husch kleine Hexe",
-      "titleLanguage": "en",
-      "otherTitles": [
-        {
-          "languageCode": "de",
-          "title": "Husch, husch, kleine Hexe"
-        }
-      ],
+      "title": "Husch, husch, kleine Hexe",
+      "titleLanguage": "de",
+      "otherTitles": [],
       "minPlayers": 2,
       "maxPlayers": 6,
       "durationMinutes": null,
@@ -3800,7 +3683,7 @@
     {
       "wikidataId": "Q45536456",
       "title": "De Ontembare Stad",
-      "titleLanguage": "en",
+      "titleLanguage": "nl",
       "otherTitles": [
         {
           "languageCode": "de",
@@ -3811,18 +3694,6 @@
       "maxPlayers": 5,
       "durationMinutes": null,
       "year": 2004,
-      "awards": 1,
-      "sitelinks": 0
-    },
-    {
-      "wikidataId": "Q96050772",
-      "title": "Unlock! Escape adventures",
-      "titleLanguage": "en",
-      "otherTitles": [],
-      "minPlayers": 2,
-      "maxPlayers": 6,
-      "durationMinutes": 60,
-      "year": 2017,
       "awards": 1,
       "sitelinks": 0
     },
@@ -3849,7 +3720,7 @@
     },
     {
       "wikidataId": "Q100797618",
-      "title": "Detective",
+      "title": "Detective: A Modern Crime Board Game",
       "titleLanguage": "en",
       "otherTitles": [],
       "minPlayers": 1,
@@ -4031,23 +3902,6 @@
       "sitelinks": 0
     },
     {
-      "wikidataId": "Q124386138",
-      "title": "My Puzzle Adventure: Dragon",
-      "titleLanguage": "en",
-      "otherTitles": [
-        {
-          "languageCode": "fr",
-          "title": "Mon Puzzle Aventure : Dragon"
-        }
-      ],
-      "minPlayers": 1,
-      "maxPlayers": 1,
-      "durationMinutes": 30,
-      "year": 2023,
-      "awards": 1,
-      "sitelinks": 0
-    },
-    {
       "wikidataId": "Q124519630",
       "title": "Zombie in My Pocket",
       "titleLanguage": "en",
@@ -4094,7 +3948,7 @@
     },
     {
       "wikidataId": "Q135472525",
-      "title": "Welcome to your perfect home",
+      "title": "Welcome to Your Perfect Home",
       "titleLanguage": "en",
       "otherTitles": [],
       "minPlayers": 1,
@@ -4248,44 +4102,10 @@
       "sitelinks": 9
     },
     {
-      "wikidataId": "Q1194265",
-      "title": "Middle-Earth Strategy Battle Game",
-      "titleLanguage": "en",
-      "otherTitles": [
-        {
-          "languageCode": "es",
-          "title": "El Señor de los Anillos, el juego de batallas estratégicas"
-        },
-        {
-          "languageCode": "fr",
-          "title": "Le Seigneur des anneaux : le jeu de bataille"
-        },
-        {
-          "languageCode": "de",
-          "title": "Mittelerde Tabletop-Strategiespiel"
-        },
-        {
-          "languageCode": "it",
-          "title": "Il Signore degli Anelli - Gioco di battaglie strategiche"
-        }
-      ],
-      "minPlayers": 2,
-      "maxPlayers": 2,
-      "durationMinutes": null,
-      "year": 2001,
-      "awards": 0,
-      "sitelinks": 9
-    },
-    {
       "wikidataId": "Q1473805",
       "title": "Phase 10",
       "titleLanguage": "en",
-      "otherTitles": [
-        {
-          "languageCode": "fr",
-          "title": "phase 10"
-        }
-      ],
+      "otherTitles": [],
       "minPlayers": 2,
       "maxPlayers": 6,
       "durationMinutes": null,
@@ -4361,7 +4181,7 @@
         },
         {
           "languageCode": "fr",
-          "title": "jeu des Amazones"
+          "title": "Jeu des Amazones"
         },
         {
           "languageCode": "de",
@@ -4379,12 +4199,7 @@
       "wikidataId": "Q840299",
       "title": "Trax",
       "titleLanguage": "en",
-      "otherTitles": [
-        {
-          "languageCode": "es",
-          "title": "Trax (juego)"
-        }
-      ],
+      "otherTitles": [],
       "minPlayers": 2,
       "maxPlayers": 2,
       "durationMinutes": null,
@@ -4544,12 +4359,7 @@
       "wikidataId": "Q25345980",
       "title": "Tak",
       "titleLanguage": "en",
-      "otherTitles": [
-        {
-          "languageCode": "es",
-          "title": "tak"
-        }
-      ],
+      "otherTitles": [],
       "minPlayers": 2,
       "maxPlayers": 2,
       "durationMinutes": 60,
@@ -4718,18 +4528,6 @@
       "sitelinks": 6
     },
     {
-      "wikidataId": "Q5435387",
-      "title": "Farkle",
-      "titleLanguage": "en",
-      "otherTitles": [],
-      "minPlayers": 2,
-      "maxPlayers": 6,
-      "durationMinutes": null,
-      "year": 1984,
-      "awards": 0,
-      "sitelinks": 6
-    },
-    {
       "wikidataId": "Q18573786",
       "title": "Zombicide",
       "titleLanguage": "en",
@@ -4842,7 +4640,7 @@
       "otherTitles": [
         {
           "languageCode": "fr",
-          "title": "le Tour du Monde en 80 Jours"
+          "title": "Le Tour du Monde en 80 Jours"
         },
         {
           "languageCode": "de",
@@ -4931,18 +4729,6 @@
       "maxPlayers": 4,
       "durationMinutes": null,
       "year": 2012,
-      "awards": 0,
-      "sitelinks": 5
-    },
-    {
-      "wikidataId": "Q20025693",
-      "title": "Commander Chess",
-      "titleLanguage": "en",
-      "otherTitles": [],
-      "minPlayers": 2,
-      "maxPlayers": 2,
-      "durationMinutes": null,
-      "year": 2010,
       "awards": 0,
       "sitelinks": 5
     },
@@ -5160,16 +4946,7 @@
       "wikidataId": "Q3432672",
       "title": "Railways of the World",
       "titleLanguage": "en",
-      "otherTitles": [
-        {
-          "languageCode": "fr",
-          "title": "Railroad Tycoon : The Boardgame"
-        },
-        {
-          "languageCode": "de",
-          "title": "Railroad Tycoon"
-        }
-      ],
+      "otherTitles": [],
       "minPlayers": 2,
       "maxPlayers": 6,
       "durationMinutes": 120,
@@ -5254,10 +5031,6 @@
         {
           "languageCode": "fr",
           "title": "Perlin Pinpin"
-        },
-        {
-          "languageCode": "de",
-          "title": "De Hartenkoningin"
         },
         {
           "languageCode": "it",
@@ -5476,7 +5249,7 @@
     },
     {
       "wikidataId": "Q111181282",
-      "title": "Unmatched",
+      "title": "Unmatched: Battle of Legends, Volume One",
       "titleLanguage": "en",
       "otherTitles": [],
       "minPlayers": 2,
