@@ -1,0 +1,38 @@
+{
+    "exclude": {
+        "Q1129250": "The 2002 collectible card game, not the board game (Q1755280)."
+    },
+    "override": {
+        "Q17271": { "title": "Catan" },
+        "Q17245": { "titleLanguage": "en" },
+        "Q17622491": { "title": "Camel Up", "titleLanguage": "en" },
+        "Q60773519": { "titleLanguage": "en" },
+        "Q113260368": { "title": "Cubirds", "titleLanguage": "en" },
+        "Q29169338": { "titleLanguage": "en" },
+        "Q136914069": { "titleLanguage": "en" },
+        "Q2141869": { "titleLanguage": "en" },
+        "Q4691914": { "titleLanguage": "en" },
+        "Q134862198": {},
+        "Q44572428": {},
+        "Q125985075": {},
+        "Q597760": { "title": "Arkham Horror" },
+        "Q16213033": {},
+        "Q27970574": {
+            "title": "Arkham Horror: The Card Game",
+            "titleLanguage": "en",
+            "otherTitles": [
+                { "languageCode": "es", "title": "Arkham Horror: El Juego de Cartas" },
+                { "languageCode": "fr", "title": "Horreur à Arkham: Le Jeu de Cartes" },
+                { "languageCode": "de", "title": "Arkham Horror: Das Kartenspiel" },
+                { "languageCode": "it", "title": "Arkham Horror: Il Gioco di Carte" }
+            ]
+        },
+        "Q5038791": { "minPlayers": 4, "maxPlayers": 20 },
+        "Q851937": {},
+        "Q135472525": {},
+        "Q122227092": { "minPlayers": 5, "maxPlayers": 20 },
+        "Q1755280": { "title": "A Game of Thrones: The Board Game" },
+        "Q1094512": {},
+        "Q5124752": { "title": "Sid Meier's Civilization: The Board Game", "otherTitles": [] }
+    }
+}
