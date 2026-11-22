@@ -158,11 +158,25 @@ describe('browsing the catalogue with filters (e2e)', () => {
         expect((await browse('players=5')).titles).toEqual(['Codenames', 'Love Letter', 'Twilight Imperium'])
     })
 
-    it('splits games by average length without overlaps', async () => {
-        expect((await browse('length=short')).titles).toEqual(['Codenames', 'Love Letter'])
-        expect((await browse('length=medium')).titles).toEqual(['Azul'])
-        expect((await browse('length=long')).titles).toEqual(['Catan'])
-        expect((await browse('length=epic')).titles).toEqual(['Twilight Imperium'])
+    it('splits games by average length without overlaps, leaving out games of unknown length', async () => {
+        const database = createClient({ url: `file:${testDatabasePath}` })
+
+        // An imported game (ADR-0030) whose playing time nobody knows: 0, or NULL.
+        await database.execute(
+            "INSERT INTO Game (id, imageUrl, gameAvgDuration, minPlayers, maxPlayers) VALUES (7, '', 0, 2, 4), (8, '', NULL, 2, 4)",
+        )
+        await database.execute(
+            "INSERT INTO GameEdition (gameId, languageCode, title, normalizedTitle, isPrimary) VALUES (7, 'en', 'Dixit', 'dixit', 1), (8, 'en', 'Skull', 'skull', 1)",
+        )
+        try {
+            expect((await browse('length=short')).titles).toEqual(['Codenames', 'Love Letter'])
+            expect((await browse('length=medium')).titles).toEqual(['Azul'])
+            expect((await browse('length=long')).titles).toEqual(['Catan'])
+            expect((await browse('length=epic')).titles).toEqual(['Twilight Imperium'])
+        } finally {
+            await database.execute('DELETE FROM Game WHERE id IN (7, 8)')
+            database.close()
+        }
     })
 
     it('keeps the games that have every chosen tag', async () => {

@@ -2973,6 +2973,7 @@
                 "no-title",
                 "no-artwork",
                 "no-primary",
+                "no-length",
                 "no-tags",
                 "no-price"
               ]
@@ -9426,16 +9427,27 @@
             "type": "number",
             "example": 12
           },
+          "no-length": {
+            "type": "number",
+            "example": 40,
+            "description": "Games whose length is unknown (0)."
+          },
           "no-tags": {
             "type": "number",
             "example": 2
+          },
+          "no-price": {
+            "type": "number",
+            "example": 7
           }
         },
         "required": [
           "no-title",
           "no-artwork",
           "no-primary",
-          "no-tags"
+          "no-length",
+          "no-tags",
+          "no-price"
         ]
       },
       "OverviewTagsDto": {
@@ -9701,6 +9713,7 @@
                 "no-title",
                 "no-artwork",
                 "no-primary",
+                "no-length",
                 "no-tags",
                 "no-price"
               ]

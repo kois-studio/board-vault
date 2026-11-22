@@ -27,7 +27,7 @@ import type { GameLength } from './game.type.js'
 
 const ADMIN_PAGE_SIZE_MAX = 100
 
-export const CATALOGUE_QUALITY_ISSUES = ['no-title', 'no-artwork', 'no-primary', 'no-tags', 'no-price'] as const
+export const CATALOGUE_QUALITY_ISSUES = ['no-title', 'no-artwork', 'no-primary', 'no-length', 'no-tags', 'no-price'] as const
 export type CatalogueQualityIssue = (typeof CATALOGUE_QUALITY_ISSUES)[number]
 
 export class AdminGamesQuery {
@@ -239,8 +239,14 @@ class OverviewCatalogueIssuesDto {
     @ApiProperty({ example: 12 })
     'no-primary': number
 
+    @ApiProperty({ example: 40, description: 'Games whose length is unknown (0).' })
+    'no-length': number
+
     @ApiProperty({ example: 2 })
     'no-tags': number
+
+    @ApiProperty({ example: 7 })
+    'no-price': number
 }
 
 class OverviewTagsDto {

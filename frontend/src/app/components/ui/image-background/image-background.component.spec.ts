@@ -24,7 +24,9 @@ describe('ImageBackgroundComponent', () => {
         const fallback = fixture.nativeElement.querySelector('[role="img"]') as HTMLElement
 
         expect(fallback.getAttribute('aria-label')).toBe('Example game cover unavailable')
-        expect(fallback.textContent).toContain('Artwork unavailable')
+        // A game without artwork shows a quiet mark, not an error, so a list of them does not look broken.
+        expect(fallback.textContent).not.toContain('Artwork unavailable')
+        expect(fallback.querySelector('app-icon svg')?.getAttribute('aria-hidden')).toBe('true')
     })
 
     it('replaces broken artwork with the same accessible fallback', () => {
@@ -37,5 +39,6 @@ describe('ImageBackgroundComponent', () => {
 
         expect(fixture.nativeElement.querySelector('img')).toBeNull()
         expect(fixture.nativeElement.querySelector('[role="img"]')?.getAttribute('aria-label')).toBe('Example game cover unavailable')
+        expect(fixture.nativeElement.textContent).toContain('Artwork unavailable')
     })
 })

@@ -76,8 +76,13 @@ letters and an optional region, canonicalized (`pt-br` becomes `pt-BR`); an
 edition may be in any language, not only an interface language. Editions whose
 language stays keep their `id`; the ones left out are deleted. The admin `issue` filter and the overview's
 `catalogueIssues` count `no-title` (no edition), `no-artwork`, `no-primary`
-(editions but none primary), `no-tags`, and `no-price`; the catalogue search
-matches any edition's title.
+(editions but none primary), `no-length` (duration 0 or NULL), `no-tags`, and
+`no-price`; with an `issue`, the games on the most shelves come first. The
+catalogue search matches any edition's title.
+
+A `gameAvgDuration` of 0 means the length is unknown (imported games, ADR-0030).
+Browse's `length` filter leaves those games out; suggestions keep them and say
+the length is unknown.
 
 A proposal (`POST /profile/users/:userId/proposals`) says which language its
 `title` is in with `titleLanguage` (default: `request.locale`) and may list

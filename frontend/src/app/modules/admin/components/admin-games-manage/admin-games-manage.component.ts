@@ -24,6 +24,11 @@ export const CATALOGUE_ISSUES: Array<{ value: CatalogueIssue; label: string; hin
         label: 'No primary edition',
         hint: 'The game has editions but none is the primary one, so it has no title to show. Open it and choose one.',
     },
+    {
+        value: 'no-length',
+        label: 'No length',
+        hint: 'Without a length the game is left out of Browse’s length filter. Add its usual playing time in minutes.',
+    },
     { value: 'no-tags', label: 'No tags', hint: 'Without tags the game is missing from tag filters and suggestions.' },
     { value: 'no-price', label: 'No price', hint: 'Without a retail price the game is left out of collection worth estimates.' },
 ]

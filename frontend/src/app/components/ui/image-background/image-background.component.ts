@@ -1,7 +1,8 @@
 import { Component, effect, input, signal, untracked } from '@angular/core'
+import { IconComponent } from '../icon/icon.component'
 
 @Component({
-    imports: [],
+    imports: [IconComponent],
     selector: 'image-background',
     host: { class: 'block' },
     templateUrl: 'image-background.component.html',
