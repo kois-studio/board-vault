@@ -82,7 +82,8 @@ missed; proposals cover them.
    wrong games and bad titles are removed there.
 2. **Import** (#361): a script reads the reviewed file and, per game, updates
    the game with the same `Game.wikidataId`, else links an existing game
-   with the same primary title, else adds the game and its editions. It only
+   that has an edition with one of its titles (or a review `matchTitles`
+   name), else adds the game and its editions. It only
    fills empty fields and never overwrites what an admin set. It has a dry
    run, runs on the development database first, and runs on production after
    a backup, like a one-off data change (add-migration.md).

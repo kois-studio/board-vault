@@ -34,3 +34,9 @@ one exact player count, or a title that may name an edition.
 Read the diff in the pull request. For anything wrong, add an `exclude` or
 an `override` to `wikidata-review.json` and regenerate, until no candidate
 has `check`. The import (#361) only reads the generated file.
+
+## Import
+
+`database/scripts/import-wikidata-catalogue.mjs` writes the file into a
+database: dry run by default, `--apply` to write. How and when to run it:
+[docs/how-to/import-wikidata-catalogue.md](../../docs/how-to/import-wikidata-catalogue.md).

@@ -24,6 +24,7 @@ operating procedures are not kept here.
 
 - [Add or change an endpoint](how-to/add-endpoint.md)
 - [Add a database migration](how-to/add-migration.md)
+- [Import the Wikidata catalogue](how-to/import-wikidata-catalogue.md)
 - [Recover production](how-to/recover-production.md)
 - [Add a page](how-to/add-page.md)
 - [Run with Clerk](how-to/run-with-clerk.md)
