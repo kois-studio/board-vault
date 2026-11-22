@@ -170,6 +170,16 @@ describe('browsing the catalogue with filters (e2e)', () => {
         )
         try {
             expect((await browse('length=short')).titles).toEqual(['Codenames', 'Love Letter'])
+            // Shortest first puts the unknown lengths last.
+            expect((await browse('sort=shortest')).titles).toEqual([
+                'Codenames',
+                'Love Letter',
+                'Azul',
+                'Catan',
+                'Twilight Imperium',
+                'Dixit',
+                'Skull',
+            ])
             expect((await browse('length=medium')).titles).toEqual(['Azul'])
             expect((await browse('length=long')).titles).toEqual(['Catan'])
             expect((await browse('length=epic')).titles).toEqual(['Twilight Imperium'])
