@@ -86,6 +86,8 @@ export function planImport(candidates, games, firstNewId) {
     const otherCandidates = (edition, candidate) => !edition.isPrimary && primaries.has(edition.normalizedTitle) && primaries.get(edition.normalizedTitle) !== candidate.wikidataId
 
     const plan = { inserts: [], links: [], updates: [], unchanged: [], skipped: [] }
+    // Games this run links, so a second candidate with one of their titles does not link the same game.
+    const linkedNow = new Map()
     let nextId = firstNewId
 
     for (const candidate of candidates) {
@@ -109,12 +111,14 @@ export function planImport(candidates, games, firstNewId) {
                 continue
             }
             if (matchedGames.length === 1) {
-                if (matchedGames[0].wikidataId) {
-                    plan.skipped.push({ candidate, reason: `title matches game ${matchedGames[0].id}, already linked to ${matchedGames[0].wikidataId}` })
+                const linkedTo = matchedGames[0].wikidataId ?? linkedNow.get(matchedGames[0].id)
+                if (linkedTo) {
+                    plan.skipped.push({ candidate, reason: `title matches game ${matchedGames[0].id}, already linked to ${linkedTo}` })
                     continue
                 }
                 game = matchedGames[0]
                 linked = true
+                linkedNow.set(game.id, candidate.wikidataId)
             }
         }
 
