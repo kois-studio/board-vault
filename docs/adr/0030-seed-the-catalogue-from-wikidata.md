@@ -63,16 +63,21 @@ BoardGameGeek and never made by AI.
 
 ### Which games
 
-Board games published since 1980 with player counts, ranked by national game
-awards first (Spiel des Jahres, Kennerspiel des Jahres, As d'Or, Juego del
-Año, Gioco dell'Anno and similar), then by how many Wikipedia languages
-cover them. A few hundred at a time, not the whole of Wikidata.
+Published games with a BoardGameGeek ID and player counts, without
+expansions or variants. Each scores the number of Wikipedia languages that
+cover it plus 10 per game award (Spiel des Jahres, Kennerspiel des Jahres,
+As d'Or, Juego del Año, Gioco dell'Anno and similar; wargame awards do not
+count). Games below a minimum score are left out, and games from before 1980
+need a higher one, so household classics such as *Monopoly* stay and
+forgotten ones do not. A few hundred at a time, not the whole of Wikidata.
+Games Wikidata describes poorly (no BoardGameGeek ID or player counts) are
+missed; proposals cover them.
 
 ### How it runs
 
 1. **Candidates** (#360): a script queries the Wikidata Query Service at a
    polite pace, with a User-Agent naming Board Vault, and writes
-   `data/catalogue/wikidata-candidates.json`. CC0 data with no personal
+   `database/catalogue/wikidata-candidates.json`. CC0 data with no personal
    details, so it lives in Git. The PR that adds or changes it is the review:
    wrong games and bad titles are removed there.
 2. **Import** (#361): a script reads the reviewed file and, per game, updates
