@@ -4,7 +4,7 @@
     },
     "override": {
         "Q17271": { "title": "Catan" },
-        "Q17245": { "titleLanguage": "en" },
+        "Q17245": { "titleLanguage": "en", "matchTitles": ["Clue"] },
         "Q17622491": { "title": "Camel Up", "titleLanguage": "en" },
         "Q60773519": { "titleLanguage": "en" },
         "Q113260368": { "title": "Cubirds", "titleLanguage": "en" },

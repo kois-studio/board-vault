@@ -9,7 +9,8 @@
 // Review decisions live in database/catalogue/wikidata-review.json, so a rerun
 // keeps them: `exclude` maps an item to why it is left out, `override` maps an
 // item to the fields that replace Wikidata's (title, titleLanguage, otherTitles,
-// minPlayers, maxPlayers, durationMinutes). Candidates that need a look carry
+// minPlayers, maxPlayers, durationMinutes, and matchTitles: other names the import finds an existing game by,
+// never written as titles). Candidates that need a look carry
 // `check`, a list of reasons.
 //
 // Wikidata data is CC0. The file holds no personal details.

@@ -7,7 +7,7 @@ details, and nothing at runtime reads them.
 | File | What it is |
 | --- | --- |
 | `wikidata-candidates.json` | Generated. The games to import, best known first. Do not edit by hand: a rerun overwrites it. |
-| `wikidata-review.json` | Hand-written. Review decisions the script applies on every run: `exclude` (item → why it is left out) and `override` (item → fields that replace Wikidata's: `title`, `titleLanguage`, `otherTitles`, `minPlayers`, `maxPlayers`, `durationMinutes`). An empty override marks an item as checked. |
+| `wikidata-review.json` | Hand-written. Review decisions the script applies on every run: `exclude` (item → why it is left out) and `override` (item → fields that replace Wikidata's: `title`, `titleLanguage`, `otherTitles`, `minPlayers`, `maxPlayers`, `durationMinutes`, and `matchTitles`: other names the import finds an existing game by, such as Clue for Cluedo, never written as titles). An empty override marks an item as checked. |
 
 ## Regenerate
 
