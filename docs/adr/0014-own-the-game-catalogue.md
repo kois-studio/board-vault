@@ -38,6 +38,9 @@ and does not depend on one to add games.
 - Revisit when proposal review becomes the bottleneck: proposals waiting
   more than a few days, or groups unable to build a shelf without help.
   A new ADR would then decide the import source and its licensing.
+- ADR-0030 (2026-11-22) chose that source: an admin-side import from
+  Wikidata, so the catalogue has common games before the public
+  announcement.
 
 ## Alternatives considered
 
