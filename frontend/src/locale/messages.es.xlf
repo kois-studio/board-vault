@@ -4962,6 +4962,15 @@
         <target>{VAR_PLURAL, plural, one {<ph id="0" equiv="INTERPOLATION"/> partida} other {<ph id="1" equiv="INTERPOLATION"/> partidas}}</target>
       </segment>
     </unit>
+    <unit id="3575928111122408887">
+      <notes>
+        <note category="description">Under a game&apos;s title that is in a language other than the reader&apos;s and English; the placeholder is a language name, such as Finnish</note>
+      </notes>
+      <segment state="translated">
+        <source>Title in <ph id="0" equiv="INTERPOLATION" disp="{{ languageName(lang) }}"/></source>
+        <target>Título en <ph id="0" equiv="INTERPOLATION" disp="{{ languageName(lang) }}"/></target>
+      </segment>
+    </unit>
     <unit id="3592226001673531572">
       <notes>
         <note category="description">Heading of the suggested games on a planned game night</note>
