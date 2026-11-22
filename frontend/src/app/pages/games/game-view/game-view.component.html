@@ -27,9 +27,15 @@
 
         <div class="min-w-0">
           <h1 id="game-title" class="text-3xl font-bold tracking-tight md:text-4xl" [attr.lang]="titleLanguage(game.gameData)">{{ game.gameData | gameTitle }}</h1>
-          <!-- Its titles in other editions, such as Codenames under Código Secreto (ADR-0025). -->
+          <!-- A title in neither the reader's language nor English, such as Afrikan tähti, says which language it is. -->
+          @if (unfamiliarTitleLanguage(game.gameData); as lang) {
+            <p class="mt-1 text-sm text-bv-text-muted" i18n="Under a game's title that is in a language other than the reader's and English; the placeholder is a language name, such as Finnish">Title in {{ languageName(lang) }}</p>
+          }
+          <!-- Its titles in other editions, such as Codenames under Código Secreto (ADR-0025), each with its language. -->
           @for (other of otherTitles(game.gameData); track other.lang) {
-            <p class="mt-1 text-secondary" [attr.lang]="other.lang">{{ other.title }}</p>
+            <p class="mt-1 text-secondary">
+              <span [attr.lang]="other.lang">{{ other.title }}</span> — <span class="text-sm text-bv-text-muted">{{ languageName(other.lang) }}</span>
+            </p>
           }
 
           <ul class="mt-4 flex flex-wrap gap-2 text-sm" i18n-aria-label="Accessible name of the list of a game's length and player count on its page" aria-label="Game facts">

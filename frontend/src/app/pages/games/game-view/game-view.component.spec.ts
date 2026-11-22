@@ -175,6 +175,25 @@ describe('GameViewPageComponent plays', () => {
         [...element.querySelectorAll('#game-plays a')].map((link) => Number(link.getAttribute('href')?.split('/').pop()))
 
     // #256: "nobody owns it" only once your groups have loaded.
+    it('names the language of a title in neither the reader’s language nor English, and of each other title', async () => {
+        const afrikanTahti = {
+            ...game(18, 'Afrikan tähti'),
+            titleLanguage: 'fi',
+            titleTranslations: { fi: 'Afrikan tähti', de: 'Der Stern von Afrika' },
+        } as GameCompleteType
+        const { element } = await setup(vi.fn().mockReturnValue(of({ ...view, gameData: afrikanTahti })))
+        const text = element.textContent?.replace(/\s+/g, ' ') ?? ''
+
+        expect(text).toContain('Title in Finnish')
+        expect(text).toContain('Der Stern von Afrika — German')
+    })
+
+    it('does not label an English title for an English reader', async () => {
+        const { element } = await setup()
+
+        expect(element.textContent).not.toContain('Title in')
+    })
+
     it('says nobody in your groups owns it only once your groups have loaded', async () => {
         const { element } = await setup()
 

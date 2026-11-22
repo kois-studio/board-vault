@@ -18,7 +18,8 @@ import { IconComponent } from '../../../components/ui/icon/icon.component'
 import { ImageBackgroundComponent } from '../../../components/ui/image-background/image-background.component'
 import { WishlistToggleComponent } from '../../../components/wishlist-toggle/wishlist-toggle.component'
 import { mapState } from '../../../core/async/resource-state'
-import { formatList, formatNumber } from '../../../core/i18n/format'
+import { formatList, formatNumber, pageLocale } from '../../../core/i18n/format'
+import { languageName } from '../../../core/i18n/language-names'
 import { CustomDatePipe } from '../../../core/pipes/customDate.pipe'
 import { CoverAltPipe, GameTitlePipe } from '../../../core/pipes/game-title.pipe'
 import { ConnectivityService } from '../../../core/services/connectivity.service'
@@ -125,6 +126,12 @@ export class GameViewPageComponent {
     public readonly playedCount = computed(() => this.playsCount() ?? this.userHistoryFilteredComputed().length)
     protected readonly titleLanguage = gameTitleLanguage
     protected readonly otherTitles = otherGameTitles
+    protected readonly languageName = languageName
+    /** The shown title's language when it is neither the reader's nor English, which most box titles are. */
+    protected unfamiliarTitleLanguage(game: GameViewType['gameData']): string | null {
+        const language = gameTitleLanguage(game)
+        return language && language !== 'en' && language !== pageLocale() ? language : null
+    }
     private playsCountRequest: Subscription | null = null
 
     // --------------------------------------------------------------------------
